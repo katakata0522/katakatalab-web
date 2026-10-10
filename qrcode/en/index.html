@@ -384,7 +384,7 @@
                 <option value="svg" data-i18n-option="sidebar.formatSvg">SVG (Pro)</option>
                 <option value="pdf" data-i18n-option="sidebar.formatPdf">PDF (Pro)</option>
               </select>
-              <p class="helper-text pro-feature-tag" data-i18n="pro.exportProNotice">SVG and PDF export are available on Pro.</p>
+              <p class="helper-text pro-feature-tag" data-i18n="pro.exportProNotice">SVG and PDF are Pro formats. Both embed a PNG image; enlarging them does not add detail.</p>
             </div>
             <div>
               <label class="setting-label" for="filePrefix" data-i18n="sidebar.filePrefix">Filename Prefix</label>
@@ -397,7 +397,7 @@
       <details class="advanced-settings" data-details-id="logo">
         <summary class="pro-feature-tag" data-i18n="pro.logoTitle">Logo Insert (Pro)</summary>
         <div class="advanced-settings-body extension-form">
-          <p class="helper-text" data-i18n="pro.logoHelp">Insert a center logo and automatically review likely scan safety.</p>
+          <p class="helper-text" data-i18n="pro.logoHelp">Insert a center logo and review contrast, margins, and logo coverage. Test scanning on real devices too.</p>
           <label class="setting-label pro-feature-tag" for="logoFile" data-i18n="pro.logoFileLabel">Logo image (Pro)</label>
           <input id="logoFile" class="text-input" type="file" accept="image/png,image/jpeg,image/webp,image/svg+xml">
           <img id="logoPreview" class="logo-preview" alt="logo preview" hidden>
@@ -415,13 +415,13 @@
       </details>
 
       <details class="advanced-settings" data-details-id="quality" open>
-        <summary data-i18n="pro.qualityTitle">Quality Check</summary>
+        <summary data-i18n="pro.qualityTitle">Settings Review</summary>
         <div class="advanced-settings-body">
           <div class="quality-grade-row">
             <span class="quality-label" data-i18n="pro.qualityGrade">Grade</span>
             <strong id="qualityGrade" class="quality-grade quality-a">A</strong>
           </div>
-          <p id="qualitySummary" class="helper-text" data-i18n="pro.qualitySummaryDefault">Looks good. Suitable for common scanning situations.</p>
+          <p id="qualitySummary" class="helper-text" data-i18n="pro.qualitySummaryDefault">Review contrast, margins, and logo coverage. This score does not guarantee a successful scan.</p>
           <ul id="qualityChecklist" class="policy-list">
             <li data-i18n="pro.qualityItemContrast">Contrast: Good</li>
             <li data-i18n="pro.qualityItemPadding">Quiet Zone: Good</li>
@@ -570,7 +570,7 @@
 </main>
 
 <script type="application/ld+json">
-  {
+{
   "@context": "https://schema.org",
   "@type": "WebApplication",
   "name": "QR Maker Lab",
@@ -591,7 +591,7 @@
   },
   "dateModified": "2026-07-16"
 }
-  </script>
+</script>
 
 <script src="js/pwa.js" defer></script>
 <script src="js/pro-config.js" defer></script>

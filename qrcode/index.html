@@ -10,7 +10,7 @@
   
   <title>QRコード作成ツール | ブラウザ完結・登録不要 - KatakataLab</title>
   
-  <meta name="description" content="【登録不要・基本機能無料】URL・テキスト・Wi-Fi情報からQRコードを作成できるブラウザ完結型ツールです。入力内容をQRコード生成のために外部サーバーへ送信せず、色・サイズ・余白を調整してPNG・SVGで保存できます。">
+  <meta name="description" content="【登録不要・基本機能無料】URL・テキスト・Wi-Fi情報からQRコードを作成できるブラウザ完結型ツールです。入力内容をQRコード生成のために外部サーバーへ送信せず、色・サイズ・余白を調整してPNGで保存できます。">
   
   <link rel="canonical" href="https://katakatalab.com/qrcode/">
   <link rel="alternate" hreflang="ja" href="https://katakatalab.com/qrcode/">
@@ -20,7 +20,7 @@
   <link rel="icon" href="assets/icon-192.png" type="image/png">
 
   <meta property="og:title" content="QRコード作成ツール | ブラウザ完結・登録不要 - KatakataLab">
-  <meta property="og:description" content="URL・テキスト・Wi-Fi情報からQRコードを作成し、PNG・SVGで保存できるブラウザ完結型ツールです。">
+  <meta property="og:description" content="URL・テキスト・Wi-Fi情報からQRコードを作成し、PNGで保存できるブラウザ完結型ツールです。">
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://katakatalab.com/qrcode/">
   <meta property="og:site_name" content="KatakataLab">
@@ -28,7 +28,7 @@
   <meta property="og:locale" content="ja_JP">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="QRコード作成ツール | ブラウザ完結・登録不要 - KatakataLab">
-  <meta name="twitter:description" content="URL・テキスト・Wi-Fi情報からQRコードを作成し、PNG・SVGで保存できるブラウザ完結型ツールです。">
+  <meta name="twitter:description" content="URL・テキスト・Wi-Fi情報からQRコードを作成し、PNGで保存できるブラウザ完結型ツールです。">
   <meta name="twitter:image" content="https://katakatalab.com/qrcode/ogp.png">
 
   <link rel="stylesheet" href="style.css?v=20260824-responsive">
@@ -377,7 +377,7 @@
                 <option value="svg" data-i18n-option="sidebar.formatSvg">SVG (Pro)</option>
                 <option value="pdf" data-i18n-option="sidebar.formatPdf">PDF (Pro)</option>
               </select>
-              <p class="helper-text pro-feature-tag" data-i18n="pro.exportProNotice">SVG / PDF保存はProで利用できます。</p>
+              <p class="helper-text pro-feature-tag" data-i18n="pro.exportProNotice">SVG / PDF保存はPro機能です。どちらもPNG画像を内包し、拡大しても細部は増えません。</p>
             </div>
             <div>
               <label class="setting-label" for="filePrefix" data-i18n="sidebar.filePrefix">ファイル名プレフィックス</label>
@@ -390,7 +390,7 @@
       <details class="advanced-settings" data-details-id="logo">
         <summary class="pro-feature-tag" data-i18n="pro.logoTitle">ロゴ挿入 (Pro)</summary>
         <div class="advanced-settings-body extension-form">
-          <p class="helper-text" data-i18n="pro.logoHelp">中央ロゴを挿入し、読み取り安全性を自動判定します。</p>
+          <p class="helper-text" data-i18n="pro.logoHelp">中央ロゴを挿入し、色・余白・ロゴ比率などの設定を確認します。実機での読み取り確認も必要です。</p>
           <label class="setting-label pro-feature-tag" for="logoFile" data-i18n="pro.logoFileLabel">ロゴ画像 (Pro)</label>
           <input id="logoFile" class="text-input" type="file" accept="image/png,image/jpeg,image/webp,image/svg+xml">
           <img id="logoPreview" class="logo-preview" alt="logo preview" hidden>
@@ -408,13 +408,13 @@
       </details>
 
       <details class="advanced-settings" data-details-id="quality" open>
-        <summary data-i18n="pro.qualityTitle">品質チェック</summary>
+        <summary data-i18n="pro.qualityTitle">設定の目安</summary>
         <div class="advanced-settings-body">
           <div class="quality-grade-row">
             <span class="quality-label" data-i18n="pro.qualityGrade">評価</span>
             <strong id="qualityGrade" class="quality-grade quality-a">A</strong>
           </div>
-          <p id="qualitySummary" class="helper-text" data-i18n="pro.qualitySummaryDefault">良好です。通常環境での読み取りに適しています。</p>
+          <p id="qualitySummary" class="helper-text" data-i18n="pro.qualitySummaryDefault">色・余白・ロゴ比率などを確認します。読み取り成功を保証する評価ではありません。</p>
           <ul id="qualityChecklist" class="policy-list">
             <li data-i18n="pro.qualityItemContrast">コントラスト: 良好</li>
             <li data-i18n="pro.qualityItemPadding">余白: 良好</li>
@@ -591,7 +591,7 @@
         </a>
         <a href="pro-plan.html" class="resource-card resource-card-pro" target="_blank" rel="noopener">
           <strong>Proプラン詳細を見る</strong>
-          <span>買い切り 2,980円・ロゴ挿入・SVG/PDF・ZIP一括保存</span>
+          <span>Proは販売準備中・ロゴ挿入・画像内包SVG/PDF・ZIP一括保存</span>
         </a>
       </div>
     </section>
@@ -695,7 +695,7 @@
         </a>
         <a href="pro-plan.html" class="resource-card resource-card-pro">
           <strong>See Pro Plan Details</strong>
-          <span>One-time 2,980 JPY with logo, SVG/PDF, and ZIP export</span>
+          <span>Pro is in preparation: logo, PNG-based SVG/PDF, and ZIP export</span>
         </a>
       </div>
     </section>
@@ -733,15 +733,9 @@
         "name": "Free",
         "price": "0",
         "priceCurrency": "JPY"
-      },
-      {
-        "@type": "Offer",
-        "name": "Pro",
-        "price": "2980",
-        "priceCurrency": "JPY"
       }
     ],
-    "description": "URL・テキスト・Wi-Fi情報からQRコードを作成し、PNG・SVGで保存できるブラウザ完結型ツールです。入力内容はQRコード生成のために外部サーバーへ送信しません。"
+    "description": "URL・テキスト・Wi-Fi情報からQRコードを作成し、PNGで保存できるブラウザ完結型ツールです。入力内容はQRコード生成のために外部サーバーへ送信しません。"
   },
   {
     "@context": "https://schema.org",

@@ -356,7 +356,7 @@ document.addEventListener('DOMContentLoaded', () => {
         licensePlaceholder: 'PRO-XXXX-XXXX',
         applyLicense: 'ライセンスを適用 (Pro)',
         licenseNotice: 'ライセンス検証時のみ、ライセンスキーと利用ドメインを検証APIへ送信します。',
-        exportProNotice: 'SVG / PDF保存はProで利用できます。',
+        exportProNotice: 'SVG / PDF保存はPro機能です。どちらもPNG画像を内包し、拡大しても細部は増えません。',
         statusFree: '現在: Freeプラン',
         statusPro: '現在: Proプラン',
         statusActivated: 'Proプランを有効化しました。',
@@ -367,7 +367,7 @@ document.addEventListener('DOMContentLoaded', () => {
         statusUnavailable: '現在はライセンス検証サーバー未設定のため、Pro機能を有効化できません。',
         statusRevoked: 'ライセンスが無効または期限切れです。',
         logoTitle: 'ロゴ挿入 (Pro)',
-        logoHelp: '中央にロゴを挿入し、読み取りやすさを自動チェックします。',
+        logoHelp: '中央ロゴを挿入し、色・余白・ロゴ比率などの設定を確認します。実機での読み取り確認も必要です。',
         logoFileLabel: 'ロゴ画像 (Pro)',
         logoClear: 'ロゴを削除 (Pro)',
         logoSize: 'ロゴサイズ (Pro)',
@@ -377,16 +377,16 @@ document.addEventListener('DOMContentLoaded', () => {
         logoRemoved: 'ロゴを削除しました。',
         logoTooLargeFile: 'ロゴ画像は2MB以下にしてください。',
         logoReadFailed: 'ロゴ画像の読み込みに失敗しました。',
-        qualityTitle: '品質チェック',
+        qualityTitle: '設定の目安',
         qualityGrade: '評価',
-        qualitySummaryDefault: '良好です。通常環境での読み取りに適しています。',
+        qualitySummaryDefault: '色・余白・ロゴ比率などを確認します。読み取り成功を保証する評価ではありません。',
         qualityItemContrast: 'コントラスト: 良好',
         qualityItemPadding: '余白: 良好',
         qualityItemLogo: 'ロゴ占有率: 良好',
         qualityItemEcc: '誤り訂正: 良好',
-        qualityHigh: '良好です。印刷・画面表示ともに安定した読み取りが期待できます。',
-        qualityMedium: '概ね良好ですが、距離や環境によって読み取りにくい場合があります。',
-        qualityLow: '読み取り失敗の可能性があります。色・余白・ロゴサイズを調整してください。',
+        qualityHigh: '設定の目安を満たしています。保存後、実際の掲載サイズで読み取りを確認してください。',
+        qualityMedium: '一部の設定を見直せます。下の項目を確認し、実際の掲載サイズでも試してください。',
+        qualityLow: '設定に注意点があります。色・余白・ロゴサイズを調整し、実機でも確認してください。',
         qualityContrastUnknown: 'コントラスト: 背景透過のため判定不可',
         qualityContrastGood: 'コントラスト: 良好 ({ratio})',
         qualityContrastWarn: 'コントラスト: 低め ({ratio})',
@@ -616,7 +616,7 @@ document.addEventListener('DOMContentLoaded', () => {
         licensePlaceholder: 'PRO-XXXX-XXXX',
         applyLicense: 'Apply License (Pro)',
         licenseNotice: 'Only during license verification, the license key and current origin are sent to the verification API.',
-        exportProNotice: 'SVG and PDF export are available on Pro.',
+        exportProNotice: 'SVG and PDF are Pro formats. Both embed a PNG image; enlarging them does not add detail.',
         statusFree: 'Current: Free plan',
         statusPro: 'Current: Pro plan',
         statusActivated: 'Pro plan has been activated.',
@@ -627,7 +627,7 @@ document.addEventListener('DOMContentLoaded', () => {
         statusUnavailable: 'Pro activation is unavailable because the license verification server is not configured.',
         statusRevoked: 'License is invalid or expired.',
         logoTitle: 'Logo Insert (Pro)',
-        logoHelp: 'Insert a center logo and run automatic scan-readability checks.',
+        logoHelp: 'Insert a center logo and review contrast, margins, and logo coverage. Test scanning on real devices too.',
         logoFileLabel: 'Logo image (Pro)',
         logoClear: 'Remove Logo (Pro)',
         logoSize: 'Logo Size (Pro)',
@@ -637,16 +637,16 @@ document.addEventListener('DOMContentLoaded', () => {
         logoRemoved: 'Logo has been removed.',
         logoTooLargeFile: 'Please use an image under 2MB.',
         logoReadFailed: 'Failed to read the logo image.',
-        qualityTitle: 'Quality Check',
+        qualityTitle: 'Settings Review',
         qualityGrade: 'Grade',
-        qualitySummaryDefault: 'Looks good. Suitable for common scanning situations.',
+        qualitySummaryDefault: 'Review contrast, margins, and logo coverage. This score does not guarantee a successful scan.',
         qualityItemContrast: 'Contrast: Good',
         qualityItemPadding: 'Quiet Zone: Good',
         qualityItemLogo: 'Logo Coverage: Good',
         qualityItemEcc: 'Error Correction: Good',
-        qualityHigh: 'Looks good. Stable scanning is expected for print and screens.',
-        qualityMedium: 'Mostly good, but scanning may vary by distance or lighting.',
-        qualityLow: 'Scan failures are likely. Adjust colors, quiet zone, or logo size.',
+        qualityHigh: 'The settings meet the guide values. Test the saved code at its intended display or print size.',
+        qualityMedium: 'Some settings could be improved. Review the items below and test at the intended size.',
+        qualityLow: 'Review colors, margins, and logo size, then test scanning on a real device.',
         qualityContrastUnknown: 'Contrast: Not scored when transparent background is enabled',
         qualityContrastGood: 'Contrast: Good ({ratio})',
         qualityContrastWarn: 'Contrast: Low ({ratio})',
@@ -727,9 +727,21 @@ document.addEventListener('DOMContentLoaded', () => {
       const stored = localStorage.getItem(PLAN_STORAGE_KEY);
       if (stored === 'pro') {
         if (runtimeConfig.allowManualPlanSwitch) return 'pro';
+        // APIを使う構成では、保存済みPro状態を再検証前に復元しない。
+        // ローカルfallbackを明示的に許可した構成だけ、保存キーの形式確認で復元する。
         if (
-          VALID_LICENSE_PATTERN.test(licenseKey)
-          && (runtimeConfig.allowLocalLicenseFallback || Boolean(runtimeConfig.licenseApiUrl))
+          !runtimeConfig.licenseApiUrl
+          && runtimeConfig.allowLocalLicenseFallback
+          && VALID_LICENSE_PATTERN.test(licenseKey)
+        ) {
+          return 'pro';
+        }
+        // strictVerification=false は移行期間の猶予設定。
+        // API構成済みでも保存済みキーの再検証が終わるまで直前のPro状態を維持する。
+        if (
+          runtimeConfig.strictVerification === false
+          && Boolean(runtimeConfig.licenseApiUrl)
+          && VALID_LICENSE_PATTERN.test(licenseKey)
         ) {
           return 'pro';
         }
@@ -776,6 +788,7 @@ document.addEventListener('DOMContentLoaded', () => {
     bulkRows: [],
     logoImage: null,
     logoDataUrl: '',
+    logoLoadId: 0,
     presets: loadStoredPresets(),
     scanning: false,
     scanDetector: null,
@@ -1419,6 +1432,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const setPlan = (plan, options = {}) => {
     const { statusMessage = '' } = options;
     state.currentPlan = plan === 'pro' ? 'pro' : 'free';
+    if (!isProPlan()) state.logoLoadId = (state.logoLoadId || 0) + 1;
     if (!isProPlan() && hasLogo()) {
       state.logoImage = null;
       state.logoDataUrl = '';
@@ -1481,7 +1495,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
       const payload = await response.json();
       return {
-        valid: Boolean(payload && payload.valid),
+        valid: Boolean(payload) && payload.valid === true,
         reason: payload && typeof payload.reason === 'string' ? payload.reason : '',
         source: 'api'
       };
@@ -1511,13 +1525,21 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     if (verification.error) {
-      state.licenseKey = '';
-      setPlan('free', { statusMessage: t('pro.statusVerifyFailed') });
+      // 通信障害では入力済みキーを失効扱いにしない。再試行できるよう保持する。
+      state.licenseKey = raw;
+      if (state.runtimeConfig.strictVerification) {
+        setPlan('free', { statusMessage: t('pro.statusVerifyFailed') });
+      } else {
+        savePlanState();
+        syncPlanInputs();
+        setPlanStatus(t('pro.statusVerifyFailed'));
+      }
       return;
     }
 
     if (verification.reason === 'unconfigured') {
-      state.licenseKey = '';
+      // 設定不足はキーの無効判定ではない。設定復旧後に再試行できるよう保持する。
+      state.licenseKey = raw;
       setPlan('free', { statusMessage: t('pro.statusUnavailable') });
       return;
     }
@@ -1531,7 +1553,7 @@ document.addEventListener('DOMContentLoaded', () => {
       return;
     }
     if (!getLicenseApiUrl() && !canUseLocalLicenseFallback()) {
-      state.licenseKey = '';
+      // API未設定でも保存済みキーは削除せず、Pro機能だけを無効にする。
       setPlan('free', { statusMessage: t('pro.statusUnavailable') });
       return;
     }
@@ -1548,8 +1570,14 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     if (verification.error) {
-      state.licenseKey = '';
-      setPlan('free', { statusMessage: t('pro.statusVerifyFailed') });
+      // サーバーへ到達できないだけでは保存済みキーを削除しない。
+      if (state.runtimeConfig.strictVerification) {
+        setPlan('free', { statusMessage: t('pro.statusVerifyFailed') });
+      } else {
+        savePlanState();
+        syncPlanInputs();
+        setPlanStatus(t('pro.statusVerifyFailed'));
+      }
       return;
     }
 
@@ -1642,6 +1670,7 @@ document.addEventListener('DOMContentLoaded', () => {
   };
 
   const clearLogoState = (statusText = '') => {
+    state.logoLoadId = (state.logoLoadId || 0) + 1;
     state.logoImage = null;
     state.logoDataUrl = '';
     els.logoFile.value = '';
@@ -1656,6 +1685,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   const loadLogoFromFile = async (file) => {
     if (!file) return;
+    const loadId = state.logoLoadId = (state.logoLoadId || 0) + 1;
     if (file.size > MAX_LOGO_FILE_BYTES) {
       setPlanStatus(t('pro.logoTooLargeFile'));
       els.logoFile.value = '';
@@ -1668,9 +1698,10 @@ document.addEventListener('DOMContentLoaded', () => {
       reader.onerror = () => reject(new Error('logo-read-failed'));
       reader.readAsDataURL(file);
     }).catch(() => {
-      setPlanStatus(t('pro.logoReadFailed'));
+      if (loadId === state.logoLoadId) setPlanStatus(t('pro.logoReadFailed'));
     });
 
+    if (loadId !== state.logoLoadId || !isProPlan()) return;
     if (!reader.result || typeof reader.result !== 'string') {
       return;
     }
@@ -1681,9 +1712,10 @@ document.addEventListener('DOMContentLoaded', () => {
       image.onerror = () => reject(new Error('logo-image-invalid'));
       image.src = reader.result;
     }).catch(() => {
-      setPlanStatus(t('pro.logoReadFailed'));
+      if (loadId === state.logoLoadId) setPlanStatus(t('pro.logoReadFailed'));
     });
 
+    if (loadId !== state.logoLoadId || !isProPlan()) return;
     if (!image.complete || !image.naturalWidth || !image.naturalHeight) {
       return;
     }
@@ -2621,6 +2653,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   const applyPresetData = async (preset) => {
     if (!preset || typeof preset !== 'object') return;
+    const loadId = state.logoLoadId = (state.logoLoadId || 0) + 1;
 
     els.size.value = String(clamp(parseInt(preset.size, 10) || 250, 100, 1000));
     els.fgColor.value = /^#[0-9a-fA-F]{6}$/.test(preset.foreground) ? preset.foreground : DEFAULT_FOREGROUND_COLOR;
@@ -2644,6 +2677,7 @@ document.addEventListener('DOMContentLoaded', () => {
         image.onerror = () => resolve();
         image.src = preset.logoDataUrl;
       });
+      if (loadId !== state.logoLoadId || !isProPlan()) return;
       if (image.complete && image.naturalWidth > 0) {
         state.logoImage = image;
         state.logoDataUrl = preset.logoDataUrl;
