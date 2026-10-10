@@ -1,0 +1,26 @@
+{
+  "id": "/screenshot-crop/",
+  "name": "スクショ端カット",
+  "short_name": "端カット",
+  "description": "スクリーンショットの見せたくない画面端を、端末内だけで切り落とすプライバシーツール",
+  "lang": "ja",
+  "start_url": "/screenshot-crop/",
+  "scope": "/screenshot-crop/",
+  "display": "standalone",
+  "background_color": "#f5f7fb",
+  "theme_color": "#f8fafc",
+  "categories": [
+    "utilities",
+    "productivity",
+    "photo"
+  ],
+  "prefer_related_applications": false,
+  "icons": [
+    {
+      "src": "./pwa-icon.svg",
+      "sizes": "192x192 512x512",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

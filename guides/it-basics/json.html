@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>【IT用語】「JSON」とは？データを受け渡すためのシンプルな書式 | KatakataLab</title>
+  <meta name="description" content="JSONとは何かを、文字列・数値・真偽値・配列・オブジェクト、Excelとの用途の違い、構文エラーと入力検証の必要性から解説します。">
+  <link rel="canonical" href="https://katakatalab.com/guides/it-basics/json.html">
+  <meta property="og:type" content="article">
+  <meta property="og:site_name" content="KatakataLab">
+  <meta property="og:title" content="【IT用語】「JSON」とは？データを受け渡すためのシンプルな書式">
+  <meta property="og:description" content="JSONとは何かを、文字列・数値・真偽値・配列・オブジェクト、Excelとの用途の違い、構文エラーと入力検証の必要性から解説します。">
+  <meta property="og:url" content="https://katakatalab.com/guides/it-basics/json.html">
+  <meta property="og:image" content="https://katakatalab.com/ogp.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="icon" href="../../favicon.ico">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&family=Zen+Kurenaido&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css?v=20260824-responsive">
+  <script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": "【IT用語】「JSON」とは？データを受け渡すためのシンプルな書式",
+  "description": "JSONとは何かを、文字列・数値・真偽値・配列・オブジェクト、Excelとの用途の違い、構文エラーと入力検証の必要性から解説します。",
+  "datePublished": "2026-07-13",
+  "dateModified": "2026-08-04",
+  "mainEntityOfPage": "https://katakatalab.com/guides/it-basics/json.html",
+  "inLanguage": "ja",
+  "author": {
+    "@type": "Person",
+    "name": "かたかた",
+    "url": "https://katakatalab.com/who-is-katakata.html"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "KatakataLab",
+    "url": "https://katakatalab.com/"
+  }
+}</script>
+  <script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position": 1,
+      "name": "ホーム",
+      "item": "https://katakatalab.com/"
+    },
+    {
+      "@type": "ListItem",
+      "position": 2,
+      "name": "かたかたの制作ノート",
+      "item": "https://katakatalab.com/guides/it-basics/"
+    },
+    {
+      "@type": "ListItem",
+      "position": 3,
+      "name": "【IT用語】「JSON」とは？データを受け渡すためのシンプルな書式",
+      "item": "https://katakatalab.com/guides/it-basics/json.html"
+    }
+  ]
+}</script>
+</head>
+<body>
+    <script>try{if(localStorage.getItem('theme')==='dark')document.body.classList.add('dark-mode');}catch(e){}</script>
+  <a class="skip-link" href="#main-content">本文へ移動</a>
+  <header class="site-header">
+    <div class="header-inner">
+      <a class="brand" href="../../" aria-label="KatakataLab ホーム">
+        <span class="brand-mark" aria-hidden="true">K</span>
+        <span><strong>KatakataLab</strong><small>かたかたの制作ノート</small></span>
+      </a>
+      <nav class="site-nav" aria-label="主要ナビゲーション">
+        <a href="./">記事一覧</a>
+        <a href="../../#projects">作品・ツール</a>
+        <a href="../../who-is-katakata.html">運営者</a>
+      </nav>
+    </div>
+  </header>
+  <main id="main-content">
+    <nav class="breadcrumbs" aria-label="パンくずリスト">
+      <a href="../../">ホーム</a><span aria-hidden="true">/</span><a href="./">かたかたの制作ノート</a><span aria-hidden="true">/</span><span aria-current="page">「JSON」とは？データを受け渡すためのシンプルな書式</span>
+    </nav>
+    <article class="article-shell">
+      <header class="article-hero">
+        <div class="chapter-stamp"><span>CHAPTER 04</span><strong>JSON</strong></div>
+        <p class="chapter-name">第4章｜システムの通信</p>
+        <h1>【IT用語】「JSON」とは？データを受け渡すためのシンプルな書式</h1>
+        <p class="article-lead">JSONとは何かを、文字列・数値・真偽値・配列・オブジェクト、Excelとの用途の違い、構文エラーと入力検証の必要性から解説します。</p>
+        <div class="article-meta" aria-label="記事情報">
+          <span>作成者：かたかた</span><span>公開日：2026年7月13日</span><span>更新日：2026年8月4日</span>
+        </div>
+      </header>
+      <div class="article-layout">
+        <aside class="article-toc" aria-label="目次"><p>このページの目次</p><ol><li><a href="#section-1">結論：「JSON」＝「構造のあるデータを、文字で表すための書式」</a></li>
+<li><a href="#section-2">「ダンボール」で例えると？</a></li>
+<li><a href="#section-3">JSONで表せるもの</a></li>
+<li><a href="#section-4">なぜExcelではなくJSONなの？</a></li>
+<li><a href="#section-5">Web APIではどう使う？</a></li>
+<li><a href="#section-6">「JSONが壊れている」とは？</a></li>
+<li><a href="#section-talk">この言葉が会話に出てくるとき</a></li>
+<li><a href="#section-misread">勘違いしやすい点</a></li>
+<li><a href="#section-7">まとめ</a></li></ol></aside>
+        <div class="article-content">
+          <p>「データをJSONで送って」</p>
+<p>「返ってきたJSONを確認して」</p>
+<p>JSON（ジェイソン）は、アプリやWeb APIで広く使われているデータ形式です。</p>
+<p>今回は、JSONを<strong>「中身を書いたダンボール」</strong>に例えて解説します。</p>
+<section class="article-section" aria-labelledby="section-1"><h2 id="section-1">結論：「JSON」＝「構造のあるデータを、文字で表すための書式」</h2>
+<p>JSONは、JavaScript Object Notationの略です。</p>
+<p><strong>軽量なテキスト形式で、プログラミング言語に依存せず、構造化されたデータを表現できます。</strong></p>
+<p>JavaScriptから生まれた形式ですが、Python、Java、PHP、Goなど、多くの言語で扱えます。</p>
+</section>
+<section class="article-section" aria-labelledby="section-2"><h2 id="section-2">「ダンボール」で例えると？</h2>
+<p>引越しの箱に「食器」「本」と書けば、開ける前に中身を想像できます。</p>
+<p>JSONも、名前と値を組み合わせて、何のデータか分かる形にします。</p>
+<pre><code class="language-json">{
+  &quot;name&quot;: &quot;かたかた&quot;,
+  &quot;age&quot;: 25,
+  &quot;favoriteFoods&quot;: [&quot;寿司&quot;, &quot;ラーメン&quot;],
+  &quot;active&quot;: true
+}</code></pre>
+<p>この例には、文字列、数値、配列、真偽値が含まれています。</p>
+</section>
+<section class="article-section" aria-labelledby="section-3"><h2 id="section-3">JSONで表せるもの</h2>
+<p>JSONでは、次の値を組み合わせられます。</p>
+<ul>
+<li><strong>文字列：</strong> <code>&quot;かたかた&quot;</code></li>
+<li><strong>数値：</strong> <code>25</code></li>
+<li><strong>真偽値：</strong> <code>true</code> または <code>false</code></li>
+<li><strong>null：</strong> 値がないことを表す</li>
+<li><strong>オブジェクト：</strong> 名前と値の組み合わせ</li>
+<li><strong>配列：</strong> 複数の値を順番に並べたもの</li>
+</ul>
+<p>コメント、関数、日付専用の型などは、JSONの標準には含まれません。日付を文字列で送る場合は、送り手と受け手で形式を決めます。</p>
+</section>
+<section class="article-section" aria-labelledby="section-4"><h2 id="section-4">なぜExcelではなくJSONなの？</h2>
+<p>ExcelとJSONは、得意な目的が違います。</p>
+<ul>
+<li><strong>Excel：</strong> 人が表を見て、計算・分析・編集するのが得意。</li>
+<li><strong>JSON：</strong> ソフトウェア同士が、構造のあるデータを交換するのが得意。</li>
+</ul>
+<p>JSONは装飾を持たないテキストなので、通信や設定ファイルで扱いやすい形式です。ただし、いつでも最小・最速とは限りません。用途によっては、CSVやバイナリ形式のほうが小さくなることもあります。</p>
+</section>
+<section class="article-section" aria-labelledby="section-5"><h2 id="section-5">Web APIではどう使う？</h2>
+<p>天気情報を返す架空のAPIなら、次のようなJSONを返せます。</p>
+<pre><code class="language-json">{
+  &quot;location&quot;: &quot;東京&quot;,
+  &quot;weather&quot;: &quot;晴れ&quot;,
+  &quot;temperature&quot;: 24.5,
+  &quot;precipitationProbability&quot;: 0
+}</code></pre>
+<p>アプリは、この中から<code>weather</code>や<code>temperature</code>の値を取り出し、画面へ表示します。</p>
+<p>ただし、外部から届いたJSONをそのまま信用してはいけません。</p>
+<ul>
+<li>必要な項目があるか</li>
+<li>期待した型か</li>
+<li>数値や文字列が許容範囲か</li>
+<li>想定外に大きなデータではないか</li>
+</ul>
+<p>受け取った側で確認してから使います。</p>
+</section>
+<section class="article-section" aria-labelledby="section-6"><h2 id="section-6">「JSONが壊れている」とは？</h2>
+<p>次のような書き方は、正しいJSONではありません。</p>
+<pre><code class="language-text">{ name: &quot;かたかた&quot;, }</code></pre>
+<p>JSONでは名前を二重引用符で囲み、最後の項目の後ろへ余分なカンマを付けません。構文が正しくても、必要な項目が不足していれば、アプリ側では処理できないことがあります。</p>
+</section>
+<section class="article-section" aria-labelledby="section-talk"><h2 id="section-talk">この言葉が会話に出てくるとき</h2>
+<p>例えば、設定や記事一覧を「人が読める文字」で受け渡すときです。表計算より、プログラムが扱いやすい形を選びます。</p>
+<p>例えば、「1文字足りない」で読み込みが止まったときです。壊れた場所を特定する会話になります。</p>
+</section>
+<section class="article-section" aria-labelledby="section-misread"><h2 id="section-misread">勘違いしやすい点</h2>
+<ul>
+<li><strong>データベースと同じ：</strong> 保存庫ではなく、受け渡し用の書き方です。</li>
+<li><strong>見た目が整っていればよい：</strong> 引用符やカンマの位置が違うと、機械は読めません。</li>
+<li><strong>大きいほど便利：</strong> 不要な項目が多いと、失敗の範囲も広がります。</li>
+</ul>
+<p>残すのは美しさより、必要な項目が欠けず、壊れていないことです。</p>
+</section>
+<section class="article-section" aria-labelledby="section-7"><h2 id="section-7">まとめ</h2>
+<ul>
+<li><strong>JSON</strong> ＝ <strong>「構造のあるデータを文字で表す書式」</strong></li>
+<li><strong>特徴</strong> ＝ <strong>「軽量なテキストで、多くの言語から扱える」</strong></li>
+<li><strong>用途</strong> ＝ <strong>「Web API、設定ファイル、データ交換など」</strong></li>
+<li><strong>注意点</strong> ＝ <strong>「受け取ったデータの内容を確認してから使う」</strong></li>
+</ul>
+<p>JSONは魔法の箱ではありません。送り手と受け手が同じ構造を理解することで、初めて正しく情報を交換できます。</p>
+<p>次の記事では、HTTP通信の結果を伝える「ステータスコード」について解説します。</p>
+<p>ここまでお読みいただきありがとうございました！</p>
+</section>
+          <aside class="lab-example" aria-labelledby="lab-example-title">
+            <p class="eyebrow">FROM THE LAB</p>
+            <h2 id="lab-example-title">KatakataLabでの実例</h2>
+            <p>KatakataLabのトップページでは、作品名や説明、リンク先などをprojects.jsonにまとめ、JavaScriptが読み込んで作品カードを表示します。JSONは見た目ではなく、プログラムが扱いやすい形で情報を渡す役目です。</p>
+            <p class="related-heading">この実例につながるページ</p>
+            <ul class="related-links"><li><a href="api.html">関連用語：API</a></li>
+<li><a href="../../">作品一覧を組み立てるKatakataLabトップ</a></li></ul>
+          </aside>
+          <section class="article-section" aria-labelledby="section-ops-json">
+            <h2 id="section-ops-json">JSONでつまずきやすい実務ポイント</h2>
+            <p>設定ファイルやAPIのやりとりでJSONを使うとき、カンマの余剰・文字コード・型の違いで静かに壊れます。作品一覧の projects.json のような設定は、壊れるとトップの表示に直結します。</p>
+<ul>
+<li>編集後は JSON としてパースできるか確認する</li>
+<li>数値と文字列を混ぜない（"16" と 16）</li>
+<li>手編集したら、表示と検索が想定どおりかトップで確認する</li>
+</ul>
+<p>JSONは見た目がテキストでも、壊れるとアプリが読めないデータです。保存前の検証を習慣にします。</p>
+          </section>
+          <section class="article-section faq" aria-labelledby="faq-title">
+            <p class="eyebrow">QUICK CHECK</p>
+            <h2 id="faq-title">よくある質問</h2>
+            <h3>JSONはプログラミング言語ですか？</h3>
+            <p>いいえ。JSONはデータを文字で表すための書式です。JavaScript、Python、PHPなど多くの言語から読み書きできますが、JSON自体が処理を実行するわけではありません。</p>
+            <h3>次に読むなら？</h3><p><a href="status-code.html">STATUS CODEの記事</a>へ進むと、次の用語を順番に読めます。</p>
+          </section>
+          <section class="article-section references" aria-labelledby="references-title">
+            <h2 id="references-title">参考資料</h2>
+            <p>用語の定義や仕様を確認するため、公式文書・標準文書を参照しています。リンク先の内容は更新される場合があります。</p>
+            <ul><li><a href="https://ecma-international.org/publications-and-standards/standards/ecma-404/" target="_blank" rel="noopener noreferrer">ECMA-404「The JSON data interchange syntax」</a></li>
+<li><a href="https://developer.mozilla.org/ja/docs/Learn_web_development/Core/Scripting/JSON" target="_blank" rel="noopener noreferrer">MDN「JSONの操作」</a></li></ul>
+          </section>
+          <nav class="chapter-nav" aria-label="前後の記事">
+            <a class="chapter-link previous" href="endpoint.html"><small>前の記事</small><span>← ENDPOINT</span></a>
+            <a class="chapter-link next" href="status-code.html"><small>次の記事</small><span>STATUS CODE →</span></a>
+          </nav>
+        </div>
+      </div>
+    </article>
+  </main>
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <p><strong>KatakataLab</strong><br><span>作って、つまずいて、分かったことを残す小さな研究室。</span></p>
+      <nav aria-label="フッターナビゲーション">
+        <a href="../../contact.html">お問い合わせ</a>
+        <a href="../../who-is-katakata.html">運営者情報</a>
+        <a href="../../privacy.html">プライバシーポリシー</a>
+        <a href="../../sitemap.html">サイトマップ</a>
+      </nav>
+    </div>
+    <p class="copyright">&copy; 2024-2026 KatakataLab</p>
+  </footer>
+</body>
+</html>

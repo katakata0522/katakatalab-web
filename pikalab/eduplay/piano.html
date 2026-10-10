@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="robots" content="noindex, follow">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>おとあそび（ピアノ）</title>
+    <meta name="description" content="画面の鍵盤を押して音やリズムを自由に楽しめる、子ども向けのシンプルなピアノ遊びです。">
+    <link rel="canonical" href="https://katakatalab.com/pikalab/eduplay/piano.html">
+    <meta property="og:title" content="おとあそび（ピアノ）">
+    <meta property="og:description" content="画面の鍵盤を押して音やリズムを自由に楽しめる、子ども向けのシンプルなピアノ遊びです。">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://katakatalab.com/pikalab/eduplay/piano.html">
+    <meta property="og:image" content="https://katakatalab.com/pikalab/pikalab_ogp_compressed.jpg">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="おとあそび（ピアノ）">
+    <meta name="twitter:description" content="画面の鍵盤を押して音やリズムを自由に楽しめる、子ども向けのシンプルなピアノ遊びです。">
+    <meta name="twitter:image" content="https://katakatalab.com/pikalab/pikalab_ogp_compressed.jpg">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,1,0&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../style.css">
+    <link rel="stylesheet" href="common.css">
+    <script src="common.js"></script>
+    <style>
+        /* 鍵盤を押したときのエフェクト */
+        .key-active {
+            transform: scale(0.95) translateY(5px);
+            filter: brightness(0.85);
+            box-shadow: inset 0 4px 6px rgba(0,0,0,0.2) !important;
+        }
+        
+        /* 音符が飛び出るアニメーション */
+        @keyframes floatUp {
+            0% { transform: translateY(0) scale(0.5) rotate(0deg); opacity: 1; }
+            100% { transform: translateY(-100px) scale(1.5) rotate(20deg); opacity: 0; }
+        }
+        .note-anim {
+            position: absolute;
+            animation: floatUp 1s ease-out forwards;
+            pointer-events: none;
+            z-index: 10;
+        }
+
+        /* 楽器アイコンの揺れ */
+        @keyframes tilt {
+            0%, 100% { transform: rotate(0deg); }
+            25% { transform: rotate(-10deg); }
+            75% { transform: rotate(10deg); }
+        }
+        .anim-tilt { animation: tilt 0.5s ease-in-out; }
+    </style>
+    <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"おとあそび（ピアノ）","url":"https://katakatalab.com/pikalab/eduplay/piano.html","description":"画面の鍵盤を押して音やリズムを自由に楽しめる、子ども向けのシンプルなピアノ遊びです。","applicationCategory":"EducationalApplication","operatingSystem":"Any","isAccessibleForFree":true,"offers":{"@type":"Offer","price":"0","priceCurrency":"JPY"}}</script>
+</head>
+<body class="bg-pink-50 h-screen w-screen overflow-auto font-sans select-none text-gray-800">
+    <main id="app" class="max-w-2xl mx-auto h-full flex flex-col p-3 sm:p-5 relative">
+        
+        <!-- ヘッダー -->
+        <header class="flex justify-between items-center py-2 sm:py-4 shrink-0 gap-2">
+            <a id="game-back-btn" href="./" class="bg-white border-b-4 border-gray-300 px-4 py-2 sm:px-6 sm:py-3 rounded-full font-bold text-base sm:text-lg shadow-md game-card text-gray-700">⬅️ もどる</a>
+            <h1 class="text-3xl sm:text-4xl md:text-5xl font-black text-pink-500 drop-shadow-sm tracking-wide hidden sm:block">🎵 おとあそび 🎵</h1>
+            <div class="flex gap-2">
+                <button type="button" data-action="parents-modal-open" class="bg-white border-b-4 border-gray-300 p-3 sm:p-4 rounded-full shadow-md text-lg sm:text-xl game-card flex items-center justify-center active:scale-95 transition" aria-label="保護者の方へ - 開く" aria-haspopup="dialog" aria-expanded="false" title="保護者の方へ">👨‍👩‍👦</button>
+                <button type="button" id="sound-toggle" onclick="EduSound.toggle(this)" aria-label="音を消す" aria-pressed="true" class="bg-white border-b-4 border-gray-300 p-3 sm:p-4 rounded-full shadow-md text-xl sm:text-2xl game-card">🔊</button>
+            </div>
+        </header>
+
+        <!-- メッセージ -->
+        <div id="message" class="text-center font-bold text-xl sm:text-2xl text-pink-600 my-2 sm:my-4 bg-white py-3 sm:py-4 rounded-full shadow-sm border-4 border-pink-100 shrink-0">
+            すきな おとを ならそう！
+        </div>
+
+        <!-- 楽器きりかえボタン -->
+        <div class="flex justify-center gap-3 sm:gap-6 mb-4 shrink-0">
+            <button onclick="changeInstrument('piano', '🎹', this)" class="inst-btn bg-pink-400 text-white rounded-2xl shadow-md border-b-4 border-pink-600 p-3 sm:p-4 font-bold text-xl sm:text-2xl flex-1 flex flex-col items-center opacity-100 transition-opacity">
+                <span class="text-4xl sm:text-5xl mb-1">🎹</span> ピアノ
+            </button>
+            <button onclick="changeInstrument('dog', '🐶', this)" class="inst-btn bg-gray-300 text-gray-600 rounded-2xl shadow-md border-b-4 border-gray-400 p-3 sm:p-4 font-bold text-xl sm:text-2xl flex-1 flex flex-col items-center opacity-70 transition-opacity">
+                <span class="text-4xl sm:text-5xl mb-1">🐶</span> いぬ
+            </button>
+            <button onclick="changeInstrument('cat', '🐱', this)" class="inst-btn bg-gray-300 text-gray-600 rounded-2xl shadow-md border-b-4 border-gray-400 p-3 sm:p-4 font-bold text-xl sm:text-2xl flex-1 flex flex-col items-center opacity-70 transition-opacity">
+                <span class="text-4xl sm:text-5xl mb-1">🐱</span> ねこ
+            </button>
+        </div>
+
+        <!-- ピアノ鍵盤エリア -->
+        <div class="flex-1 bg-white p-4 sm:p-6 rounded-3xl shadow-inner border-4 border-pink-200 flex flex-col justify-end pb-8 sm:pb-12 relative overflow-hidden">
+            <!-- 飾り（音符が飛び出す背景） -->
+            <div id="note-stage" class="absolute inset-0 pointer-events-none"></div>
+
+            <!-- 鍵盤コンテナ -->
+            <div class="flex h-4/5 sm:h-3/4 gap-1 sm:gap-2 mx-auto w-full max-w-lg relative">
+                <!-- 白鍵（ドレミファソラシド） -->
+                <button type="button" class="piano-key flex-1 bg-white border-2 border-gray-300 rounded-b-xl sm:rounded-b-2xl shadow-md flex items-end justify-center pb-4 text-xl sm:text-3xl font-bold text-red-400" data-note="C4" data-label="ド" aria-label="低いドを鳴らす">ド</button>
+                <button type="button" class="piano-key flex-1 bg-white border-2 border-gray-300 rounded-b-xl sm:rounded-b-2xl shadow-md flex items-end justify-center pb-4 text-xl sm:text-3xl font-bold text-orange-400" data-note="D4" data-label="レ" aria-label="レを鳴らす">レ</button>
+                <button type="button" class="piano-key flex-1 bg-white border-2 border-gray-300 rounded-b-xl sm:rounded-b-2xl shadow-md flex items-end justify-center pb-4 text-xl sm:text-3xl font-bold text-yellow-400" data-note="E4" data-label="ミ" aria-label="ミを鳴らす">ミ</button>
+                <button type="button" class="piano-key flex-1 bg-white border-2 border-gray-300 rounded-b-xl sm:rounded-b-2xl shadow-md flex items-end justify-center pb-4 text-xl sm:text-3xl font-bold text-green-400" data-note="F4" data-label="ファ" aria-label="ファを鳴らす">ファ</button>
+                <button type="button" class="piano-key flex-1 bg-white border-2 border-gray-300 rounded-b-xl sm:rounded-b-2xl shadow-md flex items-end justify-center pb-4 text-xl sm:text-3xl font-bold text-blue-400" data-note="G4" data-label="ソ" aria-label="ソを鳴らす">ソ</button>
+                <button type="button" class="piano-key flex-1 bg-white border-2 border-gray-300 rounded-b-xl sm:rounded-b-2xl shadow-md flex items-end justify-center pb-4 text-xl sm:text-3xl font-bold text-indigo-400" data-note="A4" data-label="ラ" aria-label="ラを鳴らす">ラ</button>
+                <button type="button" class="piano-key flex-1 bg-white border-2 border-gray-300 rounded-b-xl sm:rounded-b-2xl shadow-md flex items-end justify-center pb-4 text-xl sm:text-3xl font-bold text-purple-400" data-note="B4" data-label="シ" aria-label="シを鳴らす">シ</button>
+                <button type="button" class="piano-key flex-1 bg-white border-2 border-gray-300 rounded-b-xl sm:rounded-b-2xl shadow-md flex items-end justify-center pb-4 text-xl sm:text-3xl font-bold text-pink-400" data-note="C5" data-label="ド" aria-label="高いドを鳴らす">ド</button>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // Web Audio API のコンテキスト
+        const AudioContext = window.AudioContext || window.webkitAudioContext;
+        let audioCtx;
+        
+        let currentInstrument = 'piano';
+        let currentEmoji = '🎵'; // 音符のエフェクト用
+
+        // 楽器の周波数（ドレミファソラシド）
+        const frequencies = {
+            'C4': 261.63, 'D4': 293.66, 'E4': 329.63, 'F4': 349.23,
+            'G4': 392.00, 'A4': 440.00, 'B4': 493.88, 'C5': 523.25
+        };
+
+        // アプリ起動時の初期化
+        function initAudio() {
+            if (!audioCtx) {
+                audioCtx = new AudioContext();
+            }
+            if (audioCtx && audioCtx.state === 'suspended') {
+                audioCtx.resume();
+            }
+        }
+
+        // 音を鳴らすメイン関数
+        function playSound(note, type = 'piano') {
+            if (!EduSound.isOn) return;
+            initAudio();
+            
+            const freq = frequencies[note];
+            if (!freq) return;
+
+            // 動物の鳴き声モード（TTSで代用）
+            if (type === 'dog') {
+                EduSound.speak("ワン！", 1.5, getPitchRatio(note));
+                return;
+            } else if (type === 'cat') {
+                EduSound.speak("ニャン！", 1.5, getPitchRatio(note));
+                return;
+            }
+
+            // ピアノモード（Web Audio API のオシレーター）
+            const osc = audioCtx.createOscillator();
+            const gainNode = audioCtx.createGain();
+
+            // 音色の設定
+            osc.type = 'triangle'; // トライアングル波が一番マイルドでピアノっぽい電子音になる
+            osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+
+            // 音量のエンベロープ（減衰）
+            const targetVolume = 0.5 * (EduSound.volume !== undefined ? EduSound.volume : 0.1);
+            gainNode.gain.setValueAtTime(0, audioCtx.currentTime);
+            gainNode.gain.linearRampToValueAtTime(targetVolume, audioCtx.currentTime + 0.05); // アタック
+            gainNode.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 1.5); // リリース
+
+            osc.connect(gainNode);
+            gainNode.connect(audioCtx.destination);
+
+            osc.start();
+            osc.stop(audioCtx.currentTime + 1.5);
+        }
+
+        // ドレミの高さに応じてTTSのピッチ（声の高さ）を変えるための計算
+        function getPitchRatio(note) {
+            const pitches = { 'C4': 0.8, 'D4': 0.9, 'E4': 1.0, 'F4': 1.1, 'G4': 1.2, 'A4': 1.3, 'B4': 1.4, 'C5': 1.6 };
+            return pitches[note] || 1.0;
+        }
+
+        // 楽器切り替え
+        function changeInstrument(type, emoji, btnElement) {
+            currentInstrument = type;
+            currentEmoji = emoji === '🎹' ? '🎵' : emoji; // ピアノの時は音符マーク
+            
+            // ボタンの見た目（アクティブ状態）の更新
+            document.querySelectorAll('.inst-btn').forEach(btn => {
+                btn.className = "inst-btn bg-gray-300 text-gray-600 rounded-2xl shadow-md border-b-4 border-gray-400 p-3 sm:p-4 font-bold text-xl sm:text-2xl flex-1 flex flex-col items-center opacity-70 transition-opacity";
+            });
+            btnElement.className = "inst-btn bg-pink-400 text-white rounded-2xl shadow-md border-b-4 border-pink-600 p-3 sm:p-4 font-bold text-xl sm:text-2xl flex-1 flex flex-col items-center opacity-100 transition-opacity anim-tilt";
+            
+            // 楽器名を喋る
+            const instNames = { 'piano': "ピアノ", 'dog': "いぬ", 'cat': "ねこ" };
+            EduSound.speak(instNames[type]);
+        }
+
+        // 鍵盤イベントの設定
+        function setupKeys() {
+            const keys = document.querySelectorAll('.piano-key');
+            let isDragging = false; // スワイプ（指を滑らせる）状態を判定するフラグ
+            
+            // 画面全体で指を離した・キャンセルした時の処理（スワイプ終了）
+            document.body.addEventListener('pointerup', () => isDragging = false);
+            document.body.addEventListener('pointercancel', () => isDragging = false);
+
+            keys.forEach(key => {
+                const triggerPlay = () => {
+                    // すでに押されている状態なら無視する（二重発音防止）
+                    if (key.classList.contains('key-active')) return;
+                    
+                    key.classList.add('key-active');
+                    
+                    const note = key.getAttribute('data-note');
+                    playSound(note, currentInstrument);
+                    
+                    spawnNoteEffect(key);
+                    document.getElementById('message').innerText = key.getAttribute('data-label') + "！";
+                };
+
+                const releaseKey = () => {
+                    key.classList.remove('key-active');
+                };
+
+                // タップした瞬間
+                key.addEventListener('pointerdown', (e) => {
+                    if (e.pointerType === 'mouse' && e.button !== 0) return;
+                    isDragging = true;
+                    // 要素をキャプチャしない（滑らせて隣の鍵盤に行くため）
+                    triggerPlay();
+                });
+
+                // 指を乗せたまま滑らせて入ってきた時（グリッサンド対応）
+                key.addEventListener('pointerenter', (e) => {
+                    if (isDragging) {
+                        triggerPlay();
+                    }
+                });
+
+                // 指が鍵盤から出た時、または離れた時
+                key.addEventListener('pointerleave', releaseKey);
+                key.addEventListener('pointerup', releaseKey);
+                key.addEventListener('pointercancel', releaseKey);
+
+                // キーボード操作によるclickだけを処理し、ポインター操作との二重発音を防ぐ
+                key.addEventListener('click', (e) => {
+                    if (e.detail === 0) {
+                        triggerPlay();
+                        setTimeout(releaseKey, 120);
+                    }
+                });
+            });
+        }
+
+        // 音符や動物の顔が上に飛び出るエフェクト
+        function spawnNoteEffect(keyElement) {
+            const stage = document.getElementById('note-stage');
+            const rect = keyElement.getBoundingClientRect();
+            const stageRect = stage.getBoundingClientRect();
+            
+            const note = document.createElement('div');
+            note.className = 'note-anim text-4xl sm:text-5xl';
+            note.innerText = currentEmoji;
+            
+            // 鍵盤の真ん中あたりから出現させる
+            const x = rect.left - stageRect.left + (rect.width / 2) - 20;
+            const y = rect.top - stageRect.top;
+            
+            note.style.left = `${x}px`;
+            note.style.top = `${y}px`;
+            
+            stage.appendChild(note);
+            
+            // アニメーションが終わったら消す
+            setTimeout(() => {
+                if (note.parentNode) note.remove();
+            }, 1000);
+        }
+
+        window.onload = () => {
+            setupKeys();
+            // 初回タップ時にAudioContextを初期化させる（ブラウザの自動再生ポリシー対策）
+            document.body.addEventListener('pointerdown', initAudio, { once: true });
+            
+        };
+    </script>
+    
+<!-- Parents Modal -->
+    
+
+    
+
+    
+<!-- Parents Modal -->
+    <dialog id="parents-modal"
+        class="p-0 rounded-3xl shadow-2xl  open:animate-fade-in w-full max-w-lg m-auto overflow-hidden border-0"
+        aria-labelledby="parents-modal-title" style="display:none;">
+        <div class="bg-white p-6 md:p-8 max-h-[90vh] overflow-y-auto relative text-left">
+            <button type="button" data-action="parents-modal-close" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600 focus:outline-none" aria-label="閉じる">
+                <span class="material-symbols-rounded">close</span>
+            </button>
+            <div class="mb-6 border-b-2 border-indigo-100 pb-4">
+                <h2 id="parents-modal-title"
+                    class="text-lg md:text-xl font-black text-slate-800 flex items-center gap-2">
+                    <span class="material-symbols-rounded text-indigo-500">family_restroom</span> 保護者の方へ
+                </h2>
+                <p class="text-xs text-slate-400 font-bold mt-1">For Parents & Guardians</p>
+            </div>
+
+            <div class="space-y-6 text-sm text-slate-600 leading-relaxed font-bold">
+                <!-- ウェルカムメッセージカード -->
+                <div class="bg-gradient-to-r from-indigo-50 to-purple-50 p-5 rounded-2xl border border-indigo-100 text-center">
+                    <p class="mb-2 text-indigo-800 text-base">
+                        <span class="material-symbols-rounded text-xl align-bottom mr-1 text-pink-400">favorite</span>
+                        当サイト「PikaLab」に<br>ご訪問いただき、誠にありがとうございます。
+                    </p>
+                    <p class="text-xs text-indigo-600">
+                            大切なお子様と一緒にPikaLabを訪れていただけたこと、<br>制作者のかたかたより、心から感謝申し上げます。
+                    </p>
+                </div>
+
+                <!-- 1. ねらい -->
+                <div>
+                    <h3 class="text-indigo-600 font-black mb-2 flex items-center gap-2">
+                        <span class="material-symbols-rounded text-base">school</span> このアプリのねらい
+                    </h3>
+                    <p>
+                        「おとあそび（ピアノ）」は、画面上のカラフルな鍵盤をタップ（またはドラッグ）して音を鳴らし、直感的に音の響きを楽しむ音楽トイです。ピアノ音だけでなく「いぬ」や「ねこ」の声に音色が切り替わる面白さや、タップに応じて画面に浮かび上がる音符のエフェクトを通して、聴覚・視覚の感性と、自由な音楽的表現力を刺激することをねらいとしています。
+                    </p>
+                </div>
+
+                <!-- 2. おねがい -->
+                <div>
+                    <h3 class="text-pink-500 font-black mb-2 flex items-center gap-2">
+                        <span class="material-symbols-rounded text-base">favorite</span> 保護者様へのおねがい
+                    </h3>
+                    <p>
+                        鍵盤を指でスーッと滑らせる「グリッサンド」演奏にも対応しています。デタラメに叩くだけでも音が重なって綺麗な響きになりますので、正しくメロディを奏でることにこだわらず、<span class="bg-pink-100 text-pink-700 px-1 rounded">「どんな音が聞こえるかな？」「にゃんにゃんピアノ面白いね！」</span>と、お子様の自由な創作活動を肯定してあげてください。
+                    </p>
+                </div>
+
+                <!-- 3. 活用方法 -->
+                <div>
+                    <h3 class="text-green-600 font-black mb-2 flex items-center gap-2">
+                        <span class="material-symbols-rounded text-base">emoji_objects</span> おうちでの活用方法
+                    </h3>
+                    <p>
+                        「ド・レ・ミ」と鳴らしながら、おうちの方が一緒に「ドはドーナツのド♪」と歌ってみたり、知っている簡単な歌（「かえるのうた」や「きらきらぼし」など）をお子様の目の前で弾いて聴かせてあげることで、音感やメロディに対する興味関心がさらに豊かに広がります。
+                    </p>
+                </div>
+
+                <!-- 4. 健康への配慮 -->
+                <div>
+                    <h3 class="text-orange-500 font-black mb-2 flex items-center gap-2">
+                        <span class="material-symbols-rounded text-base">timer</span> 健康への配慮（休憩の推奨）
+                    </h3>
+                    <p>
+                        スピーカーからの再生時も、お子様が夢中になりがちなため、<span class="bg-orange-100 text-orange-700 px-1 rounded">15〜20分程度</span>でおしまいにするなど時間を決めて遊ぶのがおすすめです。本アプリはデバイス内部で発音処理を行っており、通信は発生しません。
+                    </p>
+                </div>
+            </div>
+            <div class="mt-8 text-center">
+                <button type="button" data-action="parents-modal-close"
+                    class="w-full bg-indigo-500 text-white px-8 py-3 rounded-xl font-black hover:bg-indigo-600 transition shadow-lg shadow-indigo-200">閉じる</button>
+            </div>
+        </div>
+    </dialog>
+
+    <style>
+    #parents-modal::backdrop {
+        background: rgba(15, 23, 42, 0.6);
+        backdrop-filter: blur(4px);
+    }
+    #parents-modal[open] {
+        display: block !important;
+        animation: parentsModalFadeIn 0.3s ease-out forwards;
+    }
+    @keyframes parentsModalFadeIn {
+        from { opacity: 0; transform: scale(0.95); }
+        to { opacity: 1; transform: scale(1); }
+    }
+    </style>
+
+
+</body>
+</html>

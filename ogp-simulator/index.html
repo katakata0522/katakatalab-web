@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="index, follow">
+  <meta name="format-detection" content="telephone=no">
+  
+  <title>OGPシミュレーター【無料】X・LINE・Facebook表示確認＆画像比率チェック - KatakataLab</title>
+  
+  <meta name="description" content="【登録不要・完全無料】記事公開前にOGP画像(サムネイル)の表示を確認できるシミュレーター。X(Twitter)、Facebook、LINEに対応。ダークモード確認や画像比率の自動判定機能付き。画像データを外部送信しない設計。">
+  
+  <link rel="canonical" href="https://katakatalab.com/ogp-simulator/">
+  <link rel="alternate" hreflang="ja" href="https://katakatalab.com/ogp-simulator/">
+  <link rel="alternate" hreflang="en" href="https://katakatalab.com/ogp-simulator/en/">
+  <link rel="alternate" hreflang="x-default" href="https://katakatalab.com/ogp-simulator/">
+
+  <meta property="og:title" content="OGPシミュレーター - OGP Preview Tool">
+  <meta property="og:description" content="SNSシェア時の見え方をリアルタイム確認。推奨サイズ早見表付き。">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://katakatalab.com/ogp-simulator/">
+  <meta property="og:site_name" content="KatakataLab">
+  <meta property="og:image" content="https://katakatalab.com/ogp-simulator/ogp.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:image" content="https://katakatalab.com/ogp-simulator/ogp.png">
+
+  <link rel="icon" href="/favicon.ico">
+  <link rel="stylesheet" href="style.css?v=20260824-responsive">
+    <link rel="stylesheet" href="../tool-chrome.css?v=source">
+</head>
+<body>
+    <script>try{if(localStorage.getItem('theme')==='dark')document.body.classList.add('dark-mode');}catch(e){}</script>
+
+<main class="tool-wrapper">
+
+    <!-- Unified Mini Header / Breadcrumbs -->
+    <nav class="breadcrumbs-tool breadcrumbs-tool--bar" aria-label="パンくずリスト">
+        <div class="breadcrumbs-tool__trail">
+            <a href="../" class="breadcrumbs-tool__brand">
+                <span class="breadcrumbs-tool__mark">🧪</span> KatakataLab
+            </a>
+            <span class="breadcrumbs-tool__sep">/</span>
+            <span class="breadcrumbs-tool__current" aria-current="page">OGPシミュレーター</span>
+        </div>
+        <a href="../#projects" class="breadcrumbs-tool__index">
+            <span>🧰</span> ツール一覧へ
+        </a>
+    </nav>
+
+    <!-- Auto-Injected noscript fallback -->
+    <noscript>
+        <div class="tool-noscript">
+            <p class="tool-noscript__title">⚠️ JavaScriptが無効になっています</p>
+            <p class="tool-noscript__text">このツールはブラウザ上での計算のためにJavaScriptを使用します。有効にしてからご利用ください。</p>
+        </div>
+    </noscript>
+
+
+
+  
+  <header class="tool-header">
+    <div class="header-inner">
+      <h1 class="app-title">OGPの見え方を<span class="accent">確かめる</span></h1>
+      <p class="app-desc">手入力したタイトル・説明・画像を、SNS風の枠に置いて見るモックです。公式の実表示ではありません。</p>
+    </div>
+    <span class="badge-security" title="画像はサーバーに送信されません">
+      <span class="icon-lock">🔒</span> Client-Side Preview
+    </span>
+  </header>
+
+  <div class="two-column-layout">
+    
+    <section class="config-panel" aria-label="OGP設定入力">
+      <div class="input-group">
+        <label class="group-label" for="imageInput">OG Image <small>(サムネイル画像)</small></label>
+        <div class="file-upload-area" id="dropZone" tabindex="0" role="button" aria-label="画像をアップロード">
+          <input type="file" id="imageInput" accept="image/*" class="file-input" tabindex="-1">
+          <div class="upload-placeholder">
+            <span class="icon-upload">📁</span>
+            <p>クリックして画像を選択<br><small>またはここにドロップ</small></p>
+          </div>
+          <div id="imagePreviewContainer" class="image-preview-container" style="display:none;">
+            <img id="imagePreviewThumb" src="" alt="Selected">
+            <button type="button" id="removeImageBtn" class="btn-icon-remove" title="削除" aria-label="画像を削除">×</button>
+          </div>
+        </div>
+        <div id="ratioWarning" class="warning-msg" role="alert" style="display:none;"></div>
+      </div>
+
+      <div class="input-group">
+        <div class="label-row">
+          <label for="ogTitle" class="group-label">OG Title</label>
+          <span id="countTitle" class="char-count">0 / 40</span>
+        </div>
+        <input type="text" id="ogTitle" class="input-text" placeholder="記事のタイトルを入力...">
+      </div>
+
+      <div class="input-group">
+        <div class="label-row">
+          <label for="ogDesc" class="group-label">OG Description</label>
+          <span id="countDesc" class="char-count">0 / 80</span>
+        </div>
+        <textarea id="ogDesc" class="input-text" rows="3" placeholder="記事の説明文を入力..."></textarea>
+      </div>
+
+      <div class="input-group">
+        <label for="siteName" class="group-label">Site Name / Domain</label>
+        <input type="text" id="siteName" class="input-text" placeholder="katakatalab.com">
+      </div>
+
+      <div class="actions">
+        <button type="button" id="resetBtn" class="btn-text">Reset All</button>
+      </div>
+    </section>
+
+    <section class="preview-panel sticky-container" aria-label="プレビュー表示">
+      <div class="preview-controls">
+        <div class="preview-tabs-scroll">
+          <div class="preview-tabs">
+            <button type="button" class="tab-btn active" data-target="twitter-large">X (Large)</button>
+            <button type="button" class="tab-btn" data-target="twitter-summary">X (Small)</button>
+            <button type="button" class="tab-btn" data-target="facebook">Facebook</button>
+            <button type="button" class="tab-btn" data-target="line">LINE</button>
+          </div>
+        </div>
+        <div class="theme-toggle-wrapper" title="ダークモード切り替え">
+          <label class="toggle-switch-theme">
+            <input type="checkbox" id="previewThemeToggle">
+            <span class="slider round"></span>
+            <span class="theme-icon icon-sun">☀️</span>
+            <span class="theme-icon icon-moon">🌙</span>
+          </label>
+        </div>
+      </div>
+
+      <div id="previewCanvas" class="preview-canvas theme-light">
+        
+        <!-- X (Large) Feed Mock -->
+        <div id="view-twitter-large" class="card-view twitter-large active">
+          <div class="sns-user-row">
+            <div class="sns-avatar">🪄</div>
+            <div class="sns-user-info">
+              <span class="sns-display-name">KatakataLab</span>
+              <span class="sns-username">@katakata_toybox · 1分</span>
+            </div>
+          </div>
+          <div class="sns-post-text">投稿文の見本です。下のカードだけが、入力したタイトル・説明・画像を反映します。</div>
+          
+          <div class="sns-card-container">
+            <div class="card-image-wrapper aspect-191-100">
+              <img class="preview-img" src="" alt="OG Image">
+              <!-- 見切れマスクレイヤー -->
+              <div class="trim-mask mask-top"></div>
+              <div class="trim-mask mask-bottom"></div>
+              <div class="trim-mask mask-left"></div>
+              <div class="trim-mask mask-right"></div>
+            </div>
+            <div class="card-meta">
+              <span class="meta-domain">katakatalab.com</span>
+              <div class="meta-title">No Title</div>
+              <div class="meta-desc">No description provided.</div>
+            </div>
+          </div>
+          <div class="sns-actions-row">
+            <span class="sns-action-icon">💬 12</span>
+            <span class="sns-action-icon">🔁 45</span>
+            <span class="sns-action-icon">❤️ 128</span>
+            <span class="sns-action-icon">📊 2.4k</span>
+          </div>
+        </div>
+        
+        <!-- X (Small) Feed Mock -->
+        <div id="view-twitter-summary" class="card-view twitter-summary">
+          <div class="sns-user-row">
+            <div class="sns-avatar">🪄</div>
+            <div class="sns-user-info">
+              <span class="sns-display-name">KatakataLab</span>
+              <span class="sns-username">@katakata_toybox · 1分</span>
+            </div>
+          </div>
+          <div class="sns-post-text">こちらの記事もおすすめ！タイムライン上でコンパクトに表示される「サマリーカード」の見え方はこちらでシミュレートできます。</div>
+          
+          <div class="sns-card-container card-content-row">
+            <div class="card-image-wrapper aspect-1-1">
+              <img class="preview-img" src="" alt="OG Image">
+              <!-- 見切れマスクレイヤー（正方形用） -->
+              <div class="trim-mask mask-top"></div>
+              <div class="trim-mask mask-bottom"></div>
+              <div class="trim-mask mask-left"></div>
+              <div class="trim-mask mask-right"></div>
+            </div>
+            <div class="card-meta">
+              <span class="meta-domain">katakatalab.com</span>
+              <div class="meta-title">No Title</div>
+              <div class="meta-desc">No description provided.</div>
+            </div>
+          </div>
+          <div class="sns-actions-row">
+            <span class="sns-action-icon">💬 3</span>
+            <span class="sns-action-icon">🔁 12</span>
+            <span class="sns-action-icon">❤️ 41</span>
+            <span class="sns-action-icon">📊 982</span>
+          </div>
+        </div>
+        
+        <!-- Facebook Feed Mock -->
+        <div id="view-facebook" class="card-view facebook">
+          <div class="fb-user-row">
+            <div class="fb-avatar">🪄</div>
+            <div class="fb-user-info">
+              <span class="fb-display-name">KatakataLab</span>
+              <span class="fb-time">1分前 · 🌐</span>
+            </div>
+          </div>
+          <div class="fb-post-text">投稿文の見本です。下のカードだけが、入力したタイトル・説明・画像を反映します。</div>
+          
+          <div class="fb-card-container">
+            <div class="card-image-wrapper aspect-191-100">
+              <img class="preview-img" src="" alt="OG Image">
+              <!-- 見切れマスクレイヤー -->
+              <div class="trim-mask mask-top"></div>
+              <div class="trim-mask mask-bottom"></div>
+              <div class="trim-mask mask-left"></div>
+              <div class="trim-mask mask-right"></div>
+            </div>
+            <div class="card-meta">
+              <span class="meta-domain">KATAKATALAB.COM</span>
+              <div class="meta-title">No Title</div>
+              <div class="meta-desc">No description provided.</div>
+            </div>
+          </div>
+          <div class="fb-actions-row">
+            <span>👍 いいね！</span>
+            <span>💬 コメントする</span>
+            <span>↩️ シェア</span>
+          </div>
+        </div>
+        
+        <!-- LINE Feed Mock -->
+        <div id="view-line" class="card-view line">
+          <div class="line-chat-row">
+            <div class="line-avatar">🪄</div>
+            <div class="line-bubble-wrapper">
+              <span class="line-user-name">KatakataLab</span>
+              <div class="line-bubble">
+                <div class="card-image-wrapper aspect-191-100">
+                  <img class="preview-img" src="" alt="OG Image">
+                  <!-- 見切れマスクレイヤー -->
+                  <div class="trim-mask mask-top"></div>
+                  <div class="trim-mask mask-bottom"></div>
+                  <div class="trim-mask mask-left"></div>
+                  <div class="trim-mask mask-right"></div>
+                </div>
+                <div class="card-meta">
+                  <div class="meta-title">No Title</div>
+                  <div class="meta-desc">No description provided.</div>
+                  <span class="meta-domain">katakatalab.com</span>
+                </div>
+              </div>
+            </div>
+            <span class="line-time">0:26</span>
+          </div>
+        </div>
+      </div>
+      <div class="preview-note">
+        ※ これはSNS風のモックです。公式スクレイパでも実タイムラインでもありません。LINEの正方形寄り切り抜きは、この画面では再現しません。
+      </div>
+    </section>
+  </div>
+
+  <article class="article-content">
+    <h2>OGPシミュレーターの使い方と推奨サイズ</h2>
+    <p>公開前に、手入力したタイトル・説明・画像がシェアカード風の枠でどう見えるかを確認するツールです。URLからの自動取得は行わず、画像はサーバーへ送信せずブラウザ内だけで処理します。</p>
+
+    <div class="feature-box">
+      <h3>💡 クイック使い方とポイント</h3>
+      <p>タイトル、説明文、画像を入力・選択すると、X（旧Twitter）、Facebook、LINEそれぞれの表示枠に即座に反映されます。画像の見切れ防止や、文字数の収まり確認にご活用ください。</p>
+    </div>
+
+    <!-- 姉妹ツール（アスペクト比計算ツール）へのバナー導線 -->
+    <div class="sister-banner-card">
+      <div class="banner-badge">姉妹ツールのご案内</div>
+      <h3 class="banner-title">📐 アスペクト比計算ツール ＆ リサイズラボ</h3>
+      <p class="banner-text">欠けている辺のピクセルを出したいときは、アスペクト比計算を使えます。画像ファイルの切り抜きやリサイズはしません。</p>
+      <a href="/aspect-ratio-calc/" class="btn-banner" target="_blank" rel="noopener">比率計算ツールを使う 🪄</a>
+    </div>
+
+    <!-- アコーディオン 1: SNS別推奨サイズ -->
+    <details class="tool-accordion">
+      <summary class="tool-accordion__summary">
+        <span>📏 SNS別推奨OGPサイズ・比率一覧表（X・Facebook・LINE）</span>
+        <span class="tool-accordion__icon">▼</span>
+      </summary>
+      <div class="tool-accordion__body">
+        <p>作業用の推奨目安一覧です。確認日: 2026年8月17日。</p>
+        <div class="table-wrapper">
+          <table class="size-table">
+            <thead>
+              <tr>
+                <th>SNS</th>
+                <th>推奨サイズ (px)</th>
+                <th>アスペクト比</th>
+                <th>備考</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>X (旧Twitter)</strong></td>
+                <td>1200 × 630</td>
+                <td>1.91 : 1</td>
+                <td>Summary Card with Large Image の場合</td>
+              </tr>
+              <tr>
+                <td><strong>Facebook</strong></td>
+                <td>1200 × 630</td>
+                <td>1.91 : 1</td>
+                <td>標準的なOGP推奨サイズ</td>
+              </tr>
+              <tr>
+                <td><strong>LINE</strong></td>
+                <td>1200 × 630</td>
+                <td>1.91 : 1</td>
+                <td>トークルーム内のリンクプレビュー（横長枠）</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </details>
+
+    <!-- アコーディオン 2: よくある質問 -->
+    <details class="tool-accordion">
+      <summary class="tool-accordion__summary">
+        <span>❓ よくある質問 (FAQ)</span>
+        <span class="tool-accordion__icon">▼</span>
+      </summary>
+      <div class="tool-accordion__body">
+        <h4>Q. アップロードした画像は外部に流出しませんか？</h4>
+        <p>A. はい、安全です。このツールはお客様のブラウザ内（ローカル環境）だけで画像を処理しています。当サイトのサーバーに画像データが送信・保存されることは一切ありません。</p>
+
+        <h4>Q. ダークモードでの表示確認はできますか？</h4>
+        <p>A. はい。プレビュー画面右上のスイッチ（☀️/🌙）を切り替えることで、スマホのダークモード設定時の見え方を確認できます。</p>
+
+        <h4>Q. OGP画像がSNS側で反映されない時は？</h4>
+        <p>A. 公開後に古い画像のままなら、各サービスのキャッシュが残っていることがあります。Facebook は Sharing Debugger、X は投稿プレビューで確認してください。この画面は外部URLを直接取得するものではありません。</p>
+      </div>
+    </details>
+  </article>
+
+
+
+  <!-- Auto-Injected Unified Footer -->
+  <footer class="tool-footer tool-footer--bar" aria-label="サイト情報">
+      <a href="../" class="tool-footer__brand">🧪 KatakataLab</a>
+      <span class="tool-footer__sep" aria-hidden="true">|</span>
+      <a href="../who-is-katakata.html">運営者情報</a>
+      <span class="tool-footer__sep" aria-hidden="true">|</span>
+      <a href="../terms.html">利用規約</a>
+      <span class="tool-footer__sep" aria-hidden="true">|</span>
+      <a href="../privacy.html">プライバシーポリシー</a>
+      <span class="tool-footer__sep" aria-hidden="true">|</span>
+      <a href="../contact.html">お問い合わせ</a>
+  </footer>
+
+</main>
+
+<script type="application/ld+json">
+[
+  {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    "name": "OGP Simulator",
+    "url": "https://katakatalab.com/ogp-simulator/",
+    "applicationCategory": "DesignApplication",
+    "operatingSystem": "Browser",
+    "offers": {
+      "@type": "Offer",
+      "price": "0",
+      "priceCurrency": "JPY"
+    },
+    "description": "SNSシェア時のOGP表示シミュレーター。X, Facebook, LINE対応。ダークモード確認機能付き。"
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {
+        "@type": "Question",
+        "name": "推奨されるOGP画像のサイズは？",
+        "acceptedAnswer": { "@type": "Answer", "text": "一般的には 1200 x 630 px (比率 1.91:1) が多くのプラットフォームで最適に表示されます。" }
+      },
+      {
+        "@type": "Question",
+        "name": "画像データはサーバーに送信されますか？",
+        "acceptedAnswer": { "@type": "Answer", "text": "いいえ、送信されません。すべての処理はブラウザ内で行われるため、公開前の画像でも安心してご確認いただけます。" }
+      }
+    ]
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      { "@type": "ListItem", "position": 1, "name": "KatakataLab", "item": "https://katakatalab.com/" },
+      { "@type": "ListItem", "position": 2, "name": "OGPシミュレーター", "item": "https://katakatalab.com/ogp-simulator/" }
+    ]
+  }
+]
+</script>
+
+<script src="script.js" defer></script>
+</body>
+</html>

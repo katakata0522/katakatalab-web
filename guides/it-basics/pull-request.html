@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>【IT用語】「プルリクエスト」とは？変更を共有して相談する場所 | KatakataLab</title>
+  <meta name="description" content="プルリクエストとは何かを、変更内容・理由・確認方法の伝え方、レビューとマージや本番公開の違い、小さく分ける利点から解説します。">
+  <link rel="canonical" href="https://katakatalab.com/guides/it-basics/pull-request.html">
+  <meta property="og:type" content="article">
+  <meta property="og:site_name" content="KatakataLab">
+  <meta property="og:title" content="【IT用語】「プルリクエスト」とは？変更を共有して相談する場所">
+  <meta property="og:description" content="プルリクエストとは何かを、変更内容・理由・確認方法の伝え方、レビューとマージや本番公開の違い、小さく分ける利点から解説します。">
+  <meta property="og:url" content="https://katakatalab.com/guides/it-basics/pull-request.html">
+  <meta property="og:image" content="https://katakatalab.com/ogp.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="icon" href="../../favicon.ico">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&family=Zen+Kurenaido&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css?v=20260824-responsive">
+  <script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": "【IT用語】「プルリクエスト」とは？変更を共有して相談する場所",
+  "description": "プルリクエストとは何かを、変更内容・理由・確認方法の伝え方、レビューとマージや本番公開の違い、小さく分ける利点から解説します。",
+  "datePublished": "2026-07-13",
+  "dateModified": "2026-08-04",
+  "mainEntityOfPage": "https://katakatalab.com/guides/it-basics/pull-request.html",
+  "inLanguage": "ja",
+  "author": {
+    "@type": "Person",
+    "name": "かたかた",
+    "url": "https://katakatalab.com/who-is-katakata.html"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "KatakataLab",
+    "url": "https://katakatalab.com/"
+  }
+}</script>
+  <script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position": 1,
+      "name": "ホーム",
+      "item": "https://katakatalab.com/"
+    },
+    {
+      "@type": "ListItem",
+      "position": 2,
+      "name": "かたかたの制作ノート",
+      "item": "https://katakatalab.com/guides/it-basics/"
+    },
+    {
+      "@type": "ListItem",
+      "position": 3,
+      "name": "【IT用語】「プルリクエスト」とは？変更を共有して相談する場所",
+      "item": "https://katakatalab.com/guides/it-basics/pull-request.html"
+    }
+  ]
+}</script>
+</head>
+<body>
+    <script>try{if(localStorage.getItem('theme')==='dark')document.body.classList.add('dark-mode');}catch(e){}</script>
+  <a class="skip-link" href="#main-content">本文へ移動</a>
+  <header class="site-header">
+    <div class="header-inner">
+      <a class="brand" href="../../" aria-label="KatakataLab ホーム">
+        <span class="brand-mark" aria-hidden="true">K</span>
+        <span><strong>KatakataLab</strong><small>かたかたの制作ノート</small></span>
+      </a>
+      <nav class="site-nav" aria-label="主要ナビゲーション">
+        <a href="./">記事一覧</a>
+        <a href="../../#projects">作品・ツール</a>
+        <a href="../../who-is-katakata.html">運営者</a>
+      </nav>
+    </div>
+  </header>
+  <main id="main-content">
+    <nav class="breadcrumbs" aria-label="パンくずリスト">
+      <a href="../../">ホーム</a><span aria-hidden="true">/</span><a href="./">かたかたの制作ノート</a><span aria-hidden="true">/</span><span aria-current="page">「プルリクエスト」とは？変更を共有して相談する場所</span>
+    </nav>
+    <article class="article-shell">
+      <header class="article-hero">
+        <div class="chapter-stamp"><span>CHAPTER 02</span><strong>PULL REQUEST</strong></div>
+        <p class="chapter-name">第2章｜開発の流れ</p>
+        <h1>【IT用語】「プルリクエスト」とは？変更を共有して相談する場所</h1>
+        <p class="article-lead">プルリクエストとは何かを、変更内容・理由・確認方法の伝え方、レビューとマージや本番公開の違い、小さく分ける利点から解説します。</p>
+        <div class="article-meta" aria-label="記事情報">
+          <span>作成者：かたかた</span><span>公開日：2026年7月13日</span><span>更新日：2026年8月4日</span>
+        </div>
+      </header>
+      <div class="article-layout">
+        <aside class="article-toc" aria-label="目次"><p>このページの目次</p><ol><li><a href="#section-1">結論：「プルリク」＝「この変更を取り込むか、確認・相談するための提案」</a></li>
+<li><a href="#section-2">プルリクで確認すること</a></li>
+<li><a href="#section-3">分かりやすいプルリクの例</a></li>
+<li><a href="#section-4">プルリクは「本番公開」と同じではない</a></li>
+<li><a href="#section-5">レビューは責めるためではない</a></li>
+<li><a href="#section-6">小さなプルリクは確認しやすい</a></li>
+<li><a href="#section-talk">この言葉が会話に出てくるとき</a></li>
+<li><a href="#section-misread">勘違いしやすい点</a></li>
+<li><a href="#section-7">まとめ</a></li></ol></aside>
+        <div class="article-content">
+          <p>「プルリクを出しておいて」</p>
+<p>「PRにコメントしました」</p>
+<p>開発現場で使われる「プルリク」は、Pull Request（プルリクエスト）の略です。</p>
+<p>今回は、プルリクエストを<strong>「合流前の確認依頼」</strong>に例えて解説します。</p>
+<section class="article-section" aria-labelledby="section-1"><h2 id="section-1">結論：「プルリク」＝「この変更を取り込むか、確認・相談するための提案」</h2>
+<p>プルリクエストは、<strong>「あるブランチの変更を、別のブランチへ取り込むことを提案する仕組み」</strong>です。</p>
+<p>GitHubなどのサービスでは、変更内容を一覧で見せ、コメント、レビュー、自動テストの結果などを1か所にまとめられます。</p>
+<p>「許可申請」と説明されることもありますが、必ず上司や管理者へ申請するとは限りません。自分で確認してマージする場合もあれば、複数人の承認が必要なチームもあります。</p>
+</section>
+<section class="article-section" aria-labelledby="section-2"><h2 id="section-2">プルリクで確認すること</h2>
+<h3>1. 何を変えたのか</h3>
+<p>変更されたファイルや行を確認します。意図していないファイルが混ざっていないかも大切です。</p>
+<h3>2. なぜ変えたのか</h3>
+<p>コードだけでは、変更した理由まで分からないことがあります。説明文に目的や背景を書いておくと、レビューする人が判断しやすくなります。</p>
+<h3>3. どう確認したのか</h3>
+<p>実行したテストや、画面で確認した手順を書きます。自動テストが設定されていれば、その結果もプルリク上で確認できます。</p>
+</section>
+<section class="article-section" aria-labelledby="section-3"><h2 id="section-3">分かりやすいプルリクの例</h2>
+<h3>分かりにくい例</h3>
+<ul>
+<li>タイトル：<code>修正</code></li>
+<li>説明：なし</li>
+</ul>
+<p>これでは、何をどこまで確認すればよいのか分かりません。</p>
+<h3>分かりやすい例</h3>
+<ul>
+<li><strong>タイトル：</strong> 会員登録画面の入力エラー表示を修正</li>
+<li><strong>変更内容：</strong> 未入力項目の下に、具体的な案内を表示</li>
+<li><strong>理由：</strong> どの項目を直せばよいか分かりにくかったため</li>
+<li><strong>確認方法：</strong> 名前を空欄にして送信し、案内が表示されることを確認</li>
+</ul>
+<p>レビューする側が、目的と確認方法をすぐ理解できます。</p>
+</section>
+<section class="article-section" aria-labelledby="section-4"><h2 id="section-4">プルリクは「本番公開」と同じではない</h2>
+<p>プルリクをマージしても、必ずその瞬間に本番へ公開されるとは限りません。</p>
+<p>マージ後に自動でデプロイするチームもあれば、別の確認や承認を経て公開するチームもあります。プルリクは、あくまで変更を提案・確認・統合するための仕組みです。</p>
+</section>
+<section class="article-section" aria-labelledby="section-5"><h2 id="section-5">レビューは責めるためではない</h2>
+<p>コードレビューの目的は、間違い探しで人を評価することではありません。</p>
+<ul>
+<li>バグや見落としを早く見つける</li>
+<li>変更の意図を共有する</li>
+<li>保守しやすい方法を相談する</li>
+<li>チームに知識を残す</li>
+</ul>
+<p>丁寧な説明と、相手を尊重したコメントが、良いプルリクを作ります。</p>
+</section>
+<section class="article-section" aria-labelledby="section-6"><h2 id="section-6">小さなプルリクは確認しやすい</h2>
+<p>多くの目的を1つのプルリクへ詰め込むと、変更量が増え、見落としや確認の負担も大きくなります。</p>
+<p>可能なら「表示の修正」「入力チェックの追加」のように、目的ごとに分けます。小さく分けられない変更では、確認する順番や重要な箇所を説明文に書くと伝わりやすくなります。</p>
+</section>
+<section class="article-section" aria-labelledby="section-talk"><h2 id="section-talk">この言葉が会話に出てくるとき</h2>
+<p>例えば、「この変更を入れてよいか」を、差分を見ながら相談する場所です。一人でも、送る前の自己確認に使えます。</p>
+<p>例えば、レビューで「意図が分からない」と言われたときです。目的・確認方法・影響範囲を書く対象がプルリクエストです。</p>
+</section>
+<section class="article-section" aria-labelledby="section-misread"><h2 id="section-misread">勘違いしやすい点</h2>
+<ul>
+<li><strong>マージと同じ：</strong> 提案と確認の場であり、取り込んだ瞬間ではありません。</li>
+<li><strong>本番公開と同じ：</strong> 取り込まれても、公開先へ届ける作業は別に残ることがあります。</li>
+<li><strong>大きいほど立派：</strong> 変更が広いほど、見る人が見落とします。</li>
+</ul>
+<p>書くのは成果の自慢ではなく、次に見る人が判断できる材料です。</p>
+</section>
+<section class="article-section" aria-labelledby="section-7"><h2 id="section-7">まとめ</h2>
+<ul>
+<li><strong>プルリク</strong> ＝ <strong>「変更を取り込むか、確認・相談するための提案」</strong></li>
+<li><strong>確認内容</strong> ＝ <strong>「何を、なぜ変え、どう確かめたか」</strong></li>
+<li><strong>注意点</strong> ＝ <strong>「マージと本番公開は同じとは限らない」</strong></li>
+<li><strong>コツ</strong> ＝ <strong>「目的を絞り、確認方法を具体的に書く」</strong></li>
+</ul>
+<p>プルリクは、変更を安全に共有するだけでなく、チームの会話と知識を残す場所でもあります。</p>
+<p>次の記事では、完成したものを利用できる環境へ届ける「デプロイ」について解説します。</p>
+<p>ここまでお読みいただきありがとうございました！</p>
+</section>
+          <aside class="lab-example" aria-labelledby="lab-example-title">
+            <p class="eyebrow">FROM THE LAB</p>
+            <h2 id="lab-example-title">KatakataLabでの実例</h2>
+            <p>KatakataLabのようにページ数が多いサイトでは、「何を変えたか」だけでなく「どのテストで確かめたか」を残すと確認しやすくなります。プルリクは、その説明と差分と結果を同じ場所で相談するための器です。</p>
+            <p class="related-heading">この実例につながるページ</p>
+            <ul class="related-links"><li><a href="merge.html">関連用語：マージ</a></li>
+<li><a href="../../updates.html">公開後の更新記録</a></li></ul>
+          </aside>
+          <section class="article-section" aria-labelledby="section-ops-pr">
+            <h2 id="section-ops-pr">一人でも変更のまとめを見直す理由</h2>
+            <p>自分一人でも、変更内容を一覧で見直す習慣は有効です。KatakataLabではテストや品質監査を通してから公開する流れにしており、「送る前の自己レビュー」が事故防止になります。</p>
+<ul>
+<li>変更の目的を1行で書く</li>
+<li>関係ないファイルが混ざっていないか見る</li>
+<li>公開後に確認するURLを先にメモする</li>
+</ul>
+<p>レビューは他人のためだけではありません。未来の自分が同じミスを繰り返さないための区切りです。</p>
+          </section>
+          <section class="article-section faq" aria-labelledby="faq-title">
+            <p class="eyebrow">QUICK CHECK</p>
+            <h2 id="faq-title">よくある質問</h2>
+            <h3>プルリクを作れば自動で本番公開されますか？</h3>
+            <p>必ずしも公開されません。通常はレビュー、テスト、マージを経て、別のデプロイ処理が動きます。チームやリポジトリの設定によって流れは異なります。</p>
+            <h3>次に読むなら？</h3><p><a href="deploy.html">DEPLOYの記事</a>へ進むと、次の用語を順番に読めます。</p>
+          </section>
+          <section class="article-section references" aria-labelledby="references-title">
+            <h2 id="references-title">参考資料</h2>
+            <p>用語の定義や仕様を確認するため、公式文書・標準文書を参照しています。リンク先の内容は更新される場合があります。</p>
+            <ul><li><a href="https://docs.github.com/ja/pull-requests/collaborating-with-pull-requests/proposing-changes-to-your-work-with-pull-requests/about-pull-requests" target="_blank" rel="noopener noreferrer">GitHub Docs「プルリクエストについて」</a></li></ul>
+          </section>
+          <nav class="chapter-nav" aria-label="前後の記事">
+            <a class="chapter-link previous" href="merge.html"><small>前の記事</small><span>← MERGE</span></a>
+            <a class="chapter-link next" href="deploy.html"><small>次の記事</small><span>DEPLOY →</span></a>
+          </nav>
+        </div>
+      </div>
+    </article>
+  </main>
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <p><strong>KatakataLab</strong><br><span>作って、つまずいて、分かったことを残す小さな研究室。</span></p>
+      <nav aria-label="フッターナビゲーション">
+        <a href="../../contact.html">お問い合わせ</a>
+        <a href="../../who-is-katakata.html">運営者情報</a>
+        <a href="../../privacy.html">プライバシーポリシー</a>
+        <a href="../../sitemap.html">サイトマップ</a>
+      </nav>
+    </div>
+    <p class="copyright">&copy; 2024-2026 KatakataLab</p>
+  </footer>
+</body>
+</html>

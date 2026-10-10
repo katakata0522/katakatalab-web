@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="robots" content="index, follow">
+  <meta name="format-detection" content="telephone=no">
+  <meta name="referrer" content="strict-origin-when-cross-origin">
+  <meta http-equiv="Permissions-Policy" content="camera=(), microphone=(), geolocation=(), payment=(), usb=()">
+
+  <!-- Security: Content-Security-Policy -->
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; base-uri 'self'; object-src 'none'; form-action 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data: https:; connect-src 'self'; frame-src 'self'; font-src 'self' https://fonts.gstatic.com data:; upgrade-insecure-requests;">
+
+  <title>モヤモヤ仕分け機【無料】頭の不安を整理して2分でできる最小の一歩を踏み出そう - KatakataLab</title>
+
+  <meta name="description" content="【登録不要・完全無料】やることが多すぎて動けない、漠然とした不安がある時に。頭の中のモヤモヤを「変えられること」と「変えられないこと」に整理し、今すぐ2分でできる最小のアクションを提案するメンタル・行動サポートツール。">
+  <meta name="author" content="katakata0522">
+
+  <link rel="canonical" href="https://katakatalab.com/moyamoya-sorter/">
+  <meta name="theme-color" content="#4338ca">
+  <link rel="apple-touch-icon" href="../favicon.ico">
+  <link rel="icon" type="image/svg+xml" href="../favicon.svg">
+  <link rel="icon" type="image/x-icon" href="../favicon.ico">
+
+  <!-- OGP / Social Media -->
+  <meta property="og:title" content="モヤモヤ仕分け機 - 2分でできる最小の一歩ジェネレーター">
+  <meta property="og:description" content="やることが多くて焦る、不安で手が止まる時に。頭のモヤモヤを客観的に整理し、今すぐできる『2分の一歩』を導きます。">
+  <meta property="og:type" content="website">
+  <meta property="og:locale" content="ja_JP">
+  <meta property="og:url" content="https://katakatalab.com/moyamoya-sorter/">
+  <meta property="og:site_name" content="KatakataLab">
+  <meta property="og:image" content="https://katakatalab.com/ogp.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="モヤモヤ仕分け機 - 2分でできる最小の一歩ジェネレーター">
+  <meta name="twitter:description" content="やることが多くて焦る、不安で手が止まる時に。頭のモヤモヤを客観的に整理し、今すぐできる『2分の一歩』を導きます。">
+  <meta name="twitter:image" content="https://katakatalab.com/ogp.png">
+
+  <!-- Fonts: Preconnect & Google Fonts with display=swap -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@400;500;700;800&family=Outfit:wght@400;600;700&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="style.css?v=20260930a">
+</head>
+<body>
+  <script>try{if(localStorage.getItem('theme')==='dark')document.body.classList.add('dark-mode');}catch(e){}</script>
+
+  <!-- 支援技術向けライブアナウンサー -->
+  <div id="a11yAnnouncer" class="sr-only" role="status" aria-live="polite" aria-atomic="true"></div>
+
+  <!-- タイマー完了時の紙吹雪キャンバス -->
+  <canvas id="confettiCanvas" class="confetti-canvas" aria-hidden="true"></canvas>
+
+  <main class="tool-wrapper">
+    <!-- パンくずリスト -->
+    <nav class="breadcrumbs-tool" aria-label="パンくずリスト">
+      <div class="breadcrumbs-left">
+        <a href="../" class="bc-home"><span class="bc-icon">🧪</span> KatakataLab</a>
+        <span class="bc-sep">/</span>
+        <span aria-current="page" class="bc-current">モヤモヤ仕分け機</span>
+      </div>
+      <div class="breadcrumbs-right">
+        <a href="../chiritsumo-calc/" class="bc-other-tool"><span>☕</span> チリツモ逆算へ</a>
+        <a href="../#projects" class="bc-all-tools"><span>🧰</span> ツール一覧</a>
+      </div>
+    </nav>
+
+    <noscript>
+      <div class="noscript-banner">
+        <p class="noscript-title">⚠️ JavaScriptが無効になっています</p>
+        <p class="noscript-text">このツールはブラウザ上でリアルタイムに整理・タイマーを実行するためJavaScriptが必要です。</p>
+      </div>
+    </noscript>
+
+    <!-- ヒーローヘッダー -->
+    <header class="hero-header">
+      <div class="hero-badge">🌿 メンタル＆行動整理ツール</div>
+      <h1 class="hero-title">モヤモヤ仕分け機</h1>
+      <p class="hero-subtitle">
+        頭の中がパンクしそうな時、漠然と不安な時。<br>
+        「自分で変えられること」と「手放していいこと」を仕分けて、<strong>今すぐ2分でできる最小の一歩</strong>を踏み出そう。
+      </p>
+    <p class="hero-subtitle">入力に含まれる言葉から仕分けの例を提案します。自分の状況に合わない項目は採用せず、考えを整理する下書きとして使ってください。</p>
+    </header>
+
+    <!-- メイン操作エリア -->
+    <section class="card-container" id="inputSection" aria-labelledby="step1Title">
+      <div class="card-header">
+        <span class="step-num">Step 1</span>
+        <h2 class="card-title" id="step1Title">今、頭の中にあるモヤモヤ・焦りは何ですか？</h2>
+      </div>
+
+      <!-- プリセットタグ -->
+      <div class="preset-section">
+        <span class="preset-label" id="presetLabel">よくあるモヤモヤから選ぶ（タップで入力）：</span>
+        <div class="preset-chips" id="presetChips" role="group" aria-labelledby="presetLabel">
+          <button type="button" class="chip-btn" data-text="仕事や課題の締切が迫っていて、何から手をつければいいか分からない" aria-pressed="false">💼 締切・やることが山積み</button>
+          <button type="button" class="chip-btn" data-text="誰かに言われた一言や、他人の目が気になって頭から離れない" aria-pressed="false">💬 他人の一言・視線が気になる</button>
+          <button type="button" class="chip-btn" data-text="将来のことやお金のことがなんとなく不安で落ち着かない" aria-pressed="false">💸 お金・将来への漠然とした不安</button>
+          <button type="button" class="chip-btn" data-text="スマホをダラダラ見て時間を無駄にしてしまい、自己嫌悪になっている" aria-pressed="false">📱 時間を無駄にして自己嫌悪</button>
+          <button type="button" class="chip-btn" data-text="体がだるくて気力が出ないのに、休むことに罪悪感がある" aria-pressed="false">🛌 だるい・やる気が出ない</button>
+          <button type="button" class="chip-btn" data-text="大事な決断や返信を先延ばしにしていてプレッシャーを感じている" aria-pressed="false">⏳ 返信や決断を先延ばし中</button>
+        </div>
+      </div>
+
+      <!-- 入力フォーム -->
+      <div class="input-group">
+        <div class="input-label-row">
+          <label for="moyamoyaText" class="input-label">モヤモヤを書き出してみる（短くてOK・箇条書きOK）：</label>
+          <span class="char-count" id="charCount" aria-live="polite">0文字</span>
+        </div>
+        <textarea id="moyamoyaText" class="textarea-input" placeholder="例：やることが多すぎてパニック。メールの返信もしなきゃいけないし、明日の準備も終わってない…" rows="3" maxlength="1000" aria-describedby="moyamoyaKeyHint charCount"></textarea>
+        <p class="input-key-hint" id="moyamoyaKeyHint">💡 <kbd>Ctrl</kbd> + <kbd>Enter</kbd>（Macは <kbd>⌘</kbd> + <kbd>Enter</kbd>）でもすぐに仕分けられます</p>
+      </div>
+
+      <div class="action-btn-row">
+        <button type="button" id="sortBtn" class="primary-btn pulse-hover" aria-controls="resultSection">
+          <span class="btn-icon">✨</span> モヤモヤを仕分けて一歩を決める
+        </button>
+      </div>
+    </section>
+
+    <!-- 結果表示エリア -->
+    <section class="result-container hidden" id="resultSection" aria-labelledby="step2Title">
+      <!-- 診断・仕分けカード -->
+      <div class="result-box">
+        <div class="result-header">
+          <div class="result-header-left">
+            <span class="step-num">Step 2</span>
+            <h2 class="result-title" id="step2Title">頭の中の仕分け結果</h2>
+          </div>
+          <button type="button" id="quickEditBtn" class="sub-link-btn" title="入力欄に戻る">
+            <span>✏️</span> モヤモヤを書き直す
+          </button>
+        </div>
+
+        <div class="personalized-note" id="personalizedNote" role="status">
+          <!-- パーソナライズされた共感メッセージ -->
+        </div>
+
+        <div class="split-grid">
+          <!-- コントロール可能領域 -->
+          <div class="split-card controllable-card">
+            <div class="split-card-header">
+              <span class="split-icon" aria-hidden="true">🌱</span>
+              <div>
+                <h3 class="split-title">今、あなたが変えられること</h3>
+                <span class="split-tag tag-green">ここに全集中！</span>
+              </div>
+            </div>
+            <ul class="split-list" id="controllableList">
+              <!-- JSで動的生成 -->
+            </ul>
+            <p class="split-desc">あなたの行動、深呼吸、目の前の小さな1歩は、100%あなたの味方です。</p>
+          </div>
+
+          <!-- コントロール不能領域 -->
+          <div class="split-card uncontrollable-card">
+            <div class="split-card-header">
+              <span class="split-icon" aria-hidden="true">☁️</span>
+              <div>
+                <h3 class="split-title">今はコントロールできないこと</h3>
+                <span class="split-tag tag-gray">手放してOK</span>
+              </div>
+            </div>
+            <ul class="split-list" id="uncontrollableList">
+              <!-- JSで動的生成 -->
+            </ul>
+            <p class="split-desc">他人の反応、過去の後悔、まだ起きていない未来は、今考えても解決しません。一旦横に置いて大丈夫。</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- 2分アクション提案カード -->
+      <div class="action-proposal-box" id="actionProposalBox" aria-labelledby="step3Title">
+        <div class="proposal-badge">🎯 Step 3：今すぐできる最小アクション</div>
+        <h3 class="proposal-title" id="step3Title">まずはこれだけ。「2分間」やってみよう</h3>
+
+        <div class="action-science-tip">
+          💡 <strong>2分の区切り：</strong> 大きな作業を、今できる小さな一歩に分けるための目安です。途中で休んだり、別の提案を選んだりしても構いません。</div>
+
+        <div class="selected-action-card">
+          <div class="action-main-icon" id="actionIcon" aria-hidden="true">💧</div>
+          <div class="action-main-content">
+            <div class="action-step-label">おすすめのスモールステップ</div>
+            <div class="action-step-text" id="actionText">コップ1杯の常温の水をゆっくり飲む</div>
+            <p class="action-reason" id="actionReason">いったん手を止め、水を飲む時間をつくります。</p>
+          </div>
+        </div>
+
+        <div class="action-shuffle-row">
+          <button type="button" id="shuffleActionBtn" class="secondary-btn">
+            <span>🔄</span> 別の2分アクションを提案してもらう
+          </button>
+        </div>
+
+        <!-- 行動の選択肢：今すぐ行動して閉じる OR 画面の2分タイマーで集中する -->
+        <div class="action-choice-group" role="region" aria-label="行動スタイルの選択">
+          <div class="action-choice-label">次の行動スタイルを選んでください：</div>
+          <div class="action-choice-buttons">
+            <button type="button" id="actNowBtn" class="act-now-btn">
+              <span class="btn-icon" aria-hidden="true">🏃</span> <span><strong>今すぐ行動する</strong>（画面を閉じる）</span>
+            </button>
+            <button type="button" id="toggleTimerViewBtn" class="timer-toggle-action-btn" aria-expanded="true" aria-controls="timerCard">
+              <span class="btn-icon" aria-hidden="true">⏱️</span> <span><strong>2分タイマーで集中する</strong></span>
+            </button>
+          </div>
+        </div>
+
+        <!-- 今すぐ行動モードの完了メッセージバナー -->
+        <div id="actNowCompleteBanner" class="act-now-banner hidden" role="region" aria-live="polite">
+          <div class="act-now-header">
+            <span class="act-now-badge">✨ 素晴らしい決断！</span>
+            <button type="button" id="closeActNowBannerBtn" class="act-now-dismiss-btn" aria-label="バナーを閉じる">✕</button>
+          </div>
+          <h4 class="act-now-title">今すぐ画面を閉じて、最初の一歩へ！</h4>
+          <p class="act-now-text">
+            「あれこれ悩むのを一旦やめて、目の前の小さな1つに手を付ける」と決めた瞬間、脳のストレスは大きく和らいでいます。<br>
+            結果は履歴に保存されました。深呼吸して、いってらっしゃい！応援しています！
+          </p>
+          <div class="act-now-actions">
+            <button type="button" id="actNowDoneBtn" class="primary-btn-mini">閉じる・作業に戻る</button>
+          </div>
+        </div>
+
+        <!-- 2分タイマーセクション -->
+        <div class="timer-card" id="timerCard" aria-labelledby="timerTitle">
+          <div class="timer-header-row">
+            <div class="timer-title" id="timerTitle">⏱️ 2分間集中タイマー</div>
+            <button type="button" id="soundToggleBtn" class="sound-toggle-btn muted" aria-label="完了音のミュート切り替え" aria-pressed="false">
+              <span id="soundIcon" aria-hidden="true">🔕</span> <span id="soundLabel">消音中</span>
+            </button>
+          </div>
+
+          <div class="timer-display-wrap">
+            <svg class="timer-svg" viewBox="0 0 120 120" aria-hidden="true">
+              <circle class="timer-circle-bg" cx="60" cy="60" r="54" />
+              <circle class="timer-circle-progress" id="timerProgress" cx="60" cy="60" r="54" />
+            </svg>
+            <div class="timer-digits" id="timerDigits" aria-live="off">02:00</div>
+          </div>
+
+          <div class="timer-controls">
+            <button type="button" id="startTimerBtn" class="timer-btn-primary">▶ 2分間スタート</button>
+            <button type="button" id="resetTimerBtn" class="timer-btn-sub hidden">リセット</button>
+          </div>
+
+          <div class="timer-encouragement" id="timerMessage" role="status" aria-live="polite">
+            「あれこれ考えず、この2分だけ目の前のこと（または呼吸）に集中しましょう」
+          </div>
+        </div>
+      </div>
+
+      <!-- 完了・肯定メッセージ -->
+      <div class="cheer-box">
+        <div class="cheer-icon" aria-hidden="true">🎉</div>
+        <h3 class="cheer-title">小さな一歩を踏み出せたら、今日は100点満点！</h3>
+        <p class="cheer-text">
+          全部を一気に解決しなくていいんです。<br>
+          人生も仕事も、「今日できる2分の一歩」の積み重ねでしか前に進みません。自分をいっぱい褒めてあげてくださいね。
+        </p>
+
+        <div class="share-row">
+          <button type="button" id="copyResultBtn" class="share-btn copy-btn">
+            <span aria-hidden="true">📋</span> 結果をコピーする
+          </button>
+          <button type="button" id="shareXBtn" class="share-btn x-btn">
+            <span aria-hidden="true">𝕏</span> Xで宣言・シェアする
+          </button>
+          <button type="button" id="retryBtn" class="share-btn text-btn">
+            <span aria-hidden="true">✍️</span> 別のモヤモヤを仕分ける
+          </button>
+        </div>
+      </div>
+
+      <!-- 相互リンク・おすすめカード -->
+      <aside class="cross-promo-card">
+        <div class="cross-promo-icon" aria-hidden="true">☕</div>
+        <div class="cross-promo-content">
+          <h4>頭がスッキリしたら、次は「暮らしとお金」を整えてみませんか？</h4>
+          <p>カフェ代や使っていないサブスク…日々の何気ない出費が、数年後に温泉旅行や海外旅行に化ける未来価値を逆算するシミュレーターです。</p>
+          <a href="../chiritsumo-calc/" class="cross-promo-btn">チリツモ逆算シミュレーターを試す →</a>
+        </div>
+      </aside>
+
+      <!-- 完了履歴・記録 -->
+      <section class="history-box" id="historyBox" aria-labelledby="historyTitle">
+        <div class="history-header">
+          <h4 class="history-title" id="historyTitle">🌱 あなたが乗り越えたモヤモヤ（この端末の記録）</h4>
+          <button type="button" id="clearHistoryBtn" class="clear-history-btn">履歴をクリア</button>
+        </div>
+        <div class="history-list" id="historyList" role="list">
+          <!-- 動的表示 -->
+        </div>
+      </section>
+    </section>
+
+    <!-- ガイド・解説セクション -->
+    <article class="article-guide">
+      <h2 class="guide-heading">💡 モヤモヤを整理するときのヒント</h2>
+      <div class="guide-grid">
+        <div class="guide-item">
+          <h3>1. 頭の中のことを書き出す</h3>
+          <p>気になっていることを文字にすると、内容を見返しながら順番を考えられます。すぐ解決しなくても、今取り組むことを1つ選ぶためのメモとして使えます。</p>
+        </div>
+        <div class="guide-item">
+          <h3>2. 「変えられないこと」にエネルギーを使わない</h3>
+          <p>「相手はどう思うか」「失敗したらどうしよう」は、未来や他人の領域です。あなたが今コントロールできるのは「自分の次の1手」だけ。そこに集中するのが今できることを考えるための目安です。</p>
+        </div>
+        <div class="guide-item">
+          <h3>3. 小さく始めて、続けるかを選ぶ</h3>
+          <p>2分は作業を小さく区切るための目安です。時間が来たら、続ける・休む・別のことを選ぶ、のどれでも構いません。やる気や気分の変化を約束するものではありません。</p>
+        </div>
+      </div>
+    </article>
+
+    <!-- 共通フッター -->
+    <footer class="tool-footer" style="text-align: center; margin-top: 3rem; padding: 2rem 1rem; border-top: 1px solid var(--c-border, rgba(0,0,0,0.06)); font-size: 0.85rem; color: var(--c-text-muted, #71717a);">
+      <p style="margin-bottom: 0.5rem;">© 2026 <a href="../" style="color: inherit; text-decoration: underline; font-weight: 600;">KatakataLab</a> - 暮らしと心をちょっと軽くする道具箱</p>
+      <div style="display: flex; justify-content: center; gap: 1rem; flex-wrap: wrap;">
+        <a href="../privacy.html" style="color: inherit; text-decoration: none;">プライバシーポリシー</a>
+        <span style="opacity: 0.3;" aria-hidden="true">|</span>
+        <a href="../terms.html" style="color: inherit; text-decoration: none;">利用規約</a>
+        <span style="opacity: 0.3;" aria-hidden="true">|</span>
+        <a href="../contact.html" style="color: inherit; text-decoration: none;">お問い合わせ</a>
+      </div>
+    </footer>
+  </main>
+
+  <!-- 構造化データ（Schema.org） -->
+  <script type="application/ld+json">
+  [
+    {
+      "@context": "https://schema.org",
+      "@type": "WebApplication",
+      "name": "モヤモヤ仕分け機",
+      "url": "https://katakatalab.com/moyamoya-sorter/",
+      "applicationCategory": "HealthApplication",
+      "operatingSystem": "All",
+      "browserRequirements": "Requires JavaScript. Requires HTML5.",
+      "inLanguage": "ja",
+      "author": {
+        "@type": "Person",
+        "name": "katakata0522",
+        "url": "https://katakatalab.com/about-katakatalab.html"
+      },
+      "publisher": {
+        "@type": "Organization",
+        "name": "KatakataLab",
+        "url": "https://katakatalab.com/",
+        "logo": {
+          "@type": "ImageObject",
+          "url": "https://katakatalab.com/ogp.png"
+        }
+      },
+      "featureList": [
+        "頭のモヤモヤを客観的に外在化する思考整理",
+        "課題の分離（今変えられること／手放していいことの仕分け）",
+        "2分で取り組める小さな行動の提案",
+        "ドリフト補正付き高精度2分間集中タイマー（音・演出付き）",
+        "入力内容を自動送信せず、ブラウザ内で処理"
+      ],
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "JPY"
+      },
+      "description": "頭の中のモヤモヤや不安を、変えられることと変えられないことに仕分け、今すぐ2分でできる最小アクションを提案する無料行動整理ツール。"
+    },
+    {
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "なぜ「2分間」だけでいいのですか？",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "2分は作業を小さく区切るための目安です。時間が来たら、続ける・休む・別のことを選ぶ、のどれでも構いません。"
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "入力したモヤモヤや悩みは外部に送信されますか？",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "入力内容は自動で外部へ送信せず、仕分け処理と履歴保存はブラウザ内で行います。履歴は暗号化されないため共有端末では削除してください。コピーや共有を選んだ結果は、自分で送信先を確認してください。"
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "スマートフォンでも利用できますか？料金はかかりますか？",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "はい、iPhone・Android・タブレット・PCなどあらゆる端末のブラウザで快適にご利用いただけます。会員登録不要・完全無料です。"
+          }
+        }
+      ]
+    },
+    {
+      "@context": "https://schema.org",
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        { "@type": "ListItem", "position": 1, "name": "KatakataLab", "item": "https://katakatalab.com/" },
+        { "@type": "ListItem", "position": 2, "name": "モヤモヤ仕分け機", "item": "https://katakatalab.com/moyamoya-sorter/" }
+      ]
+    }
+  ]
+  </script>
+
+  <script src="script.js?v=20260930a" defer></script>
+</body>
+</html>

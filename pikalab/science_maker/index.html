@@ -1,0 +1,649 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self' https:; 
+                 style-src 'self' https: https://fonts.googleapis.com 'unsafe-inline'; 
+                 font-src 'self' https: https://fonts.gstatic.com; 
+                 script-src 'self' https: 'unsafe-inline';
+                 img-src 'self' https: data: https:;
+                 connect-src 'self' https:;
+                 object-src 'none';
+                 base-uri 'self' https:;
+                 form-action 'self' https:; frame-src https:;">
+    <meta name="description"
+        content="使える時間や興味、安全条件から自由研究のテーマ候補を探し、予想・方法・結果・考察まで研究計画を整理できる小学生向け無料ツールです。">
+    <title>自由研究テーマ診断｜小学生向け候補と研究計画を無料作成 | PikaLab</title>
+    <link rel="canonical" href="https://katakatalab.com/pikalab/science_maker/">
+
+    <!-- Favicon & Icons -->
+    <link rel="icon" type="image/jpeg" href="../pikalab_ogp_compressed.jpg">
+    <link rel="apple-touch-icon" href="../pikalab_ogp_compressed.jpg">
+    <link rel="manifest" href="manifest.json">
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700;900&display=swap"
+        rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0"
+        rel="stylesheet">
+
+    <link rel="stylesheet" href="../style.css">
+
+    <!-- Custom Styles -->
+    <link rel="stylesheet" href="style.css">
+
+    <!-- Structured Data (JSON-LD) for SEO -->
+    <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"自由研究テーマ診断｜小学生向け候補と研究計画を無料作成 | PikaLab","applicationCategory":"EducationalApplication","operatingSystem":"Web Browser","description":"使える時間や興味、安全条件から自由研究のテーマ候補を探し、予想・方法・結果・考察まで研究計画を整理できる小学生向け無料ツールです。","offers":{"@type":"Offer","price":"0","priceCurrency":"JPY"},"audience":{"@type":"EducationalAudience","educationalRole":"student"},"inLanguage":"ja","isAccessibleForFree":true,"url":"https://katakatalab.com/pikalab/science_maker/"}</script>
+
+    <noscript>
+        <style>
+            body {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                min-height: 100vh;
+                background: #F1F8E9;
+            }
+
+            .noscript-warning {
+                text-align: center;
+                padding: 2rem;
+                max-width: 400px;
+            }
+
+            .noscript-warning h1 {
+                font-size: 1.5rem;
+                font-weight: bold;
+                color: #689F38;
+                margin-bottom: 1rem;
+            }
+
+            .noscript-warning p {
+                color: #78716C;
+            }
+        </style>
+    </noscript>
+
+  <meta property="og:title" content="自由研究テーマ診断｜小学生向け候補と研究計画を無料作成 | PikaLab">
+  <meta property="og:description" content="使える時間や興味、安全条件から自由研究のテーマ候補を探し、予想・方法・結果・考察まで研究計画を整理できる小学生向け無料ツールです。">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://katakatalab.com/pikalab/science_maker/">
+  <meta property="og:image" content="https://katakatalab.com/pikalab/pikalab_ogp_compressed.jpg">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="自由研究テーマ診断｜小学生向け候補と研究計画を無料作成 | PikaLab">
+  <meta name="twitter:description" content="使える時間や興味、安全条件から自由研究のテーマ候補を探し、予想・方法・結果・考察まで研究計画を整理できる小学生向け無料ツールです。">
+  <meta name="twitter:image" content="https://katakatalab.com/pikalab/pikalab_ogp_compressed.jpg">
+  <meta name="twitter:site" content="@katakata0522">
+
+</head>
+
+<body class="min-h-screen pb-20">
+    <script>try{var p=localStorage.getItem('wonder_school_profile_v2');if(p&&JSON.parse(p).darkMode)document.body.classList.add('theme-night');}catch(e){}</script>
+    <!-- Top Navigation Bar -->
+
+    <nav class="bg-white border-b border-stone-200 px-6 py-3.5 flex justify-between items-center z-20 flex-shrink-0 shadow-sm print:hidden">
+        <div class="flex items-center gap-2">
+            <div class="bg-gradient-to-br from-green-400 to-emerald-600 text-white p-2 rounded-xl shadow-md">
+                <span class="material-symbols-outlined text-xl block">science</span>
+            </div>
+            <div>
+                <div class="font-bold text-stone-700 text-sm md:text-base tracking-tight select-none">PikaLab 自由研究</div>
+                <p class="text-[9px] text-slate-400 font-bold leading-none">テーマ診断＆計画書</p>
+            </div>
+        </div>
+        <button type="button" data-action="parents-modal-open"
+            class="bg-white hover:bg-slate-50 text-slate-600 hover:text-slate-800 px-3 py-2 rounded-xl text-xs font-bold shadow-sm transition-all flex items-center gap-1 border border-slate-200 active:scale-95"
+            aria-label="保護者の方へ - 開く" aria-haspopup="dialog" aria-expanded="false">
+            <span class="material-symbols-rounded text-lg text-emerald-500">family_restroom</span>
+            <span class="hidden sm:inline">保護者の方へ</span>
+        </button>
+    </nav>
+
+
+    <noscript>
+        <div class="noscript-warning">
+            <h2>⚠️ JavaScriptが無効です</h2>
+            <p>このアプリケーションを使用するには、ブラウザの設定でJavaScriptを有効にしてください。</p>
+        </div>
+    </noscript>
+
+    <!-- Skip Link for Accessibility -->
+    <a href="#main-content" class="skip-link print:hidden">メインコンテンツへスキップ</a>
+
+    <!-- Toast Container -->
+    <div id="toast-container" aria-live="polite" aria-atomic="true"></div>
+    <template id="toast-template">
+        <div class="toast" role="alert">
+            <span class="material-symbols-outlined" aria-hidden="true"></span>
+            <span class="toast-message"></span>
+        </div>
+    </template>
+
+    <!-- Header -->
+    <header class="relative bg-white shadow-sm overflow-hidden print:hidden border-b-4 border-science-200">
+        <div class="max-w-4xl mx-auto px-4 py-10 text-center">
+            <div
+                class="inline-flex items-center justify-center p-2 bg-science-50 rounded-full shadow-sm mb-4 border border-science-100">
+                <span class="material-symbols-outlined text-science-600 mr-2" aria-hidden="true">science</span>
+                <span class="text-sm font-bold text-science-800 uppercase tracking-wider">夏休み・宿題お助けツール</span>
+            </div>
+            <h1 class="text-3xl sm:text-4xl font-black text-gray-800 mb-4 leading-tight tracking-tight">
+                自由研究<span class="text-science-600">「テーマ診断」＆「計画書」</span>メーカー
+            </h1>
+            <p class="text-lg text-gray-600 max-w-2xl mx-auto font-bold">
+                使える時間や興味、安全条件に合う研究テーマ候補を見つけて、<br class="hidden sm:inline">予想・方法・結果・考察まで<span class="text-science-700 bg-science-100 px-1 rounded">「研究メモ」</span>に整理しよう！
+            </p>
+        </div>
+    </header>
+
+    <main id="main-content"
+        class="max-w-4xl mx-auto px-4 py-8 relative -mt-6 z-10 print:max-w-none print:px-0 print:py-0 print:m-0">
+
+
+        <div class="bg-white rounded-3xl shadow-xl overflow-hidden border-4 border-white" id="app-container">
+
+            <!-- Step 1: Quiz -->
+            <div class="p-6 sm:p-10 step-section active print:hidden" id="step-quiz">
+                <h2 class="text-2xl font-black text-center text-gray-800 mb-8 flex items-center justify-center gap-2">
+                    <span class="material-symbols-outlined text-science-500" aria-hidden="true">search</span>
+                    条件に合う研究を探そう！
+                </h2>
+
+                <div class="space-y-8 max-w-2xl mx-auto">
+                    <!-- Question 1: Time -->
+                    <div class="bg-science-50 rounded-2xl p-6 border-2 border-science-100">
+                        <div class="flex items-center mb-4">
+                            <span
+                                class="bg-science-500 text-white rounded-full w-8 h-8 flex items-center justify-center font-bold mr-3 shadow-sm">Q1</span>
+                            <h3 class="font-bold text-lg text-science-900">かけられる時間はどれくらい？</h3>
+                        </div>
+                        <fieldset class="grid grid-cols-3 gap-3">
+                            <legend class="sr-only">研究にかけられる時間</legend>
+
+                            <input type="radio" name="time" id="time-1day" value="1day" class="sr-only peer/1day">
+                            <label for="time-1day"
+                                class="quiz-btn-time w-full min-h-[48px] py-4 px-2 rounded-xl border-2 border-gray-200 hover:border-science-500 hover:bg-white bg-white/60 transition-all font-bold text-gray-600 active:scale-95 cursor-pointer flex items-center justify-center text-center select-none peer-checked/1day:bg-science-100 peer-checked/1day:border-science-500 peer-checked/1day:ring-2 peer-checked/1day:ring-science-200">
+                                1日<br><span class="text-xs font-normal">（すぐ終わる）</span>
+                            </label>
+
+                            <input type="radio" name="time" id="time-3days" value="3days" class="sr-only peer/3days">
+                            <label for="time-3days"
+                                class="quiz-btn-time w-full min-h-[48px] py-4 px-2 rounded-xl border-2 border-gray-200 hover:border-science-500 hover:bg-white bg-white/60 transition-all font-bold text-gray-600 active:scale-95 cursor-pointer flex items-center justify-center text-center select-none peer-checked/3days:bg-science-100 peer-checked/3days:border-science-500 peer-checked/3days:ring-2 peer-checked/3days:ring-science-200">
+                                3日<br><span class="text-xs font-normal">（ほどほど）</span>
+                            </label>
+
+                            <input type="radio" name="time" id="time-1week" value="1week" class="sr-only peer/1week">
+                            <label for="time-1week"
+                                class="quiz-btn-time w-full min-h-[48px] py-4 px-2 rounded-xl border-2 border-gray-200 hover:border-science-500 hover:bg-white bg-white/60 transition-all font-bold text-gray-600 active:scale-95 cursor-pointer flex items-center justify-center text-center select-none peer-checked/1week:bg-science-100 peer-checked/1week:border-science-500 peer-checked/1week:ring-2 peer-checked/1week:ring-science-200">
+                                1週間<br><span class="text-xs font-normal">（じっくり）</span>
+                            </label>
+                        </fieldset>
+                    </div>
+
+                    <!-- Question 2: Type -->
+                    <div class="bg-blue-50 rounded-2xl p-6 border-2 border-blue-100">
+                        <div class="flex items-center mb-4">
+                            <span
+                                class="bg-lab-blue text-white rounded-full w-8 h-8 flex items-center justify-center font-bold mr-3 shadow-sm">Q2</span>
+                            <h3 class="font-bold text-lg text-blue-900">どんなことが好き？</h3>
+                        </div>
+                        <fieldset class="grid grid-cols-2 gap-3">
+                            <legend class="sr-only">興味のある分野</legend>
+
+                            <input type="radio" name="type" id="type-experiment" value="experiment"
+                                class="sr-only peer/experiment">
+                            <label for="type-experiment"
+                                class="quiz-btn-type w-full min-h-[48px] py-4 rounded-xl border-2 border-gray-200 hover:border-lab-blue hover:bg-white bg-white/60 transition-all font-bold text-gray-600 flex flex-col items-center justify-center gap-1 active:scale-95 cursor-pointer select-none peer-checked/experiment:bg-science-100 peer-checked/experiment:border-science-500 peer-checked/experiment:ring-2 peer-checked/experiment:ring-science-200">
+                                <span class="material-symbols-outlined text-3xl text-purple-500"
+                                    aria-hidden="true">science</span>
+                                実験（ふしぎ発見）
+                            </label>
+
+                            <input type="radio" name="type" id="type-craft" value="craft" class="sr-only peer/craft">
+                            <label for="type-craft"
+                                class="quiz-btn-type w-full min-h-[48px] py-4 rounded-xl border-2 border-gray-200 hover:border-lab-blue hover:bg-white bg-white/60 transition-all font-bold text-gray-600 flex flex-col items-center justify-center gap-1 active:scale-95 cursor-pointer select-none peer-checked/craft:bg-science-100 peer-checked/craft:border-science-500 peer-checked/craft:ring-2 peer-checked/craft:ring-science-200">
+                                <span class="material-symbols-outlined text-3xl text-orange-500"
+                                    aria-hidden="true">construction</span>
+                                工作（モノづくり）
+                            </label>
+
+                            <input type="radio" name="type" id="type-observe" value="observe"
+                                class="sr-only peer/observe">
+                            <label for="type-observe"
+                                class="quiz-btn-type w-full min-h-[48px] py-4 rounded-xl border-2 border-gray-200 hover:border-lab-blue hover:bg-white bg-white/60 transition-all font-bold text-gray-600 flex flex-col items-center justify-center gap-1 active:scale-95 cursor-pointer select-none peer-checked/observe:bg-science-100 peer-checked/observe:border-science-500 peer-checked/observe:ring-2 peer-checked/observe:ring-science-200">
+                                <span class="material-symbols-outlined text-3xl text-green-500"
+                                    aria-hidden="true">potted_plant</span>
+                                観察（じっくり見る）
+                            </label>
+
+                            <input type="radio" name="type" id="type-investigate" value="investigate"
+                                class="sr-only peer/investigate">
+                            <label for="type-investigate"
+                                class="quiz-btn-type w-full min-h-[48px] py-4 rounded-xl border-2 border-gray-200 hover:border-lab-blue hover:bg-white bg-white/60 transition-all font-bold text-gray-600 flex flex-col items-center justify-center gap-1 active:scale-95 cursor-pointer select-none peer-checked/investigate:bg-science-100 peer-checked/investigate:border-science-500 peer-checked/investigate:ring-2 peer-checked/investigate:ring-science-200">
+                                <span class="material-symbols-outlined text-3xl text-blue-500"
+                                    aria-hidden="true">menu_book</span>
+                                調べ学習（博士になる）
+                            </label>
+                        </fieldset>
+                    </div>
+
+                    <!-- Submit Button -->
+                    <div class="text-center mt-8">
+                        <button type="button"
+                            class="bg-gray-300 text-white font-black py-4 px-12 rounded-full shadow-lg text-lg transition-all transform scale-95 cursor-not-allowed flex items-center justify-center gap-2 mx-auto"
+                            disabled id="diagnose-btn" aria-label="おすすめテーマを見る">
+                            <span class="material-symbols-outlined" aria-hidden="true">auto_awesome</span> おすすめテーマを見る！
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Step 2: Results -->
+            <div class="step-section bg-gray-50 min-h-[500px] print:hidden" id="step-results">
+                <div
+                    class="p-6 bg-white border-b border-gray-200 sticky top-0 z-20 shadow-sm flex items-center justify-between">
+                    <button type="button"
+                        class="text-gray-400 hover:text-gray-600 flex items-center font-bold text-sm bg-gray-100 px-3 py-1.5 rounded-lg transition-colors"
+                        id="back-to-quiz-btn" aria-label="クイズ画面に戻る">
+                        <span class="material-symbols-outlined text-lg mr-1" aria-hidden="true">arrow_back</span> 戻る
+                    </button>
+                    <h2 class="text-lg md:text-xl font-bold text-gray-800"><span class="text-science-600"
+                            id="result-time-label"></span>でできるテーマ</h2>
+                    <div class="w-16"></div>
+                </div>
+
+                <div class="p-6 sm:p-10 max-w-5xl mx-auto">
+                    <!-- Template for Result Card -->
+                    <template id="result-card-template">
+                        <div class="result-card bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden cursor-pointer group"
+                            role="button" tabindex="0">
+                            <div class="h-2 bg-gradient-to-r from-science-400 to-lab-blue"></div>
+                            <div class="p-6">
+                                <div class="flex justify-between items-start mb-4">
+                                    <span class="card-type text-xs font-bold px-2 py-1 rounded"></span>
+                                    <span
+                                        class="text-xs text-gray-400 flex items-center bg-gray-100 px-2 py-1 rounded-full font-bold">
+                                        <span class="material-symbols-outlined text-sm mr-1"
+                                            aria-hidden="true">timer</span>
+                                        <span class="card-time"></span>
+                                    </span>
+                                </div>
+                                <h3
+                                    class="card-title text-xl font-black text-gray-800 mb-2 group-hover:text-science-600 transition-colors">
+                                </h3>
+                                <p
+                                    class="card-desc text-sm text-gray-600 mb-4 line-clamp-2 min-h-[40px] font-medium leading-relaxed">
+                                </p>
+                                <div class="flex justify-between items-center mt-4 pt-4 border-t border-gray-100">
+                                    <div class="card-difficulty difficulty-stars flex text-sm" title="難易度"></div>
+                                    <span
+                                        class="text-science-600 font-bold text-sm flex items-center group-hover:underline">
+                                        計画書を作る <span class="material-symbols-outlined text-lg ml-1"
+                                            aria-hidden="true">arrow_forward</span>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </template>
+
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6" id="results-container" role="list"
+                        aria-label="おすすめテーマ一覧">
+                    </div>
+                    <div class="mt-12 text-center text-gray-500 text-sm font-bold bg-white/50 p-4 rounded-xl">
+                        👆 気になるテーマをクリックすると、自動で「計画書」が作れるよ！
+                    </div>
+                </div>
+            </div>
+
+            <!-- Step 3: Plan Editor -->
+            <div class="step-section print:block" id="step-plan">
+                <div
+                    class="bg-science-600 p-4 text-white flex items-center justify-between print:hidden sticky top-0 z-30 shadow-md">
+                    <button type="button"
+                        class="flex items-center hover:bg-science-700 px-3 py-1 rounded transition-colors text-sm font-bold"
+                        id="back-to-results-btn" aria-label="テーマ選択画面に戻る">
+                        <span class="material-symbols-outlined mr-1" aria-hidden="true">arrow_back</span> 選びなおす
+                    </button>
+                    <span class="font-bold hidden sm:inline flex items-center gap-1"><span
+                            class="material-symbols-outlined" aria-hidden="true">edit_document</span> 研究計画書エディタ</span>
+                    <div class="flex items-center gap-2">
+                        <button type="button"
+                            class="bg-science-700 text-white border border-science-400 font-bold px-4 py-1.5 rounded-full shadow hover:bg-science-800 flex items-center transform active:scale-95 transition text-sm"
+                            id="share-btn" aria-label="計画書を共有">
+                            <span class="material-symbols-outlined mr-1 text-lg" aria-hidden="true">share</span> 共有する
+                        </button>
+                        <button type="button"
+                            class="bg-white text-science-700 font-bold px-4 py-1.5 rounded-full shadow hover:bg-gray-50 flex items-center transform active:scale-95 transition text-sm"
+                            id="print-btn" aria-label="計画書を印刷">
+                            <span class="material-symbols-outlined mr-1 text-lg" aria-hidden="true">print</span> 印刷する
+                        </button>
+                    </div>
+                </div>
+
+                <div class="p-4 sm:p-8 bg-gray-100 overflow-y-auto h-full">
+                    <div class="bg-white mx-auto shadow-2xl p-8 sm:p-12 max-w-[210mm] min-h-[297mm] text-gray-800 relative print:w-full print:max-w-none print:min-h-screen print:m-0 print:p-5 print:shadow-none print:border-none"
+                        id="plan-paper">
+                        <div class="absolute top-6 right-6 text-gray-100 pointer-events-none print:hidden"
+                            aria-hidden="true">
+                            <span class="material-symbols-outlined text-8xl opacity-50">science</span>
+                        </div>
+
+                        <div
+                            class="border-b-4 border-black pb-4 mb-8 flex flex-col md:flex-row justify-between items-end gap-4">
+                            <div>
+                                <h2 class="text-3xl font-black mb-2 font-serif tracking-widest text-black">自由研究 計画書</h2>
+                                <p class="text-xs font-bold text-gray-500">この計画書に沿って研究を進めよう！</p>
+                            </div>
+                            <div class="text-right w-full md:w-auto">
+                                <div class="flex items-baseline justify-end mb-1">
+                                    <span class="text-sm mr-2 font-bold">　　年　　組</span>
+                                    <label for="student-name" class="text-sm font-bold">名前：</label>
+                                    <input
+                                        class="border-b border-gray-300 w-40 px-2 py-1 outline-none focus:border-science-500 bg-transparent text-lg font-serif print:hidden"
+                                        id="student-name" placeholder="（名前を書く）" type="text" autocomplete="name" maxlength="60">
+                                    <span id="print-student-name" class="hidden print:inline border-b border-gray-300 px-2 py-1 text-lg font-serif min-w-[10rem] text-left"></span>
+                                </div>
+                                <div class="text-xs text-gray-400 font-mono">作成日：<span id="current-date"></span></div>
+                            </div>
+                        </div>
+
+                        <div class="space-y-8">
+                            <!-- 1. Theme -->
+                            <div class="bg-science-50 p-5 rounded-xl border-2 border-science-100 relative group">
+                                <label for="plan-title" class="block text-sm font-black text-science-800 mb-1">①
+                                    研究テーマ（タイトル）</label>
+                                <input
+                                    class="w-full text-2xl font-black bg-transparent border-b-2 border-science-200 focus:border-science-500 outline-none px-1 py-2 text-science-900 placeholder-science-200 print:hidden"
+                                    id="plan-title" type="text" value="" maxlength="80">
+                                <div class="text-right text-xs text-science-400 mt-1 print:hidden" id="counter-plan-title"></div>
+                                <div id="print-plan-title" class="hidden print:block w-full text-2xl font-black border-b-2 border-black px-1 py-2 text-black text-left"></div>
+                                <span
+                                    class="material-symbols-outlined absolute top-4 right-4 text-science-200 group-hover:text-science-400 transition-colors"
+                                    aria-hidden="true">edit</span>
+                            </div>
+
+                            <!-- 2. Motivation -->
+                            <div>
+                                <label for="plan-motivation"
+                                    class="block text-sm font-black text-gray-800 mb-2 flex items-center">
+                                    <span
+                                        class="bg-black text-white rounded-full w-6 h-6 flex items-center justify-center text-xs mr-2 shadow-sm">2</span>
+                                    研究のきっかけ（なぜこれをやるの？）
+                                </label>
+                                <div class="relative">
+                                    <textarea
+                                        class="w-full p-4 border-2 border-gray-200 rounded-xl focus:border-science-500 focus:bg-white outline-none resize-none bg-gray-50 text-gray-700 leading-relaxed transition-colors print:hidden"
+                                        id="plan-motivation" rows="4" maxlength="500"></textarea>
+                                    <div class="text-right text-xs text-gray-400 mt-1 mr-1 print:hidden" id="counter-plan-motivation"></div>
+                                </div>
+                                <div id="print-plan-motivation" class="hidden print:block w-full p-4 border-2 border-gray-300 rounded-xl text-gray-800 leading-relaxed bg-white min-h-[100px] whitespace-pre-wrap text-left"></div>
+                            </div>
+
+                            <!-- 3. Hypothesis -->
+                            <div>
+                                <label for="plan-hypothesis"
+                                    class="block text-sm font-black text-gray-800 mb-2 flex items-center">
+                                    <span
+                                        class="bg-black text-white rounded-full w-6 h-6 flex items-center justify-center text-xs mr-2 shadow-sm">3</span>
+                                    予想（どうなると思う？）
+                                </label>
+                                <div class="relative">
+                                    <textarea
+                                        class="w-full p-4 border-2 border-gray-200 rounded-xl focus:border-science-500 focus:bg-white outline-none resize-none bg-gray-50 text-gray-700 leading-relaxed transition-colors print:hidden"
+                                        id="plan-hypothesis" placeholder="私は、〜〜〜になると予想します。なぜなら、〜〜〜だからです。"
+                                        rows="4" maxlength="500"></textarea>
+                                    <div class="text-right text-xs text-gray-400 mt-1 mr-1 print:hidden" id="counter-plan-hypothesis"></div>
+                                    <div class="absolute top-2 right-2 print:hidden">
+                                        <button type="button"
+                                            class="material-symbols-outlined text-gray-300 hover:text-science-500 cursor-help transition-colors bg-transparent border-none p-1"
+                                            id="plan-hypothesis-help-btn" aria-label="ヒントを表示" aria-expanded="false"
+                                            aria-controls="plan-hypothesis-help-tooltip">help</button>
+                                        <div class="hidden absolute right-0 w-64 p-3 bg-yellow-50 border border-yellow-200 rounded-xl shadow-xl text-xs z-10 text-yellow-800 font-medium"
+                                            id="plan-hypothesis-help-tooltip" role="tooltip">
+                                            ヒント：「〇〇をしたら××になるはず」という自分なりの答えを書いてみよう。間違っていてもOK！
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- 4. Materials -->
+                            <div>
+                                <label for="plan-materials"
+                                    class="block text-sm font-black text-gray-800 mb-2 flex items-center">
+                                    <span
+                                        class="bg-black text-white rounded-full w-6 h-6 flex items-center justify-center text-xs mr-2 shadow-sm">4</span>
+                                    用意するもの
+                                </label>
+                                <div class="relative">
+                                    <textarea
+                                        class="w-full p-4 border-2 border-gray-200 rounded-xl focus:border-science-500 focus:bg-white outline-none resize-none bg-gray-50 text-gray-700 leading-relaxed transition-colors print:hidden"
+                                        id="plan-materials" rows="3" maxlength="300"></textarea>
+                                    <div class="text-right text-xs text-gray-400 mt-1 mr-1 print:hidden" id="counter-plan-materials"></div>
+                                </div>
+                                <div id="print-plan-materials" class="hidden print:block w-full p-4 border-2 border-gray-300 rounded-xl text-gray-800 leading-relaxed bg-white min-h-[80px] whitespace-pre-wrap text-left"></div>
+                            </div>
+
+                            <!-- Safety Notes -->
+                            <div class="bg-red-50 border-2 border-red-100 rounded-xl p-4">
+                                <p class="text-sm font-black text-red-800 mb-3 flex items-center">
+                                    <span
+                                        class="bg-black text-white rounded-full w-6 h-6 flex items-center justify-center text-xs mr-2 shadow-sm">!</span>
+                                    安全チェック（はじめる前に確認）
+                                </p>
+                                <ul class="space-y-2 text-sm text-red-900 leading-relaxed list-disc list-inside"
+                                    aria-label="安全に進めるための共通ルール"
+                                    id="plan-safety-list"></ul>
+                            </div>
+
+                            <!-- 5. Method -->
+                            <div>
+                                <label for="plan-method"
+                                    class="block text-sm font-black text-gray-800 mb-2 flex items-center">
+                                    <span
+                                        class="bg-black text-white rounded-full w-6 h-6 flex items-center justify-center text-xs mr-2 shadow-sm">5</span>
+                                    研究の方法（やり方）
+                                </label>
+                                <div class="relative">
+                                    <textarea
+                                        class="w-full p-4 border-2 border-gray-200 rounded-xl focus:border-science-500 focus:bg-white outline-none resize-none bg-gray-50 text-gray-700 leading-relaxed transition-colors print:hidden"
+                                        id="plan-method" rows="6" maxlength="1000"></textarea>
+                                    <div class="text-right text-xs text-gray-400 mt-1 mr-1 print:hidden" id="counter-plan-method"></div>
+                                </div>
+                                <div id="print-plan-method" class="hidden print:block w-full p-4 border-2 border-gray-300 rounded-xl text-gray-800 leading-relaxed bg-white min-h-[150px] whitespace-pre-wrap text-left"></div>
+                            </div>
+
+                            <!-- Post-Research Section -->
+                            <div class="mt-12 pt-8 border-t-4 border-dotted border-gray-300">
+                                <p
+                                    class="text-center text-xs font-bold text-gray-400 mb-6 bg-gray-100 inline-block px-4 py-1 rounded-full mx-auto block w-max">
+                                    ↓ ここから下は研究が終わってから書こう ↓</p>
+                                <div class="mb-8">
+                                    <span class="block text-sm font-black text-gray-400 mb-2">⑥ 結果（わかったこと）</span>
+                                    <div class="w-full h-40 border-2 border-gray-200 rounded-xl bg-gray-50/50"></div>
+                                </div>
+                                <div>
+                                    <span class="block text-sm font-black text-gray-400 mb-2">⑦ 感想・まとめ</span>
+                                    <div class="w-full h-32 border-2 border-gray-200 rounded-xl bg-gray-50/50"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="h-20"></div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Parent Modal -->
+    
+
+    <!-- Share Modal -->
+    <dialog id="share-modal"
+        class="backdrop:bg-gray-900/60 backdrop:backdrop-blur-sm rounded-2xl shadow-2xl w-full max-w-sm m-auto p-0 open:animate-fadeIn animation-fill-forwards print:hidden">
+        <div class="flex flex-col bg-white rounded-2xl">
+            <div class="sticky top-0 bg-white border-b border-gray-100 px-6 py-4 flex items-center justify-between">
+                <h3 id="share-modal-title" class="text-lg font-bold text-gray-800 flex items-center gap-2">
+                    <span class="material-symbols-outlined text-science-600" aria-hidden="true">share</span>
+                    計画書を共有する
+                </h3>
+                <button id="share-modal-close" type="button" class="p-2 hover:bg-gray-100 rounded-full transition"
+                    aria-label="閉じる">
+                    <span class="material-symbols-outlined text-gray-500">close</span>
+                </button>
+            </div>
+            <div class="p-6 space-y-6 flex flex-col items-center">
+                <div class="bg-gray-50 p-2 rounded-xl border border-gray-200 flex items-center justify-center w-48 h-48">
+                    <div id="share-qrcode" class="w-full h-full flex items-center justify-center"></div>
+                </div>
+                <p class="text-xs text-gray-500 text-center leading-relaxed font-bold">
+                    別のスマホやタブレットで読み取ると、この計画書をそのままコピーして続きを書くことができます。
+                </p>
+                <div class="w-full flex gap-2">
+                    <input id="share-link-input" type="text" readonly
+                        class="flex-1 px-3 py-2 text-xs font-mono rounded-lg border border-gray-200 outline-none bg-gray-50 text-gray-600">
+                    <button id="share-copy-btn" type="button"
+                        class="bg-science-100 hover:bg-science-200 text-science-700 font-bold text-xs px-4 py-2 rounded-lg transition whitespace-nowrap">
+                        コピー
+                    </button>
+                </div>
+            </div>
+        </div>
+    </dialog>
+
+    <script src="topics.js"></script>
+    <script defer src="../js/qrcode.min.js"></script>
+    <script defer src="script.js"></script>
+
+<!-- Parents Modal -->
+<dialog id="parents-modal"
+    class="p-0 rounded-3xl shadow-2xl open:animate-fade-in w-full max-w-lg m-auto overflow-hidden border-0"
+    aria-labelledby="parents-modal-title" style="display:none;">
+    <div class="bg-white p-6 md:p-8 max-h-[90vh] overflow-y-auto relative text-left">
+        <button type="button" data-action="parents-modal-close" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600 focus:outline-none" aria-label="閉じる">
+            <span class="material-symbols-rounded">close</span>
+        </button>
+        <div class="mb-6 border-b-2 border-indigo-100 pb-4">
+            <h2 id="parents-modal-title"
+                class="text-lg md:text-xl font-black text-slate-800 flex items-center gap-2">
+                <span class="material-symbols-rounded text-indigo-500">family_restroom</span> 保護者の方へ
+            </h2>
+            <p class="text-xs text-slate-400 font-bold mt-1">For Parents &amp; Guardians</p>
+        </div>
+
+        <div class="space-y-6 text-sm text-slate-600 leading-relaxed font-bold">
+            <!-- ウェルカムメッセージカード -->
+            <div class="bg-gradient-to-r from-indigo-50 to-purple-50 p-5 rounded-2xl border border-indigo-100 text-center">
+                <p class="mb-2 text-indigo-800 text-base">
+                    <span class="material-symbols-rounded text-xl align-bottom mr-1 text-pink-400">favorite</span>
+                    当サイト「PikaLab」に<br>ご訪問いただき、誠にありがとうございます。
+                </p>
+                <p class="text-xs text-indigo-600">
+                            大切なお子様と一緒にPikaLabを訪れていただけたこと、<br>制作者のかたかたより、心から感謝申し上げます。
+                </p>
+            </div>
+
+            <!-- 1. ねらい -->
+            <div>
+                <h3 class="text-indigo-600 font-black mb-2 flex items-center gap-2">
+                    <span class="material-symbols-rounded text-base">school</span> このアプリのねらい
+                </h3>
+                <p>「サイエンスメーカー」は、自由研究のテーマ選びから、予想・方法・結果・考察までを順番に整理する学習支援ツールです。<span class="bg-indigo-100 text-indigo-700 px-1 rounded">「予想する→試す→記録する→考える」</span>という流れを体験し、自分の考えを言葉や記録にまとめる練習に使えます。</p>
+            </div>
+
+            <!-- 2. おねがい -->
+            <div>
+                <h3 class="text-pink-500 font-black mb-2 flex items-center gap-2">
+                    <span class="material-symbols-rounded text-base">favorite</span> 保護者様へのおねがい
+                </h3>
+                <p>実験の予想が外れても「なんで違ったんだろう？」と一緒に考えてあげてください。<span class="bg-pink-100 text-pink-700 px-1 rounded">予想と違う結果も大切な発見</span>です。正解を先に教えるより、結果を見て次の疑問を一緒に探す使い方がおすすめです。</p>
+            </div>
+
+            <!-- 3. 活用方法 -->
+            <div>
+                <h3 class="text-green-600 font-black mb-2 flex items-center gap-2">
+                    <span class="material-symbols-rounded text-base">emoji_objects</span> おうちでの活用方法
+                </h3>
+                <p>実際の観察や実験と組み合わせ、予想したこと・実際に起きたこと・そこから考えたことを分けて記録してみてください。体験と記録を往復すると、自由研究のまとめが作りやすくなります。</p>
+            </div>
+
+            <!-- 4. 健康への配慮 -->
+            <div>
+                <h3 class="text-orange-500 font-black mb-2 flex items-center gap-2">
+                    <span class="material-symbols-rounded text-base">timer</span> 健康への配慮（休憩の推奨）
+                </h3>
+                <p>画面を長時間続けて見ないよう、疲れを感じる前に適宜休憩してください。実際の実験ではテーマごとの安全チェックを確認し、火気・加熱・刃物・薬品などを扱う場合は必ず大人と一緒に行ってください。通常の入力内容は端末内で扱われます。共有機能を使うと、氏名欄を含む研究計画の入力内容が共有URLに含まれます。氏名など共有したくない情報は共有前に外してください。ページ表示時にはWebフォント等の外部配信サービスへの通常の通信が発生する場合があります。</p>
+            </div>
+        </div>
+        <div class="mt-8 text-center">
+            <button type="button" data-action="parents-modal-close"
+                class="w-full bg-indigo-500 text-white px-8 py-3 rounded-xl font-black hover:bg-indigo-600 transition shadow-lg shadow-indigo-200">閉じる</button>
+        </div>
+    </div>
+</dialog>
+
+    <style>
+#parents-modal::backdrop {
+    background: rgba(15, 23, 42, 0.6);
+    backdrop-filter: blur(4px);
+}
+#parents-modal[open] {
+    display: block !important;
+    animation: parentsModalFadeIn 0.3s ease-out forwards;
+}
+@keyframes parentsModalFadeIn {
+    from { opacity: 0; transform: scale(0.95); }
+    to { opacity: 1; transform: scale(1); }
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const openBtns = document.querySelectorAll('[data-action="parents-modal-open"]');
+    const closeBtns = document.querySelectorAll('[data-action="parents-modal-close"]');
+    const dialog = document.getElementById('parents-modal');
+
+    if (dialog) {
+        openBtns.forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.preventDefault();
+                if (typeof dialog.showModal === 'function') { dialog.showModal(); }
+                else { dialog.setAttribute('open', ''); }
+                btn.setAttribute('aria-expanded', 'true');
+            });
+        });
+        closeBtns.forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.preventDefault();
+                if (typeof dialog.close === 'function') { dialog.close(); }
+                else { dialog.removeAttribute('open'); }
+                const openBtn = document.querySelector('[data-action="parents-modal-open"]');
+                if (openBtn) { openBtn.setAttribute('aria-expanded', 'false'); openBtn.focus(); }
+            });
+        });
+        dialog.addEventListener('click', (e) => {
+            if (e.target === dialog) {
+                if (typeof dialog.close === 'function') { dialog.close(); }
+                else { dialog.removeAttribute('open'); }
+                const openBtn = document.querySelector('[data-action="parents-modal-open"]');
+                if (openBtn) openBtn.setAttribute('aria-expanded', 'false');
+            }
+        });
+    }
+});
+</script>
+
+<script>
+// 個別manifestの入口からも、親PWAの同じ配信版を利用する。
+if ('serviceWorker' in navigator && window.isSecureContext) {
+  const registerPwa = () => navigator.serviceWorker.register('../sw.js', { scope: '../', updateViaCache: 'none' }).catch(error => console.warn('PWA registration failed', error));
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', registerPwa, { once: true });
+  else registerPwa();
+}
+</script>
+</body>
+
+</html>

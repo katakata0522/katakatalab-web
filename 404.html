@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ページが見つかりません (404) | KatakataLab</title>
+    <meta name="description" content="お探しのページは見つかりませんでした。URLのミスや移動の可能性があります。KatakataLabのトップページからお目当てのツールをお探しください。">
+    <meta name="robots" content="noindex, nofollow">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@400;500;700;800&family=Outfit:wght@400;600;700&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="style.css?v=20260824-responsive">
+    <link rel="icon" href="icon.svg" type="image/svg+xml">
+
+    <style>
+        .error-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 60vh;
+            text-align: center;
+            padding: 2rem;
+        }
+
+        .error-code {
+            font-family: 'Outfit', sans-serif;
+            font-size: 6rem;
+            font-weight: 800;
+            color: #dfe6e9;
+            line-height: 1;
+            margin-bottom: 1rem;
+        }
+
+        .error-title {
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-bottom: 1rem;
+            color: var(--text-color);
+        }
+
+        .error-desc {
+            color: #666;
+            margin-bottom: 2rem;
+        }
+
+        .flask-icon {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            animation: float 3s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+    </style>
+</head>
+
+<body>
+    <script>try{if(localStorage.getItem('theme')==='dark')document.body.classList.add('dark-mode');}catch(e){}</script>
+    <header class="header">
+        <div class="container header-container">
+            <a href="./" class="logo">
+                <span class="logo-icon">🧪</span>
+                <span class="logo-text">KatakataLab</span>
+            </a>
+        </div>
+    </header>
+
+    <main class="error-container">
+        <div class="flask-icon">🧪</div>
+        <div class="error-code">404</div>
+        <h1 class="error-title">ページが見つかりません</h1>
+        <p class="error-desc">
+            お探しのURLは存在しないか、移動・整理された可能性があります。<br>
+            下のリンクから、使い方ガイドや主要ツールへお進みください。
+        </p>
+        <p class="error-desc" style="margin-top:0.5rem">
+            <a href="./">トップ</a> ｜
+            <a href="guides/case-studies.html">実例集</a> ｜
+            <a href="guides/tool-selection-guide.html">用途から選ぶ</a> ｜
+            <a href="guides/password-guide.html">パスワードガイド</a> ｜
+            <a href="contact.html">お問い合わせ</a>
+        </p>
+        <a href="./" class="btn btn-primary">ラボの入り口（ホーム）へ戻る</a>
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2024-2026 KatakataLab. All Rights Reserved.</p>
+        </div>
+    </footer>
+</body>
+</html>

@@ -1,0 +1,38 @@
+User-agent: Mediapartners-Google
+Disallow: /_archive/
+Disallow: /CLI_AUTO/
+Disallow: /dist_lite/
+Disallow: /docs/
+Disallow: /IT_Book_Vol1_Basics/
+Disallow: /liverepo/
+Disallow: /liverepo-pages/
+Disallow: /.github/
+Disallow: /tests/
+Disallow: /qrcode/node_modules/
+Disallow: /qrcode/tests/
+Disallow: /qrcode/production/
+Disallow: /qrcode/test-results/
+Disallow: /pikalab/*/tests/
+
+User-agent: *
+Allow: /
+Disallow: /_archive/
+Disallow: /CLI_AUTO/
+Disallow: /dist_lite/
+Disallow: /docs/
+Disallow: /IT_Book_Vol1_Basics/
+Disallow: /liverepo/
+Disallow: /liverepo-pages/
+Disallow: /.github/
+Disallow: /tests/
+Disallow: /qrcode/node_modules/
+Disallow: /qrcode/tests/
+Disallow: /qrcode/production/
+Disallow: /qrcode/test-results/
+Disallow: /pikalab/*/tests/
+
+Sitemap: https://katakatalab.com/sitemap.xml
+# PikaLab は縮小版 sitemap のみ（ミニアプリ群は noindex）。入口はルートから辿れる
+Sitemap: https://katakatalab.com/pikalab/sitemap.xml
+# あそびポケットは独立デプロイ管理。専用sitemapをルートrobotsから通知する
+Sitemap: https://katakatalab.com/asobi-pocket/sitemap.xml

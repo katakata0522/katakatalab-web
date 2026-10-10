@@ -1,0 +1,232 @@
+/* common.css - 知育ひろば共通スタイル */
+
+html,
+body {
+    max-width: 100%;
+    overflow-x: hidden;
+}
+
+/* 押し込み効果（子供が押したと分かりやすいように少し大げさに） */
+.game-card {
+    transition: transform 0.1s ease, box-shadow 0.1s ease, filter 0.1s ease;
+}
+
+.game-card:focus-visible {
+    outline: 4px solid #1d4ed8;
+    outline-offset: 4px;
+}
+
+/* 淡い背景の上でも、幼児向け操作ラベルをAA相当の濃さで読めるようにする */
+.bg-green-500.text-white {
+    background-color: #15803d !important;
+}
+
+.bg-blue-500.text-white {
+    background-color: #1d4ed8 !important;
+}
+
+button.text-gray-500 {
+    color: #4b5563 !important;
+}
+
+.piano-key.text-green-400 {
+    color: #15803d !important;
+}
+
+.game-card:active { 
+    transform: scale(0.92) translateY(4px); 
+    box-shadow: 0 0px 0px rgba(0,0,0,0.1) !important; /* 影を消して押し込み感を強調 */
+    filter: brightness(0.95);
+}
+
+/* ポップアップ用アニメーション */
+@keyframes scaleUp { 
+    0% { transform: scale(0.5); opacity: 0; } 
+    70% { transform: scale(1.05); opacity: 1; }
+    100% { transform: scale(1); opacity: 1; } 
+}
+.scale-up { animation: scaleUp 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
+
+/* 紙吹雪用クラス */
+.confetti-piece {
+    position: absolute;
+    width: 15px;
+    height: 15px;
+    border-radius: 50%;
+    opacity: 0;
+    z-index: 100;
+    pointer-events: none;
+}
+
+/* 幼児向け：テキストの選択やハイライトを完全に無効化 */
+* {
+    -webkit-tap-highlight-color: transparent;
+    -webkit-touch-callout: none;
+}
+
+/* スクロールバー隠し（でもスクロールはできる） */
+.no-scrollbar::-webkit-scrollbar { display: none; }
+.no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+@media (max-width: 480px) {
+    #header {
+        padding-top: 3.75rem;
+    }
+
+    #header h1 {
+        font-size: clamp(2rem, 10vw, 2.6rem);
+        line-height: 1.1;
+        text-align: center;
+        gap: 0.25rem;
+    }
+
+    #pikalab-back-btn {
+        top: 0.25rem;
+        left: 0.25rem;
+        min-height: 44px;
+        max-width: 9rem;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    #sound-toggle {
+        top: 0.25rem;
+        right: 0.25rem;
+    }
+
+    /* 幼児向け：もどるボタンと音ボタンのタップ領域を最低48px以上に拡張 */
+    #game-back-btn {
+        min-height: 48px !important;
+        display: inline-flex !important;
+        align-items: center;
+        justify-content: center;
+        padding: 0 1.25rem !important;
+    }
+
+    #sound-toggle {
+        min-height: 48px !important;
+        min-width: 48px !important;
+        display: inline-flex !important;
+        align-items: center;
+        justify-content: center;
+    }
+}
+
+/* 保護者向けモーダル共通スタイル */
+.parents-modal-dialog {
+    border: none;
+    border-radius: 24px;
+    padding: 0;
+    max-width: 500px;
+    width: 90%;
+    background: #ffffff;
+    color: #334155;
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+    overflow: hidden;
+    font-family: 'Helvetica Neue', Arial, 'Hiragino Kaku Gothic ProN', Meiryo, sans-serif;
+    border: 4px solid #ffedd5; /* 温かみのある暖色系の境界線 */
+    z-index: 9999;
+}
+.parents-modal-dialog::backdrop {
+    background: rgba(15, 23, 42, 0.5);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+}
+.parents-modal-body {
+    padding: 24px;
+    position: relative;
+    text-align: left;
+}
+.parents-modal-close-btn {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    background: transparent;
+    border: none;
+    color: #94a3b8;
+    font-size: 20px;
+    cursor: pointer;
+    transition: color 0.2s;
+    padding: 4px;
+    line-height: 1;
+}
+.parents-modal-close-btn:hover {
+    color: #0f172a;
+}
+.parents-modal-header {
+    border-bottom: 2px dashed #fed7aa;
+    padding-bottom: 12px;
+    margin-bottom: 20px;
+}
+.parents-modal-header h3 {
+    margin: 0;
+    font-size: 20px;
+    font-weight: 900;
+    color: #ea580c;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+.parents-modal-subtitle {
+    font-size: 10px;
+    color: #a1a1aa;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+.parents-modal-content {
+    max-height: 50vh;
+    overflow-y: auto;
+    padding-right: 8px;
+}
+.parents-modal-content::-webkit-scrollbar {
+    width: 6px;
+}
+.parents-modal-content::-webkit-scrollbar-track {
+    background: transparent;
+}
+.parents-modal-content::-webkit-scrollbar-thumb {
+    background: #fed7aa;
+    border-radius: 3px;
+}
+.parents-modal-section {
+    margin-bottom: 20px;
+}
+.parents-modal-section h4 {
+    margin: 0 0 8px 0;
+    font-size: 14px;
+    font-weight: bold;
+    color: #f97316;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+.parents-modal-section p {
+    margin: 0;
+    font-size: 13px;
+    line-height: 1.6;
+    color: #4b5563;
+}
+.parents-modal-footer {
+    margin-top: 24px;
+    padding-top: 16px;
+    border-top: 2px dashed #fed7aa;
+    display: flex;
+    justify-content: flex-end;
+}
+.parents-modal-footer-close-btn {
+    background: #f97316;
+    border: none;
+    color: #ffffff;
+    padding: 8px 20px;
+    border-radius: 12px;
+    font-size: 13px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background 0.2s;
+    box-shadow: 0 4px 0 #ea580c;
+}
+.parents-modal-footer-close-btn:hover {
+    background: #ea580c;
+}

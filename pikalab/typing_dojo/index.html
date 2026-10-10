@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>タイピングゲーム｜小学生向けローマ字練習 無料 | PikaLab</title>
+    <meta name="description" content="ひらがなをローマ字で入力する小学生向け無料タイピングゲーム。かんたん・ふつう・むずかしいから選び、ブラウザですぐ練習できます。">
+
+    <meta property="og:title" content="タイピングゲーム｜小学生向けローマ字練習 無料 | PikaLab">
+    <meta property="og:description" content="ひらがなをローマ字で入力する小学生向け無料タイピングゲーム。かんたん・ふつう・むずかしいから選び、ブラウザですぐ練習できます。">
+    <meta property="og:type" content="website">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@400;700;800&family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,1,0&display=swap"
+        rel="stylesheet">
+
+    <link rel="stylesheet" href="../style.css">
+    <link rel="stylesheet" href="style.css">
+
+  <link rel="canonical" href="https://katakatalab.com/pikalab/typing_dojo/">
+  <meta property="og:url" content="https://katakatalab.com/pikalab/typing_dojo/">
+  <meta property="og:image" content="https://katakatalab.com/pikalab/pikalab_ogp_compressed.jpg">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="タイピングゲーム｜小学生向けローマ字練習 無料 | PikaLab">
+  <meta name="twitter:description" content="ひらがなをローマ字で入力する小学生向け無料タイピングゲーム。かんたん・ふつう・むずかしいから選び、ブラウザですぐ練習できます。">
+  <meta name="twitter:image" content="https://katakatalab.com/pikalab/pikalab_ogp_compressed.jpg">
+  <meta name="twitter:site" content="@katakata0522">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"タイピングゲーム｜小学生向けローマ字練習 無料 | PikaLab","description":"ひらがなをローマ字で入力する小学生向け無料タイピングゲーム。かんたん・ふつう・むずかしいから選び、ブラウザですぐ練習できます。","url":"https://katakatalab.com/pikalab/typing_dojo/","applicationCategory":"EducationalApplication","operatingSystem":"Web Browser","offers":{"@type":"Offer","price":"0","priceCurrency":"JPY"},"isAccessibleForFree":true,"audience":{"@type":"EducationalAudience","educationalRole":"student"}}</script>
+
+</head>
+
+<body>
+    <script>try{var p=localStorage.getItem('wonder_school_profile_v2');if(p&&JSON.parse(p).darkMode)document.body.classList.add('theme-night');}catch(e){}</script>
+    <main>
+    <!-- チュートリアルオーバーレイ -->
+    <div id="tutorial-overlay" class="tutorial-overlay" role="dialog" aria-modal="true" aria-hidden="true" aria-labelledby="tutorial-title">
+        <div class="tutorial-card">
+            <h3 class="tutorial-title" id="tutorial-title">📘 30秒ガイド</h3>
+            <p class="tutorial-step-title" id="tutorial-step-title">基本ルール</p>
+            <p class="tutorial-step-body" id="tutorial-step-body">
+                ひらがなをローマ字で入力します。正しく入力すると次の問題へ進みます。
+            </p>
+            <div class="tutorial-progress">
+                <div id="tutorial-progress-bar" class="tutorial-progress-bar"></div>
+            </div>
+            <div class="tutorial-actions">
+                <button type="button" class="btn btn-resume" id="tutorial-next-btn">次へ</button>
+                <button type="button" class="btn btn-quit-pause" id="tutorial-skip-btn">スキップ</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 設定オーバーレイ -->
+    <div id="settings-overlay" class="settings-overlay" role="dialog" aria-modal="true" aria-hidden="true" aria-labelledby="settings-title">
+        <div class="settings-card">
+            <h3 class="settings-title" id="settings-title">⚙ 設定</h3>
+
+            <div class="settings-group">
+                <p class="settings-group-title">難易度と表示</p>
+                <label class="settings-row" for="romaji-hint-toggle">
+                    <span>ローマ字ヒントを表示する</span>
+                    <input type="checkbox" id="romaji-hint-toggle" checked>
+                </label>
+                <label class="settings-row" for="focus-mode-toggle">
+                    <span>背景演出を弱める（集中モード）</span>
+                    <input type="checkbox" id="focus-mode-toggle">
+                </label>
+            </div>
+
+            <div class="settings-group" id="settings-keyboard-group" hidden>
+                <p class="settings-group-title">スマホ用キーボード</p>
+                <div class="settings-row">
+                    <span>キーボードの種類</span>
+                    <select id="keyboard-type-select" aria-label="キーボードの種類">
+                        <option value="kana">ひらがな</option>
+                        <option value="romaji">ローマ字（英字）</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="settings-group">
+                <p class="settings-group-title">サウンド</p>
+                <label class="settings-row" for="sound-toggle">
+                    <span>効果音を鳴らす</span>
+                    <input type="checkbox" id="sound-toggle" checked>
+                </label>
+                <label class="settings-slider-row" for="sound-volume">
+                    <span>音量</span>
+                    <input type="range" id="sound-volume" min="0" max="100" step="5" value="60">
+                </label>
+            </div>
+
+            <div class="settings-group">
+                <p class="settings-group-title">セッション</p>
+                <label class="settings-row" for="auto-resume-toggle">
+                    <span>中断セッションを復元する</span>
+                    <input type="checkbox" id="auto-resume-toggle" checked>
+                </label>
+            </div>
+
+            <button type="button" class="btn btn-home" id="close-settings-btn">閉じる</button>
+        </div>
+    </div>
+
+    <!-- カウントダウンオーバーレイ -->
+    <div id="countdown-overlay" class="countdown-overlay" role="dialog" aria-modal="true" aria-hidden="true" aria-labelledby="countdown-level" tabindex="-1">
+        <div class="countdown-content">
+            <div class="countdown-level" id="countdown-level">ふつう</div>
+            <div class="countdown-number" id="countdown-number">3</div>
+        </div>
+    </div>
+
+    <!-- 一時停止オーバーレイ -->
+    <div id="pause-overlay" class="pause-overlay" role="dialog" aria-modal="true" aria-hidden="true" aria-labelledby="pause-title">
+        <div class="pause-content">
+            <div class="pause-icon">⏸️</div>
+            <div class="pause-text" id="pause-title">一時停止中</div>
+            <p class="pause-hint">スペースキー または クリックで再開</p>
+            <div class="pause-actions">
+                <button type="button" class="btn btn-resume" id="resume-btn">▶️ 再開</button>
+                <button type="button" class="btn btn-quit-pause" id="quit-from-pause-btn">🏠 やめる</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- スタート画面 -->
+    <div id="start-screen" class="screen active">
+        <div class="container start-container">
+
+            <div class="start-grid">
+                <section class="start-main-panel">
+                    <div class="start-main-top">
+                        <h1 class="title">🥋 タイピング道場</h1>
+                        <p class="subtitle">ひらがなをローマ字でタイピング！<br>ノーミスでタイムボーナス！</p>
+
+                        <div id="resume-card" class="resume-card" hidden>
+                            <p class="resume-title">⏯️ 前回のつづきがあります</p>
+                            <p class="resume-desc" id="resume-desc">中断したプレイを再開できます。</p>
+                            <div class="resume-actions">
+                                <button type="button" class="btn btn-resume" id="resume-session-btn">つづきから</button>
+                                <button type="button" class="btn btn-quit-pause" id="discard-session-btn">新しくはじめる</button>
+                            </div>
+                        </div>
+
+                        <div class="player-status-row">
+                            <div class="player-rank" id="player-rank">段位: 見習い</div>
+                            <div class="streak-badge" id="streak-badge">連続: 0日</div>
+                        </div>
+                    </div>
+
+                    <div class="start-main-bottom">
+                        <div class="difficulty-select">
+                            <p class="select-label">難易度を選んでね</p>
+                            <button type="button" class="btn btn-easy" data-level="easy">🌸 かんたん</button>
+                            <button type="button" class="btn btn-normal" data-level="normal">🌟 ふつう</button>
+                            <button type="button" class="btn btn-hard" data-level="hard">🔥 むずかしい</button>
+                            <p class="difficulty-help" id="difficulty-help">かんたん: 単語中心 / ふつう: 四字熟語中心 / むずかしい: ことわざ・文章中心</p>
+                            <p class="difficulty-sample" id="difficulty-sample">例: さくら</p>
+                        </div>
+                    </div>
+                </section>
+
+                <aside class="start-config-panel">
+                    <div class="start-header-row">
+                        <a href="../" class="back-link start-back-link">← PikaLabに戻る</a>
+                        <div class="start-toolbar">
+                            <button type="button" class="control-btn" id="open-settings-btn" title="設定を開く">⚙️</button>
+                            <button type="button" class="control-btn" id="open-tutorial-btn" title="30秒ガイドを開く">?</button>
+                            <button type="button" class="control-btn" data-action="parents-modal-open" title="保護者の方へ" aria-label="保護者の方へ - 開く" aria-haspopup="dialog" aria-expanded="false">👨‍👩‍👧‍👦</button>
+                        </div>
+                    </div>
+
+                    <div class="goal-select primary-config">
+                        <p class="select-label">今日の目標</p>
+                        <div class="chip-group">
+                            <button type="button" class="chip-btn goal-btn active" data-goal="5">5問</button>
+                            <button type="button" class="chip-btn goal-btn" data-goal="10">10問</button>
+                            <button type="button" class="chip-btn goal-btn" data-goal="20">20問</button>
+                        </div>
+                        <p class="goal-progress" id="goal-progress">今日 0/5 問</p>
+                    </div>
+
+                    <div class="mode-select primary-config">
+                        <p class="select-label">プレイモード</p>
+                        <div class="chip-group">
+                            <button type="button" class="chip-btn mode-btn active" data-mode="dojo">道場モード（じっくり）</button>
+                            <button type="button" class="chip-btn mode-btn" data-mode="focus60">1分集中モード</button>
+                        </div>
+                    </div>
+
+                    <div class="unit-select secondary-config">
+                        <p class="select-label">学習単位</p>
+                        <div class="chip-grid" id="unit-select-grid">
+                            <button type="button" class="chip-btn unit-btn active" data-unit="auto">おまかせ</button>
+                            <button type="button" class="chip-btn unit-btn" data-unit="word">単語</button>
+                            <button type="button" class="chip-btn unit-btn" data-unit="proverb">ことわざ</button>
+                            <button type="button" class="chip-btn unit-btn" data-unit="sentence-short">短文</button>
+                            <button type="button" class="chip-btn unit-btn" data-unit="sentence-long">長文</button>
+                            <button type="button" class="chip-btn unit-btn" data-unit="katakana">カタカナ語</button>
+                            <button type="button" class="chip-btn unit-btn" data-unit="subject-science">理科語彙</button>
+                            <button type="button" class="chip-btn unit-btn" data-unit="subject-social">社会語彙</button>
+                            <button type="button" class="chip-btn unit-btn" data-unit="ultra-beginner">超入門</button>
+                        </div>
+                    </div>
+
+                    <div class="char-train-select secondary-config">
+                        <p class="select-label">文字特訓</p>
+                        <div class="chip-group">
+                            <button type="button" class="chip-btn char-btn active" data-char-training="all">なし</button>
+                            <button type="button" class="chip-btn char-btn" data-char-training="youon">拗音（ゃゅょ）</button>
+                            <button type="button" class="chip-btn char-btn" data-char-training="sokuon">促音（っ）</button>
+                            <button type="button" class="chip-btn char-btn" data-char-training="hatsuon">撥音（ん）</button>
+                            <button type="button" class="chip-btn char-btn" data-char-training="choon">長音（ー）</button>
+                        </div>
+                    </div>
+                </aside>
+            </div>
+        </div>
+    </div>
+
+    <!-- ゲーム画面 -->
+    <div id="game-screen" class="screen">
+        <div class="game-container">
+            <!-- 難易度表示とコントロール -->
+            <div class="game-top-bar">
+                <div class="game-top-left">
+                    <div class="level-badge" id="level-badge">🌟 ふつう</div>
+                    <div class="rank-badge" id="rank-badge">見習い</div>
+                </div>
+                <div class="game-controls">
+                    <button type="button" class="control-btn" id="open-settings-btn-game" title="設定">⚙️</button>
+                    <button type="button" class="control-btn" id="pause-btn" title="一時停止 (スペース)">⏸️</button>
+                    <button type="button" class="control-btn control-btn-quit" id="quit-btn" title="やめる (Esc)">✕</button>
+                </div>
+            </div>
+
+            <div class="game-header">
+                <div class="stat">
+                    <span class="stat-label">⏱️ 残り</span>
+                    <span class="stat-value" id="timer">30</span>
+                    <span class="stat-unit">秒</span>
+                </div>
+                <div class="stat">
+                    <span class="stat-label">📝</span>
+                    <span class="stat-value" id="word-count">0問クリア</span>
+                </div>
+                <div class="stat">
+                    <span class="stat-label">✅ 正解</span>
+                    <span class="stat-value" id="score">0</span>
+                </div>
+                <div class="stat">
+                    <span class="stat-label">❌ ミス</span>
+                    <span class="stat-value" id="miss">0</span>
+                </div>
+                <div class="stat">
+                    <span class="stat-label">🔥 コンボ</span>
+                    <span class="stat-value" id="combo">0</span>
+                </div>
+                <div class="stat">
+                    <span class="stat-label">🎯 目標</span>
+                    <span class="stat-value" id="goal-status">0/5</span>
+                </div>
+            </div>
+
+            <div class="question-area">
+                <div class="bonus-word-badge" id="bonus-word-badge" hidden>BONUS</div>
+                <div class="hiragana" id="hiragana">さくら</div>
+                <div class="romaji-hint" id="romaji-hint">sakura</div>
+            </div>
+
+            <div class="input-area">
+                <input type="text" id="input" class="typing-input" autocomplete="off" autocapitalize="off"
+                    inputmode="text" enterkeyhint="done" spellcheck="false"
+                    placeholder="ここにタイプ！" aria-label="タイピング入力欄">
+            </div>
+
+            <div class="bonus-popup" id="bonus-popup" role="status" aria-live="polite">+3秒 ボーナス！</div>
+        </div>
+    </div>
+
+    <!-- リザルト画面 -->
+    <div id="result-screen" class="screen">
+        <div class="container">
+            <h2 class="result-title">🎉 おつかれさま！</h2>
+
+            <div class="result-card">
+                <div class="result-item">
+                    <span class="result-label">正解数</span>
+                    <span class="result-value" id="result-score">0</span>
+                </div>
+                <div class="result-item">
+                    <span class="result-label">ミス数</span>
+                    <span class="result-value" id="result-miss">0</span>
+                </div>
+                <div class="result-item">
+                    <span class="result-label">正確率</span>
+                    <span class="result-value" id="result-accuracy">0%</span>
+                </div>
+                <div class="result-item highscore-row">
+                    <span class="result-label">ハイスコア</span>
+                    <span class="result-value" id="result-highscore">-</span>
+                </div>
+                <div class="result-item">
+                    <span class="result-label">平均WPM</span>
+                    <span class="result-value" id="result-wpm">0</span>
+                </div>
+                <div class="result-item">
+                    <span class="result-label">最大コンボ</span>
+                    <span class="result-value" id="result-max-combo">0</span>
+                </div>
+                <div class="result-item">
+                    <span class="result-label">段位</span>
+                    <span class="result-value" id="result-rank">見習い</span>
+                </div>
+                <div class="result-item">
+                    <span class="result-label">今日の目標</span>
+                    <span class="result-value" id="result-goal-status">-</span>
+                </div>
+            </div>
+
+            <div class="growth-panel">
+                <p class="growth-title">📈 成長グラフ（最近10回）</p>
+                <svg id="growth-chart" class="growth-chart" viewBox="0 0 360 140" role="img"
+                    aria-label="最近10回の成績推移グラフ"></svg>
+                <div class="growth-legend">
+                    <span class="legend-item legend-wpm">WPM</span>
+                    <span class="legend-item legend-accuracy">正確率</span>
+                    <span class="legend-item legend-miss">ミス率</span>
+                </div>
+            </div>
+
+            <!-- にがて特訓セクション -->
+            <div id="review-section" class="review-section" hidden>
+                <p class="review-title">⚠️ まちがえた言葉が <span id="review-count">0</span>個 あるよ！</p>
+                <button type="button" class="btn btn-review" id="review-btn">✍️ まちがえた言葉で特訓！</button>
+            </div>
+
+            <div class="result-actions">
+                <button type="button" class="btn btn-retry" id="retry-btn">🔄 もう一回</button>
+                <button type="button" class="btn btn-home" id="home-btn">🏠 タイトルへ</button>
+            </div>
+        </div>
+    </div>
+    </main>
+
+    
+
+    
+
+    
+
+    <script type="module" src="script.js"></script>
+
+<!-- Parents Modal -->
+<dialog id="parents-modal"
+    class="p-0 rounded-3xl shadow-2xl open:animate-fade-in w-full max-w-lg m-auto overflow-hidden border-0"
+    aria-labelledby="parents-modal-title" style="display:none;">
+    <div class="bg-white p-6 md:p-8 max-h-[90vh] overflow-y-auto relative text-left">
+        <button type="button" data-action="parents-modal-close" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600 focus:outline-none" aria-label="閉じる">
+            <span class="material-symbols-rounded">close</span>
+        </button>
+        <div class="mb-6 border-b-2 border-indigo-100 pb-4">
+            <h2 id="parents-modal-title"
+                class="text-lg md:text-xl font-black text-slate-800 flex items-center gap-2">
+                <span class="material-symbols-rounded text-indigo-500">family_restroom</span> 保護者の方へ
+            </h2>
+            <p class="text-xs text-slate-400 font-bold mt-1">For Parents &amp; Guardians</p>
+        </div>
+
+        <div class="space-y-6 text-sm text-slate-600 leading-relaxed font-bold">
+            <!-- ウェルカムメッセージカード -->
+            <div class="bg-gradient-to-r from-indigo-50 to-purple-50 p-5 rounded-2xl border border-indigo-100 text-center">
+                <p class="mb-2 text-indigo-800 text-base">
+                    <span class="material-symbols-rounded text-xl align-bottom mr-1 text-pink-400">favorite</span>
+                    当サイト「PikaLab」に<br>ご訪問いただき、誠にありがとうございます。
+                </p>
+                <p class="text-xs text-indigo-600">
+                            大切なお子様と一緒にPikaLabを訪れていただけたこと、<br>制作者のかたかたより、心から感謝申し上げます。
+                </p>
+            </div>
+
+            <!-- 1. ねらい -->
+            <div>
+                <h3 class="text-indigo-600 font-black mb-2 flex items-center gap-2">
+                    <span class="material-symbols-rounded text-base">school</span> このアプリのねらい
+                </h3>
+                <p>「タイピング道場」は、ひらがなをローマ字で入力し、正解数・ミス数・WPMなどを確認しながら練習できるタイピングゲームです。難易度、出題数、練習モードを選び、<span class="bg-indigo-100 text-indigo-700 px-1 rounded">自分の記録を見ながら繰り返し練習</span>できます。</p>
+            </div>
+
+            <!-- 2. おねがい -->
+            <div>
+                <h3 class="text-pink-500 font-black mb-2 flex items-center gap-2">
+                    <span class="material-symbols-rounded text-base">favorite</span> 保護者様へのおねがい
+                </h3>
+                <p>タイピングは最初はゆっくりで大丈夫です。<span class="bg-pink-100 text-pink-700 px-1 rounded">「正確さが先、速さは後から」</span>という気持ちで温かく見守ってあげてください。焦らず練習を続けることで、指が少しずつ動きやすくなることがあります。</p>
+            </div>
+
+            <!-- 3. 活用方法 -->
+            <div>
+                <h3 class="text-green-600 font-black mb-2 flex items-center gap-2">
+                    <span class="material-symbols-rounded text-base">emoji_objects</span> おうちでの活用方法
+                </h3>
+                <p>日記や短い文章をキーボードで入力してみるなど、ゲーム以外でもローマ字入力を使う機会を作ると、練習した入力を実際の文章で試せます。</p>
+            </div>
+
+            <!-- 4. 健康への配慮 -->
+            <div>
+                <h3 class="text-orange-500 font-black mb-2 flex items-center gap-2">
+                    <span class="material-symbols-rounded text-base">timer</span> 健康への配慮（休憩の推奨）
+                </h3>
+                <p>大切なお子様の健康のために、<span class="bg-orange-100 text-orange-700 px-1 rounded">30分に1回程度の休憩</span>を推奨しています。タイピング姿勢にも気をつけ、背筋を伸ばして正しい姿勢で取り組めるよう声をかけてあげてください。各ツールへ入力した内容や端末内の記録はブラウザ内で処理・保存し、運営者のサーバー、広告サービス、アクセス解析サービスへ送信しません。ページ表示時にはWebフォント等の外部配信サービスへの通常の通信が発生する場合があります。</p>
+            </div>
+        </div>
+        <div class="mt-8 text-center">
+            <button type="button" data-action="parents-modal-close"
+                class="w-full bg-indigo-500 text-white px-8 py-3 rounded-xl font-black hover:bg-indigo-600 transition shadow-lg shadow-indigo-200">閉じる</button>
+        </div>
+    </div>
+</dialog>
+
+    <style>
+    #parents-modal::backdrop {
+        background: rgba(15, 23, 42, 0.6);
+        backdrop-filter: blur(4px);
+    }
+    #parents-modal[open] {
+        display: block !important;
+        animation: parentsModalFadeIn 0.3s ease-out forwards;
+    }
+    @keyframes parentsModalFadeIn {
+        from { opacity: 0; transform: scale(0.95); }
+        to { opacity: 1; transform: scale(1); }
+    }
+    </style>
+
+    <script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const openBtns = document.querySelectorAll('[data-action="parents-modal-open"]');
+        const closeBtns = document.querySelectorAll('[data-action="parents-modal-close"]');
+        const dialog = document.getElementById('parents-modal');
+
+        if (!dialog) return;
+        let trigger = null;
+        const syncClosed = () => {
+            if (dialog.open || dialog.hasAttribute('open')) return;
+            openBtns.forEach(btn => btn.setAttribute('aria-expanded', 'false'));
+            if (trigger?.isConnected) trigger.focus();
+            trigger = null;
+        };
+        const close = () => {
+            if (typeof dialog.close === 'function') dialog.close();
+            else { dialog.removeAttribute('open'); dialog.style.display = 'none'; }
+            syncClosed();
+        };
+        openBtns.forEach(btn => btn.addEventListener('click', (e) => {
+            e.preventDefault();
+            if (dialog.open) return;
+            trigger = btn;
+            if (typeof dialog.showModal === 'function') dialog.showModal();
+            else { dialog.setAttribute('open', ''); dialog.style.display = 'block'; }
+            btn.setAttribute('aria-expanded', 'true');
+        }));
+        closeBtns.forEach(btn => btn.addEventListener('click', close));
+        dialog.addEventListener('close', syncClosed);
+        dialog.addEventListener('cancel', (event) => {
+            event.preventDefault();
+            close();
+        });
+        dialog.addEventListener('click', (e) => { if (e.target === dialog) close(); });
+    });
+    </script>
+
+</body>
+
+</html>
+

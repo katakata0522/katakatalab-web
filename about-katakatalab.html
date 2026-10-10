@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KatakataLabについて | コンセプトと制作方針</title>
+    <meta name="description" content="KatakataLabは使い方ガイドと登録不要のブラウザ道具を主軸にした個人ラボです。「日常の小さな困りごとを解消する」軸で、読みものと道具がなぜ共存するのかを説明しています。">
+    <meta name="author" content="かたかた">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@400;500;700;800&family=Outfit:wght@400;600;700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="style.css?v=20260824-responsive">
+    <link rel="icon" href="icon.svg" type="image/svg+xml">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#FF7675">
+
+    <link rel="canonical" href="https://katakatalab.com/about-katakatalab.html">
+    <meta property="og:title" content="KatakataLabについて | コンセプトと制作方針">
+    <meta property="og:description" content="使い方ガイドと登録不要の道具を主軸にした個人ラボ。日常の小さな困りごとを解消する軸で、各コンテンツがなぜ共存するのかを説明しています。">
+    <meta property="og:type" content="article">
+    <meta property="og:url" content="https://katakatalab.com/about-katakatalab.html">
+    <meta property="og:image" content="https://katakatalab.com/ogp.png">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="KatakataLabについて | コンセプトと制作方針">
+    <meta name="twitter:description" content="KatakataLabのコンセプト「日常の小さな困りごとを解消する」という一本の軸を中心に、各コンテンツがなぜ共存するのかを説明しています。">
+    <meta name="twitter:image" content="https://katakatalab.com/ogp.png">
+    <meta name="twitter:site" content="@Katakata_toybox">
+
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "AboutPage",
+      "name": "KatakataLabについて",
+      "url": "https://katakatalab.com/about-katakatalab.html",
+      "description": "KatakataLabのコンセプトと制作方針を説明するページです。",
+      "author": {
+        "@id": "https://katakatalab.com/#person"
+      },
+      "isPartOf": {
+        "@id": "https://katakatalab.com/#website"
+      }
+    }
+    </script>
+
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-FYFPS7L9X9"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag() { dataLayer.push(arguments); }
+        gtag('js', new Date());
+        gtag('config', 'G-FYFPS7L9X9', { 'anonymize_ip': true });
+    </script>
+    <style>
+        /* ── コンセプトアクシスセクション ── */
+        .concept-axis {
+            background: linear-gradient(135deg, var(--c-glass-bg) 0%, rgba(255,118,117,0.06) 100%);
+            border: 1px solid var(--c-glass-border);
+            border-radius: var(--radius-lg);
+            padding: 2.5rem 2rem;
+            margin: 2.5rem 0;
+            position: relative;
+            overflow: hidden;
+        }
+        .concept-axis::before {
+            content: '';
+            position: absolute;
+            top: -60px; right: -60px;
+            width: 180px; height: 180px;
+            background: radial-gradient(circle, rgba(255,118,117,0.12) 0%, transparent 70%);
+            border-radius: 50%;
+        }
+        .concept-axis-title {
+            font-size: 1.15rem;
+            font-weight: 800;
+            color: var(--c-primary);
+            margin-bottom: 0.75rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .concept-axis-body {
+            font-size: 1.05rem;
+            line-height: 1.85;
+            color: var(--c-text);
+            margin: 0;
+        }
+        .concept-axis-body strong {
+            color: var(--c-primary);
+        }
+
+        /* ── コンセプトグリッド（3軸） ── */
+        .concept-pillars {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+            gap: 1.25rem;
+            margin: 2rem 0;
+        }
+        .pillar-card {
+            background: var(--c-surface);
+            border: 1px solid var(--c-glass-border);
+            border-radius: var(--radius-md);
+            padding: 1.5rem 1.25rem;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        .pillar-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+        }
+        .pillar-icon {
+            font-size: 2rem;
+            margin-bottom: 0.75rem;
+            display: block;
+        }
+        .pillar-label {
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: var(--c-primary);
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            margin-bottom: 0.4rem;
+        }
+        .pillar-title {
+            font-size: 1.05rem;
+            font-weight: 800;
+            color: var(--c-text);
+            margin-bottom: 0.5rem;
+        }
+        .pillar-desc {
+            font-size: 0.88rem;
+            color: var(--c-text-light);
+            line-height: 1.7;
+            margin: 0;
+        }
+
+        /* ── 制作方針 ── */
+        .philosophy-list {
+            list-style: none;
+            padding: 0;
+            margin: 1.25rem 0 0 0;
+            display: flex;
+            flex-direction: column;
+            gap: 0.85rem;
+        }
+        .philosophy-list li {
+            display: flex;
+            align-items: flex-start;
+            gap: 0.75rem;
+            font-size: 0.95rem;
+            color: var(--c-text);
+            line-height: 1.65;
+        }
+        .philosophy-list li::before {
+            content: '✓';
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 22px;
+            height: 22px;
+            background: var(--c-primary);
+            color: #fff;
+            border-radius: 50%;
+            font-size: 0.75rem;
+            font-weight: 700;
+            flex-shrink: 0;
+            margin-top: 1px;
+        }
+
+        /* ── プロジェクト一覧カード ── */
+        .project-list-card {
+            background: var(--c-surface);
+            border: 1px solid var(--c-glass-border);
+            border-radius: var(--radius-md);
+            padding: 1.5rem;
+            margin-bottom: 1.25rem;
+        }
+        .project-list-card h3 {
+            font-size: 1.05rem;
+            font-weight: 700;
+            color: var(--c-text);
+            margin: 0 0 0.5rem 0;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .project-list-card p {
+            font-size: 0.92rem;
+            color: var(--c-text-light);
+            line-height: 1.7;
+            margin: 0 0 0.75rem 0;
+        }
+        .project-list-card a.proj-link {
+            font-size: 0.88rem;
+            color: var(--c-primary);
+            text-decoration: none;
+            font-weight: 600;
+            border-bottom: 1px solid transparent;
+            transition: border-color 0.2s;
+        }
+        .project-list-card a.proj-link:hover {
+            border-bottom-color: var(--c-primary);
+        }
+        .project-tag {
+            display: inline-block;
+            font-size: 0.72rem;
+            font-weight: 700;
+            padding: 2px 8px;
+            border-radius: 20px;
+            background: rgba(255,118,117,0.12);
+            color: var(--c-primary);
+            margin-bottom: 0.6rem;
+        }
+    </style>
+</head>
+
+<body>
+    <script>try{if(localStorage.getItem('theme')==='dark')document.body.classList.add('dark-mode');}catch(e){}</script>
+
+    <header class="header">
+        <div class="container header-container">
+            <a href="./#home" class="logo">
+                <span class="logo-icon">🧪</span>
+                <span class="logo-text">KatakataLab</span>
+            </a>
+
+            <nav class="nav">
+                <ul class="nav-list">
+                    <li><a href="./#home" class="nav-link">ホーム</a></li>
+                    <li><a href="./#recommended-guides" class="nav-link">ガイド</a></li>
+                    <li><a href="./#projects" class="nav-link">道具</a></li>
+                    <li><a href="contact.html" class="nav-link">お問い合わせ</a></li>
+                </ul>
+            </nav>
+
+            <div class="header-actions">
+                <button type="button" id="theme-toggle" class="theme-btn" aria-label="テーマ切り替え">
+    <svg viewBox="0 0 24 24" class="svg-icon svg-moon" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/>
+    </svg>
+    <svg viewBox="0 0 24 24" class="svg-icon svg-sun" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="display: none;">
+        <circle cx="12" cy="12" r="4"/>
+        <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/>
+    </svg>
+</button>
+                <button type="button" class="menu-toggle" aria-label="メニューを開く">
+                    <span class="bar"></span>
+                    <span class="bar"></span>
+                    <span class="bar"></span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <div class="menu-overlay" id="menu-overlay" aria-hidden="true"></div>
+    <div class="mobile-menu drawer-menu" aria-hidden="true">
+        <button type="button" class="menu-close-btn" aria-label="メニューを閉じる">✕</button>
+        <div class="mobile-menu-inner">
+            <nav class="mobile-nav" aria-label="サイト内ナビゲーション">
+                <ul class="mobile-nav-list">
+                    <li><a href="who-is-katakata.html" class="mobile-nav-link">🧑‍💻 かたかたって誰？</a></li>
+                    <li><a href="about-katakatalab.html" class="mobile-nav-link">🧪 KatakataLabについて</a></li>
+                    <li><a href="note-selection.html" class="mobile-nav-link">📝 かたかたのnote</a></li>
+                    <li><a href="contact.html" class="mobile-nav-link">✉️ お問い合わせ</a></li>
+                    <li class="mobile-nav-sep"></li>
+                    <li><a href="terms.html" class="mobile-nav-link" target="_blank" rel="noopener noreferrer">📄 利用規約</a></li>
+                    <li><a href="privacy.html" class="mobile-nav-link" target="_blank" rel="noopener noreferrer">🔒 プライバシーポリシー</a></li>
+                </ul>
+            </nav>
+        </div>
+    </div>
+
+    <main class="subpage-main">
+        <nav class="breadcrumbs" aria-label="パンくずリスト">
+            <a href="./">🏠 KatakataLab</a>
+            <span class="breadcrumbs-sep">/</span>
+            <a href="./#about">🧪 ラボ情報</a>
+            <span class="breadcrumbs-sep">/</span>
+            <span class="breadcrumbs-current" aria-current="page">KatakataLabについて</span>
+        </nav>
+
+        <section class="section">
+            <div class="container">
+                <h1 class="section-title section-title-left">KatakataLabについて</h1>
+
+                <div class="hero-lead">
+
+                    <!-- ───── コンセプト軸（最重要セクション） ───── -->
+                    <div class="concept-axis">
+                        <p class="concept-axis-title">🧭 このサイトを貫く、たった一本の軸</p>
+                        <p class="concept-axis-body">
+                            KatakataLabは、ジャンルの「幅広さ」を強みにしているサイトではありません。<br>
+                            一見バラバラに見えるコンテンツが同じ場所に集まっているのは、すべてに共通する理由があるからです。<br><br>
+                            それは、<strong>「日常の中にある小さな困りごと・不便を、ブラウザひとつで今すぐ解消する」</strong>こと。<br>
+                            Webツールも学習ゲームも解説ガイドも、すべてこの1行に集約されます。
+                        </p>
+                    </div>
+
+                    <!-- ───── 3つの柱 ───── -->
+                    <h2 class="gear-heading-spaced" style="color: var(--c-primary); font-size: 1.3rem;">🔬 実用ツールの3本柱</h2>
+                    <div class="concept-pillars">
+                        <div class="pillar-card">
+                            <span class="pillar-icon">🎨</span>
+                            <p class="pillar-label">Creation</p>
+                            <p class="pillar-title">制作・デザイン</p>
+                            <p class="pillar-desc">アスペクト比、OGP、フォント、強調線など、作る前のサイズ決めと公開前の見え方を助けます。</p>
+                        </div>
+                        <div class="pillar-card">
+                            <span class="pillar-icon">🛠️</span>
+                            <p class="pillar-label">Development</p>
+                            <p class="pillar-title">開発・文章</p>
+                            <p class="pillar-desc">px/rem変換、コード試作、テキスト差分、IT入門など、作業と確認を往復できる道具をまとめます。</p>
+                        </div>
+                        <div class="pillar-card">
+                            <span class="pillar-icon">🧭</span>
+                            <p class="pillar-label">Daily Use</p>
+                            <p class="pillar-title">日常・情報共有</p>
+                            <p class="pillar-desc">QR、割引、年齢、パスワードなど、日常で迷いやすい計算・作成・確認を短い手順で終えます。</p>
+                        </div>
+                    </div>
+                    <div class="project-list-card" style="margin-top: 1rem;">
+                        <span class="project-tag">📚 別の学習エリア</span>
+                        <h3>PikaLab（ピカラボ）</h3>
+                        <p>子ども向けの学習体験は、実用ツールの3本柱には含めず、独立した学習ラボとして案内します。漢字・分数・リズム・瞬読・CodeStudioなどを、遊びながら試せます。</p>
+                        <a href="pikalab/" class="proj-link" target="_blank" rel="noopener noreferrer">PikaLabを開く →</a>
+                    </div>
+
+                    <!-- ───── 制作方針 ───── -->
+                    <h2 class="gear-heading-spaced" style="color: var(--c-primary); font-size: 1.3rem;">🛠️ KatakataLabの制作方針</h2>
+                    <div class="about-card" style="max-width: none; margin-bottom: 0;">
+                        <ul class="philosophy-list">
+                            <li><strong>まず動くものを作って公開する。</strong>完璧を待つより、実際に使って改善する方が、使う人にとっての価値につながると考えています。</li>
+                            <li><strong>入力はブラウザ完結・サーバー送信なしが原則。</strong>パスワードやQRコードなど、プライバシーに関わるデータを安心して使えるよう、ツールの処理はあなたのブラウザ上だけで完結します。</li>
+                            <li><strong>ツールだけでなく「なぜ必要か」をセットで提供する。</strong>使い方ガイドや解説コラムを併設することで、ただの計算機ではなく「理解して使えるツール」を目指しています。</li>
+                            <li><strong>法務・問い合わせ・更新履歴を常に整備する。</strong>プライバシーポリシー・利用規約・お問い合わせ窓口・アップデート情報を常にメンテナンスし、透明性を保ちます。</li>
+                        </ul>
+                    </div>
+
+                    <section aria-labelledby="content-priority-title">
+                        <h2 id="content-priority-title" class="gear-heading-spaced" style="color: var(--c-primary); font-size: 1.3rem;">📚 公開で大切にしていること</h2>
+                        <p>ページ数を増やすことより、各ページで「何ができるか」「どう使うか」「結果をどう判断するか」「注意点は何か」が分かることを優先しています。</p>
+                        <ul class="philosophy-list">
+                            <li>登録不要で使える実用ツールと、その使い方ガイドを主軸にする</li>
+                            <li>説明が薄い補助ページは、完成するまで検索の主対象から外すことがある</li>
+                            <li>PikaLabなど子ども向け学習は広告なしの実験エリアとして分ける</li>
+                            <li>技術的な主張は、可能なら公式資料や実測に基づいて書く</li>
+                            <li>誤りや不具合の指摘はお問い合わせから受け、必要なら更新履歴に残す</li>
+                        </ul>
+                        <p style="margin-top:1rem;">迷ったら <a href="guides/tool-selection-guide.html">用途から選ぶガイド</a> か <a href="guides/case-studies.html">実例集</a> から入るのが最短です。運営者の人となりは <a href="who-is-katakata.html">かたかたって誰？</a> にまとめています。</p>
+                    </section>
+
+                    <section id="verification-policy" aria-labelledby="verification-policy-title">
+                        <h2 id="verification-policy-title" class="gear-heading-spaced" style="color: var(--c-primary); font-size: 1.3rem;">🧪 KatakataLabの検証方法</h2>
+                        <div class="about-card" style="max-width: none; margin-bottom: 0;">
+                            <p>「実際に使える」と書くページでは、説明文だけでなく、入力から結果までを再現できる状態にします。確認できた範囲と、確認できない環境差を分けて記録します。</p>
+                            <ul class="philosophy-list">
+                                <li><strong>計算結果:</strong> 代表値を手計算または別の式と照合し、端数処理や入力の前提も本文に残します。</li>
+                                <li><strong>ブラウザ操作:</strong> 入力、実行、結果表示、保存やコピーなど、ユーザーが通る主な流れをデスクトップと小さい画面で確認します。</li>
+                                <li><strong>自動テスト:</strong> 主要機能、内部リンク、広告方針、サイトマップ、表示崩れにつながる既知の条件を公開前にまとめて確認します。</li>
+                                <li><strong>更新日と参考資料:</strong> 仕様が変わり得る内容は更新日を示し、公式情報を参照した場合は出典への導線を添えます。</li>
+                                <li><strong>確認範囲:</strong> 端末、印刷、店舗ルール、外部サービスなど再現しきれない条件は、断定せずユーザー側の最終確認事項として明記します。</li>
+                                <li><strong>訂正経路:</strong> 誤りや動作不良は<a href="contact.html">お問い合わせ</a>で受け付け、確認後に本文・テスト・更新履歴をそろえて直します。</li>
+                            </ul>
+                            <p style="margin-bottom: 0; color: var(--c-text-light);">方針更新日: 2026年7月22日</p>
+                        </div>
+                    </section>
+
+                    <!-- ───── 公開中プロジェクト ───── -->
+                    <h2 class="gear-heading-spaced" style="color: var(--c-primary); font-size: 1.3rem;">🗂️ 公開中のプロジェクト</h2>
+
+                    <div class="project-list-card">
+                        <span class="project-tag">💰 ポイント活用</span>
+                        <h3>Playポイント計算機</h3>
+                        <p>Google Play Pointsのランクアップに必要な課金額や、課金額から獲得できるポイントを逆算できるシミュレーターです。キャンペーン倍率にも対応し「あといくら課金したらプラチナ？」がすぐわかります。</p>
+                        <a href="https://www.playpoint-sim.com/" target="_blank" rel="noopener noreferrer" class="proj-link">Playポイント計算機を開く →</a>
+                        &emsp;<a href="guides/playpoint-guide.html" class="proj-link">活用ガイドを読む →</a>
+                    </div>
+
+                    <div class="project-list-card">
+                        <span class="project-tag">💼 Web制作ツール</span>
+                        <h3>実用ツール群（アスペクト比・QRコード・パスワード生成 他）</h3>
+                        <p>Web制作・デジタル作業の現場で毎回「ちょっと調べたい」が生まれる計算・変換・生成ツールを多数公開しています。それぞれに詳細な解説ガイドを併設し、「なぜそれが必要か」をセットで届けています。</p>
+                        <a href="./#projects" class="proj-link">ツール一覧を見る →</a>
+                    </div>
+
+                    <!-- ───── ご利用にあたって ───── -->
+                    <h2 class="gear-heading-spaced" style="color: var(--c-primary); font-size: 1.3rem;">📋 ご利用にあたって</h2>
+                    <p>
+                        各ツールの計算結果やシミュレーションは、できる限り公式仕様や実測に基づいて調整していますが、あくまで<strong>目安</strong>としてご利用ください。
+                    </p>
+                    <p>
+                        サービスの仕様変更や環境差によって結果が異なる場合があります。重要な判断をされる際は、必ず公式情報をご確認ください。
+                    </p>
+                    <p>
+                        収集する情報や広告（Google AdSense等）の取り扱いについては、
+                        <a href="privacy.html" style="color: var(--c-primary); text-decoration: underline;">プライバシーポリシー</a>をご覧ください。
+                    </p>
+
+                    <div class="inline-links" style="margin-top: 2rem;">
+                        <a href="who-is-katakata.html" class="guide-link">運営者について →</a>
+                        <a href="contact.html" class="guide-link">お問い合わせ →</a>
+                        <a href="updates.html" class="guide-link">更新履歴 →</a>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-links">
+                <a href="contact.html">お問い合わせ</a>
+                <a href="who-is-katakata.html">運営者情報</a>
+                <a href="terms.html" target="_blank" rel="noopener noreferrer">利用規約</a>
+                <a href="privacy.html" target="_blank" rel="noopener noreferrer">プライバシーポリシー</a>
+                <a href="sitemap.html">サイトマップ</a>
+            </div>
+            <p>&copy; 2024-<span id="copy-year">2026</span> KatakataLab. All Rights Reserved.</p>
+        </div>
+    </footer>
+
+    <script src="script.js?v=20260619"></script>
+</body>
+
+</html>

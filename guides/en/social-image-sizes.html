@@ -1,0 +1,44 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Social Image Sizes and Safe-Area Guide (2026) | KatakataLab</title><meta name="description" content="Plan social share images and video thumbnails with practical 1.91:1, 16:9, square, and vertical working sizes, source-backed notes, and crop-safe design checks.">
+<link rel="canonical" href="https://katakatalab.com/guides/en/social-image-sizes.html"><link rel="alternate" hreflang="ja" href="https://katakatalab.com/guides/sns-image-size-guide.html"><link rel="alternate" hreflang="en" href="https://katakatalab.com/guides/en/social-image-sizes.html"><link rel="alternate" hreflang="x-default" href="https://katakatalab.com/guides/sns-image-size-guide.html">
+<meta property="og:title" content="Social Image Sizes and Safe-Area Guide (2026)"><meta property="og:description" content="Source-backed working sizes and a safer workflow for social link images and thumbnails."><meta property="og:type" content="article"><meta property="og:url" content="https://katakatalab.com/guides/en/social-image-sizes.html"><meta property="og:image" content="https://katakatalab.com/ogp.png"><meta property="og:site_name" content="KatakataLab"><meta name="twitter:card" content="summary_large_image">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/international/english-shell.css?v=20260805-lab">
+<link rel="icon" href="/icon.svg" type="image/svg+xml">
+<meta name="theme-color" content="#ff7675">
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"Social Image Sizes and Safe-Area Guide","url":"https://katakatalab.com/guides/en/social-image-sizes.html","inLanguage":"en","dateModified":"2026-07-16","author":{"@type":"Person","name":"Katakata"},"publisher":{"@type":"Organization","name":"KatakataLab"}}</script></head>
+<body class="english-site-shell english-guide-page">
+    <script>try{if(localStorage.getItem('theme')==='dark')document.body.classList.add('dark-mode');}catch(e){}</script><header class="english-site-header">
+  <div class="english-site-header__inner">
+    <a class="english-site-brand" href="/en/"><img src="/icon.svg" alt="" width="34" height="34"><strong>Katakata<span>Lab</span></strong></a>
+    <nav class="english-site-nav" aria-label="Primary"><a href="/en/">English tools</a><a href="/guides/sns-image-size-guide.html" hreflang="ja" lang="ja">日本語</a><a href="/en/site-information.html">Site information</a></nav>
+  </div>
+</header><main class="english-site-main english-article-main"><header class="english-article-hero"><p class="english-article-meta">Created by Katakata · Reviewed <time datetime="2026-07-16">July 16, 2026</time></p><h1>Social image sizes: use ratios first, pixels second</h1><p>Platform layouts change, and the same link can be shown as a large card, compact card, notification, or cropped mobile tile. A reliable workflow starts with the intended aspect ratio, keeps critical content in a central safe area, and verifies the published URL with the platform’s current preview or debugger.</p></header>
+<article class="english-article-body"><h2>Practical working sizes</h2><table><thead><tr><th>Use</th><th>Working canvas</th><th>What the source supports</th></tr></thead><tbody>
+<tr><td>General Open Graph / large link card</td><td><strong>1200 × 630</strong> (about 1.91:1)</td><td>LinkedIn documents 1.91:1 and 1200 × 627 for a custom Page post preview. 1200 × 630 is a practical cross-site working canvas, not a guarantee that every client uses the full image.</td></tr>
+<tr><td>LinkedIn image post</td><td><strong>1080 px wide</strong>; ratio from 3:1 to 4:5</td><td>LinkedIn recommends 1080 px width for photo posts, accepts ratios from 3:1 through 4:5, and warns that wider ratios are centered and cropped.</td></tr>
+<tr><td>YouTube video thumbnail</td><td><strong>3840 × 2160</strong> or another high-resolution 16:9 image</td><td>YouTube currently recommends 3840 × 2160, a minimum width of 640, and the 16:9 ratio commonly used by players and previews. Vertical-video surfaces can replace it with an auto-generated 4:5 thumbnail.</td></tr>
+<tr><td>Square reusable asset</td><td><strong>1080 × 1080</strong> (1:1)</td><td>A square master is convenient for image-first posts, but it is not a substitute for link-preview testing. Keep important content away from the edges.</td></tr>
+<tr><td>Vertical feed asset</td><td><strong>1080 × 1350</strong> (4:5)</td><td>4:5 makes better use of vertical feed space on many clients. LinkedIn accepts up to 4:5 for photo posts; other platforms should be checked in their current composer.</td></tr></tbody></table>
+<p class="note"><strong>Do not treat this table as a permanent platform contract.</strong> The first three rows distinguish official current guidance from KatakataLab’s practical cross-platform canvas. For platforms without stable public specifications, verify in the actual publishing flow.</p>
+<h2>Safe-area workflow</h2><ol><li>Choose a ratio for the primary destination and make a separate export when the second destination uses a meaningfully different crop.</li><li>Keep the logo, face, and main phrase inside roughly the central 80% of the canvas. This is a design buffer, not an official platform measurement.</li><li>Use short, high-contrast text. Metadata can be truncated independently of the image, so the graphic should not require the full description to make sense.</li><li>Compress the final file without making small text or gradients visibly blocky. Confirm that the public image URL returns successfully to logged-out crawlers.</li><li>After publishing, inspect a real share. Cached previews may require the platform’s refresh/debug tool before a changed image appears.</li></ol>
+<h2>Metadata checklist</h2><pre><code>&lt;meta property="og:title" content="A specific page title"&gt;
+&lt;meta property="og:description" content="A useful summary"&gt;
+&lt;meta property="og:image" content="https://example.com/share.jpg"&gt;
+&lt;meta property="og:image:width" content="1200"&gt;
+&lt;meta property="og:image:height" content="630"&gt;
+&lt;meta name="twitter:card" content="summary_large_image"&gt;</code></pre><p>Use an absolute HTTPS image URL, provide meaningful alt text where supported, and avoid using a generic site-wide image for every article. The visible page title and share metadata should describe the same content.</p>
+<h2>Sources and scope</h2><ul><li><a href="https://www.linkedin.com/help/linkedin/answer/a566445">LinkedIn Help: custom Page post preview</a> — 1.91:1 and 1200 × 627.</li><li><a href="https://www.linkedin.com/help/linkedin/answer/a527229/share-photos-or-videos?lang=en">LinkedIn Help: share photos</a> — width, file size, and accepted ratio range.</li><li><a href="https://support.google.com/youtube/answer/72431">YouTube Help: custom thumbnails</a> — current resolution, format, and ratio guidance.</li></ul><p>This page does not claim a single pixel size is universally optimal. It records the sources reviewed on the date above and explains a resilient production process.</p>
+<h2>Related tools</h2><p class="tools"><a href="/ogp-simulator/en/">Social preview simulator</a><a href="/aspect-ratio-calc/en/">Aspect ratio calculator</a><a href="/emphasis-lines/en/">Emphasis lines generator</a></p></article></main>
+<footer class="english-site-footer">
+  <nav class="english-site-footer__links" aria-label="Site information">
+    <a href="/en/">English tools</a>
+    <a href="/en/site-information.html">Site information</a>
+    <a href="/privacy.html">Privacy (Japanese)</a>
+    <a href="/terms.html">Terms (Japanese)</a>
+    <a href="/contact.html">Contact</a>
+  </nav>
+  <p>© 2026 KatakataLab</p>
+</footer></body></html>

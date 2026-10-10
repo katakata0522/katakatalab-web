@@ -1,0 +1,674 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <base href="/emphasis-lines/">
+    <meta name="robots" content="noindex, follow">
+    <title>Free Emphasis Lines Generator for Thumbnails | KatakataLab</title>
+    <meta name="description" content="Create focus, speed, manga, and radial emphasis lines in your browser, adjust their shape and color, then export PNG or SVG assets without an account.">
+
+    <meta property="og:title" content="Free Emphasis Lines Generator for Thumbnails | KatakataLab">
+    <meta property="og:description" content="Create focus, speed, manga, and radial emphasis lines in your browser, adjust their shape and color, then export PNG or SVG assets without an account.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://katakatalab.com/emphasis-lines/en/">
+    <meta property="og:image" content="https://katakatalab.com/emphasis-lines/og-image.png">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Free Emphasis Lines Generator for Thumbnails | KatakataLab">
+    <meta name="twitter:description" content="Create focus, speed, manga, and radial emphasis lines in your browser, adjust their shape and color, then export PNG or SVG assets without an account.">
+    <meta name="twitter:image" content="https://katakatalab.com/emphasis-lines/og-image.png">
+    <link rel="canonical" href="https://katakatalab.com/emphasis-lines/en/">
+  <link rel="alternate" hreflang="ja" href="https://katakatalab.com/emphasis-lines/">
+  <link rel="alternate" hreflang="en" href="https://katakatalab.com/emphasis-lines/en/">
+  <link rel="alternate" hreflang="x-default" href="https://katakatalab.com/emphasis-lines/">
+    <link rel="icon"
+        href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💥</text></svg>">
+
+    <!-- JSON-LD 構造化データ -->
+    <script type="application/ld+json">
+  {
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "Emphasis Lines Studio",
+  "url": "https://katakatalab.com/emphasis-lines/en/",
+  "description": "Create focus, speed, manga, and radial emphasis lines in your browser, adjust their shape and color, then export PNG or SVG assets without an account.",
+  "applicationCategory": "DesignApplication",
+  "operatingSystem": "Any",
+  "inLanguage": "en",
+  "isAccessibleForFree": true,
+  "offers": {
+    "@type": "Offer",
+    "price": "0",
+    "priceCurrency": "USD"
+  },
+  "author": {
+    "@type": "Person",
+    "name": "Katakata"
+  },
+  "dateModified": "2026-07-16"
+}
+  </script>
+
+    <!-- Google Analytics (GA4) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-FYFPS7L9X9"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag() { dataLayer.push(arguments); }
+        gtag('js', new Date());
+        gtag('config', 'G-FYFPS7L9X9', { 'anonymize_ip': true });
+    </script>
+
+    <!-- PWA -->
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#2563eb">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+JP:wght@400;500;700&display=swap"
+        rel="stylesheet">
+
+    <link href="css/tailwind.built.css?v=20260613-2" rel="stylesheet">
+    <link href="css/style.css?v=20260824-responsive" rel="stylesheet">
+    <link href="css/phosphor/regular/style.css?v=2.1.1" rel="stylesheet">
+    <link href="css/phosphor/bold/style.css?v=2.1.1" rel="stylesheet">
+    <link href="css/phosphor/fill/style.css?v=2.1.1" rel="stylesheet">
+  <link rel="stylesheet" href="/international/english-shell.css?v=20260805-lab">
+    <link rel="stylesheet" href="../../tool-chrome.css?v=source">
+</head>
+
+<body class="bg-gray-900 text-gray-100 h-screen flex flex-col overflow-hidden font-body english-tool-page english-tool--emphasis-lines">
+  <nav class="english-tool-bar" aria-label="Language and English tools">
+  <a class="english-tool-bar__home" href="https://katakatalab.com/en/">🧪 English tool index</a>
+  <a href="https://katakatalab.com/emphasis-lines/" hreflang="ja" lang="ja">Japanese version</a>
+</nav>
+    <script>try{if(localStorage.getItem('theme')==='dark')document.body.classList.add('dark-mode');}catch(e){}</script>
+
+    <!-- Auto-Injected Breadcrumbs -->
+    <nav class="breadcrumbs-tool breadcrumbs-tool--trail" aria-label="Breadcrumb">
+        <a href="../" class="breadcrumbs-tool__home">🏠 Home</a>
+        <span class="breadcrumbs-tool__sep">/</span>
+        <span class="breadcrumbs-tool__current" aria-current="page">Emphasis Lines Studio</span>
+    </nav>
+
+    <!-- Auto-Injected noscript fallback -->
+    <noscript>
+        <div class="tool-noscript">
+            <p class="tool-noscript__title">⚠️ JavaScript is disabled</p>
+            <p class="tool-noscript__text">This tool needs JavaScript to calculate and preview results in your browser. Enable JavaScript and reload the page.</p>
+        </div>
+    </noscript>
+
+
+
+    <!-- Header -->
+    <header class="h-14 bg-gray-800 border-b border-gray-700 flex items-center justify-between px-4 z-10 shrink-0">
+        <div class="flex items-center gap-2">
+            <i class="ph-fill ph-pencil-slash text-blue-500 text-2xl"></i>
+            <h1 class="font-bold text-lg tracking-wide font-display">Emphasis Lines Studio<span
+                    class="text-xs font-normal text-gray-400 ml-2 hidden sm:inline">v1.0.0</span></h1>
+        </div>
+        <div class="flex items-center gap-2">
+            <button type="button" id="btnHelp" class="p-2 hover:bg-gray-700 rounded text-blue-400" title="Usage tips"
+                aria-label="Open help">
+                <i class="ph-bold ph-question text-xl"></i>
+            </button>
+            <div class="h-6 w-px bg-gray-600 mx-1"></div>
+            <button type="button" id="btnUndo"
+                class="p-2 hover:bg-gray-700 rounded text-gray-300 disabled:opacity-30 disabled:cursor-not-allowed"
+                title="Undo (Ctrl+Z)" aria-label="Undo">
+                <i class="ph ph-arrow-u-up-left text-xl"></i>
+            </button>
+            <button type="button" id="btnRedo"
+                class="p-2 hover:bg-gray-700 rounded text-gray-300 disabled:opacity-30 disabled:cursor-not-allowed"
+                title="Redo (Ctrl+Y)" aria-label="Redo">
+                <i class="ph ph-arrow-u-up-right text-xl"></i>
+            </button>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="flex-1 flex flex-col md:flex-row overflow-hidden relative">
+
+        <!-- Preview Area (Left/Top) -->
+        <div class="canvas-area flex-1 relative bg-gray-950 overflow-hidden checkered-bg flex items-center justify-center group"
+            id="canvasContainer">
+            <div id="canvasWrapper" class="relative shadow-2xl transition-transform duration-75 ease-out origin-center">
+                <canvas id="bgCanvas" class="absolute top-0 left-0 w-full h-full"></canvas>
+                <canvas id="lineCanvas" class="relative block cursor-crosshair touch-none"></canvas>
+                <!-- 中心点インジケーター -->
+                <div id="centerPoint"
+                    class="center-point-indicator absolute pointer-events-none transform -translate-x-1/2 -translate-y-1/2 hidden">
+                    <div class="w-5 h-5 border-2 border-white rounded-full bg-blue-500 bg-opacity-50 shadow-lg">
+                    </div>
+                    <span id="centerCoords"
+                        class="center-coords absolute top-6 left-1/2 -translate-x-1/2 text-[10px] font-mono bg-black bg-opacity-70 text-white px-1.5 py-0.5 rounded whitespace-nowrap">50%,
+                        50%</span>
+                </div>
+            </div>
+
+            <!-- Overlay Controls -->
+            <div
+                class="absolute bottom-4 right-4 flex flex-col gap-2 bg-gray-800 bg-opacity-90 p-2 rounded-lg shadow-lg backdrop-blur-sm z-10">
+                <button type="button" id="btnZoomIn" class="p-2 hover:bg-gray-700 rounded" aria-label="Zoom in"><i
+                        class="ph ph-plus"></i></button>
+                <span id="zoomLabel" class="text-center text-xs font-mono">100%</span>
+                <button type="button" id="btnZoomOut" class="p-2 hover:bg-gray-700 rounded" aria-label="Zoom out"><i
+                        class="ph ph-minus"></i></button>
+                <button type="button" id="btnFit" class="p-2 hover:bg-gray-700 rounded text-xs" aria-label="Fit to screen">Fit</button>
+            </div>
+
+            <!-- Loading Indicator -->
+            <div id="loadingOverlay"
+                class="absolute inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50 hidden">
+                <div class="flex flex-col items-center">
+                    <i class="ph ph-spinner animate-spin text-4xl text-blue-500 mb-2"></i>
+                    <p class="text-sm">Working…</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Controls Panel (Right/Bottom) -->
+        <div
+            class="settings-panel w-full md:w-80 bg-gray-800 border-l border-gray-700 flex flex-col h-1/2 md:h-full shrink-0 z-20 shadow-xl">
+
+            <!-- ボトムシートハンドル（モバイルのみ表示） -->
+            <div class="bottom-sheet-handle hidden" id="bottomSheetHandle"></div>
+
+            <!-- Header Bar -->
+            <div class="flex items-center justify-between px-4 py-2 border-b border-gray-700 bg-gray-700">
+                <span class="text-xs font-bold text-gray-400 uppercase tracking-widest">Settings</span>
+                <a href="/emphasis-lines/guide.html" target="_blank" rel="noopener"
+                    class="text-[10px] text-blue-400 hover:text-blue-300 transition-colors flex items-center gap-1"
+                    title="View usage guide and FAQ">
+                    <i class="ph ph-question"></i>
+                    How to use & FAQ
+                </a>
+            </div>
+
+            <!-- Scrollable Content -->
+            <div class="flex-1 overflow-y-auto p-3 sm:p-4 space-y-4 sm:space-y-6 custom-scrollbar panel-content"
+                id="panelContent">
+
+                <div id="tabEdit" class="space-y-4 sm:space-y-6">
+
+                    <!-- Image Upload -->
+                    <div>
+                        <label id="imageUploadLabel"
+                            class="upload-label block w-full border-2 border-dashed border-blue-500 hover:border-blue-400 rounded-lg p-4 text-center cursor-pointer transition-all bg-blue-900 bg-opacity-20 hover:bg-opacity-30">
+                            <i class="ph ph-image text-2xl text-blue-400 mb-1"></i>
+                            <div class="text-sm font-medium text-blue-300">Choose an image (optional)</div>
+                            <div class="text-xs text-gray-500 mt-1">JPEG or PNG — or create a line-only asset</div>
+                            <input type="file" id="fileInput" accept="image/png, image/jpeg" class="hidden">
+                        </label>
+                    </div>
+
+                    <!-- Output Mode -->
+                    <div>
+                        <label class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-2 block">Output mode</label>
+                        <div class="flex bg-gray-700 p-1 rounded-lg">
+                            <button type="button" class="mode-btn flex-1 p-2 rounded text-xs bg-blue-600 text-white shadow"
+                                data-mode="composite">Composite image</button>
+                            <button type="button" class="mode-btn flex-1 p-2 rounded text-xs hover:bg-gray-600 text-gray-300"
+                                data-mode="lines">Lines only</button>
+                        </div>
+                        <p class="text-xs text-gray-500 mt-2" id="modeDesc">Combine an image and the generated lines into one file.</p>
+                    </div>
+
+                    <!-- Canvas Size (For Lines mode) -->
+                    <div id="canvasSizeGroup" class="hidden">
+                        <label
+                            class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-2 block">Canvas size</label>
+                        <select id="canvasPreset"
+                            class="w-full bg-gray-700 border border-gray-600 rounded p-2 text-sm text-white mb-2">
+                            <option value="1080x1080">1080 x 1080 (Instagram etc.)</option>
+                            <option value="1280x720">1280 x 720 (YouTube)</option>
+                            <option value="1200x630">1200 x 630 (OGP/X)</option>
+                            <option value="1920x1080">1920 x 1080 (FHD)</option>
+                        </select>
+                    </div>
+
+                    <hr class="border-gray-700">
+
+                    <!-- Line Type Selection -->
+                    <div>
+                        <label class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-2 block">Line style</label>
+                        <div class="grid grid-cols-2 sm:grid-cols-4 gap-1 bg-gray-700 p-1 rounded-lg">
+                            <button
+                                class="type-btn p-2 rounded text-xs flex flex-col items-center gap-1 bg-blue-600 text-white shadow"
+                                data-type="basic" aria-label="Basic style">
+                                <i class="ph ph-pencil-simple text-lg"></i>
+                                <span>Basic</span>
+                            </button>
+                            <button
+                                class="type-btn p-2 rounded text-xs flex flex-col items-center gap-1 hover:bg-gray-600 text-gray-300"
+                                data-type="manga" aria-label="Hand-drawn style">
+                                <i class="ph ph-sun text-lg"></i>
+                                <span>Hand-drawn</span>
+                            </button>
+                            <button
+                                class="type-btn p-2 rounded text-xs flex flex-col items-center gap-1 hover:bg-gray-600 text-gray-300"
+                                data-type="radial" aria-label="Radial style">
+                                <i class="ph ph-aperture text-lg"></i>
+                                <span>Radial</span>
+                            </button>
+                            <button
+                                class="type-btn p-2 rounded text-xs flex flex-col items-center gap-1 hover:bg-gray-600 text-gray-300"
+                                data-type="speed" aria-label="Speed-line style">
+                                <i class="ph ph-wind text-lg"></i>
+                                <span>Speed</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Basic Sliders -->
+                    <div class="space-y-3 sm:space-y-4">
+                        <!-- Count -->
+                        <div class="control-group">
+                            <div class="flex justify-between text-xs mb-1">
+                                <span class="text-gray-300">Line count</span>
+                                <span class="text-blue-400 font-mono" id="valCount">80</span>
+                            </div>
+                            <input type="range" id="paramCount" min="5" max="150" step="1" value="80" aria-label="Line count"
+                                aria-valuemin="5" aria-valuemax="150">
+                        </div>
+
+                        <!-- Width -->
+                        <div class="control-group">
+                            <div class="flex justify-between text-xs mb-1">
+                                <span class="text-gray-300">Width</span>
+                                <span class="text-blue-400 font-mono" id="valWidth">2.0</span>
+                            </div>
+                            <input type="range" id="paramWidth" min="0.5" max="20" step="0.5" value="2.0"
+                                aria-label="Line width" aria-valuemin="0.5" aria-valuemax="20">
+                        </div>
+
+                        <!-- Length -->
+                        <div class="control-group">
+                            <div class="flex justify-between text-xs mb-1">
+                                <span class="text-gray-300">Center gap (inner / outer)</span>
+                            </div>
+                            <div class="flex gap-2 items-center">
+                                <input type="range" id="paramMinLen" min="0" max="100" value="30" class="flex-1"
+                                    aria-label="Minimum length">
+                                <input type="range" id="paramMaxLen" min="0" max="150" value="120" class="flex-1"
+                                    aria-label="Maximum length">
+                            </div>
+                            <div class="flex justify-between text-xs text-gray-500 mt-1 font-mono">
+                                <span id="valMinLen">30%</span>
+                                <span id="valMaxLen">120%</span>
+                            </div>
+                        </div>
+
+                        <!-- Color -->
+                        <div class="control-group">
+                            <div class="flex justify-between text-xs mb-1">
+                                <label for="paramColor" class="text-gray-300 cursor-pointer">Color</label>
+                                <span class="text-blue-400 font-mono" id="valColor">#000000</span>
+                            </div>
+                            <!-- Preset Colors (8Color) -->
+                            <div class="flex gap-1 mb-2 flex-wrap">
+                                <button type="button"
+                                    class="color-preset w-8 h-8 rounded border-2 border-gray-600 hover:border-white transition-colors"
+                                    data-color="#000000" style="background:#000000" title="Black"
+                                    aria-label="Color: Black"></button>
+                                <button type="button"
+                                    class="color-preset w-8 h-8 rounded border-2 border-gray-600 hover:border-white transition-colors"
+                                    data-color="#FFFFFF" style="background:#FFFFFF" title="White"
+                                    aria-label="Color: White"></button>
+                                <button type="button"
+                                    class="color-preset w-8 h-8 rounded border-2 border-gray-600 hover:border-white transition-colors"
+                                    data-color="#EF4444" style="background:#EF4444" title="Red"
+                                    aria-label="Color: Red"></button>
+                                <button type="button"
+                                    class="color-preset w-8 h-8 rounded border-2 border-gray-600 hover:border-white transition-colors"
+                                    data-color="#FACC15" style="background:#FACC15" title="Yellow"
+                                    aria-label="Color: Yellow"></button>
+                                <button type="button"
+                                    class="color-preset w-8 h-8 rounded border-2 border-gray-600 hover:border-white transition-colors"
+                                    data-color="#3B82F6" style="background:#3B82F6" title="Blue"
+                                    aria-label="Color: Blue"></button>
+                                <button type="button"
+                                    class="color-preset w-8 h-8 rounded border-2 border-gray-600 hover:border-white transition-colors"
+                                    data-color="#22C55E" style="background:#22C55E" title="Green"
+                                    aria-label="Color: Green"></button>
+                                <button type="button"
+                                    class="color-preset w-8 h-8 rounded border-2 border-gray-600 hover:border-white transition-colors"
+                                    data-color="#F97316" style="background:#F97316" title="Orange"
+                                    aria-label="Color: Orange"></button>
+                                <button type="button"
+                                    class="color-preset w-8 h-8 rounded border-2 border-gray-600 hover:border-white transition-colors"
+                                    data-color="#EC4899" style="background:#EC4899" title="Pink"
+                                    aria-label="Color: Pink"></button>
+                            </div>
+                            <div class="flex gap-2 items-center">
+                                <input type="color" id="paramColor" value="#000000"
+                                    class="h-8 w-12 bg-transparent border-0 p-0 cursor-pointer"
+                                    aria-label="Custom color picker">
+                                <input type="text" id="paramColorHex" value="#000000" maxlength="7"
+                                    class="h-8 w-20 bg-gray-700 border border-gray-600 rounded px-2 text-xs font-mono text-white uppercase"
+                                    placeholder="#000000" aria-label="Color code">
+                                <label class="flex items-center gap-2 text-xs cursor-pointer select-none">
+                                    <input type="checkbox" id="paramWhiteBorder"
+                                        class="form-checkbox bg-gray-700 border-gray-600 text-blue-500 rounded"
+                                        aria-label="Enable white outline">
+                                    White outline
+                                </label>
+                            </div>
+                            <!-- Gradient -->
+                            <div class="flex gap-2 items-center mt-2">
+                                <label class="flex items-center gap-2 text-xs cursor-pointer select-none">
+                                    <input type="checkbox" id="toggleGradient"
+                                        class="form-checkbox bg-gray-700 border-gray-600 text-purple-500 rounded"
+                                        aria-label="Enable gradient">
+                                    <span class="text-gray-300"><i class="ph ph-gradient"></i> Gradient</span>
+                                </label>
+                                <label for="paramEndColor" class="sr-only">Gradient end color</label>
+                                <input type="color" id="paramEndColor" value="#0000FF"
+                                    class="h-7 w-10 bg-transparent border-0 p-0 cursor-pointer disabled:opacity-30"
+                                    disabled aria-label="Gradient end color">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Advanced Settings (Collapsible) -->
+                    <div class="border-t border-gray-700 pt-4">
+                        <button type="button" id="toggleAdvanced" aria-expanded="false" aria-controls="groupAdvanced"
+                            class="flex items-center justify-between w-full text-xs font-bold text-gray-400 uppercase tracking-wider mb-2 hover:text-white transition-colors">
+                            <span>Advanced settings</span>
+                            <i id="iconAdvanced" class="ph-bold ph-caret-down transition-transform"></i>
+                        </button>
+
+                        <div id="groupAdvanced" class="space-y-3 sm:space-y-4 hidden pt-2">
+                            <!-- Regenerate Button -->
+                            <div>
+                                <button type="button" id="btnRegenerate"
+                                    class="w-full bg-gray-600 hover:bg-gray-500 text-white py-2 rounded text-xs flex items-center justify-center gap-2 transition-colors">
+                                    <i class="ph-bold ph-arrows-clockwise"></i>
+                                    Regenerate random pattern
+                                </button>
+                                <p class="text-[10px] text-gray-500 mt-1 text-center">
+                                    The pattern remains stable while you adjust color or width.
+                                </p>
+                            </div>
+
+                            <!-- Taper -->
+                            <div class="control-group">
+                                <div class="flex justify-between text-xs mb-1">
+                                    <span class="text-gray-300 flex items-center gap-1">
+                                        <i class="ph-fill ph-pen-nib"></i> Taper
+                                        <span class="text-gray-500 text-[10px]" title="Sharpen the line tips">(?)</span>
+                                    </span>
+                                    <span class="text-blue-400 font-mono" id="valTaper">0%</span>
+                                </div>
+                                <input type="range" id="paramTaper" min="0" max="100" step="1" value="0"
+                                    aria-label="Taper">
+                                <p class="text-[10px] text-gray-500 mt-1">Higher values create sharper tips.</p>
+                            </div>
+
+                            <!-- Aperture -->
+                            <div class="control-group" id="groupAperture">
+                                <div class="flex justify-between text-xs mb-1">
+                                    <span class="text-gray-300 flex items-center gap-1">
+                                        <i class="ph-fill ph-fan"></i> Aperture
+                                        <span class="text-gray-500 text-[10px]" title="Limit lines to part of the circle">(?)</span>
+                                    </span>
+                                    <span class="text-blue-400 font-mono" id="valAperture">360°</span>
+                                </div>
+                                <input type="range" id="paramAperture" min="10" max="360" step="5" value="360"
+                                    aria-label="Aperture in degrees">
+                            </div>
+
+                            <!-- Direction -->
+                            <div class="control-group">
+                                <div class="flex justify-between text-xs mb-1">
+                                    <span class="text-gray-300 flex items-center gap-1">
+                                        <i class="ph-fill ph-compass"></i> Direction
+                                        <span class="text-gray-500 text-[10px]" title="Rotate line direction">(?)</span>
+                                    </span>
+                                    <span class="text-blue-400 font-mono" id="valDirection">0°</span>
+                                </div>
+                                <input type="range" id="paramDirection" min="-180" max="180" step="5" value="0"
+                                    aria-label="Line direction in degrees">
+                            </div>
+
+                            <!-- Randomness -->
+                            <div class="control-group">
+                                <div class="flex justify-between text-xs mb-1">
+                                    <span class="text-gray-300 flex items-center gap-1">
+                                        Randomness
+                                        <span class="text-gray-500 text-[10px]" title="Vary line position and width">(?)</span>
+                                    </span>
+                                    <span class="text-blue-400 font-mono" id="valRandom">20%</span>
+                                </div>
+                                <input type="range" id="paramRandom" min="0" max="100" step="1" value="20"
+                                    aria-label="Randomness">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Footer Actions -->
+            <div class="p-4 border-t border-gray-700 bg-gray-800 shrink-0">
+                <div class="flex gap-2">
+                    <button type="button" id="btnExport"
+                        class="flex-1 bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-500 hover:to-blue-400 text-white font-bold py-3 px-4 rounded-lg shadow-lg transform active:scale-95 transition-all flex items-center justify-center gap-2">
+                        <i class="ph-bold ph-download-simple"></i>
+                        <span>Save PNG</span>
+                    </button>
+                    <button type="button" id="btnExportSVG"
+                        class="bg-gray-700 hover:bg-gray-600 text-white font-bold py-3 px-3 rounded-lg shadow transform active:scale-95 transition-all flex items-center justify-center gap-1 text-sm"
+                        title="Save as SVG">
+                        <i class="ph-bold ph-file-svg"></i>
+                        <span>SVG</span>
+                    </button>
+                </div>
+                <div class="text-[10px] text-center text-gray-500 mt-2">
+                    Images are processed locally in your browser and are not uploaded.
+                </div>
+
+
+
+            </div>
+        </div>
+
+        <!-- Help Modal -->
+        <div id="helpModal"
+            class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-70 hidden opacity-0 transition-opacity duration-200"
+            role="dialog" aria-modal="true" aria-labelledby="helpTitle">
+            <div class="bg-gray-800 w-11/12 max-w-md rounded-lg shadow-2xl flex flex-col max-h-[90vh] transform transition-transform duration-200 scale-95"
+                id="helpModalContent">
+                <div class="flex items-center justify-between p-4 border-b border-gray-700">
+                    <h2 id="helpTitle" class="text-lg font-bold text-blue-400 flex items-center gap-2">
+                        <i class="ph-fill ph-lightbulb"></i> Tips & usage guide
+                    </h2>
+                    <button type="button" id="btnCloseHelp" class="text-gray-400 hover:text-white p-1 rounded" aria-label="Close help">
+                        <i class="ph ph-x text-xl"></i>
+                    </button>
+                </div>
+                <div class="overflow-y-auto p-4 space-y-6 text-sm text-gray-300 custom-scrollbar">
+
+                    <!-- Beginner Guide -->
+                    <section>
+                        <h3 class="text-white font-bold mb-2 border-l-4 border-green-500 pl-2">📖 Quick guide</h3>
+                        <div class="space-y-3 bg-gray-700 bg-opacity-50 rounded-lg p-3">
+                            <div class="flex items-start gap-3">
+                                <span
+                                    class="bg-blue-600 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs font-bold shrink-0">1</span>
+                                <div>
+                                    <strong class="text-white">Choose a line style</strong>
+                                    <p class="text-xs text-gray-400">Pick Basic, Hand-drawn, Radial, or Speed.</p>
+                                </div>
+                            </div>
+                            <div class="flex items-start gap-3">
+                                <span
+                                    class="bg-blue-600 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs font-bold shrink-0">2</span>
+                                <div>
+                                    <strong class="text-white">Adjust color and width</strong>
+                                    <p class="text-xs text-gray-400">Use a preset or choose a custom color.</p>
+                                </div>
+                            </div>
+                            <div class="flex items-start gap-3">
+                                <span
+                                    class="bg-blue-600 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs font-bold shrink-0">3</span>
+                                <div>
+                                    <strong class="text-white">Click to move the center</strong>
+                                    <p class="text-xs text-gray-400">Click the canvas to move the focus point.</p>
+                                </div>
+                            </div>
+                            <div class="flex items-start gap-3">
+                                <span
+                                    class="bg-blue-600 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs font-bold shrink-0">4</span>
+                                <div>
+                                    <strong class="text-white">Export the result</strong>
+                                    <p class="text-xs text-gray-400">Use the blue button to download a PNG.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <section>
+                        <h3 class="text-white font-bold mb-2 border-l-4 border-blue-500 pl-2">💡 Advanced controls</h3>
+                        <div class="space-y-3">
+                            <div>
+                                <strong class="text-white block mb-1">Taper</strong>
+                                <p class="text-xs leading-relaxed text-gray-400">
+                                    Taper changes lines from rectangular at 0% to pointed at 100%.
+                                </p>
+                            </div>
+                            <div>
+                                <strong class="text-white block mb-1">Aperture</strong>
+                                <p class="text-xs leading-relaxed text-gray-400">
+                                    Aperture limits the lines to part of the full 360-degree circle.
+                                </p>
+                            </div>
+                            <div>
+                                <strong class="text-white block mb-1">Randomness</strong>
+                                <p class="text-xs leading-relaxed text-gray-400">
+                                    Randomness varies placement and width for a more organic result.
+                                </p>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- ライセンス表示 -->
+                        <section>
+                            <h3 class="text-white font-bold mb-2 border-l-4 border-yellow-500 pl-2">📜 License & terms</h3>
+                            <div class="bg-gray-700 bg-opacity-50 rounded-lg p-3 space-y-2">
+                            <p class="text-xs leading-relaxed text-gray-400">
+                                <strong class="text-green-400">✅ Commercial use allowed</strong><br>
+                                You may use generated images for commercial and non-commercial work.
+                            </p>
+                            <p class="text-xs leading-relaxed text-gray-400">
+                                <strong class="text-green-400">✅ Attribution not required</strong><br>
+                                You may use the result without credit, although a link is always appreciated.
+                            </p>
+                            <p class="text-xs leading-relaxed text-gray-400">
+                                <strong class="text-yellow-400">⚠️ Restrictions</strong><br>
+                                Do not redistribute the tool or resell a substantially unchanged collection of generated assets.
+                            </p>
+                            </div>
+                        </section>
+
+                        <section>
+                            <h3 class="text-white font-bold mb-2 border-l-4 border-cyan-500 pl-2">🧭 Choosing a style by use case</h3>
+                            <div class="space-y-3 bg-gray-700 bg-opacity-50 rounded-lg p-3">
+                                <p class="text-xs leading-relaxed text-gray-400"><strong class="text-white">Thumbnails and headings:</strong> Align the Basic style with the subject to create a background that guides attention.</p>
+                                <p class="text-xs leading-relaxed text-gray-400"><strong class="text-white">Manga and hand-drawn effects:</strong> Combine Hand-drawn style with Randomness for energy that does not feel overly uniform.</p>
+                                <p class="text-xs leading-relaxed text-gray-400"><strong class="text-white">When direction matters:</strong> Use Aperture and Direction with Radial or Speed-line style to keep lines away from a product or person.</p>
+                            </div>
+                        </section>
+
+                        <section>
+                            <h3 class="text-white font-bold mb-2 border-l-4 border-red-500 pl-2">🔍 Before you use it</h3>
+                            <div class="space-y-2">
+                                <p class="text-xs leading-relaxed text-gray-400">Images are loaded, lines are generated, and PNG/SVG files are saved in your browser. This tool does not send or store images or settings on its server.</p>
+                                <p class="text-xs leading-relaxed text-gray-400">The page may still contact advertising, analytics, and font services. When editing sensitive images, also consider the device and browser extensions you are using.</p>
+                                <p class="text-xs leading-relaxed text-gray-400">Created by Katakata · Updated: July 22, 2026</p>
+                            </div>
+                        </section>
+
+                        <!-- キーボードショートカット -->
+                        <section>
+                        <h3 class="text-white font-bold mb-2 border-l-4 border-purple-500 pl-2">⌨️ Shortcuts</h3>
+                        <div class="grid grid-cols-2 gap-2 text-xs">
+                            <div class="bg-gray-700 bg-opacity-50 rounded p-2">
+                                <kbd class="bg-gray-600 px-1.5 py-0.5 rounded text-[10px]">Ctrl+Z</kbd>
+                                <span class="text-gray-400 ml-1">Undo</span>
+                            </div>
+                            <div class="bg-gray-700 bg-opacity-50 rounded p-2">
+                                <kbd class="bg-gray-600 px-1.5 py-0.5 rounded text-[10px]">Ctrl+Y</kbd>
+                                <span class="text-gray-400 ml-1">Redo</span>
+                            </div>
+                            <div class="bg-gray-700 bg-opacity-50 rounded p-2">
+                                <kbd class="bg-gray-600 px-1.5 py-0.5 rounded text-[10px]">Ctrl+S</kbd>
+                                <span class="text-gray-400 ml-1">Export the result</span>
+                            </div>
+                            <div class="bg-gray-700 bg-opacity-50 rounded p-2">
+                                <kbd class="bg-gray-600 px-1.5 py-0.5 rounded text-[10px]">Esc</kbd>
+                                <span class="text-gray-400 ml-1">Close help</span>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+                <div class="p-4 border-t border-gray-700 bg-gray-800 rounded-b-lg">
+                    <button type="button"
+                        class="w-full bg-gray-700 hover:bg-gray-600 text-white py-2 rounded transition-colors text-sm"
+                        id="btnHelpDone">
+                        Close
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Toast Notification Container -->
+        <div id="toastContainer" class="fixed bottom-24 left-1/2 transform -translate-x-1/2 z-50 pointer-events-none">
+        </div>
+
+</main>
+<section class="article-content english-content" aria-labelledby="english-guide-title">
+    <header>
+      <p><strong>Created by Katakata</strong> · Last reviewed <time datetime="2026-07-16">July 16, 2026</time></p>
+      <h2 id="english-guide-title">How to use Emphasis Lines Studio</h2>
+      <p>Create reusable focus-line assets for thumbnails, comics, slides, and social posts without uploading your source image. The editor supports four line styles, transparent line-only output, positioning, color, taper, density, and repeatable random patterns.</p>
+    </header>
+    <section>
+      <h3>Practical workflow</h3>
+      <ol><li>Choose Composite image to place lines over a JPEG or PNG, or Lines only to create a transparent asset.</li>
+<li>Select Basic, Hand-drawn, Radial, or Speed, then adjust line count, width, center, aperture, and randomness.</li>
+<li>Inspect the result at the intended crop and export PNG or SVG. Keep important faces and text clear of dense lines.</li></ol>
+    </section>
+    <section>
+      <h3>Accuracy and limitations</h3>
+      <p>The result is generated with HTML Canvas, so very large exports depend on available device memory. Browser previews may look slightly different after another editor resizes or compresses the image. Generated assets may be used commercially without attribution, but the tool itself and unmodified asset packs may not be redistributed.</p>
+    </section>
+    <section>
+      <h3>Privacy and data handling</h3>
+      <p>Uploaded images and line settings are processed locally in the browser. They are not sent to KatakataLab. Analytics can record ordinary page-view information, but not the image content you edit.</p>
+    </section>
+    <section>
+      <h3>Why this page exists</h3>
+      <p>KatakataLab publishes small browser tools built from recurring design and development tasks. This English page is maintained as a complete entry point, not as an automatic translation or a doorway page. If a control, explanation, or result is unclear, use the <a href="https://katakatalab.com/contact.html">contact page</a> and include the tool name, browser, and expected result without sending confidential input.</p>
+      <p>For another workflow, browse the <a href="https://katakatalab.com/en/">English tool index</a> or switch to the <a href="https://katakatalab.com/emphasis-lines/" hreflang="ja" lang="ja">Japanese version</a>.</p>
+    </section>
+  </section>
+<!-- Auto-Injected Unified Footer -->
+<footer class="tool-footer" aria-label="Site information">
+  <a href="https://katakatalab.com/en/">🧪 KatakataLab English</a><span class="tool-footer__separator" aria-hidden="true">|</span>
+  <a href="https://katakatalab.com/en/site-information.html">Site information</a><span class="tool-footer__separator" aria-hidden="true">|</span>
+  <a href="https://katakatalab.com/contact.html">Contact</a><span class="tool-footer__separator" aria-hidden="true">|</span>
+  <a href="https://katakatalab.com/privacy.html">Privacy (Japanese)</a><span class="tool-footer__separator" aria-hidden="true">|</span>
+  <a href="https://katakatalab.com/terms.html">Terms (Japanese)</a>
+</footer>
+
+    <script type="module" src="js/app.js?v=20260613-2"></script>
+  <script src="/international/english-runtime.js" defer></script>
+</body>
+
+</html>

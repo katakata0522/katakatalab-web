@@ -1,0 +1,1119 @@
+<!-- index.html -->
+<!-- SITE_FACE: tool-first。実用ツールを主役にし、ガイド・学習・読みものを補助導線として分離する。 -->
+<!DOCTYPE html>
+<html lang="ja">
+
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KatakataLab | 登録不要のブラウザ実用ツールとIT入門ガイド</title>
+    <meta name="description" content="登録不要で使える実用Webツール集（QRコード作成、アスペクト比計算、パスワード生成、西暦早見表など）。主要ツールはブラウザ内処理を中心に設計し、日常や制作で困ったことをすぐ試せる形にまとめています。">
+    <meta name="author" content="かたかた">
+    <link rel="canonical" href="https://katakatalab.com/">
+    <link rel="alternate" hreflang="ja" href="https://katakatalab.com/">
+    <link rel="alternate" hreflang="en" href="https://katakatalab.com/en/">
+    <link rel="alternate" hreflang="x-default" href="https://katakatalab.com/">
+
+    <meta property="og:title" content="KatakataLab | 登録不要のブラウザ実用ツールとIT入門ガイド">
+    <meta property="og:description" content="日常に役立つブラウザツール、初心者向けITガイド、学べるアプリを育てている個人開発ラボです。主要ツールの基本機能は登録不要ですぐ試せます。">
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="KatakataLab">
+    <meta property="og:url" content="https://katakatalab.com/">
+    <meta property="og:image" content="https://katakatalab.com/ogp.png">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:site" content="@Katakata_toybox">
+    <meta name="twitter:title" content="KatakataLab | 登録不要のブラウザ実用ツールとIT入門ガイド">
+    <meta name="twitter:description" content="日常に役立つブラウザツール、初心者向けITガイド、学べるアプリを育てている個人開発ラボです。主要ツールの基本機能は登録不要ですぐ試せます。">
+    <meta name="twitter:image" content="https://katakatalab.com/ogp.png">
+
+    <!-- JSON-LD 構造化データ (WebSite, Organization, ItemList) -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@graph": [
+        {
+          "@type": "WebSite",
+          "@id": "https://katakatalab.com/#website",
+          "name": "KatakataLab",
+          "alternateName": "かたかたラボ",
+          "url": "https://katakatalab.com/",
+          "description": "登録不要で使えるブラウザ実用ツールと、使い方・判断基準を補うIT入門ガイドのサイト。",
+          "inLanguage": "ja",
+          "publisher": {
+            "@id": "https://katakatalab.com/#organization"
+          }
+        },
+        {
+          "@type": "Organization",
+          "@id": "https://katakatalab.com/#organization",
+          "name": "KatakataLab",
+          "url": "https://katakatalab.com/",
+          "logo": {
+            "@type": "ImageObject",
+            "url": "https://katakatalab.com/icon.svg"
+          },
+          "sameAs": [
+            "https://x.com/Katakata_toybox",
+            "https://note.com/cozy_snipe6552"
+          ],
+          "alternateName": "かたかたラボ",
+          "contactPoint": [
+            {
+              "@type": "ContactPoint",
+              "contactType": "customer support",
+              "url": "https://katakatalab.com/contact.html",
+              "availableLanguage": [
+                "ja"
+              ]
+            }
+          ]
+        },
+        {
+          "@type": "Person",
+          "@id": "https://katakatalab.com/#person",
+          "name": "かたかた",
+          "url": "https://katakatalab.com/who-is-katakata.html",
+          "worksFor": {
+            "@id": "https://katakatalab.com/#organization"
+          },
+          "sameAs": [
+            "https://x.com/Katakata_toybox",
+            "https://note.com/cozy_snipe6552"
+          ]
+        },
+        {
+          "@type": "ItemList",
+          "@id": "https://katakatalab.com/#tool-list",
+          "name": "KatakataLab 実用Webツール一覧",
+          "itemListElement": [
+            {
+              "@type": "ListItem",
+              "position": 1,
+              "name": "QRコードを作る",
+              "url": "https://katakatalab.com/qrcode/"
+            },
+            {
+              "@type": "ListItem",
+              "position": 2,
+              "name": "縦横比を計算する",
+              "url": "https://katakatalab.com/aspect-ratio-calc/"
+            },
+            {
+              "@type": "ListItem",
+              "position": 3,
+              "name": "安全なパスワードを作る",
+              "url": "https://katakatalab.com/password-generator/"
+            },
+            {
+              "@type": "ListItem",
+              "position": 4,
+              "name": "西暦和暦早見表",
+              "url": "https://katakatalab.com/seireki/"
+            },
+            {
+              "@type": "ListItem",
+              "position": 5,
+              "name": "px / rem 変換",
+              "url": "https://katakatalab.com/px-rem-converter/"
+            },
+            {
+              "@type": "ListItem",
+              "position": 6,
+              "name": "割引計算ツール",
+              "url": "https://katakatalab.com/discount-calc/"
+            },
+            {
+              "@type": "ListItem",
+              "position": 7,
+              "name": "文章の差分を見る",
+              "url": "https://katakatalab.com/text-diff/"
+            },
+            {
+              "@type": "ListItem",
+              "position": 8,
+              "name": "OGPシミュレーター",
+              "url": "https://katakatalab.com/ogp-simulator/"
+            },
+            {
+              "@type": "ListItem",
+              "position": 9,
+              "name": "スクショ端カット",
+              "url": "https://katakatalab.com/screenshot-crop/"
+            }
+          ]
+        }
+      ]
+    }
+    </script>
+
+    <!-- preconnect and dns-prefetch to minimize DNS overhead -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="dns-prefetch" href="https://fonts.googleapis.com">
+    <link rel="dns-prefetch" href="https://fonts.gstatic.com">
+
+    <!-- 本文は端末フォント、見出しと英字ロゴだけ既存フォントを使う -->
+    <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@700&family=Outfit:wght@400;700&display=swap">
+    <link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@700&family=Outfit:wght@400;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+    <noscript>
+        <link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@700&family=Outfit:wght@400;700&display=swap" rel="stylesheet">
+    </noscript>
+
+    <link rel="icon" href="icon.svg" type="image/svg+xml">
+    <link rel="stylesheet" href="style.css?v=20260824-responsive">
+
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#FF7675">
+
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag() { dataLayer.push(arguments); }
+        gtag('js', new Date());
+        gtag('config', 'G-FYFPS7L9X9', { 'anonymize_ip': true });
+        (function () {
+            let loaded = false;
+            const loadAnalytics = function () {
+                if (loaded) return;
+                loaded = true;
+                const script = document.createElement('script');
+                script.async = true;
+                script.src = 'https://www.googletagmanager.com/gtag/js?id=G-FYFPS7L9X9';
+                document.head.appendChild(script);
+            };
+            ['pointerdown', 'keydown', 'scroll'].forEach(function (eventName) {
+                window.addEventListener(eventName, loadAnalytics, { once: true, passive: true });
+            });
+            window.addEventListener('load', function () {
+                window.setTimeout(loadAnalytics, 2500);
+            }, { once: true });
+        }());
+    </script>
+    <!-- Google Search Console -->
+    <meta name="google-site-verification" content="DST75bkpvPm0TzZR7ms_3KgaAm3i37zZQVWUAkPdbIg" />
+
+
+</head>
+
+<body>
+    <script>try{if(localStorage.getItem('theme')==='dark')document.body.classList.add('dark-mode');}catch(e){}</script>
+
+    <!-- ✅ JS無効/失敗時用の警告バナーとネイティブ折りたたみリンク集 -->
+    <noscript>
+        <div class="noscript-banner">
+            <div class="noscript-banner-header">
+                <span class="noscript-banner-icon">⚠️</span>
+                <div>
+                    <p class="noscript-banner-title">JavaScriptが無効になっています</p>
+                    <p class="noscript-banner-desc">KatakataLabを快適にご利用いただくために、JavaScriptの有効化をおすすめします。</p>
+                </div>
+            </div>
+            <details class="noscript-details">
+                <summary class="noscript-summary">📂 代替ナビゲーション（各コンテンツへのリンク）を表示する</summary>
+                <ul class="noscript-links">
+                    <li><a href="#home">ホーム</a></li>
+                    <li><a href="#projects">作ったもの</a></li>
+                    <li><a href="#about">ラボについて</a></li>
+                    <li><a href="#contact">リンク</a></li>
+                    <li><a href="pikalab/" target="_blank" rel="noopener noreferrer">PikaLab (子ども向け学習ゲーム集)</a></li>
+                    <li><a href="https://www.playpoint-sim.com/">Playポイント計算機</a></li>
+                    <li><a href="lab-tools/gravity-todo/">Gravity TODO</a></li>
+                    <li><a href="lab-tools/kids-smile-land/">キッズ・スマイル・ランド</a></li>
+                    <li><a href="https://katakatalab.com/qrcode/">QR Maker Lab</a></li>
+                    <li><a href="aspect-ratio-calc/">アスペクト比計算機</a></li>
+                    <li><a href="screenshot-crop/">スクショ端カット</a></li>
+                    <li><a href="password-generator/">強力パスワード生成</a></li>
+                    <li><a href="px-rem-converter/">px / rem 変換</a></li>
+                    <li><a href="font-lab/">🎨 Katakata Font-Lab (フォント研究室)</a></li>
+                    <li><a href="pikalab/code-studio/">KatakataLab CodeStudio (Webプレイグラウンド)</a></li>
+                    <li><a href="emphasis-lines/">強調線メーカー</a></li>
+                    <li><a href="text-diff/">テキスト差分チェック</a></li>
+                    <li><a href="ogp-simulator/">OGPシミュレーター</a></li>
+                    <li><a href="discount-calc/">割引計算ツール</a></li>
+                    <li><a href="seireki/">年齢・和暦・西暦早見表</a></li>
+                    <li><a href="gear.html">My Desk &amp; Gear (ガジェット紹介)</a></li>
+                    <li><a href="note-selection.html">かたかたのnote</a></li>
+                    <li><a href="guides/aspect-ratio-guide.html">アスペクト比の使い方ガイド</a></li>
+                    <li><a href="guides/px-rem-guide.html">px / remの使い方ガイド</a></li>
+                    <li><a href="guides/password-guide.html">パスワード作成の考え方ガイド</a></li>
+                    <li><a href="updates.html">アップデート情報</a></li>
+                    <li><a href="who-is-katakata.html">かたかたって誰？</a></li>
+                    <li><a href="about-katakatalab.html">KatakataLabについて</a></li>
+                    <li><a href="contact.html">お問い合わせ</a></li>
+                    <li><a href="terms.html">利用規約</a></li>
+                    <li><a href="privacy.html">プライバシーポリシー</a></li>
+                </ul>
+            </details>
+        </div>
+    </noscript>
+
+    <header class="header">
+        <div class="container header-container">
+            <a href="#home" class="logo">
+                <span class="logo-icon">🧪</span>
+                <span class="logo-text">KatakataLab</span>
+            </a>
+
+            <nav class="nav" aria-label="主要ナビ">
+                <ul class="nav-list">
+                    <li><a href="#projects" class="nav-link">ツール</a></li>
+                    <li><a href="#recommended-guides" class="nav-link">ガイド</a></li>
+                    <li><a href="#about" class="nav-link">かたかた</a></li>
+                    <li><a href="#updates" class="nav-link">更新</a></li>
+                </ul>
+            </nav>
+
+            <div class="header-actions">
+                <a href="en/" class="language-link" hreflang="en" lang="en">English tools</a>
+                <button type="button" id="pwa-install-btn" class="pwa-btn" aria-label="アプリとしてインストール" hidden>🧪 アプリ化</button>
+                <button type="button" id="theme-toggle" class="theme-btn" aria-label="テーマ切り替え">
+    <svg viewBox="0 0 24 24" class="svg-icon svg-moon" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/>
+    </svg>
+    <svg viewBox="0 0 24 24" class="svg-icon svg-sun" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="display: none;">
+        <circle cx="12" cy="12" r="4"/>
+        <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/>
+    </svg>
+</button>
+                <button type="button" class="menu-toggle" aria-label="メニューを開く" aria-expanded="false" aria-controls="mobile-menu">
+                    <span class="bar"></span><span class="bar"></span><span class="bar"></span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <div class="menu-overlay" id="menu-overlay" aria-hidden="true"></div>
+    <div class="mobile-menu drawer-menu" id="mobile-menu" aria-hidden="true">
+        <button type="button" class="menu-close-btn" aria-label="メニューを閉じる">✕</button>
+        <div class="mobile-menu-inner">
+            <nav class="mobile-nav" aria-label="メニュー">
+                <ul class="mobile-nav-list">
+                    <li class="mobile-nav-group-label">すぐ使う</li>
+                    <li><a href="#projects" class="mobile-nav-link">🧰 ツールを探す</a></li>
+                    <li><a href="#recommended-guides" class="mobile-nav-link">📖 迷ったらガイド</a></li>
+                    <li><a href="note-selection.html" class="mobile-nav-link">📝 かたかたのnote</a></li>
+                    <li class="mobile-nav-sep"></li>
+                    <li class="mobile-nav-group-label">ラボについて</li>
+                    <li><a href="who-is-katakata.html" class="mobile-nav-link">🧑‍💻 かたかたって誰？</a></li>
+                    <li><a href="about-katakatalab.html" class="mobile-nav-link">🧪 KatakataLabについて</a></li>
+                    <li><a href="contact.html" class="mobile-nav-link">✉️ お問い合わせ</a></li>
+                    <li><a href="updates.html" class="mobile-nav-link">📢 更新履歴</a></li>
+                    <li><a href="en/" class="mobile-nav-link" hreflang="en" lang="en">🌐 English tools</a></li>
+                    <li class="mobile-nav-sep"></li>
+                    <li id="pwa-install-li-mobile" hidden>
+                        <button type="button" id="pwa-install-btn-mobile" class="mobile-nav-link" style="background: none; border: none; width: 100%; text-align: left; font: inherit; color: var(--c-primary); cursor: pointer; padding: 8px 0; min-height: 44px;">🧪 アプリとしてインストール</button>
+                    </li>
+                    <li id="pwa-install-sep-mobile" class="mobile-nav-sep" hidden></li>
+                    <li><a href="terms.html" class="mobile-nav-link" target="_blank" rel="noopener noreferrer">📄 利用規約</a></li>
+                    <li><a href="privacy.html" class="mobile-nav-link" target="_blank" rel="noopener noreferrer">🔒 プライバシーポリシー</a></li>
+                </ul>
+            </nav>
+        </div>
+    </div>
+
+    <main>
+        <!-- SITE_FACE:hero 定番H1＋実験場コピー -->
+        <section id="home" class="hero">
+            <div class="container hero-container">
+                <div class="hero-content">
+                    <h1 class="hero-title">
+                        あなたのための<br>
+                        小さな研究室<br>
+                        <span class="highlight">KatakataLab.</span>
+                    </h1>
+                    <p class="hero-subtitle" id="hero-subtitle">
+                        個人クリエイター「かたかた」の実験場。日常に役立つツールも、学べるアプリも、あなたの人生を豊かにする読みものも。思いついた好奇心から少しずつ育てています。主要ツールの基本機能は登録不要で、ブラウザからすぐ使えます。
+                    </p>
+                    <div class="hero-actions">
+                        <a href="#projects" class="btn btn-primary">🧰 ツールを探す</a>
+                    </div>
+                </div>
+                <div class="hero-visual">
+                    <div class="hero-orb hero-orb--1" aria-hidden="true"></div>
+                    <div class="hero-orb hero-orb--2" aria-hidden="true"></div>
+                    <div class="lab-scene" id="interactive-flask">
+                        <button type="button" class="cozy-lab-art" aria-label="フラスコを振ってラボのアクセント色を変更する">
+                            <div class="art-flask" aria-hidden="true">
+                                <div class="art-flask-liquid"></div>
+                            </div>
+                            <div class="art-bubble b1" aria-hidden="true"></div>
+                            <div class="art-bubble b2" aria-hidden="true"></div>
+                            <div class="art-bubble b3" aria-hidden="true"></div>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ツール一覧（ヒーロー直下） -->
+        <section id="projects" class="section projects-section section-band-tools" aria-labelledby="projects-title">
+            <div class="container">
+                <h2 id="projects-title" class="section-title">すぐ使えるツール</h2>
+                <p class="section-desc">ブラウザ内で完結。絞り込みや検索ですぐ見つかります。</p>
+
+                <div class="projects-controls" id="projects-controls">
+                <div class="shelf-nav-wrapper">
+                    <nav class="shelf-nav" aria-label="ツールの種類で絞り込む">
+                        <button type="button" class="shelf-nav-btn active" data-filter="all" aria-pressed="true">🌐 すべて</button>
+                        <button type="button" class="shelf-nav-btn" data-filter="tool" aria-pressed="false">💼 実用ツール</button>
+                        <button type="button" class="shelf-nav-btn" data-filter="learning" aria-pressed="false">🎓 学習ラボ</button>
+                        <button type="button" class="shelf-nav-btn" data-filter="story" aria-pressed="false">📖 読みもの</button>
+                    </nav>
+                </div>
+
+                <div class="search-box-container">
+                    <span class="search-icon" aria-hidden="true">🔍</span>
+                    <input type="search" id="project-search" class="search-input" placeholder="QR / パスワード / 比率" aria-label="ツールを検索" aria-describedby="project-filter-status" aria-keyshortcuts="/" title="スラッシュ(/)キーでも検索欄に移動できます" maxlength="80" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+                    <kbd class="search-kbd" title="キーボードの / キー">/</kbd>
+                    <button type="button" id="search-clear" class="search-clear-btn" aria-label="検索をクリア" hidden>×</button>
+                </div>
+                </div>
+
+                <div id="project-share-row" class="search-share-row" hidden>
+                    <button type="button" id="project-share" class="search-share-btn" aria-label="現在の絞り込み結果を共有">🔗 絞り込みを共有</button>
+                    <span id="project-share-status" class="visually-hidden" role="status" aria-live="polite"></span>
+                </div>
+
+                <!-- D11: 最近使ったものを一覧の手前に -->
+                <section id="recent-projects" class="recent-projects recent-projects--promoted" hidden aria-labelledby="recent-projects-title">
+                    <div class="recent-projects-header">
+                        <h3 id="recent-projects-title">最近使ったもの</h3>
+                        <button type="button" id="recent-projects-clear" class="recent-clear-btn">履歴を消去</button>
+                    </div>
+                    <div id="recent-projects-list" class="recent-projects-list"></div>
+                </section>
+
+                <h3 class="projects-subhead projects-subhead--tool" id="primary-projects-title">実用ツール</h3>
+                <div class="projects-grid" id="projects-grid">
+                    <!-- PROJECT_CARDS_PRIMARY_START -->
+                    <article class="card"
+             data-project-card="static"
+             data-id="qrcode"
+             data-group="primary"
+             data-category="tool"
+             data-shelf="tool"
+             data-url="https://katakatalab.com/qrcode/" data-guide="qrcode/guides.html" data-aliases="[&quot;QR&quot;,&quot;QR code&quot;,&quot;QRコード&quot;,&quot;二次元コード&quot;,&quot;QR作成&quot;,&quot;QR Maker Lab&quot;]"
+             data-detail="自宅のWi-Fi接続用QRや、お店のSNSリンクをその場で作成できるツール。用途別ガイドで、作成後の設定や確認ポイントまでたどれます。">
+
+        <div class="card-body">
+          <div class="card-header">
+            <div class="card-tag tag-tool">ツール</div>
+            <span class="badge-target font-badge">💼 実用向け</span>
+            <span class="badge-new">PICK</span>
+          </div>
+          <h3 class="card-title"><span class="card-title-icon" aria-hidden="true">📱</span> QRコードを作る</h3>
+          <p class="card-text">ブラウザ完結でQRコードを作成。用途別の解説ページも用意しています。</p>
+
+          <div class="card-actions">
+            <a href="https://katakatalab.com/qrcode/" class="card-link">使う →</a>
+            <button type="button" class="card-detail-btn">詳しく見る</button>
+          </div>
+        </div>
+      </article>
+                    <article class="card"
+             data-project-card="static"
+             data-id="aspect-ratio"
+             data-group="primary"
+             data-category="tool"
+             data-shelf="tool"
+             data-url="aspect-ratio-calc/" data-guide="guides/aspect-ratio-guide.html" data-aliases="[&quot;アスペクト比&quot;,&quot;縦横比&quot;,&quot;aspect ratio&quot;,&quot;aspect-ratio&quot;]"
+             data-detail="動画編集やWebデザインで、公開先に合う縦横比と画像サイズを確認するツール。比率と片方の長さから、もう片方を自動計算します。">
+
+        <div class="card-body">
+          <div class="card-header">
+            <div class="card-tag tag-tool">ツール</div>
+            <span class="badge-target font-badge">💼 実用向け</span>
+
+          </div>
+          <h3 class="card-title"><span class="card-title-icon" aria-hidden="true">📐</span> 縦横比を計算する</h3>
+          <p class="card-text">16:9などの比率と画像サイズをすぐ計算。画像リサイズや動画編集に役立ちます。</p>
+
+          <div class="card-actions">
+            <a href="aspect-ratio-calc/" class="card-link">使う →</a>
+            <button type="button" class="card-detail-btn">詳しく見る</button>
+          </div>
+        </div>
+      </article>
+                    <article class="card"
+             data-project-card="static"
+             data-id="password-generator"
+             data-group="primary"
+             data-category="tool"
+             data-shelf="tool"
+             data-url="password-generator/" data-guide="guides/password-guide.html" data-aliases="[&quot;パスワード&quot;,&quot;password&quot;,&quot;password generator&quot;,&quot;パスワードジェネレーター&quot;,&quot;暗号化保管&quot;]"
+             data-detail="推測されにくいランダムなパスワードをブラウザ内で作るツール。作ったパスワードの管理方法やセキュリティの基本も解説します。">
+
+        <div class="card-body">
+          <div class="card-header">
+            <div class="card-tag tag-tool">ツール</div>
+            <span class="badge-target font-badge">💼 実用向け</span>
+
+          </div>
+          <h3 class="card-title"><span class="card-title-icon" aria-hidden="true">🔑</span> 安全なパスワードを作る</h3>
+          <p class="card-text">推測されにくいランダムパスワードを作成。文字種や長さを用途に合わせて設定できます。</p>
+
+          <div class="card-actions">
+            <a href="password-generator/" class="card-link">使う →</a>
+            <button type="button" class="card-detail-btn">詳しく見る</button>
+          </div>
+        </div>
+      </article>
+                    <article class="card"
+             data-project-card="static"
+             data-id="px-rem"
+             data-group="primary"
+             data-category="tool"
+             data-shelf="tool"
+             data-url="px-rem-converter/" data-guide="guides/px-rem-guide.html" data-aliases="[&quot;px rem&quot;,&quot;px/rem&quot;,&quot;ピクセル レム&quot;,&quot;CSS単位&quot;,&quot;pixel rem&quot;]"
+             data-detail="スマホやPCでホームページの文字サイズが崩れないように設計する、Web制作者向けの「pxとrem」の相互変換ツール。サイズ設計の基本ガイド付き。">
+
+        <div class="card-body">
+          <div class="card-header">
+            <div class="card-tag tag-tool">ツール</div>
+            <span class="badge-target font-badge">💼 実用向け</span>
+
+          </div>
+          <h3 class="card-title"><span class="card-title-icon" aria-hidden="true">⚖️</span> px / rem 変換</h3>
+          <p class="card-text">CSSのサイズ設計に役立つ、ピクセルとremの相互変換ツール。</p>
+
+          <div class="card-actions">
+            <a href="px-rem-converter/" class="card-link">使う →</a>
+            <button type="button" class="card-detail-btn">詳しく見る</button>
+          </div>
+        </div>
+      </article>
+                    <article class="card"
+             data-project-card="static"
+             data-id="font-lab"
+             data-group="primary"
+             data-category="tool"
+             data-shelf="tool"
+             data-url="font-lab/" data-aliases="[&quot;font&quot;,&quot;フォント&quot;,&quot;Webフォント&quot;,&quot;文字フォント&quot;,&quot;Katakata Font Lab&quot;]"
+             data-detail="日本語Webフォント（M PLUS Rounded 1cやZen Maru Gothic等）をリアルタイムに比較・CSS調整できるシミュレーター。読み込み量を抑えるための軽量化手順も紹介します。">
+
+        <div class="card-body">
+          <div class="card-header">
+            <div class="card-tag tag-tool">ツール</div>
+            <span class="badge-target font-badge">💼 実用向け</span>
+            <span class="badge-new">NEW</span>
+          </div>
+          <h3 class="card-title"><span class="card-title-icon" aria-hidden="true">🔤</span> Webフォントを比較する</h3>
+          <p class="card-text">日本語Webフォントをリアルタイム比較。表示確認と軽量化の考え方を一か所にまとめました。</p>
+
+          <div class="card-actions">
+            <a href="font-lab/" class="card-link">使う →</a>
+            <button type="button" class="card-detail-btn">詳しく見る</button>
+          </div>
+        </div>
+      </article>
+                    <article class="card"
+             data-project-card="static"
+             data-id="code-studio"
+             data-group="primary"
+             data-category="tool"
+             data-shelf="tool"
+             data-url="pikalab/code-studio/" data-guide="guides/codestudio-guide.html" data-aliases="[&quot;CodeStudio&quot;,&quot;Code Studio&quot;,&quot;web playground&quot;,&quot;Webプレイグラウンド&quot;,&quot;AIコード&quot;,&quot;Vibe Coding&quot;]"
+             data-detail="HTML/CSS/JavaScriptをまとめて貼り付け、ブラウザ内で仕分けして実行結果を確認できるWebプレイグラウンド。対応ライブラリと日本語のエラー案内も用意しています。">
+
+        <div class="card-body">
+          <div class="card-header">
+            <div class="card-tag tag-tool">ツール</div>
+            <span class="badge-target font-badge">💼 実用向け</span>
+            <span class="badge-new">NEW</span>
+          </div>
+          <h3 class="card-title"><span class="card-title-icon" aria-hidden="true">🧪</span> コードを試す（CodeStudio）</h3>
+          <p class="card-text">AIが出力したコードもまとめて貼り付け、ブラウザで動作を確認できるWebプレイグラウンド。</p>
+
+          <div class="card-actions">
+            <a href="pikalab/code-studio/" class="card-link">使う →</a>
+            <button type="button" class="card-detail-btn">詳しく見る</button>
+          </div>
+        </div>
+      </article>
+                    <article class="card"
+             data-project-card="static"
+             data-id="emphasis-lines"
+             data-group="primary"
+             data-category="tool"
+             data-shelf="tool"
+             data-url="emphasis-lines/" data-guide="emphasis-lines/guide.html" data-aliases="[&quot;集中線&quot;,&quot;放射線&quot;,&quot;emphasis lines&quot;,&quot;サムネイル&quot;,&quot;漫画&quot;]"
+             data-detail="YouTubeサムネイルや漫画に使える集中線・放射線をブラウザだけで簡単作成。色や太さ、入り抜きを自由に変更してインパクトのある画像素材が作れます。">
+
+        <div class="card-body">
+          <div class="card-header">
+            <div class="card-tag tag-tool">ツール</div>
+            <span class="badge-target font-badge">💼 実用向け</span>
+            <span class="badge-new">NEW</span>
+          </div>
+          <h3 class="card-title"><span class="card-title-icon" aria-hidden="true">💥</span> 強調線・集中線を作る</h3>
+          <p class="card-text">漫画風の集中線や放射線をブラウザで手軽に作成。YouTubeのサムネ作りに。</p>
+
+          <div class="card-actions">
+            <a href="emphasis-lines/" class="card-link">使う →</a>
+            <button type="button" class="card-detail-btn">詳しく見る</button>
+          </div>
+        </div>
+      </article>
+                    <article class="card"
+             data-project-card="static"
+             data-id="text-diff"
+             data-group="primary"
+             data-category="tool"
+             data-shelf="tool"
+             data-url="text-diff/" data-aliases="[&quot;diff&quot;,&quot;text diff&quot;,&quot;テキスト比較&quot;,&quot;文章比較&quot;,&quot;差分&quot;]"
+             data-detail="文章やプログラミングコードの「違い」を色と記号で分かりやすく表示するDiffツール。左右の分割表示と統合表示を切り替えてスッキリ比較できます。">
+
+        <div class="card-body">
+          <div class="card-header">
+            <div class="card-tag tag-tool">ツール</div>
+            <span class="badge-target font-badge">💼 実用向け</span>
+
+          </div>
+          <h3 class="card-title"><span class="card-title-icon" aria-hidden="true">📝</span> 文章の差分を見る</h3>
+          <p class="card-text">文章やコードの変更箇所を色分けして視覚的に比較。登録不要・ブラウザ完結。</p>
+
+          <div class="card-actions">
+            <a href="text-diff/" class="card-link">使う →</a>
+            <button type="button" class="card-detail-btn">詳しく見る</button>
+          </div>
+        </div>
+      </article>
+                    <article class="card"
+             data-project-card="static"
+             data-id="ogp-simulator"
+             data-group="primary"
+             data-category="tool"
+             data-shelf="tool"
+             data-url="ogp-simulator/" data-aliases="[&quot;OGP&quot;,&quot;OGP preview&quot;,&quot;SNS画像&quot;,&quot;シェア画像&quot;,&quot;social image&quot;]"
+             data-detail="記事やWebサイトを公開する前に、X(Twitter)やFacebook、LINEでのシェア時の見え方をリアルタイムで確認・調整できるシミュレーターです。">
+
+        <div class="card-body">
+          <div class="card-header">
+            <div class="card-tag tag-tool">ツール</div>
+            <span class="badge-target font-badge">💼 実用向け</span>
+
+          </div>
+          <h3 class="card-title"><span class="card-title-icon" aria-hidden="true">🖼️</span> OGPシミュレーター</h3>
+          <p class="card-text">SNSでシェアした際の見え方を事前に確認。画像比率チェックやダークモード対応。</p>
+
+          <div class="card-actions">
+            <a href="ogp-simulator/" class="card-link">使う →</a>
+            <button type="button" class="card-detail-btn">詳しく見る</button>
+          </div>
+        </div>
+      </article>
+                    <article class="card"
+             data-project-card="static"
+             data-id="discount-calc"
+             data-group="primary"
+             data-category="tool"
+             data-shelf="tool"
+             data-url="discount-calc/" data-aliases="[&quot;割引&quot;,&quot;値引き&quot;,&quot;セール計算&quot;,&quot;discount&quot;,&quot;◯％オフ&quot;]"
+             data-detail="買い物やセールの際に、元の金額を入れると10%OFFから半額までを税込で計算し、追加割引も含めて一覧表示するショッピング計算機。">
+
+        <div class="card-body">
+          <div class="card-header">
+            <div class="card-tag tag-tool">ツール</div>
+            <span class="badge-target font-badge">💼 実用向け</span>
+
+          </div>
+          <h3 class="card-title"><span class="card-title-icon" aria-hidden="true">🏷️</span> 割引を計算する</h3>
+          <p class="card-text">セールの「◯％オフ」「◯割引き」を税込で一覧表示。レジ落ちの重ね割引にも対応。</p>
+
+          <div class="card-actions">
+            <a href="discount-calc/" class="card-link">使う →</a>
+            <button type="button" class="card-detail-btn">詳しく見る</button>
+          </div>
+        </div>
+      </article>
+                    <article class="card"
+             data-project-card="static"
+             data-id="seireki"
+             data-group="primary"
+             data-category="tool"
+             data-shelf="tool"
+             data-url="seireki/" data-aliases="[&quot;西暦&quot;,&quot;和暦&quot;,&quot;年齢計算&quot;,&quot;元号&quot;,&quot;年齢&quot;,&quot;早見表&quot;]"
+             data-detail="西暦または和暦を入れて、今年迎える年齢と干支を確認できます。">
+
+        <div class="card-body">
+          <div class="card-header">
+            <div class="card-tag tag-tool">ツール</div>
+            <span class="badge-target font-badge">💼 実用向け</span>
+
+          </div>
+          <h3 class="card-title"><span class="card-title-icon" aria-hidden="true">📅</span> 年齢・和暦・西暦早見表</h3>
+          <p class="card-text">西暦と和暦（令和・平成・昭和など）の相互変換と、今年迎える年齢を一覧表示。</p>
+
+          <div class="card-actions">
+            <a href="seireki/" class="card-link">使う →</a>
+            <button type="button" class="card-detail-btn">詳しく見る</button>
+          </div>
+        </div>
+      </article>
+                    <article class="card"
+             data-project-card="static"
+             data-id="screenshot-crop"
+             data-group="primary"
+             data-category="tool"
+             data-shelf="tool"
+             data-url="screenshot-crop/" data-aliases="[&quot;スクショ端カット&quot;,&quot;スクショ トリミング&quot;,&quot;スクリーンショット&quot;,&quot;ステータスバー&quot;,&quot;ナビゲーションバー&quot;,&quot;タスクバー&quot;,&quot;画像切り抜き&quot;,&quot;プライバシー&quot;,&quot;個人情報&quot;,&quot;SNS&quot;]"
+             data-detail="SNS投稿前に、スクリーンショットの上・下・左右に残ったステータスバーやナビゲーションバー、PCのタスクバーなどを切り落とすツール。画像本体はサーバーや外部AIへ送らず、ブラウザ内で処理します。自動推定のあと、指やマウスで4辺を微調整できます。">
+
+        <div class="card-body">
+          <div class="card-header">
+            <div class="card-tag tag-tool">画像・プライバシー</div>
+            <span class="badge-target font-badge">💼 実用向け</span>
+            <span class="badge-new">NEW</span>
+          </div>
+          <h3 class="card-title"><span class="card-title-icon" aria-hidden="true">✂️</span> スクショ端カット</h3>
+          <p class="card-text">投稿前のスクショから、見せたくない画面端だけをブラウザ内でサッと切る。</p>
+
+          <div class="card-actions">
+            <a href="screenshot-crop/" class="card-link">画像を整える →</a>
+            <button type="button" class="card-detail-btn">詳しく見る</button>
+          </div>
+        </div>
+      </article>
+                    <!-- PROJECT_CARDS_PRIMARY_END -->
+                </div>
+
+                <!-- 迷ったときのガイド（コンパクト3リンク） -->
+                <nav id="recommended-guides" class="guide-quick" aria-label="迷ったときのガイド" style="margin-top: 2rem;">
+                    <p class="guide-quick-label">💡 迷ったときのガイド</p>
+                    <div class="guide-quick-links">
+                        <a href="guides/case-studies.html" class="guide-quick-link">💡 実例集</a>
+                        <a href="guides/tool-selection-guide.html" class="guide-quick-link">🎯 用途から選ぶ</a>
+                        <a href="guides/it-basics/" class="guide-quick-link">📚 IT入門</a>
+                    </div>
+                </nav>
+
+                <div class="secondary-projects" id="secondary-projects">
+                    <h3 class="projects-subhead projects-subhead--other" id="secondary-projects-heading">学習ラボ・読みもの・実験</h3>
+                    <p class="section-desc" style="margin-bottom: 1.25rem; font-size: 0.92rem; color: var(--c-text-light);">子ども向け学習や制作記録など、実用ツールとは目的が違うものです。好奇心から生まれた実験場としてお楽しみください。</p>
+                    <div class="projects-grid projects-grid--secondary" id="secondary-projects-grid">
+                        <!-- PROJECT_CARDS_SECONDARY_START -->
+                    <article class="card card--featured"
+             data-project-card="static"
+             data-id="moyamoya-sorter"
+             data-group="secondary"
+             data-category="tool"
+             data-shelf="tool"
+             data-url="moyamoya-sorter/" data-aliases="[&quot;モヤモヤ仕分け機&quot;,&quot;モヤモヤ&quot;,&quot;不安解消&quot;,&quot;タスク整理&quot;,&quot;メンタルケア&quot;,&quot;2分タイマー&quot;,&quot;スモールステップ&quot;]"
+             data-detail="やることが多すぎて動けない時や不安な時に。頭のモヤモヤを「変えられること」と「手放していいこと」に仕分け、2分でできる最小の一歩を導く行動整理ツール。">
+        <div class="card-visual" aria-hidden="true">🧪</div>
+        <div class="card-body">
+          <div class="card-header">
+            <div class="card-tag tag-tool">メンタル</div>
+            <span class="badge-target font-badge">👪 全員向け</span>
+            <span class="badge-new">NEW</span>
+          </div>
+          <h3 class="card-title"><span class="card-title-icon" aria-hidden="true">🌿</span> モヤモヤ仕分け機</h3>
+          <p class="card-text">頭の中のモヤモヤを整理して、今すぐできる「2分の一歩」を決めるツール。</p>
+
+          <div class="card-actions">
+            <a href="moyamoya-sorter/" class="card-link">仕分ける →</a>
+            <button type="button" class="card-detail-btn">詳しく見る</button>
+          </div>
+        </div>
+      </article>
+                    <article class="card card--featured"
+             data-project-card="static"
+             data-id="chiritsumo-calc"
+             data-group="secondary"
+             data-category="tool"
+             data-shelf="tool"
+             data-url="chiritsumo-calc/" data-aliases="[&quot;チリツモ&quot;,&quot;チリツモ逆算&quot;,&quot;節約シミュレーター&quot;,&quot;ラテマネー&quot;,&quot;固定費見直し&quot;,&quot;サブスク解約&quot;,&quot;家計簿&quot;]"
+             data-detail="カフェ代、コンビニのついで買い、使っていないサブスク…日々のチリツモ出費を見直したお金が、温泉旅行や海外旅などのご褒美体験に化ける未来価値を逆算するシミュレーター。">
+        <div class="card-visual" aria-hidden="true">🧪</div>
+        <div class="card-body">
+          <div class="card-header">
+            <div class="card-tag tag-tool">家計</div>
+            <span class="badge-target font-badge">💼 実用向け</span>
+            <span class="badge-new">NEW</span>
+          </div>
+          <h3 class="card-title"><span class="card-title-icon" aria-hidden="true">☕</span> チリツモ逆算シミュレーター</h3>
+          <p class="card-text">我慢する節約をやめて、日々の小さな出費をご褒美体験に楽しく逆算！</p>
+
+          <div class="card-actions">
+            <a href="chiritsumo-calc/" class="card-link">逆算する →</a>
+            <button type="button" class="card-detail-btn">詳しく見る</button>
+          </div>
+        </div>
+      </article>
+                    <article class="card"
+             data-project-card="static"
+             data-id="pikalab"
+             data-group="secondary"
+             data-category="education"
+             data-shelf="learning"
+             data-url="pikalab/" data-aliases="[&quot;PikaLab&quot;,&quot;ピカラボ&quot;,&quot;子ども向け&quot;,&quot;学習ゲーム&quot;,&quot;ミニゲーム&quot;,&quot;教育&quot;]"
+             data-detail="名前や可愛いアバターを選び、ゲーム感覚で楽しく学べる子ども向け教育ミニゲーム集。漢字、色、リズム遊び、夏休みの自由研究などを親子で一緒に楽しめます。">
+
+        <div class="card-body">
+          <div class="card-header">
+            <div class="card-tag tag-education">学び</div>
+            <span class="badge-target font-badge">🎓 子ども向け</span>
+            <span class="badge-new">LAB</span>
+          </div>
+          <h3 class="card-title"><span class="card-title-icon" aria-hidden="true">✨</span> PikaLab</h3>
+          <p class="card-text">遊ぶように学ぶための研究室。ミニアプリや学習の手助けをひとつの入口に集めています。</p>
+
+          <div class="card-actions">
+            <a href="pikalab/" class="card-link" target="_blank" rel="noopener noreferrer">研究室へ行く →</a>
+            <button type="button" class="card-detail-btn">詳しく見る</button>
+          </div>
+        </div>
+      </article>
+                    <article class="card"
+             data-project-card="static"
+             data-id="playpoint"
+             data-group="secondary"
+             data-category="tool"
+             data-shelf="tool"
+             data-url="https://www.playpoint-sim.com/" data-aliases="[&quot;Google Play&quot;,&quot;Google Playポイント&quot;,&quot;ポイント計算&quot;,&quot;課金計算&quot;,&quot;ステータス&quot;]"
+             data-detail="次のGoogle Playステータス（ゴールドやプラチナ等）までに必要な金額と、得られるポイントを試算できるシミュレーター。">
+
+        <div class="card-body">
+          <div class="card-header">
+            <div class="card-tag tag-tool">ツール</div>
+            <span class="badge-target font-badge">💼 実用向け</span>
+            <span class="badge-new">BEST</span>
+          </div>
+          <h3 class="card-title"><span class="card-title-icon" aria-hidden="true">🎮</span> Playポイント計算機</h3>
+          <p class="card-text">次のステータスまでに必要な金額や、得られるポイントをさっと試算できます。</p>
+
+          <div class="card-actions">
+            <a href="https://www.playpoint-sim.com/" class="card-link" target="_blank" rel="noopener noreferrer">計算機を開く →</a>
+            <button type="button" class="card-detail-btn">詳しく見る</button>
+          </div>
+        </div>
+      </article>
+                    <article class="card"
+             data-project-card="static"
+             data-id="asobi-pocket"
+             data-group="secondary"
+             data-category="tool"
+             data-shelf="tool"
+             data-url="asobi-pocket/" data-aliases="[&quot;あそびポケット&quot;,&quot;Asobi Pocket&quot;,&quot;パーティーゲーム&quot;,&quot;暇つぶし&quot;,&quot;飲み会ゲーム&quot;,&quot;スマホゲーム&quot;]"
+             data-detail="出先・待ち時間・飲み会で、スマホ1台・道具なしですぐ遊べる31種類のパーティーゲーム集。ito、朝それ、ワードウルフ、ウミガメのスープなどをツール付きで楽しめます。">
+
+        <div class="card-body">
+          <div class="card-header">
+            <div class="card-tag tag-tool">ゲーム</div>
+            <span class="badge-target font-badge">🎉 遊び向け</span>
+            <span class="badge-new">NEW</span>
+          </div>
+          <h3 class="card-title"><span class="card-title-icon" aria-hidden="true">🎲</span> あそびポケット</h3>
+          <p class="card-text">スマホ1台・道具なしで、待ち時間や飲み会ですぐ遊べる31種類のパーティーゲーム集。</p>
+
+          <div class="card-actions">
+            <a href="asobi-pocket/" class="card-link">使う →</a>
+            <button type="button" class="card-detail-btn">詳しく見る</button>
+          </div>
+        </div>
+      </article>
+                    <article class="card"
+             data-project-card="static"
+             data-id="gravity-todo"
+             data-group="secondary"
+             data-category="tool"
+             data-shelf="tool"
+             data-url="lab-tools/gravity-todo/" data-aliases="[&quot;Gravity Todo&quot;,&quot;Todo&quot;,&quot;タスク&quot;,&quot;タスク管理&quot;,&quot;やることリスト&quot;]"
+             data-detail="20文字以内のタスクを重力ブロックとして積み、完了や削除で爆破演出する実験Todoです。期限や履歴はなく、データはこの端末のブラウザ内だけに残ります。">
+
+        <div class="card-body">
+          <div class="card-header">
+            <div class="card-tag tag-tool">ツール</div>
+            <span class="badge-target font-badge">🧪 実験向け</span>
+            <span class="badge-new">NEW</span>
+          </div>
+          <h3 class="card-title"><span class="card-title-icon" aria-hidden="true">🚀</span> Gravity TODO</h3>
+          <p class="card-text">積み上がる短いタスクを爆破演出で片づける、実験用Todo。</p>
+
+          <div class="card-actions">
+            <a href="lab-tools/gravity-todo/" class="card-link">使う →</a>
+            <button type="button" class="card-detail-btn">詳しく見る</button>
+          </div>
+        </div>
+      </article>
+                    <article class="card"
+             data-project-card="static"
+             data-id="kids-smile-land"
+             data-group="secondary"
+             data-category="education"
+             data-shelf="learning"
+             data-url="lab-tools/kids-smile-land/" data-aliases="[&quot;Kids Smile Land&quot;,&quot;キッズスマイルランド&quot;,&quot;知育&quot;,&quot;幼児&quot;,&quot;ひらがな&quot;,&quot;お絵かき&quot;]"
+             data-detail="ひらがな読み上げ、お絵かき、もっきん、おもちゃの音あてなどをまとめた親子向け遊び場です。初期は2〜3歳向けのかんたんで開き、4〜6歳は設定で変えられます。">
+
+        <div class="card-body">
+          <div class="card-header">
+            <div class="card-tag tag-education">学び</div>
+            <span class="badge-target font-badge">🎓 子ども向け</span>
+            <span class="badge-new">NEW</span>
+          </div>
+          <h3 class="card-title"><span class="card-title-icon" aria-hidden="true">🎈</span> キッズ・スマイル・ランド</h3>
+          <p class="card-text">文字・音・お絵かきを親子で試す遊び場。初期はかんたん（2〜3歳）です。</p>
+
+          <div class="card-actions">
+            <a href="lab-tools/kids-smile-land/" class="card-link">遊びに行く →</a>
+            <button type="button" class="card-detail-btn">詳しく見る</button>
+          </div>
+        </div>
+      </article>
+                    <article class="card"
+             data-project-card="static"
+             data-id="note"
+             data-group="secondary"
+             data-category="article"
+             data-shelf="story"
+             data-url="note-selection.html" data-aliases="[&quot;note&quot;,&quot;ブログ&quot;,&quot;制作話&quot;,&quot;読みもの&quot;,&quot;かたかたらぼ&quot;,&quot;KatakataLab&quot;]"
+             data-detail="アプリを作った裏話や、日々の生活の中でのちょっとした発見・失敗談を、ゆるく等身大な言葉で綴っているブログのような読みものです。">
+
+        <div class="card-body">
+          <div class="card-header">
+            <div class="card-tag tag-article">読みもの</div>
+            <span class="badge-target font-badge">👪 全員向け</span>
+
+          </div>
+          <h3 class="card-title"><span class="card-title-icon" aria-hidden="true">🧪</span> かたかたのnote</h3>
+          <p class="card-text">制作途中で考えたことや日々の発見を、雑多に置いていく場所。</p>
+
+          <div class="card-actions">
+            <a href="note-selection.html" class="card-link">読みものを見る →</a>
+            <button type="button" class="card-detail-btn">詳しく見る</button>
+          </div>
+        </div>
+      </article>
+                    <article class="card"
+             data-project-card="static"
+             data-id="gear"
+             data-group="secondary"
+             data-category="gear"
+             data-shelf="story"
+             data-url="gear.html" data-aliases="[&quot;ガジェット&quot;,&quot;機材&quot;,&quot;デスク&quot;,&quot;開発環境&quot;,&quot;desk gear&quot;]"
+             data-detail="個人開発者が実際に使って良かったキーボードやパソコンなどの機材・ガジェットを、開発を楽しくする工夫や選んだ本音とともに紹介。">
+
+        <div class="card-body">
+          <div class="card-header">
+            <div class="card-tag tag-gear">環境</div>
+            <span class="badge-target font-badge">💼 実用向け</span>
+
+          </div>
+          <h3 class="card-title"><span class="card-title-icon" aria-hidden="true">🧪</span> 制作デスクと機材メモ</h3>
+          <p class="card-text">気になる機材や、制作環境をもっと楽しくする道具のメモ。</p>
+
+          <div class="card-actions">
+            <a href="gear.html" class="card-link">使う →</a>
+            <button type="button" class="card-detail-btn">詳しく見る</button>
+          </div>
+        </div>
+      </article>
+                    <!-- PROJECT_CARDS_SECONDARY_END -->
+                    </div>
+                </div>
+                <aside class="pikalab-wing" aria-label="子ども向け学習ラボ PikaLab">
+                    <div><strong>✨ 子ども向け学習ラボ「PikaLab」（完全広告なし）</strong><span>深海生物探検・リズム・色まぜ・漢字クイズなど、親子で安心して触って遊べる知育アプリ研究室です。</span></div>
+                    <a href="pikalab/" target="_blank" rel="noopener noreferrer">PikaLabを探検する →</a>
+                </aside>
+
+                <!-- 検索結果が0件の時のメッセージ -->
+                <div id="search-no-results" class="no-results-container" hidden>
+                    <span class="no-results-icon">🔍</span>
+                    <p class="no-results-text">一致するツールが見つかりませんでした。</p>
+                    <button type="button" id="no-results-clear-btn" class="btn btn-secondary">検索をクリア</button>
+                    <div class="no-results-guides">
+                        <a href="guides/tool-selection-guide.html" class="guide-link">用途から選ぶガイド →</a>
+                        <a href="guides/case-studies.html" class="guide-link">入力例の実例集 →</a>
+                        <a href="#projects" class="guide-link">ツール一覧を見る →</a>
+                    </div>
+                    <div id="search-suggestions" class="search-suggestions" hidden>
+                        <p class="search-suggestions-title">近いツール</p>
+                        <div id="search-suggestions-list" class="search-suggestions-list"></div>
+                    </div>
+                </div>
+                <p id="project-filter-status" class="project-filter-status visually-hidden" role="status" aria-live="polite" aria-atomic="true"></p>
+                <p id="project-data-status" class="project-data-status" role="status" hidden>一覧の更新情報を取得できなかったため、ページ内に保存済みの内容を表示しています。</p>
+            </div>
+        </section>
+
+        <section id="about" class="section about-section section-band-about">
+            <div class="container lab-overview">
+                <div class="about-card">
+                    <h2 class="section-title">ラボについて</h2>
+                    <div class="about-content about-content--summary">
+                        <p><strong>KatakataLab</strong>は、個人クリエイター「かたかた」が運営する実験場です。</p>
+                        <p>日常に役立つツールと、迷ったときの使い方ガイド、人生を豊かにする読みものを少しずつ育てています。</p>
+                        <p>子ども向けのPikaLabは広告なしの別エリア。企画から更新まで一人で回しています。</p>
+                        <details class="about-more">
+                            <summary>続きを読む</summary>
+                            <p>
+                                最初はただの「メモ帳」でした。「これ計算したいな」「こんなツールあったら便利なのに」という思いつきが積み重なり、いまは実例つきの読みものとツールが並ぶラボになっています。
+                            </p>
+                            <p>
+                                大きなことは言えないし、完璧には程遠い。それでも、誰かの「あ、これで迷わなくなった」の1秒のために、今日もコツコツ続けています。ツールは「ブラウザひとつで使える」こと、ガイドは「開く前に判断できる」ことを目標にしています。
+                            </p>
+                        </details>
+                    </div>
+                </div>
+                <div class="lab-notes">
+                    <details class="lab-note" id="updates" open>
+                        <summary>📢 最近の更新</summary>
+                        <div class="updates-timeline" id="updates-timeline" style="background: none; border: none; box-shadow: none; backdrop-filter: none; -webkit-backdrop-filter: none; padding: 1rem 0 0 0;">
+                            <div class="timeline-container">
+                                <div class="timeline-item">
+                                    <div class="timeline-date">
+                                        <span>2026.08.05</span>
+                                        <span class="timeline-badge">NEW</span>
+                                    </div>
+                                    <div class="timeline-content">トップの使いやすさを改善。おすすめツールを前面に、ガイドは「迷ったらここ」、検索やモバイル導線を整えました。</div>
+                                </div>
+                                <div class="timeline-item">
+                                    <div class="timeline-date">
+                                        <span>2026.08.04</span>
+                                    </div>
+                                    <div class="timeline-content">ヒーローを定番の「小さな研究室」コピーへ。見出し下の装飾フラスコを廃止しました。</div>
+                                </div>
+                                <div class="timeline-item">
+                                    <div class="timeline-date">
+                                        <span>2026.07.16</span>
+                                    </div>
+                                    <div class="timeline-content">実用ツールを選びやすいトップへ整理。IT入門ガイドに開発・確認例を追記しました。</div>
+                                </div>
+                            </div>
+                            <a href="updates.html" class="timeline-more-link" style="margin-top: 1rem; display: inline-block;">過去のアップデート情報を見る →</a>
+                        </div>
+                    </details>
+                    <details class="lab-note">
+                        <summary>🧑‍💻 かたかたとは</summary>
+                        <p><strong>KatakataLabを運営する</strong><span class="nobrk">個人クリエイター</span><span class="nobrk">「かたかた」です。</span></p>
+                        <p>「好奇心は無限大∞」をモットーに、WebサイトやAndroidアプリの<span class="nobrk">開発を行っています。</span></p>
+                        <p>興味深い様々な話題やちょっとだけためになる情報を<span class="nobrk">noteで発信し、</span>同じように人生という名の大航海を楽しむ人たちと<span class="nobrk">関わりたいと思っています。</span></p>
+                        <a href="who-is-katakata.html" class="guide-link">さらに詳しくはこちら: かたかたって誰？ →</a>
+                    </details>
+                    <details class="lab-note" id="faq" open>
+                        <summary>❓ よくある質問(FAQ)</summary>
+                        <h3 class="faq-question">Q1. 料金はかかりますか？登録は必要ですか？</h3>
+                        <p>A. 主要ツールは<strong>登録不要・ブラウザ上で無料</strong>です。広告は主に厚いガイドページに出します。子ども向けPikaLabは広告なしです。</p>
+                        <h3 class="faq-question faq-question--spaced">Q2. 入力した情報は保存されますか？</h3>
+                        <p>A. ツールごとの仕様に従います。保存が発生する場合は、該当ページで説明します。</p>
+                        <h3 class="faq-question faq-question--spaced">Q3. コンテンツはどのくらいの頻度で更新されますか？</h3>
+                        <p>A. 不定期ですが、大きめの変更は<a href="updates.html">アップデート情報</a>に残しています。</p>
+                    </details>
+                </div>
+            </div>
+        </section>
+
+        <section id="contact" class="section links-section">
+            <div class="container">
+                <h2 class="section-title">リンク・SNS</h2>
+                <p class="section-desc section-desc-spaced">ご感想・不具合報告など、XのDMやnoteのコメント/メッセージからぜひお気軽に！！</p>
+                <div class="links-grid">
+                    <a href="https://note.com/cozy_snipe6552" target="_blank" rel="noopener noreferrer" class="link-card">
+                        <span class="link-icon">📝</span><span class="link-name">note</span>
+                    </a>
+                    <a href="https://x.com/Katakata_toybox" target="_blank" rel="noopener noreferrer" class="link-card">
+                        <span class="link-icon">𝕏</span><span class="link-name">X (Twitter)</span>
+                    </a>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-links">
+                <a href="en/" hreflang="en" lang="en">English tools</a>
+                <a href="contact.html">お問い合わせ</a>
+                <a href="who-is-katakata.html">運営者情報</a>
+                <a href="about-katakatalab.html">ラボについて</a>
+                <a href="updates.html">更新履歴</a>
+                <a href="note-selection.html">note</a>
+                <a href="terms.html" target="_blank" rel="noopener noreferrer">利用規約</a>
+                <a href="privacy.html" target="_blank" rel="noopener noreferrer">プライバシーポリシー</a>
+                <a href="sitemap.html">サイトマップ</a>
+            </div>
+            <p class="footer-trust">運営: かたかた（個人） ／ 主要ツールは登録不要・無料 ／ 子ども向けPikaLabは広告なし ／ 更新: 2026.08.05</p>
+            <p>&copy; 2024-<span id="copy-year">2026</span> KatakataLab. All Rights Reserved.</p>
+        </div>
+    </footer>
+
+    <button type="button" id="scroll-top" class="scroll-top-btn" aria-label="トップに戻る">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="18 15 12 9 6 15"></polyline>
+        </svg>
+    </button>
+
+    <div id="project-modal" class="modal" role="dialog" aria-modal="true" aria-labelledby="project-modal-title"
+        aria-describedby="project-modal-desc" aria-hidden="true">
+        <div class="modal-content" role="document">
+            <button class="modal-close" type="button" aria-label="閉じる">×</button>
+            <div class="modal-body">
+                <div class="modal-tag" id="project-modal-tag"></div>
+                <h3 class="modal-title" id="project-modal-title"></h3>
+                <p class="modal-desc" id="project-modal-desc"></p>
+
+                <div class="modal-actions">
+                    <a class="btn btn-primary modal-main-link modal-action-link" hidden aria-label="サイトを開く"><span aria-hidden="true">🚀</span> サイトを開く</a>
+                    <a class="btn btn-secondary modal-guide-link modal-action-link" hidden aria-label="使い方・よくある質問"><span aria-hidden="true">❓</span> 使い方・Q&amp;A</a>
+                    <a class="btn btn-secondary modal-story-link modal-action-link" hidden aria-label="開発秘話を読む"><span aria-hidden="true">📖</span> 開発秘話</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- モバイル用ボトムナビゲーション -->
+    <nav class="bottom-nav" aria-label="モバイルナビゲーション">
+        <a href="#home" class="bottom-nav-link active">
+            <span class="bottom-nav-icon">
+                <svg viewBox="0 0 24 24" class="svg-icon" aria-hidden="true">
+                    <path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+                    <polyline points="9 22 9 12 15 12 15 22"/>
+                </svg>
+            </span>
+            <span class="bottom-nav-label">ホーム</span>
+        </a>
+        <a href="#recommended-guides" class="bottom-nav-link">
+            <span class="bottom-nav-icon">
+                <svg viewBox="0 0 24 24" class="svg-icon" aria-hidden="true">
+                    <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/>
+                    <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
+                </svg>
+            </span>
+            <span class="bottom-nav-label">ガイド</span>
+        </a>
+        <a href="#projects" class="bottom-nav-link">
+            <span class="bottom-nav-icon">
+                <svg viewBox="0 0 24 24" class="svg-icon" aria-hidden="true">
+                    <path d="M9 3h6M10 3v6l-4 8a2 2 0 0 0 2 3h8a2 2 0 0 0 2-3l-4-8V3"/>
+                    <path d="M6 17h12"/>
+                </svg>
+            </span>
+            <span class="bottom-nav-label">ツール</span>
+        </a>
+        <a href="#about" class="bottom-nav-link">
+            <span class="bottom-nav-icon">
+                <svg viewBox="0 0 24 24" class="svg-icon" aria-hidden="true">
+                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                    <circle cx="12" cy="7" r="4"/>
+                </svg>
+            </span>
+            <span class="bottom-nav-label">かたかた</span>
+        </a>
+        <a href="note-selection.html" class="bottom-nav-link">
+            <span class="bottom-nav-icon">
+                <svg viewBox="0 0 24 24" class="svg-icon" aria-hidden="true">
+                    <path d="M12 20h9"/>
+                    <path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/>
+                </svg>
+            </span>
+            <span class="bottom-nav-label">note</span>
+        </a>
+    </nav>
+
+    <script src="project-filter-state.js?v=20260716-2"></script>
+    <script src="project-history.js?v=20260716-2"></script>
+    <script src="script.js?v=20260817-newtab"></script>
+</body>
+
+</html>

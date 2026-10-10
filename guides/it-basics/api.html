@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>【IT用語】「API」とは？ソフトウェア同士をつなぐ窓口とルール | KatakataLab</title>
+  <meta name="description" content="APIとは何かを、ソフトウェア同士をつなぐ窓口とルール、Web APIとの違い、認証・利用制限・エラーを確認する理由から解説します。">
+  <link rel="canonical" href="https://katakatalab.com/guides/it-basics/api.html">
+  <meta property="og:type" content="article">
+  <meta property="og:site_name" content="KatakataLab">
+  <meta property="og:title" content="【IT用語】「API」とは？ソフトウェア同士をつなぐ窓口とルール">
+  <meta property="og:description" content="APIとは何かを、ソフトウェア同士をつなぐ窓口とルール、Web APIとの違い、認証・利用制限・エラーを確認する理由から解説します。">
+  <meta property="og:url" content="https://katakatalab.com/guides/it-basics/api.html">
+  <meta property="og:image" content="https://katakatalab.com/ogp.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="icon" href="../../favicon.ico">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&family=Zen+Kurenaido&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css?v=20260824-responsive">
+  <script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": "【IT用語】「API」とは？ソフトウェア同士をつなぐ窓口とルール",
+  "description": "APIとは何かを、ソフトウェア同士をつなぐ窓口とルール、Web APIとの違い、認証・利用制限・エラーを確認する理由から解説します。",
+  "datePublished": "2026-07-13",
+  "dateModified": "2026-08-04",
+  "mainEntityOfPage": "https://katakatalab.com/guides/it-basics/api.html",
+  "inLanguage": "ja",
+  "author": {
+    "@type": "Person",
+    "name": "かたかた",
+    "url": "https://katakatalab.com/who-is-katakata.html"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "KatakataLab",
+    "url": "https://katakatalab.com/"
+  }
+}</script>
+  <script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position": 1,
+      "name": "ホーム",
+      "item": "https://katakatalab.com/"
+    },
+    {
+      "@type": "ListItem",
+      "position": 2,
+      "name": "かたかたの制作ノート",
+      "item": "https://katakatalab.com/guides/it-basics/"
+    },
+    {
+      "@type": "ListItem",
+      "position": 3,
+      "name": "【IT用語】「API」とは？ソフトウェア同士をつなぐ窓口とルール",
+      "item": "https://katakatalab.com/guides/it-basics/api.html"
+    }
+  ]
+}</script>
+</head>
+<body>
+    <script>try{if(localStorage.getItem('theme')==='dark')document.body.classList.add('dark-mode');}catch(e){}</script>
+  <a class="skip-link" href="#main-content">本文へ移動</a>
+  <header class="site-header">
+    <div class="header-inner">
+      <a class="brand" href="../../" aria-label="KatakataLab ホーム">
+        <span class="brand-mark" aria-hidden="true">K</span>
+        <span><strong>KatakataLab</strong><small>かたかたの制作ノート</small></span>
+      </a>
+      <nav class="site-nav" aria-label="主要ナビゲーション">
+        <a href="./">記事一覧</a>
+        <a href="../../#projects">作品・ツール</a>
+        <a href="../../who-is-katakata.html">運営者</a>
+      </nav>
+    </div>
+  </header>
+  <main id="main-content">
+    <nav class="breadcrumbs" aria-label="パンくずリスト">
+      <a href="../../">ホーム</a><span aria-hidden="true">/</span><a href="./">かたかたの制作ノート</a><span aria-hidden="true">/</span><span aria-current="page">「API」とは？ソフトウェア同士をつなぐ窓口とルール</span>
+    </nav>
+    <article class="article-shell">
+      <header class="article-hero">
+        <div class="chapter-stamp"><span>CHAPTER 04</span><strong>API</strong></div>
+        <p class="chapter-name">第4章｜システムの通信</p>
+        <h1>【IT用語】「API」とは？ソフトウェア同士をつなぐ窓口とルール</h1>
+        <p class="article-lead">APIとは何かを、ソフトウェア同士をつなぐ窓口とルール、Web APIとの違い、認証・利用制限・エラーを確認する理由から解説します。</p>
+        <div class="article-meta" aria-label="記事情報">
+          <span>作成者：かたかた</span><span>公開日：2026年7月13日</span><span>更新日：2026年8月4日</span>
+        </div>
+      </header>
+      <div class="article-layout">
+        <aside class="article-toc" aria-label="目次"><p>このページの目次</p><ol><li><a href="#section-1">結論：「API」＝「別のソフトウェアの機能を使うための窓口とルール」</a></li>
+<li><a href="#section-2">接続口で例えると？</a></li>
+<li><a href="#section-3">APIにも種類がある</a></li>
+<li><a href="#section-4">Web APIはどう使うの？</a></li>
+<li><a href="#section-5">身近なAPIの例</a></li>
+<li><a href="#section-6">APIを使うメリット</a></li>
+<li><a href="#section-talk">この言葉が会話に出てくるとき</a></li>
+<li><a href="#section-misread">勘違いしやすい点</a></li>
+<li><a href="#section-7">まとめ</a></li></ol></aside>
+        <div class="article-content">
+          <p>「GoogleマップのAPIを使う」</p>
+<p>「API連携でログインする」</p>
+<p>API（エーピーアイ）は、「なんとなく何かをつなぐもの」と理解されがちな言葉です。</p>
+<p>今回は、APIを<strong>「機器をつなぐための接続口とルール」</strong>に例えて解説します。</p>
+<section class="article-section" aria-labelledby="section-1"><h2 id="section-1">結論：「API」＝「別のソフトウェアの機能を使うための窓口とルール」</h2>
+<p>APIは、Application Programming Interfaceの略です。</p>
+<p>一言で言うと、<strong>「ソフトウェアの機能を、決められた方法で外部から利用するための窓口」</strong>です。</p>
+<p>使う側は、相手の内部構造をすべて理解しなくても、公開された使い方に従って機能を呼び出せます。</p>
+</section>
+<section class="article-section" aria-labelledby="section-2"><h2 id="section-2">接続口で例えると？</h2>
+<p>USB機器は、形や通信方法などのルールが合っていれば、内部回路を知らなくても接続できます。</p>
+<p>APIも似ています。</p>
+<ul>
+<li>どの機能を呼ぶか</li>
+<li>どんな情報を渡すか</li>
+<li>どんな結果が返るか</li>
+<li>エラーの時はどうなるか</li>
+</ul>
+<p>こうした約束が決まっているため、別々に作られたソフトウェア同士でも連携できます。</p>
+<p>ただし、APIがすべてUSBのような共通規格というわけではありません。サービスごとに使い方が違うため、提供者が用意したドキュメントを確認します。</p>
+</section>
+<section class="article-section" aria-labelledby="section-3"><h2 id="section-3">APIにも種類がある</h2>
+<p>APIという言葉は、インターネット上のサービスだけを指しません。</p>
+<ul>
+<li><strong>ライブラリのAPI：</strong> プログラムから、用意された関数や機能を使う。</li>
+<li><strong>OSのAPI：</strong> ファイル操作や画面表示など、OSの機能を使う。</li>
+<li><strong>Web API：</strong> ネットワーク越しに、別のサービスの機能やデータを使う。</li>
+</ul>
+<p>この記事で扱うGoogleマップ、天気、決済などは、主にWeb APIです。</p>
+</section>
+<section class="article-section" aria-labelledby="section-4"><h2 id="section-4">Web APIはどう使うの？</h2>
+<p>Web APIでは、決められたURLへHTTPリクエストを送り、結果を受け取る形がよく使われます。</p>
+<p>例えば天気情報を取得するなら、次のような約束が用意されます。</p>
+<ol>
+<li>指定された窓口へアクセスする。</li>
+<li>地域や日付など、必要な条件を渡す。</li>
+<li>サービスが情報を探す。</li>
+<li>JSONなどの形式で結果を返す。</li>
+</ol>
+<p>実際には、ユーザーを確認するAPIキーや認証、利用回数の制限、エラー処理なども必要です。「URLを開くだけで何でも使える」とは限りません。</p>
+</section>
+<section class="article-section" aria-labelledby="section-5"><h2 id="section-5">身近なAPIの例</h2>
+<h3>Googleなどのアカウントでログイン</h3>
+<p>認証用の仕組みを通して、ユーザーが誰かを確認します。連携先へパスワードそのものを渡さずにログインできる方式もあります。</p>
+<h3>天気予報アプリ</h3>
+<p>気象データを提供するWeb APIから情報を受け取り、見やすい画面へ整えます。</p>
+<h3>決済機能</h3>
+<p>決済サービスのAPIへ金額や取引情報を送り、処理結果を受け取ります。実際の決済では、認証や不正利用対策も組み合わされます。</p>
+</section>
+<section class="article-section" aria-labelledby="section-6"><h2 id="section-6">APIを使うメリット</h2>
+<ul>
+<li>すでにある機能を再利用できる</li>
+<li>内部実装を隠したまま、必要な機能だけ提供できる</li>
+<li>連携方法を統一しやすい</li>
+<li>認証や権限によって、使える範囲を制御できる</li>
+</ul>
+<p>ただし、APIを使うだけで安全になるわけではありません。入力の確認、認証、権限、通信の保護、エラー処理が必要です。</p>
+</section>
+<section class="article-section" aria-labelledby="section-talk"><h2 id="section-talk">この言葉が会話に出てくるとき</h2>
+<p>例えば、「天気を自前で測らず、提供元の窓口から受け取る」と決める会話です。自分で全部作るか、窓口を借りるかの分岐です。</p>
+<p>例えば、連携が止まったときです。「こちらの送り方が悪いのか、先方の窓口が応えないのか」を切り分けます。</p>
+</section>
+<section class="article-section" aria-labelledby="section-misread"><h2 id="section-misread">勘違いしやすい点</h2>
+<ul>
+<li><strong>画面のこと：</strong> 人が見るページではなく、ソフトウェア同士の約束です。</li>
+<li><strong>呼べば必ず成功：</strong> 認証、回数制限、相手側の障害で失敗します。</li>
+<li><strong>中身の形は自由：</strong> 送る項目と返す形が、窓口のルールに含まれます。</li>
+</ul>
+<p>使う前に見るのは、何を送り、何が返り、失敗したらどう表示するかです。</p>
+</section>
+<section class="article-section" aria-labelledby="section-7"><h2 id="section-7">まとめ</h2>
+<ul>
+<li><strong>API</strong> ＝ <strong>「別のソフトウェアの機能を使うための窓口とルール」</strong></li>
+<li><strong>Web API</strong> ＝ <strong>「ネットワーク越しに機能やデータを利用するAPI」</strong></li>
+<li><strong>大切なこと</strong> ＝ <strong>「公開された使い方、認証、制限、エラーを確認する」</strong></li>
+</ul>
+<p>APIがあることで、すべてをゼロから作らず、外部の機能と組み合わせてサービスを作れます。</p>
+<p>次の記事では、Web APIの具体的な窓口となる「エンドポイント」について解説します。</p>
+<p>ここまでお読みいただきありがとうございました！</p>
+</section>
+          <aside class="lab-example" aria-labelledby="lab-example-title">
+            <p class="eyebrow">FROM THE LAB</p>
+            <h2 id="lab-example-title">KatakataLabでの実例</h2>
+            <p>KatakataLabのツールには、外部APIへ送らずブラウザ内で処理するものもあります。既存サービスとの連携が必要な時はAPI、端末内で完結できる時はローカル処理というように、目的に合わせて選びます。</p>
+            <p>例えばパスワード生成やアスペクト比計算は、サーバーに送る必要がありません。一方、アクセス解析や広告配信のように外部サービスの仕組みを借りる場面ではAPI（やそれに類する連携）が出てきます。「便利だから全部外に投げる」ではなく、<strong>外に出す情報の価値</strong>で切り分けるのが実務的です。</p>
+            <p class="related-heading">この実例につながるページ</p>
+            <ul class="related-links"><li><a href="endpoint.html">関連用語：エンドポイント</a></li>
+<li><a href="json.html">関連用語：JSON</a></li>
+<li><a href="security.html">関連用語：セキュリティ</a></li></ul>
+          </aside>
+          <section class="article-section" aria-labelledby="section-lab-fail">
+            <h2 id="section-lab-fail">開発でつまずいた話（API）</h2>
+            <p>「動けばOK」で外部の天気APIを試し、キーをフロントのJavaScriptに直書きしてしまったことがあります。デモとしては動きますが、キーが丸見えになり、利用制限や不正利用の入口になります。以降は、<strong>ブラウザに置く情報</strong>と<strong>サーバー側だけが持つ秘密</strong>を分け、公開サイトでは秘密を載せない方針にしました。</p>
+            <p>もう一つの失敗は、エラー時のレスポンスを無視して「通信できた＝成功」と扱うことです。HTTPの200以外や、本文中の error フィールドを見ないと、画面には空っぽの結果だけが残ります。APIは窓口なので、呼び出せたことと、望んだ結果が返ったことは別です。</p>
+            <h3>確認すると楽になるチェック</h3>
+            <ul>
+              <li>何を送り、何が返るか（成功時・失敗時）がドキュメントにあるか</li>
+              <li>認証情報はどこに置く設計か（公開HTMLに秘密を書いていないか）</li>
+              <li>回数制限・料金・利用規約を読んだか</li>
+              <li>失敗時にユーザーへ何を表示するか決めたか</li>
+            </ul>
+          </section>
+          <section class="article-section faq" aria-labelledby="faq-title">
+            <p class="eyebrow">QUICK CHECK</p>
+            <h2 id="faq-title">よくある質問</h2>
+            <h3>APIはすべてインターネット経由ですか？</h3>
+            <p>いいえ。OSやライブラリが提供するAPIのように、同じ端末やプログラム内で使うものもあります。ネットワーク越しに使うWeb APIはAPIの一種です。</p>
+            <h3>次に読むなら？</h3><p><a href="endpoint.html">ENDPOINTの記事</a>へ進むと、次の用語を順番に読めます。</p>
+          </section>
+          <section class="article-section references" aria-labelledby="references-title">
+            <h2 id="references-title">参考資料</h2>
+            <p>用語の定義や仕様を確認するため、公式文書・標準文書を参照しています。リンク先の内容は更新される場合があります。</p>
+            <ul><li><a href="https://developer.mozilla.org/ja/docs/Web/API" target="_blank" rel="noopener noreferrer">MDN「Web APIs」</a></li></ul>
+          </section>
+          <nav class="chapter-nav" aria-label="前後の記事">
+            <a class="chapter-link previous" href="senzogaeri.html"><small>前の記事</small><span>← REGRESSION</span></a>
+            <a class="chapter-link next" href="endpoint.html"><small>次の記事</small><span>ENDPOINT →</span></a>
+          </nav>
+        </div>
+      </div>
+    </article>
+  </main>
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <p><strong>KatakataLab</strong><br><span>作って、つまずいて、分かったことを残す小さな研究室。</span></p>
+      <nav aria-label="フッターナビゲーション">
+        <a href="../../contact.html">お問い合わせ</a>
+        <a href="../../who-is-katakata.html">運営者情報</a>
+        <a href="../../privacy.html">プライバシーポリシー</a>
+        <a href="../../sitemap.html">サイトマップ</a>
+      </nav>
+    </div>
+    <p class="copyright">&copy; 2024-2026 KatakataLab</p>
+  </footer>
+</body>
+</html>

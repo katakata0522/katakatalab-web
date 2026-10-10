@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>【IT用語】「セキュリティ」とは？情報とサービスを守る考え方 | KatakataLab</title>
+  <meta name="description" content="セキュリティとは何かを、機密性・完全性・可用性、認証と認可、パスワード保存、多要素認証、多層防御の基本から解説します。">
+  <link rel="canonical" href="https://katakatalab.com/guides/it-basics/security.html">
+  <meta property="og:type" content="article">
+  <meta property="og:site_name" content="KatakataLab">
+  <meta property="og:title" content="【IT用語】「セキュリティ」とは？情報とサービスを守る考え方">
+  <meta property="og:description" content="セキュリティとは何かを、機密性・完全性・可用性、認証と認可、パスワード保存、多要素認証、多層防御の基本から解説します。">
+  <meta property="og:url" content="https://katakatalab.com/guides/it-basics/security.html">
+  <meta property="og:image" content="https://katakatalab.com/ogp.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="icon" href="../../favicon.ico">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&family=Zen+Kurenaido&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css?v=20260824-responsive">
+  <script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": "【IT用語】「セキュリティ」とは？情報とサービスを守る考え方",
+  "description": "セキュリティとは何かを、機密性・完全性・可用性、認証と認可、パスワード保存、多要素認証、多層防御の基本から解説します。",
+  "datePublished": "2026-07-13",
+  "dateModified": "2026-08-04",
+  "mainEntityOfPage": "https://katakatalab.com/guides/it-basics/security.html",
+  "inLanguage": "ja",
+  "author": {
+    "@type": "Person",
+    "name": "かたかた",
+    "url": "https://katakatalab.com/who-is-katakata.html"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "KatakataLab",
+    "url": "https://katakatalab.com/"
+  }
+}</script>
+  <script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position": 1,
+      "name": "ホーム",
+      "item": "https://katakatalab.com/"
+    },
+    {
+      "@type": "ListItem",
+      "position": 2,
+      "name": "かたかたの制作ノート",
+      "item": "https://katakatalab.com/guides/it-basics/"
+    },
+    {
+      "@type": "ListItem",
+      "position": 3,
+      "name": "【IT用語】「セキュリティ」とは？情報とサービスを守る考え方",
+      "item": "https://katakatalab.com/guides/it-basics/security.html"
+    }
+  ]
+}</script>
+</head>
+<body>
+    <script>try{if(localStorage.getItem('theme')==='dark')document.body.classList.add('dark-mode');}catch(e){}</script>
+  <a class="skip-link" href="#main-content">本文へ移動</a>
+  <header class="site-header">
+    <div class="header-inner">
+      <a class="brand" href="../../" aria-label="KatakataLab ホーム">
+        <span class="brand-mark" aria-hidden="true">K</span>
+        <span><strong>KatakataLab</strong><small>かたかたの制作ノート</small></span>
+      </a>
+      <nav class="site-nav" aria-label="主要ナビゲーション">
+        <a href="./">記事一覧</a>
+        <a href="../../#projects">作品・ツール</a>
+        <a href="../../who-is-katakata.html">運営者</a>
+      </nav>
+    </div>
+  </header>
+  <main id="main-content">
+    <nav class="breadcrumbs" aria-label="パンくずリスト">
+      <a href="../../">ホーム</a><span aria-hidden="true">/</span><a href="./">かたかたの制作ノート</a><span aria-hidden="true">/</span><span aria-current="page">「セキュリティ」とは？情報とサービスを守る考え方</span>
+    </nav>
+    <article class="article-shell">
+      <header class="article-hero">
+        <div class="chapter-stamp"><span>CHAPTER 04</span><strong>SECURITY</strong></div>
+        <p class="chapter-name">第4章｜システムの通信</p>
+        <h1>【IT用語】「セキュリティ」とは？情報とサービスを守る考え方</h1>
+        <p class="article-lead">セキュリティとは何かを、機密性・完全性・可用性、認証と認可、パスワード保存、多要素認証、多層防御の基本から解説します。</p>
+        <div class="article-meta" aria-label="記事情報">
+          <span>作成者：かたかた</span><span>公開日：2026年7月13日</span><span>更新日：2026年8月4日</span>
+        </div>
+      </header>
+      <div class="article-layout">
+        <aside class="article-toc" aria-label="目次"><p>このページの目次</p><ol><li><a href="#section-1">結論：「セキュリティ」＝「情報とサービスを、望ましくない事故や攻撃から守ること」</a></li>
+<li><a href="#section-2">認証と認可の違い</a></li>
+<li><a href="#section-3">パスワードの使い回しが危険な理由</a></li>
+<li><a href="#section-4">サービス側はパスワードをどう保存する？</a></li>
+<li><a href="#section-5">1つの対策だけに頼らない「多層防御」</a></li>
+<li><a href="#section-6">セキュリティは「人を責めるため」ではない</a></li>
+<li><a href="#section-talk">この言葉が会話に出てくるとき</a></li>
+<li><a href="#section-misread">勘違いしやすい点</a></li>
+<li><a href="#section-7">まとめ</a></li></ol></aside>
+        <div class="article-content">
+          <p>「セキュリティを強化する」</p>
+<p>「セキュリティ上の問題が見つかった」</p>
+<p>セキュリティというと、強いパスワードやウイルス対策ソフトを思い浮かべるかもしれません。どちらも大切ですが、それだけではありません。</p>
+<p>今回は、セキュリティを<strong>「大切なものを守りながら、必要な人には使ってもらう仕組み」</strong>として解説します。</p>
+<section class="article-section" aria-labelledby="section-1"><h2 id="section-1">結論：「セキュリティ」＝「情報とサービスを、望ましくない事故や攻撃から守ること」</h2>
+<p>セキュリティには、代表的な3つの目的があります。</p>
+<ul>
+<li><strong>機密性：</strong> 見てよい人だけが情報を見られる。</li>
+<li><strong>完全性：</strong> 情報が勝手に書き換えられない。</li>
+<li><strong>可用性：</strong> 必要な時にサービスを利用できる。</li>
+</ul>
+<p>「誰にも触らせない」だけでは、サービスとして役に立ちません。守ることと、正しく使えることの両方が必要です。</p>
+</section>
+<section class="article-section" aria-labelledby="section-2"><h2 id="section-2">認証と認可の違い</h2>
+<p>似ているようで、役割が違います。</p>
+<h3>認証：あなたは誰？</h3>
+<p>ログインなどによって、ユーザーや機器が誰なのかを確かめます。</p>
+<p>コンサートで本人確認付きのチケットを確認する場面に近いでしょう。単にチケットを持っているだけでは本人確認にならないため、実際の認証方法はサービスによって異なります。</p>
+<h3>認可：何をしてよい？</h3>
+<p>認証した相手が、どの機能や情報を使えるかを判断します。</p>
+<p>一般の参加者は客席へ入れても、関係者用エリアには入れません。同じように、一般ユーザーと管理者では使える機能が違います。</p>
+<p>ログインできることと、管理者の操作ができることは別の話です。</p>
+</section>
+<section class="article-section" aria-labelledby="section-3"><h2 id="section-3">パスワードの使い回しが危険な理由</h2>
+<p>あるサービスからメールアドレスとパスワードが漏れた時、攻撃者は同じ組み合わせを別のサービスでも試します。これを「リスト型攻撃」と呼びます。</p>
+<p>対策の基本は次のとおりです。</p>
+<ul>
+<li>サービスごとに異なるパスワードを使う</li>
+<li>パスワードマネージャーを利用する</li>
+<li>長く推測されにくいパスフレーズを使う</li>
+<li>多要素認証やパスキーを利用できる場合は有効にする</li>
+</ul>
+<p>使い回しを避けるために、すべてを暗記する必要はありません。安全に管理できる道具を使うことも立派な対策です。</p>
+</section>
+<section class="article-section" aria-labelledby="section-4"><h2 id="section-4">サービス側はパスワードをどう保存する？</h2>
+<p>パスワードをそのまま保存してはいけません。一般には、パスワード保存用の方式で<strong>ソルトを加え、計算コストを持たせてハッシュ化</strong>します。</p>
+<p>ハッシュ化は、データを元へ戻す暗号化とは役割が違います。単純にSHA-256へ通すだけでは、パスワード保存として十分ではありません。Argon2idなど、用途に適した方式と設定が必要です。</p>
+</section>
+<section class="article-section" aria-labelledby="section-5"><h2 id="section-5">1つの対策だけに頼らない「多層防御」</h2>
+<p>完璧な対策を1つ置くのではなく、複数の守りを重ねます。</p>
+<ul>
+<li><strong>アクセス制御：</strong> 必要な通信やユーザーだけを許可する。</li>
+<li><strong>認証・認可：</strong> 誰か、何をしてよいかを確認する。</li>
+<li><strong>暗号化：</strong> 通信中や保存中のデータを保護する。</li>
+<li><strong>更新：</strong> 既知の脆弱性を修正する。</li>
+<li><strong>監視：</strong> 異常な動きを見つける。</li>
+<li><strong>バックアップ：</strong> 事故や攻撃から復旧できるようにする。</li>
+</ul>
+<p>ファイアウォールも、多層防御の一部です。すべての悪い通信を自動で見抜く魔法の壁ではなく、決めたルールに基づいて通信を制御します。</p>
+</section>
+<section class="article-section" aria-labelledby="section-6"><h2 id="section-6">セキュリティは「人を責めるため」ではない</h2>
+<p>安全な仕組みは、ユーザーが間違える可能性も考えて作ります。</p>
+<p>確認画面、権限の分離、入力チェック、操作ログなどを用意し、1回の間違いが大きな事故につながらないようにします。</p>
+<p>セキュリティを「面倒な制限」だけで終わらせず、安心して使い続けるための設計として考えることが大切です。</p>
+</section>
+<section class="article-section" aria-labelledby="section-talk"><h2 id="section-talk">この言葉が会話に出てくるとき</h2>
+<p>例えば、公開前に「誰が読めて、誰が書いてよいか」を決める会話です。機能追加より先に、見えてはいけない範囲を決めます。</p>
+<p>例えば、パスワードや控えファイルの置き場を決めるときです。便利さと、漏れたときの影響を並べます。</p>
+</section>
+<section class="article-section" aria-labelledby="section-misread"><h2 id="section-misread">勘違いしやすい点</h2>
+<ul>
+<li><strong>専門家だけの仕事：</strong> 公開範囲、使い回し、共有端末は、作る人にも使う人にも関係します。</li>
+<li><strong>パスワードを長くすれば十分：</strong> 保存の仕方、権限、更新、置き場もセットです。</li>
+<li><strong>一度設定すれば終わり：</strong> 機能を足すたびに、見える範囲が広がり得ます。</li>
+</ul>
+<p>守る対象を先に書くと、対策の順番が決めやすくなります。</p>
+</section>
+<section class="article-section" aria-labelledby="section-7"><h2 id="section-7">まとめ</h2>
+<ul>
+<li><strong>セキュリティ</strong> ＝ <strong>「情報とサービスを、事故や攻撃から守ること」</strong></li>
+<li><strong>認証</strong> ＝ <strong>「誰なのかを確かめる」</strong></li>
+<li><strong>認可</strong> ＝ <strong>「何をしてよいかを決める」</strong></li>
+<li><strong>基本</strong> ＝ <strong>「1つの対策に頼らず、複数の守りを重ねる」</strong></li>
+</ul>
+<p>この章で、本書の16用語をすべて紹介しました。</p>
+<p>最初は呪文に聞こえた言葉も、役割と使われ方が分かれば、少しずつ自分の言葉に変わっていきます。</p>
+<p>ここまでお付き合いいただき、心からありがとうございました！</p>
+</section>
+          <aside class="lab-example" aria-labelledby="lab-example-title">
+            <p class="eyebrow">FROM THE LAB</p>
+            <h2 id="lab-example-title">KatakataLabでの実例</h2>
+            <p>KatakataLabでは、入力を外部送信しないツールはその範囲をページ上で説明し、CodeStudioのプレビューはiframeのsandboxで権限を絞っています。安全性は一言で断言せず、実装した境界を具体的に伝えることが重要です。</p>
+            <p class="related-heading">この実例につながるページ</p>
+            <ul class="related-links"><li><a href="../password-guide.html">パスワードの考え方ガイド</a></li>
+<li><a href="../../privacy.html">プライバシーポリシー</a></li>
+<li><a href="api.html">関連用語：API</a></li></ul>
+          </aside>
+          <section class="article-section" aria-labelledby="section-security-fail">
+            <h2 id="section-security-fail">「安全そう」で済ませて後悔した話</h2>
+            <p>個人開発の初期に、「HTTPSだから大丈夫」「自分しか知らないURLだから大丈夫」と思い込んでいたことがあります。前者は通信の暗号化であり、アプリの設計ミスやXSSを全部防いではくれません。後者は、URLが漏れたり推測されたりした瞬間に前提が崩れます。</p>
+            <p>そこで今は、次の層を分けて考えています。</p>
+            <ul>
+              <li><strong>通信:</strong> HTTPS で経路を保護する</li>
+              <li><strong>入力:</strong> 想定外の文字列でも壊れない・変なスクリプトを実行しない</li>
+              <li><strong>権限:</strong> プレビューや埋め込みでできる操作を最小にする</li>
+              <li><strong>秘密:</strong> APIキーや管理用情報を公開HTMLに置かない</li>
+              <li><strong>運用:</strong> 依存ライブラリとデプロイ手順を雑に増やさない</li>
+            </ul>
+            <p>セキュリティは「完璧」より<strong>穴の種類を減らす作業</strong>です。パスワードを長くするのもその一枚で、使い回しをやめる・二段階認証を足す・生成後の保管先を決める、が揃って初めて意味を持ちます。</p>
+          </section>
+          <section class="article-section faq" aria-labelledby="faq-title">
+            <p class="eyebrow">QUICK CHECK</p>
+            <h2 id="faq-title">よくある質問</h2>
+            <h3>長いパスワードだけで十分ですか？</h3>
+            <p>長さは重要ですが、使い回しを避けること、パスワードマネージャー、多要素認証やパスキー、サービス側の適切な保存など、複数の対策を重ねるほうが安全です。</p>
+            <h3>最初から読み直すなら？</h3><p><a href="server.html">サーバーの記事</a>から読むと、16語のつながりを順番に確認できます。</p>
+          </section>
+          <section class="article-section references" aria-labelledby="references-title">
+            <h2 id="references-title">参考資料</h2>
+            <p>用語の定義や仕様を確認するため、公式文書・標準文書を参照しています。リンク先の内容は更新される場合があります。</p>
+            <ul><li><a href="https://pages.nist.gov/800-63-4/sp800-63b.html" target="_blank" rel="noopener noreferrer">NIST SP 800-63B「Authentication and Lifecycle Management」</a></li>
+<li><a href="https://cheatsheetseries.owasp.org/cheatsheets/Password_Storage_Cheat_Sheet.html" target="_blank" rel="noopener noreferrer">OWASP「Password Storage Cheat Sheet」</a></li></ul>
+          </section>
+          <nav class="chapter-nav" aria-label="前後の記事">
+            <a class="chapter-link previous" href="status-code.html"><small>前の記事</small><span>← STATUS CODE</span></a>
+            <a class="chapter-link next" href="./"><small>読み終えたら</small><span>記事一覧へ →</span></a>
+          </nav>
+        </div>
+      </div>
+    </article>
+  </main>
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <p><strong>KatakataLab</strong><br><span>作って、つまずいて、分かったことを残す小さな研究室。</span></p>
+      <nav aria-label="フッターナビゲーション">
+        <a href="../../contact.html">お問い合わせ</a>
+        <a href="../../who-is-katakata.html">運営者情報</a>
+        <a href="../../privacy.html">プライバシーポリシー</a>
+        <a href="../../sitemap.html">サイトマップ</a>
+      </nav>
+    </div>
+    <p class="copyright">&copy; 2024-2026 KatakataLab</p>
+  </footer>
+</body>
+</html>

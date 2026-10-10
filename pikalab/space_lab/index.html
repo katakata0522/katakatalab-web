@@ -1,0 +1,553 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="robots" content="noindex, follow">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ほしぞら・アドベンチャー - PikaLab</title>
+    <meta name="description" content="星空を探検しながら天体に親しめる、子ども向けの体験型宇宙学習アプリです。">
+    <link rel="canonical" href="https://katakatalab.com/pikalab/space_lab/">
+    <!-- Tailwind utilities generated for PikaLab plus page-specific styles. -->
+    <link rel="stylesheet" href="../style.css">
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@400;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0,0" />
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#0f172a">
+    <link rel="apple-touch-icon" href="assets/sun.png">
+
+    <!-- OGP Tags -->
+    <meta property="og:title" content="ほしぞら・アドベンチャー - PikaLab">
+    <meta property="og:description" content="星空を探検しながら天体に親しめる、子ども向けの体験型宇宙学習アプリです。">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://katakatalab.com/pikalab/space_lab/">
+    <meta property="og:image" content="https://katakatalab.com/pikalab/pikalab_ogp_compressed.jpg">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="ほしぞら・アドベンチャー - PikaLab">
+    <meta name="twitter:description" content="星空を探検しながら天体に親しめる、子ども向けの体験型宇宙学習アプリです。">
+    <meta name="twitter:image" content="https://katakatalab.com/pikalab/pikalab_ogp_compressed.jpg">
+
+    <!-- Tailwind & Google Fonts -->
+    <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"ほしぞら・アドベンチャー - PikaLab","url":"https://katakatalab.com/pikalab/space_lab/","description":"星空を探検しながら天体に親しめる、子ども向けの体験型宇宙学習アプリです。","applicationCategory":"EducationalApplication","operatingSystem":"Any","isAccessibleForFree":true,"offers":{"@type":"Offer","price":"0","priceCurrency":"JPY"}}</script>
+</head>
+<body class="bg-slate-900 text-white overflow-hidden font-sans select-none" style="background-image: none !important; background-color: #0f172a;">
+    <noscript>
+        <div class="fixed inset-0 z-[999] bg-slate-900 flex flex-col justify-center items-center text-center p-6">
+            <h2 class="text-3xl font-bold text-red-400 mb-4">JavaScriptが無効です</h2>
+            <p class="text-slate-300">ほしぞら・アドベンチャーを遊ぶには、ブラウザの設定でJavaScriptを有効にしてください。</p>
+        </div>
+    </noscript>
+    <main>
+
+    <!-- Loading Screen -->
+    <div id="loading-overlay" class="fixed inset-0 z-[100] bg-slate-950 flex flex-col justify-center items-center transition-opacity duration-1000 overflow-hidden">
+        <!-- 3D Warp Speed Canvas -->
+        <canvas id="warp-loader-canvas" class="absolute inset-0 z-0 block w-full h-full pointer-events-none"></canvas>
+        
+        <!-- Warp Flash Effect Layer -->
+        <div id="warp-loader-flash" class="fixed inset-0 z-[101] bg-white opacity-0 transition-opacity duration-300 pointer-events-none"></div>
+
+        <!-- Futuristic HUD overlay -->
+        <div class="relative z-10 flex flex-col justify-center items-center text-center p-6 bg-slate-950/40 border border-white/5 rounded-3xl backdrop-blur-md max-w-sm w-full mx-4 shadow-[0_0_50px_rgba(0,0,0,0.8)]">
+            <!-- Cool Sci-Fi Decal/Lines -->
+            <div class="w-12 h-1 bg-gradient-to-r from-blue-500 to-cyan-400 rounded-full mb-4"></div>
+            
+            <h2 class="text-lg md:text-xl font-black tracking-[0.2em] text-transparent bg-clip-text bg-gradient-to-r from-blue-100 via-cyan-200 to-indigo-200 drop-shadow-md">
+                ほしぞら・アドベンチャー
+            </h2>
+            <p class="text-[9px] font-mono text-slate-500 tracking-[0.3em] uppercase mt-1">PIKALAB NAV-SYSTEM v1.9.9</p>
+            
+            <!-- Real-time Status Console -->
+            <div class="w-full mt-6 p-3 bg-black/60 rounded-xl border border-white/5 text-left font-mono">
+                <div id="loading-status-feed" class="text-cyan-400 text-[10px] tracking-wider uppercase leading-relaxed h-8 flex items-center">
+                    ► SYSTEM INITIALIZING...
+                </div>
+            </div>
+
+            <!-- Neon Progress Readout -->
+            <div id="loading-percentage" class="text-blue-300 font-mono text-xs font-bold tracking-widest mt-4">
+                WARP JUMP INITIALIZED: 0%
+            </div>
+            
+            <!-- Sleek Glow Progress Bar -->
+            <div id="loading-bar-container" class="w-full h-1.5 bg-slate-900 rounded-full mt-2 overflow-hidden border border-white/10 relative shadow-[0_0_15px_rgba(6,182,212,0.05)]">
+                <div id="loading-progress-bar" class="h-full bg-gradient-to-r from-blue-600 via-cyan-400 to-indigo-600 rounded-full w-0 transition-all duration-100 ease-out shadow-[0_0_10px_rgba(6,182,212,0.8)]"></div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Background Image -->
+    <div id="bg-layer" class="fixed inset-0 z-0 bg-cover bg-left-top opacity-40 mix-blend-screen pointer-events-none" style="background-image: url('assets/background.png'); width: 200vw;"></div>
+
+    <div id="stars-layer" class="fixed inset-0 z-0 space-stars pointer-events-none" style="width: 200vw;"></div>
+
+    <!-- Header -->
+    <header id="space-header" class="fixed top-0 left-0 right-0 p-4 z-50 flex justify-between items-center bg-gradient-to-b from-slate-900/80 to-transparent backdrop-blur-sm">
+        <a href="../" class="flex items-center gap-2 text-white/80 hover:text-white transition-colors group p-2 rounded-full hover:bg-white/10" aria-label="PikaLabへ戻る">
+            <svg class="w-6 h-6 transform group-hover:-translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7" />
+            </svg>
+            <span class="font-bold hidden sm:block tracking-wider text-sm">PikaLab</span>
+        </a>
+        <h1 class="text-xl md:text-2xl font-bold tracking-widest text-transparent bg-clip-text bg-gradient-to-r from-blue-300 via-purple-300 to-pink-300 drop-shadow-md flex items-center gap-2">
+            <span class="text-2xl">🚀</span>
+            ほしぞら・アドベンチャー
+        </h1>
+        <div class="flex items-center gap-2">
+            <!-- バッジ＆ひみつファイル常設ボタン -->
+            <button id="header-badge-btn" class="p-2 rounded-full bg-white/10 hover:bg-white/20 text-white/80 hover:text-white transition-all focus:outline-none flex items-center justify-center relative hover:scale-105 active:scale-95" aria-label="バッジとひみつコラム" title="バッジとひみつファイル">
+                <span class="material-symbols-rounded text-xl">workspace_premium</span>
+                <span id="header-badge-dot" class="absolute top-0 right-0 w-2 h-2 bg-red-500 rounded-full hidden animate-pulse"></span>
+            </button>
+            <button id="bgm-toggle-btn" class="p-2 rounded-full bg-white/10 hover:bg-white/20 text-white/80 hover:text-white transition-colors focus:outline-none" aria-label="BGMミュート切替" title="BGMのON/OFF">
+                <svg id="bgm-icon-on" class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5 10v4a2 2 0 002 2h2l4 4V4L9 8H7a2 2 0 00-2 2z"></path></svg>
+                <svg id="bgm-icon-off" class="w-6 h-6 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h2.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" clip-rule="evenodd"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2"></path></svg>
+            </button>
+            <button type="button" data-action="parents-modal-open"
+                class="p-2 rounded-full bg-white/10 hover:bg-white/20 text-white/80 hover:text-white transition-all focus:outline-none flex items-center justify-center hover:scale-105 active:scale-95"
+                aria-label="保護者の方へ - 開く" aria-haspopup="dialog" aria-expanded="false" title="保護者の方へ">
+                <span class="material-symbols-rounded text-xl text-blue-300">family_restroom</span>
+            </button>
+        </div>
+    </header>
+
+    
+    <!-- Mini Map (インタラクティブなハイパーナビゲーション) -->
+    <div id="minimap-container" class="fixed top-20 left-1/2 -translate-x-1/2 w-[80%] max-w-xl h-2 bg-slate-800/80 rounded-full z-40 border border-slate-700/50 backdrop-blur-sm pointer-events-auto transition-opacity duration-300">
+        <!-- Sun to Neptune markers (JSで動的に生成してクリック移動を可能にする) -->
+        <div id="minimap-markers" class="absolute inset-0 flex justify-between items-center px-1"></div>
+        <!-- Ship Indicator -->
+        <div id="minimap-indicator" class="absolute top-1/2 -translate-y-1/2 -ml-2 text-lg transition-all duration-100 ease-out z-10 filter drop-shadow-[0_0_3px_rgba(255,255,255,0.8)] pointer-events-none" style="left: 0%;">🚀</div>
+    </div>
+
+    <!-- 横長の宇宙マップをページ全体ではなく、この専用領域内に閉じ込める -->
+    <div id="space-map-viewport">
+        <!-- Canvas: 宇宙マップ全体 -->
+        <canvas id="space-canvas" class="absolute inset-0 z-10 block" style="touch-action: none;"></canvas>
+
+        <!-- A11y Container (Keyboard Navigation) -->
+        <div id="a11y-container" class="absolute top-0 left-0 h-full z-20 pointer-events-none" style="width: 10000px;"></div>
+    </div>
+
+    <!-- Scroll hint -->
+    <div id="scroll-hint" class="fixed bottom-6 left-0 right-0 flex flex-col items-center gap-2 text-cyan-300 font-black text-sm tracking-widest filter drop-shadow-[0_0_8px_rgba(6,182,212,0.8)] pointer-events-none transition-opacity duration-500 z-20">
+        <p class="tracking-widest">スワイプして星を探そう</p>
+        <div class="flex gap-4 text-cyan-400">
+            <svg class="w-5 h-5 animate-bounce-x-reverse" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
+            <svg class="w-5 h-5 animate-bounce-x" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+        </div>
+    </div>
+
+    <!-- UFOの画面外飛行で文書幅を広げない専用の描画領域 -->
+    <div id="ufo-viewport">
+        <div id="ufo-btn" role="button" tabindex="-1" class="absolute cursor-pointer opacity-0 pointer-events-none transition-opacity duration-300 hover:scale-110 drop-shadow-[0_0_15px_rgba(34,197,94,0.8)] z-[45]" style="width: 80px; height: 80px;" aria-label="未確認飛行物体を調べる">
+            <div class="w-full h-full flex items-center justify-center text-6xl animate-bounce filter drop-shadow-md">🛸</div>
+        </div>
+
+    </div>
+
+    <!-- PWA Update Toast -->
+    <div id="pwa-toast" class="fixed bottom-6 left-1/2 -translate-x-1/2 z-[100] bg-slate-800/90 backdrop-blur-md border border-blue-500/50 rounded-2xl p-4 shadow-[0_10px_40px_rgba(0,0,0,0.5)] flex items-center gap-4 transition-all duration-500 transform translate-y-32 opacity-0 pointer-events-none">
+        <div class="text-blue-400"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg></div>
+        <div class="flex-1 text-sm font-medium">新しいバージョンがあります！</div>
+        <button id="pwa-refresh-btn" class="px-4 py-2 bg-blue-600 hover:bg-blue-500 rounded-lg font-bold transition-colors">更新する</button>
+        <button id="pwa-close-btn" aria-label="更新通知を閉じる" class="p-2 text-slate-400 hover:text-white rounded-lg transition-colors"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg></button>
+    </div>
+
+    <!-- Warp Animation Overlay -->
+    <div id="warp-overlay" class="fixed inset-0 z-40 bg-slate-950 flex flex-col justify-center items-center opacity-0 pointer-events-none transition-opacity duration-500">
+        <!-- 3D Warp Speed Canvas for Cinematic Effect -->
+        <canvas id="warp-canvas" class="absolute inset-0 z-0 block w-full h-full pointer-events-none"></canvas>
+        <div class="relative w-64 h-64 flex justify-center items-center z-10">
+            <!-- Spaceship with Screen Blend Mode to completely eliminate black background borders -->
+            <img src="assets/spaceship.png" alt="spaceship" class="spaceship-warp w-32 object-contain relative z-10 filter drop-shadow-[0_0_20px_rgba(59,130,246,0.9)]" style="mix-blend-mode: screen !important;">
+        </div>
+    </div>
+            <!-- Planet Detail Modal (レスポンシブ: スマホ縦1列, PC横2列) -->
+    <div id="planet-detail-modal"
+         class="fixed inset-0 z-[60] bg-slate-950/70 backdrop-blur-md opacity-0 pointer-events-none transition-all duration-500 flex justify-center items-center p-4 sm:p-6"
+         role="dialog" aria-modal="true" aria-labelledby="detail-name" aria-hidden="true" inert>
+
+        <!-- モーダルカード本体 (グラスプレミアム & SFコーナー) - 高さを固定して内側のスクロールを安定化 -->
+        <div class="relative w-full max-w-5xl glass-premium rounded-3xl shadow-[0_20px_50px_rgba(0,0,0,0.65)] flex flex-col h-[85vh] max-h-[750px] overflow-hidden hud-corner-container hud-corner-bracket hud-corner-bracket-bottom">
+            <!-- 上部SFインジケーターバー -->
+            <div class="absolute top-0 left-12 right-12 h-[2px] bg-gradient-to-r from-transparent via-cyan-500/80 to-transparent pointer-events-none"></div>
+
+            <!-- 閉じるボタン (カード内上部右側に固定) -->
+            <button id="close-modal-btn"
+                    class="absolute top-4 right-4 p-2.5 rounded-full bg-white/5 hover:bg-white/15 text-white/80 hover:text-white transition-all z-20 focus:outline-none focus:ring-2 focus:ring-white/50 border border-white/10"
+                    aria-label="閉じる">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+            </button>
+
+            <!-- スクロール可能なメインコンテンツエリア -->
+            <div id="modal-body" class="flex-1 overflow-y-auto p-6 pb-24 sm:p-8 sm:pb-28 flex flex-col sm:flex-row items-start gap-6 custom-scrollbar relative z-10">
+
+                <!-- 【左カラム (画像・基本データ)】 -->
+                <div class="w-full sm:w-5/12 flex flex-col gap-4 shrink-0">
+                    <!-- ① 惑星ビジュアル＋名前 -->
+                    <div class="relative bg-white/5 backdrop-blur-lg border border-white/10 rounded-2xl overflow-hidden shadow-[0_8px_32px_0_rgba(0,0,0,0.37)] flex flex-col items-center pt-8 pb-6 px-6">
+                        <!-- container with overflow-hidden and rounded-full to perfectly crop the NASA planet sphere and eliminate edge artifacts/credits -->
+                        <div class="relative w-[180px] h-[180px] rounded-full overflow-hidden flex items-center justify-center bg-black/40 border border-white/5 shadow-[inset_0_0_20px_rgba(0,0,0,0.6)]">
+                            <img id="detail-image" alt="Planet"
+                                 class="relative z-10 w-full h-full object-cover scale-[1.02] animate-float-slow"
+                                 style="filter: drop-shadow(0 0 30px var(--detail-glow, rgba(255,255,255,0.4)));">
+                        </div>
+                        <!-- 画像クレジット -->
+                        <span id="detail-credit" class="absolute bottom-2 right-3 text-[8px] font-mono text-slate-500 tracking-wider z-20">Credit: NASA</span>
+                        <div class="relative z-10 mt-6 flex flex-col items-center gap-3">
+                            <span id="detail-type" class="px-4 py-1.5 bg-cyan-500/10 text-cyan-300 border border-cyan-500/30 rounded-full text-[10px] font-bold tracking-widest uppercase shadow-[0_0_15px_rgba(6,182,212,0.2)]">惑星タイプ</span>
+                            <h2 id="detail-name" class="text-3xl sm:text-4xl font-black text-transparent bg-clip-text bg-gradient-to-r from-white via-blue-100 to-slate-400 text-center tracking-tight">星の名前</h2>
+                        </div>
+                    </div>
+
+                    <!-- ② データカード（横3列） -->
+                    <div class="grid grid-cols-3 gap-2">
+                        <div class="bg-white/5 backdrop-blur-md border border-white/10 rounded-xl p-3 text-center shadow-md transition-transform hover:-translate-y-0.5">
+                            <p class="text-slate-400 text-[9px] font-bold mb-1 tracking-widest uppercase opacity-70">大きさ</p>
+                            <p id="detail-size" class="text-xs sm:text-sm font-black text-cyan-300 leading-tight font-sans tracking-wide">—</p>
+                        </div>
+                        <div class="bg-white/5 backdrop-blur-md border border-white/10 rounded-xl p-3 text-center shadow-md transition-transform hover:-translate-y-0.5">
+                            <p class="text-slate-400 text-[9px] font-bold mb-1 tracking-widest uppercase opacity-70">距離</p>
+                            <p id="detail-distance" class="text-xs sm:text-sm font-black text-blue-300 leading-tight font-sans tracking-wide">—</p>
+                        </div>
+                        <div class="bg-white/5 backdrop-blur-md border border-white/10 rounded-xl p-3 text-center shadow-md transition-transform hover:-translate-y-0.5">
+                            <p class="text-slate-400 text-[9px] font-bold mb-1 tracking-widest uppercase opacity-70">温度</p>
+                            <p id="detail-temp" class="text-xs sm:text-sm font-black text-purple-300 leading-tight font-sans tracking-wide">—</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 【右カラム (説明・クイズ・豆知識)】 -->
+                <div class="w-full sm:w-7/12 flex flex-col gap-4 shrink-0">
+                    <!-- ③ 説明文 -->
+                    <div class="bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl p-5 shadow-md shrink-0">
+                        <p id="detail-desc" class="text-slate-200 text-sm sm:text-base leading-relaxed tracking-wide">説明</p>
+                    </div>
+
+                    <!-- ④ クイズセクション（主役ボタン） -->
+                    <div id="quiz-section" class="relative overflow-hidden rounded-2xl border border-blue-500/20 shadow-[0_0_30px_rgba(59,130,246,0.1)] bg-white/5 backdrop-blur-md shrink-0">
+                        <div class="absolute inset-0 bg-gradient-to-br from-blue-900/30 to-indigo-900/30 pointer-events-none"></div>
+                        <div class="relative z-10 p-5">
+                            <h3 class="text-blue-300 font-black mb-3 flex items-center gap-2 text-sm sm:text-base">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                                宇宙クイズに挑戦！
+                            </h3>
+                            <p id="quiz-question" class="text-white text-xs sm:text-sm mb-4 font-semibold leading-relaxed tracking-wide"></p>
+                            <div id="quiz-options" class="flex flex-col gap-2.5">
+                                <!-- Options generated by JS -->
+                            </div>
+                        </div>
+                        <!-- 結果表示パネル (オーバーレイではなく選択肢の下にスライドインする構造) -->
+                        <div id="quiz-result" role="status" aria-live="polite" inert
+                             class="mt-4 p-5 rounded-2xl bg-slate-950/60 border border-slate-700 transition-all duration-500 max-h-0 opacity-0 overflow-hidden pointer-events-none flex flex-col items-center text-center">
+                            <div class="flex items-center gap-2 mb-2">
+                                <div id="quiz-result-icon" class="text-3xl">⭕</div>
+                                <p id="quiz-result-text" class="text-white font-bold text-lg">正解！</p>
+                            </div>
+                            <p id="quiz-result-explanation" class="text-slate-300 text-xs sm:text-sm mb-4 leading-relaxed tracking-wide"></p>
+                            <div class="flex gap-3 justify-center w-full">
+                                <button id="quiz-continue-btn" class="px-6 py-2 bg-blue-600 hover:bg-blue-500 text-white rounded-full font-bold text-xs transition-colors shadow-md">了解！</button>
+                                <button id="quiz-retry-btn" class="px-6 py-2 bg-gradient-to-r from-red-600 to-rose-600 hover:from-red-500 hover:to-rose-500 text-white rounded-full font-bold text-xs transition-all hover:scale-105 active:scale-95 shadow-md hidden">もう一度挑戦する</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- ⑤ 豆知識 -->
+                    <div class="relative bg-white/5 backdrop-blur-md border border-fuchsia-500/10 rounded-2xl p-5 overflow-hidden shadow-md group shrink-0">
+                        <div class="absolute -right-6 -bottom-6 text-fuchsia-500/5 transition-transform group-hover:scale-110 group-hover:-rotate-12">
+                            <svg class="w-28 h-28" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"></path></svg>
+                        </div>
+                        <h3 class="text-fuchsia-300 font-black mb-2 flex items-center gap-2 relative z-10 text-sm sm:text-base">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+                            豆知識
+                        </h3>
+                        <p id="detail-trivia" class="text-slate-300 leading-relaxed text-xs sm:text-sm relative z-10"></p>
+                        <div class="mt-4 relative z-10">
+                            <a id="real-photo-btn" href="#" target="_blank" rel="noopener noreferrer"
+                               class="inline-flex items-center gap-1.5 px-4 py-2 bg-white/5 hover:bg-white/10 border border-white/10 rounded-lg text-xs text-fuchsia-200 transition-all hover:scale-105 font-bold shadow-sm">
+                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2-2v12a2 2 0 002 2z"></path></svg>
+                                NASAの観測画像を見る (NASA)
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- 固定されたボトムフッターエリア -->
+            <div class="shrink-0 bg-slate-950/60 backdrop-blur-md border-t border-white/10 p-4 sm:px-8 sm:py-4 flex flex-col sm:flex-row-reverse gap-3">
+                <button id="warp-next-btn"
+                        class="w-full sm:w-auto px-8 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-black rounded-xl shadow-[0_0_15px_rgba(59,130,246,0.4)] transition-all hover:scale-105 active:scale-95 text-sm flex items-center justify-center gap-2 border border-blue-400/30">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+                    次の星へワープする
+                </button>
+                <button id="close-modal-bottom-btn"
+                        class="w-full sm:w-auto px-8 py-3 bg-white/5 hover:bg-white/15 text-white font-bold rounded-xl transition-all hover:scale-105 active:scale-95 text-sm flex items-center justify-center gap-2 border border-white/10">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                    宇宙へ戻る
+                </button>
+            </div>
+
+        </div>
+    </div>
+
+    
+    <!-- Passport Stamp Effect -->
+    <div id="stamp-effect" class="fixed inset-0 z-[80] pointer-events-none flex justify-center items-center opacity-0">
+        <div class="stamp-animation border-4 border-green-500 text-green-500 font-black text-4xl md:text-6xl p-4 md:p-8 rounded-xl transform -rotate-12 bg-slate-900/50 backdrop-blur-sm shadow-[0_0_30px_rgba(16,185,129,0.5)]">
+            VISITED!
+        </div>
+    </div>
+
+    <!-- Celebration Overlay for completing all planets -->
+    <div id="celebration-overlay" role="dialog" aria-modal="true" aria-labelledby="celebration-title" aria-hidden="true" inert class="fixed inset-0 z-[70] bg-black/80 backdrop-blur-sm opacity-0 pointer-events-none transition-opacity duration-1000 flex justify-center items-center">
+        <div class="text-center p-8 bg-gradient-to-b from-blue-900/90 to-purple-900/90 rounded-3xl border-2 border-yellow-400 shadow-[0_0_50px_rgba(250,204,21,0.5)] transform scale-90 transition-transform duration-700" id="celebration-box">
+            <div class="text-6xl mb-4 animate-bounce">👩‍🚀</div>
+            <h2 id="celebration-title" class="text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-yellow-300 to-yellow-500 mb-4">太陽系マスター！</h2>
+            <p class="text-lg text-blue-100 mb-6">すべての星を巡りました。<br>「宇宙飛行士」バッジを獲得！</p>
+            <div class="flex flex-col gap-3 mt-6">
+                <!-- X Share Button -->
+                <a href="https://twitter.com/intent/tweet?text=PikaLab%E3%81%AE%E3%80%8C%E3%81%BB%E3%81%97%E3%81%9E%E3%82%89%E3%83%BB%E3%82%A2%E3%83%89%E3%83%99%E3%83%B3%E3%83%81%E3%83%A3%E3%83%BC%E3%80%8D%E3%81%A7%E5%A4%AA%E9%99%BD%E7%B3%BB%E3%82%92%E5%88%B6%E8%A6%87%E3%81%97%E3%80%81%E5%AE%87%E5%AE%99%E9%A3%9B%E8%A1%8C%E5%A3%AB%E3%83%90%E3%83%83%E3%82%B8%E3%82%92%E7%8D%B2%E5%BE%97%E3%81%97%E3%81%BE%E3%81%97%E3%81%9F%EF%BC%81%F0%9F%AA%90%F0%9F%9A%80%20%23PikaLab%20%23%E3%81%8B%E3%81%9F%E3%81%8B%E3%81%9F&url=https%3A%2F%2Fkatakatalab.com%2Fpikalab%2F" target="_blank" rel="noopener noreferrer" class="px-8 py-3 bg-black text-white font-bold rounded-full hover:scale-105 transition-transform shadow-lg flex items-center justify-center gap-2 border border-slate-700">
+                    <svg class="w-5 h-5 fill-current" viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"></path></svg>
+                    Xで自慢する
+                </a>
+                <button id="close-celebration-btn" class="px-8 py-3 bg-gradient-to-r from-yellow-500 to-yellow-400 text-black font-bold rounded-full hover:scale-105 transition-transform shadow-lg">宇宙へ戻る</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 境界警告HUD (未探索セクター境界) -->
+    <div id="boundary-warning-left" class="fixed top-0 left-0 bottom-0 w-8 z-30 pointer-events-none opacity-0 transition-opacity duration-300 bg-gradient-to-r from-red-500/30 to-transparent flex items-center justify-center">
+        <div class="text-red-500 font-mono text-[9px] font-bold tracking-widest uppercase rotate-90 whitespace-nowrap animate-pulse">
+            ⚠️ SYSTEM WARNING: BOUNDARY REACHED
+        </div>
+    </div>
+    <div id="boundary-warning-right" class="fixed top-0 right-0 bottom-0 w-8 z-30 pointer-events-none opacity-0 transition-opacity duration-300 bg-gradient-to-l from-red-500/30 to-transparent flex items-center justify-center">
+        <div class="text-red-500 font-mono text-[9px] font-bold tracking-widest uppercase -rotate-90 whitespace-nowrap animate-pulse">
+            ⚠️ SYSTEM WARNING: BOUNDARY REACHED
+        </div>
+    </div>
+
+    <!-- UFO解析完了HUDモーダル -->
+    <div id="ufo-modal" role="dialog" aria-modal="true" aria-labelledby="ufo-title" aria-hidden="true" inert class="fixed inset-0 z-[70] bg-slate-950/80 backdrop-blur-md opacity-0 pointer-events-none transition-opacity duration-300 flex justify-center items-center p-4">
+        <div class="glass-premium rounded-3xl p-6 md:p-8 max-w-md w-full text-center relative overflow-hidden hud-corner-container hud-corner-bracket hud-corner-bracket-bottom cyber-grid shadow-[0_0_40px_rgba(34,197,94,0.3)]">
+            <div class="hologram-scan-line"></div>
+            <!-- Header -->
+            <div class="w-full flex justify-between items-center text-[8px] font-mono text-green-400/90 tracking-widest uppercase mb-4 border-b border-green-500/20 pb-1.5">
+                <span>⚠️ UNIDENTIFIED FLYING OBJECT</span>
+                <span>SCAN COMPLETE</span>
+            </div>
+            
+            <div class="relative w-32 h-32 mx-auto mb-4 bg-slate-900/60 rounded-full border border-green-500/30 flex items-center justify-center shadow-[inset_0_0_20px_rgba(34,197,94,0.1)]">
+                <img src="assets/ufo.png" alt="UFO" class="w-24 h-24 object-contain animate-float-slow mix-blend-screen drop-shadow-[0_0_15px_rgba(34,197,94,0.6)]">
+            </div>
+            
+            <h3 id="ufo-title" class="font-black text-lg text-green-400 mb-2 tracking-widest uppercase text-neon-cyan">UFO 解析完了</h3>
+            <div class="text-xs text-slate-300 leading-relaxed mb-6 bg-slate-950/40 p-4 rounded-xl border border-green-500/10 text-left font-mono">
+                <span class="text-green-400 font-bold block mb-1">► ANALYZING DATA PROTOCOL:</span>
+                ・機体種別: レトロ・スペースソーサー型<br>
+                ・エネルギー: 高濃度スターダスト粒子<br>
+                ・危険度評価: 安全 (いたずら好きの生命体)<br>
+                ・行動特性: ピカピカ光るものに興味を示す
+            </div>
+            
+            <button id="close-ufo-btn" class="w-full py-3 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-500 hover:to-emerald-500 text-white font-black rounded-xl transition-all hover:scale-[1.03] active:scale-95 text-xs tracking-widest border border-green-400/30 shadow-[0_0_15px_rgba(34,197,94,0.3)]">
+                UFOを宇宙へ帰す
+            </button>
+        </div>
+    </div>
+
+    <!-- Secret Column UI -->
+    <button id="btn-secret-column" class="fixed bottom-6 right-6 z-40 bg-gradient-to-r from-purple-600 to-indigo-600 text-white p-3 rounded-full shadow-lg shadow-purple-500/50 hover:scale-110 transition-all duration-300 opacity-0 pointer-events-none group hidden flex-col items-center justify-center">
+        <span class="material-symbols-rounded text-3xl">auto_stories</span>
+        <span class="text-[10px] font-bold tracking-wider mt-1">ひみつファイル</span>
+        <div class="absolute -top-2 -right-2 bg-red-500 text-white text-[10px] font-black w-5 h-5 rounded-full flex items-center justify-center shadow animate-bounce">!</div>
+    </button>
+
+    <div id="secret-modal" role="dialog" aria-modal="true" aria-labelledby="secret-title" aria-hidden="true" inert class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/90 backdrop-blur-md p-4 transition-opacity duration-300 opacity-0 pointer-events-none hidden">
+        <!-- SFプレミアム グラスモーダル -->
+        <div class="glass-premium rounded-3xl p-6 md:p-8 max-w-3xl w-full shadow-2xl relative overflow-hidden flex flex-col h-[85vh] max-h-[800px] text-slate-200 hud-corner-container hud-corner-bracket hud-corner-bracket-bottom cyber-grid">
+            <!-- 走査スキャンライン -->
+            <div class="hologram-scan-line"></div>
+            <!-- Header -->
+            <div class="flex justify-between items-center pb-4 border-b border-indigo-500/20 mb-4 shrink-0 relative z-10">
+                <h2 id="secret-title" class="text-xl md:text-2xl font-black text-transparent bg-clip-text bg-gradient-to-r from-indigo-200 via-cyan-100 to-white flex items-center gap-2 text-neon-cyan">
+                    <span class="material-symbols-rounded text-indigo-400 text-3xl">workspace_premium</span>
+                    宇宙パスポート & ひみつファイル
+                </h2>
+                <button id="btn-close-secret" aria-label="ひみつファイルを閉じる" class="text-slate-400 hover:text-white transition-colors bg-white/5 hover:bg-white/15 p-2 rounded-full w-10 h-10 flex items-center justify-center border border-white/10">
+                    <span class="material-symbols-rounded">close</span>
+                </button>
+            </div>
+
+            <!-- Content Area -->
+            <div class="flex-1 overflow-y-auto pr-2 custom-scrollbar flex flex-col md:flex-row gap-6 relative z-10">
+                <!-- Sidebar: Badge & Tabs -->
+                <div class="w-full md:w-5/12 flex flex-col shrink-0">
+                    <!-- バッジ・進捗ステータスパネル -->
+                    <div id="badge-status-container" class="p-4 bg-slate-900/60 rounded-2xl border border-slate-700/50 mb-4 flex flex-col items-center shadow-inner">
+                        <!-- Dynamic content via JS -->
+                    </div>
+                    
+                    <h3 class="text-xs font-bold text-slate-400 tracking-wider uppercase mb-2">ひみつファイル一覧</h3>
+                    <div class="flex flex-col gap-2 overflow-y-auto max-h-[30vh] md:max-h-[320px] custom-scrollbar" id="secret-tabs-container">
+                        <!-- Tabs are generated by JS -->
+                    </div>
+                </div>
+                
+                <!-- Main Content -->
+                <div class="w-full md:w-7/12 bg-slate-900/50 rounded-2xl p-5 border border-slate-700/50 flex flex-col min-h-[250px] md:min-h-0" id="secret-content-area">
+                    <div class="text-center text-slate-400 py-10 flex flex-col items-center justify-center h-full">
+                        <span class="material-symbols-rounded text-5xl mb-3 opacity-50">menu_book</span>
+                        <p class="font-bold">読みたいファイルを選んでね</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    
+
+    
+    
+
+
+    </main>
+    <script type="module" src="script.js"></script>
+<!-- Parents Modal -->
+<dialog id="parents-modal"
+    class="p-0 rounded-3xl shadow-2xl open:animate-fade-in w-full max-w-lg m-auto overflow-hidden border-0"
+    aria-labelledby="parents-modal-title" style="display:none;">
+    <div class="bg-white p-6 md:p-8 max-h-[90vh] overflow-y-auto relative text-left">
+        <button type="button" data-action="parents-modal-close" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600 focus:outline-none" aria-label="閉じる">
+            <span class="material-symbols-rounded">close</span>
+        </button>
+        <div class="mb-6 border-b-2 border-indigo-100 pb-4">
+            <h2 id="parents-modal-title"
+                class="text-lg md:text-xl font-black text-slate-800 flex items-center gap-2">
+                <span class="material-symbols-rounded text-indigo-500">family_restroom</span> 保護者の方へ
+            </h2>
+            <p class="text-xs text-slate-400 font-bold mt-1">For Parents &amp; Guardians</p>
+        </div>
+
+        <div class="space-y-6 text-sm text-slate-600 leading-relaxed font-bold">
+            <!-- ウェルカムメッセージカード -->
+            <div class="bg-gradient-to-r from-indigo-50 to-purple-50 p-5 rounded-2xl border border-indigo-100 text-center">
+                <p class="mb-2 text-indigo-800 text-base">
+                    <span class="material-symbols-rounded text-xl align-bottom mr-1 text-pink-400">favorite</span>
+                    当サイト「PikaLab」に<br>ご訪問いただき、誠にありがとうございます。
+                </p>
+                <p class="text-xs text-indigo-600">
+                            大切なお子様と一緒にPikaLabを訪れていただけたこと、<br>制作者のかたかたより、心から感謝申し上げます。
+                </p>
+            </div>
+
+            <!-- 1. ねらい -->
+            <div>
+                <h3 class="text-indigo-600 font-black mb-2 flex items-center gap-2">
+                    <span class="material-symbols-rounded text-base">school</span> このアプリのねらい
+                </h3>
+                <p>「宇宙ラボ」は、太陽系の天体を順番に旅しながら、大きさ・太陽からの距離・特徴を見比べられる体験型コンテンツです。<span class="bg-indigo-100 text-indigo-700 px-1 rounded">天体ごとの違い</span>を見て、気になったことを次に調べる入口として使えます。</p>
+            </div>
+
+            <!-- 2. おねがい -->
+            <div>
+                <h3 class="text-pink-500 font-black mb-2 flex items-center gap-2">
+                    <span class="material-symbols-rounded text-base">favorite</span> 保護者様へのおねがい
+                </h3>
+                <p>「地球はほかの惑星とどう違う？」「この天体はなぜこんな色？」など、画面を見て出てきた疑問を大切にしてください。<span class="bg-pink-100 text-pink-700 px-1 rounded">分からないことを次に調べる</span>ための入口としてご活用ください。</p>
+            </div>
+
+            <!-- 3. 活用方法 -->
+            <div>
+                <h3 class="text-green-600 font-black mb-2 flex items-center gap-2">
+                    <span class="material-symbols-rounded text-base">emoji_objects</span> おうちでの活用方法
+                </h3>
+                <p>晴れた夜に空を見たとき、アプリで見た惑星や天体を思い出したら、図鑑や天文アプリなどで実際の見え方を調べてみてください。PikaLabは空に見える天体を自動判定する機能はありません。</p>
+            </div>
+
+            <!-- 4. 健康への配慮 -->
+            <div>
+                <h3 class="text-orange-500 font-black mb-2 flex items-center gap-2">
+                    <span class="material-symbols-rounded text-base">timer</span> 健康への配慮（休憩の推奨）
+                </h3>
+                <p>大切なお子様の健康のために、<span class="bg-orange-100 text-orange-700 px-1 rounded">30分に1回程度の休憩</span>を推奨しています。宇宙の映像は没入感が高く時間を忘れやすいため、タイマーを使った休憩管理をおすすめします。各ツールへ入力した内容や端末内の記録はブラウザ内で処理・保存し、運営者のサーバー、広告サービス、アクセス解析サービスへ送信しません。ページ表示時にはWebフォント等の外部配信サービスへの通常の通信が発生する場合があります。</p>
+            </div>
+        </div>
+        <div class="mt-8 text-center">
+            <button type="button" data-action="parents-modal-close"
+                class="w-full bg-indigo-500 text-white px-8 py-3 rounded-xl font-black hover:bg-indigo-600 transition shadow-lg shadow-indigo-200">閉じる</button>
+        </div>
+    </div>
+</dialog>
+
+    <style>
+#parents-modal::backdrop {
+    background: rgba(15, 23, 42, 0.6);
+    backdrop-filter: blur(4px);
+}
+#parents-modal[open] {
+    display: block !important;
+    animation: parentsModalFadeIn 0.3s ease-out forwards;
+}
+@keyframes parentsModalFadeIn {
+    from { opacity: 0; transform: scale(0.95); }
+    to { opacity: 1; transform: scale(1); }
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const openBtns = document.querySelectorAll('[data-action="parents-modal-open"]');
+    const closeBtns = document.querySelectorAll('[data-action="parents-modal-close"]');
+    const dialog = document.getElementById('parents-modal');
+
+    if (dialog) {
+        dialog.addEventListener('close', () => {
+            openBtns.forEach(btn => btn.setAttribute('aria-expanded', 'false'));
+        });
+        openBtns.forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.preventDefault();
+                if (typeof dialog.showModal === 'function') { dialog.showModal(); }
+                else { dialog.setAttribute('open', ''); }
+                btn.setAttribute('aria-expanded', 'true');
+            });
+        });
+        closeBtns.forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.preventDefault();
+                if (typeof dialog.close === 'function') { dialog.close(); }
+                else { dialog.removeAttribute('open'); }
+                const openBtn = document.querySelector('[data-action="parents-modal-open"]');
+                if (openBtn) { openBtn.setAttribute('aria-expanded', 'false'); openBtn.focus(); }
+            });
+        });
+        dialog.addEventListener('click', (e) => {
+            if (e.target === dialog) {
+                if (typeof dialog.close === 'function') { dialog.close(); }
+                else { dialog.removeAttribute('open'); }
+                const openBtn = document.querySelector('[data-action="parents-modal-open"]');
+                if (openBtn) openBtn.setAttribute('aria-expanded', 'false');
+            }
+        });
+    }
+});
+</script>
+
+<script>
+// 個別manifestの入口からも、親PWAの同じ配信版を利用する。
+if ('serviceWorker' in navigator && window.isSecureContext) {
+  const registerPwa = () => navigator.serviceWorker.register('../sw.js', { scope: '../', updateViaCache: 'none' }).catch(error => console.warn('PWA registration failed', error));
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', registerPwa, { once: true });
+  else registerPwa();
+}
+</script>
+</body>
+</html>
+

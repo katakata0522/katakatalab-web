@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>【IT用語】「コミット」とは？変更を履歴に残すセーブポイント | KatakataLab</title>
+  <meta name="description" content="コミットとは何かを、上書き保存との違い、良い単位とメッセージ、revert・restore・resetの違い、バックアップとの関係から解説します。">
+  <link rel="canonical" href="https://katakatalab.com/guides/it-basics/commit.html">
+  <meta property="og:type" content="article">
+  <meta property="og:site_name" content="KatakataLab">
+  <meta property="og:title" content="【IT用語】「コミット」とは？変更を履歴に残すセーブポイント">
+  <meta property="og:description" content="コミットとは何かを、上書き保存との違い、良い単位とメッセージ、revert・restore・resetの違い、バックアップとの関係から解説します。">
+  <meta property="og:url" content="https://katakatalab.com/guides/it-basics/commit.html">
+  <meta property="og:image" content="https://katakatalab.com/ogp.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="icon" href="../../favicon.ico">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&family=Zen+Kurenaido&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css?v=20260824-responsive">
+  <script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": "【IT用語】「コミット」とは？変更を履歴に残すセーブポイント",
+  "description": "コミットとは何かを、上書き保存との違い、良い単位とメッセージ、revert・restore・resetの違い、バックアップとの関係から解説します。",
+  "datePublished": "2026-07-13",
+  "dateModified": "2026-08-04",
+  "mainEntityOfPage": "https://katakatalab.com/guides/it-basics/commit.html",
+  "inLanguage": "ja",
+  "author": {
+    "@type": "Person",
+    "name": "かたかた",
+    "url": "https://katakatalab.com/who-is-katakata.html"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "KatakataLab",
+    "url": "https://katakatalab.com/"
+  }
+}</script>
+  <script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position": 1,
+      "name": "ホーム",
+      "item": "https://katakatalab.com/"
+    },
+    {
+      "@type": "ListItem",
+      "position": 2,
+      "name": "かたかたの制作ノート",
+      "item": "https://katakatalab.com/guides/it-basics/"
+    },
+    {
+      "@type": "ListItem",
+      "position": 3,
+      "name": "【IT用語】「コミット」とは？変更を履歴に残すセーブポイント",
+      "item": "https://katakatalab.com/guides/it-basics/commit.html"
+    }
+  ]
+}</script>
+</head>
+<body>
+    <script>try{if(localStorage.getItem('theme')==='dark')document.body.classList.add('dark-mode');}catch(e){}</script>
+  <a class="skip-link" href="#main-content">本文へ移動</a>
+  <header class="site-header">
+    <div class="header-inner">
+      <a class="brand" href="../../" aria-label="KatakataLab ホーム">
+        <span class="brand-mark" aria-hidden="true">K</span>
+        <span><strong>KatakataLab</strong><small>かたかたの制作ノート</small></span>
+      </a>
+      <nav class="site-nav" aria-label="主要ナビゲーション">
+        <a href="./">記事一覧</a>
+        <a href="../../#projects">作品・ツール</a>
+        <a href="../../who-is-katakata.html">運営者</a>
+      </nav>
+    </div>
+  </header>
+  <main id="main-content">
+    <nav class="breadcrumbs" aria-label="パンくずリスト">
+      <a href="../../">ホーム</a><span aria-hidden="true">/</span><a href="./">かたかたの制作ノート</a><span aria-hidden="true">/</span><span aria-current="page">「コミット」とは？変更を履歴に残すセーブポイント</span>
+    </nav>
+    <article class="article-shell">
+      <header class="article-hero">
+        <div class="chapter-stamp"><span>CHAPTER 02</span><strong>COMMIT</strong></div>
+        <p class="chapter-name">第2章｜開発の流れ</p>
+        <h1>【IT用語】「コミット」とは？変更を履歴に残すセーブポイント</h1>
+        <p class="article-lead">コミットとは何かを、上書き保存との違い、良い単位とメッセージ、revert・restore・resetの違い、バックアップとの関係から解説します。</p>
+        <div class="article-meta" aria-label="記事情報">
+          <span>作成者：かたかた</span><span>公開日：2026年7月13日</span><span>更新日：2026年8月4日</span>
+        </div>
+      </header>
+      <div class="article-layout">
+        <aside class="article-toc" aria-label="目次"><p>このページの目次</p><ol><li><a href="#section-1">結論：「コミット」＝「選んだ変更を、履歴として記録すること」</a></li>
+<li><a href="#section-2">上書き保存とは何が違う？</a></li>
+<li><a href="#section-3">良いコミットの作り方</a></li>
+<li><a href="#section-4">コミットはバックアップではない</a></li>
+<li><a href="#section-5">「戻す」にも種類がある</a></li>
+<li><a href="#section-6">KatakataLabで実際に確認したこと</a></li>
+<li><a href="#section-talk">この言葉が会話に出てくるとき</a></li>
+<li><a href="#section-misread">勘違いしやすい点</a></li>
+<li><a href="#section-7">まとめ</a></li></ol></aside>
+        <div class="article-content">
+          <p>「ここまでコミットしておいて」</p>
+<p>「コミットメッセージを書いて」</p>
+<p>開発現場でよく聞く「コミット(Commit)」。日常語の「約束する」とは少し違う意味で使われます。</p>
+<p>今回は、コミットをRPGの<strong>「セーブポイント」</strong>に例えて解説します。</p>
+<section class="article-section" aria-labelledby="section-1"><h2 id="section-1">結論：「コミット」＝「選んだ変更を、履歴として記録すること」</h2>
+<p>Gitにおけるコミットとは、<strong>「記録したい変更をひとまとまりにして、履歴へ残すこと」</strong>です。</p>
+<p>ゲームでセーブした時点へ戻れるように、コミットを残しておけば、あとから変更内容を確認したり、問題のある変更を打ち消したりできます。</p>
+</section>
+<section class="article-section" aria-labelledby="section-2"><h2 id="section-2">上書き保存とは何が違う？</h2>
+<p><code>Ctrl + S</code>で保存すると、作業中のファイルが更新されます。しかし、それだけでは「どこを、なぜ変えたのか」という履歴はGitに残りません。</p>
+<p>コミットには、次の情報が記録されます。</p>
+<ul>
+<li>記録した日時</li>
+<li>記録した人の情報</li>
+<li>対象となったファイルの状態</li>
+<li>変更の目的を説明するメッセージ</li>
+</ul>
+<p>ただし、コミットされるのは、あらかじめ選んだ変更です。未追跡のファイルや、選択していない変更まで自動で入るわけではありません。</p>
+</section>
+<section class="article-section" aria-labelledby="section-3"><h2 id="section-3">良いコミットの作り方</h2>
+<h3>1. 意味のある単位で分ける</h3>
+<p>「ログイン画面の表示を直す」と「料金計算を変更する」は、別の目的です。関係のない変更を1つにまとめると、あとで確認しにくくなります。</p>
+<p><strong>1つのコミットに、1つの目的。</strong> これを意識すると履歴が読みやすくなります。</p>
+<h3>2. 理由が分かるメッセージを書く</h3>
+<p>「修正」だけでは、あとから見ても内容が分かりません。</p>
+<ul>
+<li>分かりにくい例：<code>修正</code></li>
+<li>分かりやすい例：<code>会員登録フォームの入力エラー表示を修正</code></li>
+</ul>
+<p>何を変えたのかが伝わる言葉を選びましょう。</p>
+<h3>3. 動作を確認してから記録する</h3>
+<p>コミットは「必ず正しく動く保証」ではありません。保存前に、意図した変更だけが含まれているか、基本的な動作に問題がないかを確認します。</p>
+</section>
+<section class="article-section" aria-labelledby="section-4"><h2 id="section-4">コミットはバックアップではない</h2>
+<p>コミットは、PC内のGitリポジトリに履歴を残します。ローカルでコミットしただけでは、PCやストレージの故障から守れません。</p>
+<p>大切な履歴は、GitHubなどのリモートリポジトリへ<strong>プッシュ</strong>して、別の場所にも保存します。一般的なファイルのバックアップも併用すると、さらに安心です。</p>
+</section>
+<section class="article-section" aria-labelledby="section-5"><h2 id="section-5">「戻す」にも種類がある</h2>
+<p>Gitでは、目的によって操作が変わります。</p>
+<ul>
+<li><strong>revert：</strong> 過去の変更を打ち消す、新しいコミットを作る。</li>
+<li><strong>restore：</strong> ファイルの内容を、指定した状態から取り出す。</li>
+<li><strong>reset：</strong> ブランチや記録位置を動かす。使い方によっては変更を失うため注意が必要。</li>
+</ul>
+<p>初心者のうちは「戻す＝全部同じ操作」と考えず、作業前に目的を確認するのが安全です。</p>
+</section>
+<section class="article-section" aria-labelledby="section-6"><h2 id="section-6">KatakataLabで実際に確認したこと</h2>
+<p>KatakataLabでは、表示文だけを直したつもりでも、生成済みHTML、サイトマップ、テスト、デプロイ設定が関係する場合があります。そこでコミット前に変更一覧と差分を読み、自動テストを実行してから、ひとつの目的として説明できる変更だけを記録します。</p>
+<p>例えば「トップの主題を明確にする変更」と「子ども向けページから広告を外す変更」は、公開品質を整えるという目的ではつながっています。一方、無関係なゲーム機能の改修は同じコミットへ混ぜません。あとから履歴を見た時に、何を確かめて本番へ送ったのかを説明しやすくするためです。</p>
+</section>
+<section class="article-section" aria-labelledby="section-talk"><h2 id="section-talk">この言葉が会話に出てくるとき</h2>
+<p>例えば、直したあと「どのまとまりまで戻すか」を決める会話です。セーブが雑だと、戻したい点を選べません。</p>
+<p>例えば、公開前の確認です。「導線の修正」と「誤字」が同じ記録だと、あとから理由を追えません。</p>
+</section>
+<section class="article-section" aria-labelledby="section-misread"><h2 id="section-misread">勘違いしやすい点</h2>
+<ul>
+<li><strong>保存と同じ：</strong> 上書き保存は今のファイルを置き換えます。コミットは、選んだ変更を履歴に残します。</li>
+<li><strong>メッセージは後回しでよい：</strong> 「fix」だけが続くと、数週間後の自分でも原因を絞れません。</li>
+<li><strong>たくさん残すほど安全：</strong> 関係ない変更を混ぜると、戻す時に巻き込みます。</li>
+</ul>
+<p>小さく、一文で分かる単位にすると、切り戻しも説明も楽になります。</p>
+</section>
+<section class="article-section" aria-labelledby="section-7"><h2 id="section-7">まとめ</h2>
+<ul>
+<li><strong>コミット</strong> ＝ <strong>「選んだ変更を履歴として記録すること」</strong></li>
+<li><strong>コツ</strong> ＝ <strong>「1つの目的ごとに分け、内容が分かるメッセージを書く」</strong></li>
+<li><strong>注意点</strong> ＝ <strong>「コミットだけではPC故障へのバックアップにならない」</strong></li>
+</ul>
+<p>コミットは、作業の区切りと理由を未来の自分や仲間へ伝える記録です。</p>
+<p>次の記事では、別々に進めた変更を合流させる「マージ」について解説します。</p>
+<p>ここまでお読みいただきありがとうございました！</p>
+</section>
+          <aside class="lab-example" aria-labelledby="lab-example-title">
+            <p class="eyebrow">FROM THE LAB</p>
+            <h2 id="lab-example-title">KatakataLabでの実例</h2>
+            <p>KatakataLabでは、記事だけでなくトップページの導線やサイトマップも公開前に差分として確認します。関連する変更を意味のある単位でコミットすると、あとから「なぜこの導線を加えたか」を追いやすくなります。</p>
+            <p class="related-heading">この実例につながるページ</p>
+            <ul class="related-links"><li><a href="git.html">関連用語：Git</a></li>
+<li><a href="../../updates.html">公開後の更新記録</a></li></ul>
+          </aside>
+          <section class="article-section" aria-labelledby="section-ops-commit">
+            <h2 id="section-ops-commit">コミットメッセージを雑にすると後で困る</h2>
+            <p>「fix」だけのメッセージが続くと、問題が起きたときに原因候補を絞れません。日本語で「何をしたか」が一文で分かるようにすると、数週間後の自分でも追いやすいです。</p>
+<ul>
+<li>良い例: 「パスワードガイドに保存手順を追加」</li>
+<li>避けたい例: 「いろいろ」「更新」だけ</li>
+<li>公開に効く変更は、更新履歴ページにも要約を残す</li>
+</ul>
+<p>コミットは履歴の最小単位です。小さく・意味が分かる単位で積むと、切り戻しも楽になります。</p>
+          </section>
+          <section class="article-section faq" aria-labelledby="faq-title">
+            <p class="eyebrow">QUICK CHECK</p>
+            <h2 id="faq-title">よくある質問</h2>
+            <h3>コミットすればバックアップになりますか？</h3>
+            <p>同じPCの中にしか履歴がなければ、故障時に一緒に失う可能性があります。Gitの履歴をGitHubなど別の場所へ送ることや、別方式のバックアップも組み合わせます。</p>
+            <h3>次に読むなら？</h3><p><a href="merge.html">MERGEの記事</a>へ進むと、次の用語を順番に読めます。</p>
+          </section>
+          <section class="article-section references" aria-labelledby="references-title">
+            <h2 id="references-title">参考資料</h2>
+            <p>用語の定義や仕様を確認するため、公式文書・標準文書を参照しています。リンク先の内容は更新される場合があります。</p>
+            <ul><li><a href="https://git-scm.com/docs/git-commit" target="_blank" rel="noopener noreferrer">Git公式「git-commit」</a></li>
+<li><a href="https://git-scm.com/book/en/v2/Git-Basics-Undoing-Things" target="_blank" rel="noopener noreferrer">Git公式「Undoing Things」</a></li></ul>
+          </section>
+          <nav class="chapter-nav" aria-label="前後の記事">
+            <a class="chapter-link previous" href="git.html"><small>前の記事</small><span>← GIT</span></a>
+            <a class="chapter-link next" href="merge.html"><small>次の記事</small><span>MERGE →</span></a>
+          </nav>
+        </div>
+      </div>
+    </article>
+  </main>
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <p><strong>KatakataLab</strong><br><span>作って、つまずいて、分かったことを残す小さな研究室。</span></p>
+      <nav aria-label="フッターナビゲーション">
+        <a href="../../contact.html">お問い合わせ</a>
+        <a href="../../who-is-katakata.html">運営者情報</a>
+        <a href="../../privacy.html">プライバシーポリシー</a>
+        <a href="../../sitemap.html">サイトマップ</a>
+      </nav>
+    </div>
+    <p class="copyright">&copy; 2024-2026 KatakataLab</p>
+  </footer>
+</body>
+</html>

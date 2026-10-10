@@ -1,0 +1,1 @@
+const {spawnSync}=require('node:child_process');const tests=require('../../qa/root-tests.json');if(!tests.length)throw Error('No root contract tests');const result=spawnSync(process.execPath,['--test',...tests],{stdio:'inherit'});process.exit(result.status??1);

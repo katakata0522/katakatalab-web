@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>【IT用語】「先祖返り」とは？直した問題が戻ってくる現象 | KatakataLab</title>
+  <meta name="description" content="IT現場でいう「先祖返り」を、古いファイルの上書き、マージ、公開元、キャッシュ、別変更による再発と、その予防策から解説します。">
+  <link rel="canonical" href="https://katakatalab.com/guides/it-basics/senzogaeri.html">
+  <meta property="og:type" content="article">
+  <meta property="og:site_name" content="KatakataLab">
+  <meta property="og:title" content="【IT用語】「先祖返り」とは？直した問題が戻ってくる現象">
+  <meta property="og:description" content="IT現場でいう「先祖返り」を、古いファイルの上書き、マージ、公開元、キャッシュ、別変更による再発と、その予防策から解説します。">
+  <meta property="og:url" content="https://katakatalab.com/guides/it-basics/senzogaeri.html">
+  <meta property="og:image" content="https://katakatalab.com/ogp.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="icon" href="../../favicon.ico">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&family=Zen+Kurenaido&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css?v=20260824-responsive">
+  <script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": "【IT用語】「先祖返り」とは？直した問題が戻ってくる現象",
+  "description": "IT現場でいう「先祖返り」を、古いファイルの上書き、マージ、公開元、キャッシュ、別変更による再発と、その予防策から解説します。",
+  "datePublished": "2026-07-13",
+  "dateModified": "2026-08-04",
+  "mainEntityOfPage": "https://katakatalab.com/guides/it-basics/senzogaeri.html",
+  "inLanguage": "ja",
+  "author": {
+    "@type": "Person",
+    "name": "かたかた",
+    "url": "https://katakatalab.com/who-is-katakata.html"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "KatakataLab",
+    "url": "https://katakatalab.com/"
+  }
+}</script>
+  <script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position": 1,
+      "name": "ホーム",
+      "item": "https://katakatalab.com/"
+    },
+    {
+      "@type": "ListItem",
+      "position": 2,
+      "name": "かたかたの制作ノート",
+      "item": "https://katakatalab.com/guides/it-basics/"
+    },
+    {
+      "@type": "ListItem",
+      "position": 3,
+      "name": "【IT用語】「先祖返り」とは？直した問題が戻ってくる現象",
+      "item": "https://katakatalab.com/guides/it-basics/senzogaeri.html"
+    }
+  ]
+}</script>
+</head>
+<body>
+    <script>try{if(localStorage.getItem('theme')==='dark')document.body.classList.add('dark-mode');}catch(e){}</script>
+  <a class="skip-link" href="#main-content">本文へ移動</a>
+  <header class="site-header">
+    <div class="header-inner">
+      <a class="brand" href="../../" aria-label="KatakataLab ホーム">
+        <span class="brand-mark" aria-hidden="true">K</span>
+        <span><strong>KatakataLab</strong><small>かたかたの制作ノート</small></span>
+      </a>
+      <nav class="site-nav" aria-label="主要ナビゲーション">
+        <a href="./">記事一覧</a>
+        <a href="../../#projects">作品・ツール</a>
+        <a href="../../who-is-katakata.html">運営者</a>
+      </nav>
+    </div>
+  </header>
+  <main id="main-content">
+    <nav class="breadcrumbs" aria-label="パンくずリスト">
+      <a href="../../">ホーム</a><span aria-hidden="true">/</span><a href="./">かたかたの制作ノート</a><span aria-hidden="true">/</span><span aria-current="page">「先祖返り」とは？直した問題が戻ってくる現象</span>
+    </nav>
+    <article class="article-shell">
+      <header class="article-hero">
+        <div class="chapter-stamp"><span>CHAPTER 03</span><strong>REGRESSION</strong></div>
+        <p class="chapter-name">第3章｜トラブルへの備え</p>
+        <h1>【IT用語】「先祖返り」とは？直した問題が戻ってくる現象</h1>
+        <p class="article-lead">IT現場でいう「先祖返り」を、古いファイルの上書き、マージ、公開元、キャッシュ、別変更による再発と、その予防策から解説します。</p>
+        <div class="article-meta" aria-label="記事情報">
+          <span>作成者：かたかた</span><span>公開日：2026年7月13日</span><span>更新日：2026年8月4日</span>
+        </div>
+      </header>
+      <div class="article-layout">
+        <aside class="article-toc" aria-label="目次"><p>このページの目次</p><ol><li><a href="#section-1">結論：「先祖返り」＝「修正した内容が失われ、以前の問題が戻ること」</a></li>
+<li><a href="#section-2">「古い図面」で例えると？</a></li>
+<li><a href="#section-3">先祖返りが起きる主な原因</a></li>
+<li><a href="#section-4">どうすれば防げる？</a></li>
+<li><a href="#section-talk">この言葉が会話に出てくるとき</a></li>
+<li><a href="#section-misread">勘違いしやすい点</a></li>
+<li><a href="#section-5">まとめ</a></li></ol></aside>
+        <div class="article-content">
+          <p>「先週直したはずの不具合が、また起きている」</p>
+<p>開発現場でこうした状態を「先祖返り」と呼ぶことがあります。以前の状態へ戻ったように見えるため、この名前が使われます。</p>
+<p>今回は、先祖返りを<strong>「古い図面で工事をやり直してしまうこと」</strong>に例えて解説します。</p>
+<section class="article-section" aria-labelledby="section-1"><h2 id="section-1">結論：「先祖返り」＝「修正した内容が失われ、以前の問題が戻ること」</h2>
+<p>先祖返りは、厳密に1つの操作を指す正式な技術用語ではありません。</p>
+<p>現場では、古いファイルで上書きした場合だけでなく、変更の取り込み漏れや不完全なデプロイなどによって、以前の不具合が戻ったように見える状態を広く表すことがあります。「デグレード」や「リグレッション（回帰）」と呼ばれることもあります。</p>
+</section>
+<section class="article-section" aria-labelledby="section-2"><h2 id="section-2">「古い図面」で例えると？</h2>
+<p>家の雨漏りを直したあと、別の業者が修理前の図面だけを見て工事をしたとします。</p>
+<p>古い図面に合わせて作業した結果、修理した箇所まで元へ戻してしまいました。</p>
+<p>デジタルの世界では、古いファイルを保存したり、必要な変更を含まない状態を公開したりすることで、同じようなことが起こります。</p>
+</section>
+<section class="article-section" aria-labelledby="section-3"><h2 id="section-3">先祖返りが起きる主な原因</h2>
+<h3>1. 古いファイルで上書きした</h3>
+<p>共有フォルダなどで、更新前から開いていたファイルを保存し、ほかの人の変更を消してしまうケースです。</p>
+<h3>2. マージの解決を間違えた</h3>
+<p>コンフリクトを解決する際に、必要な修正を含まない側だけを残してしまうことがあります。</p>
+<h3>3. 公開するファイルを間違えた</h3>
+<p>ソースコードは新しくても、デプロイ時に古い成果物を送れば、公開サイトは以前の状態へ戻ります。</p>
+<h3>4. 別の変更が同じ問題を再発させた</h3>
+<p>古いファイルへ戻っていなくても、新しい変更が以前と同じ症状を生むことがあります。ユーザーから見ると、直した問題が戻ったように見えます。</p>
+<h3>5. キャッシュに古い内容が残った</h3>
+<p>サーバーは新しくても、ブラウザやCDNが古いファイルを返し、先祖返りしたように見えることがあります。</p>
+</section>
+<section class="article-section" aria-labelledby="section-4"><h2 id="section-4">どうすれば防げる？</h2>
+<h3>作業前に最新の状態を確認する</h3>
+<p>共有リポジトリや共有ファイルから、最新の内容を取得してから作業します。ただし、これだけですべて防げるわけではありません。</p>
+<h3>差分をレビューする</h3>
+<p>マージやデプロイの前に、必要な修正が残っているか、意図しない削除がないかを確認します。</p>
+<h3>再発防止テストを残す</h3>
+<p>一度直した不具合を再現するテストを追加すると、同じ問題が戻った時に気づきやすくなります。</p>
+<h3>公開元を一本化する</h3>
+<p>「どのフォルダ、どのブランチ、どの成果物を本番へ出すか」を決めます。人によって異なるコピーから公開すると、古い状態が混ざりやすくなります。</p>
+<h3>公開後に実物を確認する</h3>
+<p>デプロイ処理が成功しただけで終わらず、実際のURLや機能を確認します。必要に応じてキャッシュの状態も調べます。</p>
+</section>
+<section class="article-section" aria-labelledby="section-talk"><h2 id="section-talk">この言葉が会話に出てくるとき</h2>
+<p>例えば、「先週直した誤字が、今日の公開で戻っている」と気づいたときです。新しい不具合ではなく、古い版が混ざった可能性があります。</p>
+<p>例えば、別の人が古いフォルダから公開したときです。「どれが本番の元か」が話題になります。</p>
+</section>
+<section class="article-section" aria-labelledby="section-misread"><h2 id="section-misread">勘違いしやすい点</h2>
+<ul>
+<li><strong>気のせい：</strong> 上書き、取り込み、公開元の取り違え、キャッシュで実際に戻ります。</li>
+<li><strong>Gitがあれば起きない：</strong> 古い枝や古い成果物を公開元にすると、履歴があっても戻ります。</li>
+<li><strong>画面を見れば十分：</strong> 見た目が同じでも、中身の版が古いことがあります。</li>
+</ul>
+<p>防ぐ核は、最新を取るだけでなく、公開する元を一本にすることです。</p>
+</section>
+<section class="article-section" aria-labelledby="section-5"><h2 id="section-5">まとめ</h2>
+<ul>
+<li><strong>先祖返り</strong> ＝ <strong>「修正した内容が失われ、以前の問題が戻ること」</strong></li>
+<li><strong>原因</strong> ＝ <strong>「上書き、マージ、公開ミス、別変更、キャッシュなど」</strong></li>
+<li><strong>対策</strong> ＝ <strong>「差分確認、テスト、公開元の一本化、公開後確認」</strong></li>
+</ul>
+<p>「作業前に最新版を取る」は大切な第一歩です。そのうえで、変更の確認とテスト、公開後の確認までつなげることで、再発の可能性を下げられます。</p>
+<p>次の記事では、ソフトウェア同士の窓口である「API」について解説します。</p>
+<p>ここまでお読みいただきありがとうございました！</p>
+</section>
+          <aside class="lab-example" aria-labelledby="lab-example-title">
+            <p class="eyebrow">FROM THE LAB</p>
+            <h2 id="lab-example-title">KatakataLabでの実例</h2>
+            <p>Webサイトは、サーバーが新しくてもブラウザやService Workerのキャッシュに古い内容が残る場合があります。KatakataLabでは公開後に実際の本文を確認し、必要に応じてキャッシュの版も更新します。</p>
+            <p class="related-heading">この実例につながるページ</p>
+            <ul class="related-links"><li><a href="git.html">関連用語：Git</a></li>
+<li><a href="../case-studies.html">ツールの入力・出力実例</a></li></ul>
+          </aside>
+          <section class="article-section" aria-labelledby="section-ops-regression">
+            <h2 id="section-ops-regression">直したはずが別の場所が壊れる現象</h2>
+            <p>回帰（デグレ）は、共通部品やコピーしたHTMLを直したときに起きやすいです。ナビやフッター、広告許可リストのような共有設定を触ったあとは、関係なさそうなページも軽く確認します。</p>
+<ul>
+<li>直した機能の周辺だけでなく、トップと問い合わせも開く</li>
+<li>自動テストがあるなら、感覚より先に回す</li>
+<li>「動いた」だけでなく「前から動いていた別機能」も見る</li>
+</ul>
+<p>修正の完了条件に「関係ページの再確認」を入れておくと、同じ不具合を二度出荷しにくくなります。</p>
+          </section>
+          <section class="article-section faq" aria-labelledby="faq-title">
+            <p class="eyebrow">QUICK CHECK</p>
+            <h2 id="faq-title">よくある質問</h2>
+            <h3>古い画面が見えたら必ず先祖返りですか？</h3>
+            <p>必ずしもそうではありません。サーバー上のファイルが戻った場合と、手元のキャッシュが古い場合では対処が違います。別端末や直接取得した内容も比べて切り分けます。</p>
+            <h3>次に読むなら？</h3><p><a href="api.html">APIの記事</a>へ進むと、次の用語を順番に読めます。</p>
+          </section>
+          <section class="article-section references" aria-labelledby="references-title">
+            <h2 id="references-title">参考資料</h2>
+            <p>用語の定義や仕様を確認するため、公式文書・標準文書を参照しています。リンク先の内容は更新される場合があります。</p>
+            <ul><li><a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Caching" target="_blank" rel="noopener noreferrer">MDN「HTTP caching」</a></li>
+<li><a href="https://git-scm.com/docs/git-revert" target="_blank" rel="noopener noreferrer">Git公式「git-revert」</a></li></ul>
+          </section>
+          <nav class="chapter-nav" aria-label="前後の記事">
+            <a class="chapter-link previous" href="debug.html"><small>前の記事</small><span>← DEBUG</span></a>
+            <a class="chapter-link next" href="api.html"><small>次の記事</small><span>API →</span></a>
+          </nav>
+        </div>
+      </div>
+    </article>
+  </main>
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <p><strong>KatakataLab</strong><br><span>作って、つまずいて、分かったことを残す小さな研究室。</span></p>
+      <nav aria-label="フッターナビゲーション">
+        <a href="../../contact.html">お問い合わせ</a>
+        <a href="../../who-is-katakata.html">運営者情報</a>
+        <a href="../../privacy.html">プライバシーポリシー</a>
+        <a href="../../sitemap.html">サイトマップ</a>
+      </nav>
+    </div>
+    <p class="copyright">&copy; 2024-2026 KatakataLab</p>
+  </footer>
+</body>
+</html>

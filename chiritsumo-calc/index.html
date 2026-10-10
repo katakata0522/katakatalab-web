@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="robots" content="index, follow">
+  <meta name="format-detection" content="telephone=no">
+  <meta name="referrer" content="strict-origin-when-cross-origin">
+  <meta http-equiv="Permissions-Policy" content="camera=(), microphone=(), geolocation=(), payment=(), usb=()">
+
+  <!-- Security: Content-Security-Policy -->
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; base-uri 'self'; object-src 'none'; form-action 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data: https:; connect-src 'self'; frame-src 'self'; font-src 'self' https://fonts.gstatic.com data:; upgrade-insecure-requests;">
+
+  <title>チリツモ逆算シミュレーター【無料】日々の小さな出費をご褒美体験に換算！ - KatakataLab</title>
+
+  <meta name="description" content="【登録不要・完全無料】カフェ代、コンビニのついで買い、使っていないサブスク…日々のチリツモ出費をまとめたら、数年後にどんなご褒美（温泉旅行、最新ガジェット、海外旅）に化けるかを楽しく逆算する家計・資産シミュレーター。">
+  <meta name="author" content="katakata0522">
+
+  <link rel="canonical" href="https://katakatalab.com/chiritsumo-calc/">
+  <meta name="theme-color" content="#b45309">
+  <link rel="apple-touch-icon" href="../favicon.ico">
+  <link rel="icon" type="image/svg+xml" href="../favicon.svg">
+  <link rel="icon" type="image/x-icon" href="../favicon.ico">
+
+  <!-- OGP / Social Media -->
+  <meta property="og:title" content="チリツモ逆算シミュレーター - 我慢しない固定費・小さな出費の未来価値">
+  <meta property="og:description" content="我慢する節約はもう終わり。何気ない出費を見直すと、1年後・5年後にどんなワクワク体験に化ける？楽しく計算してみよう！">
+  <meta property="og:type" content="website">
+  <meta property="og:locale" content="ja_JP">
+  <meta property="og:url" content="https://katakatalab.com/chiritsumo-calc/">
+  <meta property="og:site_name" content="KatakataLab">
+  <meta property="og:image" content="https://katakatalab.com/ogp.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="チリツモ逆算シミュレーター - 我慢しない固定費・小さな出費の未来価値">
+  <meta name="twitter:description" content="我慢する節約はもう終わり。何気ない出費を見直すと、1年後・5年後にどんなワクワク体験に化ける？楽しく計算してみよう！">
+  <meta name="twitter:image" content="https://katakatalab.com/ogp.png">
+
+  <!-- Fonts: Preconnect & Google Fonts with display=swap -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@400;500;700;800&family=Outfit:wght@400;600;700&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="style.css?v=20260930a">
+</head>
+<body>
+  <script>try{if(localStorage.getItem('theme')==='dark')document.body.classList.add('dark-mode');}catch(e){}</script>
+
+  <!-- 支援技術向けライブアナウンサー -->
+  <div id="a11yAnnouncer" class="sr-only" role="status" aria-live="polite" aria-atomic="true"></div>
+
+  <!-- スマホ用 Sticky ボトム追従バー -->
+  <aside class="sticky-summary-bar" id="stickySummaryBar" aria-label="現在のチリツモ合計">
+    <div class="sticky-bar-inner">
+      <div class="sticky-bar-info">
+        <span class="sticky-period-badge" id="stickyPeriodBadge">1年間</span>
+        <span class="sticky-amount" id="stickyAmount" aria-live="polite">¥0</span>
+      </div>
+      <div class="sticky-reward-preview" id="stickyRewardPreview">
+        <span class="sticky-reward-icon" id="stickyRewardIcon" aria-hidden="true">✨</span>
+        <span class="sticky-reward-text" id="stickyRewardText">ご褒美を計算中…</span>
+      </div>
+      <button type="button" id="stickyJumpBtn" class="sticky-jump-btn">ご褒美を見る ↓</button>
+    </div>
+  </aside>
+
+  <main class="tool-wrapper">
+    <!-- パンくずリスト -->
+    <nav class="breadcrumbs-tool" aria-label="パンくずリスト">
+      <div class="breadcrumbs-left">
+        <a href="../" class="bc-home"><span class="bc-icon">🧪</span> KatakataLab</a>
+        <span class="bc-sep">/</span>
+        <span aria-current="page" class="bc-current">チリツモ逆算シミュレーター</span>
+      </div>
+      <div class="breadcrumbs-right">
+        <a href="../moyamoya-sorter/" class="bc-other-tool"><span>🌿</span> モヤモヤ仕分けへ</a>
+        <a href="../#projects" class="bc-all-tools"><span>🧰</span> ツール一覧</a>
+      </div>
+    </nav>
+
+    <noscript>
+      <div class="noscript-banner">
+        <p class="noscript-title">⚠️ JavaScriptが無効になっています</p>
+        <p class="noscript-text">このツールはブラウザ上でリアルタイムにシミュレーションを行うためJavaScriptが必要です。</p>
+      </div>
+    </noscript>
+
+    <!-- ヒーローヘッダー -->
+    <header class="hero-header">
+      <div class="hero-badge">☕ 家計＆未来価値シミュレーター</div>
+      <h1 class="hero-title">チリツモ逆算シミュレーター</h1>
+      <p class="hero-subtitle">
+        我慢ばかりのつらい節約は、もうやめにしませんか？<br>
+        日々の何気ない出費を見直したお金は、数年後に<strong>どんな素敵なご褒美体験</strong>に化けるかを逆算します。
+      </p>
+    </header>
+
+    <!-- Step 1: 出費アイテム選択 -->
+    <section class="card-container" id="expenseSection" aria-labelledby="step1Title">
+      <div class="card-header">
+        <div class="card-header-left">
+          <span class="step-num">Step 1</span>
+          <h2 class="card-title" id="step1Title">心当たりのある「チリツモ出費」をチェック</h2>
+        </div>
+        <button type="button" id="resetDefaultsBtn" class="sub-link-btn" title="初期状態に戻す">
+          <span>🔄</span> リセット
+        </button>
+      </div>
+      <p class="card-desc">初期金額は計算用の例です。当てはまるものをONにして、自分の支出額や頻度に調整してください（増減ボタンでも調整可能）。</p>
+
+      <div class="expense-grid" id="expenseGrid" role="group" aria-label="出費アイテムリスト">
+        <!-- JSでアイテム動的描画 -->
+      </div>
+
+      <!-- カスタム出費追加アコーディオン -->
+      <div class="custom-expense-box">
+        <button type="button" id="toggleCustomBtn" class="toggle-custom-btn" aria-expanded="false" aria-controls="customForm">
+          <span>➕</span> 自分で項目を新しく追加する
+        </button>
+        <div class="custom-form hidden" id="customForm">
+          <form id="customExpenseForm" class="custom-input-row">
+            <input type="text" id="customName" placeholder="項目名（例：タバコ、タクシー代）" class="input-text" maxlength="30" aria-label="項目名">
+            <div class="input-with-unit">
+              <input type="number" id="customAmount" placeholder="300" min="10" max="10000000" step="10" class="input-number" aria-label="金額">
+              <span class="unit-label" aria-hidden="true">円</span>
+            </div>
+            <select id="customFreq" class="select-freq" aria-label="頻度">
+              <option value="daily">毎日</option>
+              <option value="weekday">平日のみ（週5）</option>
+              <option value="weekly">週1回</option>
+              <option value="monthly" selected>月1回</option>
+              <option value="yearly">年1回（年会費等）</option>
+            </select>
+            <button type="submit" id="addCustomBtn" class="add-btn">追加</button>
+          </form>
+        </div>
+      </div>
+    </section>
+
+    <!-- Step 2: チリツモ金額のサマリー & 期間シミュレーション -->
+    <section class="card-container summary-card" id="summarySection" aria-labelledby="step2Title">
+      <div class="card-header">
+        <span class="step-num">Step 2</span>
+        <h2 class="card-title" id="step2Title">あなたの「チリツモ未来資金」</h2>
+      </div>
+
+      <!-- リアルタイム集計メイン表示 -->
+      <div class="summary-hero">
+        <div class="summary-period-label" id="summaryPeriodLabel">1年間で浮くお金</div>
+        <div class="summary-amount-wrap">
+          <span class="currency-mark" aria-hidden="true">¥</span>
+          <span class="summary-amount" id="summaryAmount" aria-live="polite">0</span>
+        </div>
+        <div class="summary-sub-stats">
+          <span class="stat-pill">月額換算：約 <strong id="monthlyStat">¥0</strong></span>
+          <span class="stat-pill">1日換算：約 <strong id="dailyStat">¥0</strong></span>
+        </div>
+      </div>
+
+      <!-- 期間切り替えタブ -->
+      <div class="period-tabs" role="tablist" aria-label="計算期間">
+        <button type="button" class="period-tab" role="tab" aria-selected="false" data-period="1m">1ヶ月</button>
+        <button type="button" class="period-tab" role="tab" aria-selected="false" data-period="6m">半年</button>
+        <button type="button" class="period-tab active" role="tab" aria-selected="true" data-period="1y">1年間</button>
+        <button type="button" class="period-tab" role="tab" aria-selected="false" data-period="3y">3年間</button>
+        <button type="button" class="period-tab" role="tab" aria-selected="false" data-period="5y">5年間</button>
+        <button type="button" class="period-tab" role="tab" aria-selected="false" data-period="10y">10年間</button>
+      </div>
+
+      <!-- 運用切り替えトグル（投資効果） -->
+      <div class="invest-toggle-box">
+        <div class="invest-toggle-left">
+          <span class="invest-icon" aria-hidden="true">📈</span>
+          <div>
+            <div class="invest-title">仮に年率5%で積み立てた場合を比較する</div>
+            <div class="invest-desc">毎月末に同じ額を積み立てる、一定利率の計算例です</div>
+          </div>
+        </div>
+        <label class="switch">
+          <input type="checkbox" id="investToggle" aria-label="仮定年率5%の積立計算例を表示">
+          <span class="slider round"></span>
+        </label>
+      </div>
+
+      <!-- 投資効果表示 -->
+      <div class="invest-result-banner hidden" id="investResultBanner" role="region" aria-live="polite">
+        <div class="invest-banner-content">
+          <span class="invest-badge">複利効果</span>
+          <div class="invest-banner-text">
+            そのまま貯金：<span id="savingsBaseAmount">¥0</span> ➔ <strong>年率5%を仮定した計算例：<span id="investAmount" class="highlight-gold">¥0</span></strong>（運用利益: +<span id="investProfit">¥0</span>）
+          </div>
+        </div>
+
+        <!-- 視覚的比較バー（貯蓄元本 vs 運用益） -->
+        <div class="invest-compare-bar-wrap" aria-hidden="true">
+          <div class="invest-compare-labels">
+            <span class="compare-label-savings">元本 (貯金): <strong id="compareSavingsLabel">¥0</strong></span>
+            <span class="compare-label-profit">想定運用益: <strong id="compareProfitLabel">+¥0</strong></span>
+          </div>
+          <div class="invest-compare-track">
+            <div class="invest-bar-savings" id="compareBarSavings" style="width: 100%;"></div>
+            <div class="invest-bar-profit" id="compareBarProfit" style="width: 0%;"></div>
+          </div>
+        </div>
+
+        <p class="invest-note">
+          ※年率5%は計算用の仮定で、過去の実績や将来の利益を示す値ではありません。月率を5%÷12として、毎月末に積み立て、税金・手数料・値動きを含めず計算します。<br>実際の投資では元本割れがあり得ます。<a href="https://www.fsa.go.jp/policy/nisa2/invest/" target="_blank" rel="noopener noreferrer">金融庁の資産形成の基本</a>
+        </p>
+      </div>
+    </section>
+
+    <!-- Step 3: ワクワクご褒美（体験価値）への換算 -->
+    <section class="card-container reward-card" id="rewardSection" aria-labelledby="step3Title">
+      <div class="card-header">
+        <div class="card-header-left">
+          <span class="step-num">Step 3</span>
+          <h2 class="card-title" id="step3Title">このお金で手に入る「ご褒美体験」</h2>
+        </div>
+        <button type="button" id="rewardSoundToggle" class="sound-toggle-btn muted" aria-label="アンロック音のミュート切り替え" aria-pressed="false">
+          <span id="rewardSoundIcon" aria-hidden="true">🔕</span> <span id="rewardSoundLabel">消音中</span>
+        </button>
+      </div>
+      <p class="card-desc">見直した資金で実現できるワクワク体験が自動でアンロックされます！</p>
+
+      <div class="reward-grid" id="rewardGrid" role="group" aria-label="ご褒美体験リスト">
+        <!-- JSでアンロック状況を描画 -->
+      </div>
+
+      <!-- かたかた流・生きたアドバイス -->
+      <div class="katakata-advice-box">
+        <div class="advice-avatar" aria-hidden="true">☕</div>
+        <div class="advice-content">
+          <h3 class="advice-title" id="adviceTitle">かたかたのアドバイス：全部ゼロにしなくて大丈夫</h3>
+          <p class="advice-text" id="adviceText">
+            大切なのは「全部我慢する」ことではありません。<br>
+            平日のコーヒーを週2日だけマイボトルにしたり、見ていないサブスクを1つ解約するだけで、<strong>年間数万円〜数十万円の「本当にやりたいこと資金」</strong>が生まれます。罪悪感なく楽しいことに使いましょう！
+          </p>
+        </div>
+      </div>
+
+      <!-- シェア & アクション -->
+      <div class="share-row">
+        <button type="button" id="copyChiritsumoBtn" class="share-btn copy-btn">
+          <span aria-hidden="true">📋</span> 結果をコピーする
+        </button>
+        <button type="button" id="nativeShareBtn" class="share-btn share-native-btn hidden">
+          <span aria-hidden="true">📲</span> スマホでシェア
+        </button>
+        <button type="button" id="shareChiritsumoXBtn" class="share-btn x-btn">
+          <span aria-hidden="true">𝕏</span> Xで結果をシェアする
+        </button>
+        <button type="button" id="printSheetBtn" class="share-btn print-btn">
+          <span aria-hidden="true">🖨️</span> 見直しシートを印刷
+        </button>
+      </div>
+    </section>
+
+    <!-- 相互リンク・おすすめカード -->
+    <aside class="cross-promo-card">
+      <div class="cross-promo-icon" aria-hidden="true">🌿</div>
+      <div class="cross-promo-content">
+        <h4>やることが多すぎて焦る…そんな時は心を軽くしませんか？</h4>
+        <p>「今すぐ変えられること」と「手放していいこと」を仕分けて、2分でできる最小の一歩を提案する行動整理ツールです。</p>
+        <a href="../moyamoya-sorter/" class="cross-promo-btn">モヤモヤ仕分け機を試す →</a>
+      </div>
+    </aside>
+
+    <!-- ガイド・コラム -->
+    <article class="article-guide">
+      <h2 class="guide-heading">💡 「ラテマネー」を味方につける賢いチリツモ術</h2>
+      <div class="guide-grid">
+        <div class="guide-item">
+          <h3>1. ラテマネー（Latte Factor）とは？</h3>
+          <p>毎日のカフェ代やコンビニのお菓子など、1回数百円の何気ない出費のこと。1回は小さくても、1年で10万〜20万円、10年で100万円以上の大きな差になります。</p>
+        </div>
+        <div class="guide-item">
+          <h3>2. 「節約＝我慢」にするとリバウンドする</h3>
+          <p>好きなものを無理に断つとストレスが溜まり、後でドカンと無駄遣いしてしまいます。「やめる」のではなく「頻度を半分にする」「本当に価値を感じる体験に振り替える」のが成功の秘訣です。</p>
+        </div>
+        <div class="guide-item">
+          <h3>3. 固定費の見直しが最も効果的</h3>
+          <p>一度手続きするだけでずっと効果が続くのが「使っていないサブスクの解約」や「格安SIMへの乗り換え」です。使っていない契約があれば削減の候補です。解約条件・手数料・必要な機能を確認して比較しましょう。</p>
+        </div>
+      </div>
+    </article>
+
+    <!-- 共通フッター -->
+    <footer class="tool-footer" style="text-align: center; margin-top: 3rem; padding: 2rem 1rem; border-top: 1px solid var(--c-border, rgba(0,0,0,0.06)); font-size: 0.85rem; color: var(--c-text-muted, #71717a);">
+      <p style="margin-bottom: 0.5rem;">© 2026 <a href="../" style="color: inherit; text-decoration: underline; font-weight: 600;">KatakataLab</a> - 暮らしと心をちょっと軽くする道具箱</p>
+      <div style="display: flex; justify-content: center; gap: 1rem; flex-wrap: wrap;">
+        <a href="../privacy.html" style="color: inherit; text-decoration: none;">プライバシーポリシー</a>
+        <span style="opacity: 0.3;" aria-hidden="true">|</span>
+        <a href="../terms.html" style="color: inherit; text-decoration: none;">利用規約</a>
+        <span style="opacity: 0.3;" aria-hidden="true">|</span>
+        <a href="../contact.html" style="color: inherit; text-decoration: none;">お問い合わせ</a>
+      </div>
+    </footer>
+  </main>
+
+  <!-- 構造化データ（Schema.org） -->
+  <script type="application/ld+json">
+  [
+    {
+      "@context": "https://schema.org",
+      "@type": "WebApplication",
+      "name": "チリツモ逆算シミュレーター",
+      "url": "https://katakatalab.com/chiritsumo-calc/",
+      "applicationCategory": "FinanceApplication",
+      "operatingSystem": "All",
+      "browserRequirements": "Requires JavaScript. Requires HTML5.",
+      "inLanguage": "ja",
+      "author": {
+        "@type": "Person",
+        "name": "katakata0522",
+        "url": "https://katakatalab.com/about-katakatalab.html"
+      },
+      "publisher": {
+        "@type": "Organization",
+        "name": "KatakataLab",
+        "url": "https://katakatalab.com/",
+        "logo": {
+          "@type": "ImageObject",
+          "url": "https://katakatalab.com/ogp.png"
+        }
+      },
+      "featureList": [
+        "日常のラテマネー・固定費のリアルタイム集計",
+        "1ヶ月〜10年間の累計未来資金逆算",
+        "年利5%の長期積立複利シミュレーション",
+        "10段階のワクワクご褒美アンロック演出（音・視覚効果）",
+        "入力内容を自動送信せず、ブラウザ内で計算"
+      ],
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "JPY"
+      },
+      "description": "日々の小さな出費や固定費を見直したお金を、将来の旅行やご褒美体験に楽しく逆算する無料家計シミュレーションツール。"
+    },
+    {
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "「チリツモ逆算」とはどのような仕組みですか？",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "日々のカフェ代や使っていないサブスクなどの出費を単に『削る』のではなく、見直すことで浮く年間・数年間の累計資金が、どんな温泉旅行や欲しいガジェット等の体験に変わるかを逆算するポジティブな家計シミュレーションです。"
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "年利5%の積立投資シミュレーションとは何ですか？",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "一定年率5%を12等分した月率で、毎月末に積み立てる計算例です。税金・手数料・値動きは含めず、将来の利益や元本を保証するものではありません。"
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "入力した出費や金額は外部に保存・送信されますか？",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "入力内容は自動で外部へ送信しません。コピーや共有を選んだ結果は、自分で送信先を確認してください。すべての計算はお使いの端末（ブラウザ内部）だけで行われ、保存データもお使いのブラウザのLocalStorage内に保存されます。共有端末では履歴の削除も確認してください。"
+          }
+        }
+      ]
+    },
+    {
+      "@context": "https://schema.org",
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        { "@type": "ListItem", "position": 1, "name": "KatakataLab", "item": "https://katakatalab.com/" },
+        { "@type": "ListItem", "position": 2, "name": "チリツモ逆算シミュレーター", "item": "https://katakatalab.com/chiritsumo-calc/" }
+      ]
+    }
+  ]
+  </script>
+
+  <script src="script.js?v=20260930a" defer></script>
+</body>
+</html>

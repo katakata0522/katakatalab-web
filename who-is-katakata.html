@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>かたかたって誰？ | KatakataLabの運営者情報</title>
+    <meta name="description" content="KatakataLabを運営する「かたかた」のプロフィール、運営サイト、得意分野、制作方針、更新時の確認項目をまとめたページです。">
+    <meta name="author" content="かたかた">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@400;500;700;800&family=Outfit:wght@400;600;700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="style.css?v=20260824-responsive">
+    <link rel="icon" href="icon.svg" type="image/svg+xml">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#FF7675">
+
+    <style>
+        /* 隠しスイッチ（絵文字） */
+        #secret-switch {
+            cursor: pointer;
+            display: inline-block;
+            transition: transform 0.1s;
+            margin-left: 10px;
+            user-select: none;
+        }
+        #secret-switch:hover { transform: scale(1.2); }
+        #secret-switch:active { transform: scale(0.9); }
+
+        /* 震えるアニメーション */
+        .shake { animation: shake 0.4s cubic-bezier(.36,.07,.19,.97) both; }
+        @keyframes shake {
+            10%, 90% { transform: translate3d(-1px, 0, 0); }
+            20%, 80% { transform: translate3d(2px, 0, 0); }
+            30%, 50%, 70% { transform: translate3d(-4px, 0, 0); }
+            40%, 60% { transform: translate3d(4px, 0, 0); }
+        }
+
+        /* ハッキング画面 */
+        .glitch-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: #000; z-index: 9999;
+            display: none; flex-direction: column;
+            align-items: center; justify-content: center;
+            color: #0f0; font-family: monospace; font-size: 1.5rem; text-align: center;
+        }
+        .glitch-text { margin-bottom: 1rem; text-shadow: 0 0 5px #0f0; }
+    </style>
+
+  <link rel="canonical" href="https://katakatalab.com/who-is-katakata.html">
+  <meta property="og:title" content="かたかたって誰？ | KatakataLabの運営者情報">
+  <meta property="og:description" content="KatakataLabを運営する「かたかた」のプロフィール、運営サイト、得意分野、制作方針、更新時の確認項目をまとめたページです。">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="https://katakatalab.com/who-is-katakata.html">
+  <meta property="og:image" content="https://katakatalab.com/ogp.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="かたかたって誰？ | KatakataLabの運営者情報">
+  <meta name="twitter:description" content="KatakataLabを運営する「かたかた」のプロフィール、運営サイト、得意分野、制作方針、更新時の確認項目をまとめたページです。">
+  <meta name="twitter:image" content="https://katakatalab.com/ogp.png">
+  <meta name="twitter:site" content="@Katakata_toybox">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Person",
+    "@id": "https://katakatalab.com/#person",
+    "name": "かたかた",
+    "url": "https://katakatalab.com/who-is-katakata.html",
+    "description": "個人でWebツールと教育系サイトを運営する制作者。",
+    "jobTitle": "個人クリエイター / Webツール制作者",
+    "worksFor": {
+      "@type": "Organization",
+      "name": "KatakataLab",
+      "url": "https://katakatalab.com/"
+    },
+    "sameAs": [
+      "https://x.com/Katakata_toybox",
+      "https://note.com/cozy_snipe6552"
+    ]
+  }
+  </script>
+</head>
+
+<body>
+    <script>try{if(localStorage.getItem('theme')==='dark')document.body.classList.add('dark-mode');}catch(e){}</script>
+    <header class="header">
+        <div class="container header-container">
+            <a href="./#home" class="logo">
+                <span class="logo-icon">🧪</span><span class="logo-text">KatakataLab</span>
+            </a>
+            <nav class="nav">
+                <ul class="nav-list">
+                    <li><a href="./#home" class="nav-link">ホーム</a></li>
+                    <li><a href="./#projects" class="nav-link">作ったもの</a></li>
+                    <li><a href="./#about" class="nav-link">ラボについて</a></li>
+                    <li><a href="./#contact" class="nav-link">リンク</a></li>
+                </ul>
+            </nav>
+            <div class="header-actions">
+                <button type="button" id="theme-toggle" class="theme-btn" aria-label="テーマ切り替え">
+    <svg viewBox="0 0 24 24" class="svg-icon svg-moon" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/>
+    </svg>
+    <svg viewBox="0 0 24 24" class="svg-icon svg-sun" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="display: none;">
+        <circle cx="12" cy="12" r="4"/>
+        <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/>
+    </svg>
+</button>
+                <button type="button" class="menu-toggle" aria-label="メニューを開く">
+                    <span class="bar"></span><span class="bar"></span><span class="bar"></span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <div class="menu-overlay" id="menu-overlay" aria-hidden="true"></div>
+    <div class="mobile-menu drawer-menu" aria-hidden="true">
+        <button type="button" class="menu-close-btn" aria-label="メニューを閉じる">✕</button>
+        <div class="mobile-menu-inner">
+            <nav class="mobile-nav" aria-label="サイト内ナビゲーション">
+                <ul class="mobile-nav-list">
+                    <li><a href="./#home" class="mobile-nav-link">ホーム</a></li>
+                    <li><a href="./#projects" class="mobile-nav-link">作ったもの</a></li>
+                    <li><a href="./#about" class="mobile-nav-link">ラボについて</a></li>
+                    <li><a href="./#contact" class="mobile-nav-link">リンク</a></li>
+                    <li class="mobile-nav-sep"></li>
+                    <li><a href="who-is-katakata.html" class="mobile-nav-link">かたかたって誰？</a></li>
+                    <li><a href="about-katakatalab.html" class="mobile-nav-link">KatakataLabについて</a></li>
+                </ul>
+            </nav>
+        </div>
+    </div>
+
+    <main class="subpage-main">
+
+        <section class="section">
+            <div class="container">
+                <h1 class="section-title section-title-left">
+                    かたかたって誰？
+                    <span id="secret-switch" role="button" aria-label="秘密のスイッチ">😊</span>
+                </h1>
+
+                <div class="hero-lead">
+                    <div class="about-card" style="max-width: none; margin-bottom: 2rem; text-align: left;">
+                        <h2 class="gear-heading" style="margin-top: 0;">■ひとことで言うと</h2>
+                        <p><strong>個人でWebツールと教育系サイトを運営し、日常で役立つ小さな詰まりどころを解消するためのコンテンツを作っている制作者</strong>です。</p>
+
+                        <div class="trust-grid" style="margin-top: 1.5rem;">
+                            <article class="trust-card">
+                                <h3>主な運営サイト</h3>
+                                <ul class="trust-list">
+                                    <li><a href="./" style="color: var(--c-primary);">KatakataLab</a></li>
+                                    <li><a href="https://playpoint-sim.com/" style="color: var(--c-primary);">Playポイント計算機</a></li>
+                                    <li><a href="pikalab/" target="_blank" rel="noopener noreferrer" style="color: var(--c-primary);">PikaLab</a></li>
+                                </ul>
+                            </article>
+                            <article class="trust-card">
+                                <h3>得意分野</h3>
+                                <ul class="trust-list">
+                                    <li>HTML / CSS / JavaScript を使った実用ツール制作</li>
+                                    <li>教育向け・日常向けの小規模Webサービス設計</li>
+                                    <li>Google Apps Script、Python、Kotlin を使った自動化と試作</li>
+                                </ul>
+                            </article>
+                            <article class="trust-card">
+                                <h3>制作方針</h3>
+                                <ul class="trust-list">
+                                    <li>用途・入力例・注意点が分かる形で公開する</li>
+                                    <li>実際に使って不便だった点を優先的に直す</li>
+                                    <li>法務ページ、問い合わせ導線、更新履歴を残す</li>
+                                </ul>
+                            </article>
+                            <article class="trust-card">
+                                <h3>更新時に見ていること</h3>
+                                <ul class="trust-list">
+                                    <li>リンク切れや導線の迷いがないか</li>
+                                    <li>入力値や結果の解釈で誤解が起きないか</li>
+                                    <li>公開後も改善履歴を追えるか</li>
+                                </ul>
+                            </article>
+                        </div>
+
+                        <div class="inline-links">
+                            <a href="contact.html" class="guide-link">お問い合わせページ →</a>
+                            <a href="updates.html" class="guide-link">更新履歴 →</a>
+                        </div>
+                    </div>
+
+                    <h2 class="gear-heading" style="color: var(--c-primary); font-size: 1.3rem;">■かたかたって何者？</h2>
+                    <p>
+                        改めまして、かたかたと申します！🙌<br>
+                        よくいる、という言葉では表しきれないほどよくいるごく普通の一般人。<br>
+                        特別なスキルがあるわけじゃないけど、面白いことを妄想したり、くだらなく楽しいことに全力で頭を使って遊ぶのが大好きです！
+                    </p>
+                    <p>
+                        そんな私がこのサイトを作った最大の目的は<strong>社会貢献！！</strong>
+                    </p>
+                    <p>
+                        有難いことに、順風満帆とはいかないまでもたくさんの人の愛に恵まれて生きてこられました。<br>
+                        たくさん頂いた優しい気持ちをよりたくさんの人に返したい。
+                    </p>
+                    <p>
+                        なんて身の丈に合っていない気持ちが大きく膨らんでしまったので、いっぱいコンテンツを作ってしまいました！
+                    </p>
+                    <p>
+                        今後、さらにたくさんのコンテンツ作成をしていきます！お楽しみに！
+                    </p>
+                    <p>
+                        教育系や便利系のものが多いと思いますが、一緒にワクワクする世界を遊んでいただけたら嬉しいです👐
+                    </p>
+
+                    <h2 class="gear-heading-spaced" style="color: var(--c-primary); font-size: 1.3rem;">■スキルセット & 活動</h2>
+                    <dl style="margin-bottom: 2rem; line-height: 1.8;">
+                        <dt><strong>🛠️ 技術スタック</strong></dt>
+                        <dd>HTML / CSS / JavaScript / Google Apps Script (GAS) / Python / Kotlin (Android)</dd>
+                        
+                        <dt style="margin-top: 1rem;"><strong>🌍 活動拠点</strong></dt>
+                        <dd>日本 (Japan)</dd>
+
+                        <dt style="margin-top: 1rem;"><strong>📩 お問い合わせ</strong></dt>
+                        <dd>お仕事のご依頼や技術的なご相談は<a href="contact.html" style="color: #007bff; text-decoration: underline;">お問い合わせフォーム</a>よりご連絡ください。</dd>
+                    </dl>
+
+                    <h2 class="gear-heading-spaced" style="color: var(--c-primary); font-size: 1.3rem;">■制作・検証メモ</h2>
+                    <p>
+                        KatakataLabのページは、ツールを置いて終わりにせず、利用者が入力して結果を受け取るところまでを一つの体験として確認しています。専門家の資格を示すページではありませんが、実際に作って使い、見つかった不便や誤解の起きやすい箇所を更新に反映するための記録です。
+                    </p>
+                    <div class="trust-grid" style="margin-top: 1.25rem;">
+                        <article class="trust-card">
+                            <h3>入力と結果</h3>
+                            <ul class="trust-list">
+                                <li>空欄、上限付近、想定外の形式を試す</li>
+                                <li>計算結果や変換結果の前提を文章で確認する</li>
+                                <li>エラー時に次の行動が分かるかを見る</li>
+                            </ul>
+                        </article>
+                        <article class="trust-card">
+                            <h3>表示と操作</h3>
+                            <ul class="trust-list">
+                                <li>デスクトップとスマートフォン幅で表示を確認する</li>
+                                <li>キーボード操作と読み上げ用の名前を確認する</li>
+                                <li>長い入力や結果で横スクロールが起きないか見る</li>
+                            </ul>
+                        </article>
+                        <article class="trust-card">
+                            <h3>公開後の確認</h3>
+                            <ul class="trust-list">
+                                <li>サイトマップ、canonical、内部リンクを確認する</li>
+                                <li>更新箇所をアップデート情報に残す</li>
+                                <li>ご指摘を受けたら内容を再確認して訂正する</li>
+                            </ul>
+                        </article>
+                    </div>
+                    <p style="margin-top: 1rem;">仕様が外部サービスや端末に依存する内容では、断定しすぎないよう前提と確認方法も記載します。誤りや分かりにくい箇所を見つけた場合は、<a href="contact.html" style="color: #007bff; text-decoration: underline;">お問い合わせフォーム</a>からお知らせください。</p>
+
+                    <h2 class="gear-heading-spaced" style="color: var(--c-primary); font-size: 1.3rem;">■かたかたの好きなもの</h2>
+                    <p>
+                        私の人間性を形作っている、いくつかの好きなものについて語らせてください。<br>
+                        同じ趣味があると嬉しいです🤝ｶﾞｼｯ
+                    </p>
+
+                    <p><strong>🐨🐱Official髭男dism🦍🐻‍</strong></p>
+                    <p>
+                        『Pretender』からの新参者。彼らがGood Musicを届けてくれる素晴らしい時代に生きています。大感謝。<br>
+                        メロディーよりも圧倒的に歌詞派なのですがどっちもいいんだなこれが…<br>
+                        好きな曲は「発明家」、「Shower」、「Chessboard」など！でも正直全部大好き！
+                    </p>
+
+                    <p><strong>╭Ꙭ╮ドラえもん</strong></p>
+                    <p>
+                        子どもの頃は、ただただひみつ道具にワクワクしていました。<br>
+                        それは大人になった今でも全く変わらない。<br>
+                        藤子先生が創る温かくユーモラスな世界にずっと夢中のまま大きくなりました。<br>
+                        一番欲しいひみつ道具は「ソノウソホント」。
+                    </p>
+
+                    <p><strong>🎤カラオケ</strong></p>
+                    <p>
+                        友達と歌うのも一人で歌うのもなんでもござれ！<br>
+                        フリータイムは基本フルで歌うので10時間〜12時間くらい熱唱することもしばしば。<br>
+                        やめて…耳鼻咽喉科、ボイストレーナーの先生…殴らないで…<br>
+                        地声と歌声がかなり違うらしい（？）
+                    </p>
+
+                    <p><strong>⚾野球</strong></p>
+                    <p>
+                        これまた新参者！<br>
+                        日本ハムファイターズを贔屓にしていて新庄政権から好きになりました！！🚢<br>
+                        若手の台頭とベテランの技巧が織り交ざった本当に魅力的なチーム！<br>
+                        来年こそは優勝するぞファイターズ！！
+                    </p>
+
+                    <h2 class="gear-heading-spaced" style="color: var(--c-primary); font-size: 1.3rem;">■おわりに</h2>
+                    <p>
+                        ここまで長いプロフィールを読んでくださった、ちょっと物好きで、すごく優しいあなた！<br>
+                        本当にありがとうございます！<br>
+                        若輩者ではありますが！<br>
+                        これからどうぞ、末永く、よろしくお願いします！！🙏
+                    </p>
+
+                    <p style="margin-top: 3rem; font-size: 0.9rem; color: #888; line-height: 1.8;">
+                        P.S.<br>
+                        かなり気づきにくいけどこのページにも遊び心が。<br>
+                        おもしろいと思ってくれたら嬉しいな。<br>
+                        もし見つけたらみんなにも教えてあげて。<br>
+                        じゃあまたその仕掛けの先で会おうね。
+                    </p>
+
+                    <h2 class="gear-heading-spaced" style="color: var(--c-primary); font-size: 1.3rem;">■こんな方に使ってもらえると嬉しい</h2>
+                    <div class="trust-grid" style="margin-top: 1rem;">
+                        <article class="trust-card">
+                            <h3>📐 Web制作・動画制作をしている方</h3>
+                            <p>アスペクト比計算、px/rem変換など、制作現場で毎回「ちょっと調べたい」が生まれる場面を、このラボで一気に解決できます。</p>
+                        </article>
+                        <article class="trust-card">
+                            <h3>🔐 セキュリティを気にし始めた方</h3>
+                            <p>パスワードの使い回しが不安になってきた方へ。ブラウザ完結で安全に強力なパスワードを作れるツールを用意しています。外部に送信しないので安心して使えます。</p>
+                        </article>
+                        <article class="trust-card">
+                            <h3>📱 QRコードを活用したい方</h3>
+                            <p>店舗やイベント、名刺で「QRを貼りたい」と思ったことがある方。Wi-Fi共有、LINE追加、連絡先など用途別の作り方ガイドをそのまま使えます。</p>
+                        </article>
+                        <article class="trust-card">
+                            <h3>👶 教育・学習に関わる親御さん・先生</h3>
+                            <p>小中学生向けのゲーム感覚で学べるコンテンツを「PikaLab」にまとめています。読書感想文・自由研究のお助けコンテンツも収録中です。</p>
+                        </article>
+                    </div>
+                    <div class="inline-links" style="margin-top: 1.5rem;">
+                        <a href="./#projects" class="guide-link">ツール一覧を見る →</a>
+                        <a href="contact.html" class="guide-link">お問い合わせ →</a>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-links">
+                <a href="contact.html">お問い合わせ</a>
+                <a href="who-is-katakata.html">運営者情報</a>
+                <a href="terms.html" target="_blank" rel="noopener noreferrer">利用規約</a>
+                <a href="privacy.html" target="_blank" rel="noopener noreferrer">プライバシーポリシー</a>
+                <a href="sitemap.html">サイトマップ</a>
+            </div>
+            <p>&copy; 2024-2026 KatakataLab. All Rights Reserved.</p>
+        </div>
+    </footer>
+
+    <div class="glitch-overlay" id="glitch-overlay">
+        <div class="glitch-text">ACCESS GRANTED...</div>
+        <div class="glitch-text">CONNECTING TO SECRET BASE...</div>
+        <div class="glitch-text" style="color: #ff00ff;">WELCOME, EXPLORER.</div>
+    </div>
+
+    <script src="script.js?v=20260610"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const emojiEl = document.getElementById('secret-switch');
+            const overlay = document.getElementById('glitch-overlay');
+            let clickCount = 0;
+
+            if (emojiEl) {
+                emojiEl.addEventListener('click', () => {
+                    clickCount++;
+                    emojiEl.classList.remove('shake');
+                    void emojiEl.offsetWidth;
+                    emojiEl.classList.add('shake');
+
+                    if (clickCount >= 5 && clickCount < 8) {
+                        emojiEl.textContent = '🤔';
+                    } else if (clickCount >= 8 && clickCount < 10) {
+                        emojiEl.textContent = '🤫';
+                    } else if (clickCount >= 10) {
+                        emojiEl.textContent = '👾';
+                        startHackingSequence();
+                    }
+                });
+            }
+
+            function startHackingSequence() {
+                document.body.style.overflow = 'hidden';
+                overlay.style.display = 'flex';
+                setTimeout(() => {
+                    // 未公開のリンクは運営案内へ戻す
+                    // window.location.href = 'himitsukichi/index.html';
+                    window.location.href = 'about-katakatalab.html';
+                }, 1500);
+            }
+        });
+    </script>
+</body>
+</html>

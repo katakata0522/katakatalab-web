@@ -1,0 +1,743 @@
+@import "../style.css";
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* 外部のMaterial Symbolsフォントが読めない場合も、アイコン名で幅を押し広げない */
+.material-symbols-rounded,
+.material-symbols-outlined {
+    display: inline-block;
+    width: 1em;
+    max-width: 1em;
+    overflow: hidden;
+    white-space: nowrap;
+    line-height: 1;
+    flex: 0 0 auto;
+}
+
+:root {
+    --contrast-text-muted: #64748B;
+    --contrast-action-blue: #2563EB;
+    --contrast-action-green: #15803D;
+    --contrast-action-orange: #C2410C;
+    --contrast-action-pink: #BE185D;
+    --contrast-action-indigo: #4F46E5;
+    --contrast-action-teal: #0F766E;
+}
+
+body.bg-slate-900,
+body.bg-slate-950,
+body.bg-black,
+body.theme-night {
+    --contrast-text-muted: #CBD5E1;
+}
+
+/* --- 基本デザイン設定 --- */
+body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Hiragino Kaku Gothic ProN", "Yu Gothic UI", Meiryo, sans-serif;
+    background-color: #F8FAFC;
+    background-image:
+        radial-gradient(#E2E8F0 2px, transparent 2px),
+        radial-gradient(#E2E8F0 2px, transparent 2px);
+    background-size: 32px 32px;
+    background-position: 0 0, 16px 16px;
+    color: #334155;
+    transition: background-color 1s ease, color 0.5s ease;
+
+    /* テーマ変数（light） */
+    --surface-panel: rgba(255, 255, 255, 0.85);
+    --surface-elevated: #FFFFFF;
+    --surface-muted: #F1F5F9;
+    --text-primary: #334155;
+    --text-secondary: #475569;
+    --text-muted: #94A3B8;
+    --border-color: #E2E8F0;
+}
+
+/* --- スクリーンリーダー専用（アクセシビリティ） --- */
+.sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}
+
+.sr-only:focus,
+.sr-only:focus-visible {
+    position: absolute;
+    width: auto;
+    height: auto;
+    padding: 0;
+    margin: 0;
+    overflow: visible;
+    clip: auto;
+    white-space: nowrap;
+}
+
+/* --- テーマ別スタイル --- */
+/* 夕方 (Sunset) */
+body.theme-sunset {
+    background-color: #FFF7ED;
+    background-image:
+        radial-gradient(#FED7AA 2px, transparent 2px),
+        radial-gradient(#FED7AA 2px, transparent 2px);
+}
+
+/* 夜 / ダークモード (Night) */
+body.theme-night {
+    background-color: #0F172A;
+    background-image:
+        radial-gradient(#334155 2px, transparent 2px),
+        radial-gradient(#334155 2px, transparent 2px);
+    color: var(--text-primary);
+
+    /* テーマ変数（night） */
+    --surface-panel: rgba(30, 41, 59, 0.95);
+    --surface-elevated: #1E293B;
+    --surface-muted: #334155;
+    --text-primary: #E2E8F0;
+    --text-secondary: #CBD5E1;
+    --text-muted: #94A3B8;
+    --border-color: #334155;
+}
+
+body.theme-night .glass-panel,
+body.theme-night header,
+body.theme-night .app-card,
+body.theme-night .modal-content,
+body.theme-night #dropdown-menu,
+body.theme-night #record-modal>div,
+body.theme-night #settings-modal>div,
+body.theme-night #parents-modal>div,
+body.theme-night footer {
+    background-color: var(--surface-panel);
+    border-color: var(--border-color);
+    color: var(--text-primary);
+}
+
+/* 中立なサーフェス */
+body.theme-night [data-surface="menu-section"],
+body.theme-night [data-surface="control"],
+body.theme-night [data-surface="chip"] {
+    background-color: var(--surface-muted);
+    border-color: var(--border-color);
+}
+
+body.theme-night [data-surface="panel"],
+body.theme-night [data-surface="menu-panel"] {
+    background-color: var(--surface-elevated);
+    border-color: var(--border-color);
+}
+
+/* 見出し・本文のダーク配色（アクセント色は上書きしない） */
+:where(body.theme-night) :where(header, footer, .glass-panel, .app-card, .modal-content, #dropdown-menu, #record-modal, #settings-modal, #parents-modal) :where(h1, h2, h3, h4, h5) {
+    color: var(--text-primary);
+}
+
+:where(body.theme-night) :where(header, footer, .glass-panel, .app-card, .modal-content, #dropdown-menu, #record-modal, #settings-modal, #parents-modal) :where(p, label, li, input, textarea, select) {
+    color: var(--text-secondary);
+}
+
+/* Tailwindの中立テキスト（slate系）のみ補正。アクセント色は保持 */
+:where(body.theme-night) [class*="text-slate-8"],
+:where(body.theme-night) [class*="text-slate-7"],
+:where(body.theme-night) [class*="text-slate-6"] {
+    color: var(--text-primary) !important;
+}
+
+:where(body.theme-night) [class*="text-slate-5"],
+:where(body.theme-night) [class*="text-slate-4"],
+:where(body.theme-night) [class*="text-slate-3"] {
+    color: var(--text-muted) !important;
+}
+
+/* カード内ボタンの背景色・文字色を補正（ナイトモード） */
+body.theme-night .app-card button,
+body.theme-night .app-card a[data-launch-app] {
+    background-color: rgba(51, 65, 85, 0.8) !important;
+    color: #E2E8F0 !important;
+    border-color: rgba(71, 85, 105, 0.5) !important;
+}
+
+body.theme-night .app-card button:hover,
+body.theme-night .app-card a[data-launch-app]:hover {
+    background-color: var(--surface-muted) !important;
+    color: #FFFFFF !important;
+}
+
+/* ドロップダウン内のメニュー項目ボタン */
+body.theme-night #dropdown-menu button:not(#filter-all):not(#filter-bunkei):not(#filter-rikei) {
+    color: var(--text-secondary);
+}
+
+/* ドロップダウンメニュー内の白背景をダーク化 */
+body.theme-night #dropdown-menu .bg-slate-50,
+body.theme-night #dropdown-menu .bg-white {
+    background-color: var(--surface-muted) !important;
+}
+
+body.theme-night #dropdown-menu input {
+    background-color: var(--surface-elevated) !important;
+    color: var(--text-primary) !important;
+    border-color: var(--border-color) !important;
+}
+
+body.theme-night #dropdown-menu input::placeholder {
+    color: var(--text-muted) !important;
+}
+
+/* けんきゅう手帳モーダル内の白背景をダーク化 */
+body.theme-night #record-modal .bg-white,
+body.theme-night #record-modal .bg-slate-50,
+body.theme-night #record-modal .bg-amber-50 {
+    background-color: var(--surface-muted) !important;
+}
+
+body.theme-night #record-modal .border-slate-100,
+body.theme-night #record-modal .border-amber-100 {
+    border-color: var(--border-color) !important;
+}
+
+body.theme-night #record-modal p,
+body.theme-night #record-modal span:not(.material-symbols-rounded) {
+    color: var(--text-secondary) !important;
+}
+
+body.theme-night #record-modal h2,
+body.theme-night #record-modal h3,
+body.theme-night #record-modal h4 {
+    color: var(--text-primary) !important;
+}
+
+/* けんきゅう手帳のプロフィールカード */
+body.theme-night #record-modal .bg-indigo-50 {
+    background-color: rgba(99, 102, 241, 0.15) !important;
+}
+
+body.theme-night #record-modal .text-indigo-900 {
+    color: var(--text-primary) !important;
+}
+
+body.theme-night #record-modal .text-indigo-400 {
+    color: #A5B4FC !important;
+}
+
+/* ヘッダーのユーザー表示エリア */
+body.theme-night header .bg-slate-50,
+body.theme-night header .bg-slate-100 {
+    background-color: var(--surface-muted) !important;
+}
+
+body.theme-night header .bg-white {
+    background-color: var(--surface-elevated) !important;
+}
+
+body.theme-night header .border-slate-200 {
+    border-color: var(--border-color) !important;
+}
+
+body.theme-night header .text-slate-700,
+body.theme-night header .text-slate-500 {
+    color: var(--text-primary) !important;
+}
+
+body.theme-night header .text-slate-400 {
+    color: var(--text-muted) !important;
+}
+
+/* 設定モーダル内の白背景をダーク化 */
+body.theme-night #settings-modal .bg-white,
+body.theme-night #settings-modal .bg-slate-50 {
+    background-color: var(--surface-muted) !important;
+}
+
+body.theme-night #settings-modal .border-slate-100,
+body.theme-night #settings-modal .border-slate-200 {
+    border-color: var(--border-color) !important;
+}
+
+body.theme-night #settings-modal label,
+body.theme-night #settings-modal .text-slate-500,
+body.theme-night #settings-modal .text-slate-400 {
+    color: var(--text-secondary) !important;
+}
+
+body.theme-night #settings-modal .text-slate-800 {
+    color: var(--text-primary) !important;
+}
+
+/* 保護者モーダル内も同様にダーク化 */
+body.theme-night #parents-modal .bg-white,
+body.theme-night #parents-modal .bg-slate-50,
+body.theme-night #parents-modal .bg-gradient-to-r {
+    background-color: var(--surface-muted) !important;
+    background-image: none !important;
+}
+
+body.theme-night #parents-modal .border-slate-100,
+body.theme-night #parents-modal .border-indigo-100 {
+    border-color: var(--border-color) !important;
+}
+
+body.theme-night #parents-modal p,
+body.theme-night #parents-modal .text-slate-500,
+body.theme-night #parents-modal .text-slate-400 {
+    color: var(--text-secondary) !important;
+}
+
+body.theme-night #parents-modal .text-slate-800,
+body.theme-night #parents-modal .text-slate-700,
+body.theme-night #parents-modal .text-indigo-800,
+body.theme-night #parents-modal .text-indigo-600 {
+    color: var(--text-primary) !important;
+}
+
+/* 各モーダルの右上クローズボタン */
+body.theme-night #record-modal>div>button[data-close-modal],
+body.theme-night #settings-modal>div>button[data-close-modal],
+body.theme-night #parents-modal>div>button[data-close-modal] {
+    color: var(--text-muted);
+}
+
+body.theme-night #record-modal>div>button[data-close-modal]:hover,
+body.theme-night #settings-modal>div>button[data-close-modal]:hover,
+body.theme-night #parents-modal>div>button[data-close-modal]:hover {
+    color: var(--text-primary);
+}
+
+/* モーダル内のメインボタン（とじる等）をナイトモードで視認しやすく */
+body.theme-night #record-modal button:not([data-close-modal]),
+body.theme-night #settings-modal button:not([data-close-modal]),
+body.theme-night #parents-modal button:not([data-close-modal]) {
+    color: #FFFFFF;
+}
+
+/* ランチャーオーバーレイのダークモード対応 */
+body.theme-night .launcher-overlay {
+    background-color: #0F172A !important;
+}
+
+body.theme-night .launcher-title {
+    color: var(--text-primary) !important;
+}
+
+body.theme-night #launcher-text {
+    color: var(--text-muted) !important;
+}
+
+/* アプリカード等の微調整 */
+body.theme-night .app-card:hover {
+    border-color: #6366f1;
+    /* Indigo-500 */
+}
+
+.font-pop {
+    font-family: 'M PLUS Rounded 1c', sans-serif;
+}
+
+/* --- アニメーション --- */
+@keyframes float {
+
+    0%,
+    100% {
+        transform: translateY(0);
+    }
+
+    50% {
+        transform: translateY(-10px);
+    }
+}
+
+.animate-float {
+    animation: float 3s ease-in-out infinite;
+}
+
+@keyframes pop-in {
+    0% {
+        transform: scale(0.9);
+        opacity: 0;
+    }
+
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+.animate-pop {
+    animation: pop-in 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+@keyframes shine {
+    0% {
+        left: -100%;
+    }
+
+    100% {
+        left: 100%;
+    }
+}
+
+.shine-effect::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 50%;
+    height: 100%;
+    background: linear-gradient(to right, transparent, rgba(255, 255, 255, 0.4), transparent);
+    transform: skewX(-25deg);
+    animation: shine 3s infinite;
+}
+
+@keyframes jelly {
+    0% {
+        transform: scale(1, 1);
+    }
+
+    30% {
+        transform: scale(1.25, 0.75);
+    }
+
+    40% {
+        transform: scale(0.75, 1.25);
+    }
+
+    50% {
+        transform: scale(1.15, 0.85);
+    }
+
+    65% {
+        transform: scale(0.95, 1.05);
+    }
+
+    75% {
+        transform: scale(1.05, 0.95);
+    }
+
+    100% {
+        transform: scale(1, 1);
+    }
+}
+
+.animate-jelly {
+    animation: jelly 0.5s;
+}
+
+/* アニメーション停止用クラス */
+body.reduce-motion *,
+body.reduce-motion *::after,
+body.reduce-motion *::before {
+    animation: none !important;
+    transition: none !important;
+}
+
+/* OS設定を自動検知（アクセシビリティ） */
+@media (prefers-reduced-motion: reduce) {
+
+    *,
+    *::after,
+    *::before {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+    }
+}
+
+/* ガラス風パネルデザイン */
+.glass-panel {
+    background: rgba(255, 255, 255, 0.85);
+    backdrop-filter: blur(12px);
+    border: 2px solid rgba(255, 255, 255, 0.5);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.05);
+}
+
+/* ホームのヒーローパネルは、背景に溶けないよう枠と色面を強める */
+#hero-section .glass-panel {
+    background:
+        linear-gradient(135deg, rgba(255, 255, 255, 0.94), rgba(255, 253, 232, 0.9) 45%, rgba(236, 253, 245, 0.88));
+    border: 4px solid rgba(255, 255, 255, 0.95);
+    box-shadow:
+        0 24px 60px rgba(15, 23, 42, 0.14),
+        0 0 0 2px rgba(99, 102, 241, 0.16),
+        inset 0 0 0 2px rgba(250, 204, 21, 0.18);
+}
+
+#hero-section .glass-panel::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    background:
+        radial-gradient(circle at 16% 22%, rgba(250, 204, 21, 0.28), transparent 26%),
+        radial-gradient(circle at 76% 28%, rgba(96, 165, 250, 0.24), transparent 30%),
+        radial-gradient(circle at 36% 82%, rgba(34, 197, 94, 0.18), transparent 28%),
+        linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(255, 247, 237, 0.55));
+    pointer-events: none;
+}
+
+#hero-section .glass-panel::after {
+    content: "";
+    position: absolute;
+    inset: 14px;
+    z-index: 0;
+    border: 2px dashed rgba(99, 102, 241, 0.18);
+    border-radius: 1.25rem;
+    pointer-events: none;
+}
+
+#hero-img {
+    display: none;
+}
+
+body.theme-night #hero-section .glass-panel h2,
+body.theme-night #hero-section .glass-panel #hero-title {
+    color: #1E293B !important;
+}
+
+body.theme-night #hero-section .glass-panel #hero-desc {
+    color: #475569 !important;
+}
+
+body.theme-night #hero-section .glass-panel #hero-tag {
+    color: #A16207 !important;
+}
+
+/* タブのアクティブ状態 */
+body.theme-night #category-tabs {
+    background-color: #334155 !important;
+}
+
+/* 既存の色相を保ったまま、AA基準を満たす明度へ補正 */
+.text-slate-400 {
+    color: var(--contrast-text-muted) !important;
+}
+
+.bg-blue-400 {
+    background-color: var(--contrast-action-blue) !important;
+}
+
+.bg-green-400.text-white {
+    background-color: var(--contrast-action-green) !important;
+}
+
+.bg-orange-400.text-white {
+    background-color: var(--contrast-action-orange) !important;
+}
+
+.bg-pink-400.text-white {
+    background-color: var(--contrast-action-pink) !important;
+}
+
+.bg-indigo-400.text-white {
+    background-color: var(--contrast-action-indigo) !important;
+}
+
+.bg-teal-400.text-white {
+    background-color: var(--contrast-action-teal) !important;
+}
+
+.bg-yellow-400.text-white {
+    color: #1F2937 !important;
+}
+
+body.theme-night #category-tabs button:not(.tab-active) {
+    color: #E2E8F0 !important;
+}
+
+body.theme-night #category-tabs .tab-active {
+    background-color: #1E293B;
+    color: #BFDBFE;
+}
+
+.tab-active {
+    background-color: white;
+    color: #3B82F6;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    transform: translateY(-2px);
+}
+
+body.theme-night .tab-active {
+    background-color: #334155;
+    color: #60A5FA;
+}
+
+/* 文字サイズ変更用 */
+body.text-large {
+    font-size: 1.1rem;
+}
+
+body.text-large #hero-title {
+    font-size: 3.5rem;
+}
+
+@media (max-width: 640px) {
+    body.text-large #hero-title {
+        font-size: 2.5rem;
+    }
+}
+
+body.text-large .app-card p {
+    font-size: 1rem;
+}
+
+/* スクロールバーのカスタマイズ */
+::-webkit-scrollbar {
+    width: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #CBD5E1;
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #94A3B8;
+}
+
+body.theme-night ::-webkit-scrollbar-thumb {
+    background: #475569;
+}
+
+/* フォーカス表示の強化（アクセシビリティ） */
+:focus-visible {
+    outline: 2px solid #6366f1;
+    outline-offset: 2px;
+}
+
+button:focus-visible,
+a:focus-visible,
+input:focus-visible {
+    outline: 2px solid #6366f1;
+    outline-offset: 2px;
+}
+
+/* --- 共通トースト通知スタイル --- */
+#toast-container {
+    position: fixed;
+    bottom: 1.5rem;
+    right: 1.5rem;
+    z-index: 100000;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    pointer-events: none;
+    max-width: 380px;
+    width: calc(100% - 3rem);
+}
+
+.toast {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    background-color: #ffffff;
+    border: 2px solid #e2e8f0;
+    border-radius: 1rem;
+    padding: 1rem;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    transform: translateY(0);
+    opacity: 1;
+    transition: opacity 0.3s ease, transform 0.3s ease;
+    pointer-events: auto;
+    font-weight: 700;
+}
+
+body.theme-night .toast {
+    background-color: #1e293b;
+    border-color: #334155;
+    color: #f8fafc;
+}
+
+.toast-info {
+    border-left: 6px solid #3b82f6;
+}
+.toast-success {
+    border-left: 6px solid #10b981;
+}
+.toast-warning {
+    border-left: 6px solid #f59e0b;
+}
+.toast-error {
+    border-left: 6px solid #ef4444;
+}
+
+.toast-icon {
+    font-size: 1.5rem;
+    flex-shrink: 0;
+}
+.toast-info .toast-icon { color: #3b82f6; }
+.toast-success .toast-icon { color: #10b981; }
+.toast-warning .toast-icon { color: #f59e0b; }
+.toast-error .toast-icon { color: #ef4444; }
+
+.toast-text {
+    font-size: 0.875rem;
+    line-height: 1.25rem;
+}
+
+/* ==========================================
+   PikaLab UI/UX 徹底改善カスタムスタイル
+   ========================================== */
+
+/* 1. アプリグリッドのレイアウトシフト（ガタつき）防止 */
+#apps-grid {
+    min-height: 500px;
+}
+
+/* 2. タッチデバイスでのタップ時青枠（ハイライト）無効化 */
+a, button, [role="button"], details, .app-card {
+    -webkit-tap-highlight-color: transparent;
+}
+
+/* 3. ランチャーオーバーレイのフェードアウト遷移用スタイル */
+#launcher-overlay {
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+}
+#launcher-overlay.launcher-fade-out {
+    opacity: 0;
+    visibility: hidden;
+}
+
+/* --- レーダーチャート（ダッシュボード）アニメーション --- */
+.radar-chart-polygon {
+    transform-origin: 100px 100px;
+    animation: radarExpand 0.7s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+}
+
+.radar-chart-dot {
+    transform-origin: center;
+    transform: scale(0);
+    animation: dotPop 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+}
+
+@keyframes radarExpand {
+    from {
+        transform: scale(0);
+        opacity: 0;
+    }
+    to {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+@keyframes dotPop {
+    from {
+        transform: scale(0);
+        opacity: 0;
+    }
+    to {
+        transform: scale(1);
+        opacity: 1;
+    }
+}

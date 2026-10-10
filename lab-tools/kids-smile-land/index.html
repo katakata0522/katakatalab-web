@@ -1,0 +1,721 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="robots" content="noindex, follow">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>キッズ・スマイル・ランド DX</title>
+    <meta name="description" content="ひらがな読み上げ・お絵かき・もっきん・おもちゃの音あてなど7つの遊び。初期は2〜3歳向けのかんたんで開き、親が横で使います。">
+    <meta name="keywords" content="知育,幼児,ゲーム,ひらがな,お絵かき,PWA,オフライン,無料,2歳,3歳,4歳,5歳,6歳">
+    <!-- OGP -->
+    <meta property="og:title" content="キッズ・スマイル・ランド — 親子で遊ぶミニゲーム">
+    <meta property="og:description" content="ひらがな・もっきん・お絵かき・おもちゃの音あて。初期はかんたん（2〜3歳）。保護者ロックとタイマー付き。">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://katakatalab.com/lab-tools/kids-smile-land/">
+    <meta property="og:image" content="https://katakatalab.com/lab-tools/kids-smile-land/icon-512.png">
+    <meta property="og:locale" content="ja_JP">
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:title" content="キッズ・スマイル・ランド — 親子で遊ぶミニゲーム">
+    <meta name="twitter:description" content="ひらがな・もっきん・お絵かき・おもちゃの音あて。初期はかんたん（2〜3歳）。">
+    <meta name="twitter:image" content="https://katakatalab.com/lab-tools/kids-smile-land/icon-512.png">
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" sizes="192x192" href="./icon-192.png">
+    <link rel="apple-touch-icon" href="./icon-192.png">
+    <link rel="canonical" href="https://katakatalab.com/lab-tools/kids-smile-land/">
+    <!-- PWAマニフェストとテーマカラー -->
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#ff5e7e">
+    <!-- ビルドされた静的 Tailwind CSS -->
+    <link rel="stylesheet" href="tailwind-built.css">
+    <!-- 外部スタイルシートの読み込み -->
+    <link rel="stylesheet" href="style.css?v=20260824-responsive">
+</head>
+<body class="min-h-screen flex flex-col justify-between overflow-x-hidden text-slate-800">
+    <script>try{if(localStorage.getItem('theme')==='dark')document.body.classList.add('dark-mode');}catch(e){}</script>
+
+    <!-- メインアプリコンテナ -->
+    <div id="app" class="w-full max-w-4xl mx-auto flex flex-col flex-grow p-4 md:p-6 pb-28">
+
+        <!-- ヘッダー（ステータスとおとなロック） -->
+        <header class="flex justify-between items-center bg-white/80 backdrop-blur-md rounded-2xl p-4 shadow-sm border-2 border-orange-100 mb-4">
+            <div class="flex items-center gap-2 md:gap-3 kids-header-main">
+                <!-- おうちにもどるボタン (ゲーム中のみ表示) -->
+                <button id="btn-back-home" class="hidden flex items-center gap-1.5 bg-sky-100 hover:bg-sky-200 text-sky-600 px-3.5 py-2 rounded-2xl border-2 border-sky-200 transition-all text-xs font-black shadow-sm shrink-0">
+                    🏠 おうち
+                </button>
+                <div class="bg-amber-50 text-2xl p-2.5 rounded-full shadow-inner animate-bounce">
+                    🎪
+                </div>
+                <div class="kids-title-block">
+                    <h1 class="text-xl md:text-2xl font-bold text-orange-500 tracking-wide kids-site-title"><span class="kids-site-title__name">キッズ・スマイル・ランド</span><span class="text-xs bg-red-400 text-white px-2 py-0.5 rounded-full kids-site-title__badge">DX</span></h1>
+                    <p class="text-[10px] text-slate-400">親子で遊ぶブラウザの遊び場。初期はかんたん（2〜3歳）</p>
+                </div>
+            </div>
+
+            <div class="flex items-center gap-2">
+                <!-- タイマーカウント表示 (動作時のみ表示) -->
+                <div id="timer-badge" class="hidden bg-indigo-50 border border-indigo-200 text-indigo-600 px-2.5 py-1.5 rounded-full text-xs font-bold flex items-center gap-1">
+                    ⏰ <span id="timer-countdown">00:00</span>
+                </div>
+                <!-- シール帳クイック表示 -->
+                <button id="btn-quick-sticker" data-tab-target="sticker" class="flex items-center gap-1.5 bg-yellow-100 hover:bg-yellow-200 text-orange-600 px-3 py-1.5 rounded-full border border-yellow-200 transition-all text-xs font-bold shadow-sm">
+                    ✨ <span id="sticker-count">0</span> こ 🌟
+                </button>
+                <!-- おとなロック設定 -->
+                <button id="btn-open-parent-modal" aria-label="保護者設定を開く" class="w-10 h-10 flex items-center justify-center bg-slate-100 hover:bg-slate-200 rounded-full transition-colors text-slate-500 border border-slate-200">
+                    <!-- ギアSVGアイコン -->
+                    <svg class="w-5 h-5 text-slate-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path>
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                    </svg>
+                </button>
+            </div>
+        </header>
+        <p class="text-[11px] text-slate-500 mb-3 leading-relaxed">幼児向けの別の遊び場は <a href="../../pikalab/eduplay/" class="underline">PikaLab のちいくひろば</a> です。こちらはお絵かき・もっきん・おもちゃの音あてが中心です。</p>
+
+        <!-- ももちゃん・おともだち案内エリア（ナビゲーター） -->
+        <section id="navigator-area" class="mb-4 bg-white/70 rounded-2xl p-4 border border-orange-50 flex gap-4 items-center shadow-sm relative">
+            <!-- キャラクター画像（CSS＆絵文字で可愛くアニメーション） -->
+            <div id="navigator-char" class="w-16 h-16 md:w-20 md:h-20 bg-amber-50 rounded-full border-2 border-orange-200 flex items-center justify-center text-4xl md:text-5xl shadow-md transition-all duration-300 animate-float">
+                🐰
+            </div>
+            <!-- セリフ吹き出し -->
+            <div class="flex-grow bg-white p-3 rounded-2xl border-2 border-orange-100 relative shadow-inner text-sm md:text-base leading-relaxed text-slate-700">
+                <span id="navigator-name" class="font-bold text-orange-500 block text-xs">うさぎのももちゃん</span>
+                <p id="navigator-bubble">いらっしゃい！いっしょに ぷにぷに あそぼうね！</p>
+            </div>
+        </section>
+
+        <!-- メインコンテンツ画面群 -->
+        <main class="flex-grow flex flex-col bg-white rounded-3xl p-4 md:p-6 border-4 border-orange-100 shadow-md">
+
+            <!-- TAB 0: ポータル・ホーム画面 -->
+            <div id="tab-home" class="tab-content flex flex-col h-full">
+                <!-- 3体のなかまたちお出迎えエリア -->
+                <section class="grid grid-cols-3 gap-2 md:gap-6 mb-6 pb-4 border-b-2 border-dashed border-orange-100 relative">
+                    <!-- ももちゃん (🐰) -->
+                    <button id="home-char-momo" class="flex flex-col items-center group relative cursor-pointer active:scale-95 transition-all">
+                        <!-- 吹き出し -->
+                        <div class="bg-rose-500 text-white text-[10px] md:text-xs font-black px-3 py-1.5 rounded-2xl shadow-sm mb-3 bubble-bottom-tip relative shrink-0">
+                            なにしてあそぶ？🐰
+                        </div>
+                        <div class="w-16 h-16 md:w-20 md:h-20 bg-rose-50 border-4 border-rose-200 rounded-full flex items-center justify-center text-4xl md:text-5xl shadow-md group-hover:scale-105 animate-float" style="animation-delay: 0s;">
+                            🐰
+                        </div>
+                        <span class="text-[10px] md:text-xs font-black text-rose-500 mt-2">ももちゃん</span>
+                    </button>
+
+                    <!-- レオくん (🦁) -->
+                    <button id="home-char-leo" class="flex flex-col items-center group relative cursor-pointer active:scale-95 transition-all">
+                        <!-- 吹き出し -->
+                        <div class="bg-amber-500 text-white text-[10px] md:text-xs font-black px-3 py-1.5 rounded-2xl shadow-sm mb-3 bubble-bottom-tip-center relative shrink-0">
+                            いっしょにあそぼ！🦁
+                        </div>
+                        <div class="w-16 h-16 md:w-20 md:h-20 bg-amber-50 border-4 border-amber-200 rounded-full flex items-center justify-center text-4xl md:text-5xl shadow-md group-hover:scale-105 animate-float" style="animation-delay: 0.5s;">
+                            🦁
+                        </div>
+                        <span class="text-[10px] md:text-xs font-black text-amber-500 mt-2">レオくん</span>
+                    </button>
+
+                    <!-- パンちゃん (🐼) -->
+                    <button id="home-char-pan" class="flex flex-col items-center group relative cursor-pointer active:scale-95 transition-all">
+                        <!-- 吹き出し -->
+                        <div class="bg-emerald-500 text-white text-[10px] md:text-xs font-black px-3 py-1.5 rounded-2xl shadow-sm mb-3 bubble-bottom-tip-right relative shrink-0">
+                            シールもあるよ〜🐼
+                        </div>
+                        <div class="w-16 h-16 md:w-20 md:h-20 bg-emerald-50 border-4 border-emerald-200 rounded-full flex items-center justify-center text-4xl md:text-5xl shadow-md group-hover:scale-105 animate-float" style="animation-delay: 1s;">
+                            🐼
+                        </div>
+                        <span class="text-[10px] md:text-xs font-black text-emerald-500 mt-2">パンちゃん</span>
+                    </button>
+                </section>
+
+                <!-- アトラクション選択グリッド -->
+                <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 md:gap-5 flex-grow py-2">
+                    <!-- おえかき -->
+                    <button data-tab-target="draw" class="card-attraction btn-puni bg-gradient-to-br from-rose-50 to-rose-100 border-4 border-rose-200 shadow-rose-200/50 text-rose-500 rounded-3xl p-5 md:p-6 flex flex-col items-center justify-center gap-3 select-none">
+                        <span class="text-4xl md:text-5xl select-none filter drop-shadow">🎨</span>
+                        <span class="text-sm md:text-base font-black tracking-wide">おえかき</span>
+                    </button>
+
+                    <!-- おしゃべり -->
+                    <button data-tab-target="hiragana" class="card-attraction btn-puni bg-gradient-to-br from-orange-50 to-orange-100 border-4 border-orange-200 shadow-orange-200/50 text-orange-500 rounded-3xl p-5 md:p-6 flex flex-col items-center justify-center gap-3 select-none">
+                        <span class="text-4xl md:text-5xl select-none filter drop-shadow">🍎</span>
+                        <span class="text-sm md:text-base font-black tracking-wide">おしゃべり</span>
+                    </button>
+
+                    <!-- なきごえ -->
+                    <button data-tab-target="quiz" class="card-attraction btn-puni bg-gradient-to-br from-amber-50 to-amber-100 border-4 border-amber-200 shadow-amber-200/50 text-amber-500 rounded-3xl p-5 md:p-6 flex flex-col items-center justify-center gap-3 select-none">
+                        <span class="text-4xl md:text-5xl select-none filter drop-shadow">🦁</span>
+                        <span class="text-sm md:text-base font-black tracking-wide">おもちゃの音あて</span>
+                    </button>
+
+                    <!-- かずかぞえ -->
+                    <button data-tab-target="count" class="card-attraction btn-puni bg-gradient-to-br from-emerald-50 to-emerald-100 border-4 border-emerald-200 shadow-emerald-200/50 text-emerald-500 rounded-3xl p-5 md:p-6 flex flex-col items-center justify-center gap-3 select-none">
+                        <span class="text-4xl md:text-5xl select-none filter drop-shadow">🔢</span>
+                        <span class="text-sm md:text-base font-black tracking-wide">かずかぞえ</span>
+                    </button>
+
+                    <!-- カードえあわせ -->
+                    <button data-tab-target="match" class="card-attraction btn-puni bg-gradient-to-br from-sky-50 to-sky-100 border-4 border-sky-200 shadow-sky-200/50 text-sky-500 rounded-3xl p-5 md:p-6 flex flex-col items-center justify-center gap-3 select-none">
+                        <span class="text-4xl md:text-5xl select-none filter drop-shadow">🃏</span>
+                        <span class="text-sm md:text-base font-black tracking-wide">えあわせ</span>
+                    </button>
+
+                    <!-- もっきんえんそう -->
+                    <button data-tab-target="xylophone" class="card-attraction btn-puni bg-gradient-to-br from-indigo-50 to-indigo-100 border-4 border-indigo-200 shadow-indigo-200/50 text-indigo-500 rounded-3xl p-5 md:p-6 flex flex-col items-center justify-center gap-3 select-none">
+                        <span class="text-4xl md:text-5xl select-none filter drop-shadow">🎵</span>
+                        <span class="text-sm md:text-base font-black tracking-wide">もっきんえんそう</span>
+                    </button>
+
+                    <!-- シールデコ -->
+                    <button data-tab-target="sticker" class="card-attraction btn-puni bg-gradient-to-br from-yellow-50 to-yellow-100 border-4 border-yellow-200 shadow-yellow-200/50 text-yellow-500 rounded-3xl p-5 md:p-6 flex flex-col items-center justify-center gap-3 select-none">
+                        <span class="text-4xl md:text-5xl select-none filter drop-shadow">🌟</span>
+                        <span class="text-sm md:text-base font-black tracking-wide">シールデコ</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- TAB 1: おしゃべりボード（ひらがな） -->
+            <div id="tab-hiragana" class="tab-content flex flex-col h-full">
+                <!-- サブタブ（せいおん / だくおん） -->
+                <div class="flex gap-2 mb-4 bg-slate-100 p-1.5 rounded-xl border border-slate-200 w-fit">
+                    <button data-hiragana-type="standard" id="btn-h-std" class="px-4 py-2 rounded-lg text-sm font-bold bg-white text-blue-600 shadow-sm border border-slate-200 transition-all">あいうえお (せいおん)</button>
+                    <button data-hiragana-type="voiced" id="btn-h-voi" class="px-4 py-2 rounded-lg text-sm font-bold text-slate-500 hover:text-blue-600 transition-all">がぎぐげご (だくおん)</button>
+                </div>
+
+                <div id="hiragana-grid" class="grid grid-cols-5 gap-2 md:gap-3 flex-grow overflow-y-auto max-h-[400px] no-scrollbar pr-1">
+                    <!-- JSで動的に文字カードを生成 -->
+                </div>
+            </div>
+
+            <!-- TAB 2: かずかぞえクイズ -->
+            <div id="tab-count" class="tab-content hidden flex flex-col items-center justify-center h-full py-4 text-center">
+                <h3 class="text-lg font-bold text-slate-700 mb-6">くだものやどうぶつ、いくつあるかな？ かぞえてみよう！</h3>
+                
+                <!-- アイテム表示キャンバス（パステルサークル） -->
+                <div id="count-items" class="w-full max-w-md bg-orange-50/50 rounded-2xl p-6 min-h-[160px] flex flex-wrap gap-4 items-center justify-center border-2 border-dashed border-orange-200 mb-8 text-4xl md:text-5xl shadow-inner select-none">
+                    <!-- 動的にかわいい絵文字が配置される -->
+                </div>
+
+                <!-- 回答ボタン（動的に2択〜4択） -->
+                <div id="count-options" class="flex gap-4 justify-center w-full max-w-sm">
+                    <!-- 動的にボタンが生成される -->
+                </div>
+            </div>
+
+            <!-- TAB 3: おえかき＆したえ -->
+            <div id="tab-draw" class="tab-content hidden flex flex-col h-full">
+                <!-- パレットと各種操作 -->
+                <div class="flex flex-wrap items-center justify-between gap-3 mb-3 border-b border-slate-100 pb-3">
+                    <!-- カラーパレット -->
+                    <div class="flex flex-wrap gap-2 items-center">
+                        <span class="text-xs text-slate-400 font-bold mr-1">いろ:</span>
+                        <button data-draw-color="#ff5e7e" class="w-8 h-8 rounded-full border-2 border-white shadow bg-[#ff5e7e] ring-2 ring-blue-500 transition-transform scale-110 color-btn"></button>
+                        <button data-draw-color="#3b82f6" class="w-8 h-8 rounded-full border-2 border-white shadow bg-[#3b82f6] color-btn"></button>
+                        <button data-draw-color="#10b981" class="w-8 h-8 rounded-full border-2 border-white shadow bg-[#10b981] color-btn"></button>
+                        <button data-draw-color="#f59e0b" class="w-8 h-8 rounded-full border-2 border-white shadow bg-[#f59e0b] color-btn"></button>
+                        <button data-draw-color="#8b5cf6" class="w-8 h-8 rounded-full border-2 border-white shadow bg-[#8b5cf6] color-btn"></button>
+                        <button data-draw-color="rainbow" class="w-8 h-8 rounded-full border-2 border-white shadow bg-gradient-to-tr from-red-400 via-green-400 to-blue-500 color-btn flex items-center justify-center text-[10px] text-white font-bold">🌈</button>
+                        <button data-draw-color="eraser" class="w-8 h-8 rounded-full border border-slate-300 shadow bg-white color-btn flex items-center justify-center text-lg">🧽</button>
+                    </div>
+
+                    <!-- 太さ -->
+                    <div class="flex gap-2 items-center bg-slate-50 p-1 rounded-xl border border-slate-200 text-xs">
+                        <button id="btn-stroke-auto" data-draw-pen-width="auto" class="px-3 py-1.5 rounded-lg bg-blue-100 shadow-sm font-black text-blue-700 border border-blue-200 transition-all stroke-btn">🪄 じどう太さ</button>
+                        <button data-draw-pen-width="5" class="px-3 py-1.5 rounded-lg text-slate-500 font-bold hover:text-slate-700 transition-all stroke-btn">ほそい</button>
+                        <button data-draw-pen-width="15" class="px-3 py-1.5 rounded-lg text-slate-500 font-bold hover:text-slate-700 transition-all stroke-btn">ふとい</button>
+                    </div>
+
+                    <!-- したえ（テンプレート） -->
+                    <div class="flex gap-1.5 items-center">
+                        <span class="text-xs text-slate-400 font-bold">したえ:</span>
+                        <select id="draw-template" class="bg-blue-50 border border-blue-200 text-xs font-bold text-blue-600 rounded-lg px-2.5 py-1.5 outline-none">
+                            <option value="none">しろいかみ ⬜️</option>
+                            <option value="star">おほしさま ⭐</option>
+                            <option value="cat">ねこちゃん 🐱</option>
+                            <option value="car">くるま 🚗</option>
+                        </select>
+                    </div>
+
+                    <!-- クリア -->
+                    <button id="btn-clear-canvas" class="px-3 py-1.5 rounded-lg bg-red-100 hover:bg-red-200 text-red-600 font-bold text-xs border border-red-200 transition-all flex items-center gap-1">
+                        <!-- ゴミ箱SVG -->
+                        <svg class="w-3.5 h-3.5 inline mr-0.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                          <path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                        </svg>
+                        ぜんぶけす
+                    </button>
+                </div>
+
+                <!-- キャンバス -->
+                <div class="relative w-full flex-grow bg-slate-50 border-4 border-dashed border-slate-200 rounded-2xl overflow-hidden min-h-[300px]">
+                    <canvas id="paint-canvas" aria-label="お絵かきキャンバス" class="absolute top-0 left-0 w-full h-full cursor-crosshair touch-none"></canvas>
+                </div>
+            </div>
+
+            <!-- TAB 4: なきごえクイズ -->
+            <div id="tab-quiz" class="tab-content hidden flex flex-col items-center justify-center h-full py-4 text-center">
+                <h3 class="text-lg font-bold text-slate-700 mb-2">おもちゃの音を よくきいて、どのどうぶつか あててみてね！</h3>
+                <p class="text-xs text-slate-500 mb-6">本物の動物の声ではなく、このページで作ったおもちゃの音です。</p>
+
+                <!-- スピーカーボタン -->
+                <button id="btn-play-quiz-voice" aria-label="なきごえを聞く" class="btn-puni shadow-blue-200 bg-blue-500 hover:bg-blue-600 text-white w-28 h-28 rounded-full flex items-center justify-center shadow-md mb-8 relative group border-4 border-white">
+                    <!-- スピーカーSVG -->
+                    <svg class="w-12 h-12 text-white animate-pulse" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z"></path>
+                    </svg>
+                    <span class="absolute -bottom-1 text-xs font-bold bg-yellow-300 text-blue-900 px-2 py-0.5 rounded-full shadow border border-white">おとをきく</span>
+                </button>
+
+                <!-- 選択肢（どうぶつ4択） -->
+                <div id="quiz-options" class="grid grid-cols-2 sm:grid-cols-4 gap-4 w-full max-w-lg">
+                    <!-- JSで動的に生成 -->
+                </div>
+            </div>
+
+            <!-- TAB 5: カードえあわせ -->
+            <div id="tab-match" class="tab-content hidden flex flex-col items-center justify-center h-full">
+                <div class="flex justify-between items-center w-full max-w-md mb-4 text-xs font-bold text-slate-500">
+                    <span>そろったペア: <span id="match-pairs" class="text-emerald-600 text-sm font-black">0</span> / <span id="match-pairs-total" class="text-slate-600">6</span></span>
+                    <button id="btn-restart-match" class="px-3 py-1.5 rounded-lg bg-blue-50 hover:bg-blue-100 text-blue-600 border border-blue-200">やりなおす 🔄</button>
+                </div>
+
+                <!-- カードグリッド -->
+                <div id="match-grid" class="grid grid-cols-4 gap-3 w-full max-w-md aspect-square max-h-[380px]">
+                    <!-- JSで難易度に応じた枚数のカードを生成 -->
+                </div>
+            </div>
+
+            <!-- TAB 6: もっきん -->
+            <div id="tab-xylophone" class="tab-content hidden flex flex-col h-full">
+                <div class="flex flex-wrap items-center justify-between gap-3 mb-4 border-b border-slate-100 pb-3">
+                    <div class="flex flex-wrap items-center gap-3">
+                        <div class="flex items-center gap-2">
+                            <span class="text-xs text-slate-400 font-bold">えんそガイド:</span>
+                            <select id="xylo-song" class="bg-blue-50 border border-blue-200 text-xs font-bold text-blue-600 rounded-lg px-2.5 py-1.5 outline-none">
+                                <option value="free">じゆうにあそぶ 🎵</option>
+                                <option value="twinkle">きらきらぼし ⭐</option>
+                                <option value="frog">かえるのがっしょう 🐸</option>
+                                <option value="sheep">メリーさんのひつじ 🐑</option>
+                            </select>
+                        </div>
+                        
+                        <!-- おとあてゲーム開始ボタン -->
+                        <button id="btn-otoate" class="px-3 py-1.5 rounded-lg bg-blue-500 hover:bg-blue-600 text-white text-xs font-bold transition-all shadow-sm">
+                            🎯 おとあてゲーム
+                        </button>
+                    </div>
+                    
+                    <span id="xylo-guide-text" class="text-xs text-blue-500 font-bold bg-blue-50 px-3 py-1 rounded-full border border-blue-100 hidden">
+                        おんぷのとおりに たたいてね！
+                    </span>
+                    <span id="xylo-otoate-text" class="text-xs text-indigo-500 font-bold bg-indigo-50 px-3 py-1 rounded-full border border-indigo-100 hidden animate-pulse">
+                        ききとったおとを たたいてね！
+                    </span>
+                </div>
+
+                <!-- 鍵盤コンテナ -->
+                <div class="flex justify-between items-stretch gap-1.5 md:gap-3 flex-grow h-[260px] md:h-[320px] bg-slate-900/5 p-4 rounded-3xl border border-slate-200 shadow-inner">
+                    <!-- ド -->
+                    <button id="key-0" data-key-index="0" style="background-color: #ff5e7e;" class="btn-puni shadow-red-900/30 flex-grow rounded-2xl flex flex-col justify-between items-center py-4 text-white font-bold border-2 border-white/20 xylo-key">
+                        <span class="text-lg md:text-xl">ド</span>
+                        <span class="w-2.5 h-2.5 bg-white/40 rounded-full"></span>
+                    </button>
+                    <!-- レ -->
+                    <button id="key-1" data-key-index="1" style="background-color: #ff9f43;" class="btn-puni shadow-orange-900/30 flex-grow rounded-2xl flex flex-col justify-between items-center py-4 text-white font-bold border-2 border-white/20 mt-2 xylo-key">
+                        <span class="text-lg md:text-xl">レ</span>
+                        <span class="w-2.5 h-2.5 bg-white/40 rounded-full"></span>
+                    </button>
+                    <!-- ミ -->
+                    <button id="key-2" data-key-index="2" style="background-color: #fffa65; color: #5f27cd;" class="btn-puni shadow-yellow-950/20 flex-grow rounded-2xl flex flex-col justify-between items-center py-4 font-bold border-2 border-slate-900/10 mt-4 xylo-key">
+                        <span class="text-lg md:text-xl">ミ</span>
+                        <span class="w-2.5 h-2.5 bg-slate-900/10 rounded-full"></span>
+                    </button>
+                    <!-- ファ -->
+                    <button id="key-3" data-key-index="3" style="background-color: #1dd1a1;" class="btn-puni shadow-green-900/30 flex-grow rounded-2xl flex flex-col justify-between items-center py-4 text-white font-bold border-2 border-white/20 mt-6 xylo-key">
+                        <span class="text-lg md:text-xl">ファ</span>
+                        <span class="w-2.5 h-2.5 bg-white/40 rounded-full"></span>
+                    </button>
+                    <!-- ソ -->
+                    <button id="key-4" data-key-index="4" style="background-color: #10ac84;" class="btn-puni shadow-teal-900/30 flex-grow rounded-2xl flex flex-col justify-between items-center py-4 text-white font-bold border-2 border-white/20 mt-8 xylo-key">
+                        <span class="text-lg md:text-xl">ソ</span>
+                        <span class="w-2.5 h-2.5 bg-white/40 rounded-full"></span>
+                    </button>
+                    <!-- ラ -->
+                    <button id="key-5" data-key-index="5" style="background-color: #54a0ff;" class="btn-puni shadow-blue-900/30 flex-grow rounded-2xl flex flex-col justify-between items-center py-4 text-white font-bold border-2 border-white/20 mt-10 xylo-key">
+                        <span class="text-lg md:text-xl">ラ</span>
+                        <span class="w-2.5 h-2.5 bg-white/40 rounded-full"></span>
+                    </button>
+                    <!-- シ -->
+                    <button id="key-6" data-key-index="6" style="background-color: #5f27cd;" class="btn-puni shadow-indigo-900/30 flex-grow rounded-2xl flex flex-col justify-between items-center py-4 text-white font-bold border-2 border-white/20 mt-12 xylo-key">
+                        <span class="text-lg md:text-xl">シ</span>
+                        <span class="w-2.5 h-2.5 bg-white/40 rounded-full"></span>
+                    </button>
+                    <!-- ド（高） -->
+                    <button id="key-7" data-key-index="7" style="background-color: #ff5e7e;" class="btn-puni shadow-red-900/30 flex-grow rounded-2xl flex flex-col justify-between items-center py-4 text-white font-bold border-2 border-white/20 mt-14 xylo-key">
+                        <span class="text-lg md:text-xl">ド</span>
+                        <span class="w-2.5 h-2.5 bg-white/40 rounded-full"></span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- TAB 7: シールデコ台紙 -->
+            <div id="tab-sticker" class="tab-content hidden flex flex-col h-full relative">
+                <!-- 操作ツールバー -->
+                <div class="flex flex-wrap items-center justify-between gap-3 mb-3 border-b border-slate-100 pb-3">
+                    <div class="flex items-center gap-2">
+                        <span class="text-xs text-slate-400 font-bold">だいし選択:</span>
+                        <button data-sticker-bg="grass" class="px-2.5 py-1.5 rounded-lg bg-emerald-50 text-emerald-600 hover:bg-emerald-100 border border-emerald-200 text-xs font-bold bg-btn">はらっぱ 🌳</button>
+                        <button data-sticker-bg="space" class="px-2.5 py-1.5 rounded-lg bg-indigo-950 text-indigo-300 hover:bg-indigo-900 border border-indigo-800 text-xs font-bold bg-btn">きらきら宇宙 🚀</button>
+                        <button data-sticker-bg="sea" class="px-2.5 py-1.5 rounded-lg bg-sky-50 text-sky-600 hover:bg-sky-100 border border-sky-200 text-xs font-bold bg-btn">あおい海 🌊</button>
+                    </div>
+
+                    <!-- シール図鑑呼び出しボタン (操作色: ブルー) -->
+                    <button id="btn-open-zukan" class="px-3 py-1.5 rounded-lg bg-blue-500 hover:bg-blue-600 text-white text-xs font-bold shadow-sm flex items-center gap-1">
+                        📖 シールずかん
+                    </button>
+
+                    <button id="btn-clear-stickers" class="px-3 py-1.5 rounded-lg bg-red-100 hover:bg-red-200 text-red-600 text-xs font-bold border border-red-200">
+                        シールをぜんぶはがす 🧽
+                    </button>
+                </div>
+
+                <!-- メイン台紙 & シールプール（2段レイアウト） -->
+                <div class="flex flex-col gap-4 flex-grow">
+                    <!-- シール台紙エリア -->
+                    <div id="sticker-canvas" class="relative w-full h-[240px] md:h-[300px] border-4 border-dashed border-slate-200 rounded-2xl overflow-hidden transition-all duration-500 bg-gradient-to-b from-emerald-100 to-green-200">
+                        <div class="absolute inset-0 flex items-center justify-center pointer-events-none select-none text-slate-400/30 text-xs font-bold">
+                            あつめたシールをペタペタはろう！「はがす」ボタンでも はがせるよ
+                        </div>
+                        <!-- 配置されたシールは動的にここに挿入される -->
+                    </div>
+                    <button type="button" id="btn-peel-sticker" class="self-start mt-2 bg-white border-2 border-orange-200 text-orange-600 font-bold text-sm px-4 py-2 rounded-xl">さいごに はったシールを はがす</button>
+
+                    <!-- シールプール（手持ちの獲得シール一覧） -->
+                    <div class="bg-slate-50 border border-slate-200 rounded-2xl p-3">
+                        <span class="text-xs text-slate-400 font-bold block mb-2">はれるシール (タップしてペタッ！):</span>
+                        <div id="sticker-pool" class="flex gap-3 overflow-x-auto py-1 no-scrollbar min-h-[50px] items-center">
+                            <!-- クイズ等で獲得したシールが並ぶ -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </main>
+    </div>
+
+    <!-- フッターナビゲーション（ゲーム選択：ホーム画面ポータル化により常時非表示化） -->
+    <nav class="hidden fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-md border-t-4 border-orange-100 shadow-2xl z-40 px-3 py-2">
+        <div role="tablist" aria-label="ゲーム選択" class="max-w-4xl mx-auto flex justify-around items-center gap-1.5">
+            <!-- おえかき -->
+            <button id="nav-draw" role="tab" data-tab-target="draw" class="flex-1 flex flex-col items-center justify-center p-2 rounded-2xl hover:bg-slate-50 transition-all text-blue-500 font-bold text-xs gap-1 border-2 border-transparent">
+                <span class="text-2xl">🎨</span>
+                <span class="scale-90 md:scale-100 truncate w-full">おえかき</span>
+            </button>
+            <!-- おしゃべり -->
+            <button id="nav-hiragana" role="tab" data-tab-target="hiragana" class="flex-1 flex flex-col items-center justify-center p-2 rounded-2xl hover:bg-slate-50 transition-all text-blue-500 font-bold text-xs gap-1 border-2 border-transparent bg-blue-50 border-blue-200 shadow-inner">
+                <span class="text-2xl">🍎</span>
+                <span class="scale-90 md:scale-100 truncate w-full">おしゃべり</span>
+            </button>
+            <!-- なきごえ -->
+            <button id="nav-quiz" role="tab" data-tab-target="quiz" class="flex-1 flex flex-col items-center justify-center p-2 rounded-2xl hover:bg-slate-50 transition-all text-blue-500 font-bold text-xs gap-1 border-2 border-transparent">
+                <span class="text-2xl">🦁</span>
+                <span class="scale-90 md:scale-100 truncate w-full">なきごえ</span>
+            </button>
+            <!-- かずかぞえ -->
+            <button id="nav-count" role="tab" data-tab-target="count" class="flex-1 flex flex-col items-center justify-center p-2 rounded-2xl hover:bg-slate-50 transition-all text-blue-500 font-bold text-xs gap-1 border-2 border-transparent">
+                <span class="text-2xl">🔢</span>
+                <span class="scale-90 md:scale-100 truncate w-full">かずかぞえ</span>
+            </button>
+            <!-- えあわせ -->
+            <button id="nav-match" role="tab" data-tab-target="match" class="flex-1 flex flex-col items-center justify-center p-2 rounded-2xl hover:bg-slate-50 transition-all text-blue-500 font-bold text-xs gap-1 border-2 border-transparent">
+                <span class="text-2xl">🃏</span>
+                <span class="scale-90 md:scale-100 truncate w-full">えあわせ</span>
+            </button>
+            <!-- もっきん -->
+            <button id="nav-xylophone" role="tab" data-tab-target="xylophone" class="flex-1 flex flex-col items-center justify-center p-2 rounded-2xl hover:bg-slate-50 transition-all text-blue-500 font-bold text-xs gap-1 border-2 border-transparent">
+                <span class="text-2xl">🎵</span>
+                <span class="scale-90 md:scale-100 truncate w-full">もっきん</span>
+            </button>
+            <!-- シール -->
+            <button id="nav-sticker" role="tab" data-tab-target="sticker" class="flex-1 flex flex-col items-center justify-center p-2 rounded-2xl hover:bg-slate-50 transition-all text-blue-500 font-bold text-xs gap-1 border-2 border-transparent relative">
+                <span class="text-2xl">🌟</span>
+                <span class="scale-90 md:scale-100 truncate w-full">シールデコ</span>
+                <!-- シールバッジ -->
+                <span id="badge-new" aria-hidden="true" class="absolute top-1 right-2 w-2.5 h-2.5 bg-red-500 rounded-full border border-white hidden"></span>
+            </button>
+        </div>
+    </nav>
+
+    <!-- モーダル: 新しいシールゲット -->
+    <div id="modal-sticker" class="fixed inset-0 bg-slate-900/60 flex items-center justify-center z-50 p-4 hidden">
+        <div class="bg-white rounded-[40px] border-8 border-yellow-300 p-8 text-center max-w-sm w-full shadow-2xl relative">
+            <h4 class="text-2xl font-black text-emerald-600 mb-2">やったー！あたり！ ✨</h4>
+            <p class="text-sm text-slate-500 mb-6 font-bold">ごほうびの シールを ゲットしたよ！</p>
+            
+            <div id="get-sticker-emoji" class="text-8xl my-6 animate-pulse select-none">🐶</div>
+            
+            <button id="btn-close-sticker-modal" class="btn-puni shadow-blue-700 bg-blue-500 hover:bg-blue-600 text-white font-bold py-3 px-8 rounded-full text-lg w-full border-2 border-white">
+                ありがとう！
+            </button>
+        </div>
+    </div>
+
+    <!-- モーダル: シールずかん 📖 -->
+    <div id="modal-zukan" class="fixed inset-0 bg-slate-900/70 flex items-center justify-center z-50 p-4 hidden animate-fade-in">
+        <div class="bg-white rounded-[32px] border-4 border-blue-200 p-6 max-w-md w-full shadow-2xl flex flex-col max-h-[85vh]">
+            <div class="flex justify-between items-center mb-4">
+                <h4 class="text-lg font-bold text-slate-800 flex items-center gap-1">📖 シールずかん</h4>
+                <button id="btn-close-zukan" class="text-slate-400 hover:text-slate-600">
+                    <svg class="w-6 h-6 text-slate-400 hover:text-slate-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                </button>
+            </div>
+            
+            <p class="text-[10px] text-slate-400 font-bold mb-3 text-center">クイズをクリアして ぜんぶあつめよう！タップするとおしゃべりするよ</p>
+            
+            <div id="zukan-grid" class="grid grid-cols-4 gap-3 flex-grow overflow-y-auto pr-1 no-scrollbar mb-4">
+                <!-- JSで動的にコレクション状態を生成 -->
+            </div>
+
+            <!-- アチーブメント/実績ミッションコーナー -->
+            <div class="bg-indigo-50 p-3 rounded-2xl border border-indigo-100 text-left">
+                <h5 class="text-xs font-black text-indigo-700 mb-1.5 flex items-center gap-1">🏆 がんばりミッション</h5>
+                <div id="mission-list" class="space-y-1.5 text-[10px] text-slate-600">
+                    <!-- アチーブメント進捗状況 -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- モーダル: おやすみロック (あんしんタイマー時間終了時用) -->
+    <div id="modal-sleep" class="fixed inset-0 bg-slate-900/95 flex items-center justify-center z-50 p-4 hidden">
+        <div class="bg-white rounded-[40px] border-8 border-indigo-400 p-8 text-center max-w-sm w-full shadow-2xl relative">
+            <div class="text-6xl mb-4 animate-bounce">🌙</div>
+            <h4 id="sleep-title" class="text-2xl font-black text-indigo-600 mb-2">おめめを やすめようね</h4>
+            <p id="sleep-body" class="text-sm text-slate-500 mb-6 font-bold">たくさん あそんだから、すこし やすもうね。<br>また あした あそぼう！</p>
+            <div class="text-8xl my-6 select-none animate-float">🐰💤</div>
+            <button id="btn-unlock-sleep-parent" class="text-xs text-blue-500 underline hover:text-blue-700 block mx-auto font-bold transition-all">
+                おとなのひとが ロックを解除する
+            </button>
+        </div>
+    </div>
+
+    <!-- モーダル: 保護者（みまもり）ログイン -->
+    <div id="modal-parent-auth" class="fixed inset-0 bg-slate-900/60 flex items-center justify-center z-50 p-4 hidden">
+        <div class="bg-white rounded-3xl p-6 text-center max-w-sm w-full shadow-2xl border-4 border-slate-200">
+            <h4 class="text-lg font-bold text-slate-700 mb-2">🔒 おとなのかんもん</h4>
+            <p class="text-xs text-slate-500 mb-4">おとなの人にやってもらってね。</p>
+            
+            <div id="parent-quiz-text" class="text-2xl font-black text-slate-800 my-4 tracking-widest bg-slate-50 py-2 rounded-xl">5 + 7 = ?</div>
+            
+            <input type="text" id="parent-answer" placeholder="こたえを入力" class="w-full text-center text-xl font-bold border-2 border-slate-300 rounded-xl py-2 mb-4 focus:border-blue-500 outline-none">
+            
+            <div class="flex gap-2">
+                <button id="btn-close-parent-modal" class="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-600 font-bold py-2.5 rounded-xl text-sm">やめる</button>
+                <button id="btn-submit-parent-auth" class="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-bold py-2.5 rounded-xl text-sm">すすむ</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- モーダル: 保護者設定画面 (タブ化で整理・拡張) -->
+    <div id="modal-parent-settings" class="fixed inset-0 bg-slate-900/60 flex items-center justify-center z-50 p-4 hidden">
+        <div class="bg-white rounded-3xl p-6 max-w-md w-full shadow-2xl border-4 border-slate-700 flex flex-col max-h-[90vh]">
+            <div class="flex justify-between items-center mb-4 shrink-0">
+                <h4 class="text-lg font-bold text-slate-800">⚙️ みまもり設定 (保護者用)</h4>
+                <button id="btn-close-parent-settings" class="text-slate-400 hover:text-slate-600">
+                    <svg class="w-6 h-6 text-slate-400 hover:text-slate-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                </button>
+            </div>
+
+            <!-- 設定画面内タブメニュー -->
+            <div class="flex border-b border-slate-200 mb-4 shrink-0 text-sm font-bold">
+                <button id="set-tab-sound" data-settings-tab="sound" class="flex-1 py-2 text-center border-b-2 border-blue-500 text-blue-600">おと・こえ 📢</button>
+                <button id="set-tab-study" data-settings-tab="study" class="flex-1 py-2 text-center border-b-2 border-transparent text-slate-500 hover:text-slate-800">がくしゅう 🏫</button>
+                <button id="set-tab-report" data-settings-tab="report" class="flex-1 py-2 text-center border-b-2 border-transparent text-slate-500 hover:text-slate-800">がんばり 📈</button>
+            </div>
+            
+            <!-- スクロール可能な設定コンテンツ領域 -->
+            <div class="flex-grow overflow-y-auto pr-1 no-scrollbar mb-4 space-y-4">
+                
+                <!-- TAB CONTENT: おと・こえ -->
+                <div id="set-content-sound" class="space-y-4">
+                    <!-- ボイス設定 -->
+                    <div>
+                        <label class="block text-xs text-slate-400 font-bold mb-1.5">📢 おしゃべりするこえ</label>
+                        <select id="voice-select" class="w-full bg-slate-50 border-2 border-slate-200 text-slate-700 rounded-xl px-3 py-2 text-xs font-bold outline-none focus:border-blue-500">
+                            <!-- JSで内蔵音声の候補を追加 -->
+                        </select>
+                        <p class="text-[10px] text-slate-500 mt-1 leading-relaxed">「クラウドの声」と付く候補は、端末の読み上げ機能が外部の音声サービスを使うことがあります。端末内だけにしたいときは「ローカル」と付く声を選んでください。</p>
+                    </div>
+
+                    <!-- 読み上げ音量 -->
+                    <div>
+                        <label class="block text-xs text-slate-400 font-bold mb-1">🔊 おしゃべりの音量</label>
+                        <input type="range" id="voice-volume-range" min="0" max="1" step="0.1" value="1.0" class="w-full accent-blue-500">
+                        <div class="flex justify-between text-[9px] text-slate-400 font-bold">
+                            <span>ミュート</span>
+                            <span>最大</span>
+                        </div>
+                    </div>
+
+                    <!-- 音声の高さ -->
+                    <div>
+                        <label class="block text-xs text-slate-400 font-bold mb-1">🔊 おしゃべりの高さ (ピッチ)</label>
+                        <input type="range" id="voice-pitch-range" min="0.5" max="2" step="0.1" value="1.2" class="w-full accent-blue-500">
+                        <div class="flex justify-between text-[9px] text-slate-400 font-bold">
+                            <span>ひくい</span>
+                            <span>たかい (おすすめ)</span>
+                        </div>
+                    </div>
+
+                    <!-- 効果音音量 -->
+                    <div>
+                        <label class="block text-xs text-slate-400 font-bold mb-1">🎵 もっきん・効果音・なきごえの音量</label>
+                        <input type="range" id="synth-volume-range" min="0" max="1" step="0.1" value="1.0" class="w-full accent-blue-500">
+                        <div class="flex justify-between text-[9px] text-slate-400 font-bold">
+                            <span>しずか</span>
+                            <span>にぎやか</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- TAB CONTENT: がくしゅう -->
+                <div id="set-content-study" class="space-y-4 hidden">
+                    <!-- がくしゅうレベル -->
+                    <div>
+                        <label class="block text-xs text-slate-400 font-bold mb-1.5">🏫 がくしゅうレベル (年齢に合わせる)</label>
+                        <select id="study-level-select" class="w-full bg-slate-50 border-2 border-slate-200 text-slate-700 rounded-xl px-3 py-2 text-xs font-bold outline-none focus:border-blue-500">
+                            <option value="easy">かんたん 🐥 (2〜3才：かず 1〜5 / えあわせ 4枚)</option>
+                            <option value="normal" selected>ふつう 🐰 (4〜5才：かず 1〜10 / えあわせ 12枚)</option>
+                            <option value="hard">チャレンジ 🦁 (6才〜：かず 11〜20 / えあわせ 16枚)</option>
+                        </select>
+                    </div>
+
+                    <!-- あんしんタイマー -->
+                    <div>
+                        <label class="block text-xs text-slate-400 font-bold mb-1.5">⏳ あんしんタイマー (使いすぎ防止)</label>
+                        <select id="timer-limit-select" class="w-full bg-slate-50 border-2 border-slate-200 text-slate-700 rounded-xl px-3 py-2 text-xs font-bold outline-none focus:border-blue-500">
+                            <option value="0">せいげんなし (いつでも遊べる)</option>
+                            <option value="5">5ふん で おやすみ 🌙</option>
+                            <option value="15">15ふん で おやすみ 🌙</option>
+                            <option value="30">30ふん で おやすみ 🌙</option>
+                            <option value="45">45ふん で おやすみ 🌙</option>
+                        </select>
+                    </div>
+
+                    <!-- おやすみ理由設定 🌙 -->
+                    <div>
+                        <label class="block text-xs text-slate-400 font-bold mb-1.5">🛌 おやすみロックのりゆう (カスタマイズ)</label>
+                        <select id="sleep-reason-select" class="w-full bg-slate-50 border-2 border-slate-200 text-slate-700 rounded-xl px-3 py-2 text-xs font-bold outline-none focus:border-blue-500">
+                            <option value="eye">おめめを休めるおまじないの時間 👁️</option>
+                            <option value="meal">ごはんの時間だよ 🍙</option>
+                            <option value="sleep">ねんねの時間だよ 😴</option>
+                        </select>
+                        <p class="text-[10px] text-slate-400 mt-1">※タイマーが切れたときの表示メッセージを状況に合わせて変更できます。</p>
+                    </div>
+                </div>
+
+                <!-- TAB CONTENT: がんばりレポート -->
+                <div id="set-content-report" class="space-y-3 hidden">
+                    <h5 class="text-xs font-bold text-slate-400 mb-1">📈 お子さんのあそんだきろく</h5>
+                    <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 text-xs space-y-3">
+                        <!-- 賞状用のおなまえ入力 -->
+                        <div>
+                            <label class="block text-[10px] text-slate-400 font-bold mb-1">✍️ おともだちのおなまえ (しょうじょう用)</label>
+                            <input type="text" id="parent-kids-name" maxlength="30" placeholder="がんばったおともだち" class="w-full bg-white border border-slate-300 rounded-lg px-2.5 py-1.5 text-xs font-bold outline-none focus:border-blue-500">
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-3">
+                            <div class="bg-white p-2.5 rounded-lg border border-slate-100 shadow-sm text-center">
+                                <span class="text-[9px] text-slate-400 block font-bold">せいかいした数 💮</span>
+                                <span id="stat-correct" class="text-lg font-black text-emerald-600">0</span>
+                            </div>
+                            <div class="bg-white p-2.5 rounded-lg border border-slate-100 shadow-sm text-center">
+                                <span class="text-[9px] text-slate-400 block font-bold">もらったシール 🌟</span>
+                                <span id="stat-stickers" class="text-lg font-black text-amber-500">0</span>
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <span class="text-[9px] text-slate-400 block font-bold mb-1.5 text-left">あそんだ回数 🎮</span>
+                            <div class="space-y-1 text-left" id="stat-play-list">
+                                <!-- JSで動的生成 -->
+                            </div>
+                        </div>
+
+                        <!-- 賞状SVG保存エクスポートボタン -->
+                        <div class="pt-2">
+                            <button id="btn-export-certificate" class="w-full bg-emerald-500 hover:bg-emerald-600 text-white font-black py-2.5 rounded-xl text-xs flex items-center justify-center gap-1.5 transition-all shadow-sm">
+                                <!-- アワードSVG -->
+                                <svg class="w-4 h-4 inline mr-0.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                  <path stroke-linecap="round" stroke-linejoin="round" d="M12 8v13m0-13V6a2 2 0 112 2h-2zm0 0V6a2 2 0 10-2 2h2zm0 0v4l2 3h-4l2-3v-4zm6-2a6 6 0 11-12 0 6 6 0 0112 0z"></path>
+                                </svg>
+                                がんばりしょうじょうを保存する 🏆
+                            </button>
+                        </div>
+                    </div>
+                    <button id="btn-reset-stats" class="w-full text-center text-xs text-red-500 font-bold hover:underline py-1">がんばりきろくをリセットする 🔄</button>
+                </div>
+
+            </div>
+
+            <!-- フッターアクション（リセット等） -->
+            <div class="border-t border-slate-100 pt-3 flex gap-2 shrink-0">
+                <button id="btn-reset-app-all" class="flex-1 bg-red-50 hover:bg-red-100 text-red-600 font-bold py-2.5 rounded-xl text-xs border border-red-200 transition-all flex items-center justify-center gap-1">
+                    <!-- リセットSVG -->
+                    <svg class="w-3.5 h-3.5 inline mr-0.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 1121.21 8H17m-11 4h5V7"></path>
+                    </svg>
+                    アプリ初期化
+                </button>
+                <button id="btn-close-parent-settings-bottom" class="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-bold py-2.5 rounded-xl text-xs transition-all">
+                    とじる
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- モーダル: カスタム確認ダイアログ (confirm置き換え) -->
+    <div id="modal-confirm" class="fixed inset-0 bg-slate-900/70 flex items-center justify-center z-50 p-4 hidden">
+        <div class="bg-white rounded-3xl p-6 text-center max-w-sm w-full shadow-2xl border-4 border-orange-200">
+            <div class="text-5xl mb-4">🤔</div>
+            <h4 id="confirm-title" class="text-lg font-bold text-slate-700 mb-2">ほんとうに いいですか？</h4>
+            <p id="confirm-body" class="text-sm text-slate-500 mb-6 font-bold"></p>
+            <div class="flex gap-2">
+                <button id="btn-confirm-cancel" class="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-600 font-bold py-2.5 rounded-xl text-sm">やめる</button>
+                <button id="btn-confirm-ok" class="flex-1 bg-red-500 hover:bg-red-600 text-white font-bold py-2.5 rounded-xl text-sm">はい</button>
+            </div>
+        </div>
+    </div>
+
+    <footer class="px-4 py-5 text-center text-xs text-slate-500" aria-label="サイト情報">
+        <p class="mb-2">制作：かたかた / KatakataLab</p>
+        <nav class="flex flex-wrap justify-center gap-x-4 gap-y-2">
+            <a href="../../privacy.html" class="underline">プライバシーポリシー</a>
+            <a href="../../terms.html" class="underline">利用規約</a>
+            <a href="../../contact.html" class="underline">お問い合わせ</a>
+            <a href="../../" class="underline">KatakataLab</a>
+        </nav>
+    </footer>
+
+    <!-- Service Workerの登録 ＆ ロジックの読み込み -->
+    <script>
+      if ('serviceWorker' in navigator) {
+        const register = () => {
+          navigator.serviceWorker.register('./service-worker.js', { updateViaCache: 'none' })
+            .then(reg => console.log('Service Worker registered successfully:', reg.scope))
+            .catch(err => console.error('Service Worker registration failed:', err));
+        };
+        if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', register, { once: true });
+        else register();
+      }
+    </script>
+    <script src="app.js"></script>
+</body>
+</html>

@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>【IT用語】「サーバー」とは？雲の上ではなく、サービスを支える働き手 | KatakataLab</title>
+  <meta name="description" content="サーバーとは何かを、クライアントとの関係、Web・メール・データベースの役割、障害が起きる理由まで初心者向けにやさしく解説します。">
+  <link rel="canonical" href="https://katakatalab.com/guides/it-basics/server.html">
+  <meta property="og:type" content="article">
+  <meta property="og:site_name" content="KatakataLab">
+  <meta property="og:title" content="【IT用語】「サーバー」とは？雲の上ではなく、サービスを支える働き手">
+  <meta property="og:description" content="サーバーとは何かを、クライアントとの関係、Web・メール・データベースの役割、障害が起きる理由まで初心者向けにやさしく解説します。">
+  <meta property="og:url" content="https://katakatalab.com/guides/it-basics/server.html">
+  <meta property="og:image" content="https://katakatalab.com/ogp.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="icon" href="../../favicon.ico">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&family=Zen+Kurenaido&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css?v=20260824-responsive">
+  <script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": "【IT用語】「サーバー」とは？雲の上ではなく、サービスを支える働き手",
+  "description": "サーバーとは何かを、クライアントとの関係、Web・メール・データベースの役割、障害が起きる理由まで初心者向けにやさしく解説します。",
+  "datePublished": "2026-07-13",
+  "dateModified": "2026-08-04",
+  "mainEntityOfPage": "https://katakatalab.com/guides/it-basics/server.html",
+  "inLanguage": "ja",
+  "author": {
+    "@type": "Person",
+    "name": "かたかた",
+    "url": "https://katakatalab.com/who-is-katakata.html"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "KatakataLab",
+    "url": "https://katakatalab.com/"
+  }
+}</script>
+  <script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position": 1,
+      "name": "ホーム",
+      "item": "https://katakatalab.com/"
+    },
+    {
+      "@type": "ListItem",
+      "position": 2,
+      "name": "かたかたの制作ノート",
+      "item": "https://katakatalab.com/guides/it-basics/"
+    },
+    {
+      "@type": "ListItem",
+      "position": 3,
+      "name": "【IT用語】「サーバー」とは？雲の上ではなく、サービスを支える働き手",
+      "item": "https://katakatalab.com/guides/it-basics/server.html"
+    }
+  ]
+}</script>
+</head>
+<body>
+    <script>try{if(localStorage.getItem('theme')==='dark')document.body.classList.add('dark-mode');}catch(e){}</script>
+  <a class="skip-link" href="#main-content">本文へ移動</a>
+  <header class="site-header">
+    <div class="header-inner">
+      <a class="brand" href="../../" aria-label="KatakataLab ホーム">
+        <span class="brand-mark" aria-hidden="true">K</span>
+        <span><strong>KatakataLab</strong><small>かたかたの制作ノート</small></span>
+      </a>
+      <nav class="site-nav" aria-label="主要ナビゲーション">
+        <a href="./">記事一覧</a>
+        <a href="../../#projects">作品・ツール</a>
+        <a href="../../who-is-katakata.html">運営者</a>
+      </nav>
+    </div>
+  </header>
+  <main id="main-content">
+    <nav class="breadcrumbs" aria-label="パンくずリスト">
+      <a href="../../">ホーム</a><span aria-hidden="true">/</span><a href="./">かたかたの制作ノート</a><span aria-hidden="true">/</span><span aria-current="page">「サーバー」とは？雲の上ではなく、サービスを支える働き手</span>
+    </nav>
+    <article class="article-shell">
+      <header class="article-hero">
+        <div class="chapter-stamp"><span>CHAPTER 01</span><strong>SERVER</strong></div>
+        <p class="chapter-name">第1章｜インフラの基礎</p>
+        <h1>【IT用語】「サーバー」とは？雲の上ではなく、サービスを支える働き手</h1>
+        <p class="article-lead">サーバーとは何かを、クライアントとの関係、Web・メール・データベースの役割、障害が起きる理由まで初心者向けにやさしく解説します。</p>
+        <div class="article-meta" aria-label="記事情報">
+          <span>作成者：かたかた</span><span>公開日：2026年7月13日</span><span>更新日：2026年8月4日</span>
+        </div>
+      </header>
+      <div class="article-layout">
+        <aside class="article-toc" aria-label="目次"><p>このページの目次</p><ol><li><a href="#section-1">結論：「サーバー」＝「求められたサービスを提供する役割」</a></li>
+<li><a href="#section-2">サーバーにはどんな種類がある？</a></li>
+<li><a href="#section-3">サーバーは、どこで動いているの？</a></li>
+<li><a href="#section-4">「サーバーが落ちる」とは？</a></li>
+<li><a href="#section-talk">この言葉が会話に出てくるとき</a></li>
+<li><a href="#section-misread">勘違いしやすい点</a></li>
+<li><a href="#section-5">まとめ</a></li></ol></aside>
+        <div class="article-content">
+          <p>「サーバーが落ちた！」</p>
+<p>「クラウドサーバーに保存しよう」</p>
+<p>ITの話でよく登場する「サーバー(Server)」。名前は聞いたことがあっても、実体が見えにくい言葉ですよね。</p>
+<p>今回は、サーバーの役割を<strong>「注文に応えるお店」</strong>に例えて解説します。</p>
+<section class="article-section" aria-labelledby="section-1"><h2 id="section-1">結論：「サーバー」＝「求められたサービスを提供する役割」</h2>
+<p>サーバーとは、<strong>「ほかのコンピュータからの要求に応えて、データや機能を提供する役割」</strong>です。</p>
+<p>専用の物理マシンだけを指す言葉ではありません。サーバー用ソフトウェアを動かせば、家庭のノートPCもサーバーとして働けますし、クラウド上の仮想環境で動くこともあります。</p>
+<p><strong>「ください（リクエスト）」に対して「どうぞ（レスポンス）」と返す。</strong> これが基本です。</p>
+<h3>「お店」で例えると？</h3>
+<ul>
+<li><strong>クライアント（スマホやPC）：</strong> お客さん。「このページを見せて」と注文する。</li>
+<li><strong>サーバー：</strong> お店。「はい、こちらです」とデータを返す。</li>
+</ul>
+<p>サーバーは、要求を待ち受け、受け取った内容に応じて処理を行います。</p>
+</section>
+<section class="article-section" aria-labelledby="section-2"><h2 id="section-2">サーバーにはどんな種類がある？</h2>
+<p>何を提供するかによって、役割が変わります。</p>
+<h3>1. Webサーバー</h3>
+<p>ブラウザからの要求に応じて、HTMLや画像などを返します。</p>
+<h3>2. メールサーバー</h3>
+<p>メールの送信、受信、保管を担当します。</p>
+<h3>3. データベースサーバー</h3>
+<p>データを保存し、条件に合う情報を検索して返します。</p>
+<p>1つのシステムが、こうした複数のサーバーを組み合わせて動くこともあります。</p>
+</section>
+<section class="article-section" aria-labelledby="section-3"><h2 id="section-3">サーバーは、どこで動いているの？</h2>
+<p>クラウドにも、土台となる物理的な機械があります。ただし、私たちが使う「1台のサーバー」が、いつも1台の専用マシンと対応しているとは限りません。</p>
+<p>仮想化やコンテナという技術を使い、1台の機械を複数の環境に分けることもあります。大規模なデータセンターでは、サーバー機器を収めた棚が並び、電力・冷却・ネットワーク設備によって24時間支えられています。</p>
+</section>
+<section class="article-section" aria-labelledby="section-4"><h2 id="section-4">「サーバーが落ちる」とは？</h2>
+<p>「サーバーが落ちる」とは、ユーザーの要求に正常に応えられない状態のことです。</p>
+<ul>
+<li><strong>アクセス集中：</strong> 短時間に大量の要求が集まり、処理が追いつかない。</li>
+<li><strong>機器やネットワークの障害：</strong> 故障、停電、通信障害などでサービスを提供できない。</li>
+<li><strong>ソフトウェアの不具合：</strong> プログラムや設定の問題で、正しい応答を返せない。</li>
+</ul>
+<p>アクセス集中やメンテナンスで一時的に利用できない時は、「503 Service Unavailable」が返されることがあります。ただし、過負荷なら必ず503になるとは限りません。</p>
+<p>そこで重要になるのが<strong>「冗長化」</strong>です。複数のサーバーや通信経路を用意し、どこか1つに障害が起きても、残りが役割を引き継げるようにします。</p>
+</section>
+<section class="article-section" aria-labelledby="section-talk"><h2 id="section-talk">この言葉が会話に出てくるとき</h2>
+<p>例えば、サイトが急に開けなくなったときです。「自分のネットが切れたのか、サーバー側が応えていないのか」を切り分ける会話になります。</p>
+<p>例えば、新しいページを公開するときです。「どの場所にファイルを置くのか」「置いたあと、URLで本当に届くのか」を確認する対象がサーバーです。</p>
+<p>家庭のノートPCで学習用のWebサーバーを動かすこともできます。その場合も、役割は同じです。要求を待ち、応える側がサーバーです。</p>
+</section>
+<section class="article-section" aria-labelledby="section-misread"><h2 id="section-misread">勘違いしやすい点</h2>
+<ul>
+<li><strong>大きい機械だけがサーバー：</strong> 大きさではなく、要求に応える役割かどうかです。</li>
+<li><strong>クラウドとサーバーは同じ：</strong> クラウド上でも、要求に応える役割はサーバーと呼ばれます。置き場所が自室か、借りた環境かの違いです。</li>
+<li><strong>自分のパソコンは関係ない：</strong> ページを見る側のブラウザはクライアントです。サーバーへ「ください」を送っています。</li>
+</ul>
+<p>公開前に見るなら、次の3つです。ファイルがあること、URLで届くこと、届いた中身が今回の版であること。この3つが揃って、初めて「サーバーが応えた」と言えます。</p>
+</section>
+<section class="article-section" aria-labelledby="section-5"><h2 id="section-5">まとめ</h2>
+<ul>
+<li><strong>サーバー</strong> ＝ <strong>「求められたデータや機能を提供する役割」</strong></li>
+<li><strong>形</strong> ＝ <strong>「物理マシン、仮想環境、ソフトウェアなど、さまざま」</strong></li>
+<li><strong>大切なこと</strong> ＝ <strong>「止まる前提で、監視や冗長化を考える」</strong></li>
+</ul>
+<p>あなたがWebサイトを見たり、ゲームを楽しんだりしている間も、どこかのサーバーが要求に応え続けています。</p>
+<p>次の記事では、こうした計算資源を必要に応じて利用できる「クラウド」について解説します。</p>
+<p>ここまでお読みいただきありがとうございました！</p>
+</section>
+          <aside class="lab-example" aria-labelledby="lab-example-title">
+            <p class="eyebrow">FROM THE LAB</p>
+            <h2 id="lab-example-title">KatakataLabでの実例</h2>
+            <p>KatakataLabの公開ページも、ブラウザからの要求に応じてHTML・CSS・画像などを返すWebサーバー上に置かれています。ページを見る時、手元のブラウザがクライアント、公開先がサーバーという関係です。</p>
+            <p class="related-heading">この実例につながるページ</p>
+            <ul class="related-links"><li><a href="cloud.html">関連用語：クラウド</a></li>
+<li><a href="../../about-katakatalab.html">KatakataLabの制作方針</a></li></ul>
+          </aside>
+          <section class="article-section" aria-labelledby="section-ops-server">
+            <h2 id="section-ops-server">公開サイトでサーバーを意識する瞬間</h2>
+            <p>KatakataLabをXserverへ置くとき、「ファイルがある」ことと「URLで届く」ことは別問題だと何度も痛感しました。置き場所のパス、公開ディレクトリ、パーミッション、キャッシュのどれかがずれても、ブラウザには404や古いページが出ます。</p>
+<ul>
+<li>公開してよいファイルだけを同期する（テストや下書きを混ぜない）</li>
+<li>反映後は必ず公開URLで本文を目視する</li>
+<li>エラー時はサーバーログとブラウザのネットワーク表示をセットで見る</li>
+</ul>
+<p>サーバーは「箱」です。箱が正しい場所にあり、正しい中身が入っているかを、デプロイのたびに確認する習慣が事故を減らします。</p>
+          </section>
+          <section class="article-section faq" aria-labelledby="faq-title">
+            <p class="eyebrow">QUICK CHECK</p>
+            <h2 id="faq-title">よくある質問</h2>
+            <h3>サーバーは必ず大きな専用機ですか？</h3>
+            <p>いいえ。サーバーは機械の大きさではなく「要求に応えてサービスを提供する役割」を指します。一般的なPCに近い機械や、仮想化された環境でも動かせます。</p>
+            <h3>次に読むなら？</h3><p><a href="cloud.html">CLOUDの記事</a>へ進むと、次の用語を順番に読めます。</p>
+          </section>
+          <section class="article-section references" aria-labelledby="references-title">
+            <h2 id="references-title">参考資料</h2>
+            <p>用語の定義や仕様を確認するため、公式文書・標準文書を参照しています。リンク先の内容は更新される場合があります。</p>
+            <ul><li><a href="https://developer.mozilla.org/ja/docs/Learn_web_development/Howto/Web_mechanics/What_is_a_web_server" target="_blank" rel="noopener noreferrer">MDN「クライアントサーバーの概要」</a></li></ul>
+          </section>
+          <nav class="chapter-nav" aria-label="前後の記事">
+            <span class="chapter-link is-empty" aria-hidden="true"></span>
+            <a class="chapter-link next" href="cloud.html"><small>次の記事</small><span>CLOUD →</span></a>
+          </nav>
+        </div>
+      </div>
+    </article>
+  </main>
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <p><strong>KatakataLab</strong><br><span>作って、つまずいて、分かったことを残す小さな研究室。</span></p>
+      <nav aria-label="フッターナビゲーション">
+        <a href="../../contact.html">お問い合わせ</a>
+        <a href="../../who-is-katakata.html">運営者情報</a>
+        <a href="../../privacy.html">プライバシーポリシー</a>
+        <a href="../../sitemap.html">サイトマップ</a>
+      </nav>
+    </div>
+    <p class="copyright">&copy; 2024-2026 KatakataLab</p>
+  </footer>
+</body>
+</html>

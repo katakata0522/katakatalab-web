@@ -1,0 +1,337 @@
+/* かんじ・ガッタイ・ラボ: 337字規模でも迷わず遊べるためのUX補助 */
+.kanji-ux-toolbar {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin: -0.25rem 0 0.75rem;
+    padding: 0 0.25rem;
+}
+.kanji-ux-search {
+    flex: 1 1 auto;
+    min-width: 0;
+    min-height: 44px;
+    border: 2px solid #fed7aa;
+    border-radius: 0.875rem;
+    background: #fff;
+    color: #334155;
+    padding: 0.55rem 0.75rem;
+    font-size: 0.875rem;
+    font-weight: 700;
+    outline: none;
+}
+.kanji-ux-search:focus-visible {
+    border-color: #ea580c;
+    box-shadow: 0 0 0 3px rgba(234, 88, 12, 0.16);
+}
+.kanji-ux-count {
+    flex: 0 0 auto;
+    min-width: 3.5rem;
+    text-align: center;
+    color: #64748b;
+    font-size: 0.7rem;
+    font-weight: 900;
+}
+.kanji-part-btn.selected {
+    background-color: #c2410c !important;
+    color: #ffffff !important;
+    border-color: #7c2d12 !important;
+    box-shadow: 0 0 0 2px rgba(194, 65, 12, 0.16);
+}
+.kanji-part-btn[aria-disabled="true"] {
+    opacity: 0.28;
+    cursor: not-allowed;
+}
+.kanji-part-btn.ux-filtered-out {
+    display: none !important;
+}
+.kanji-ux-partner-toggle,
+.kanji-ux-deep-toggle,
+.kanji-ux-reset-btn,
+.kanji-ux-discovery-btn,
+.kanji-ux-filter-chip {
+    min-height: 44px;
+    border-radius: 9999px;
+    border: 2px solid #fed7aa;
+    background: #fff7ed;
+    color: #9a3412;
+    padding: 0.45rem 0.8rem;
+    font-size: 0.75rem;
+    font-weight: 900;
+    transition: transform 0.15s ease, background-color 0.15s ease, border-color 0.15s ease, opacity 0.15s ease;
+}
+.kanji-ux-partner-toggle:hover,
+.kanji-ux-deep-toggle:hover,
+.kanji-ux-reset-btn:hover:not(:disabled),
+.kanji-ux-discovery-btn:hover,
+.kanji-ux-filter-chip:hover {
+    background: #ffedd5;
+}
+.kanji-ux-partner-toggle:active,
+.kanji-ux-deep-toggle:active,
+.kanji-ux-reset-btn:active:not(:disabled),
+.kanji-ux-discovery-btn:active,
+.kanji-ux-filter-chip:active {
+    transform: scale(0.97);
+}
+.kanji-ux-partner-toggle[aria-pressed="true"],
+.kanji-ux-filter-chip[aria-pressed="true"] {
+    background: #c2410c;
+    border-color: #c2410c;
+    color: #fff;
+}
+.kanji-ux-deep-toggle {
+    border-color: #c7d2fe;
+    background: #eef2ff;
+    color: #4338ca;
+}
+.kanji-ux-deep-toggle:hover {
+    background: #e0e7ff;
+}
+.kanji-ux-deep-toggle[aria-pressed="true"] {
+    background: #4f46e5;
+    border-color: #4338ca;
+    color: #fff;
+}
+.kanji-ux-reset-btn {
+    border-color: #cbd5e1;
+    background: #f8fafc;
+    color: #475569;
+}
+.kanji-ux-reset-btn:disabled {
+    opacity: 0.45;
+    cursor: default;
+}
+.kanji-ux-actions {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    margin-top: -0.5rem;
+}
+#open-settings-btn,
+#help-btn,
+#mute-btn,
+#open-wrong-btn,
+#open-collection-btn,
+[data-action="parents-modal-open"],
+#close-help-btn,
+#close-settings-btn,
+#close-title-btn,
+#close-dict-detail-btn,
+#close-collection-btn,
+#close-wrong-btn {
+    min-width: 44px;
+    min-height: 44px;
+}
+.ux-keyboard-clickable:focus-visible,
+.kanji-ux-partner-toggle:focus-visible,
+.kanji-ux-deep-toggle:focus-visible,
+.kanji-ux-reset-btn:focus-visible,
+.kanji-ux-discovery-btn:focus-visible,
+.kanji-ux-filter-chip:focus-visible {
+    outline: 3px solid #ea580c;
+    outline-offset: 3px;
+}
+.ux-keyboard-clickable:focus-visible {
+    border-radius: 0.75rem;
+}
+#quiz-label-left {
+    color: #1d4ed8 !important;
+}
+#quiz-label-right {
+    color: #b91c1c !important;
+}
+#kanji-mobile-result {
+    position: fixed;
+    left: 0.75rem;
+    right: 0.75rem;
+    bottom: max(0.75rem, env(safe-area-inset-bottom));
+    z-index: 45;
+    display: none;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    padding: 0.7rem 0.85rem;
+    border: 2px solid #fdba74;
+    border-radius: 1rem;
+    background: rgba(255, 255, 255, 0.97);
+    box-shadow: 0 12px 30px rgba(67, 20, 7, 0.2);
+    backdrop-filter: blur(10px);
+    color: #7c2d12;
+}
+#kanji-mobile-result.is-visible {
+    display: flex;
+}
+#kanji-mobile-result .ux-equation {
+    font-family: 'Yuji Syuku', serif;
+    font-size: 1.35rem;
+    line-height: 1;
+    white-space: nowrap;
+}
+#kanji-mobile-result .ux-result-copy {
+    min-width: 0;
+    flex: 1 1 auto;
+}
+#kanji-mobile-result .ux-result-reading {
+    display: block;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-size: 0.78rem;
+    font-weight: 900;
+    color: #c2410c;
+}
+#kanji-mobile-result .ux-result-meaning {
+    display: block;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-size: 0.68rem;
+    font-weight: 700;
+    color: #64748b;
+}
+#kanji-mobile-result .ux-result-jump {
+    flex: 0 0 auto;
+    min-width: 44px;
+    min-height: 44px;
+    border-radius: 9999px;
+    background: #ea580c;
+    color: #fff;
+    font-weight: 900;
+}
+.kanji-collection-tools {
+    display: flex;
+    flex-direction: column;
+    gap: 0.65rem;
+    margin-bottom: 0.9rem;
+}
+.kanji-collection-summary {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 0.75rem;
+}
+.kanji-collection-summary strong {
+    color: #c2410c;
+    font-size: 1.05rem;
+}
+.kanji-collection-summary span {
+    color: #64748b;
+    font-size: 0.72rem;
+    font-weight: 800;
+}
+.kanji-collection-filters {
+    display: flex;
+    gap: 0.4rem;
+    flex-wrap: wrap;
+}
+#collection-grid > .ux-collection-hidden {
+    display: none !important;
+}
+.ux-structure-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 3.2rem;
+    min-height: 1.8rem;
+    padding: 0.2rem 0.55rem;
+    border-radius: 9999px;
+    background: #fff7ed;
+    border: 1px solid #fdba74;
+    color: #9a3412 !important;
+    font-size: 0.7rem;
+    font-weight: 900;
+    letter-spacing: 0.03em;
+}
+.ux-structure-badge[data-tier="discovery"] {
+    border-color: #99f6e4;
+    background: #f0fdfa;
+    color: #0f766e !important;
+}
+.ux-structure-badge[data-tier="deep"] {
+    border-color: #c7d2fe;
+    background: #eef2ff;
+    color: #4338ca !important;
+}
+@media (max-width: 767px) {
+    body.kanji-mobile-result-open {
+        padding-bottom: 5.25rem;
+    }
+    .kanji-ux-toolbar {
+        align-items: stretch;
+        flex-wrap: wrap;
+    }
+    .kanji-ux-search {
+        flex-basis: calc(100% - 4.25rem);
+    }
+    .kanji-ux-count {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    .kanji-ux-partner-toggle {
+        width: 100%;
+    }
+    .kanji-ux-actions {
+        gap: 0.4rem;
+    }
+    .kanji-ux-deep-toggle,
+    .kanji-ux-reset-btn,
+    .kanji-ux-discovery-btn {
+        flex: 1 1 auto;
+    }
+    .kanji-collection-summary {
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 0.1rem;
+    }
+}
+@media (min-width: 768px) {
+    #kanji-mobile-result {
+        display: none !important;
+    }
+}
+@media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+        scroll-behavior: auto !important;
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+}
+.theme-cyber .kanji-ux-search,
+.theme-cyber .kanji-ux-partner-toggle,
+.theme-cyber .kanji-ux-reset-btn,
+.theme-cyber .kanji-ux-discovery-btn,
+.theme-cyber .kanji-ux-filter-chip,
+.theme-cyber #kanji-mobile-result {
+    background: #1e293b;
+    border-color: #475569;
+    color: #f8fafc;
+}
+.theme-cyber .kanji-ux-deep-toggle {
+    background: #312e81;
+    border-color: #6366f1;
+    color: #e0e7ff;
+}
+.theme-cyber .kanji-part-btn.selected {
+    background-color: #be185d !important;
+    border-color: #831843 !important;
+}
+.theme-cyber .kanji-ux-partner-toggle[aria-pressed="true"],
+.theme-cyber .kanji-ux-filter-chip[aria-pressed="true"] {
+    background: #ec4899;
+    border-color: #ec4899;
+}
+.theme-cyber .kanji-ux-deep-toggle[aria-pressed="true"] {
+    background: #6366f1;
+    border-color: #818cf8;
+}
+
+/* 称号チップは操作要素なので、表示の小ささは保ちつつタップ面積を確保する。 */
+#header-title-badge {
+    min-height: 32px;
+    padding-top: 0.375rem;
+    padding-bottom: 0.375rem;
+}

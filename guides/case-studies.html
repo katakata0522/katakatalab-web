@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>KatakataLabの実例集 | ツールに入力して結果を確認する流れ</title>
+  <meta name="description" content="画像サイズ、割引、pxとrem、QRコード、パスワード、文章比較の8つを例に、KatakataLabのツールへ何を入力し、どんな結果を確認するかを紹介します。">
+  <meta name="author" content="かたかた">
+  <link rel="canonical" href="https://katakatalab.com/guides/case-studies.html">
+  <meta property="og:title" content="KatakataLabの実例集 | ツールに入力して結果を確認する流れ">
+  <meta property="og:description" content="ツール名だけでは分かりにくい入力・出力・最後の確認ポイントを、8つの実例で紹介します。">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="https://katakatalab.com/guides/case-studies.html">
+  <meta property="og:image" content="https://katakatalab.com/ogp.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="KatakataLabの実例集">
+  <meta name="twitter:description" content="入力・出力・最後の確認ポイントを8つの実例で紹介します。">
+  <meta name="twitter:image" content="https://katakatalab.com/ogp.png">
+  <link rel="stylesheet" href="../style.css?v=20260824-responsive">
+  <link rel="icon" href="../icon.svg" type="image/svg+xml">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "headline": "KatakataLabの実例集",
+    "description": "KatakataLabのツールに入力して結果を確認する流れをまとめた実例集。",
+    "author": {
+      "@type": "Person",
+      "name": "かたかた",
+      "url": "https://katakatalab.com/who-is-katakata.html"
+    },
+    "dateModified": "2026-08-04",
+    "mainEntityOfPage": "https://katakatalab.com/guides/case-studies.html"
+  }
+  </script>
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3845885843809455" crossorigin="anonymous"></script>
+</head>
+<body>
+  <script>try{if(localStorage.getItem('theme')==='dark')document.body.classList.add('dark-mode');}catch(e){}</script>
+  <header class="header">
+    <div class="container header-container">
+      <a href="../#home" class="logo"><span class="logo-icon">🧪</span><span class="logo-text">KatakataLab</span></a>
+      <nav class="nav">
+        <ul class="nav-list">
+          <li><a href="../#projects" class="nav-link">ツール</a></li>
+          <li><a href="../guides/it-basics/" class="nav-link">IT入門</a></li>
+          <li><a href="../who-is-katakata.html" class="nav-link">運営者</a></li>
+          <li><a href="../contact.html" class="nav-link">お問い合わせ</a></li>
+        </ul>
+      </nav>
+      <div class="header-actions">
+        <button type="button" id="theme-toggle" class="theme-btn" aria-label="テーマ切り替え">
+          <svg viewBox="0 0 24 24" class="svg-icon svg-moon" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg>
+          <svg viewBox="0 0 24 24" class="svg-icon svg-sun" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="display: none;"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41-1.41"/></svg>
+        </button>
+        <button type="button" class="menu-toggle" aria-label="メニューを開く"><span class="bar"></span><span class="bar"></span><span class="bar"></span></button>
+      </div>
+    </div>
+  </header>
+
+  <main class="guide-page">
+    <section class="section">
+      <div class="guide-hero-card">
+        <span class="guide-kicker">Case Studies</span>
+        <h1>入力して、結果を見て、最後の確認まで行う実例</h1>
+        <p class="guide-intro">ツールは開くだけでは使いどころが分かりにくいものです。ここでは、KatakataLabの実用ツールに<strong>実際の作業でありそうな入力</strong>を入れ、結果をどう読んで、どこを最後に確認するかをまとめます。</p>
+        <div class="guide-summary">
+          <span class="guide-chip">画像サイズ</span>
+          <span class="guide-chip">割引計算</span>
+          <span class="guide-chip">CSS単位</span>
+          <span class="guide-chip">QR作成</span>
+          <span class="guide-chip">パスワード</span>
+          <span class="guide-chip">文章比較</span>
+        </div>
+        <p class="guide-note">作成者: かたかた / 更新日: 2026年8月4日</p>
+        <div class="guide-actions">
+          <a href="../guides/tool-selection-guide.html" class="btn btn-primary">用途から選ぶ</a>
+          <a href="../about-katakatalab.html#verification-policy" class="btn btn-secondary">検証方法を見る</a>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="guide-section-card">
+        <h2>実例1: 16:9の画像を1200px幅で作る</h2>
+        <p>動画やサムネイル用の画像で、横幅だけ先に決まっている場面を想定します。<a href="../aspect-ratio-calc/">アスペクト比計算機</a>に、比率<strong>16:9</strong>と幅<strong>1200px</strong>を入力します。</p>
+        <div class="responsive-table-container"><table class="guide-table">
+          <thead><tr><th>入力</th><th>ツールの結果</th><th>作業での判断</th></tr></thead>
+          <tbody>
+            <tr><td>1920 × 1080 / 16:9</td><td>比率 16:9</td><td>横長の動画・サムネイル向け</td></tr>
+            <tr><td>幅 1200px</td><td>高さ 675px</td><td>1200 ÷ 16 × 9 で作成サイズを決める</td></tr>
+          </tbody>
+        </table></div>
+        <p><strong>今回の出力例:</strong> 1200 × 675px</p>
+        <div class="guide-callout"><strong>最後の確認:</strong> 数字が合っていても、人物の顔やタイトルが端に寄っているとスマートフォン表示で切れることがあります。重要な要素を中央寄りに置き、実際の掲載先のプレビューでも確認します。</div>
+        <p><a href="../aspect-ratio-calc/">アスペクト比計算機で同じ入力を試す →</a></p>
+      </div>
+
+      <div class="guide-section-card">
+        <h2>実例2: 10,000円を20%OFF、さらに10%OFFにする</h2>
+        <p>セール表示を見て、割引率を頭の中だけで計算したくない場面です。<a href="../discount-calc/">割引計算ツール</a>で価格<strong>10,000円</strong>、基本割引<strong>20%</strong>、追加割引<strong>10%</strong>を設定します。</p>
+        <div class="responsive-table-container"><table class="guide-table">
+          <thead><tr><th>計算段階</th><th>計算</th><th>結果</th></tr></thead>
+          <tbody>
+            <tr><td>基本割引</td><td>10,000 × 0.8</td><td>8,000円</td></tr>
+            <tr><td>さらに10%OFF</td><td>8,000 × 0.9</td><td><strong>7,200円</strong></td></tr>
+            <tr><td>お得額</td><td>10,000 − 7,200</td><td>2,800円</td></tr>
+          </tbody>
+        </table></div>
+        <div class="guide-callout"><strong>最後の確認:</strong> 20%OFFと10%OFFを足して30%OFFにするのではなく、割引後の価格にもう一度10%を掛けます。税込・税抜の表示や、店舗ごとの端数処理がある場合は、レジの表示を最終確認します。</div>
+        <p><a href="../discount-calc/">割引計算ツールで重ね割引を試す →</a></p>
+      </div>
+
+      <div class="guide-section-card">
+        <h2>実例3: 24pxを1.5remに変換してCSSへ戻す</h2>
+        <p>Web制作で文字サイズを揃える場面を想定します。<a href="../px-rem-converter/">px / rem 変換</a>の基準値を<strong>16px</strong>にし、24pxを入力すると、<strong>1.5rem</strong>と表示されます。</p>
+        <div class="responsive-table-container"><table class="guide-table">
+          <thead><tr><th>入力</th><th>結果</th><th>確認すること</th></tr></thead>
+          <tbody>
+            <tr><td>基準値 16px / 24px</td><td>1.5rem</td><td>見出しの大きさを段階に揃える</td></tr>
+            <tr><td>基準値 16px / 1.25rem</td><td>20px</td><td>pxへ戻して既存デザインと比較する</td></tr>
+          </tbody>
+        </table></div>
+        <div class="guide-callout"><strong>最後の確認:</strong> 変換値を貼り付けるだけでなく、ブラウザの文字サイズ設定を大きくしたときにも読めるか、スマートフォン幅で行が詰まりすぎないかを確認します。</div>
+        <p><a href="../px-rem-converter/">px / rem 変換を試す →</a></p>
+      </div>
+
+      <div class="guide-section-card">
+        <h2>実例4: 店内掲示用のURLからQRコードを作る</h2>
+        <p>店内掲示やイベント案内で、URLを手入力してもらう代わりにQRコードを配る場面です。<a href="../qrcode/">QR Maker Lab</a>でデータテンプレートを「URL / テキスト」にし、案内ページのURLを入力してPNGを生成します。</p>
+        <ol>
+          <li>公開してよい案内ページのURLだけを入力する。</li>
+          <li>背景とコードの明暗差、周囲の余白、印刷サイズを確認する。</li>
+          <li>保存した画像を実際のスマートフォンで読み取り、正しいページが開くか確認する。</li>
+        </ol>
+        <div class="guide-callout"><strong>最後の確認:</strong> QRコード画像が作れたことと、現場で読み取れることは別です。暗い場所、少し離れた距離、印刷後の状態で一度試します。Wi-Fiや連絡先の場合は、掲示場所に不要な情報を入れないことも確認します。</div>
+        <p><a href="../qrcode/">QR Maker Labで作成する →</a> / <a href="tool-selection-guide.html">用途から選ぶ →</a></p>
+      </div>
+
+      <div class="guide-section-card">
+        <h2>実例5: 通常アカウント用に20文字のパスワードを作る</h2>
+        <p>新しいサービスへ登録するときに、ほかと使い回さない文字列を作る場面です。<a href="../password-generator/">パスワード生成ツール</a>で長さを<strong>20文字</strong>にし、大文字・小文字・数字・記号を有効にして生成します。</p>
+        <div class="responsive-table-container"><table class="guide-table">
+          <thead><tr><th>入力</th><th>ツールの結果</th><th>作業での判断</th></tr></thead>
+          <tbody>
+            <tr><td>長さ 20文字 / 4種類の文字</td><td>生成するたびに異なる20文字</td><td>利用先の文字数・記号制限に合わせる</td></tr>
+            <tr><td>紛らわしい文字を除外</td><td>見分けにくい文字を避ける</td><td>手入力する可能性がある場合に使う</td></tr>
+          </tbody>
+        </table></div>
+        <div class="guide-callout"><strong>最後の確認:</strong> 生成結果そのものをこのページへ固定例として掲載すると使い回しを招くため、実際の文字列はツール上で生成します。サービスごとに異なるものを使い、信頼できるパスワードマネージャーと多要素認証を組み合わせます。</div>
+        <p><a href="../password-generator/">20文字のパスワードを生成する →</a></p>
+      </div>
+
+      <div class="guide-section-card">
+        <h2>実例6: 料金案内の変更箇所を文章比較で確認する</h2>
+        <p>公開前の案内文で、金額と補足だけを直したつもりの場面です。<a href="../text-diff/">テキスト差分チェック</a>の変更前へ「料金は1,000円です。」、変更後へ「料金は1,200円（税込）です。」と入力します。</p>
+        <div class="responsive-table-container"><table class="guide-table">
+          <thead><tr><th>入力</th><th>結果</th><th>確認すること</th></tr></thead>
+          <tbody>
+            <tr><td>1,000円 → 1,200円</td><td>変更された数字を差分表示</td><td>意図した金額へ変わっているか</td></tr>
+            <tr><td>「（税込）」を追加</td><td>追加部分を色分け</td><td>説明不足を補えているか</td></tr>
+          </tbody>
+        </table></div>
+        <div class="guide-callout"><strong>最後の確認:</strong> 差分表示は変更箇所を見つける道具です。新しい金額が正しいか、文章全体の意味が自然かまでは自動判定しないため、公開前に元資料と照合します。</div>
+        <p><a href="../text-diff/">同じ文章を比較してみる →</a></p>
+      </div>
+
+      <div class="guide-section-card">
+        <h2>実例7: 西暦と和暦が混ざった案内文を整える</h2>
+        <p>イベント案内で「令和8年3月」と「2026年3月」が混在している場面です。<a href="../seireki/">西暦・和暦・年齢換算</a>で対応を確認し、公開用の表記をどちらかに揃えます。</p>
+        <div class="responsive-table-container"><table class="guide-table">
+          <thead><tr><th>確認すること</th><th>判断</th><th>最後の一手</th></tr></thead>
+          <tbody>
+            <tr><td>対象読者は国内向けか</td><td>和暦が通じる相手なら併記も可</td><td>どちらかを主、もう一方を括弧で補足</td></tr>
+            <tr><td>システムやチケットが西暦前提か</td><td>フォーム・決済は西暦が多い</td><td>内部データは西暦、表示だけ併記</td></tr>
+          </tbody>
+        </table></div>
+        <div class="guide-callout"><strong>最後の確認:</strong> 年号の切り替わり前後は、元号の開始日を誤ると1日ずれます。公式の換算結果と、公開文面の日付を突き合わせます。</div>
+        <p><a href="../seireki/">西暦・和暦ツールで確認する →</a></p>
+      </div>
+
+      <div class="guide-section-card">
+        <h2>実例8: SNS投稿前にOGPの見え方を疑う</h2>
+        <p>ブログやツール紹介をXやチャットに貼る前に、タイトル・説明・画像の欠けを減らしたい場面です。<a href="../ogp-simulator/">OGPシミュレーター</a>に、出す予定のタイトル・説明・画像を手入力して、枠の中で見切れないかを見ます。URLから og: タグを読む機能はありません。</p>
+        <ol>
+          <li>公開ページの HTML で og:title / og:description / og:image が入っているかを、自分で確認する。</li>
+          <li>画像が正方形すぎる・文字が端にある場合は、シェア先の切り抜きを想定して差し替える。</li>
+          <li>キャッシュが残るサービスでは、更新直後に古い表示になることがあるので時間を置いて再確認する。</li>
+        </ol>
+        <div class="guide-callout"><strong>最後の確認:</strong> シミュレーターは手入力した内容をSNS風の枠に置く道具です。各SNSの実表示はサービス側の仕様差があるため、可能なら下書き投稿や公式のデバッガでも確認します。</div>
+        <p><a href="../ogp-simulator/">OGPの見え方を確認する →</a></p>
+      </div>
+
+      <div class="guide-section-card">
+        <h2>作業を始める前の共通チェックリスト</h2>
+        <p>どの実例でも、ツールを開く前に次を決めておくとやり直しが減ります。</p>
+        <ul>
+          <li><strong>ゴール:</strong> 完成物は何か（画像サイズ、最終価格、パスワード文字列、掲示用QRなど）。</li>
+          <li><strong>制約:</strong> 文字数制限、税込表示、印刷サイズ、サービス側の記号禁止など。</li>
+          <li><strong>入力の正しさ:</strong> 比率・金額・URL・基準フォントサイズが、元資料と一致しているか。</li>
+          <li><strong>最後の人間確認:</strong> 計算結果をそのまま信用せず、掲載先・レジ・実機で一度見る。</li>
+        </ul>
+        <p>KatakataLabのツールは、迷ったときの出発点として設計しています。最終判断は、現場のルールと公開前の目視確認に戻してください。</p>
+      </div>
+
+      <div class="guide-section-card">
+        <h2>失敗しやすいパターンと立て直し方</h2>
+        <div class="responsive-table-container"><table class="guide-table">
+          <thead><tr><th>起きがちなこと</th><th>原因の例</th><th>立て直し</th></tr></thead>
+          <tbody>
+            <tr><td>計算は合っているのに現場で使えない</td><td>税・端数・端末の切り抜きを見ていない</td><td>掲載先のプレビューや実機確認を必須にする</td></tr>
+            <tr><td>QRが読めない</td><td>余白不足、コントラスト不足、印刷が小さい</td><td>余白とサイズを見直し、実機で読み取る</td></tr>
+            <tr><td>パスワードを使い回してしまう</td><td>生成後の保存先が決まっていない</td><td>生成前に管理ツールへ入れる手順を固定する</td></tr>
+            <tr><td>差分を見落とす</td><td>全文を目視だけしている</td><td>テキスト差分で変更箇所を先に洗い出す</td></tr>
+          </tbody>
+        </table></div>
+        <p>「ツールの数字が正しい」ことと「その作業が完了した」ことは別です。実例集では、毎回<strong>最後の確認</strong>を1行入れているのはそのためです。</p>
+      </div>
+
+      <div class="guide-section-card">
+        <h2>どの実例から試すか</h2>
+        <ul>
+          <li>画像やサムネのサイズで迷う → 実例1（アスペクト比）と<a href="aspect-ratio-guide.html">比率ガイド</a></li>
+          <li>セール表示の計算が不安 → 実例2（割引）</li>
+          <li>CSSの単位を揃えたい → 実例3と<a href="px-rem-guide.html">px/remガイド</a></li>
+          <li>店頭やイベントで案内したい → 実例4と<a href="../qrcode/">QR Maker Lab</a></li>
+          <li>アカウント登録のたびに迷う → 実例5と<a href="password-guide.html">パスワードガイド</a></li>
+          <li>公開前の文章チェック → 実例6</li>
+        </ul>
+        <p>用途がまだ曖昧な場合は、<a href="tool-selection-guide.html">用途から選ぶガイド</a>で分野を絞ってから戻ってくると迷いにくいです。</p>
+      </div>
+
+      <div class="guide-section-card">
+        <h2>この実例の作り方と限界</h2>
+        <p>数値例は、各ツールの現在の入力項目と計算ロジックに合わせて作成しています。アスペクト比は入力幅から高さを丸め、割引は基本割引後に追加割引を掛け、px / remは基準値で相互変換します。QRコードとパスワードはブラウザ内で生成し、文章比較もブラウザ内で処理します。</p>
+        <p>一方、SNSや店舗の表示、端末のカメラ、税・端数処理など、外部サービスや現場環境に左右される結果をサイトだけで保証することはできません。ここで示した値を出発点に、公開・購入・印刷の直前に、手元でも最終確認してください。</p>
+        <p class="guide-note">作成者: <a href="../who-is-katakata.html">かたかた</a> / 更新日: 2026年8月4日 / 入力例の見直しや誤りのご指摘は<a href="../contact.html">お問い合わせ</a>からお知らせください。</p>
+      </div>
+
+      <div class="guide-section-card">
+        <h2>実例を「自分の作業」に置き換えるコツ</h2>
+        <p>数字をそのまま真似るより、次の3つを自分の案件の言葉に置き換えると、実例が使いやすくなります。</p>
+        <ul>
+          <li><strong>ゴール:</strong> 何が完成すれば終わりか（投稿画像、掲示QR、登録用パスワードなど）</li>
+          <li><strong>制約:</strong> 文字数、記号禁止、印刷サイズ、税込表示など</li>
+          <li><strong>最後の確認場所:</strong> 投稿先プレビュー、実機カメラ、元資料、レジ表示など</li>
+        </ul>
+        <p>この3つが埋まらないままツールを開くと、結果の数字だけが増えて判断が遅れます。迷うときは先に<a href="tool-selection-guide.html">用途から選ぶガイド</a>で分野を絞ってください。</p>
+      </div>
+    </section>
+  </main>
+
+  <div class="menu-overlay" id="menu-overlay" aria-hidden="true"></div>
+  <div class="mobile-menu drawer-menu" aria-hidden="true">
+    <div class="mobile-menu-inner">
+      <nav class="mobile-nav" aria-label="モバイルナビゲーション">
+        <ul class="mobile-nav-list">
+          <li><a href="../who-is-katakata.html" class="mobile-nav-link">🧑‍💻 かたかたって誰？</a></li>
+          <li><a href="../about-katakatalab.html" class="mobile-nav-link">🧪 KatakataLabについて</a></li>
+          <li><a href="../contact.html" class="mobile-nav-link">✉️ お問い合わせ</a></li>
+          <li class="mobile-nav-sep"></li>
+          <li><a href="../terms.html" class="mobile-nav-link">📄 利用規約</a></li>
+          <li><a href="../privacy.html" class="mobile-nav-link">🔒 プライバシーポリシー</a></li>
+        </ul>
+      </nav>
+    </div>
+  </div>
+
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-links">
+        <a href="../contact.html">お問い合わせ</a>
+        <a href="../who-is-katakata.html">運営者情報</a>
+        <a href="../terms.html" target="_blank" rel="noopener noreferrer">利用規約</a>
+        <a href="../privacy.html" target="_blank" rel="noopener noreferrer">プライバシーポリシー</a>
+        <a href="../sitemap.html">サイトマップ</a>
+      </div>
+      <p>&copy; 2024-2026 KatakataLab. All Rights Reserved.</p>
+    </div>
+  </footer>
+  <script src="../script.js"></script>
+</body>
+</html>

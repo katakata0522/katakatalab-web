@@ -1,0 +1,1181 @@
+{
+  "purpose": "CI-only external dependencies. Media redistribution rights remain unverified; these files are excluded from Git. Private production release requires original media and server configuration.",
+  "files": [
+    {
+      "path": "discount-calc/ogp.png",
+      "sha256": "753d8b0b0e2d3934b30e14a694969ae8444f21f38804e884844a9bea42df12f2",
+      "bytes": 750695,
+      "url": "https://katakatalab.com/discount-calc/ogp.png"
+    },
+    {
+      "path": "emphasis-lines/css/phosphor/bold/Phosphor-Bold.woff2",
+      "sha256": "2153b52cea9e06fc0cc8496048be485b381a0f8bf130adea5a9756fc8f100b87",
+      "bytes": 150052,
+      "url": "https://katakatalab.com/emphasis-lines/css/phosphor/bold/Phosphor-Bold.woff2"
+    },
+    {
+      "path": "emphasis-lines/css/phosphor/fill/Phosphor-Fill.woff2",
+      "sha256": "660bd6045c0e0d9756cddb8ba2ece3aad855df7d4a170ef23f7b1c0bf511c430",
+      "bytes": 131744,
+      "url": "https://katakatalab.com/emphasis-lines/css/phosphor/fill/Phosphor-Fill.woff2"
+    },
+    {
+      "path": "emphasis-lines/css/phosphor/regular/Phosphor.woff2",
+      "sha256": "c2ea45ea05ff5c7df1936770c104725f2a68f43fd343f35f3da23a30b27de32a",
+      "bytes": 147380,
+      "url": "https://katakatalab.com/emphasis-lines/css/phosphor/regular/Phosphor.woff2"
+    },
+    {
+      "path": "emphasis-lines/og-image.png",
+      "sha256": "d2a9c97708eb18362550c73ebf9b3a15454bf0f81d674814b5302371af47f6ff",
+      "bytes": 147536,
+      "url": "https://katakatalab.com/emphasis-lines/og-image.png"
+    },
+    {
+      "path": "favicon.ico",
+      "sha256": "7d6fbb157f99f94dc562f725c65cc7712e178ebcc346be41adce34786b81113a",
+      "bytes": 12133,
+      "url": "https://katakatalab.com/favicon.ico"
+    },
+    {
+      "path": "icon-192.png",
+      "sha256": "3c050189473a7c285802e35f0931bcdcbc70c9b89704ff1d775f638a91d428ca",
+      "bytes": 7703,
+      "url": "https://katakatalab.com/icon-192.png"
+    },
+    {
+      "path": "icon-512.png",
+      "sha256": "9d44a3bdd0915775c778a6a89e4046d9b9748465e72fc02742c40983836f9610",
+      "bytes": 24857,
+      "url": "https://katakatalab.com/icon-512.png"
+    },
+    {
+      "path": "lab-tools/gravity-todo/og-image.png",
+      "sha256": "ef0b61478adbc29dd558b9306ca0fc858a06078830e6d987d0ce15dee8fb76fe",
+      "bytes": 549981,
+      "url": "https://katakatalab.com/lab-tools/gravity-todo/og-image.png"
+    },
+    {
+      "path": "lab-tools/kids-smile-land/icon-192.png",
+      "sha256": "9c2294f8fc3c61a0ae57ec54b8a2cab6452b72fa0218aba1fbe897b2fe778000",
+      "bytes": 78076,
+      "url": "https://katakatalab.com/lab-tools/kids-smile-land/icon-192.png"
+    },
+    {
+      "path": "lab-tools/kids-smile-land/icon-512.png",
+      "sha256": "81b172208536143f3aaf8807ef488c636a4b80a45447b0e49611c7c460c25e79",
+      "bytes": 499657,
+      "url": "https://katakatalab.com/lab-tools/kids-smile-land/icon-512.png"
+    },
+    {
+      "path": "lab-tools/kids-smile-land/kiwimaru-400.woff2",
+      "sha256": "84afe803a66884c580476f296e2a27ccfde841ce0103db2e55482789ba3e3ebb",
+      "bytes": 104780,
+      "url": "https://katakatalab.com/lab-tools/kids-smile-land/kiwimaru-400.woff2"
+    },
+    {
+      "path": "lab-tools/kids-smile-land/kiwimaru-500.woff2",
+      "sha256": "ff574cf73c4b189cb8205e56ef272edc39d36d4d069129b0bc64dd4763df2ae1",
+      "bytes": 107564,
+      "url": "https://katakatalab.com/lab-tools/kids-smile-land/kiwimaru-500.woff2"
+    },
+    {
+      "path": "ogp-simulator/ogp.png",
+      "sha256": "cfd98f05fc3aa39834a037a97ee67f4430038516611dc0424781298048cfa48e",
+      "bytes": 500694,
+      "url": "https://katakatalab.com/ogp-simulator/ogp.png"
+    },
+    {
+      "path": "ogp.png",
+      "sha256": "9beab93219a6a18539a33a9ce0030946f7c68c78d781081d24dae58bbf5ec13f",
+      "bytes": 550168,
+      "url": "https://katakatalab.com/ogp.png"
+    },
+    {
+      "path": "password-generator/icon-192.png",
+      "sha256": "adefee3760f89c6bcdbcbb407441508685e3646acdb698324ed4bc0782655090",
+      "bytes": 267803,
+      "url": "https://katakatalab.com/password-generator/icon-192.png"
+    },
+    {
+      "path": "password-generator/icon-512.png",
+      "sha256": "39aaa5e809b6511316b67f1bec2a8e3ae61e4c59ec97a09e4159c07bd08318d5",
+      "bytes": 132913,
+      "url": "https://katakatalab.com/password-generator/icon-512.png"
+    },
+    {
+      "path": "password-generator/og-image.png",
+      "sha256": "4d1c908416888d49234fda4a0bd9142a38bfe54b1ca84ad93d51820de0d77548",
+      "bytes": 431271,
+      "url": "https://katakatalab.com/password-generator/og-image.png"
+    },
+    {
+      "path": "pikalab/.code-studio/assets/abap-08VXUWAP.js",
+      "sha256": "bffb36886b330040548e09a7c68fa82f1d414134008ecc3188dcd9db87cd677a",
+      "bytes": 11690,
+      "url": "https://katakatalab.com/pikalab/code-studio/assets/abap-08VXUWAP.js"
+    },
+    {
+      "path": "pikalab/.code-studio/assets/apex-BWPQTe0t.js",
+      "sha256": "794bb6262709d298e6318113816555bb314425ecb111f89ebe58cbe37e8cb774",
+      "bytes": 3469,
+      "url": "https://katakatalab.com/pikalab/code-studio/assets/apex-BWPQTe0t.js"
+    },
+    {
+      "path": "pikalab/.code-studio/assets/azcli-Bc_sGQ0U.js",
+      "sha256": "2c3464d88876c09b13064125e728844a66cb31e3021ae346bb9683671699cd10",
+      "bytes": 707,
+      "url": "https://katakatalab.com/pikalab/code-studio/assets/azcli-Bc_sGQ0U.js"
+    },
+    {
+      "path": "pikalab/.code-studio/assets/bat-i0X4ZdIN.js",
+      "sha256": "1c6f14208c883c792f2cf7d81efc333f0987c17062845ae5fc0377e057d138fe",
+      "bytes": 1696,
+      "url": "https://katakatalab.com/pikalab/code-studio/assets/bat-i0X4ZdIN.js"
+    },
+    {
+      "path": "pikalab/.code-studio/assets/bicep-B5-_aFwp.js",
+      "sha256": "2ea49cdc88d9d11eb71a63206916c8c59188f4533e204ef0fd7005cec109807d",
+      "bytes": 2367,
+      "url": "https://katakatalab.com/pikalab/code-studio/assets/bicep-B5-_aFwp.js"
+    },
+    {
+      "path": "pikalab/.code-studio/assets/cameligo-DMUM7wLl.js",
+      "sha256": "f8cf8a6a9453b4ac6482c32d39360ea484400aa198c783aeda4cfcf58ced7350",
+      "bytes": 1975,
+      "url": "https://katakatalab.com/pikalab/code-studio/assets/cameligo-DMUM7wLl.js"
+    },
+    {
+      "path": "pikalab/.code-studio/assets/clojure-Cm7r79vr.js",
+      "sha256": "bc5c1f46b0ce8785c78dc51206bb6cabb2c49e4f60380207b522fd74c12f2b45",
+      "bytes": 8211,
+      "url": "https://katakatalab.com/pikalab/code-studio/assets/clojure-Cm7r79vr.js"
+    },
+    {
+      "path": "pikalab/.code-studio/assets/code-studio-security.js",
+      "sha256": "64ebe970b6c6d4847d41d91f6988c4fffc972f02b177719d46566ebaeb53e963",
+      "bytes": 8445,
+      "url": "https://katakatalab.com/pikalab/code-studio/assets/code-studio-security.js"
+    },
+    {
+      "path": "pikalab/.code-studio/assets/code-studio.js",
+      "sha256": "4116eb6740585788222cc0aad071d1d5a537f14c6e64e1337b00a6c21694004c",
+      "bytes": 93107,
+      "url": "https://katakatalab.com/pikalab/code-studio/assets/code-studio.js"
+    },
+    {
+      "path": "pikalab/.code-studio/assets/codicon-ngg6Pgfi.ttf",
+      "sha256": "9d25513c861704be650eacef8c4588aceabdc8b668857747b5e42b299e926918",
+      "bytes": 121972,
+      "url": "https://katakatalab.com/pikalab/code-studio/assets/codicon-ngg6Pgfi.ttf"
+    },
+    {
+      "path": "pikalab/.code-studio/assets/coffee-Ba7i2nA0.js",
+      "sha256": "e5690905b616659b886795524f4349b37e19af5ae72519b06384dc4fb63409a1",
+      "bytes": 3364,
+      "url": "https://katakatalab.com/pikalab/code-studio/assets/coffee-Ba7i2nA0.js"
+    },
+    {
+      "path": "pikalab/.code-studio/assets/cpp-C7h46wYY.js",
+      "sha256": "0f16cff9f7780af91337017f6be26bd4871a5005e6c04adb6d01047e246437f5",
+      "bytes": 4743,
+      "url": "https://katakatalab.com/pikalab/code-studio/assets/cpp-C7h46wYY.js"
+    },
+    {
+      "path": "pikalab/.code-studio/assets/csharp-BKxtCVv1.js",
+      "sha256": "b5c2b4c55aff810ce2372f02543c3e90c404c1e8487bd343df88c5d24b7c737e",
+      "bytes": 4117,
+      "url": "https://katakatalab.com/pikalab/code-studio/assets/csharp-BKxtCVv1.js"
+    },
+    {
+      "path": "pikalab/.code-studio/assets/csp-bTuwJoIa.js",
+      "sha256": "a54603c0e0cfb172abe2c86bc617d1834fd6458dd32d3f1fe68997ee760fc3b6",
+      "bytes": 1278,
+      "url": "https://katakatalab.com/pikalab/code-studio/assets/csp-bTuwJoIa.js"
+    },
+    {
+      "path": "pikalab/.code-studio/assets/css-DIMkf-bt.js",
+      "sha256": "361b35ed3c739617f90ee999b6bcfe6e7047c1d30c52df58401c50486f5fd8e4",
+      "bytes": 4361,
+      "url": "https://katakatalab.com/pikalab/code-studio/assets/css-DIMkf-bt.js"
+    },
+    {
+      "path": "pikalab/.code-studio/assets/css.worker-CvXBzhp8.js",
+      "sha256": "caeb023fe2d780cf8401787bb163e465ed684c342b9692d780286693aff1e451",
+      "bytes": 1054628,
+      "url": "https://katakatalab.com/pikalab/code-studio/assets/css.worker-CvXBzhp8.js"
+    },
+    {
+      "path": "pikalab/.code-studio/assets/cssMode-Dc-1eK54.js",
+      "sha256": "1d70ec4279fe6038fc27936214333befe834c926811ae8676746e4f423aa2ffb",
+      "bytes": 2943,
+      "url": "https://katakatalab.com/pikalab/code-studio/assets/cssMode-Dc-1eK54.js"
+    },
+    {
+      "path": "pikalab/.code-studio/assets/cypher-CVaqCwHa.js",
+      "sha256": "0181ad561c8c1c97516cec2918b11f00f0321c07705dcdc9d03fe68cde282d58",
+      "bytes": 3048,
+      "url": "https://katakatalab.com/pikalab/code-studio/assets/cypher-CVaqCwHa.js"
+    },
+    {
+      "path": "pikalab/.code-studio/assets/dart-onAF5SnQ.js",
+      "sha256": "41649fe3b34c16edb251df57152184ba2b03adf729fa0bec731f56ce7b8c636c",
+      "bytes": 3931,
+      "url": "https://katakatalab.com/pikalab/code-studio/assets/dart-onAF5SnQ.js"
+    },
+    {
+      "path": "pikalab/.code-studio/assets/dockerfile-DZFCIeNp.js",
+      "sha256": "84814a9784122bacec9f8f423f729a7262a98a8bf05a74d995e7a9aa5e55007a",
+      "bytes": 1728,
+      "url": "https://katakatalab.com/pikalab/code-studio/assets/dockerfile-DZFCIeNp.js"
+    },
+    {
+      "path": "pikalab/.code-studio/assets/ecl-D05T4iGw.js",
+      "sha256": "f1dcbc07ef5c96168389bccfb33cd78f1edcf598f4b76a54c35f6b8083a50243",
+      "bytes": 4623,
+      "url": "https://katakatalab.com/pikalab/code-studio/assets/ecl-D05T4iGw.js"
+    },
+    {
+      "path": "pikalab/.code-studio/assets/editor.worker-Cn2oRESe.js",
+      "sha256": "8985e6ebc1a23868678bc5c2efee2652d43524b2f4cbb5a32a1125c0586104d5",
+      "bytes": 279948,
+      "url": "https://katakatalab.com/pikalab/code-studio/assets/editor.worker-Cn2oRESe.js"
+    },
+    {
+      "path": "pikalab/.code-studio/assets/elixir-6RTg0lbw.js",
+      "sha256": "fc0336d16849bf07801e67d229927011a21e2e0ef5b7c8e4494260455cf93f4c",
+      "bytes": 10116,
+      "url": "https://katakatalab.com/pikalab/code-studio/assets/elixir-6RTg0lbw.js"
+    },
+    {
+      "path": "pikalab/.code-studio/assets/flow9-C5_-GSwl.js",
+      "sha256": "9146223a874645367aa89e7189e958f0abb9c815e5b0439bf64c5263815a8dbd",
+      "bytes": 1669,
+      "url": "https://katakatalab.com/pikalab/code-studio/assets/flow9-C5_-GSwl.js"
+    },
+    {
+      "path": "pikalab/.code-studio/assets/freemarker2-CT2ax9ff.js",
+      "sha256": "faedf55f209956d11989924b7ef2f64645e73de85ec3d884d909028778032805",
+      "bytes": 15543,
+      "url": "https://katakatalab.com/pikalab/code-studio/assets/freemarker2-CT2ax9ff.js"
+    },
+    {
+      "path": "pikalab/.code-studio/assets/fsharp-C8Ef5oNN.js",
+      "sha256": "5137a827baefcb111c2ff8747bbe07924c9f9ea8f3d4a7a07a7b6e7c25f69e45",
+      "bytes": 2651,
+      "url": "https://katakatalab.com/pikalab/code-studio/assets/fsharp-C8Ef5oNN.js"
+    },
+    {
+      "path": "pikalab/.code-studio/assets/go-C-y9NEjX.js",
+      "sha256": "ca236e02f3a5f8225d83597bb65b036ea8caae5f79549ea37213bb2979bcb085",
+      "bytes": 2350,
+      "url": "https://katakatalab.com/pikalab/code-studio/assets/go-C-y9NEjX.js"
+    },
+    {
+      "path": "pikalab/.code-studio/assets/graphql-fmXr3nnJ.js",
+      "sha256": "a66e3b8eacf8ad4017403825f7cc7978fbefc5fd1f80ea6c044f8059848c5186",
+      "bytes": 2119,
+      "url": "https://katakatalab.com/pikalab/code-studio/assets/graphql-fmXr3nnJ.js"
+    },
+    {
+      "path": "pikalab/.code-studio/assets/handlebars-B8ykj8Xs.js",
+      "sha256": "e2894cb4e015a445d24da61466d6aa647f5f3dd2ff92405f696c7c97f1deee4c",
+      "bytes": 6279,
+      "url": "https://katakatalab.com/pikalab/code-studio/assets/handlebars-B8ykj8Xs.js"
+    },
+    {
+      "path": "pikalab/.code-studio/assets/hcl-CpzslTdj.js",
+      "sha256": "15310bb6f51d2670886bac778d8c23351697bd2a8393bff1e1295361e84c99d2",
+      "bytes": 3449,
+      "url": "https://katakatalab.com/pikalab/code-studio/assets/hcl-CpzslTdj.js"
+    },
+    {
+      "path": "pikalab/.code-studio/assets/html-BnmdwtKL.js",
+      "sha256": "9602f103e444eb44ed9f9c52614ed08d3309d144e87d25acda403c7f025566a0",
+      "bytes": 4511,
+      "url": "https://katakatalab.com/pikalab/code-studio/assets/html-BnmdwtKL.js"
+    },
+    {
+      "path": "pikalab/.code-studio/assets/html.worker-BO6WuOEO.js",
+      "sha256": "4c4b2bca777626cbcc6663aceb3a9c538a48b931409378e3e80b73ac0414dfdf",
+      "bytes": 719577,
+      "url": "https://katakatalab.com/pikalab/code-studio/assets/html.worker-BO6WuOEO.js"
+    },
+    {
+      "path": "pikalab/.code-studio/assets/htmlMode-CtqHAgAY.js",
+      "sha256": "016703655da65fc7fb8670f15636be6f4b0cd30947f3d4fd3324206cd0936f84",
+      "bytes": 3397,
+      "url": "https://katakatalab.com/pikalab/code-studio/assets/htmlMode-CtqHAgAY.js"
+    },
+    {
+      "path": "pikalab/.code-studio/assets/index-BLXcr_Fx.css",
+      "sha256": "e44e4e67442d0311317afc11f067f2058b5fe3655d41b751e216680ca9d02aca",
+      "bytes": 164402,
+      "url": "https://katakatalab.com/pikalab/code-studio/assets/index-BLXcr_Fx.css"
+    },
+    {
+      "path": "pikalab/.code-studio/assets/index-HUl3bkZy.js",
+      "sha256": "7b8f118af7a0ba56bd4626edc0b30a503842c9ac40fb57a4da731fc90856ffb5",
+      "bytes": 3806062,
+      "url": "https://katakatalab.com/pikalab/code-studio/assets/index-HUl3bkZy.js"
+    },
+    {
+      "path": "pikalab/.code-studio/assets/ini-sBoK_t0W.js",
+      "sha256": "e9017a169ebca71c2edba3ee62e01ae57969c0330ca295c1f201e3e17829a54e",
+      "bytes": 960,
+      "url": "https://katakatalab.com/pikalab/code-studio/assets/ini-sBoK_t0W.js"
+    },
+    {
+      "path": "pikalab/.code-studio/assets/java-BEtHBSE6.js",
+      "sha256": "77d3a91eeaf54e004f8ec321e6208afecebe2435232146b41f68135373800953",
+      "bytes": 2906,
+      "url": "https://katakatalab.com/pikalab/code-studio/assets/java-BEtHBSE6.js"
+    },
+    {
+      "path": "pikalab/.code-studio/assets/javascript-CI_tQo-1.js",
+      "sha256": "ada5676192b871dd69a2367951c0950bc0b9a8c897d77819a2b1a24b02e86d5d",
+      "bytes": 688,
+      "url": "https://katakatalab.com/pikalab/code-studio/assets/javascript-CI_tQo-1.js"
+    },
+    {
+      "path": "pikalab/.code-studio/assets/json.worker-BkJRGcCJ.js",
+      "sha256": "748b1535564c3f2214bef6783df7dd08d45fbac935f5f750388ffc4f9bc2dde0",
+      "bytes": 409211,
+      "url": "https://katakatalab.com/pikalab/code-studio/assets/json.worker-BkJRGcCJ.js"
+    },
+    {
+      "path": "pikalab/.code-studio/assets/jsonMode-BHeGffJt.js",
+      "sha256": "3ab207dc349633317d5e504c75c230428bb9b94df14282808622ab01468edfb2",
+      "bytes": 12192,
+      "url": "https://katakatalab.com/pikalab/code-studio/assets/jsonMode-BHeGffJt.js"
+    },
+    {
+      "path": "pikalab/.code-studio/assets/julia-Bri6UV-V.js",
+      "sha256": "1a01df2b09226f1f376180126ae2717b2f4239a7829c30b4f853bd0c8e61d70c",
+      "bytes": 6505,
+      "url": "https://katakatalab.com/pikalab/code-studio/assets/julia-Bri6UV-V.js"
+    },
+    {
+      "path": "pikalab/.code-studio/assets/kotlin-BOotOW0E.js",
+      "sha256": "cbd90a8ca4d40a492021fd1766b9f4696d0cdbcc9969a6efac0acd8cc862f643",
+      "bytes": 3041,
+      "url": "https://katakatalab.com/pikalab/code-studio/assets/kotlin-BOotOW0E.js"
+    },
+    {
+      "path": "pikalab/.code-studio/assets/less-B9JPFI3C.js",
+      "sha256": "44afa50e036a60b51d9e8946705b63e56e4d85d8f6ae10108de80b312b642dbc",
+      "bytes": 3749,
+      "url": "https://katakatalab.com/pikalab/code-studio/assets/less-B9JPFI3C.js"
+    },
+    {
+      "path": "pikalab/.code-studio/assets/lexon-CfSJPG6W.js",
+      "sha256": "df071e61a9754e5ff7a082a5bab4f6f5ee3a082c251f40d85d1c47ca48ba6807",
+      "bytes": 2288,
+      "url": "https://katakatalab.com/pikalab/code-studio/assets/lexon-CfSJPG6W.js"
+    },
+    {
+      "path": "pikalab/.code-studio/assets/liquid-BMKfstdM.js",
+      "sha256": "0d34827a85ffee8fa64c9294ab99ff5c29c571d1d57d94110bb4f54c2a75f89b",
+      "bytes": 3339,
+      "url": "https://katakatalab.com/pikalab/code-studio/assets/liquid-BMKfstdM.js"
+    },
+    {
+      "path": "pikalab/.code-studio/assets/lspLanguageFeatures-BVzaRmjL.js",
+      "sha256": "6677486d443db3a397c16971245372c0d6b0860f20b1362626c1dffe1d6b76eb",
+      "bytes": 28243,
+      "url": "https://katakatalab.com/pikalab/code-studio/assets/lspLanguageFeatures-BVzaRmjL.js"
+    },
+    {
+      "path": "pikalab/.code-studio/assets/lua-CsQS60Ue.js",
+      "sha256": "4faf3305fbfc61b59039430ea0a0c7952e992d741bbd4a15cc8aa37dd29a37cd",
+      "bytes": 1982,
+      "url": "https://katakatalab.com/pikalab/code-studio/assets/lua-CsQS60Ue.js"
+    },
+    {
+      "path": "pikalab/.code-studio/assets/m3-D-oSqn_W.js",
+      "sha256": "c22429b1cf9e8ee53e35dfcdd44124bbbd06bc5c42291d9e9f1ff814c68b1115",
+      "bytes": 2520,
+      "url": "https://katakatalab.com/pikalab/code-studio/assets/m3-D-oSqn_W.js"
+    },
+    {
+      "path": "pikalab/.code-studio/assets/markdown-Cimd5fb3.js",
+      "sha256": "621e51234c4fea96a2a3a6e0dd59151f1c0216d7cb4a963361ee29aa302c7977",
+      "bytes": 3639,
+      "url": "https://katakatalab.com/pikalab/code-studio/assets/markdown-Cimd5fb3.js"
+    },
+    {
+      "path": "pikalab/.code-studio/assets/mdx-NkyzjuBn.js",
+      "sha256": "5bd9a90b0212a10410a2a08942703058516201c99266f16ffe92bc9c1cf477af",
+      "bytes": 4314,
+      "url": "https://katakatalab.com/pikalab/code-studio/assets/mdx-NkyzjuBn.js"
+    },
+    {
+      "path": "pikalab/.code-studio/assets/mips-CIPQ_RoX.js",
+      "sha256": "31ff67847e1488dbf870ec71f466f3644c1c6a700bc9e5f59ea6727835709fef",
+      "bytes": 2325,
+      "url": "https://katakatalab.com/pikalab/code-studio/assets/mips-CIPQ_RoX.js"
+    },
+    {
+      "path": "pikalab/.code-studio/assets/msdax-DauUninz.js",
+      "sha256": "c7e11cd45bd941f372201b9f1b7685fa76e18ed59609be2dacd125db0ee63915",
+      "bytes": 4270,
+      "url": "https://katakatalab.com/pikalab/code-studio/assets/msdax-DauUninz.js"
+    },
+    {
+      "path": "pikalab/.code-studio/assets/mysql-SOo6toE5.js",
+      "sha256": "b34d7be6f8a903da0877bc96c65faee230d0a7a7000f52e5cc8950f789275331",
+      "bytes": 9659,
+      "url": "https://katakatalab.com/pikalab/code-studio/assets/mysql-SOo6toE5.js"
+    },
+    {
+      "path": "pikalab/.code-studio/assets/objective-c-FvmIjYaQ.js",
+      "sha256": "fb4eab2690dc37ba7b619e074368450ed02be3c30b4fec782134e12d1474a573",
+      "bytes": 2102,
+      "url": "https://katakatalab.com/pikalab/code-studio/assets/objective-c-FvmIjYaQ.js"
+    },
+    {
+      "path": "pikalab/.code-studio/assets/pascal-DrH0SRf2.js",
+      "sha256": "2f334989ddf5ad3a0cd557d71162ebf9eeadade1526083d1b35797f1069bf3bc",
+      "bytes": 2639,
+      "url": "https://katakatalab.com/pikalab/code-studio/assets/pascal-DrH0SRf2.js"
+    },
+    {
+      "path": "pikalab/.code-studio/assets/pascaligo-D-ptJ9y-.js",
+      "sha256": "224cfd072a59e3ff45f37adcec85b544858b47e90b0617f54fe3e6ab4de832ad",
+      "bytes": 1859,
+      "url": "https://katakatalab.com/pikalab/code-studio/assets/pascaligo-D-ptJ9y-.js"
+    },
+    {
+      "path": "pikalab/.code-studio/assets/perl-oz_6vUea.js",
+      "sha256": "c580f25e97de8b3bb096498919558aaa55e0fd2764d408cb73c66e3702cc2240",
+      "bytes": 7352,
+      "url": "https://katakatalab.com/pikalab/code-studio/assets/perl-oz_6vUea.js"
+    },
+    {
+      "path": "pikalab/.code-studio/assets/pgsql-DTj74zXo.js",
+      "sha256": "da731f252a2c8651c92bb10b22b77a69d67236aef1ad58bed8119212e4aa6a07",
+      "bytes": 11913,
+      "url": "https://katakatalab.com/pikalab/code-studio/assets/pgsql-DTj74zXo.js"
+    },
+    {
+      "path": "pikalab/.code-studio/assets/php-nr791fC2.js",
+      "sha256": "a592c0b5ded4d8136c1c45c1fe91e3d1a9aba10fba9cd690dedbdd575c960c97",
+      "bytes": 7743,
+      "url": "https://katakatalab.com/pikalab/code-studio/assets/php-nr791fC2.js"
+    },
+    {
+      "path": "pikalab/.code-studio/assets/pla-CopQ2nXW.js",
+      "sha256": "17aa9ef936a2a049be2b7d64aea32486f961c1edb7cf1c5c270f2612f2fef7ef",
+      "bytes": 1542,
+      "url": "https://katakatalab.com/pikalab/code-studio/assets/pla-CopQ2nXW.js"
+    },
+    {
+      "path": "pikalab/.code-studio/assets/postiats-43DmfD33.js",
+      "sha256": "de5f427d26790893b215cba9cf83c78dd4401d1198d6fe6c467691b123960580",
+      "bytes": 7364,
+      "url": "https://katakatalab.com/pikalab/code-studio/assets/postiats-43DmfD33.js"
+    },
+    {
+      "path": "pikalab/.code-studio/assets/powerquery-D3hlyOfw.js",
+      "sha256": "87bfb26727836297fc573ec8fa8f8074e5cbebbdc40e844d7a56306fea006273",
+      "bytes": 15343,
+      "url": "https://katakatalab.com/pikalab/code-studio/assets/powerquery-D3hlyOfw.js"
+    },
+    {
+      "path": "pikalab/.code-studio/assets/powershell-DmHpPYUd.js",
+      "sha256": "7d2fa4e26c98b5b27b23e9d3e00384db158153a042e32053b0ef2eb512369180",
+      "bytes": 3057,
+      "url": "https://katakatalab.com/pikalab/code-studio/assets/powershell-DmHpPYUd.js"
+    },
+    {
+      "path": "pikalab/.code-studio/assets/protobuf-C531GsRP.js",
+      "sha256": "084d9064c607e6db8ae6a69c261142379120ab495d0020a7f19332eddac203f0",
+      "bytes": 8897,
+      "url": "https://katakatalab.com/pikalab/code-studio/assets/protobuf-C531GsRP.js"
+    },
+    {
+      "path": "pikalab/.code-studio/assets/pug-Z5eAx3Zn.js",
+      "sha256": "dd6fd0e69c38d8f4a1bd74de666762779629cd2dbd644288b46dcd6cc6646486",
+      "bytes": 4468,
+      "url": "https://katakatalab.com/pikalab/code-studio/assets/pug-Z5eAx3Zn.js"
+    },
+    {
+      "path": "pikalab/.code-studio/assets/python-CNbJTqhj.js",
+      "sha256": "60a34034dc9557770cb311c1b8eaf326738b5b4750c3bc05eefcdccd87488650",
+      "bytes": 3450,
+      "url": "https://katakatalab.com/pikalab/code-studio/assets/python-CNbJTqhj.js"
+    },
+    {
+      "path": "pikalab/.code-studio/assets/qsharp-DkqhCAOL.js",
+      "sha256": "ef671378a8ae53aa91c7323d8f82956feaf6cb9bbb623f4ef83a69a8932bb30f",
+      "bytes": 2722,
+      "url": "https://katakatalab.com/pikalab/code-studio/assets/qsharp-DkqhCAOL.js"
+    },
+    {
+      "path": "pikalab/.code-studio/assets/r-BwWrilGY.js",
+      "sha256": "923bf047ed7decb6ba5ab3df467b6f739552e06715b3b49550872ae5bae00e1e",
+      "bytes": 2836,
+      "url": "https://katakatalab.com/pikalab/code-studio/assets/r-BwWrilGY.js"
+    },
+    {
+      "path": "pikalab/.code-studio/assets/razor-Cbvek3_I.js",
+      "sha256": "36a0aac172dfb201bc6edbc8668ec676cd3f2a1925c0d735f13f395bcb74bc4b",
+      "bytes": 8108,
+      "url": "https://katakatalab.com/pikalab/code-studio/assets/razor-Cbvek3_I.js"
+    },
+    {
+      "path": "pikalab/.code-studio/assets/redis-ClamHrr6.js",
+      "sha256": "3fa2881b96c9456be6c8fcc6d7840ee516499668f8f69ce7fa9e210ea4854393",
+      "bytes": 3032,
+      "url": "https://katakatalab.com/pikalab/code-studio/assets/redis-ClamHrr6.js"
+    },
+    {
+      "path": "pikalab/.code-studio/assets/redshift-DT7zqm-g.js",
+      "sha256": "3e62d2f263de782216bbe34bc3548c53b9d9a7de16bd6edaa8a006ed36c9bf77",
+      "bytes": 10331,
+      "url": "https://katakatalab.com/pikalab/code-studio/assets/redshift-DT7zqm-g.js"
+    },
+    {
+      "path": "pikalab/.code-studio/assets/restructuredtext-BYgofb2h.js",
+      "sha256": "52688aefe9a0825bd762aaceb78342771e2828d3681e2963d577e6564470ee60",
+      "bytes": 3744,
+      "url": "https://katakatalab.com/pikalab/code-studio/assets/restructuredtext-BYgofb2h.js"
+    },
+    {
+      "path": "pikalab/.code-studio/assets/ruby-DezsRK8O.js",
+      "sha256": "721bbb944308c8e3388ef74930f0b5e192b98720f1889f4b324a033ef094a130",
+      "bytes": 8217,
+      "url": "https://katakatalab.com/pikalab/code-studio/assets/ruby-DezsRK8O.js"
+    },
+    {
+      "path": "pikalab/.code-studio/assets/rust-DdL9SqIa.js",
+      "sha256": "306a2b66455042750a665f7329a1c5feb4a33b408dec0e54802755dae2963b87",
+      "bytes": 3661,
+      "url": "https://katakatalab.com/pikalab/code-studio/assets/rust-DdL9SqIa.js"
+    },
+    {
+      "path": "pikalab/.code-studio/assets/sb-CcwsVR0C.js",
+      "sha256": "c4079c95ca545fc031101180dbc5e529e188c7faa1881bbf18bf8701b2d2eb67",
+      "bytes": 1688,
+      "url": "https://katakatalab.com/pikalab/code-studio/assets/sb-CcwsVR0C.js"
+    },
+    {
+      "path": "pikalab/.code-studio/assets/scala-DHpiXF5c.js",
+      "sha256": "c82c096cd169dd2e720592c7723690c3c74a254fa64817cf00e968dd5c98314a",
+      "bytes": 7112,
+      "url": "https://katakatalab.com/pikalab/code-studio/assets/scala-DHpiXF5c.js"
+    },
+    {
+      "path": "pikalab/.code-studio/assets/scheme-BeGwcela.js",
+      "sha256": "cfc22daf2ad0cd716773a3ca1f5a66a11e07ba918c860aa329c1e940d870c4ae",
+      "bytes": 1626,
+      "url": "https://katakatalab.com/pikalab/code-studio/assets/scheme-BeGwcela.js"
+    },
+    {
+      "path": "pikalab/.code-studio/assets/scss-gp-XZpBa.js",
+      "sha256": "7110a8b2dc55041f461998cf79b16e2f25d9793b07155446cbfc97b45f8b8cfd",
+      "bytes": 6260,
+      "url": "https://katakatalab.com/pikalab/code-studio/assets/scss-gp-XZpBa.js"
+    },
+    {
+      "path": "pikalab/.code-studio/assets/shell-CC2rA5mh.js",
+      "sha256": "9380df24541bab1a9ab0999d08c542e6d63905cfd8116a61579e6896cfedba3c",
+      "bytes": 2811,
+      "url": "https://katakatalab.com/pikalab/code-studio/assets/shell-CC2rA5mh.js"
+    },
+    {
+      "path": "pikalab/.code-studio/assets/solidity-BEEn4gHE.js",
+      "sha256": "6a06945b7a04d32e929fc5f86cd1097fc29dfa4fcee24a330b4c0e73ba43ddf5",
+      "bytes": 15992,
+      "url": "https://katakatalab.com/pikalab/code-studio/assets/solidity-BEEn4gHE.js"
+    },
+    {
+      "path": "pikalab/.code-studio/assets/sophia-CRfGWb83.js",
+      "sha256": "5f597679cef7e39dcc86886aeaba4dc7aa6a1ecb8abedde2cade18568a70c631",
+      "bytes": 2481,
+      "url": "https://katakatalab.com/pikalab/code-studio/assets/sophia-CRfGWb83.js"
+    },
+    {
+      "path": "pikalab/.code-studio/assets/sparql-D_Lu-MrJ.js",
+      "sha256": "dc978506d1a47be041882cd4e6733cdc38b0bb579cd48fbfedd44f10ad6cd84f",
+      "bytes": 2217,
+      "url": "https://katakatalab.com/pikalab/code-studio/assets/sparql-D_Lu-MrJ.js"
+    },
+    {
+      "path": "pikalab/.code-studio/assets/sql-NEE52Syq.js",
+      "sha256": "fa4fe9ccff8882e93028a9fa6961b1a485b8eb480880fa480fdf4057b0de7cd0",
+      "bytes": 8840,
+      "url": "https://katakatalab.com/pikalab/code-studio/assets/sql-NEE52Syq.js"
+    },
+    {
+      "path": "pikalab/.code-studio/assets/st-DbInun42.js",
+      "sha256": "e2eaa622ad805796cece9e9832b5bb9ca398ade0d0371b693633990778ce5ffe",
+      "bytes": 6946,
+      "url": "https://katakatalab.com/pikalab/code-studio/assets/st-DbInun42.js"
+    },
+    {
+      "path": "pikalab/.code-studio/assets/swift-Bxkupp3x.js",
+      "sha256": "3c0a146a88fdc340b543cb4e7c1b0379fcad231cda24b6315e8f1d830584e0b4",
+      "bytes": 4483,
+      "url": "https://katakatalab.com/pikalab/code-studio/assets/swift-Bxkupp3x.js"
+    },
+    {
+      "path": "pikalab/.code-studio/assets/systemverilog-Bz4Y3fRF.js",
+      "sha256": "37c0497660cf7404b76122dff7e73a5a3a5e1e20bc01488f142d1bf37411bbce",
+      "bytes": 6850,
+      "url": "https://katakatalab.com/pikalab/code-studio/assets/systemverilog-Bz4Y3fRF.js"
+    },
+    {
+      "path": "pikalab/.code-studio/assets/tcl-DISqw1ZD.js",
+      "sha256": "b460f0ae3471b62c331c14155f86981cfc76b6f9f3c826ec937328b9137c9c62",
+      "bytes": 3271,
+      "url": "https://katakatalab.com/pikalab/code-studio/assets/tcl-DISqw1ZD.js"
+    },
+    {
+      "path": "pikalab/.code-studio/assets/ts.worker-B0J26iPs.js",
+      "sha256": "444e860d8be0eafcb708a53000d3e7a367963f49104825538cde60bb9b167acb",
+      "bytes": 6895040,
+      "url": "https://katakatalab.com/pikalab/code-studio/assets/ts.worker-B0J26iPs.js"
+    },
+    {
+      "path": "pikalab/.code-studio/assets/tsMode-gIVIp4Q4.js",
+      "sha256": "5c890813505a04d1f888012e138870c96b38230e7e3fe32e03416b765376447c",
+      "bytes": 21810,
+      "url": "https://katakatalab.com/pikalab/code-studio/assets/tsMode-gIVIp4Q4.js"
+    },
+    {
+      "path": "pikalab/.code-studio/assets/twig-De2hgUGE.js",
+      "sha256": "ed42be999634b7600e1b6ba924576151f93f84de2343134edfbc56fe95ec6119",
+      "bytes": 5781,
+      "url": "https://katakatalab.com/pikalab/code-studio/assets/twig-De2hgUGE.js"
+    },
+    {
+      "path": "pikalab/.code-studio/assets/typescript-BvMTHW8B.js",
+      "sha256": "1a54b4a51b9a2966816763699a3d7d8ab203e3e4e64870c1d587964962412ad5",
+      "bytes": 4670,
+      "url": "https://katakatalab.com/pikalab/code-studio/assets/typescript-BvMTHW8B.js"
+    },
+    {
+      "path": "pikalab/.code-studio/assets/typespec-B8J7ngcE.js",
+      "sha256": "e128961ad6029fe9fb0c0168430de115b5e95ce1335085603eb1673317832f40",
+      "bytes": 2625,
+      "url": "https://katakatalab.com/pikalab/code-studio/assets/typespec-B8J7ngcE.js"
+    },
+    {
+      "path": "pikalab/.code-studio/assets/vb-DV3o63ZY.js",
+      "sha256": "83a1714a1a12ba92d31b12ab18752ddf5a4ee85a02ad8f67a4c310a674aab6c3",
+      "bytes": 5300,
+      "url": "https://katakatalab.com/pikalab/code-studio/assets/vb-DV3o63ZY.js"
+    },
+    {
+      "path": "pikalab/.code-studio/assets/wgsl-DpFanUEy.js",
+      "sha256": "335b9279c9f8966b751b7990c9309dc53e267c70b8837023240c3b72e530020e",
+      "bytes": 7182,
+      "url": "https://katakatalab.com/pikalab/code-studio/assets/wgsl-DpFanUEy.js"
+    },
+    {
+      "path": "pikalab/.code-studio/assets/xml-DL229CLj.js",
+      "sha256": "022284b34150f276da14165266d5e3135c117bb4b49a724f024b6ec699de1c09",
+      "bytes": 1918,
+      "url": "https://katakatalab.com/pikalab/code-studio/assets/xml-DL229CLj.js"
+    },
+    {
+      "path": "pikalab/.code-studio/assets/yaml-DoSTnSxy.js",
+      "sha256": "0bea80bc15f95127872b574666fe062fc9f64d1396eced5ce25bfdc70358d3c3",
+      "bytes": 3538,
+      "url": "https://katakatalab.com/pikalab/code-studio/assets/yaml-DoSTnSxy.js"
+    },
+    {
+      "path": "pikalab/.code-studio/index.html",
+      "sha256": "a5e394a303e996274546c9c3e9c05051890d8fa04cbabb58d19d9a928273f5b2",
+      "bytes": 55194,
+      "url": "https://katakatalab.com/pikalab/code-studio/index.html"
+    },
+    {
+      "path": "pikalab/.kotoba/ogp.png",
+      "sha256": "e1d1b1c6372172c3480fe7ba292fd6f19256733a9c575734d4725cfc1f60047d",
+      "bytes": 713934,
+      "url": "https://katakatalab.com/pikalab/kotoba/ogp.png"
+    },
+    {
+      "path": "pikalab/assets/images/chef.png",
+      "sha256": "b735cc14514276e71c55b930da9be28336e5fe30ba5c07539e7682cf2a7ebdb7",
+      "bytes": 340846,
+      "ci_fixture": {
+        "format": "png",
+        "width": 1024,
+        "height": 1024
+      }
+    },
+    {
+      "path": "pikalab/assets/images/shop.png",
+      "sha256": "e6f6325323e3d4bceddb957ddce41e240c369382d52baf0852e484c3a262b12e",
+      "bytes": 414275,
+      "ci_fixture": {
+        "format": "png",
+        "width": 1024,
+        "height": 1024
+      }
+    },
+    {
+      "path": "pikalab/focus_studio/favicon.png",
+      "sha256": "0b5a6e0c0b064316d2a0edea2459966988afb5665110d9024b3234d0eab8151b",
+      "bytes": 350347,
+      "url": "https://katakatalab.com/pikalab/focus_studio/favicon.png"
+    },
+    {
+      "path": "pikalab/kanji_lab/assets/og-image.png",
+      "sha256": "7f03305f83299f693b84717c0cf52dbe09c26701bb397c3a16eccdc6aced4402",
+      "bytes": 133021,
+      "ci_fixture": {
+        "format": "png",
+        "width": 1200,
+        "height": 630
+      }
+    },
+    {
+      "path": "pikalab/pikalab_ogp_compressed.jpg",
+      "sha256": "b9636e256934596ce788261ac158be2989b0e49e17424da0463a4db70f6934d5",
+      "bytes": 132712,
+      "url": "https://katakatalab.com/pikalab/assets/pikalab_ogp_compressed-DHgtbBFw.jpg"
+    },
+    {
+      "path": "pikalab/public/deepsea_lab/images/deepsea_anglerfish_v2_1780408241111.png",
+      "sha256": "b800f2321f83145a90d21e834e6df764699915dfd4aa0f486ba173236b6b5b05",
+      "bytes": 690405,
+      "url": "https://katakatalab.com/pikalab/deepsea_lab/images/deepsea_anglerfish_v2_1780408241111.png"
+    },
+    {
+      "path": "pikalab/public/deepsea_lab/images/deepsea_barreleye_v2_1780408267611.png",
+      "sha256": "b2b2d0c55f79de5ee062a1048494d540ec39a5af2191e051dc55b5392b64e3f7",
+      "bytes": 664255,
+      "url": "https://katakatalab.com/pikalab/deepsea_lab/images/deepsea_barreleye_v2_1780408267611.png"
+    },
+    {
+      "path": "pikalab/public/deepsea_lab/images/deepsea_blobfish_1780389309818.png",
+      "sha256": "6564be3aee03cda6a758b364a6e65c6513c275feb5c63cd04e531ed5d00a18fa",
+      "bytes": 754658,
+      "url": "https://katakatalab.com/pikalab/deepsea_lab/images/deepsea_blobfish_1780389309818.png"
+    },
+    {
+      "path": "pikalab/public/deepsea_lab/images/deepsea_clione_1780408407512.png",
+      "sha256": "baf8cc1461051ebf4110cf2087f57b2d3681929dccb7d9b7f9bb8d67b2030e9d",
+      "bytes": 655488,
+      "url": "https://katakatalab.com/pikalab/deepsea_lab/images/deepsea_clione_1780408407512.png"
+    },
+    {
+      "path": "pikalab/public/deepsea_lab/images/deepsea_clownfish_1780390322711.png",
+      "sha256": "fce1fb29fc119f86ca1a7ffef710a07654f0eb599acf9e6464bd3bdaf4d1e6c5",
+      "bytes": 860574,
+      "url": "https://katakatalab.com/pikalab/deepsea_lab/images/deepsea_clownfish_1780390322711.png"
+    },
+    {
+      "path": "pikalab/public/deepsea_lab/images/deepsea_coelacanth_1780408220645.png",
+      "sha256": "213f1bff65fcf5b04f560ee273f59a473f145532a25af852a528059f80c7ee6c",
+      "bytes": 847738,
+      "url": "https://katakatalab.com/pikalab/deepsea_lab/images/deepsea_coelacanth_1780408220645.png"
+    },
+    {
+      "path": "pikalab/public/deepsea_lab/images/deepsea_cookiecutter_shark_1780408395069.png",
+      "sha256": "594b4ad135bedc37b7430e14d91889dbba199cbe41fce3ea00578a04b226ef1e",
+      "bytes": 655265,
+      "url": "https://katakatalab.com/pikalab/deepsea_lab/images/deepsea_cookiecutter_shark_1780408395069.png"
+    },
+    {
+      "path": "pikalab/public/deepsea_lab/images/deepsea_dolphin.png",
+      "sha256": "80a55230163de55ddf6781d6fe0ec568daa5c1751077db24c46c5a858f8171af",
+      "bytes": 601012,
+      "url": "https://katakatalab.com/pikalab/deepsea_lab/images/deepsea_dolphin.png"
+    },
+    {
+      "path": "pikalab/public/deepsea_lab/images/deepsea_dumbo_1780390390863.png",
+      "sha256": "f3c91804c950de68e00fde795438fde940714c3eaf1d9d9b714db02a2313c4ba",
+      "bytes": 846728,
+      "url": "https://katakatalab.com/pikalab/deepsea_lab/images/deepsea_dumbo_1780390390863.png"
+    },
+    {
+      "path": "pikalab/public/deepsea_lab/images/deepsea_frilled_shark_1780408341871.png",
+      "sha256": "5758a17a0fd46900d5662f1306e638468b507fe011042d58cc5e4a98b58bae8a",
+      "bytes": 736642,
+      "url": "https://katakatalab.com/pikalab/deepsea_lab/images/deepsea_frilled_shark_1780408341871.png"
+    },
+    {
+      "path": "pikalab/public/deepsea_lab/images/deepsea_giant_isopod_1780408204091.png",
+      "sha256": "021aedc7a9175383dd7d1220902e877393776c2ad3f7cbae83e702a6fa01f1a0",
+      "bytes": 876598,
+      "url": "https://katakatalab.com/pikalab/deepsea_lab/images/deepsea_giant_isopod_1780408204091.png"
+    },
+    {
+      "path": "pikalab/public/deepsea_lab/images/deepsea_goblin_shark_1780408309113.png",
+      "sha256": "c170fcefddfba308dee1bdb9d25d477322ed2d23a29797de30e6123e7521d808",
+      "bytes": 713097,
+      "url": "https://katakatalab.com/pikalab/deepsea_lab/images/deepsea_goblin_shark_1780408309113.png"
+    },
+    {
+      "path": "pikalab/public/deepsea_lab/images/deepsea_oarfish_v2_1780408254790.png",
+      "sha256": "2ce3f03dbed196d7ea47b14ae5d1e6ce8bac0476a8f19add6b14cc51d3fdd264",
+      "bytes": 677742,
+      "url": "https://katakatalab.com/pikalab/deepsea_lab/images/deepsea_oarfish_v2_1780408254790.png"
+    },
+    {
+      "path": "pikalab/public/deepsea_lab/images/deepsea_pelican_eel_1780408356187.png",
+      "sha256": "7210358174dc964054ac99f45fdf0f62d0955fef5e96ef58d788070b1d854dfb",
+      "bytes": 689670,
+      "url": "https://katakatalab.com/pikalab/deepsea_lab/images/deepsea_pelican_eel_1780408356187.png"
+    },
+    {
+      "path": "pikalab/public/deepsea_lab/images/deepsea_plastic_1780396101817.png",
+      "sha256": "8ed03bbb21d63344c7cfd7c1e3ec4e974884730d50cb64a7277796baa8211c81",
+      "bytes": 647831,
+      "url": "https://katakatalab.com/pikalab/deepsea_lab/images/deepsea_plastic_1780396101817.png"
+    },
+    {
+      "path": "pikalab/public/deepsea_lab/images/deepsea_predatory_tunicate_1780408369639.png",
+      "sha256": "477219ca4e3ed7b5f71946ef021c6b927ff70c824e092ac8b361a84cd8cfb91c",
+      "bytes": 846408,
+      "url": "https://katakatalab.com/pikalab/deepsea_lab/images/deepsea_predatory_tunicate_1780408369639.png"
+    },
+    {
+      "path": "pikalab/public/deepsea_lab/images/deepsea_scaly_foot_snail_1780408451466.png",
+      "sha256": "03df5914481e4d7f08f66d1f719475fd8352be0533b1839c6cb16699fc458fd9",
+      "bytes": 1002440,
+      "url": "https://katakatalab.com/pikalab/deepsea_lab/images/deepsea_scaly_foot_snail_1780408451466.png"
+    },
+    {
+      "path": "pikalab/public/deepsea_lab/images/deepsea_sea_pig_1780408283124.png",
+      "sha256": "78408e5535b6bdea24b54a2dc95d09df51ed21efe281c33f8d0169721d98c80b",
+      "bytes": 855715,
+      "url": "https://katakatalab.com/pikalab/deepsea_lab/images/deepsea_sea_pig_1780408283124.png"
+    },
+    {
+      "path": "pikalab/public/deepsea_lab/images/deepsea_shipwreck_1780396059686.png",
+      "sha256": "d9e2f9638a3ffeb6e3f15c22075f96927068a612dfe7b1e159b5417d34dbe266",
+      "bytes": 804499,
+      "url": "https://katakatalab.com/pikalab/deepsea_lab/images/deepsea_shipwreck_1780396059686.png"
+    },
+    {
+      "path": "pikalab/public/deepsea_lab/images/deepsea_snailfish_1780389368914.png",
+      "sha256": "5a9fb812a6ae23b5f85168dc2eac6b25fe90a29addcb63823a61a3634c52cbbe",
+      "bytes": 684343,
+      "url": "https://katakatalab.com/pikalab/deepsea_lab/images/deepsea_snailfish_1780389368914.png"
+    },
+    {
+      "path": "pikalab/public/deepsea_lab/images/deepsea_squid_1780389387608.png",
+      "sha256": "1efc3ec58ab9fe2779ab5f0a367a3903a3d5358619ebc27aa6da805c08865f0d",
+      "bytes": 729340,
+      "url": "https://katakatalab.com/pikalab/deepsea_lab/images/deepsea_squid_1780389387608.png"
+    },
+    {
+      "path": "pikalab/public/deepsea_lab/images/deepsea_submarine_1780396149628.png",
+      "sha256": "83087d8eb9c63efcd8af7d8f55ad32beee8c4aa69f1be0e96c0d244035b51b02",
+      "bytes": 750202,
+      "url": "https://katakatalab.com/pikalab/deepsea_lab/images/deepsea_submarine_1780396149628.png"
+    },
+    {
+      "path": "pikalab/public/deepsea_lab/images/deepsea_swimming_sea_cucumber_1780408421213.png",
+      "sha256": "1b638ae57c1a3639eb474ba71546e1cf6f616446c2fa19c1e3f1127b126ff874",
+      "bytes": 733578,
+      "url": "https://katakatalab.com/pikalab/deepsea_lab/images/deepsea_swimming_sea_cucumber_1780408421213.png"
+    },
+    {
+      "path": "pikalab/public/deepsea_lab/images/deepsea_tripod_1780390465721.png",
+      "sha256": "8c5f0136a1a32848df8726d4f59fa2c9415fcea4abef9cdb0a01cbadc65aa8e3",
+      "bytes": 720943,
+      "url": "https://katakatalab.com/pikalab/deepsea_lab/images/deepsea_tripod_1780390465721.png"
+    },
+    {
+      "path": "pikalab/public/deepsea_lab/images/deepsea_turtle_1780389293156.png",
+      "sha256": "c854a6a9c7e0a5e14a834fcab481032f36bfe618bc6996886f95a5aa3efb93ea",
+      "bytes": 894385,
+      "url": "https://katakatalab.com/pikalab/deepsea_lab/images/deepsea_turtle_1780389293156.png"
+    },
+    {
+      "path": "pikalab/public/deepsea_lab/images/deepsea_vent_1780389410123.png",
+      "sha256": "7dac9e302ccea555632df2a3ce3909a56215c42ce365abe7b7e40652cdc20d62",
+      "bytes": 868435,
+      "url": "https://katakatalab.com/pikalab/deepsea_lab/images/deepsea_vent_1780389410123.png"
+    },
+    {
+      "path": "pikalab/public/deepsea_lab/images/deepsea_viperfish_1780408325638.png",
+      "sha256": "7485ce9895c4c30da1a5c5297b3ee85eaa6c7bd6476fed9daac88b6c9d7842c7",
+      "bytes": 809935,
+      "url": "https://katakatalab.com/pikalab/deepsea_lab/images/deepsea_viperfish_1780408325638.png"
+    },
+    {
+      "path": "pikalab/public/deepsea_lab/images/deepsea_whale_clean_1780390652210.png",
+      "sha256": "3844b1f8f9452bea4a6338d3473535ebc6cf92b0be5bd1d3fe24e0ba982dc9df",
+      "bytes": 816014,
+      "url": "https://katakatalab.com/pikalab/deepsea_lab/images/deepsea_whale_clean_1780390652210.png"
+    },
+    {
+      "path": "pikalab/public/deepsea_lab/images/deepsea_yeti_crab_1780408436544.png",
+      "sha256": "07fa15231680a1f34af965b92643e3285f69c485168628a5c440085a94ad27b3",
+      "bytes": 1006665,
+      "url": "https://katakatalab.com/pikalab/deepsea_lab/images/deepsea_yeti_crab_1780408436544.png"
+    },
+    {
+      "path": "pikalab/public/icon-192.png",
+      "sha256": "3c050189473a7c285802e35f0931bcdcbc70c9b89704ff1d775f638a91d428ca",
+      "bytes": 7703,
+      "url": "https://katakatalab.com/pikalab/icon-192.png"
+    },
+    {
+      "path": "pikalab/public/icon-512.png",
+      "sha256": "9d44a3bdd0915775c778a6a89e4046d9b9748465e72fc02742c40983836f9610",
+      "bytes": 24857,
+      "url": "https://katakatalab.com/pikalab/icon-512.png"
+    },
+    {
+      "path": "pikalab/rhythm_lab/ogp.png",
+      "sha256": "5204c64dda7aca7e940dba9d4ae8b59eff339cca73d3de04057b1ace3bfcc1ec",
+      "bytes": 389590,
+      "ci_fixture": {
+        "format": "png",
+        "width": 1200,
+        "height": 630
+      }
+    },
+    {
+      "path": "pikalab/space_lab/assets/background.png",
+      "sha256": "58cc483530f3753e3c36df0ce540059ecfb6c5b2cceebb285bdac09f2257d0cb",
+      "bytes": 892304,
+      "url": "https://katakatalab.com/pikalab/assets/background-B0g1I2r3.png"
+    },
+    {
+      "path": "pikalab/space_lab/assets/earth.png",
+      "sha256": "c08e1044f40b146a58ff3f14973edf78c06c03300463dc834186e21e26ad5003",
+      "bytes": 1884721,
+      "url": "https://katakatalab.com/pikalab/assets/earth-CvvOeq40.png"
+    },
+    {
+      "path": "pikalab/space_lab/assets/jupiter.png",
+      "sha256": "0df50691f472a5ccc036c962dbebb8faa5c965d34ce0cd04ee154219b09b6071",
+      "bytes": 565732,
+      "url": "https://katakatalab.com/pikalab/assets/jupiter-BH4pHEd2.png"
+    },
+    {
+      "path": "pikalab/space_lab/assets/mars.png",
+      "sha256": "1476e802c0686192ae6ae926e5b885584df9334fad68c7d23f0a4944a214b8bd",
+      "bytes": 1354434,
+      "url": "https://katakatalab.com/pikalab/assets/mars-C-Yph44j.png"
+    },
+    {
+      "path": "pikalab/space_lab/assets/mercury.png",
+      "sha256": "bd9f1122ced097d490cf611f70a8dad497835870ee2336f5d4d5eb52594fbd1e",
+      "bytes": 1794912,
+      "url": "https://katakatalab.com/pikalab/assets/mercury-80IR1NFB.png"
+    },
+    {
+      "path": "pikalab/space_lab/assets/neptune.png",
+      "sha256": "5eb134127440955be8dad1a39d845b67dbce6e4ef08d5240225bd2e2657e8ed6",
+      "bytes": 484729,
+      "url": "https://katakatalab.com/pikalab/assets/neptune-BBVrVnZ6.png"
+    },
+    {
+      "path": "pikalab/space_lab/assets/saturn.png",
+      "sha256": "20ab079134e142a6c8e4f7ce3b85fdbd72b3abd5164a99171ff605f2755f2efc",
+      "bytes": 468827,
+      "url": "https://katakatalab.com/pikalab/assets/saturn-D2xnbFNo.png"
+    },
+    {
+      "path": "pikalab/space_lab/assets/spaceship.png",
+      "sha256": "5fe14efa215909841f3a8b78f9b431357e47b31f71e2c0f678f65e2f7c2efd5d",
+      "bytes": 910465,
+      "url": "https://katakatalab.com/pikalab/assets/spaceship-D7w0s5s1.png"
+    },
+    {
+      "path": "pikalab/space_lab/assets/sun.png",
+      "sha256": "a318be23a740b0427acf467ccf317c458eb998cc41300b4d13ea83dcd0b33cf6",
+      "bytes": 809576,
+      "url": "https://katakatalab.com/pikalab/assets/sun-Cvg89Ym2.png"
+    },
+    {
+      "path": "pikalab/space_lab/assets/ufo.png",
+      "sha256": "dddfd5141419955b43a1a94a2820a33234a945f012afe0d5c0bfb4a350aa484f",
+      "bytes": 590024,
+      "url": "https://katakatalab.com/pikalab/assets/ufo-CsYaoB1d.png"
+    },
+    {
+      "path": "pikalab/space_lab/assets/uranus.png",
+      "sha256": "fc2df54af88b495574f872dd2d76c0ff4ffc0567860416c224b707e14bfc8642",
+      "bytes": 440788,
+      "url": "https://katakatalab.com/pikalab/assets/uranus-Ds8ljniX.png"
+    },
+    {
+      "path": "pikalab/space_lab/assets/venus.png",
+      "sha256": "5c018aef1ee584155c948955e7f7d20df076dd36acf8fcbea6e1da7014be0bbd",
+      "bytes": 1506268,
+      "url": "https://katakatalab.com/pikalab/assets/venus-C2DQQoLw.png"
+    },
+    {
+      "path": "pikalab/space_lab/ogp.png",
+      "sha256": "a42975fde5918d78c51f25f5928c5e01cf6946ee90def77cdb3e459c3b0fbfc2",
+      "bytes": 697029,
+      "ci_fixture": {
+        "format": "png",
+        "width": 1200,
+        "height": 630
+      }
+    },
+    {
+      "path": "pikalab/typing_dojo/ogp-typing-dojo.png",
+      "sha256": "c11c79010da9e5e6d5623a3732514be775f6eba39db66dab100eaa6b6bcf8f57",
+      "bytes": 484890,
+      "ci_fixture": {
+        "format": "png",
+        "width": 1200,
+        "height": 630
+      }
+    },
+    {
+      "path": "pikalab_screenshot.jpg",
+      "sha256": "d026bb5d9515c62230423c94c4e89219dce0acc087f6d195c84f8ae393cc3d96",
+      "bytes": 143320,
+      "url": "https://katakatalab.com/pikalab_screenshot.jpg"
+    },
+    {
+      "path": "qrcode/assets/icon-192.png",
+      "sha256": "e157d32c1d6b0276f27a62ffb5081cf957ea6191a699385749cc36d27dc6b922",
+      "bytes": 1932,
+      "url": "https://katakatalab.com/qrcode/assets/icon-192.png"
+    },
+    {
+      "path": "qrcode/assets/icon-512.png",
+      "sha256": "460d78ec382a42b24c675fe2e66d1deacb05f60088d1edb04e1f4acacd51d929",
+      "bytes": 6470,
+      "url": "https://katakatalab.com/qrcode/assets/icon-512.png"
+    },
+    {
+      "path": "qrcode/ogp.png",
+      "sha256": "fe1120e9acbd9fcea8ef10a641d6cca9770f089900e7bdacffad9c3b41928945",
+      "bytes": 591176,
+      "url": "https://katakatalab.com/qrcode/ogp.png"
+    },
+    {
+      "path": "emphasis-lines/icons/icon.svg",
+      "sha256": "2a5565546c789bb90cde869d3cb5d27764faad90f1bc8fac78f607be1f537e06",
+      "bytes": 2068,
+      "url": "https://katakatalab.com/emphasis-lines/icons/icon.svg"
+    },
+    {
+      "path": "favicon.svg",
+      "sha256": "4b61cd4866ba04cb74aa0c998201402f9c23e27fe5a2f21ece06ceb050c876d7",
+      "bytes": 828,
+      "url": "https://katakatalab.com/favicon.svg"
+    },
+    {
+      "path": "icon.svg",
+      "sha256": "4b61cd4866ba04cb74aa0c998201402f9c23e27fe5a2f21ece06ceb050c876d7",
+      "bytes": 828,
+      "url": "https://katakatalab.com/icon.svg"
+    },
+    {
+      "path": "lab-tools/gravity-todo/icon.svg",
+      "sha256": "0acec10b6efed30583b32684430bfe7702dcbd695334433f68ee3bb8d381cea8",
+      "bytes": 340,
+      "url": "https://katakatalab.com/lab-tools/gravity-todo/icon.svg"
+    },
+    {
+      "path": "ogp.svg",
+      "sha256": "5ceb37bea792de2be6a6b9dca75574248f043f424ef06b35d57689d635232aab",
+      "bytes": 1736,
+      "url": "https://katakatalab.com/ogp.svg"
+    },
+    {
+      "path": "pikalab/.kotoba/favicon.svg",
+      "sha256": "ceeac38434be7a3b4d0f68b8cd8aa2b9ae78c260d6343087c6e095f8031ce4ff",
+      "bytes": 9523,
+      "url": "https://katakatalab.com/pikalab/kotoba/favicon.svg"
+    },
+    {
+      "path": "pikalab/.kotoba/icons.svg",
+      "sha256": "b45fa506195cfcdef406ba9f0c77b36ddc1a7c224040926ec70abc2fdea7b93a",
+      "bytes": 5031,
+      "url": "https://katakatalab.com/pikalab/kotoba/icons.svg"
+    },
+    {
+      "path": "pikalab/icon.svg",
+      "sha256": "4b61cd4866ba04cb74aa0c998201402f9c23e27fe5a2f21ece06ceb050c876d7",
+      "bytes": 828,
+      "url": "https://katakatalab.com/pikalab/icon.svg"
+    },
+    {
+      "path": "pikalab/public/icon.svg",
+      "sha256": "4b61cd4866ba04cb74aa0c998201402f9c23e27fe5a2f21ece06ceb050c876d7",
+      "bytes": 828,
+      "url": "https://katakatalab.com/pikalab/icon.svg"
+    },
+    {
+      "path": "pikalab/quest_board/ogp-quest-board.svg",
+      "sha256": "4f9550648a180e1f1cab966c9f6d9a7d4fc5308bbb6c71476dfa29f86ddb692c",
+      "bytes": 1934,
+      "ci_fixture": {
+        "format": "svg",
+        "width": 1200,
+        "height": 630
+      }
+    },
+    {
+      "path": "pikalab/speed_reader/icon.svg",
+      "sha256": "fad3a8f4cb9f2ac55b014c4fb4a3462d3ab73ed6bd68bff68b754b1bf94b9dfd",
+      "bytes": 439,
+      "url": "https://katakatalab.com/pikalab/assets/icon-Cf71Sov5.svg"
+    },
+    {
+      "path": "pikalab/speed_reader/ogp.svg",
+      "sha256": "a8b2f91ea6971fd5f07a0164fdee96ea5f891edb658ebdd4998d2f2b7310d417",
+      "bytes": 985,
+      "ci_fixture": {
+        "format": "svg",
+        "width": 1200,
+        "height": 630
+      }
+    },
+    {
+      "path": "pikalab/typing_dojo/ogp-typing-dojo.svg",
+      "sha256": "f8cd515974de6bfcb07872e1360f5d54038e0d50b223b0e5e5ceeba35c007382",
+      "bytes": 3015,
+      "ci_fixture": {
+        "format": "svg",
+        "width": 1200,
+        "height": 630
+      }
+    },
+    {
+      "path": "screenshot-crop/pwa-icon.svg",
+      "sha256": "5ae80261ba8dde5ad4a4e248e94f488929e6482b9225e501ccde46b50946f7d7",
+      "bytes": 902,
+      "url": "https://katakatalab.com/screenshot-crop/pwa-icon.svg"
+    }
+  ],
+  "server_fixtures": [
+    {
+      "path": ".htaccess",
+      "content": "Header always set Content-Security-Policy \"default-src 'self' https: data: blob:; base-uri 'self'; object-src 'none'; frame-ancestors 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.tailwindcss.com https://cdnjs.cloudflare.com https://www.googletagmanager.com https://*.googlesyndication.com https://*.googleads.g.doubleclick.net https://*.adtrafficquality.google https://*.google.com https://*.google-analytics.com https://*.doubleclick.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' https: data: blob:; worker-src 'self' blob:; connect-src 'self' https:; frame-src https:; upgrade-insecure-requests\"\nHeader always set X-Frame-Options \"SAMEORIGIN\"\nHeader always set X-Content-Type-Options \"nosniff\"\n"
+    },
+    {
+      "path": ".user.ini",
+      "content": "; CI-only PHP placeholder\n"
+    },
+    {
+      "path": "lab-tools/kids-smile-land/.htaccess",
+      "content": "Header always set Content-Security-Policy \"default-src 'self' https: data: blob:; base-uri 'self'; object-src 'none'; frame-ancestors 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.tailwindcss.com https://cdnjs.cloudflare.com https://www.googletagmanager.com https://*.googlesyndication.com https://*.googleads.g.doubleclick.net https://*.adtrafficquality.google https://*.google.com https://*.google-analytics.com https://*.doubleclick.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' https: data: blob:; worker-src 'self' blob:; connect-src 'self' https:; frame-src https:; upgrade-insecure-requests\"\nHeader always set X-Frame-Options \"SAMEORIGIN\"\nHeader always set X-Content-Type-Options \"nosniff\"\n"
+    },
+    {
+      "path": "pikalab/.htaccess",
+      "content": "Header always set Content-Security-Policy \"default-src 'self' data: blob:; base-uri 'self'; object-src 'none'; frame-ancestors 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: blob:; media-src 'self' blob:; worker-src 'self' blob:; connect-src 'self'; frame-src 'self'; upgrade-insecure-requests\"\nHeader always set X-Frame-Options \"SAMEORIGIN\"\nHeader always set X-Content-Type-Options \"nosniff\"\n"
+    },
+    {
+      "path": "pikalab/science_maker/.htaccess",
+      "content": "Header always set Content-Security-Policy \"default-src 'self' data: blob:; base-uri 'self'; object-src 'none'; frame-ancestors 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: blob:; media-src 'self' blob:; worker-src 'self' blob:; connect-src 'self'; frame-src 'self'; upgrade-insecure-requests\"\nHeader always set X-Frame-Options \"SAMEORIGIN\"\nHeader always set X-Content-Type-Options \"nosniff\"\n"
+    },
+    {
+      "path": "qrcode/.htaccess",
+      "content": "Header always set Content-Security-Policy \"default-src 'self' https: data: blob:; base-uri 'self'; object-src 'none'; frame-ancestors 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.tailwindcss.com https://cdnjs.cloudflare.com https://www.googletagmanager.com https://*.googlesyndication.com https://*.googleads.g.doubleclick.net https://*.adtrafficquality.google https://*.google.com https://*.google-analytics.com https://*.doubleclick.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' https: data: blob:; worker-src 'self' blob:; connect-src 'self' https:; frame-src https:; upgrade-insecure-requests\"\nHeader always set X-Frame-Options \"SAMEORIGIN\"\nHeader always set X-Content-Type-Options \"nosniff\"\n"
+    },
+    {
+      "path": "screenshot-crop/.htaccess",
+      "content": "Header always set Content-Security-Policy \"default-src 'self' https: data: blob:; base-uri 'self'; object-src 'none'; frame-ancestors 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.tailwindcss.com https://cdnjs.cloudflare.com https://www.googletagmanager.com https://*.googlesyndication.com https://*.googleads.g.doubleclick.net https://*.adtrafficquality.google https://*.google.com https://*.google-analytics.com https://*.doubleclick.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' https: data: blob:; worker-src 'self' blob:; connect-src 'self' https:; frame-src https:; upgrade-insecure-requests\"\nHeader always set X-Frame-Options \"SAMEORIGIN\"\nHeader always set X-Content-Type-Options \"nosniff\"\n"
+    }
+  ]
+}

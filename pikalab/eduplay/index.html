@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="robots" content="noindex, follow">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ちいくひろば (EduPlay)</title>
+    <meta name="description" content="ひらがな、数、音、形などを遊びながら体験できる、幼児・低学年向けの知育ゲーム広場です。">
+    <link rel="canonical" href="https://katakatalab.com/pikalab/eduplay/">
+    <meta property="og:title" content="ちいくひろば (EduPlay)">
+    <meta property="og:description" content="ひらがな、数、音、形などを遊びながら体験できる、幼児・低学年向けの知育ゲーム広場です。">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://katakatalab.com/pikalab/eduplay/">
+    <meta property="og:image" content="https://katakatalab.com/pikalab/pikalab_ogp_compressed.jpg">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="ちいくひろば (EduPlay)">
+    <meta name="twitter:description" content="ひらがな、数、音、形などを遊びながら体験できる、幼児・低学年向けの知育ゲーム広場です。">
+    <meta name="twitter:image" content="https://katakatalab.com/pikalab/pikalab_ogp_compressed.jpg">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,1,0&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../style.css">
+    <link rel="stylesheet" href="common.css">
+    <script src="common.js"></script>
+    <style>
+        /* メインメニュー用のふわふわアニメーション */
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+        .anim-float { animation: float 3s ease-in-out infinite; }
+        @media (max-width: 480px) {
+            #app {
+                height: auto;
+                min-height: 100dvh;
+            }
+            #game-menu-wrap {
+                flex: none;
+                overflow: visible;
+            }
+            #game-menu-grid {
+                height: auto;
+                place-content: stretch;
+            }
+        }
+    </style>
+    <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"ちいくひろば (EduPlay)","url":"https://katakatalab.com/pikalab/eduplay/","description":"ひらがな、数、音、形などを遊びながら体験できる、幼児・低学年向けの知育ゲーム広場です。","applicationCategory":"EducationalApplication","operatingSystem":"Any","isAccessibleForFree":true,"offers":{"@type":"Offer","price":"0","priceCurrency":"JPY"}}</script>
+</head>
+<body class="bg-yellow-50 h-screen w-screen overflow-auto font-sans select-none touch-manipulation text-gray-800 flex flex-col">
+    <main id="app" class="max-w-3xl mx-auto h-full flex flex-col p-4 sm:p-6 w-full relative">
+        
+        <!-- ヘッダー -->
+        <header id="header" class="flex justify-center items-center py-4 sm:py-6 shrink-0 relative">
+            <button id="pikalab-back-btn" class="absolute left-0 bg-white border-b-4 border-gray-300 px-3 py-2 sm:px-4 sm:py-2.5 rounded-full font-bold text-xs sm:text-sm shadow-md game-card text-gray-700 flex items-center gap-1 active:scale-95 transition">⬅️ ピカラボ</button>
+            <h1 class="text-4xl sm:text-5xl md:text-6xl font-black text-orange-500 drop-shadow-sm tracking-wide flex items-center gap-2">
+                <span class="anim-float" style="animation-delay: 0s;">🎈</span> 
+                ちいくひろば 
+                <span class="anim-float" style="animation-delay: 0.5s;">🎈</span>
+            </h1>
+            <button type="button" data-action="parents-modal-open"
+                class="absolute right-14 sm:right-20 bg-white border-b-4 border-gray-300 p-3 sm:p-4 rounded-full shadow-md text-lg sm:text-xl game-card flex items-center justify-center active:scale-95 transition"
+                aria-label="保護者の方へ - 開く" aria-haspopup="dialog" aria-expanded="false" title="保護者の方へ">👨‍👩‍👦</button>
+            <button type="button" id="sound-toggle" onclick="EduSound.toggle(this)" aria-label="音を消す" aria-pressed="true" class="absolute right-0 bg-white border-b-4 border-gray-300 p-3 sm:p-4 rounded-full shadow-md text-xl sm:text-2xl game-card">🔊</button>
+        </header>
+
+        <!-- メッセージ -->
+        <div class="text-center font-bold text-xl sm:text-2xl text-orange-600 my-2 sm:my-6 bg-white py-3 sm:py-4 rounded-full shadow-sm border-4 border-orange-100 shrink-0 mx-auto w-full max-w-lg">
+            あそびたい ゲームを えらんでね！
+        </div>
+
+        <!-- 6つのゲームへのリンク（スマホで2列、タブレットで3列） -->
+        <div id="game-menu-wrap" class="flex-1 overflow-y-auto no-scrollbar py-2 px-1">
+            <div id="game-menu-grid" class="grid grid-cols-2 md:grid-cols-3 gap-4 sm:gap-6 lg:gap-8 h-full place-content-center">
+                <a href="puzzle.html" onpointerenter="EduSound.speak('パズルであそぶ！')" class="bg-blue-400 text-white rounded-3xl shadow-lg border-b-8 border-blue-600 game-card flex flex-col items-center justify-center p-6 sm:p-8 font-bold text-xl sm:text-3xl min-h-[140px] sm:min-h-[180px]">
+                    <span class="text-6xl sm:text-[80px] mb-3 drop-shadow-md">🧩</span> パズル
+                </a>
+                <a href="shopping.html" onpointerenter="EduSound.speak('おかいものにいく！')" class="bg-orange-400 text-white rounded-3xl shadow-lg border-b-8 border-orange-600 game-card flex flex-col items-center justify-center p-6 sm:p-8 font-bold text-xl sm:text-3xl min-h-[140px] sm:min-h-[180px]">
+                    <span class="text-6xl sm:text-[80px] mb-3 drop-shadow-md">🛒</span> おかいもの
+                </a>
+                <a href="hiragana.html" onpointerenter="EduSound.speak('ひらがなであそぶ！')" class="bg-green-400 text-white rounded-3xl shadow-lg border-b-8 border-green-600 game-card flex flex-col items-center justify-center p-6 sm:p-8 font-bold text-xl sm:text-3xl min-h-[140px] sm:min-h-[180px]">
+                    <span class="text-6xl sm:text-[80px] mb-3 drop-shadow-md">🔤</span> ひらがな
+                </a>
+                <a href="piano.html" onpointerenter="EduSound.speak('おとであそぶ！')" class="bg-pink-400 text-white rounded-3xl shadow-lg border-b-8 border-pink-600 game-card flex flex-col items-center justify-center p-6 sm:p-8 font-bold text-xl sm:text-3xl min-h-[140px] sm:min-h-[180px]">
+                    <span class="text-6xl sm:text-[80px] mb-3 drop-shadow-md">🎵</span> おとあそび
+                </a>
+                <a href="matching.html" onpointerenter="EduSound.speak('えあわせカードであそぶ！')" class="bg-indigo-400 text-white rounded-3xl shadow-lg border-b-8 border-indigo-600 game-card flex flex-col items-center justify-center p-6 sm:p-8 font-bold text-xl sm:text-3xl min-h-[140px] sm:min-h-[180px]">
+                    <span class="text-6xl sm:text-[80px] mb-3 drop-shadow-md">🃏</span> えあわせ
+                </a>
+                <!-- 新しく追加した「ずかん」ボタン -->
+                <a href="zukan.html" onpointerenter="EduSound.speak('ずかんをみる！')" class="bg-teal-400 text-white rounded-3xl shadow-lg border-b-8 border-teal-600 game-card flex flex-col items-center justify-center p-6 sm:p-8 font-bold text-xl sm:text-3xl min-h-[140px] sm:min-h-[180px]">
+                    <span class="text-6xl sm:text-[80px] mb-3 drop-shadow-md">📕</span> ずかん
+                </a>
+            </div>
+        </div>
+
+        <!-- 保護者向けお役立ちツールセクション -->
+        <div class="mt-8 bg-white rounded-3xl p-6 shadow-md border-4 border-dashed border-orange-300 max-w-xl mx-auto text-center shrink-0 mb-8">
+            <h3 class="text-xl font-black text-orange-600 mb-2 flex items-center justify-center gap-2">
+                <span>💡</span> おうちの方へ おすすめツール
+            </h3>
+            <p class="text-sm text-gray-500 font-bold mb-4">お手伝いをゲーム感覚で楽しめる「クエストボード」や、漢字や五線譜の練習用紙を作れる「用紙メーカー」など、役立つツールも無料でお使いいただけます。</p>
+            <div class="grid grid-cols-2 gap-4">
+                <a href="../quest_board/" class="bg-amber-100 hover:bg-amber-200 text-amber-800 font-bold p-3 rounded-2xl text-xs sm:text-sm flex items-center justify-center gap-2 active:scale-95 transition">
+                    <span>🎯 クエストボード</span>
+                </a>
+                <a href="../paper_gen/" class="bg-stone-100 hover:bg-stone-200 text-stone-800 font-bold p-3 rounded-2xl text-xs sm:text-sm flex items-center justify-center gap-2 active:scale-95 transition">
+                    <span>📄 用紙メーカー</span>
+                </a>
+            </div>
+        </div>
+    </main>
+    <script>
+        window.onload = () => {
+            setTimeout(() => {
+                EduSound.speak("あそびたいゲームをえらんでね！", 1.0, 1.2);
+            }, 500);
+
+            // 戻るボタンに長押しロックをセット
+            const backBtn = document.getElementById('pikalab-back-btn');
+            if (backBtn) {
+                EduUtils.setupLongPressBack(backBtn, '../index.html');
+            }
+        };
+    </script>
+    
+
+
+<!-- Parents Modal -->
+    
+
+    
+
+    
+<!-- Parents Modal -->
+    <dialog id="parents-modal"
+        class="p-0 rounded-3xl shadow-2xl  open:animate-fade-in w-full max-w-lg m-auto overflow-hidden border-0"
+        aria-labelledby="parents-modal-title" style="display:none;">
+        <div class="bg-white p-6 md:p-8 max-h-[90vh] overflow-y-auto relative text-left">
+            <button type="button" data-action="parents-modal-close" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600 focus:outline-none" aria-label="閉じる">
+                <span class="material-symbols-rounded">close</span>
+            </button>
+            <div class="mb-6 border-b-2 border-indigo-100 pb-4">
+                <h2 id="parents-modal-title"
+                    class="text-lg md:text-xl font-black text-slate-800 flex items-center gap-2">
+                    <span class="material-symbols-rounded text-indigo-500">family_restroom</span> 保護者の方へ
+                </h2>
+                <p class="text-xs text-slate-400 font-bold mt-1">For Parents & Guardians</p>
+            </div>
+
+            <div class="space-y-6 text-sm text-slate-600 leading-relaxed font-bold">
+                <!-- ウェルカムメッセージカード -->
+                <div class="bg-gradient-to-r from-indigo-50 to-purple-50 p-5 rounded-2xl border border-indigo-100 text-center">
+                    <p class="mb-2 text-indigo-800 text-base">
+                        <span class="material-symbols-rounded text-xl align-bottom mr-1 text-pink-400">favorite</span>
+                        当サイト「PikaLab」に<br>ご訪問いただき、誠にありがとうございます。
+                    </p>
+                    <p class="text-xs text-indigo-600">
+                            大切なお子様と一緒にPikaLabを訪れていただけたこと、<br>制作者のかたかたより、心から感謝申し上げます。
+                    </p>
+                </div>
+
+                <!-- 1. ねらい -->
+                <div>
+                    <h3 class="text-indigo-600 font-black mb-2 flex items-center gap-2">
+                        <span class="material-symbols-rounded text-base">school</span> このアプリのねらい
+                    </h3>
+                    <p>
+                        「ちいくひろば (EduPlay)」は、幼児（2〜5歳）のお子様が感覚的かつ自発的に楽しめる6つのゲーム（パズル、おかいもの、ひらがな、おとあそび、えあわせ、ずかん）を揃えた総合知育知恵袋です。指先での直感的なタッチ操作と楽しい音声フィードバックを通して、思考力、言葉の理解、表現力、指先の発達を優しく育むことをねらいとしています。
+                    </p>
+                </div>
+
+                <!-- 2. おねがい -->
+                <div>
+                    <h3 class="text-pink-500 font-black mb-2 flex items-center gap-2">
+                        <span class="material-symbols-rounded text-base">favorite</span> 保護者様へのおねがい
+                    </h3>
+                    <p>
+                        この年代のお子様にとって、デジタル機器は「魔法のおもちゃ」です。操作を間違えたり、思わぬところを連打したりしても、決して叱らず<span class="bg-pink-100 text-pink-700 px-1 rounded">「面白いね」「できたね！」</span>と声をかけてあげてください。完璧に正解することよりも、「自分で画面を触ったら変化した」という自己効力感の芽生えがもっとも大切です。
+                    </p>
+                </div>
+
+                <!-- 3. 活用方法 -->
+                <div>
+                    <h3 class="text-green-600 font-black mb-2 flex items-center gap-2">
+                        <span class="material-symbols-rounded text-base">emoji_objects</span> おうちでの活用方法
+                    </h3>
+                    <p>
+                        できるだけお子様が一人きりで遊ぶのではなく、おうちの方が横に寄り添って「りんごはどこかな？」「これは何の音だろう？」「一緒におかいものに行こう！」と話しかけながら、対話のきっかけとして活用してください。アプリの絵や音を現実のモノと結びつけることで、知育効果は飛躍的に高まります。
+                    </p>
+                </div>
+
+                <!-- 4. 健康への配慮 -->
+                <div>
+                    <h3 class="text-orange-500 font-black mb-2 flex items-center gap-2">
+                        <span class="material-symbols-rounded text-base">timer</span> 健康への配慮（休憩の推奨）
+                    </h3>
+                    <p>
+                        幼児期のお子様は目が疲れやすく、また夢中になりすぎることがあるため、<span class="bg-orange-100 text-orange-700 px-1 rounded">1日のプレイ時間は15〜20分程度</span>に留め、連続して長い時間プレイしすぎないよう見守ってあげてください。また、本アプリでの操作履歴は外部サーバーに一切送信されず、デバイス内で安全に完結しております。
+                    </p>
+                </div>
+            </div>
+            <div class="mt-8 text-center">
+                <button type="button" data-action="parents-modal-close"
+                    class="w-full bg-indigo-500 text-white px-8 py-3 rounded-xl font-black hover:bg-indigo-600 transition shadow-lg shadow-indigo-200">閉じる</button>
+            </div>
+        </div>
+    </dialog>
+
+    <style>
+    #parents-modal::backdrop {
+        background: rgba(15, 23, 42, 0.6);
+        backdrop-filter: blur(4px);
+    }
+    #parents-modal[open] {
+        display: block !important;
+        animation: parentsModalFadeIn 0.3s ease-out forwards;
+    }
+    @keyframes parentsModalFadeIn {
+        from { opacity: 0; transform: scale(0.95); }
+        to { opacity: 1; transform: scale(1); }
+    }
+    </style>
+
+
+</body>
+</html>

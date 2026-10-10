@@ -1,0 +1,51 @@
+{
+  "name": "pikalab",
+  "version": "7.7.0",
+  "scripts": {
+    "dev": "vite",
+    "build": "node scripts/build-articles-css.cjs && node scripts/sync-seo-metadata.cjs && vite build && node ../.github/scripts/copy-code-studio-reachable.cjs .code-studio dist/code-studio && node scripts/copy-build-runtime-assets.cjs dist && node scripts/harden-focus-studio-build.cjs dist && node scripts/finalize-deploy-output.cjs dist && node scripts/restore-lab-pwa-assets.cjs dist && node scripts/finalize-lab-service-workers.cjs dist && node scripts/finalize-service-worker.cjs dist && node ../scripts/education-no-tracking.cjs --pikalab-build",
+    "build:css": "tailwindcss -i ./tailwind.input.css -o ./style.css --minify",
+    "build:css:articles": "node scripts/build-articles-css.cjs",
+    "build:css:kanji": "tailwindcss -c ./tailwind.kanji.config.cjs -i ./tailwind.kanji.input.css -o ./kanji_lab/tailwind.css --minify",
+    "build:all": "npm run build",
+    "sync:seo": "node scripts/sync-seo-metadata.cjs",
+    "preview": "vite preview",
+    "guard:visual": "node scripts/visual-regression-guard.mjs",
+    "verify:code-studio-security": "node scripts/verify-code-studio-security.mjs",
+    "verify:build": "node scripts/verify-build-output.cjs dist && node scripts/verify-focus-studio-build.cjs dist && node scripts/restore-lab-pwa-assets.cjs dist --verify && node scripts/finalize-lab-service-workers.cjs dist --check && node scripts/finalize-service-worker.cjs dist --check && node ../scripts/education-no-tracking.cjs --pikalab-build",
+    "typecheck": "tsc --noEmit",
+    "test:node": "node scripts/run-node-tests.cjs",
+    "test:kanji-data": "node kanji_lab/js/test_data.js",
+    "test:kanji-ux": "node kanji_lab/js/test_ux.js",
+    "test:kanji-exposure": "node kanji_lab/js/test_exposure.js",
+    "test:vitest": "vitest run deepsea_lab/js",
+    "test:manabi-e2e": "node scripts/manabi-land-e2e.mjs",
+    "test:rhythm-e2e": "node scripts/rhythm-lab-e2e.mjs",
+    "test:focus-e2e": "node scripts/focus-studio-e2e.mjs",
+    "test": "npm run test:node && npm run test:kanji-data && npm run test:kanji-ux && npm run test:kanji-exposure && npm run test:vitest",
+    "test:pwa-e2e": "node scripts/pwa-cache-e2e.mjs",
+    "test:speed-reader-e2e": "node scripts/speed-reader-e2e.mjs",
+    "test:typing-dojo-e2e": "node scripts/typing-dojo-e2e.mjs",
+    "test:kotowaza-quiz-e2e": "node scripts/kotowaza-quiz-e2e.mjs",
+    "test:fraction-e2e": "node scripts/fraction-lab-e2e.mjs",
+    "test:space-e2e": "node scripts/space-lab-e2e.mjs",
+    "test:focus-deep-e2e": "node scripts/focus-studio-deep-e2e.mjs",
+    "test:paper-e2e": "node scripts/paper-gen-e2e.mjs",
+    "test:quest-e2e": "node scripts/quest-board-e2e.mjs"
+  },
+  "devDependencies": {
+    "@types/node": "^25.9.1",
+    "autoprefixer": "^10.4.14",
+    "playwright": "^1.60.0",
+    "postcss": "^8.4.21",
+    "tailwindcss": "^3.3.0",
+    "terser": "^5.48.0",
+    "typescript": "^6.0.3",
+    "vite": "^8.1.4",
+    "vite-plugin-pwa": "^1.3.0",
+    "vitest": "^4.1.8"
+  },
+  "overrides": {
+    "ejs": "6.0.1"
+  }
+}

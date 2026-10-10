@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <base href="/aspect-ratio-calc/">
+  <meta name="format-detection" content="telephone=no">
+  
+  <title>Aspect Ratio Calculator and Resize Preview | KatakataLab</title>
+  <meta name="description" content="Calculate a missing width or height from any aspect ratio, detect common ratios, swap orientation, and preview the result for video, images, CSS, and responsive layouts.">
+  
+  <meta property="og:title" content="Aspect Ratio Calculator and Resize Preview | KatakataLab">
+  <meta property="og:description" content="Calculate a missing width or height from any aspect ratio, detect common ratios, swap orientation, and preview the result for video, images, CSS, and responsive layouts.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://katakatalab.com/aspect-ratio-calc/en/">
+  <meta property="og:site_name" content="KatakataLab">
+  <meta property="og:image" content="https://katakatalab.com/ogp.png">
+
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:site" content="@Katakata_toybox">
+  <meta name="twitter:title" content="Aspect Ratio Calculator and Resize Preview | KatakataLab">
+  <meta name="twitter:description" content="Calculate a missing width or height from any aspect ratio, detect common ratios, swap orientation, and preview the result for video, images, CSS, and responsive layouts.">
+  <meta name="twitter:image" content="https://katakatalab.com/ogp.png">
+
+  <link rel="icon" href="/favicon.ico">
+  <link rel="stylesheet" href="style.css?v=20260824-responsive">
+  <link rel="canonical" href="https://katakatalab.com/aspect-ratio-calc/en/">
+  <link rel="alternate" hreflang="ja" href="https://katakatalab.com/aspect-ratio-calc/">
+  <link rel="alternate" hreflang="en" href="https://katakatalab.com/aspect-ratio-calc/en/">
+  <link rel="alternate" hreflang="x-default" href="https://katakatalab.com/aspect-ratio-calc/">
+  <link rel="stylesheet" href="/international/english-shell.css?v=20260805-lab">
+    <link rel="stylesheet" href="../../tool-chrome.css?v=source">
+</head>
+<body class="english-tool-page english-tool--aspect-ratio-calc">
+  <nav class="english-tool-bar" aria-label="Language and English tools">
+  <a class="english-tool-bar__home" href="https://katakatalab.com/en/">🧪 English tool index</a>
+  <a href="https://katakatalab.com/aspect-ratio-calc/" hreflang="ja" lang="ja">Japanese version</a>
+</nav>
+    <script>try{if(localStorage.getItem('theme')==='dark')document.body.classList.add('dark-mode');}catch(e){}</script>
+
+<main class="tool-wrapper">
+
+    <!-- Auto-Injected Breadcrumbs -->
+    <nav class="breadcrumbs-tool breadcrumbs-tool--trail" aria-label="Breadcrumb">
+        <a href="../" class="breadcrumbs-tool__home">🏠 Home</a>
+        <span class="breadcrumbs-tool__sep">/</span>
+        <span class="breadcrumbs-tool__current" aria-current="page">Aspect Ratio Calculator</span>
+    </nav>
+
+    <!-- Auto-Injected noscript fallback -->
+    <noscript>
+        <div class="tool-noscript">
+            <p class="tool-noscript__title">⚠️ JavaScript is disabled</p>
+            <p class="tool-noscript__text">This tool needs JavaScript to calculate and preview results in your browser. Enable JavaScript and reload the page.</p>
+        </div>
+    </noscript>
+
+
+
+  
+  <header class="tool-header">
+    <div class="header-inner">
+      <h1 class="app-title">Aspect Ratio <span class="accent">Calc</span></h1>
+      <p class="app-desc">Enter one side to get the other in pixels. This page does not load or crop images. It is a pixel calculator with a frame preview.</p>
+    </div>
+  </header>
+
+  <section class="preset-area" aria-label="Ratio presets">
+    <div class="preset-grid">
+      <button type="button" class="btn-preset active" data-w="16" data-h="9">
+        <span class="ratio-text">16:9</span><span class="ratio-label">YouTube</span>
+      </button>
+      <button type="button" class="btn-preset" data-w="4" data-h="3">
+        <span class="ratio-text">4:3</span><span class="ratio-label">Standard</span>
+      </button>
+      <button type="button" class="btn-preset" data-w="1" data-h="1">
+        <span class="ratio-text">1:1</span><span class="ratio-label">Square</span>
+      </button>
+      <button type="button" class="btn-preset" data-w="9" data-h="16">
+        <span class="ratio-text">9:16</span><span class="ratio-label">Story</span>
+      </button>
+      <button type="button" class="btn-preset" data-w="4" data-h="5">
+        <span class="ratio-text">4:5</span><span class="ratio-label">Portrait</span>
+      </button>
+      <button type="button" class="btn-preset special" data-w="1" data-h="1.618">
+        <span class="ratio-text">Golden</span><span class="ratio-label">1 : 1.618</span>
+      </button>
+    </div>
+  </section>
+
+  <section class="calc-panel">
+    
+    <div class="panel-section section-ratio">
+      <div class="section-header">
+        <label class="group-label">Ratio <small>(Aspect Ratio)</small></label>
+        <button type="button" id="swapBtn" class="btn-icon" title="Swap width and height" aria-label="Swap orientation">
+          <span class="icon-swap">⇄</span>
+        </button>
+      </div>
+      <div class="inputs-row">
+        <input type="number" id="ratioW" class="input-number" placeholder="16" inputmode="decimal">
+        <span class="separator">:</span>
+        <input type="number" id="ratioH" class="input-number" placeholder="9" inputmode="decimal">
+      </div>
+      <button type="button" id="detectBtn" class="btn-detect">
+        <span class="icon-magic">🪄</span> Detect ratio from dimensions
+      </button>
+    </div>
+
+    <div class="divider">
+      <span class="chain-icon">🔗</span>
+    </div>
+
+    <div class="panel-section section-size">
+      <label class="group-label">Resolution <small>(px)</small></label>
+      <div class="inputs-row">
+        <div class="input-col">
+          <label for="width" class="sub-label">Width</label>
+          <input type="number" id="width" class="input-number" placeholder="1920" inputmode="numeric">
+        </div>
+        <span class="separator">×</span>
+        <div class="input-col">
+          <label for="height" class="sub-label">Height</label>
+          <input type="number" id="height" class="input-number" placeholder="1080" inputmode="numeric">
+        </div>
+      </div>
+    </div>
+
+  </section>
+
+  <section class="preview-area">
+    <div class="preview-header">
+      <h2 class="section-title">Frame Preview</h2>
+      <div class="controls-row">
+        <!-- デバイスフレームセレクター -->
+        <div class="device-selector" role="group" aria-label="Preview frame">
+          <button type="button" class="btn-device active" data-device="monitor" title="Desktop frame">🖥️ Monitor</button>
+          <button type="button" class="btn-device" data-device="phone" title="Phone frame">📱 Phone</button>
+          <button type="button" class="btn-device" data-device="cinema" title="Cinema frame">🎬 Cinema</button>
+        </div>
+        <div class="current-info">
+          <span id="infoRatio">16 : 9</span>
+        </div>
+      </div>
+    </div>
+    
+    <div class="preview-canvas">
+      <!-- デバイスモックアップを表現するラッパー -->
+      <div id="deviceWrapper" class="device-wrapper frame-monitor">
+        <div id="previewBox" class="preview-box">
+          <div class="box-content">
+            <span class="box-dims" id="boxDims">1920 × 1080</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- インテリジェント定番比率アドバイザー -->
+    <div id="advisorArea" class="advisor-area hidden">
+      <span class="advisor-icon">💡</span>
+      <span id="advisorText" class="advisor-text">Approximately 16:9 (YouTube, etc.). Use it as a common-ratio reference.</span>
+    </div>
+  </section>
+
+  <section class="article-content english-content" aria-labelledby="english-guide-title">
+    <header>
+      <p><strong>Created by Katakata</strong> · Last reviewed <time datetime="2026-07-16">July 16, 2026</time></p>
+      <h2 id="english-guide-title">How to use Aspect Ratio Calculator</h2>
+      <p>Use this calculator when an image, video, embed, or CSS box must keep the same proportions at a new size. Enter a ratio and either width or height; the missing dimension is calculated immediately and the preview helps catch an accidental portrait or landscape orientation.</p>
+    </header>
+    <section>
+      <h3>Practical workflow</h3>
+      <ol><li>Enter the ratio as two positive values, such as 16 and 9, or use detection when you already know both pixel dimensions.</li>
+<li>Enter either the target width or height. The paired dimension updates from the exact ratio and is rounded for practical pixel output.</li>
+<li>Swap orientation when moving between landscape and portrait, then verify the receiving platform does not apply an additional crop.</li></ol>
+    </section>
+    <section>
+      <h3>Accuracy and limitations</h3>
+      <p>A matching ratio does not guarantee that text or faces remain visible after a platform crop. The displayed pixel value is a geometric calculation, not a compression or image-quality estimate. For CSS layouts, consider using the native aspect-ratio property and allow the container width to remain responsive.</p>
+    </section>
+    <section>
+      <h3>Privacy and data handling</h3>
+      <p>All numbers are calculated locally. No dimensions or project data are transmitted to KatakataLab.</p>
+    </section>
+    <section>
+      <h3>Why this page exists</h3>
+      <p>KatakataLab publishes small browser tools built from recurring design and development tasks. This English page is maintained as a complete entry point, not as an automatic translation or a doorway page. If a control, explanation, or result is unclear, use the <a href="https://katakatalab.com/contact.html">contact page</a> and include the tool name, browser, and expected result without sending confidential input.</p>
+      <p>For another workflow, browse the <a href="https://katakatalab.com/en/">English tool index</a> or switch to the <a href="https://katakatalab.com/aspect-ratio-calc/" hreflang="ja" lang="ja">Japanese version</a>.</p>
+    </section>
+  </section>
+</main>
+  <!-- Auto-Injected Unified Footer -->
+<footer class="tool-footer" aria-label="Site information">
+  <a href="https://katakatalab.com/en/">🧪 KatakataLab English</a><span class="tool-footer__separator" aria-hidden="true">|</span>
+  <a href="https://katakatalab.com/en/site-information.html">Site information</a><span class="tool-footer__separator" aria-hidden="true">|</span>
+  <a href="https://katakatalab.com/contact.html">Contact</a><span class="tool-footer__separator" aria-hidden="true">|</span>
+  <a href="https://katakatalab.com/privacy.html">Privacy (Japanese)</a><span class="tool-footer__separator" aria-hidden="true">|</span>
+  <a href="https://katakatalab.com/terms.html">Terms (Japanese)</a>
+</footer>
+
+</main>
+
+
+<script type="application/ld+json">
+  {
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "Aspect Ratio Calculator",
+  "url": "https://katakatalab.com/aspect-ratio-calc/en/",
+  "description": "Calculate a missing width or height from any aspect ratio, detect common ratios, swap orientation, and preview the result for video, images, CSS, and responsive layouts.",
+  "applicationCategory": "DeveloperApplication",
+  "operatingSystem": "Any",
+  "inLanguage": "en",
+  "isAccessibleForFree": true,
+  "offers": {
+    "@type": "Offer",
+    "price": "0",
+    "priceCurrency": "USD"
+  },
+  "author": {
+    "@type": "Person",
+    "name": "Katakata"
+  },
+  "dateModified": "2026-07-16"
+}
+  </script>
+
+<script src="script.js?v=20260817-2" defer></script>
+  <script src="/international/english-runtime.js" defer></script>
+</body>
+</html>

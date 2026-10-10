@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PX to REM 変換ラボ｜Web制作・デザイナー向け計算ツール - KatakataLab</title>
+  <meta name="description" content="Web制作で必須のPXとREMを相互変換できる計算ツール。基準値(Root)の変更、リアルタイムプレビュー、CSSコピペ用の一覧表生成機能付き。">
+  
+  <link rel="stylesheet" href="style.css?v=20260824-responsive">
+
+  <link rel="icon" href="../icon.svg" type="image/svg+xml">
+  <link rel="canonical" href="https://katakatalab.com/px-rem-converter/">
+  <link rel="alternate" hreflang="ja" href="https://katakatalab.com/px-rem-converter/">
+  <link rel="alternate" hreflang="en" href="https://katakatalab.com/px-rem-converter/en/">
+  <link rel="alternate" hreflang="x-default" href="https://katakatalab.com/px-rem-converter/">
+  <meta property="og:title" content="PX to REM 変換ラボ｜Web制作・デザイナー向け計算ツール - KatakataLab">
+  <meta property="og:description" content="Web制作で必須のPXとREMを相互変換できる計算ツール。基準値(Root)の変更、リアルタイムプレビュー、CSSコピペ用の一覧表生成機能付き。">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://katakatalab.com/px-rem-converter/">
+  <meta property="og:image" content="https://katakatalab.com/ogp.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="PX to REM 変換ラボ｜Web制作・デザイナー向け計算ツール - KatakataLab">
+  <meta name="twitter:description" content="Web制作で必須のPXとREMを相互変換できる計算ツール。基準値(Root)の変更、リアルタイムプレビュー、CSSコピペ用の一覧表生成機能付き。">
+  <meta name="twitter:image" content="https://katakatalab.com/ogp.png">
+  <meta name="twitter:site" content="@Katakata_toybox">
+    <link rel="stylesheet" href="../tool-chrome.css?v=source">
+</head>
+<body>
+    <script>try{if(localStorage.getItem('theme')==='dark')document.body.classList.add('dark-mode');}catch(e){}</script>
+
+    <!-- Unified Mini Header / Breadcrumbs -->
+    <nav class="breadcrumbs-tool breadcrumbs-tool--bar" aria-label="パンくずリスト">
+        <div class="breadcrumbs-tool__trail">
+            <a href="../" class="breadcrumbs-tool__brand">
+                <span class="breadcrumbs-tool__mark">🧪</span> KatakataLab
+            </a>
+            <span class="breadcrumbs-tool__sep">/</span>
+            <span class="breadcrumbs-tool__current" aria-current="page">px / rem 変換</span>
+        </div>
+        <a href="../#projects" class="breadcrumbs-tool__index">
+            <span>🧰</span> ツール一覧へ
+        </a>
+    </nav>
+
+<main class="tool-wrapper">
+  
+  <header class="tool-header">
+    <div class="header-inner">
+      <h1 class="app-title">PX / REM <span class="accent">Converter</span></h1>
+      <p class="app-desc">Webデザイナー・開発者のための単位変換ラボ</p>
+    </div>
+    <div class="root-setting">
+      <label for="rootBase">基準サイズ (Root HTML):</label>
+      <div class="root-input-group">
+        <input type="number" id="rootBase" value="16" min="1" max="100" inputmode="decimal" aria-label="基準サイズ (Root HTML)">
+        <span class="unit">px</span>
+        <div class="root-presets" role="group" aria-label="よく使う基準">
+          <button type="button" class="btn-root-preset is-active" data-root="16" aria-label="基準を16pxにする" aria-pressed="true">16</button>
+          <button type="button" class="btn-root-preset" data-root="10" aria-label="基準を10pxにする" aria-pressed="false">10</button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <div class="root-explain">
+    <p>ブラウザの既定はだいたい <strong>16px = 1rem</strong> です。root を 10 にすると <strong>14px = 1.4rem</strong> になります。</p>
+    <p><code>font-size: 62.5%</code> は「ユーザー既定の 62.5%」なので、既定が 16px なら約 10px、ユーザーが 20px なら 12.5px です。<code>font-size: 10px</code> 固定とは別です。</p>
+    <p>このページの基準入力には、プロジェクトの実際の root を入れてください。</p>
+  </div>
+
+  <section class="converter-panel">
+    <div class="input-card" id="pxCard">
+      <label for="pxInput">PX <small>(絶対サイズ・ピクセル)</small></label>
+      <div class="input-row">
+        <input type="number" id="pxInput" value="16" placeholder="16" step="1" inputmode="decimal" aria-label="変換元のピクセル値 (PX)">
+        <span class="unit-label">px</span>
+      </div>
+    </div>
+
+    <div class="exchange-icon">⇄</div>
+
+    <div class="input-card" id="remCard">
+      <label for="remInput">REM <small>(相対サイズ・レム)</small></label>
+      <div class="input-row">
+        <input type="number" id="remInput" placeholder="1" step="0.0625" inputmode="decimal" aria-label="変換元のレム値 (REM)">
+        <span class="unit-label">rem</span>
+      </div>
+    </div>
+  </section>
+
+  <section class="preview-area">
+    <h2 class="sub-title">見た目の確認</h2>
+    <div class="preview-box">
+      <div id="previewRoot" class="preview-root">
+        <p id="previewText" class="preview-content" contenteditable="true" title="クリックしてテキストを自由に変更できます">あのイーハトーヴォ的のすきとおった風、夏でも底に冷たさをもつ青いそら... (編集可能)</p>
+      </div>
+      <div class="preview-info">
+        表示中: <span id="infoPx">16px</span> / <span id="infoRem">1rem</span>
+      </div>
+    </div>
+    <p class="preview-note">プレビュー箱の文字サイズはこのページの基準値です。本文は箱を擬似ルートにした rem 相当（親基準の em）で見せています。本物の rem は文書の html を見ます。これはこのページの基準値での見た目です。OSの文字サイズ変更そのものではありません。</p>
+  </section>
+
+  <section class="cheatsheet-area">
+    <div class="list-header">
+      <h2 class="sub-title">Quick List & Code Generator</h2>
+      <div class="copy-controls">
+        <select id="codeFormatSelect" class="select-format" aria-label="出力コード形式">
+          <option value="css">CSS変数 (--fs-16)</option>
+          <option value="scss">SCSS変数 ($fs-16)</option>
+          <option value="tailwind">Tailwind CSS (fontSize)</option>
+          <option value="classes">CSSクラス (.text-16)</option>
+        </select>
+        <button type="button" id="copyCssBtn" class="btn-secondary">
+          <span class="icon">📋</span> コードをコピー
+        </button>
+      </div>
+    </div>
+    <p class="copy-hint">コピーは主要サイズのみ（早見表の全行ではありません）</p>
+    
+    <div class="custom-add-container">
+
+      <label for="customPxInput">早見表にサイズを追加する：</label>
+      <div class="add-input-group">
+        <input type="number" id="customPxInput" placeholder="24" min="1" max="500" inputmode="numeric" aria-label="早見表に追加するピクセル値">
+        <span class="unit">px</span>
+        <button type="button" id="addSizeBtn" class="btn-primary-sm">リストに追加</button>
+        <button type="button" id="resetSizesBtn" class="btn-secondary-sm" title="早見表をデフォルトに戻す" aria-label="早見表をデフォルトのサイズに戻す">↩ リセット</button>
+      </div>
+      <p id="listMessage" class="list-message" role="status" hidden></p>
+    </div>
+
+    <div class="table-container">
+      <table class="conversion-table">
+        <thead>
+          <tr>
+            <th>PX</th>
+            <th>REM</th>
+            <th>Preview</th>
+          </tr>
+        </thead>
+        <tbody id="tableBody">
+          </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="article-content">
+    <h2>1秒でもコーディングを速くするために──pxとremのやさしい使い分け</h2>
+    <p>
+      「デザインカンプのこの文字、24pxだから……ええっと、16で割るから1.5remか」<br>
+      「じゃあ、この14pxは……？ 14 ÷ 16 ＝ ……0.875rem！？ 暗算できるわけがないでしょ！！」
+    </p>
+    <p>
+      フロントエンドのコーディングをしていて、こんな風に電卓アプリとエディタを往復した経験はありませんか？<br>
+      私（わたくし）は数え切れないほどあります。笑
+    </p>
+    <p>
+      この<strong>「PX / REM Converter」</strong>は、そんな地味で、毎日発生する「暗算のイライラ」から開発者を救うために作られた、完全ブラウザ完結型の実験場です。<br>
+      ただ数値を変換するだけでなく、文字が実際にどう見えるかのプレビュー機能や、CSS変数を一括でコピーできるボタンも用意しました。ぜひ、あなたの強力な相棒として役立ててください！
+    </p>
+
+    <div class="feature-box" style="background: var(--c-glass-bg, rgba(255,255,255,0.05)); border: 2px solid var(--c-primary, #FF7675); border-radius: var(--radius-md, 8px); padding: 1.5rem; margin: 2rem 0; text-align: left;">
+      <h3 style="color: var(--c-primary, #FF7675); margin-top: 0; font-weight: 800;">🧪 料理店でたとえる px と rem</h3>
+      <p>
+        px は「お皿」に近い絶対指定です。ブラウザの文字サイズ設定を変えても、指定した px はその設定には追従しません。ページのズームでは伸びます。「お皿のサイズは絶対に変わらない」わけではありません。
+      </p>
+      <p style="margin-bottom: 0;">
+        rem は「盛り付け」に近い相対指定です。ルート（html）の font-size を見るので、ユーザーが文字を大きくしていると一緒に伸びます。画面幅のレスポンシブ（メディアクエリ）とは別の話です。動かしたくないものは px、文字サイズ設定に合わせて伸びてほしいものは rem。
+      </p>
+    </div>
+
+    <h3 style="margin-top: 2.5rem; font-weight: 800;">実務での使い分け</h3>
+    <p>
+      「どれをpxにして、どれをremにすればいいの？」と迷ったときは、次を目安にしてください。
+    </p>
+    <div class="table-container" style="margin: 1.5rem 0; overflow-x: auto; border: 1px solid var(--c-glass-border, rgba(255,255,255,0.1)); border-radius: 8px;">
+      <div class="responsive-table-container"><table class="conversion-table" style="width: 100%; border-collapse: collapse; text-align: left; font-size: 0.92rem;">
+        <thead>
+          <tr style="border-bottom: 2px solid var(--c-primary, #FF7675); background: rgba(255, 118, 117, 0.05);">
+            <th style="padding: 12px; font-weight: 800;">場面</th>
+            <th style="padding: 12px; font-weight: 800;">推奨単位</th>
+            <th style="padding: 12px; font-weight: 800;">理由</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr style="border-bottom: 1px solid var(--c-glass-border, rgba(255,255,255,0.1));">
+            <td style="padding: 12px; font-weight: 700;">本文・見出しの文字</td>
+            <td style="padding: 12px; color: var(--c-primary, #FF7675); font-weight: 800;">REM</td>
+            <td style="padding: 12px;">ルートの font-size（ユーザーの文字サイズ設定）に追従して読みやすさを保つため。</td>
+          </tr>
+          <tr style="border-bottom: 1px solid var(--c-glass-border, rgba(255,255,255,0.1));">
+            <td style="padding: 12px; font-weight: 700;">余白(Margin / Padding)</td>
+            <td style="padding: 12px; color: var(--c-primary, #FF7675); font-weight: 800;">REM</td>
+            <td style="padding: 12px;">文字が大きくなったとき、余白も一緒にスケールしてバランスを保つため。</td>
+          </tr>
+          <tr style="border-bottom: 1px solid var(--c-glass-border, rgba(255,255,255,0.1));">
+            <td style="padding: 12px; font-weight: 700;">行間 (line-height)</td>
+            <td style="padding: 12px; font-weight: 800;">単位なし（例: 1.5）</td>
+            <td style="padding: 12px;">親の font-size に対する倍率になります。原則すべて rem にはしません。</td>
+          </tr>
+          <tr style="border-bottom: 1px solid var(--c-glass-border, rgba(255,255,255,0.1));">
+            <td style="padding: 12px; font-weight: 700;">1px / 2px の罫線（ボーダー）</td>
+            <td style="padding: 12px; font-weight: 700;">PX</td>
+            <td style="padding: 12px;">16px基準なら 1px は 0.0625rem です。サブピクセルのにじみは起きることがありますが例外です。細い線は px のほうが読みやすく、意図した太さを保ちやすいです。</td>
+          </tr>
+          <tr style="border-bottom: 1px solid var(--c-glass-border, rgba(255,255,255,0.1));">
+            <td style="padding: 12px; font-weight: 700;">アイコン</td>
+            <td style="padding: 12px; font-weight: 700;">場合による</td>
+            <td style="padding: 12px;">変形してほしくないなら px。フォントに連動させるなら rem。</td>
+          </tr>
+        </tbody>
+      </table></div>
+    </div>
+
+    <div class="feature-box" style="background: rgba(255, 118, 117, 0.04); border-left: 4px solid var(--c-primary, #FF7675); padding: 1.25rem; margin: 2rem 0; border-radius: 0 8px 8px 0; text-align: left;">
+      <h3 style="margin-top: 0; font-weight: 800; color: var(--c-primary, #FF7675);">⚠️ 文字サイズだけをremにするときの注意</h3>
+      <p style="margin-bottom: 0; line-height: 1.7;">
+        よくあるミスが、<strong>「文字サイズだけをremにして、余白をpxのままにする」</strong>ことです。<br>
+        ユーザーが文字サイズを大きくしたとき、文字だけ巨大化して余白は狭いままになり、窮屈になります。<br>
+        文字をremにするなら、周囲の余白もremで揃える。rem が見るのはルートの font-size です。画面幅のメディアクエリとは別の話です。
+      </p>
+    </div>
+
+    <div class="feature-box" style="background: var(--c-glass-bg, rgba(255,255,255,0.03)); border: 1px solid var(--c-glass-border, rgba(255,255,255,0.1)); border-radius: var(--radius-md, 8px); padding: 1.5rem; margin-top: 2.5rem; text-align: left;">
+      <div style="display: flex; justify-content: space-between; align-items: center; gap: 1rem; flex-wrap: wrap; text-align: left;">
+        <div style="flex: 1; min-width: 200px;">
+          <h3 style="margin-top: 0; font-weight: 800; color: var(--c-primary, #FF7675);">📘 あわせて読みたい実践ガイド</h3>
+          <p style="font-size: 0.85rem; color: var(--c-text-light, #555); margin: 0; line-height: 1.6;">16px基準と10px基準の落とし穴や、ブラウザがremを必要とする本当の理由を徹底解説。</p>
+        </div>
+        <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+          <a href="../guides/px-rem-guide.html" class="btn btn-primary" style="padding: 0.5rem 1rem; font-size: 0.85rem; text-decoration: none; display: inline-flex; align-items: center; gap: 0.25rem; background: var(--c-primary, #FF7675); color: white; border: none; border-radius: 4px; font-weight: bold; cursor: pointer; white-space: nowrap;" target="_blank" rel="noopener noreferrer">ガイドを読む →</a>
+          <a href="../guides/case-studies.html" class="btn btn-secondary" style="padding: 0.5rem 1rem; font-size: 0.85rem; white-space: nowrap;" target="_blank" rel="noopener noreferrer">実例を見る →</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- アコーディオン式コラムセクション -->
+    <details class="pwd-column-details" style="margin-top: 2.5rem; padding: 1.5rem; background: var(--c-glass-bg, rgba(255,255,255,0.03)); border: 1px solid var(--c-glass-border, rgba(255,255,255,0.1)); border-radius: var(--radius-md, 8px); text-align: left; box-shadow: var(--glass-shadow); cursor: pointer;">
+        <summary class="pwd-column-summary" style="font-weight: 800; font-size: 1.1rem; color: var(--c-primary, #FF7675); list-style: none; display: flex; align-items: center; justify-content: space-between; gap: 0.5rem; outline: none; user-select: none;">
+            <span>📖 このツールの使い方</span>
+            <span class="summary-toggle-icon" style="font-size: 0.9rem; transition: transform 0.2s;">▼</span>
+        </summary>
+        <div class="pwd-column-content" style="margin-top: 1.25rem; font-size: 0.92rem; color: var(--c-text, #2d3436); line-height: 1.85; cursor: default;" onclick="event.stopPropagation();">
+            <h4 style="color: var(--c-primary, #FF7675); margin-top: 0; font-weight: 800; font-size: 1.1rem; margin-bottom: 0.75rem;">基準サイズの意味</h4>
+            <p>
+                上の基準入力は、プロジェクトの html（ルート）の font-size です。ブラウザ既定はだいたい 16px。10px 運用なら 10 を入れてください。計算は「px ÷ 基準 = rem」です。16 と 10 のボタンは、よくある値へのショートカットです。
+            </p>
+
+            <h4 style="color: var(--c-primary, #FF7675); margin-top: 1.5rem; font-weight: 800; font-size: 1.05rem; margin-bottom: 0.5rem;">早見表の追加と削除</h4>
+            <p>
+                よく使う px を入力して「リストに追加」できます。不要な行は × で削除、↩ リセットで初期リストに戻せます。行の px をクリックすると、上の変換欄とプレビューにセットされます。
+            </p>
+
+            <h4 style="color: var(--c-primary, #FF7675); margin-top: 1.5rem; font-weight: 800; font-size: 1.05rem; margin-bottom: 0.5rem;">コードコピーは主要サイズのみ</h4>
+            <p>
+                「コードをコピー」に含まれるのは 10 / 12 / 14 / 16 / 18 / 20 / 24 / 28 / 32 / 40 / 48 / 64px です。早見表に足した行や、表にある 8px・11px などは含まれません。
+            </p>
+        </div>
+    </details>
+
+    <!-- 姉妹ツール誘導バナー (極上ガラスモフィズム) -->
+    <section class="sister-tools">
+      <h3>🧪 他の実験ツールも試してみませんか？</h3>
+      <div class="sister-grid">
+        <a href="../aspect-ratio-calc/" class="sister-card" target="_blank" rel="noopener noreferrer">
+          <div class="sister-icon">📐</div>
+          <div class="sister-info">
+            <h4>アスペクト比計算ツール</h4>
+            <p>画像トリミングや動画の比率を瞬時に計算！SNS画像の見切れ防止に大活躍します。</p>
+          </div>
+        </a>
+        <a href="../discount-calc/" class="sister-card" target="_blank" rel="noopener noreferrer">
+          <div class="sister-icon">🛍️</div>
+          <div class="sister-info">
+            <h4>割引価格計算ツール</h4>
+            <p>「〇％引き」「さらにポイント還元」を視覚的にスッキリ可視化して計算します！</p>
+          </div>
+        </a>
+      </div>
+    </section>
+
+    <!-- 著者・更新情報 -->
+    <div class="author-meta" style="margin-top: 3rem; font-size: 0.8rem; color: var(--text-sub); border-top: 1px solid var(--border-color); padding-top: 20px; display: flex; justify-content: space-between; flex-wrap: wrap; gap: 10px;">
+      <span>作成者: かたかた</span>
+      <span>更新日: 2026年8月17日</span>
+    </div>
+
+  </section>
+
+</main>
+
+  <!-- Auto-Injected Unified Footer -->
+  <footer class="tool-footer tool-footer--bar" aria-label="サイト情報">
+      <a href="../" class="tool-footer__brand">🧪 KatakataLab</a>
+      <span class="tool-footer__sep" aria-hidden="true">|</span>
+      <a href="../who-is-katakata.html" target="_blank" rel="noopener noreferrer">運営者情報</a>
+      <span class="tool-footer__sep" aria-hidden="true">|</span>
+      <a href="../terms.html" target="_blank" rel="noopener noreferrer">利用規約</a>
+      <span class="tool-footer__sep" aria-hidden="true">|</span>
+      <a href="../privacy.html" target="_blank" rel="noopener noreferrer">プライバシーポリシー</a>
+      <span class="tool-footer__sep" aria-hidden="true">|</span>
+      <a href="../contact.html" target="_blank" rel="noopener noreferrer">お問い合わせ</a>
+  </footer>
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "PX to REM Converter Lab",
+  "url": "https://katakatalab.com/px-rem-converter/",
+  "applicationCategory": "DeveloperApplication",
+  "operatingSystem": "Browser",
+  "offers": {
+    "@type": "Offer",
+    "price": "0",
+    "priceCurrency": "JPY"
+  },
+  "description": "Webデザイナー向けPX/REM相互変換ツール。基準値変更、プレビュー、CSSコード生成機能付き。"
+}
+</script>
+
+<script src="script.js?v=20260817-2" defer></script>
+
+</body>
+</html>

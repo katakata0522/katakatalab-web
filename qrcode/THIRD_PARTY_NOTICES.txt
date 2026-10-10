@@ -1,0 +1,21 @@
+Third Party Notices
+===================
+
+This project includes the following third-party libraries:
+
+- QRious (https://github.com/neocotic/qrious)
+  - Distributed under the MIT License
+  - Copyright (c) 2017 James Talmage
+- JSZip (https://stuk.github.io/jszip/)
+  - Distributed under the MIT License
+  - Copyright (c) 2009-2016 Stuart Knightley, David Duponchel, Franz Buchinger, António Afonso
+- jsPDF (https://github.com/parallax/jsPDF)
+  - Distributed under the MIT License
+  - Copyright (c) 2010-2021 James Hall, yWorks GmbH and contributors
+
+The library files are vendored at:
+- vendor/qrious.min.js
+- vendor/jszip.min.js
+- vendor/jspdf.umd.min.js
+
+Please refer to the upstream repository for the latest license text.

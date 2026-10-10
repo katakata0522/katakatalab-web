@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-FYFPS7L9X9"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag() { dataLayer.push(arguments); }
+        gtag('js', new Date());
+        gtag('config', 'G-FYFPS7L9X9', { 'anonymize_ip': true });
+    </script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AIコードを貼って実行するWebツール「CodeStudio」の使い方ガイド | KatakataLab</title>
+    <meta name="description" content="ChatGPTやClaudeなどが出力したHTML/CSS/JavaScriptを貼り付け、仕分けして実行結果を確認できるCodeStudioの使い方を解説します。対応ライブラリ、エラー表示、履歴、スマホ操作も紹介します。">
+    <link rel="canonical" href="https://katakatalab.com/guides/codestudio-guide.html">
+    <meta property="og:title" content="AIコードを貼って実行するWebツール「CodeStudio」の使い方ガイド | KatakataLab">
+    <meta property="og:description" content="HTML/CSS/JavaScriptを貼り付け、仕分けして実行結果を確認できるCodeStudioの使い方を解説します。">
+    <meta property="og:type" content="article">
+    <meta property="og:url" content="https://katakatalab.com/guides/codestudio-guide.html">
+    <meta property="og:image" content="https://katakatalab.com/ogp.png">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="AIコードを貼って実行するWebツール「CodeStudio」の使い方ガイド | KatakataLab">
+    <meta name="twitter:description" content="HTML/CSS/JavaScriptを貼り付け、仕分けして実行結果を確認できるCodeStudioの使い方を解説します。">
+    <meta name="twitter:image" content="https://katakatalab.com/ogp.png">
+    <meta name="twitter:site" content="@Katakata_toybox">
+    <link rel="stylesheet" href="../style.css?v=20260824-responsive">
+    <link rel="icon" href="../icon.svg" type="image/svg+xml">
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Article",
+      "headline": "AIコードを貼って実行するWebツール「CodeStudio」の使い方ガイド",
+      "description": "ChatGPTやClaudeが出力したコードをごちゃ混ぜのままコピペするだけで自動仕分け・実行するCodeStudioの使い方と理念を解説するガイド。",
+      "author": {
+        "@type": "Person",
+        "name": "かたかた"
+      },
+      "publisher": {
+        "@type": "Organization",
+        "name": "KatakataLab",
+        "logo": {
+          "@type": "ImageObject",
+          "url": "https://katakatalab.com/ogp.png"
+        }
+      },
+      "mainEntityOfPage": "https://katakatalab.com/guides/codestudio-guide.html"
+    }
+    </script>
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3845885843809455"
+     crossorigin="anonymous"></script>
+</head>
+<body>
+    <script>try{if(localStorage.getItem('theme')==='dark')document.body.classList.add('dark-mode');}catch(e){}</script>
+    <header class="header">
+        <div class="container header-container">
+            <a href="../#home" class="logo">
+                <span class="logo-icon">🧪</span>
+                <span class="logo-text">KatakataLab</span>
+            </a>
+            <nav class="nav">
+                <ul class="nav-list">
+                    <li><a href="../#projects" class="nav-link">ツール</a></li>
+                    <li><a href="../who-is-katakata.html" class="nav-link">運営者</a></li>
+                    <li><a href="../contact.html" class="nav-link">お問い合わせ</a></li>
+                </ul>
+            </nav>
+            <div class="header-actions">
+                <button type="button" id="theme-toggle" class="theme-btn" aria-label="テーマ切り替え">
+    <svg viewBox="0 0 24 24" class="svg-icon svg-moon" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/>
+    </svg>
+    <svg viewBox="0 0 24 24" class="svg-icon svg-sun" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="display: none;">
+        <circle cx="12" cy="12" r="4"/>
+        <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/>
+    </svg>
+</button>
+                <button type="button" class="menu-toggle" aria-label="メニューを開く">
+                    <span class="bar"></span><span class="bar"></span><span class="bar"></span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main class="guide-page">
+        <section class="section">
+            <div class="guide-hero-card">
+                <span class="guide-kicker">CodeStudio Guide</span>
+                <h1>AIコードを貼り付けて動作を確かめるためのWeb開発入門</h1>
+                <p class="guide-intro">「ChatGPTやClaudeにコードを書いてもらったけれど、どうやって動かせばいいのかわからない」「HTML、CSS、JavaScriptのファイルを分けて連携させるのが難しい」。そんな時に、まとめて貼り付けて動作を確認できるWebプレイグラウンド「PikaLab CodeStudio」の仕組みと使い方を解説します。</p>
+                <div class="guide-summary">
+                    <span class="guide-chip">AI Paste 自動仕分け</span>
+                    <span class="guide-chip">ライブラリ(CDN)連携</span>
+                    <span class="guide-chip">エラー日本語解説</span>
+                    <span class="guide-chip">多言語切り替え</span>
+                </div>
+                <p class="guide-note" style="margin-top: 1rem;">作成者: かたかた / 更新日: 2026年8月2日</p>
+                <div class="guide-actions">
+                    <a href="../pikalab/code-studio/" class="btn btn-primary">CodeStudioを使う</a>
+                    <a href="../#projects" class="btn btn-secondary">他のツールも見る</a>
+                </div>
+            </div>
+        </section>
+
+        <section class="section">
+            <div class="guide-section-card">
+                <h2>⚡ CodeStudioが大切にする「3つのホスピタリティ理念」</h2>
+                <p>プログラミング学習やアプリ作成の最初の一歩は、本来とてもワクワクするもの。しかし、多くの人が「黒い画面の設定」や「難解な英語のエラー」に阻まれて、その楽しさを知る前に挫折してしまいます。CodeStudioは、そんな「最初の挫折」を減らすことを目指しています。準備作業は減りますが、コードの正しさまでは保証しません。</p>
+                <ul style="list-style-type: disc; padding-left: 1.5rem; line-height: 1.8; margin-top: 0.5rem;">
+                    <li><strong>「考える楽しさ」を止めない：</strong>面倒なフォルダ作成やファイルのリンク設定といった「準備作業」をすべて自動化し、「コードが動く、形になる」という本質的な楽しさに没頭できます。</li>
+                    <li><strong>言語の壁で「拒絶」させない（多言語・グローバル対応）：</strong>ブラウザが吐き出す不親切な英語のエラーを、あなたの言語に合わせて分かりやすくアドバイス。日本語と英語を自動・手動でシームレスに切り替えることができ、グローバルに学ぶすべての開発者を応援します。</li>
+                    <li><strong>AIとの連携をスムーズに：</strong>AIが出したものをそのまま受け止められる「余白」をツール側に用意し、コピペのイライラを極限まで減らします。</li>
+                </ul>
+            </div>
+
+            <div class="guide-section-card">
+                <h2>⚡ 1. AI Paste：魔法の仕分けクローゼット</h2>
+                <h3>〜 チャット画面を丸ごとコピーして貼り付けるだけ 〜</h3>
+                <p>AIが書き出してくれたコードは、HTML、CSS、JavaScriptがごちゃ混ぜになっていたり、チャットの解説文が挟まっていたりします。これらを1つずつ手作業で切り取って、別々の場所に貼り付けるのは本当に面倒ですよね。</p>
+                <p>CodeStudioの <strong>「AI Paste」</strong> は、AIの出力をそのまま受け取って、適切な場所に自動で整理整頓する「クローゼット」のような機能です。</p>
+                <div class="guide-callout" style="border-left: 4px solid var(--primary-color); padding: 1rem 1.5rem; margin: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.02);">
+                    <h4>📋 使い方手順</h4>
+                    <ol style="padding-left: 1.25rem; margin-top: 0.5rem; line-height: 1.6;">
+                        <li>左側のサイドバーにある <strong>`🤖 AI Paste`</strong> ボタンをクリックします。</li>
+                        <li>開いた画面に、AIのチャット画面（説明テキストなどが入っていてもOK）をそのまま貼り付けます。</li>
+                        <li><strong>`✓ 自動貼り付けして適用`</strong> ボタンをクリックします。</li>
+                        <li>HTML、CSS、JS の各エディタにコードが自動で分類して配置され、右側のプレビュー画面にアプリが即座に描画されます。</li>
+                    </ol>
+                </div>
+                <div class="guide-callout" style="border-left: 4px solid var(--accent-color); padding: 1rem 1.5rem; margin: 1rem 0; border-radius: 8px; background: rgba(59,130,246,0.04);">
+                    <strong>💡 ココが親切（ホスピタリティ設計）：</strong>
+                    AIがHTMLの中に記述した <code>&lt;style&gt;</code> や <code>&lt;script&gt;</code> は、取り出せる範囲で各タブへ分けます。説明文が混ざった出力も受け取れますが、すべてのコメントやBOMを必ず消すわけではありません。
+                </div>
+            </div>
+
+            <div class="guide-section-card">
+                <h2>📦 2. 外部ライブラリ (CDN)：チェック一つで動くお助け衣装パーツ</h2>
+                <h3>〜 デザインやアイコンが「表示されない」問題を解決 〜</h3>
+                <p>AIはよく「Tailwind CSS」や「Lucide Icons」といった外部ツールを使ったコードを出力します。しかし、これらはネット上からツール本体を読み込む設定をしておかないと、<strong>「デザインがただの白黒になる」「アイコンが消えて文字だけになる」</strong>という問題が発生します。</p>
+                <p>CodeStudioでは、初心者でも難しく考えずに動かせるように、スイッチ一つでこれらの読み込みリンク(CDN)をプレビューに挿入できます。さらに今回、任意のCDN URLを自由に入力して追加・削除できる<strong>「カスタムライブラリ追加機能」</strong>も追加されました！</p>
+                <div class="guide-callout" style="border-left: 4px solid var(--primary-color); padding: 1rem 1.5rem; margin: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.02);">
+                    <h4>⚙️ 使い方手順</h4>
+                    <ol style="padding-left: 1.25rem; margin-top: 0.5rem; line-height: 1.6;">
+                        <li>右上の <strong>`⚙️ Tools`</strong> ボタンをクリックして、プレビュー設定パネルを開きます。</li>
+                        <li>パネルの中ほどにある <strong>`📦 外部ライブラリ (CDN)`</strong> から使いたいライブラリを選択するか、<strong>`➕ カスタムライブラリ (URL)`</strong> に任意のJS/CSSのCDN URLを貼り付けて「追加」を押します。
+                            <ul style="list-style-type: circle; padding-left: 1.25rem; margin-top: 0.25rem;">
+                                <li><strong>Tailwind CSS:</strong> 🎨 チェックするだけでモダンなデザインが瞬時に適用されます。</li>
+                                <li><strong>Lucide Icons / Font Awesome:</strong> 🌟/🚩 AIが多用する便利なアイコンを読み込みます。</li>
+                                <li><strong>任意のCDN:</strong> 📦 好きなCSSフレームワークやJavaScriptライブラリを自由に追加してプレビューに反映できます。</li>
+                            </ul>
+                        </li>
+                        <li>チェックを入れる、あるいはURLを追加すると自動的にプレビューが更新されます。</li>
+                    </ol>
+                </div>
+                <div class="guide-callout" style="border-left: 4px solid var(--accent-color); padding: 1rem 1.5rem; margin: 1rem 0; border-radius: 8px; background: rgba(59,130,246,0.04);">
+                    <strong>💡 ココが親切（ホスピタリティ設計）：</strong>
+                    複数のライブラリを読み込んでも、ツールが内部で「jQueryなどの基礎的なライブラリを先に読み込む」といった順序制御を自動で行うため、読み込み順によるエラーが起きません。
+                    <code>Lucide Icons</code> は、読み込み後に描画処理を1回呼びます。表示されないときは、プレビューを再実行してください。
+                </div>
+            </div>
+
+            <div class="guide-section-card">
+                <h2>🔍 2.5 エディタ文字サイズ調整：目に優しい自分サイズ</h2>
+                <h3>〜 細かいコードも、大画面の確認も自由自在 〜</h3>
+                <p>PCやスマホの画面解像度、または個人の視力に合わせて、エディタの文字の大きさをリアルタイムに変更できます。</p>
+                <div class="guide-callout" style="border-left: 4px solid var(--primary-color); padding: 1rem 1.5rem; margin: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.02);">
+                    <h4>⚙️ 使い方手順</h4>
+                    <ol style="padding-left: 1.25rem; margin-top: 0.5rem; line-height: 1.6;">
+                        <li>右上の <strong>`⚙️ Tools`</strong> ボタンをクリックして、プレビュー設定パネルを開きます。</li>
+                        <li>パネルの中央付近にある <strong>`🔍 エディタ文字サイズ`</strong> スライダーを左右に動かします。</li>
+                        <li>スライダーを動かすと、HTML、CSS、JS、JSON、PHPの各エディタの文字サイズ（12px〜24px）が連動して切り替わります。</li>
+                    </ol>
+                </div>
+                <div class="guide-callout" style="border-left: 4px solid var(--accent-color); padding: 1rem 1.5rem; margin: 1rem 0; border-radius: 8px; background: rgba(59,130,246,0.04);">
+                    <strong>💡 ココが親切（ホスピタリティ設計）：</strong>
+                    変更したフォントサイズはブラウザに自動で記憶されます。次回ツールを開いた際にも、自動的に前回と同じ好みのフォントサイズでエディタが立ち上がります。
+                </div>
+            </div>
+
+            <div class="guide-section-card">
+                <h2>💡 3. エラーお助けアドバイザー：横で見守る優しい先輩</h2>
+                <h3>〜 英語のエラーを優しい日本語で解説 〜</h3>
+                <p>JavaScriptを動かしたとき、スペルミスや設定ミスがあると、画面の下のコンソール(Logs)に赤字でエラーが表示されます。しかし、<code>TypeError: Cannot read properties of null</code> のような冷たい英語のエラーを見ても、どこをどう直せばいいか分かりませんよね。CodeStudioでは、よくある典型エラーを検知し、初心者のための解説アドバイスをその場に表示します。</p>
+                <div class="guide-callout" style="border-left: 4px solid var(--primary-color); padding: 1rem 1.5rem; margin: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.02);">
+                    <h4>🔎 よくあるエラーとアドバイスの例</h4>
+                    <ul style="list-style-type: none; padding-left: 0; line-height: 1.6;">
+                        <li style="margin-bottom: 0.75rem;">
+                            <strong>❌ Cannot read properties of null (reading 'addEventListener')</strong><br>
+                            💡 <em>JSで指定したHTML要素が存在しない可能性があります。HTML側のidやclass名と、JavaScriptで指定しているID名（document.getElementById("要素名") 等）が一致しているか確認しましょう！</em>
+                        </li>
+                        <li style="margin-bottom: 0.75rem;">
+                            <strong>❌ ReferenceError: XXX is not defined</strong><br>
+                            💡 <em>変数や関数 "XXX" が定義されていないか、スペルミスがあります。定義する前に使用していないか、または綴りを確認しましょう！</em>
+                        </li>
+                        <li style="margin-bottom: 0.75rem;">
+                            <strong>❌ Assignment to constant variable.</strong><br>
+                            💡 <em>const（再代入不可の定数）で宣言された変数に、新しい値を代入しようとしています。値を後から変更したい場合は、宣言を let に書き換えましょう！</em>
+                        </li>
+                    </ul>
+                </div>
+                <div class="guide-callout" style="border-left: 4px solid var(--accent-color); padding: 1rem 1.5rem; margin: 1rem 0; border-radius: 8px; background: rgba(59,130,246,0.04);">
+                    <strong>💡 ココが親切（ホスピタリティ設計）：</strong>
+                    JavaScriptのエラーが発生すると、右下の「Logs（コンソール）」が自動的にスライドして開き、警告マークでお知らせします。
+                    さらに、エラー発生時にはLogsパネルのヘッダーに <b>`🤖 AI質問`</b> ボタンが出ます。押すと、エラー文と現在のHTML/CSS/JSをまとめた質問文をクリップボードへコピーします。AI Paste に流し込んではいけません。コピーした文を、別のAIチャットへ貼ってください。
+                </div>
+            </div>
+
+            <div class="guide-section-card">
+                <h2>🌐 4. 多言語対応 (i18n)：世界中どこからでも、誰にでも</h2>
+                <h3>〜 日本語と英語をスマートに切り替え 〜</h3>
+                <p>CodeStudioは、画面の一部を日本語と英語で切り替えられます。履歴やデモ文など、日本語のまま残る箇所もあります。</p>
+                <div class="guide-callout" style="border-left: 4px solid var(--primary-color); padding: 1rem 1.5rem; margin: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.02);">
+                    <h4>📋 使い方手順</h4>
+                    <ol style="padding-left: 1.25rem; margin-top: 0.5rem; line-height: 1.6;">
+                        <li>基本的には、ブラウザの優先言語設定を自動的に判別し、最適な言語（日本語または英語）で初期表示されます。</li>
+                        <li>手動で切り替えるには、右上の <strong>`⚙️ Tools`</strong> ボタンをクリックしてプレビュー設定パネルを開きます。</li>
+                        <li>パネルの最上部にある <strong>`🌐 言語 / Language`</strong> セレクトボックスから、<strong>`日本語 (Japanese)`</strong> または <strong>`English`</strong> を選択します。</li>
+                        <li>選択すると即座に、サイドバー、エディタ、設定パネル、モーダルなど、すべてのUIテキストが指定した言語に切り替わります。</li>
+                    </ol>
+                </div>
+                <div class="guide-callout" style="border-left: 4px solid var(--accent-color); padding: 1rem 1.5rem; margin: 1rem 0; border-radius: 8px; background: rgba(59,130,246,0.04);">
+                    <strong>💡 ココが親切（ホスピタリティ設計）：</strong>
+                    言語を切り替えると、前述の「エラーお助けアドバイザー」のアドバイス文言も、選択した言語に合わせて動的に（日本語／英語）自動切り替えされます！
+                    また、選択した言語はブラウザ(LocalStorage)に自動で保存されるため、次回ツールを開いた際も設定を引き継いで開発をスムーズに再開できます。
+                </div>
+            </div>
+
+            <div class="guide-section-card">
+                <h2>🎛️ 5. パラメータ調整パネル：JSコメントが即時ツマミに変身</h2>
+                <h3>〜 コードを書かずに、動きや色をリアルタイムにいじる 〜</h3>
+                <p>「アニメーションの速度を少し遅くしたい」「背景の色を青から赤に変えたい」といった微調整のたびに、コードの中身を探して書き換え、実行し直すのは疲れますよね。</p>
+                <p>CodeStudioの <strong>「パラメータ調整パネル」</strong> は、JavaScriptの変数宣言の横にコメントを書くだけで、右上に自動的に操作ツマミ（スライダーやカラーピッカーなど）が飛び出してくる魔法の機能です。</p>
+                <div class="guide-callout" style="border-left: 4px solid var(--primary-color); padding: 1rem 1.5rem; margin: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.02);">
+                    <h4>📋 使い方手順 ＆ コメントアノテーションの書き方</h4>
+                    <p>JSエディタ内で、以下のようにアノテーションコメントを記述して実行します：</p>
+                    <ul style="list-style-type: disc; padding-left: 1.25rem; margin-top: 0.5rem; line-height: 1.8;">
+                        <li><strong>数値スライダー:</strong> <code>let speed = 5; // @slider(1-20, 0.5)</code><br>
+                            <span style="color: var(--text-muted); font-size: 0.9em;">(最小値1、最大値20、0.5刻みのスライダーを自動生成します)</span>
+                        </li>
+                        <li><strong>カラーピッカー:</strong> <code>let textColor = "#3b82f6"; // @color</code><br>
+                            <span style="color: var(--text-muted); font-size: 0.9em;">(カラーピッカーを生成し、直感的に色を選択できます)</span>
+                        </li>
+                        <li><strong>ON/OFF スイッチ:</strong> <code>let isGlow = true; // @switch</code><br>
+                            <span style="color: var(--text-muted); font-size: 0.9em;">(ON/OFFを切り替えるトグルスイッチを生成します)</span>
+                        </li>
+                    </ul>
+                    <p style="margin-top: 1rem;">コメント記述後に実行すると、右上に <b>🎛️ パラメータボタン</b> が出現します。これをクリックして調整ツマミを動かすと、プレビューを再読み込みすることなく、即座に変数の中身が書き換わって画面に反映されます。</p>
+                </div>
+                <div class="guide-callout" style="border-left: 4px solid var(--accent-color); padding: 1rem 1.5rem; margin: 1rem 0; border-radius: 8px; background: rgba(59,130,246,0.04);">
+                    <strong>💡 ココが親切（ホスピタリティ設計）：</strong>
+                    エディタのヘッダー右側にある <b>「🎛️ パラメータ挿入」</b> セレクトボックスから使いたいツマミを選ぶと、同じ行のコメント形式ならツマミになります。複数行の初期化やオブジェクトはそのままでは対象外です。<br>
+                    さらに、エディタ上の <code>@slider</code> や <code>@color</code>、<code>@switch</code> といったキーワードにマウスカーソルを合わせる（ホバーする）だけで、アノテーションの役割や詳細な書き方を説明する「日本語ポップアップヘルプ」がその場に出現します。
+                </div>
+            </div>
+
+            <div class="guide-section-card">
+                <h2>🔍 6. いまの画面に無い機能</h2>
+                <p>以前の案内にあった虫眼鏡インスペクターは、いまの公開画面にはありません。プレビュー上の要素をクリックしてHTML行へ飛ぶ操作は、現時点では使えないと考えてください。</p>
+            </div>
+
+            <div class="guide-section-card">
+                <h2>✍️ 6.5 文字のダイレクト編集 ＆ スタイル調整：プレビュー上から文字とデザインを直感的に書き換え</h2>
+                <h3>〜 エディタを触らずに「文字の書き換え・サイズ変更・太字化」を瞬時に解決 〜</h3>
+                <p>プレビュー上の文字（ボタンの文字や見出しなど）をダブルクリックするだけで、エディタに戻らずにその場で文字を書き換えるだけでなく、<strong>文字の大きさ（フォントサイズ）や太さ（ボールド）までポチポチ調整する</strong>ことができます。</p>
+                <div class="guide-callout" style="border-left: 4px solid var(--primary-color); padding: 1rem 1.5rem; margin: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.02);">
+                    <h4>📋 使い方手順</h4>
+                    <ol style="padding-left: 1.25rem; margin-top: 0.5rem; line-height: 1.6;">
+                        <li>プレビュー上の編集したい文字（例: 「送信」ボタンや、「タイトル」文字など）を <strong>ダブルクリック</strong> します。</li>
+                        <li>選択した要素の周りに <strong>青い点線の枠</strong> が表示され、文字の真上に <strong>ミニ操作ツールバー</strong> が浮かび上がります。</li>
+                        <li>好きな文字に書き換えるとともに、ツールバーのボタンを操作してデザインを微調整します：
+                            <ul style="list-style-type: circle; padding-left: 1.25rem; margin-top: 0.25rem;">
+                                <li><strong>`【 B 】` ボタン:</strong> 文字の太さを太字(Bold)と通常の太さで切り替えます。</li>
+                                <li><strong>`【 A- 】 / 【 A+ 】` ボタン:</strong> 文字の大きさを1pxずつポチポチ縮小・拡大します。</li>
+                            </ul>
+                        </li>
+                        <li>ツールバーの <strong>`【 ✓ 】` ボタン</strong> をクリックするか、<strong>Enterキー</strong> を押すと、編集内容が確定します。（<code>Escapeキー</code> を押すと、文字もサイズも太さもすべて元の状態にキャンセルされます）</li>
+                        <li>エディタ側のHTMLコードが対象箇所だけ置換され、既存の <code>style="..."</code> がある場合は必要な部分を統合してプレビューへ反映されます。</li>
+                    </ol>
+                </div>
+                <div class="guide-callout" style="border-left: 4px solid var(--accent-color); padding: 1rem 1.5rem; margin: 1rem 0; border-radius: 8px; background: rgba(59,130,246,0.04);">
+                    <strong>💡 ココが親切（ホスピタリティ設計）：</strong>
+                    この機能は、HTML内に直接記述された「静的なテキスト」を対象とします。JavaScriptでプログラムによって後から動的に表示された文字（スコアや現在の時刻など）は誤爆を防ぐために対象外となります。<br>
+                    また、Monaco Editorの「履歴(Undo)を壊さない行の丸ごと置換処理」を採用しているため、ダイレクト編集をした後でも、エディタ上で <code>Ctrl + Z</code> を押せばすぐに元のコードへロールバックできます。
+                </div>
+            </div>
+
+            <div class="guide-section-card">
+                <h2>📱 7. デバイスシミュレーター ＆ スマホ用左右スワイプPiP</h2>
+                <h3>〜 PCでもスマホでも、快適なマルチ画面検証 〜</h3>
+                <p>Webアプリ開発で非常に重要なのが「PCとスマホの両方でデザインが崩れていないか」を確認することです。CodeStudioはPC表示時とスマホ表示時それぞれに最適な「マルチ表示アシスタント」を搭載しています。</p>
+                <div class="guide-callout" style="border-left: 4px solid var(--primary-color); padding: 1rem 1.5rem; margin: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.02);">
+                    <h4>📋 各種表示機能の使い分け</h4>
+                    <ul style="list-style-type: disc; padding-left: 1.25rem; margin-top: 0.5rem; line-height: 1.8;">
+                        <li><strong>💻 📟 📱 PCでのデバイスシミュレート:</strong><br>
+                            プレビューヘッダーの左側にあるシミュレーターボタンから、PC、タブレット、スマホのサイズをワンクリックで切り替えられます。美しい外枠（ベゼル）が表示され、実際のスマートフォンの画角でデザインを確認できます。
+                        </li>
+                        <li><strong>↔️ スマホ用左右端スワイプ切り替え:</strong><br>
+                            スマートフォンで開発を行う際、エディタとプレビューの両方を一度に画面に出すと窮屈になります。そこで、画面の左右両端15%をスワイプするだけで「エディタ画面 ↔ プレビュー画面」をスムーズに行き来できるジェスチャー機能を実装しました。
+                        </li>
+                        <li><strong>🖼️ ピクチャー・イン・ピクチャー (PiP) プレビュー:</strong><br>
+                            スマホでエディタ画面を表示している間、右下に「ミニ窓プレビュー」が自動的に浮かび上がります。コードを打ち込みながら、リアルタイムで変化をその場で把握でき、ミニ窓をタップするだけで瞬時に全画面プレビューへ復帰できます。
+                        </li>
+                    </ul>
+                </div>
+                <div class="guide-callout" style="border-left: 4px solid var(--accent-color); padding: 1rem 1.5rem; margin: 1rem 0; border-radius: 8px; background: rgba(59,130,246,0.04);">
+                    <strong>💡 ココが親切（ホスピタリティ設計）：</strong>
+                    スマホの端スワイプの際、エディタの通常のドラッグ操作やスクロールと干渉しないよう、画面中央部のスワイプ操作は無視される仕組みになっています。また、ローディング中は表示を重ね、完了時に色を変えることで処理状態を確認できます。
+                </div>
+            </div>
+
+            <div class="guide-section-card">
+                <h2>⌨️ 8. エディタ操作を加速するショートカットキー</h2>
+                <h3>〜 手数を減らしてプロのように開発する 〜</h3>
+                <p>エディタを行き来したり、毎回「実行ボタン」までマウスを動かすのは大変です。以下のキーボードショートカットを覚えるだけで、開発効率が劇的にアップします。</p>
+                <div class="guide-callout" style="border-left: 4px solid var(--primary-color); padding: 1rem 1.5rem; margin: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.02);">
+                    <h4>⌨️ CodeStudio 専用ショートカットキー</h4>
+                    <table style="width: 100%; border-collapse: collapse; margin-top: 0.5rem; font-size: 0.9em; text-align: left;">
+                        <thead>
+                            <tr style="border-bottom: 2px solid rgba(255,255,255,0.1);">
+                                <th style="padding: 8px;">操作内容</th>
+                                <th style="padding: 8px;">キー入力</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+                                <td style="padding: 8px;"><strong>▶ プレビュー実行</strong></td>
+                                <td style="padding: 8px;"><kbd style="background:#2d3748; padding:2px 6px; border-radius:4px; border: 1px solid rgba(255,255,255,0.15)">Ctrl + Enter</kbd></td>
+                            </tr>
+                            <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+                                <td style="padding: 8px;"><strong>🎨 HTML エディタに切り替え</strong></td>
+                                <td style="padding: 8px;"><kbd style="background:#2d3748; padding:2px 6px; border-radius:4px; border: 1px solid rgba(255,255,255,0.15)">Alt + 1</kbd></td>
+                            </tr>
+                            <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+                                <td style="padding: 8px;"><strong>👗 CSS エディタに切り替え</strong></td>
+                                <td style="padding: 8px;"><kbd style="background:#2d3748; padding:2px 6px; border-radius:4px; border: 1px solid rgba(255,255,255,0.15)">Alt + 2</kbd></td>
+                            </tr>
+                            <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+                                <td style="padding: 8px;"><strong>⚡ JS エディタに切り替え</strong></td>
+                                <td style="padding: 8px;"><kbd style="background:#2d3748; padding:2px 6px; border-radius:4px; border: 1px solid rgba(255,255,255,0.15)">Alt + 3</kbd></td>
+                            </tr>
+                            <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+                                <td style="padding: 8px;"><strong>⛶ エディタ全画面(Zen Mode)トグル</strong></td>
+                                <td style="padding: 8px;"><kbd style="background:#2d3748; padding:2px 6px; border-radius:4px; border: 1px solid rgba(255,255,255,0.15)">Alt + Z</kbd></td>
+                            </tr>
+                            <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+                                <td style="padding: 8px;"><strong>✨ コード自動整形 (Format)</strong></td>
+                                <td style="padding: 8px;"><kbd style="background:#2d3748; padding:2px 6px; border-radius:4px; border: 1px solid rgba(255,255,255,0.15)">Alt + Shift + F</kbd></td>
+                            </tr>
+                            <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+                                <td style="padding: 8px;"><strong>💾 コードの手動保存</strong></td>
+                                <td style="padding: 8px;"><kbd style="background:#2d3748; padding:2px 6px; border-radius:4px; border: 1px solid rgba(255,255,255,0.15)">Ctrl + S</kbd></td>
+                            </tr>
+                            <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+                                <td style="padding: 8px;"><strong>↶ / ↷ 元に戻す / やり直し</strong></td>
+                                <td style="padding: 8px;"><kbd style="background:#2d3748; padding:2px 6px; border-radius:4px; border: 1px solid rgba(255,255,255,0.15)">Ctrl + Z</kbd> / <kbd style="background:#2d3748; padding:2px 6px; border-radius:4px; border: 1px solid rgba(255,255,255,0.15)">Ctrl + Y</kbd></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="guide-section-card">
+                <h2>🕰️ 9. タイムマシン（履歴から復元）機能：壊れるのを恐れない開発</h2>
+                <h3>〜 「さっきの動いていた状態」を履歴から選ぶ 〜</h3>
+                <p>コードを変更して動かなくなったり、誤ってコードを消したりした時は、保存された履歴から以前の状態を選んで戻せます。</p>
+                <div class="guide-callout" style="border-left: 4px solid var(--primary-color); padding: 1rem 1.5rem; margin: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.02);">
+                    <h4>⚙️ 使い方手順</h4>
+                    <ol style="padding-left: 1.25rem; margin-top: 0.5rem; line-height: 1.6;">
+                        <li>右上の <strong>`⚙️ Tools`</strong> ボタンをクリックして、プレビュー設定パネルを開きます。</li>
+                        <li>パネルの中央付近にある <strong>`🕰️ 履歴から復元`</strong> セクションを確認します。</li>
+                        <li>ドロップダウンから、戻したい時点の履歴（保存された時刻とコードの一部が表示されます）を選択します。</li>
+                        <li><strong>`復元`</strong> ボタンをクリックし、確認ダイアログで「OK」を選択します。</li>
+                        <li>エディタのコードが選択した状態に書き換わり、プレビューが自動で再実行されます。</li>
+                    </ol>
+                </div>
+                <div class="guide-callout" style="border-left: 4px solid var(--accent-color); padding: 1rem 1.5rem; margin: 1rem 0; border-radius: 8px; background: rgba(59,130,246,0.04);">
+                    <strong>💡 ココが親切（ホスピタリティ設計）：</strong>
+                    <code>▶ 実行</code> ボタンを押した瞬間のコードが、裏で自動的に最大10件までセーブデータ（履歴）として保存されます。手動でこまめに保存する手間を減らし、必要なときは直近10件の履歴からコードを戻せます。大切なコードは、別途バックアップも残してください。
+                </div>
+            </div>
+
+            <div class="guide-section-card">
+                <h2>🛠️ 初心者向け：「どうしても動かない！」ときのチェックリスト</h2>
+                <ol style="padding-left: 1.25rem; line-height: 1.8;">
+                    <li><strong>画面が真っ白のまま変化しない場合：</strong>
+                        <ul>
+                            <li>HTMLエディタの中に、要素（<code>&lt;div&gt;</code> や <code>&lt;button&gt;</code> など）が記述されているか確認してください。</li>
+                            <li>JavaScriptでエラーが出ていないか、右下の <strong>`🌲 Logs`</strong> パネルを開いて確認しましょう。</li>
+                        </ul>
+                    </li>
+                    <li><strong>デザイン(Tailwind CSS)が適用されない場合：</strong>
+                        <ul>
+                            <li>右上の <strong>`⚙️ Tools`</strong> パネルを開き、 <strong>`Tailwind CSS`</strong> にチェックが入っているか確認してください。</li>
+                        </ul>
+                    </li>
+                    <li><strong>ボタンを押しても何も反応しない場合：</strong>
+                        <ul>
+                            <li>HTMLで定義した <code>id="..."</code> （例: <code>id="btn"</code>）と、JavaScriptで取得しているID名（例: <code>document.getElementById('btn')</code>）のスペル（大文字小文字含む）が完全に一致しているか確認してください。</li>
+                        </ul>
+                    </li>
+                </ol>
+            </div>
+        </section>
+    </main>
+
+    <div class="menu-overlay" id="menu-overlay" aria-hidden="true"></div>
+    <div class="mobile-menu drawer-menu" aria-hidden="true">
+        <div class="mobile-menu-inner">
+            <nav class="mobile-nav" aria-label="モバイルナビゲーション">
+                <ul class="mobile-nav-list">
+                    <li><a href="../who-is-katakata.html" class="mobile-nav-link">🧑‍💻 かたかたって誰？</a></li>
+                    <li><a href="../about-katakatalab.html" class="mobile-nav-link">🧪 KatakataLabについて</a></li>
+                    <li><a href="../note-selection.html" class="mobile-nav-link">📝 かたかたのnote</a></li>
+                    <li><a href="../contact.html" class="mobile-nav-link">✉️ お問い合わせ</a></li>
+                    <li class="mobile-nav-sep"></li>
+                    <li><a href="../terms.html" class="mobile-nav-link">📄 利用規約</a></li>
+                    <li><a href="../privacy.html" class="mobile-nav-link">🔒 プライバシーポリシー</a></li>
+                </ul>
+            </nav>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-links">
+                <a href="../contact.html">お問い合わせ</a>
+                <a href="../who-is-katakata.html">運営者情報</a>
+                <a href="../terms.html" target="_blank" rel="noopener noreferrer">利用規約</a>
+                <a href="../privacy.html" target="_blank" rel="noopener noreferrer">プライバシーポリシー</a>
+                <a href="../sitemap.html">サイトマップ</a>
+            </div>
+            <p>&copy; 2024-2026 KatakataLab. All Rights Reserved.</p>
+        </div>
+    </footer>
+    <script src="../script.js"></script>
+</body>
+</html>

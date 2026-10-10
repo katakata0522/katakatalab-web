@@ -1,0 +1,17 @@
+{
+    "name": "Focus Studio",
+    "short_name": "Focus",
+    "description": "集中と休憩のリズムを作るポモドーロタイマー",
+    "start_url": "./index.html",
+    "display": "standalone",
+    "background_color": "#fff0f5",
+    "theme_color": "#ff9eb5",
+    "icons": [
+        {
+            "src": "favicon.png",
+            "sizes": "192x192",
+            "type": "image/png",
+            "purpose": "any maskable"
+        }
+    ]
+}

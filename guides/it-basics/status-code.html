@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>【IT用語】「HTTPステータスコード」とは？通信結果を伝える3桁の番号 | KatakataLab</title>
+  <meta name="description" content="HTTPステータスコードとは何かを、2xx・3xx・4xx・5xxの分類と、401・403・404・500・503の違い、調査時の読み方から解説します。">
+  <link rel="canonical" href="https://katakatalab.com/guides/it-basics/status-code.html">
+  <meta property="og:type" content="article">
+  <meta property="og:site_name" content="KatakataLab">
+  <meta property="og:title" content="【IT用語】「HTTPステータスコード」とは？通信結果を伝える3桁の番号">
+  <meta property="og:description" content="HTTPステータスコードとは何かを、2xx・3xx・4xx・5xxの分類と、401・403・404・500・503の違い、調査時の読み方から解説します。">
+  <meta property="og:url" content="https://katakatalab.com/guides/it-basics/status-code.html">
+  <meta property="og:image" content="https://katakatalab.com/ogp.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="icon" href="../../favicon.ico">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&family=Zen+Kurenaido&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css?v=20260824-responsive">
+  <script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": "【IT用語】「HTTPステータスコード」とは？通信結果を伝える3桁の番号",
+  "description": "HTTPステータスコードとは何かを、2xx・3xx・4xx・5xxの分類と、401・403・404・500・503の違い、調査時の読み方から解説します。",
+  "datePublished": "2026-07-13",
+  "dateModified": "2026-08-04",
+  "mainEntityOfPage": "https://katakatalab.com/guides/it-basics/status-code.html",
+  "inLanguage": "ja",
+  "author": {
+    "@type": "Person",
+    "name": "かたかた",
+    "url": "https://katakatalab.com/who-is-katakata.html"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "KatakataLab",
+    "url": "https://katakatalab.com/"
+  }
+}</script>
+  <script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position": 1,
+      "name": "ホーム",
+      "item": "https://katakatalab.com/"
+    },
+    {
+      "@type": "ListItem",
+      "position": 2,
+      "name": "かたかたの制作ノート",
+      "item": "https://katakatalab.com/guides/it-basics/"
+    },
+    {
+      "@type": "ListItem",
+      "position": 3,
+      "name": "【IT用語】「HTTPステータスコード」とは？通信結果を伝える3桁の番号",
+      "item": "https://katakatalab.com/guides/it-basics/status-code.html"
+    }
+  ]
+}</script>
+</head>
+<body>
+    <script>try{if(localStorage.getItem('theme')==='dark')document.body.classList.add('dark-mode');}catch(e){}</script>
+  <a class="skip-link" href="#main-content">本文へ移動</a>
+  <header class="site-header">
+    <div class="header-inner">
+      <a class="brand" href="../../" aria-label="KatakataLab ホーム">
+        <span class="brand-mark" aria-hidden="true">K</span>
+        <span><strong>KatakataLab</strong><small>かたかたの制作ノート</small></span>
+      </a>
+      <nav class="site-nav" aria-label="主要ナビゲーション">
+        <a href="./">記事一覧</a>
+        <a href="../../#projects">作品・ツール</a>
+        <a href="../../who-is-katakata.html">運営者</a>
+      </nav>
+    </div>
+  </header>
+  <main id="main-content">
+    <nav class="breadcrumbs" aria-label="パンくずリスト">
+      <a href="../../">ホーム</a><span aria-hidden="true">/</span><a href="./">かたかたの制作ノート</a><span aria-hidden="true">/</span><span aria-current="page">「HTTPステータスコード」とは？通信結果を伝える3桁の番号</span>
+    </nav>
+    <article class="article-shell">
+      <header class="article-hero">
+        <div class="chapter-stamp"><span>CHAPTER 04</span><strong>STATUS CODE</strong></div>
+        <p class="chapter-name">第4章｜システムの通信</p>
+        <h1>【IT用語】「HTTPステータスコード」とは？通信結果を伝える3桁の番号</h1>
+        <p class="article-lead">HTTPステータスコードとは何かを、2xx・3xx・4xx・5xxの分類と、401・403・404・500・503の違い、調査時の読み方から解説します。</p>
+        <div class="article-meta" aria-label="記事情報">
+          <span>作成者：かたかた</span><span>公開日：2026年7月13日</span><span>更新日：2026年8月4日</span>
+        </div>
+      </header>
+      <div class="article-layout">
+        <aside class="article-toc" aria-label="目次"><p>このページの目次</p><ol><li><a href="#section-1">結論：「ステータスコード」＝「HTTPリクエストの結果を表す3桁の番号」</a></li>
+<li><a href="#section-2">よく見るステータスコード</a></li>
+<li><a href="#section-3">コードだけで犯人は決められない</a></li>
+<li><a href="#section-talk">この言葉が会話に出てくるとき</a></li>
+<li><a href="#section-misread">勘違いしやすい点</a></li>
+<li><a href="#section-4">まとめ</a></li></ol></aside>
+        <div class="article-content">
+          <p>Webサイトを開いた時に、「404」や「500」という数字を見たことはありませんか？</p>
+<p>これはウイルスの警告ではなく、サーバーが通信結果を伝える<strong>HTTPステータスコード</strong>です。</p>
+<p>今回は、ステータスコードを<strong>「お店からの返事」</strong>に例えて解説します。</p>
+<section class="article-section" aria-labelledby="section-1"><h2 id="section-1">結論：「ステータスコード」＝「HTTPリクエストの結果を表す3桁の番号」</h2>
+<p>ブラウザやアプリがサーバーへリクエストを送ると、サーバーはレスポンスを返します。その中に含まれる3桁の番号がステータスコードです。</p>
+<p>最初の数字によって、大きな分類が分かります。</p>
+<ul>
+<li><strong>1xx：情報</strong> — 処理を継続している</li>
+<li><strong>2xx：成功</strong> — リクエストを正常に受け付けた</li>
+<li><strong>3xx：リダイレクト</strong> — 完了のために追加の移動や処理が必要</li>
+<li><strong>4xx：クライアントエラー</strong> — リクエストを処理できない</li>
+<li><strong>5xx：サーバーエラー</strong> — 有効に見えるリクエストをサーバーが処理できない</li>
+</ul>
+<p>4xxだからユーザー本人が悪い、5xxだから担当者が悪い、と決めつけるための番号ではありません。問題の方向を切り分ける手がかりです。</p>
+</section>
+<section class="article-section" aria-labelledby="section-2"><h2 id="section-2">よく見るステータスコード</h2>
+<h3>200 OK</h3>
+<p>リクエストが成功したことを示します。</p>
+<p>Webページの取得だけでなく、APIの処理成功などにも使われます。成功時に常に200を使うとは限らず、作成成功の201や、本文を返さない204などもあります。</p>
+<h3>400 Bad Request</h3>
+<p>リクエストの形式が不正などの理由で、サーバーが処理できない状態です。</p>
+<p>入力値の不足、壊れたJSON、想定外の形式などが原因になります。</p>
+<h3>401 Unauthorized</h3>
+<p>有効な認証情報がないため、処理できない状態です。名前はUnauthorizedですが、実際には「まず認証が必要」という場面で使われます。</p>
+<h3>403 Forbidden</h3>
+<p>サーバーは要求を理解していますが、処理を拒否しています。</p>
+<p>ログイン済みでも権限が足りない場合などに使われます。理由を隠すため、存在するページに404を返す設計もあります。</p>
+<h3>404 Not Found</h3>
+<p>指定された対象が見つからない、または存在を公開しない状態です。</p>
+<p>URLの間違い、ページの削除、公開場所の設定ミスなどが考えられます。</p>
+<h3>500 Internal Server Error</h3>
+<p>サーバーが予期しない状態に遭遇し、リクエストを処理できなかったことを示します。</p>
+<p>プログラムの例外や設定不備などが原因になりますが、500だけでは具体的な原因までは分かりません。サーバー全体が停止したという意味でもありません。</p>
+<h3>503 Service Unavailable</h3>
+<p>一時的な過負荷やメンテナンスなどで、現在はリクエストを処理できない状態です。</p>
+<p>時間を置けば回復する可能性があります。ただし、サーバーが過負荷の時に必ず503を返せるとは限りません。</p>
+</section>
+<section class="article-section" aria-labelledby="section-3"><h2 id="section-3">コードだけで犯人は決められない</h2>
+<p>ステータスコードは大切な手がかりですが、それだけで原因を断定できないことがあります。</p>
+<p>例えば404なら、URLの入力ミス、ルーティング設定、デプロイ漏れ、アクセス制御など複数の可能性があります。</p>
+<p>開発者は、次の情報も組み合わせて調べます。</p>
+<ul>
+<li>レスポンス本文</li>
+<li>リクエスト内容</li>
+<li>サーバーやアプリのログ</li>
+<li>発生した時刻と環境</li>
+</ul>
+</section>
+<section class="article-section" aria-labelledby="section-talk"><h2 id="section-talk">この言葉が会話に出てくるとき</h2>
+<p>例えば、公開確認で「200なのに本文が古い」となったときです。番号だけでなく、中身も見ます。</p>
+<p>例えば、404と500を分けて話すときです。探し先が違うのか、応える側が完了できないのかで、次の手が変わります。</p>
+</section>
+<section class="article-section" aria-labelledby="section-misread"><h2 id="section-misread">勘違いしやすい点</h2>
+<ul>
+<li><strong>数字が犯人：</strong> 手がかりです。本文、ログ、時刻とセットで見ます。</li>
+<li><strong>4xxは自分のせい、5xxは先方のせい、で確定：</strong> だいたいの方向であり、例外があります。</li>
+<li><strong>200なら正しい：</strong> 古いキャッシュや、意図しないページでも200になります。</li>
+</ul>
+<p>番号は結論ではなく、調べる範囲を狭める短い返事です。</p>
+</section>
+<section class="article-section" aria-labelledby="section-4"><h2 id="section-4">まとめ</h2>
+<ul>
+<li><strong>ステータスコード</strong> ＝ <strong>「HTTP通信の結果を表す3桁の番号」</strong></li>
+<li><strong>4xx</strong> ＝ <strong>「リクエストをそのまま処理できない」</strong></li>
+<li><strong>5xx</strong> ＝ <strong>「サーバーが処理を完了できない」</strong></li>
+<li><strong>使い方</strong> ＝ <strong>「原因を決めつけず、調査範囲を絞る手がかりにする」</strong></li>
+</ul>
+<p>エラー画面の数字は、怖い暗号ではありません。システムが「何が起きたか」を伝えようとしている短い返事です。</p>
+<p>次の記事では、システムとユーザーを守る「セキュリティ」について解説します。</p>
+<p>ここまでお読みいただきありがとうございました！</p>
+</section>
+          <aside class="lab-example" aria-labelledby="lab-example-title">
+            <p class="eyebrow">FROM THE LAB</p>
+            <h2 id="lab-example-title">KatakataLabでの実例</h2>
+            <p>KatakataLabの公開確認では、まずページが200で返るかを見ます。ただし200でも古い本文が返る場合があるため、番号だけで終わらず、期待する内容やリンクまで確認します。</p>
+            <p class="related-heading">この実例につながるページ</p>
+            <ul class="related-links"><li><a href="../../404.html">KatakataLabの404ページ</a></li>
+<li><a href="endpoint.html">関連用語：エンドポイント</a></li></ul>
+          </aside>
+          <section class="article-section" aria-labelledby="section-ops-status">
+            <h2 id="section-ops-status">ステータスコードで切り分けた実例</h2>
+            <p>公開後に「表示がおかしい」と言われても、200なのに中身が古い場合と、404でファイルが無い場合では打ち手が違います。KatakataLabではデプロイ後に主要URLのステータスを確認し、200以外なら配置先や転送設定を疑います。</p>
+<ul>
+<li>200: 届いている（ただし中身が新しいかは別確認）</li>
+<li>301/302: 転送が意図どおりか</li>
+<li>404: パスやファイル名の誤り</li>
+<li>5xx: サーバー側の失敗</li>
+</ul>
+<p>コードを見る習慣があると、「なんとなく壊れた」が具体的な次の一手に変わります。</p>
+          </section>
+          <section class="article-section faq" aria-labelledby="faq-title">
+            <p class="eyebrow">QUICK CHECK</p>
+            <h2 id="faq-title">よくある質問</h2>
+            <h3>4xxならユーザーが悪い、5xxなら開発者が悪いのですか？</h3>
+            <p>責任を決める番号ではありません。4xxは要求をそのまま処理できない状態、5xxはサーバー側で処理を完了できない状態を示す分類です。原因はログや要求内容と合わせて調べます。</p>
+            <h3>次に読むなら？</h3><p><a href="security.html">SECURITYの記事</a>へ進むと、次の用語を順番に読めます。</p>
+          </section>
+          <section class="article-section references" aria-labelledby="references-title">
+            <h2 id="references-title">参考資料</h2>
+            <p>用語の定義や仕様を確認するため、公式文書・標準文書を参照しています。リンク先の内容は更新される場合があります。</p>
+            <ul><li><a href="https://www.rfc-editor.org/rfc/rfc9110" target="_blank" rel="noopener noreferrer">RFC 9110「HTTP Semantics」</a></li>
+<li><a href="https://developer.mozilla.org/ja/docs/Web/HTTP/Reference/Status" target="_blank" rel="noopener noreferrer">MDN「HTTP response status codes」</a></li></ul>
+          </section>
+          <nav class="chapter-nav" aria-label="前後の記事">
+            <a class="chapter-link previous" href="json.html"><small>前の記事</small><span>← JSON</span></a>
+            <a class="chapter-link next" href="security.html"><small>次の記事</small><span>SECURITY →</span></a>
+          </nav>
+        </div>
+      </div>
+    </article>
+  </main>
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <p><strong>KatakataLab</strong><br><span>作って、つまずいて、分かったことを残す小さな研究室。</span></p>
+      <nav aria-label="フッターナビゲーション">
+        <a href="../../contact.html">お問い合わせ</a>
+        <a href="../../who-is-katakata.html">運営者情報</a>
+        <a href="../../privacy.html">プライバシーポリシー</a>
+        <a href="../../sitemap.html">サイトマップ</a>
+      </nav>
+    </div>
+    <p class="copyright">&copy; 2024-2026 KatakataLab</p>
+  </footer>
+</body>
+</html>

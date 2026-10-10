@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex, follow">
+  <meta name="referrer" content="no-referrer">
+  <meta name="theme-color" content="#10b981">
+  <title>メール起動QRの作り方 | QR Maker Lab</title>
+  <meta name="description" content="問い合わせ受付向けのメール起動QRを作る方法。宛先・件名・本文の設定と失敗しないポイントを解説します。">
+  <link rel="icon" href="assets/icon-192.png" type="image/png">
+    <link rel="canonical" href="https://katakatalab.com/qrcode/guide-mail.html">
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="メール起動QRの作り方 | QR Maker Lab">
+  <meta property="og:description" content="問い合わせメールをすぐ開けるQRの作り方。">
+  <meta property="og:url" content="https://katakatalab.com/qrcode/guide-mail.html">
+  <meta property="og:image" content="https://katakatalab.com/qrcode/ogp.png">
+  <link rel="stylesheet" href="content.css">
+
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="メール起動QRの作り方 | QR Maker Lab">
+  <meta name="twitter:description" content="問い合わせ受付向けのメール起動QRを作る方法。宛先・件名・本文の設定と失敗しないポイントを解説します。">
+  <meta name="twitter:image" content="https://katakatalab.com/qrcode/ogp.png">
+  <meta name="twitter:site" content="@Katakata_toybox">
+</head>
+<body>
+    <script>try{if(localStorage.getItem('theme')==='dark')document.body.classList.add('dark-mode');}catch(e){}</script>
+<main class="page-shell">
+
+  <nav class="top-nav" aria-label="breadcrumb">
+    <a href="./">QR作成ツール</a>
+    <a href="guides.html">用途別ガイド</a>
+    <a href="pro-plan.html">Proプラン</a>
+  </nav>
+
+  <header class="hero">
+    <h1>メール起動QRの作り方</h1>
+    <p>問い合わせ時の入力の手間を減らすために、件名・本文を入れたメール起動QRを作成します。</p>
+    <div class="chip-list">
+      <span class="chip">問い合わせ受付</span>
+      <span class="chip">サポート窓口</span>
+      <span class="chip">資料請求</span>
+    </div>
+    <p class="hero-meta">作成者: かたかた / 更新日: 2026年3月6日 / 問い合わせ導線の整理経験をもとに作成</p>
+  </header>
+
+  <section class="section-panel">
+    <h2>作成手順</h2>
+    <ol class="step-list">
+      <li><strong>種類を選ぶ:</strong> 「メールリンク」を選択します。</li>
+      <li><strong>宛先入力:</strong> 問い合わせ先メールアドレスを入力します。</li>
+      <li><strong>件名・本文設定:</strong> 返信に必要な最低限の情報を定型文として入れます。</li>
+      <li><strong>動作確認:</strong> 各端末でメールアプリ起動と文面セットを確認します。</li>
+    </ol>
+  </section>
+
+  <section class="section-panel">
+    <h2>失敗しやすいポイント</h2>
+    <ul class="check-list">
+      <li><strong>宛先の誤入力:</strong> 文字列コピーで入力し、送信テストを実施します。</li>
+      <li><strong>本文が長すぎる:</strong> 最低限の入力項目に絞り、ユーザーの編集余地を残します。</li>
+      <li><strong>目的が混ざっている:</strong> 見積依頼用とサポート用など、用途ごとにQRを分けると管理しやすくなります。</li>
+    </ul>
+  </section>
+
+    <section class="section-panel">
+    <h2>実運用で失敗しにくくするコツ</h2>
+    <p>メール起動QRは、宛先だけでなく件名・本文の設計で使いやすさが大きく変わります。問い合わせ内容の分類が必要な場合は、件名に「資料請求」「見積依頼」などの選択肢を先に入れておくと、受信後の振り分けが安定します。</p>
+    <p>本文は長文テンプレートにせず、ユーザーが追記しやすい短い項目に分解してください。端末やメールアプリの違いで挙動が変わるため、公開前にiOS/Androidの両方で送信テストを行う運用が安全です。</p>
+    <h3>よくある質問</h3>
+    <ul class="check-list">
+      <li><strong>Q. 件名を固定すると使いにくくなりませんか？</strong> A. 固定部分は短くし、自由記述欄を残すとバランスが取りやすくなります。</li>
+      <li><strong>Q. 1つのQRで複数窓口を兼用できますか？</strong> A. 誤送信を防ぐため、窓口ごとにQRを分ける設計を推奨します。</li>
+    </ul>
+  </section>
+
+  <section class="cta-band">
+    <h2>すぐにメール起動QRを作成する</h2>
+    <p>テンプレート選択済みで開始できます。</p>
+    <div class="action-row">
+      <a class="btn btn-primary" href="./?type=mailto">メール起動QRを作成</a>
+      <a class="btn btn-secondary" href="guide-social.html">SNSプロフィールQRの作り方を見る</a>
+    </div>
+  </section>
+
+  <footer class="site-footer">
+    <div>
+      <a href="guides.html">用途別ガイド</a> /
+      <a href="pro-plan.html">Proプラン</a> /
+      <a href="terms.html">利用規約</a> /
+      <a href="privacy.html">プライバシーポリシー</a>
+    </div>
+    <p class="footer-note">© 2026 QR Maker Lab</p>
+  </footer>
+</main>
+
+<script type="application/ld+json">
+[
+  {
+    "@context": "https://schema.org",
+    "@type": "HowTo",
+    "name": "メール起動QRの作り方",
+    "step": [
+      { "@type": "HowToStep", "name": "メールリンクテンプレートを選ぶ" },
+      { "@type": "HowToStep", "name": "宛先と件名を入力する" },
+      { "@type": "HowToStep", "name": "動作確認して配布する" }
+    ]
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      { "@type": "ListItem", "position": 1, "name": "QR Maker Lab", "item": "https://katakatalab.com/qrcode/" },
+      { "@type": "ListItem", "position": 2, "name": "用途別QR活用ガイド", "item": "https://katakatalab.com/qrcode/guides.html" },
+      { "@type": "ListItem", "position": 3, "name": "メール起動QRの作り方", "item": "https://katakatalab.com/qrcode/guide-mail.html" }
+    ]
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {
+        "@type": "Question",
+        "name": "件名を固定すると使いにくくなりませんか？",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "固定部分は短くし、自由記述欄を残すとバランスが取りやすくなります。"
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "1つのQRで複数窓口を兼用できますか？",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "誤送信を防ぐため、窓口ごとにQRを分ける設計を推奨します。"
+        }
+      }
+    ]
+  }
+]
+</script>
+</body>
+</html>

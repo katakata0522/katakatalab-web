@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KakuSave プライバシーポリシー | KatakataLab</title>
+    <meta name="description" content="Chrome拡張機能KakuSaveがnote執筆中に扱う本文テキスト、ローカル保存、Chrome権限、削除方法について説明します。">
+    <link rel="canonical" href="https://katakatalab.com/privacy/kakusave/">
+    <link rel="stylesheet" href="/style.css?v=20260830-kakusave">
+    <link rel="icon" href="/icon.svg" type="image/svg+xml">
+    <meta name="theme-color" content="#FF7675">
+    <meta property="og:title" content="KakuSave プライバシーポリシー | KatakataLab">
+    <meta property="og:description" content="KakuSaveの本文バックアップが扱うデータ、保存場所、権限、削除方法を明確に説明します。">
+    <meta property="og:type" content="article">
+    <meta property="og:url" content="https://katakatalab.com/privacy/kakusave/">
+    <meta property="og:image" content="https://katakatalab.com/ogp.png">
+    <meta name="twitter:card" content="summary_large_image">
+    <style>
+        .policy-shell{max-width:960px;margin:0 auto;padding:clamp(1rem,3vw,2rem)}
+        .policy-hero,.policy-summary,.policy-section,.policy-actions{background:var(--c-surface);border:1px solid color-mix(in srgb,var(--c-primary) 18%,transparent);border-radius:var(--radius-lg)}
+        .policy-hero{padding:clamp(1.5rem,5vw,3rem);margin-bottom:1rem;box-shadow:0 12px 36px rgba(15,23,42,.08)}
+        .eyebrow{display:inline-flex;align-items:center;gap:.45rem;margin-bottom:.75rem;color:var(--c-primary);font-size:.9rem;font-weight:800}
+        .policy-hero h1{margin:0;line-height:1.2}.lead{max-width:720px;margin:1rem 0 0;line-height:1.8}.meta{color:var(--c-text-light);margin:1rem 0 0;font-size:.9rem}
+        .policy-summary{margin-bottom:1rem;padding:clamp(1.1rem,3vw,1.5rem);border-left:4px solid #16856f}.policy-summary h2{margin:0 0 .75rem;font-size:1.15rem}
+        .summary-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:.75rem}.summary-item{padding:.9rem;background:color-mix(in srgb,#16856f 7%,var(--c-surface));border-radius:.8rem}.summary-item strong{display:block;margin-bottom:.35rem}.summary-item p{margin:0;color:var(--c-text-light);line-height:1.65;font-size:.92rem}
+        .policy-section{padding:clamp(1.25rem,4vw,2rem);margin-bottom:1rem}.policy-section h2{margin:0 0 .9rem;color:var(--c-primary);font-size:clamp(1.2rem,3vw,1.5rem)}.policy-section h3{margin:1.25rem 0 .45rem;font-size:1.05rem}.policy-section p,.policy-section li{line-height:1.85}.policy-section ul{margin:.6rem 0 0;padding-left:1.25rem}.policy-section code{padding:.1em .35em;border-radius:.35rem;background:color-mix(in srgb,var(--c-primary) 10%,transparent);color:var(--c-text)}
+        .data-table-wrap{overflow-x:auto;margin-top:1rem;border:1px solid color-mix(in srgb,var(--c-primary) 14%,transparent);border-radius:.8rem}.data-table{width:100%;min-width:650px;border-collapse:collapse}.data-table th,.data-table td{padding:.85rem .9rem;text-align:left;vertical-align:top;border-bottom:1px solid color-mix(in srgb,var(--c-primary) 10%,transparent);line-height:1.6}.data-table th{background:color-mix(in srgb,var(--c-primary) 6%,var(--c-surface));font-size:.9rem}.data-table tr:last-child td{border-bottom:0}
+        .tag-local,.tag-none,.tag-sensitive{display:inline-flex;align-items:center;border-radius:999px;padding:.18rem .55rem;font-size:.8rem;font-weight:800;white-space:nowrap}.tag-local{background:#e8f7f0;color:#146345}.tag-none{background:#eef1f4;color:#45525d}.tag-sensitive{background:#fff3dc;color:#7a4e00}
+        .policy-actions{display:grid;grid-template-columns:1.25fr .75fr;gap:1rem;margin-bottom:1rem;padding:clamp(1.2rem,4vw,1.75rem)}.policy-actions h2{margin:0 0 .5rem;font-size:1.2rem}.policy-actions p{margin:0;line-height:1.75}.links{display:flex;flex-direction:column;align-items:flex-start;justify-content:center;gap:.45rem}.links a{font-weight:700}
+        @media(max-width:720px){.summary-grid,.policy-actions{grid-template-columns:1fr}}@media(max-width:480px){.policy-shell{padding:.75rem}.policy-hero h1{font-size:1.65rem}.policy-section ul{padding-left:1.05rem}}
+    </style>
+</head>
+<body>
+    <script>try{if(localStorage.getItem('theme')==='dark')document.body.classList.add('dark-mode');}catch(e){}</script>
+    <header class="header">
+        <div class="container header-container">
+            <a href="/" class="logo" aria-label="KatakataLab ホーム"><span class="logo-icon" aria-hidden="true">🧪</span><span class="logo-text">KatakataLab</span></a>
+            <nav class="nav" aria-label="主要ナビゲーション"><ul class="nav-list"><li><a href="/" class="nav-link">ホーム</a></li><li><a href="/#projects" class="nav-link">作ったもの</a></li><li><a href="/contact.html" class="nav-link">お問い合わせ</a></li></ul></nav>
+            <div class="header-actions"><button type="button" id="theme-toggle" class="theme-btn" aria-label="テーマ切り替え"><svg viewBox="0 0 24 24" class="svg-icon svg-moon" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg><svg viewBox="0 0 24 24" class="svg-icon svg-sun" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="display:none"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg></button></div>
+        </div>
+    </header>
+
+    <main class="policy-shell">
+        <nav class="breadcrumbs" aria-label="パンくずリスト"><a href="/">KatakataLab</a><span class="breadcrumbs-sep" aria-hidden="true">/</span><span class="breadcrumbs-current" aria-current="page">KakuSave プライバシーポリシー</span></nav>
+
+        <section class="policy-hero">
+            <div class="eyebrow"><span aria-hidden="true">📝</span> Chrome拡張機能 KakuSave Preview v0.9</div>
+            <h1>KakuSave プライバシーポリシー</h1>
+            <p class="lead">KakuSaveは、noteで執筆中の本文テキストをChrome内に補助保存するローカルバックアップです。本文をどこに保存し、何を外部へ送らないのかをここで明示します。</p>
+            <p class="meta">最終更新：2026年8月30日 ／ note株式会社の公式製品ではありません</p>
+        </section>
+
+        <section class="policy-summary" aria-labelledby="summary-title">
+            <h2 id="summary-title">重要な3点</h2>
+            <div class="summary-grid">
+                <div class="summary-item"><strong>本文はChrome内だけに保存</strong><p>保存先は拡張機能専用のIndexedDBです。開発者のクラウドへ同期しません。</p></div>
+                <div class="summary-item"><strong>外部送信・解析SDKなし</strong><p>本文、履歴、利用状況を開発者サーバー、広告、アクセス解析へ送信しません。</p></div>
+                <div class="summary-item"><strong>保護対象は本文テキスト</strong><p>タイトル、画像、埋め込み、書式、noteのログイン情報はバックアップ対象ではありません。</p></div>
+            </div>
+        </section>
+
+        <section class="policy-section">
+            <h2>1. KakuSaveが扱う情報</h2>
+            <div class="data-table-wrap">
+                <table class="data-table">
+                    <thead><tr><th>情報</th><th>利用目的</th><th>扱い</th></tr></thead>
+                    <tbody>
+                        <tr><td>note編集画面の本文テキスト</td><td>ローカル履歴バックアップ、過去本文の比較・コピー</td><td><span class="tag-local">Chrome内保存</span></td></tr>
+                        <tr><td>本文文字数・追加/削除差分</td><td>執筆状況と当日差分の表示</td><td><span class="tag-local">Chrome内処理</span></td></tr>
+                        <tr><td>記事URLから得る記事識別情報、保存時刻、内部ID</td><td>記事ごとの履歴分離、保存世代管理</td><td><span class="tag-local">Chrome内保存</span></td></tr>
+                        <tr><td>noteのパスワード、Cookie、ログイン資格情報</td><td>使用しません</td><td><span class="tag-none">取得・保存しない</span></td></tr>
+                    </tbody>
+                </table>
+            </div>
+            <p>KakuSaveが保護するのは本文テキストです。タイトル、見出し等の書式、リンク属性、画像・動画・埋め込み、noteエディタ内部構造の完全復元は対象外です。</p>
+        </section>
+
+        <section class="policy-section">
+            <h2>2. 保存場所とセキュリティ</h2>
+            <p>本文履歴はChrome拡張機能専用originのIndexedDBへ保存します。開発者側のサーバーやクラウドストレージには保存しません。</p>
+            <ul>
+                <li>Chromeプロファイル内ではKakuSave独自の暗号化を行いません。</li>
+                <li><code>unlimitedStorage</code> 権限を使用しますが、KakuSave側で256MBの安全上限を設けています。</li>
+                <li>履歴表示を行うextension pageはContent Security Policyで <code>connect-src 'none'</code> を指定し、履歴画面から外部通信を行わない設計です。</li>
+            </ul>
+            <p><span class="tag-sensitive">注意</span> 共有端末や、OS・Chromeプロファイル自体へアクセスできる第三者から本文を保護する暗号化保管庫ではありません。</p>
+        </section>
+
+        <section class="policy-section">
+            <h2>3. 外部送信・広告・分析</h2>
+            <p>KakuSave v0.9 Previewは、本文テキスト、保存履歴、利用ログを開発者サーバー、広告事業者、解析サービス、AIサービスへ送信しません。開発者向けテレメトリーや外部分析SDKも使用しません。</p>
+            <p>本文内容や利用履歴を、広告ターゲティング、データ販売、第三者への提供に使用しません。</p>
+        </section>
+
+        <section class="policy-section">
+            <h2>4. Chrome権限</h2>
+            <h3><code>unlimitedStorage</code></h3>
+            <p>本文履歴をユーザーのChromeプロファイル内へ保存するために使用します。権限名にかかわらず無制限に保存し続ける設計ではなく、自前の安全上限と履歴整理を設けます。</p>
+            <h3><code>alarms</code></h3>
+            <p>Manifest V3 Service Workerの停止に依存せず、不要になった一時draftデータを定期整理するために使用します。</p>
+            <p>KakuSaveは <code>&lt;all_urls&gt;</code> を要求せず、content scriptの対象をnoteの編集ルートへ限定します。</p>
+        </section>
+
+        <section class="policy-section">
+            <h2>5. 保存期間と削除</h2>
+            <p>保存履歴は、ユーザーが削除するまで、またはChrome側で拡張機能データが削除されるまでローカルに保持されます。一時draft等の不要データは日次整理の対象です。</p>
+            <ul>
+                <li>KakuSaveの履歴画面から、対象原稿の過去履歴をリセットできます。</li>
+                <li>ChromeからKakuSaveを削除すると、Chromeの仕組みにより拡張機能のローカルデータも削除されます。</li>
+                <li>開発者側にはサーバー保存された本文の複製がないため、開発者へ削除依頼をして本文を消す仕組みはありません。</li>
+            </ul>
+        </section>
+
+        <section class="policy-section">
+            <h2>6. noteとの関係</h2>
+            <p>KakuSaveは個人開発による非公式Chrome拡張機能であり、note株式会社が提供、承認、保証する製品ではありません。note側のURL、DOM、エディタ等の仕様変更により、一時的に本文を検出できなくなる場合があります。</p>
+        </section>
+
+        <section class="policy-section">
+            <h2>7. 将来の機能変更</h2>
+            <p>クラウド同期、アカウント、分析、課金等を将来追加し、データ処理が変わる場合は、その機能を公開する前に本ページとChrome Web Store上の開示を更新します。v0.9の「外部送信なし」という説明を、処理が変わった後もそのまま流用しません。</p>
+        </section>
+
+        <section class="policy-actions">
+            <div><h2>お問い合わせ・関連情報</h2><p>KakuSaveのデータの扱いや動作について質問がある場合は、KatakataLabのお問い合わせ窓口をご利用ください。</p></div>
+            <div class="links"><a href="/contact.html">お問い合わせ</a><a href="/privacy.html">KatakataLab共通プライバシーポリシー</a><a href="/terms.html">KatakataLab利用規約</a></div>
+        </section>
+    </main>
+
+    <footer class="footer"><div class="container"><div class="footer-links"><a href="/contact.html">お問い合わせ</a><a href="/privacy.html">共通プライバシーポリシー</a><a href="/terms.html">利用規約</a></div><p>&copy; 2024-2026 KatakataLab. All Rights Reserved.</p></div></footer>
+    <script src="/script.js?v=20260830-kakusave"></script>
+</body>
+</html>

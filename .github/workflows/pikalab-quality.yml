@@ -1,0 +1,651 @@
+name: Public PikaLab Quality Check
+
+on:
+  push:
+    branches: [main]
+    paths: ["pikalab/**", "qa/**", "scripts/**", ".github/**"]
+  pull_request:
+    types:
+      - opened
+      - synchronize
+      - reopened
+      - ready_for_review
+      - converted_to_draft
+    paths:
+      - "pikalab/**"
+      - "qa/**"
+      - "scripts/public-qa/**"
+      - "scripts/education-no-tracking.cjs"
+      - "education-sw-privacy.js"
+      - ".github/scripts/education-privacy-e2e.cjs"
+      - ".github/scripts/copy-code-studio-reachable.cjs"
+      - ".github/scripts/validate_pikalab.py"
+      - ".github/scripts/pikalab-ci-scope.cjs"
+      - ".github/scripts/pikalab-ci-scope.test.cjs"
+      - ".github/scripts/pikalab-e2e-inputs.cjs"
+      - ".htaccess"
+      - "sitemap.xml"
+      - ".github/scripts/sync_quest_board_csp.py"
+      - ".github/scripts/verify_color_lab_deploy.py"
+      - ".github/scripts/verify_pikalab_production.py"
+      - ".github/workflows/deploy.yml"
+      - ".github/workflows/pikalab-quality.yml"
+  workflow_dispatch:
+    inputs:
+      visual_preservation:
+        description: "Compare every published initial layout with the default branch"
+        required: false
+        default: false
+        type: boolean
+      collect_all_failures:
+        description: "Continue browser checks after failures to collect a full diagnostic report"
+        required: false
+        default: false
+        type: boolean
+
+permissions:
+  contents: read
+
+concurrency:
+  group: pikalab-quality-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  PIKALAB_COMPARE_BASELINE: ${{ (github.event_name == 'workflow_dispatch' && inputs.visual_preservation) || contains(github.event.pull_request.labels.*.name, 'pikalab-visual-preservation') }}
+  # 通常PRはジョブ内の最初の失敗で後続検証を止める。診断・全画面比較は失敗を集める。
+  PIKALAB_COLLECT_ALL_FAILURES: ${{ (github.event_name == 'workflow_dispatch' && inputs.collect_all_failures) || (github.event_name == 'workflow_dispatch' && inputs.visual_preservation) || contains(github.event.pull_request.labels.*.name, 'pikalab-visual-preservation') }}
+
+jobs:
+  scope:
+    # 共通検証を一度通してから、変更対象の重いE2Eを起動する。
+    if: "${{ github.event_name != 'pull_request' || !github.event.pull_request.draft }}"
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    outputs:
+      full: ${{ steps.scope.outputs.full }}
+      deepsea: ${{ steps.scope.outputs.deepsea }}
+      color: ${{ steps.scope.outputs.color }}
+      eduplay: ${{ steps.scope.outputs.eduplay }}
+      rhythm: ${{ steps.scope.outputs.rhythm }}
+      manabi: ${{ steps.scope.outputs.manabi }}
+      speed_reader: ${{ steps.scope.outputs.speed_reader }}
+      typing_dojo: ${{ steps.scope.outputs.typing_dojo }}
+      kotowaza: ${{ steps.scope.outputs.kotowaza }}
+      fraction: ${{ steps.scope.outputs.fraction }}
+      focus: ${{ steps.scope.outputs.focus }}
+      space: ${{ steps.scope.outputs.space }}
+      paper: ${{ steps.scope.outputs.paper }}
+      quest: ${{ steps.scope.outputs.quest }}
+    steps:
+      - name: Checkout code for PR-wide changes
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
+        with:
+          persist-credentials: false
+          fetch-depth: 2
+
+      - name: Prepare CI dependencies without publishing media
+        run: python3 scripts/public-qa/prepare.py
+
+      - name: Test conservative E2E selection
+        run: node --test .github/scripts/pikalab-ci-scope.test.cjs
+      - name: Select affected PikaLab browser checks
+        id: scope
+        env:
+          CI_EVENT_NAME: ${{ github.event_name }}
+          CI_BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          CI_PRESERVE_VISUAL: ${{ env.PIKALAB_COMPARE_BASELINE }}
+        run: node .github/scripts/pikalab-ci-scope.cjs
+
+      - name: Setup Node.js
+        uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6.5.0
+        with:
+          node-version: "20"
+          cache: "npm"
+          cache-dependency-path: "pikalab/package-lock.json"
+
+      - name: Validate PikaLab structure
+        run: |
+          set -euo pipefail
+          python3 .github/scripts/validate_pikalab.py
+          python3 -m py_compile \
+            .github/scripts/verify_color_lab_deploy.py \
+            .github/scripts/verify_pikalab_production.py
+
+      - name: Install PikaLab dependencies
+        run: |
+          set -euo pipefail
+          cd pikalab
+          npm ci --prefer-offline --no-audit --no-fund
+
+      - name: Validate dependency tree
+        run: |
+          set -euo pipefail
+          cd pikalab
+          npm ls
+
+      - name: Type-check PikaLab
+        run: |
+          set -euo pipefail
+          cd pikalab
+          npm run typecheck
+
+      - name: Build PikaLab for visual guard
+        run: |
+          set -euo pipefail
+          cd pikalab
+          npm run build:all
+
+      - name: Fail on generated PikaLab source drift
+        run: |
+          set -euo pipefail
+          if ! git diff --exit-code -- pikalab; then
+            echo "::error::PikaLab build が追跡中ソースを書き換えました。生成元を正本として npm run build:all の生成差分を確認し、必要な差分をPRへ含めてください。"
+            exit 1
+          fi
+
+      - name: Verify PikaLab build output
+        id: verified_build
+        run: |
+          set -euo pipefail
+          cd pikalab
+          npm run verify:build
+
+      - name: Cache Playwright browsers
+        id: cache-playwright
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-${{ runner.os }}-${{ hashFiles('pikalab/package-lock.json') }}
+          restore-keys: |
+            playwright-${{ runner.os }}-
+
+      - name: Install Playwright Chromium
+        run: |
+          set -euo pipefail
+          cd pikalab
+          npx playwright install-deps chromium
+          if [ "${{ steps.cache-playwright.outputs.cache-hit }}" != "true" ]; then
+            npx playwright install chromium
+          fi
+
+      - name: Verify Code Studio browser security
+        run: |
+          set -euo pipefail
+          cd pikalab
+          npm run verify:code-studio-security
+
+      - name: Verify PikaLab has no ads or third-party tracking
+        run: node scripts/education-no-tracking.cjs --pikalab-build
+
+      - name: Verify education tracking and legacy PWA isolation in Chromium
+        env:
+          NODE_PATH: ${{ github.workspace }}/pikalab/node_modules
+        run: |
+          node .github/scripts/build-public-root.cjs
+          node .github/scripts/education-privacy-e2e.cjs --root-build --pikalab-build
+
+      - name: Run all PikaLab tests
+        id: unit_tests
+        env:
+          # Nodeテスト全体は維持し、無関係なEduplay実ブラウザ1件のみ絞る。
+          PIKALAB_CI_EDUPLAY: ${{ steps.scope.outputs.eduplay }}
+        run: |
+          set -euo pipefail
+          cd pikalab
+          npm test
+
+
+  validate:
+    needs: scope
+    # PR品質検証はmain反映後に重ねて実行しない。Draft中の更新もrunnerを起動しない。
+    if: "${{ !cancelled() && (github.event_name != 'pull_request' || !github.event.pull_request.draft) }}"
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - name: Require successful E2E scope selection
+        env:
+          SCOPE_RESULT: ${{ needs.scope.result }}
+        run: test "$SCOPE_RESULT" = success
+
+      - name: Checkout code
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
+        with:
+          persist-credentials: false
+
+      - name: Prepare CI dependencies without publishing media
+        run: python3 scripts/public-qa/prepare.py
+
+      - name: Checkout PikaLab visual baseline
+        if: env.PIKALAB_COMPARE_BASELINE == 'true'
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
+        with:
+          ref: ${{ github.event.pull_request.base.sha || github.event.repository.default_branch }}
+          path: .pikalab-baseline
+          persist-credentials: false
+
+      - name: Prepare CI dependencies without publishing media
+        if: env.PIKALAB_COMPARE_BASELINE == 'true'
+        run: python3 scripts/public-qa/prepare.py --root .pikalab-baseline
+
+      - name: Setup Node.js
+        uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6.5.0
+        with:
+          node-version: "20"
+          cache: "npm"
+          cache-dependency-path: "pikalab/package-lock.json"
+
+      - name: Install PikaLab dependencies
+        run: |
+          set -euo pipefail
+          cd pikalab
+          npm ci --prefer-offline --no-audit --no-fund
+
+      - name: Build PikaLab for visual guard
+        run: |
+          set -euo pipefail
+          cd pikalab
+          npm run build:all
+
+      - name: Fail on generated PikaLab source drift
+        run: |
+          set -euo pipefail
+          if ! git diff --exit-code -- pikalab; then
+            echo "::error::PikaLab build が追跡中ソースを書き換えました。生成元を正本として npm run build:all の生成差分を確認し、必要な差分をPRへ含めてください。"
+            exit 1
+          fi
+
+      - name: Build exact baseline for visual preservation
+        if: env.PIKALAB_COMPARE_BASELINE == 'true'
+        working-directory: .pikalab-baseline/pikalab
+        run: |
+          set -euo pipefail
+          npm ci --prefer-offline --no-audit --no-fund
+          npm run build:all
+
+      - name: Verify PikaLab build output
+        id: verified_build
+        run: |
+          set -euo pipefail
+          cd pikalab
+          npm run verify:build
+
+      - name: Cache Playwright browsers
+        id: cache-playwright
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-${{ runner.os }}-${{ hashFiles('pikalab/package-lock.json') }}
+          restore-keys: |
+            playwright-${{ runner.os }}-
+
+      - name: Install Playwright Chromium
+        id: browser_setup
+        run: |
+          set -euo pipefail
+          cd pikalab
+          npx playwright install-deps chromium
+          if [ "${{ steps.cache-playwright.outputs.cache-hit }}" != "true" ]; then
+            npx playwright install chromium
+          fi
+
+      - name: Verify PikaLab top page browser behavior
+        if: "${{ !cancelled() && (success() || env.PIKALAB_COLLECT_ALL_FAILURES == 'true') && steps.verified_build.outcome == 'success' && steps.browser_setup.outcome == 'success' && needs.scope.result == 'success' }}"
+        run: |
+          set -euo pipefail
+          RUN_PIKALAB_TOP_BROWSER=1 node --test pikalab/tests/top-browser.test.cjs
+
+      - name: Verify PWA cache upgrade and offline runtime
+        if: "${{ !cancelled() && (success() || env.PIKALAB_COLLECT_ALL_FAILURES == 'true') && steps.verified_build.outcome == 'success' && steps.browser_setup.outcome == 'success' && needs.scope.result == 'success' }}"
+        run: |
+          set -euo pipefail
+          cd pikalab
+          npm run test:pwa-e2e
+
+      - name: Run PikaLab visual regression guard
+        if: "${{ !cancelled() && (success() || env.PIKALAB_COLLECT_ALL_FAILURES == 'true') && steps.verified_build.outcome == 'success' && steps.browser_setup.outcome == 'success' && needs.scope.result == 'success' }}"
+        env:
+          VISUAL_GUARD_SCREENSHOTS: "1"
+        run: |
+          set -euo pipefail
+          cd pikalab
+          npm run guard:visual
+
+      - name: Verify Deep Sea browser interactions
+        if: "${{ !cancelled() && (success() || env.PIKALAB_COLLECT_ALL_FAILURES == 'true') && steps.verified_build.outcome == 'success' && steps.browser_setup.outcome == 'success' && needs.scope.result == 'success' && needs.scope.outputs.deepsea == 'true' }}"
+        run: |
+          RUN_PIKALAB_DEEPSEA_BROWSER=1 node --test pikalab/deepsea_lab/tests/deepsea-browser.test.cjs
+
+      - name: Verify Color Lab browser interactions
+        if: "${{ !cancelled() && (success() || env.PIKALAB_COLLECT_ALL_FAILURES == 'true') && steps.verified_build.outcome == 'success' && steps.browser_setup.outcome == 'success' && needs.scope.result == 'success' && needs.scope.outputs.color == 'true' }}"
+        run: |
+          RUN_PIKALAB_COLOR_BROWSER=1 node --test pikalab/color_lab/browser-interactions.test.cjs
+
+      - name: Compare baseline and candidate initial layouts
+        if: "${{ !cancelled() && (success() || env.PIKALAB_COLLECT_ALL_FAILURES == 'true') && steps.verified_build.outcome == 'success' && steps.browser_setup.outcome == 'success' && needs.scope.result == 'success' && env.PIKALAB_COMPARE_BASELINE == 'true' }}"
+        run: |
+          set -euo pipefail
+          VISUAL_BASE_SHA="$(git -C .pikalab-baseline rev-parse HEAD)" \
+          VISUAL_CANDIDATE_SHA="$(git rev-parse HEAD)" \
+            node pikalab/scripts/visual-preservation.mjs .pikalab-baseline/pikalab/dist pikalab/dist
+
+      - name: Checkout Rhythm Lab layout baseline
+        if: "${{ !cancelled() && (success() || env.PIKALAB_COLLECT_ALL_FAILURES == 'true') && steps.verified_build.outcome == 'success' && steps.browser_setup.outcome == 'success' && needs.scope.result == 'success' && github.event_name == 'pull_request' && needs.scope.outputs.rhythm == 'true' }}"
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
+        with:
+          ref: ${{ github.event.pull_request.base.sha }}
+          path: .rhythm-baseline
+          persist-credentials: false
+
+      - name: Prepare CI dependencies without publishing media
+        if: "${{ !cancelled() && (success() || env.PIKALAB_COLLECT_ALL_FAILURES == 'true') && steps.verified_build.outcome == 'success' && steps.browser_setup.outcome == 'success' && needs.scope.result == 'success' && github.event_name == 'pull_request' && needs.scope.outputs.rhythm == 'true' }}"
+        run: python3 scripts/public-qa/prepare.py --root .rhythm-baseline
+
+      - name: Run Rhythm Lab browser E2E
+        if: "${{ !cancelled() && (success() || env.PIKALAB_COLLECT_ALL_FAILURES == 'true') && steps.verified_build.outcome == 'success' && steps.browser_setup.outcome == 'success' && needs.scope.result == 'success' && needs.scope.outputs.rhythm == 'true' }}"
+        run: |
+          set -euo pipefail
+          cd pikalab
+          if [ -d ../.rhythm-baseline/pikalab ]; then
+            export RHYTHM_BASELINE_ROOT=../.rhythm-baseline/pikalab
+          fi
+          npm run test:rhythm-e2e
+
+      - name: Checkout Manabi Land layout baseline
+        if: "${{ !cancelled() && (success() || env.PIKALAB_COLLECT_ALL_FAILURES == 'true') && steps.verified_build.outcome == 'success' && steps.browser_setup.outcome == 'success' && needs.scope.result == 'success' && github.event_name == 'pull_request' && (needs.scope.outputs.manabi == 'true' || needs.scope.outputs.speed_reader == 'true' || needs.scope.outputs.typing_dojo == 'true' || needs.scope.outputs.kotowaza == 'true' || needs.scope.outputs.fraction == 'true') }}"
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
+        with:
+          ref: ${{ github.event.pull_request.base.sha }}
+          path: .manabi-baseline
+          persist-credentials: false
+
+      - name: Prepare CI dependencies without publishing media
+        if: "${{ !cancelled() && (success() || env.PIKALAB_COLLECT_ALL_FAILURES == 'true') && steps.verified_build.outcome == 'success' && steps.browser_setup.outcome == 'success' && needs.scope.result == 'success' && github.event_name == 'pull_request' && (needs.scope.outputs.manabi == 'true' || needs.scope.outputs.speed_reader == 'true' || needs.scope.outputs.typing_dojo == 'true' || needs.scope.outputs.kotowaza == 'true' || needs.scope.outputs.fraction == 'true') }}"
+        run: python3 scripts/public-qa/prepare.py --root .manabi-baseline
+
+      - name: Build Manabi Land layout baseline
+        if: "${{ !cancelled() && (success() || env.PIKALAB_COLLECT_ALL_FAILURES == 'true') && steps.verified_build.outcome == 'success' && steps.browser_setup.outcome == 'success' && needs.scope.result == 'success' && github.event_name == 'pull_request' && (needs.scope.outputs.manabi == 'true' || needs.scope.outputs.speed_reader == 'true' || needs.scope.outputs.typing_dojo == 'true' || needs.scope.outputs.kotowaza == 'true' || needs.scope.outputs.fraction == 'true') }}"
+        working-directory: .manabi-baseline/pikalab
+        run: |
+          set -euo pipefail
+          npm ci --prefer-offline --no-audit --no-fund
+          npm run build:all
+
+      - name: Run Manabi Land browser E2E
+        if: "${{ !cancelled() && (success() || env.PIKALAB_COLLECT_ALL_FAILURES == 'true') && steps.verified_build.outcome == 'success' && steps.browser_setup.outcome == 'success' && needs.scope.result == 'success' && needs.scope.outputs.manabi == 'true' }}"
+        run: |
+          set -euo pipefail
+          cd pikalab
+          if [ -d ../.manabi-baseline/pikalab ]; then
+            export MANABI_BASELINE_ROOT=../.manabi-baseline/pikalab/dist
+          fi
+          npm run test:manabi-e2e
+
+      - name: Run Speed Reader browser E2E
+        if: "${{ !cancelled() && (success() || env.PIKALAB_COLLECT_ALL_FAILURES == 'true') && steps.verified_build.outcome == 'success' && steps.browser_setup.outcome == 'success' && needs.scope.result == 'success' && needs.scope.outputs.speed_reader == 'true' }}"
+        run: |
+          set -euo pipefail
+          cd pikalab
+          # 同じPR基点から構築済みの成果物を再利用し、追加の全体ビルドを避ける。
+          if [ -d ../.manabi-baseline/pikalab/dist ]; then
+            export SPEED_READER_BASELINE_ROOT=../.manabi-baseline/pikalab/dist
+          fi
+          npm run test:speed-reader-e2e
+
+      - name: Run Typing Dojo browser E2E
+        if: "${{ !cancelled() && (success() || env.PIKALAB_COLLECT_ALL_FAILURES == 'true') && steps.verified_build.outcome == 'success' && steps.browser_setup.outcome == 'success' && needs.scope.result == 'success' && needs.scope.outputs.typing_dojo == 'true' }}"
+        run: |
+          set -euo pipefail
+          cd pikalab
+          # 同じPR基点の構築済み成果物を使用する。
+          if [ -d ../.manabi-baseline/pikalab/dist ]; then
+            export TYPING_DOJO_BASELINE_ROOT=../.manabi-baseline/pikalab/dist
+          fi
+          npm run test:typing-dojo-e2e
+
+      - name: Run Kotowaza Quiz browser E2E
+        if: "${{ !cancelled() && (success() || env.PIKALAB_COLLECT_ALL_FAILURES == 'true') && steps.verified_build.outcome == 'success' && steps.browser_setup.outcome == 'success' && needs.scope.result == 'success' && needs.scope.outputs.kotowaza == 'true' }}"
+        run: |
+          set -euo pipefail
+          cd pikalab
+          # 既存の同一PR基点ビルドを再利用する。
+          if [ -d ../.manabi-baseline/pikalab/dist ]; then
+            export KOTOWAZA_QUIZ_BASELINE_ROOT=../.manabi-baseline/pikalab/dist
+          fi
+          npm run test:kotowaza-quiz-e2e
+
+      - name: Run Fraction Lab browser E2E
+        if: "${{ !cancelled() && (success() || env.PIKALAB_COLLECT_ALL_FAILURES == 'true') && steps.verified_build.outcome == 'success' && steps.browser_setup.outcome == 'success' && needs.scope.result == 'success' && needs.scope.outputs.fraction == 'true' }}"
+        run: |
+          set -euo pipefail
+          cd pikalab
+          # 同じPR基点から構築済みの公開成果物を比較する。
+          if [ -d ../.manabi-baseline/pikalab/dist ]; then
+            export FRACTION_LAB_BASELINE_ROOT=../.manabi-baseline/pikalab/dist
+          fi
+          npm run test:fraction-e2e
+
+      - name: Run Focus Studio browser E2E
+        if: "${{ !cancelled() && (success() || env.PIKALAB_COLLECT_ALL_FAILURES == 'true') && steps.verified_build.outcome == 'success' && steps.browser_setup.outcome == 'success' && needs.scope.result == 'success' && needs.scope.outputs.focus == 'true' }}"
+        run: |
+          set -euo pipefail
+          cd pikalab
+          npm run test:focus-e2e
+
+      # 通常成功時は保存せず、失敗・中断・明示的な診断と画面比較の証跡を3日保存する。
+      - name: Checkout code
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
+        with:
+          persist-credentials: false
+
+      - name: Prepare CI dependencies without publishing media
+        run: python3 scripts/public-qa/prepare.py
+
+      - name: Checkout Space Lab baseline
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
+        with:
+          ref: ${{ github.event.pull_request.base.sha || github.event.repository.default_branch }}
+          path: .space-baseline
+          persist-credentials: false
+
+      - name: Prepare CI dependencies without publishing media
+        run: python3 scripts/public-qa/prepare.py --root .space-baseline
+
+      - name: Setup Node.js
+        uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6.5.0
+        with:
+          node-version: "20"
+          cache: npm
+          cache-dependency-path: pikalab/package-lock.json
+      - name: Build actual candidate and baseline
+        run: |
+          set -euo pipefail
+          cd pikalab
+          npm ci --prefer-offline --no-audit --no-fund
+          npm run build:all
+          npm run verify:build
+          git diff --exit-code -- .
+          cd ../.space-baseline/pikalab
+          npm ci --prefer-offline --no-audit --no-fund
+          npm run build:all
+      - name: Cache Playwright browsers
+        id: space-browsers
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-${{ runner.os }}-${{ hashFiles('pikalab/package-lock.json') }}
+      - name: Install browser check dependencies
+        run: |
+          set -euo pipefail
+          cd pikalab
+          npx playwright install-deps chromium
+          if [ "${{ steps.space-browsers.outputs.cache-hit }}" != 'true' ]; then
+            npx playwright install chromium
+          fi
+      - name: Run Space Lab browser E2E
+        run: |
+          set -euo pipefail
+          cd pikalab
+          SPACE_LAB_BASELINE_ROOT=../.space-baseline/pikalab/dist npm run test:space-e2e
+      - name: Checkout code
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
+        with:
+          persist-credentials: false
+
+      - name: Prepare CI dependencies without publishing media
+        run: python3 scripts/public-qa/prepare.py
+
+      - name: Checkout Focus Studio baseline
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
+        with:
+          ref: ${{ github.event.pull_request.base.sha || github.event.repository.default_branch }}
+          path: .focus-baseline
+          persist-credentials: false
+
+      - name: Prepare CI dependencies without publishing media
+        run: python3 scripts/public-qa/prepare.py --root .focus-baseline
+
+      - name: Setup Node.js
+        uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6.5.0
+        with:
+          node-version: "20"
+          cache: npm
+          cache-dependency-path: pikalab/package-lock.json
+      - name: Build actual candidate and baseline
+        run: |
+          set -euo pipefail
+          cd pikalab
+          npm ci --prefer-offline --no-audit --no-fund
+          npm run build:all
+          npm run verify:build
+          git diff --exit-code -- .
+          cd ../.focus-baseline/pikalab
+          npm ci --prefer-offline --no-audit --no-fund
+          npm run build:all
+      - name: Cache Playwright browsers
+        id: focus-browsers
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-${{ runner.os }}-${{ hashFiles('pikalab/package-lock.json') }}
+      - name: Install browser check dependencies
+        run: |
+          set -euo pipefail
+          cd pikalab
+          npx playwright install-deps chromium
+          if [ "${{ steps.focus-browsers.outputs.cache-hit }}" != 'true' ]; then
+            npx playwright install chromium
+          fi
+      - name: Run Focus Studio browser E2E
+        run: |
+          set -euo pipefail
+          cd pikalab
+          FOCUS_STUDIO_BASELINE_ROOT=../.focus-baseline/pikalab/dist npm run test:focus-deep-e2e
+      - name: Checkout code
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
+        with:
+          persist-credentials: false
+
+      - name: Prepare CI dependencies without publishing media
+        run: python3 scripts/public-qa/prepare.py
+
+      - name: Checkout Paper Gen baseline
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
+        with:
+          ref: ${{ github.event.pull_request.base.sha || github.event.repository.default_branch }}
+          path: .paper-baseline
+          persist-credentials: false
+
+      - name: Prepare CI dependencies without publishing media
+        run: python3 scripts/public-qa/prepare.py --root .paper-baseline
+
+      - name: Setup Node.js
+        uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6.5.0
+        with:
+          node-version: "20"
+          cache: npm
+          cache-dependency-path: pikalab/package-lock.json
+      - name: Build actual candidate and baseline
+        run: |
+          set -euo pipefail
+          cd pikalab
+          npm ci --prefer-offline --no-audit --no-fund
+          npm run build:all
+          npm run verify:build
+          git diff --exit-code -- .
+          cd ../.paper-baseline/pikalab
+          npm ci --prefer-offline --no-audit --no-fund
+          npm run build:all
+      - name: Cache Playwright browsers
+        id: paper-browsers
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-${{ runner.os }}-${{ hashFiles('pikalab/package-lock.json') }}
+      - name: Install browser check dependencies
+        run: |
+          set -euo pipefail
+          cd pikalab
+          npx playwright install-deps chromium
+          if [ "${{ steps.paper-browsers.outputs.cache-hit }}" != 'true' ]; then
+            npx playwright install chromium
+          fi
+      - name: Run Paper Gen browser E2E
+        run: |
+          set -euo pipefail
+          cd pikalab
+          PAPER_GEN_BASELINE_ROOT=../.paper-baseline/pikalab/dist npm run test:paper-e2e
+      - name: Checkout code
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
+        with:
+          persist-credentials: false
+
+      - name: Prepare CI dependencies without publishing media
+        run: python3 scripts/public-qa/prepare.py
+
+      - name: Checkout Quest Board baseline
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
+        with:
+          ref: ${{ github.event.pull_request.base.sha || github.event.repository.default_branch }}
+          path: .quest-baseline
+          persist-credentials: false
+
+      - name: Prepare CI dependencies without publishing media
+        run: python3 scripts/public-qa/prepare.py --root .quest-baseline
+
+      - name: Setup Node.js
+        uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6.5.0
+        with:
+          node-version: "20"
+          cache: npm
+          cache-dependency-path: pikalab/package-lock.json
+      - name: Build actual candidate and baseline
+        run: |
+          set -euo pipefail
+          cd pikalab
+          npm ci --prefer-offline --no-audit --no-fund
+          npm run build:all
+          npm run verify:build
+          git diff --exit-code -- .
+          cd ../.quest-baseline/pikalab
+          npm ci --prefer-offline --no-audit --no-fund
+          npm run build:all
+      - name: Cache Playwright browsers
+        id: quest-browsers
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-${{ runner.os }}-${{ hashFiles('pikalab/package-lock.json') }}
+      - name: Install browser check dependencies
+        run: |
+          set -euo pipefail
+          cd pikalab
+          npx playwright install-deps chromium
+          sudo apt-get install -y poppler-utils
+          if [ "${{ steps.quest-browsers.outputs.cache-hit }}" != 'true' ]; then
+            npx playwright install chromium
+          fi
+      - name: Run Quest Board browser E2E
+        run: |
+          set -euo pipefail
+          cd pikalab
+          QUEST_BOARD_BASELINE_ROOT=../.quest-baseline/pikalab/dist npm run test:quest-e2e

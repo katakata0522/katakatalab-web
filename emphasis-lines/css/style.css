@@ -1,0 +1,610 @@
+/* ===========================================
+   フォント設定
+   =========================================== */
+html {
+    scroll-behavior: smooth;
+    scroll-padding-top: 0;
+}
+
+.sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}
+
+/* ===========================================
+   ランディングセクション
+   =========================================== */
+#landing {
+    min-height: 100dvh;
+    display: flex;
+    flex-direction: column;
+}
+
+/* パンくずリスト */
+.landing-breadcrumb {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1rem;
+    font-size: 0.75rem;
+    color: #9ca3af;
+    background: #1f2937;
+    border-bottom: 1px solid #374151;
+}
+
+.landing-breadcrumb a {
+    color: #9ca3af;
+    text-decoration: none;
+    transition: color 0.2s;
+}
+
+.landing-breadcrumb a:hover {
+    color: #60a5fa;
+}
+
+.landing-breadcrumb .sep {
+    color: #4b5563;
+}
+
+.landing-breadcrumb .current {
+    color: #d1d5db;
+}
+
+/* ヒーローセクション */
+.landing-hero {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 3rem 1rem;
+    text-align: center;
+}
+
+.landing-hero-inner {
+    max-width: 640px;
+    margin: 0 auto;
+}
+
+.landing-hero .hero-emoji {
+    font-size: 3.5rem;
+    display: block;
+    margin-bottom: 1.5rem;
+}
+
+.landing-hero h1 {
+    font-size: 1.8rem;
+    font-weight: 800;
+    line-height: 1.3;
+    margin-bottom: 1rem;
+}
+
+.landing-hero h1 .highlight {
+    color: #60a5fa;
+}
+
+.landing-hero .hero-desc {
+    color: #9ca3af;
+    font-size: 1rem;
+    line-height: 1.8;
+    margin-bottom: 2rem;
+}
+
+/* CTAボタン */
+.landing-cta {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: linear-gradient(135deg, #2563eb, #3b82f6);
+    color: white;
+    font-weight: 700;
+    padding: 0.875rem 2rem;
+    border-radius: 0.75rem;
+    text-decoration: none;
+    font-size: 1rem;
+    box-shadow: 0 4px 14px rgba(37, 99, 235, 0.3);
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.landing-cta:hover {
+    transform: scale(1.05);
+    box-shadow: 0 6px 20px rgba(37, 99, 235, 0.4);
+}
+
+/* 特徴セクション */
+.landing-features {
+    background: #1f2937;
+    border-top: 1px solid #374151;
+    border-bottom: 1px solid #374151;
+    padding: 3rem 1rem;
+}
+
+.landing-features-inner {
+    max-width: 960px;
+    margin: 0 auto;
+}
+
+.landing-features h2 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.landing-features-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1.25rem;
+}
+
+.landing-feature-card {
+    background: rgba(55, 65, 81, 0.5);
+    border-radius: 0.75rem;
+    padding: 1.5rem;
+    text-align: center;
+}
+
+.landing-feature-card .feature-icon {
+    font-size: 2rem;
+    margin-bottom: 0.75rem;
+}
+
+.landing-feature-card h3 {
+    font-weight: 700;
+    font-size: 1.1rem;
+    margin-bottom: 0.5rem;
+}
+
+.landing-feature-card p {
+    color: #9ca3af;
+    font-size: 0.875rem;
+    line-height: 1.6;
+}
+
+/* FAQセクション */
+.landing-faq {
+    padding: 3rem 1rem;
+}
+
+.landing-faq-inner {
+    max-width: 640px;
+    margin: 0 auto;
+}
+
+.landing-faq h2 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.landing-faq details {
+    background: #1f2937;
+    border: 1px solid #374151;
+    border-radius: 0.5rem;
+    margin-bottom: 0.75rem;
+}
+
+.landing-faq summary {
+    cursor: pointer;
+    padding: 1rem;
+    font-weight: 700;
+    font-size: 0.875rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    list-style: none;
+    transition: color 0.2s;
+}
+
+.landing-faq summary:hover {
+    color: #60a5fa;
+}
+
+.landing-faq summary::-webkit-details-marker {
+    display: none;
+}
+
+.landing-faq details p {
+    padding: 0 1rem 1rem;
+    font-size: 0.875rem;
+    color: #9ca3af;
+    line-height: 1.7;
+}
+
+.landing-faq .cta-wrap {
+    text-align: center;
+    margin-top: 2.5rem;
+}
+
+/* レスポンシブ：デスクトップ */
+@media (min-width: 768px) {
+    .landing-hero {
+        padding: 5rem 1rem;
+    }
+
+    .landing-hero h1 {
+        font-size: 2.8rem;
+    }
+
+    .landing-hero .hero-desc {
+        font-size: 1.15rem;
+    }
+
+    .landing-cta {
+        font-size: 1.1rem;
+        padding: 1rem 2.5rem;
+    }
+
+    .landing-features {
+        padding: 4rem 1rem;
+    }
+
+    .landing-features-grid {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 1.5rem;
+    }
+
+    .landing-faq {
+        padding: 4rem 1rem;
+    }
+}
+
+body {
+    font-family: 'Noto Sans JP', 'Inter', system-ui, -apple-system, sans-serif;
+    touch-action: manipulation;
+}
+
+.font-body {
+    font-family: 'Noto Sans JP', 'Inter', system-ui, -apple-system, sans-serif;
+}
+
+.font-display {
+    font-family: 'Inter', 'Noto Sans JP', system-ui, sans-serif;
+}
+
+/* カスタムスクロールバー */
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: #1f2937;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #4b5563;
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #6b7280;
+}
+
+/* ===========================================
+   レスポンシブ対応：タッチターゲットの拡大
+   =========================================== */
+
+/* ボタンの最小タッチ領域（44px推奨に準拠） */
+.touch-target {
+    min-height: 44px;
+    min-width: 44px;
+}
+
+/* ヘッダーボタンのタッチ領域拡大 */
+header button {
+    min-width: 40px;
+    min-height: 40px;
+}
+
+@media (max-width: 640px) {
+    header button {
+        min-width: 44px;
+        min-height: 44px;
+    }
+}
+
+/* ===========================================
+   レンジスライダーのカスタマイズ（レスポンシブ）
+   =========================================== */
+input[type=range] {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 100%;
+    background: transparent;
+    padding: 8px 0;
+    margin: 0;
+}
+
+/* デスクトップ用スライダーつまみ */
+input[type=range]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    height: 18px;
+    width: 18px;
+    border-radius: 50%;
+    background: #3b82f6;
+    cursor: pointer;
+    margin-top: -7px;
+    box-shadow: 0 0 4px rgba(0, 0, 0, 0.4);
+    transition: transform 0.15s ease;
+}
+
+input[type=range]::-webkit-slider-thumb:hover {
+    transform: scale(1.15);
+}
+
+input[type=range]::-webkit-slider-thumb:active {
+    transform: scale(1.2);
+    background: #60a5fa;
+}
+
+/* デスクトップ用スライダートラック */
+input[type=range]::-webkit-slider-runnable-track {
+    width: 100%;
+    height: 5px;
+    cursor: pointer;
+    background: #4b5563;
+    border-radius: 3px;
+}
+
+/* モバイル用スライダー（より大きなつまみ） */
+@media (max-width: 640px) {
+    input[type=range] {
+        padding: 12px 0;
+    }
+
+    input[type=range]::-webkit-slider-thumb {
+        height: 24px;
+        width: 24px;
+        margin-top: -10px;
+    }
+
+    input[type=range]::-webkit-slider-runnable-track {
+        height: 6px;
+    }
+}
+
+/* Firefox用スライダースタイル */
+input[type=range]::-moz-range-thumb {
+    height: 18px;
+    width: 18px;
+    border-radius: 50%;
+    background: #3b82f6;
+    cursor: pointer;
+    border: none;
+    box-shadow: 0 0 4px rgba(0, 0, 0, 0.4);
+}
+
+input[type=range]::-moz-range-track {
+    width: 100%;
+    height: 5px;
+    cursor: pointer;
+    background: #4b5563;
+    border-radius: 3px;
+}
+
+@media (max-width: 640px) {
+    input[type=range]::-moz-range-thumb {
+        height: 24px;
+        width: 24px;
+    }
+
+    input[type=range]::-moz-range-track {
+        height: 6px;
+    }
+}
+
+/* ===========================================
+   Canvasエリアのグリッド背景（透明表現）
+   =========================================== */
+.checkered-bg {
+    background-image:
+        linear-gradient(45deg, #2a2a2a 25%, transparent 25%),
+        linear-gradient(-45deg, #2a2a2a 25%, transparent 25%),
+        linear-gradient(45deg, transparent 75%, #2a2a2a 75%),
+        linear-gradient(-45deg, transparent 75%, #2a2a2a 75%);
+    background-size: 20px 20px;
+    background-position: 0 0, 0 10px, 10px -10px, -10px 0px;
+    background-color: #1a1a1a;
+}
+
+/* ===========================================
+   中心点インジケーター
+   =========================================== */
+.center-point-indicator {
+    z-index: 5;
+    transition: opacity 0.2s ease;
+}
+
+.center-point-indicator .center-coords {
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    pointer-events: none;
+}
+
+.center-point-indicator:not(.hidden) .center-coords {
+    animation: fadeInCoords 0.3s ease 0.5s forwards;
+}
+
+@keyframes fadeInCoords {
+    to {
+        opacity: 1;
+    }
+}
+
+/* ===========================================
+   アップロードラベルのアニメーション制御
+   =========================================== */
+.upload-label {
+    animation: gentlePulse 3s ease-in-out 3;
+}
+
+.upload-label.no-pulse {
+    animation: none;
+}
+
+@keyframes gentlePulse {
+
+    0%,
+    100% {
+        border-color: #3b82f6;
+    }
+
+    50% {
+        border-color: #60a5fa;
+        box-shadow: 0 0 12px rgba(59, 130, 246, 0.3);
+    }
+}
+
+/* ===========================================
+   スライダーツールチップ
+   =========================================== */
+.slider-tooltip {
+    position: absolute;
+    background: #2563eb;
+    color: white;
+    font-size: 11px;
+    font-weight: 600;
+    padding: 2px 8px;
+    border-radius: 4px;
+    white-space: nowrap;
+    pointer-events: none;
+    transform: translateX(-50%) translateY(-100%);
+    opacity: 0;
+    transition: opacity 0.15s ease;
+    z-index: 30;
+    font-family: 'Inter', monospace;
+}
+
+.slider-tooltip::after {
+    content: '';
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    border: 4px solid transparent;
+    border-top-color: #2563eb;
+}
+
+.slider-tooltip.visible {
+    opacity: 1;
+}
+
+/* ===========================================
+   カラープリセット選択状態
+   =========================================== */
+.color-preset.active {
+    border-color: white !important;
+    box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.5);
+    transform: scale(1.1);
+}
+
+.color-preset {
+    transition: transform 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+/* ===========================================
+   フッター
+   =========================================== */
+footer a {
+    text-decoration: none;
+}
+
+footer a:hover {
+    text-decoration: underline;
+}
+
+/* ===========================================
+   キーボードショートカットの kbd スタイル
+   =========================================== */
+kbd {
+    font-family: 'Inter', monospace;
+    font-size: 10px;
+    font-weight: 500;
+}
+
+/* ===========================================
+   モバイル向けレイアウト調整
+   =========================================== */
+
+/* パネルのパディング調整 */
+@media (max-width: 640px) {
+    .panel-content {
+        padding: 0.75rem !important;
+    }
+
+    .control-group {
+        margin-bottom: 0.75rem;
+    }
+
+    /* 説明テキストをコンパクトに */
+    .panel-text-sm {
+        font-size: 0.7rem;
+    }
+
+    /* フォームラベルを省スペース化 */
+    .panel-sub-text {
+        margin-top: 0.25rem;
+        font-size: 0.65rem;
+    }
+
+    /* フッターはモバイルでさらにコンパクト */
+    footer {
+        height: 24px;
+    }
+}
+
+/* ===========================================
+   タブレット・デスクトップ用微調整
+   =========================================== */
+@media (min-width: 768px) {
+    .custom-scrollbar {
+        scroll-behavior: smooth;
+    }
+}
+
+/* ===========================================
+   アクセシビリティ：フォーカス状態
+   =========================================== */
+button:focus-visible,
+input:focus-visible,
+select:focus-visible {
+    outline: 2px solid #60a5fa;
+    outline-offset: 2px;
+}
+
+/* チェックボックスのタッチ領域拡大 */
+input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    cursor: pointer;
+}
+
+@media (max-width: 640px) {
+    input[type="checkbox"] {
+        width: 22px;
+        height: 22px;
+    }
+}
+
+/* ===========================================
+   reduced motion 対応
+   =========================================== */
+@media (prefers-reduced-motion: reduce) {
+
+    .upload-label,
+    .slider-tooltip,
+    .center-point-indicator,
+    .color-preset {
+        animation: none !important;
+        transition: none !important;
+    }
+}

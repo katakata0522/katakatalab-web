@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex, follow">
+    <title>CSSサイズ設計の実例 | px/rem変換とサイズ表の作り方</title>
+    <meta name="description" content="Web制作で文字サイズ、余白、ボタン、カードの寸法を揃えるための考え方を、px/rem変換とあわせて整理したガイドです。">
+    <link rel="canonical" href="https://katakatalab.com/guides/css-size-scale-guide.html">
+    <meta property="og:title" content="CSSサイズ設計の実例 | KatakataLab">
+    <meta property="og:description" content="px/rem変換と一緒に、文字サイズや余白を揃えるための実例をまとめました。">
+    <meta property="og:type" content="article">
+    <meta property="og:url" content="https://katakatalab.com/guides/css-size-scale-guide.html">
+    <meta property="og:image" content="https://katakatalab.com/ogp.png">
+    <meta name="twitter:card" content="summary_large_image">
+    <link rel="stylesheet" href="../style.css">
+    <link rel="icon" href="../icon.svg" type="image/svg+xml">
+</head>
+<body>
+    <script>try{if(localStorage.getItem('theme')==='dark')document.body.classList.add('dark-mode');}catch(e){}</script>
+    <header class="header">
+        <div class="container header-container">
+            <a href="../#home" class="logo"><span class="logo-icon">🧪</span><span class="logo-text">KatakataLab</span></a>
+            <nav class="nav">
+                <ul class="nav-list">
+                    <li><a href="../#projects" class="nav-link">ツール</a></li>
+                    <li><a href="../who-is-katakata.html" class="nav-link">運営者</a></li>
+                    <li><a href="../contact.html" class="nav-link">お問い合わせ</a></li>
+                </ul>
+            </nav>
+            <div class="header-actions">
+                <button type="button" id="theme-toggle" class="theme-btn" aria-label="テーマ切り替え">
+    <svg viewBox="0 0 24 24" class="svg-icon svg-moon" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/>
+    </svg>
+    <svg viewBox="0 0 24 24" class="svg-icon svg-sun" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="display: none;">
+        <circle cx="12" cy="12" r="4"/>
+        <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/>
+    </svg>
+</button>
+                <button type="button" class="menu-toggle" aria-label="メニューを開く">
+                    <span class="bar"></span><span class="bar"></span><span class="bar"></span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main class="guide-page">
+
+        <section class="section">
+            <div class="guide-hero-card">
+                <span class="guide-kicker">CSS Size Guide</span>
+                <h1>CSSのサイズは、先に「よく使う段階」を決めると揃えやすいです</h1>
+                <p class="guide-intro">pxをremに変換できても、毎回違う数字を使っていると画面全体は揃いません。ここでは、見出し、本文、余白、ボタンを小さなサイズ表として整理する考え方をまとめます。</p>
+                <p class="guide-note">作成者: かたかた / 更新日: 2026年7月22日</p>
+                <div class="guide-actions">
+                    <a href="../px-rem-converter/" class="btn btn-primary">px/remを変換する</a>
+                    <a href="px-rem-guide.html" class="btn btn-secondary">単位の基本を見る</a>
+                </div>
+            </div>
+        </section>
+
+        <section class="section">
+            <div class="guide-section-card">
+                <h2>最初に作ると楽なサイズ表</h2>
+                <p>小さなサイトでも、本文、補足、見出し、余白の基準を決めておくと見た目が安定します。以下のような表を先に作るだけで、CSSを書きながら迷う時間が減ります。</p>
+                <div class="responsive-table-container"><table class="guide-table">
+                    <thead><tr><th>用途</th><th>px</th><th>rem(16px基準)</th></tr></thead>
+                    <tbody>
+                        <tr><td>補足テキスト</td><td>14px</td><td>0.875rem</td></tr>
+                        <tr><td>本文</td><td>16px</td><td>1rem</td></tr>
+                        <tr><td>小見出し</td><td>20px</td><td>1.25rem</td></tr>
+                        <tr><td>大見出し</td><td>32px</td><td>2rem</td></tr>
+                    </tbody>
+                </table></div>
+                <h2>CSS変数に落とす実例</h2>
+                <p>数値を決めたら、使用箇所に直接書き散らさず、役割が分かる変数名へまとめます。本文サイズや余白をまとめて見直せるため、スマホ調整の手戻りを減らせます。</p>
+                <div class="guide-callout">
+                    <pre><code>:root {
+  --text-body: 1rem;
+  --text-heading: 2rem;
+  --space-sm: 0.5rem;
+  --space-md: 1rem;
+  --space-lg: 2rem;
+}</code></pre>
+                </div>
+            </div>
+
+            <div class="guide-section-card">
+                <h2>余白も段階にすると崩れにくい</h2>
+                <p>文字サイズだけ整えても、余白が毎回バラバラだと画面は散らかって見えます。8px、16px、24px、32pxのように、よく使う余白を数段階に絞ると調整しやすくなります。</p>
+                <ul class="guide-checklist">
+                    <li>近い要素同士は小さめの余白にする</li>
+                    <li>セクション同士は大きめの余白にする</li>
+                    <li>カード内の余白は同じルールで揃える</li>
+                    <li>スマホでは余白を少し詰める</li>
+                </ul>
+            </div>
+
+            <div class="guide-section-card">
+                <h2>pxのまま残していいもの</h2>
+                <p>すべてをremにする必要はありません。1pxの線、アイコンの微調整、影のぼかし量などはpxのままの方が意図を保ちやすいです。</p>
+                <div class="guide-callout">
+                    <strong>目安:</strong> 読みやすさに関わる文字・余白はrem寄り。見た目の細かい線や位置はpx寄り。迷ったらこの分け方で十分です。
+                </div>
+                <h2>FAQ</h2>
+                <h3>Q. CSS変数にしたほうがいいですか？</h3>
+                <p>A. よく使う文字サイズや余白はCSS変数にすると後から直しやすいです。単発の調整値まで全部変数にする必要はありません。</p>
+                <h3>Q. スマホとPCで同じremを使っていいですか？</h3>
+                <p>A. 使えます。ただし、見出しやセクション余白はメディアクエリで少し抑えた方が収まりやすいです。</p>
+            </div>
+
+            <div class="guide-section-card">
+                <h2>実装前の確認チェック</h2>
+                <p>サイズ表は、数字を揃えること自体が目的ではありません。読む人が迷わず操作でき、画面幅や設定を変えても破綻しないかを最後に確認します。</p>
+                <ul class="guide-checklist">
+                    <li><strong>読みやすさ:</strong> 本文と補足の差を小さくしすぎず、行間と行の長さも一緒に確認する。</li>
+                    <li><strong>アクセシビリティ:</strong> 文字サイズを拡大しても内容が隠れないようにし、ボタンのラベルやフォーカス表示を残す。</li>
+                    <li><strong>レスポンシブ:</strong> PCのサイズをそのまま縮めるのではなく、見出し・余白・カード幅をスマホで再確認する。</li>
+                    <li><strong>保守性:</strong> 役割の近い数値だけをCSS変数にまとめ、例外値には理由をコメントや命名で残す。</li>
+                </ul>
+                <h3>迷ったときの判断順</h3>
+                <p>まず本文の読みやすさを確保し、次に見出しの階層、最後に余白と装飾を調整します。見た目を揃えるために文字を小さくするのではなく、必要な情報が読み取れることを優先するのが安全です。</p>
+            </div>
+        </section>
+    </main>
+
+    <div class="menu-overlay" id="menu-overlay" aria-hidden="true"></div>
+    <div class="mobile-menu drawer-menu" aria-hidden="true">
+        <div class="mobile-menu-inner">
+            <nav class="mobile-nav" aria-label="モバイルナビゲーション">
+                <ul class="mobile-nav-list">
+                    <li><a href="../who-is-katakata.html" class="mobile-nav-link">🧑‍💻 かたかたって誰？</a></li>
+                    <li><a href="../about-katakatalab.html" class="mobile-nav-link">🧪 KatakataLabについて</a></li>
+                    <li><a href="../note-selection.html" class="mobile-nav-link">📝 かたかたのnote</a></li>
+                    <li><a href="../contact.html" class="mobile-nav-link">✉️ お問い合わせ</a></li>
+                    <li class="mobile-nav-sep"></li>
+                    <li><a href="../terms.html" class="mobile-nav-link">📄 利用規約</a></li>
+                    <li><a href="../privacy.html" class="mobile-nav-link">🔒 プライバシーポリシー</a></li>
+                </ul>
+            </nav>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-links">
+                <a href="../contact.html">お問い合わせ</a>
+                <a href="../who-is-katakata.html">運営者情報</a>
+                <a href="../terms.html" target="_blank" rel="noopener noreferrer">利用規約</a>
+                <a href="../privacy.html" target="_blank" rel="noopener noreferrer">プライバシーポリシー</a>
+                <a href="../sitemap.html">サイトマップ</a>
+            </div>
+            <p>&copy; 2024-2026 KatakataLab. All Rights Reserved.</p>
+        </div>
+    </footer>
+    <script src="../script.js"></script>
+</body>
+</html>

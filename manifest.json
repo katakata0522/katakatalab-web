@@ -1,0 +1,31 @@
+{
+  "id": "/",
+  "name": "KatakataLab",
+  "short_name": "KatakataLab",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#FFFBF0",
+  "theme_color": "#FF7675",
+  "lang": "ja",
+  "description": "つくる人の小さな実験室。KatakataLab.",
+  "icons": [
+    {
+      "src": "icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ]
+}

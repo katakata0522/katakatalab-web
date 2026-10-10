@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>【IT用語】「Git（ギット）」とは？変更履歴を残すタイムマシン | KatakataLab</title>
+  <meta name="description" content="Gitとは何かを、コミットやブランチ、GitHubとの違い、チーム開発で変更履歴が役立つ理由まで非エンジニアにも分かる言葉で解説します。">
+  <link rel="canonical" href="https://katakatalab.com/guides/it-basics/git.html">
+  <meta property="og:type" content="article">
+  <meta property="og:site_name" content="KatakataLab">
+  <meta property="og:title" content="【IT用語】「Git（ギット）」とは？変更履歴を残すタイムマシン">
+  <meta property="og:description" content="Gitとは何かを、コミットやブランチ、GitHubとの違い、チーム開発で変更履歴が役立つ理由まで非エンジニアにも分かる言葉で解説します。">
+  <meta property="og:url" content="https://katakatalab.com/guides/it-basics/git.html">
+  <meta property="og:image" content="https://katakatalab.com/ogp.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="icon" href="../../favicon.ico">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&family=Zen+Kurenaido&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css?v=20260824-responsive">
+  <script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": "【IT用語】「Git（ギット）」とは？変更履歴を残すタイムマシン",
+  "description": "Gitとは何かを、コミットやブランチ、GitHubとの違い、チーム開発で変更履歴が役立つ理由まで非エンジニアにも分かる言葉で解説します。",
+  "datePublished": "2026-07-13",
+  "dateModified": "2026-08-04",
+  "mainEntityOfPage": "https://katakatalab.com/guides/it-basics/git.html",
+  "inLanguage": "ja",
+  "author": {
+    "@type": "Person",
+    "name": "かたかた",
+    "url": "https://katakatalab.com/who-is-katakata.html"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "KatakataLab",
+    "url": "https://katakatalab.com/"
+  }
+}</script>
+  <script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position": 1,
+      "name": "ホーム",
+      "item": "https://katakatalab.com/"
+    },
+    {
+      "@type": "ListItem",
+      "position": 2,
+      "name": "かたかたの制作ノート",
+      "item": "https://katakatalab.com/guides/it-basics/"
+    },
+    {
+      "@type": "ListItem",
+      "position": 3,
+      "name": "【IT用語】「Git（ギット）」とは？変更履歴を残すタイムマシン",
+      "item": "https://katakatalab.com/guides/it-basics/git.html"
+    }
+  ]
+}</script>
+</head>
+<body>
+    <script>try{if(localStorage.getItem('theme')==='dark')document.body.classList.add('dark-mode');}catch(e){}</script>
+  <a class="skip-link" href="#main-content">本文へ移動</a>
+  <header class="site-header">
+    <div class="header-inner">
+      <a class="brand" href="../../" aria-label="KatakataLab ホーム">
+        <span class="brand-mark" aria-hidden="true">K</span>
+        <span><strong>KatakataLab</strong><small>かたかたの制作ノート</small></span>
+      </a>
+      <nav class="site-nav" aria-label="主要ナビゲーション">
+        <a href="./">記事一覧</a>
+        <a href="../../#projects">作品・ツール</a>
+        <a href="../../who-is-katakata.html">運営者</a>
+      </nav>
+    </div>
+  </header>
+  <main id="main-content">
+    <nav class="breadcrumbs" aria-label="パンくずリスト">
+      <a href="../../">ホーム</a><span aria-hidden="true">/</span><a href="./">かたかたの制作ノート</a><span aria-hidden="true">/</span><span aria-current="page">「Git（ギット）」とは？変更履歴を残すタイムマシン</span>
+    </nav>
+    <article class="article-shell">
+      <header class="article-hero">
+        <div class="chapter-stamp"><span>CHAPTER 02</span><strong>GIT</strong></div>
+        <p class="chapter-name">第2章｜開発の流れ</p>
+        <h1>【IT用語】「Git（ギット）」とは？変更履歴を残すタイムマシン</h1>
+        <p class="article-lead">Gitとは何かを、コミットやブランチ、GitHubとの違い、チーム開発で変更履歴が役立つ理由まで非エンジニアにも分かる言葉で解説します。</p>
+        <div class="article-meta" aria-label="記事情報">
+          <span>作成者：かたかた</span><span>公開日：2026年7月13日</span><span>更新日：2026年8月4日</span>
+        </div>
+      </header>
+      <div class="article-layout">
+        <aside class="article-toc" aria-label="目次"><p>このページの目次</p><ol><li><a href="#section-1">結論：「Git」＝「プロジェクトの変更履歴を記録する仕組み」</a></li>
+<li><a href="#section-2">Gitでできること</a></li>
+<li><a href="#section-3">GitとGitHubは別物</a></li>
+<li><a href="#section-4">GitはWordやExcelにも使える？</a></li>
+<li><a href="#section-5">チーム作業で役立つ理由</a></li>
+<li><a href="#section-6">KatakataLabで実際に確認したこと</a></li>
+<li><a href="#section-talk">この言葉が会話に出てくるとき</a></li>
+<li><a href="#section-misread">勘違いしやすい点</a></li>
+<li><a href="#section-7">まとめ</a></li></ol></aside>
+        <div class="article-content">
+          <p><code>企画書_最新.docx</code></p>
+<p><code>企画書_最終_v2.docx</code></p>
+<p><code>企画書_本当に最終.docx</code></p>
+<p>ファイル名で履歴を残そうとして、どれが最新版か分からなくなった経験はありませんか？</p>
+<p>Git（ギット）は、こうした変更履歴を管理するための道具です。</p>
+<section class="article-section" aria-labelledby="section-1"><h2 id="section-1">結論：「Git」＝「プロジェクトの変更履歴を記録する仕組み」</h2>
+<p>Gitは、<strong>「いつ、誰が、どのファイルを、どのように変更したか」</strong>を記録するバージョン管理システムです。</p>
+<p>過去の状態と今の状態を比べたり、問題が起きる前の内容を確認したりできます。ゲームに例えるなら、複数のセーブポイントを管理できる仕組みに近いでしょう。</p>
+<p>ただし、Gitが作業中の内容を自動で保存してくれるわけではありません。記録したい変更を選び、次の章で紹介する「コミット」を行って、初めて履歴に残ります。</p>
+</section>
+<section class="article-section" aria-labelledby="section-2"><h2 id="section-2">Gitでできること</h2>
+<h3>1. 変更内容を確認する</h3>
+<p>「昨日から何を変えたのか」「この行を誰が変更したのか」を調べられます。</p>
+<h3>2. 過去の状態を確認する</h3>
+<p>コミットとして記録した時点のファイルを取り出したり、変更を打ち消したりできます。</p>
+<h3>3. 作業を枝分かれさせる</h3>
+<p>Gitでは、変更の流れを<strong>「ブランチ」</strong>として分けられます。</p>
+<ul>
+<li><strong>mainブランチ：</strong> 安定した本流。</li>
+<li><strong>featureブランチ：</strong> 新機能などを試す作業用の流れ。</li>
+</ul>
+<p>本流を保ったまま別のブランチで作業し、完成したら変更を合流できます。この合流が「マージ」です。</p>
+</section>
+<section class="article-section" aria-labelledby="section-3"><h2 id="section-3">GitとGitHubは別物</h2>
+<p>名前が似ていますが、役割は違います。</p>
+<ul>
+<li><strong>Git：</strong> PC上でも使える、変更履歴を管理する道具。</li>
+<li><strong>GitHub：</strong> Gitのリポジトリをオンラインで共有し、レビューや共同作業を行えるサービス。</li>
+</ul>
+<p>例えるなら、Gitは写真を撮って整理するカメラ、GitHubは写真を共有して話し合えるオンラインアルバムです。</p>
+<p>Gitだけでも履歴は作れます。しかし、PC内だけに保存している状態では、そのPCやストレージが故障した時に履歴ごと失う可能性があります。大切な作業は、GitHubなどの別の場所にも送っておくと安心です。</p>
+</section>
+<section class="article-section" aria-labelledby="section-4"><h2 id="section-4">GitはWordやExcelにも使える？</h2>
+<p>Gitは多くのファイルを管理できますが、特に力を発揮するのは、ソースコードやMarkdownのようなテキストファイルです。</p>
+<p>WordやExcelのファイルも保存できますが、中身の差分を人が読みやすい形で比較しにくい場合があります。共同編集や文書の版管理では、Microsoft 365など別の仕組みが向くこともあります。</p>
+</section>
+<section class="article-section" aria-labelledby="section-5"><h2 id="section-5">チーム作業で役立つ理由</h2>
+<p>複数人が同じ場所を変更すると、Gitは自動で統合できないことがあります。これが「コンフリクト」です。</p>
+<p>Gitは衝突を見つける手助けをしてくれますが、どちらの内容を残すかを決めるのは人間です。Gitを使えば事故がゼロになるのではなく、<strong>変更を見えるようにし、相談しながら直せる</strong>ようになります。</p>
+</section>
+<section class="article-section" aria-labelledby="section-6"><h2 id="section-6">KatakataLabで実際に確認したこと</h2>
+<p>KatakataLabでは、トップページ、各ツール、テスト、公開設定を同じリポジトリで管理しています。修正前には <code>git status --short</code> で変更中のファイルを確認し、<code>git diff</code> で意図しない文章や設定が混ざっていないかを読みます。</p>
+<p>公開後に表示が変わった時は、直近の履歴と現在のファイルを比べます。Gitの履歴だけで原因を断定せず、自動テストや本番ページの本文も照合することで、「コードは変わったが公開されていない」「古いキャッシュを見ている」といった別の問題を切り分けられました。</p>
+</section>
+<section class="article-section" aria-labelledby="section-talk"><h2 id="section-talk">この言葉が会話に出てくるとき</h2>
+<p>例えば、「先週の見出しに戻したい」となったときです。上書き保存だけだと、途中の版を取り出せません。</p>
+<p>例えば、公開前に「何を変えたか」を見直すときです。ファイル単位ではなく、意味のあるまとまりで差分を見ます。</p>
+</section>
+<section class="article-section" aria-labelledby="section-misread"><h2 id="section-misread">勘違いしやすい点</h2>
+<ul>
+<li><strong>GitHubと同じ：</strong> Gitは履歴の仕組み、GitHubはその履歴を共有する場所のひとつです。</li>
+<li><strong>チームだけの道具：</strong> 一人でも、「いつ・何を・なぜ」を残す説明書になります。</li>
+<li><strong>保存すれば消えない：</strong> 同じPCの中だけなら、故障と一緒に失うことがあります。</li>
+</ul>
+<p>使う理由は速さより、戻れることと、変更の意図を残すことです。</p>
+</section>
+<section class="article-section" aria-labelledby="section-7"><h2 id="section-7">まとめ</h2>
+<ul>
+<li><strong>Git</strong> ＝ <strong>「プロジェクトの変更履歴を管理する仕組み」</strong></li>
+<li><strong>コミット</strong> ＝ <strong>「選んだ変更を履歴として記録すること」</strong></li>
+<li><strong>ブランチ</strong> ＝ <strong>「本流から分けた作業の流れ」</strong></li>
+<li><strong>GitHub</strong> ＝ <strong>「Gitの履歴を共有し、共同作業できるサービス」</strong></li>
+</ul>
+<p>Gitは魔法の自動保存ではありません。それでも、正しく記録を残せば、「どこで何を変えたのか」をたどれる頼もしい道具になります。</p>
+<p>次の記事では、Gitに履歴を残す「コミット」について解説します。</p>
+<p>ここまでお読みいただきありがとうございました！</p>
+</section>
+          <aside class="lab-example" aria-labelledby="lab-example-title">
+            <p class="eyebrow">FROM THE LAB</p>
+            <h2 id="lab-example-title">KatakataLabでの実例</h2>
+            <p>KatakataLabでは、サイトのページ、ツール、テスト、公開設定を同じGitリポジトリで管理しています。どの変更がいつ加わったかを追えるため、公開後に問題が見つかった時も調査の手掛かりになります。</p>
+            <p class="related-heading">この実例につながるページ</p>
+            <ul class="related-links"><li><a href="commit.html">関連用語：コミット</a></li>
+<li><a href="../../updates.html">公開後の更新記録</a></li></ul>
+          </aside>
+          <section class="article-section" aria-labelledby="section-ops-git">
+            <h2 id="section-ops-git">一人開発でもGitが効いた場面</h2>
+            <p>mainへ直接載せる前に、壊れた状態を切り戻せる安心感があります。KatakataLabでは文章の増減やツール改修をコミット単位で残し、「いつ・何を・なぜ」変えたかを後から追えるようにしています。</p>
+<ul>
+<li>大きな見た目変更と文言修正を同じコミットに混ぜない</li>
+<li>公開前に差分を読み、意図しない削除がないか見る</li>
+<li>戻したいときは「どのコミットまで正常だったか」を先に決める</li>
+</ul>
+<p>Gitはチーム専用の道具ではなく、未来の自分への説明書でもあります。</p>
+          </section>
+          <section class="article-section faq" aria-labelledby="faq-title">
+            <p class="eyebrow">QUICK CHECK</p>
+            <h2 id="faq-title">よくある質問</h2>
+            <h3>GitとGitHubは同じものですか？</h3>
+            <p>同じではありません。Gitは変更履歴を管理する仕組み、GitHubはGitのリポジトリをネット上で共有し、レビューや自動テストなどを行えるサービスです。</p>
+            <h3>次に読むなら？</h3><p><a href="commit.html">COMMITの記事</a>へ進むと、次の用語を順番に読めます。</p>
+          </section>
+          <section class="article-section references" aria-labelledby="references-title">
+            <h2 id="references-title">参考資料</h2>
+            <p>用語の定義や仕様を確認するため、公式文書・標準文書を参照しています。リンク先の内容は更新される場合があります。</p>
+            <ul><li><a href="https://git-scm.com/book/en/v2/Getting-Started-What-is-Git%3F" target="_blank" rel="noopener noreferrer">Git公式「What is Git?」</a></li>
+<li><a href="https://docs.github.com/ja/get-started/start-your-journey/about-github-and-git" target="_blank" rel="noopener noreferrer">GitHub Docs「GitHubへようこそ」</a></li></ul>
+          </section>
+          <nav class="chapter-nav" aria-label="前後の記事">
+            <a class="chapter-link previous" href="database.html"><small>前の記事</small><span>← DATABASE</span></a>
+            <a class="chapter-link next" href="commit.html"><small>次の記事</small><span>COMMIT →</span></a>
+          </nav>
+        </div>
+      </div>
+    </article>
+  </main>
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <p><strong>KatakataLab</strong><br><span>作って、つまずいて、分かったことを残す小さな研究室。</span></p>
+      <nav aria-label="フッターナビゲーション">
+        <a href="../../contact.html">お問い合わせ</a>
+        <a href="../../who-is-katakata.html">運営者情報</a>
+        <a href="../../privacy.html">プライバシーポリシー</a>
+        <a href="../../sitemap.html">サイトマップ</a>
+      </nav>
+    </div>
+    <p class="copyright">&copy; 2024-2026 KatakataLab</p>
+  </footer>
+</body>
+</html>

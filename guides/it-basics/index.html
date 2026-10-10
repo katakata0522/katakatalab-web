@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>かたかたの制作ノート｜ツール制作で出会ったIT用語16語 | KatakataLab</title>
+  <meta name="description" content="KatakataLabのツール制作で出会ったサーバー、Git、デプロイ、API、JSONなど16のIT用語を、実例と公式資料から整理した初心者向け制作ノートです。">
+  <link rel="canonical" href="https://katakatalab.com/guides/it-basics/">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="KatakataLab">
+  <meta property="og:title" content="かたかたの制作ノート｜ツール制作で出会ったIT用語16語">
+  <meta property="og:description" content="KatakataLabのツール制作で出会ったサーバー、Git、デプロイ、API、JSONなど16のIT用語を、実例と公式資料から整理した初心者向け制作ノートです。">
+  <meta property="og:url" content="https://katakatalab.com/guides/it-basics/">
+  <meta property="og:image" content="https://katakatalab.com/ogp.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="icon" href="../../favicon.ico">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&family=Zen+Kurenaido&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css?v=20260824-responsive">
+  <script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "CollectionPage",
+  "name": "かたかたの制作ノート｜ツール制作で出会ったIT用語",
+  "description": "KatakataLabのツール制作で出会ったサーバー、Git、デプロイ、API、JSONなど16のIT用語を、実例と公式資料から整理した初心者向け制作ノートです。",
+  "url": "https://katakatalab.com/guides/it-basics/",
+  "inLanguage": "ja",
+  "author": {
+    "@type": "Person",
+    "name": "かたかた",
+    "url": "https://katakatalab.com/who-is-katakata.html"
+  }
+}</script>
+</head>
+<body>
+    <script>try{if(localStorage.getItem('theme')==='dark')document.body.classList.add('dark-mode');}catch(e){}</script>
+  <a class="skip-link" href="#main-content">本文へ移動</a>
+  <header class="site-header">
+    <div class="header-inner">
+      <a class="brand" href="../../" aria-label="KatakataLab ホーム">
+        <span class="brand-mark" aria-hidden="true">K</span>
+        <span><strong>KatakataLab</strong><small>かたかたの制作ノート</small></span>
+      </a>
+      <nav class="site-nav" aria-label="主要ナビゲーション">
+        <a href="./">記事一覧</a>
+        <a href="../../#projects">作品・ツール</a>
+        <a href="../../who-is-katakata.html">運営者</a>
+      </nav>
+    </div>
+  </header>
+  <main id="main-content">
+    <section class="hub-hero">
+      <div class="hub-hero-inner">
+        <div class="hero-copy"><p class="eyebrow">KATAKATALAB FIELD NOTES / VOL.01</p><h1>かたかたの<br><span>制作ノート</span></h1><p class="hub-lead">ツール制作で出会ったIT用語を、分かったふりで通り過ぎないためのノートです。KatakataLabで実際に作ったページや公開作業を手掛かりに、16の言葉を一つずつひも解きます。</p><div class="hub-meta"><span>全16記事</span><span>初心者・非エンジニア向け</span><span>2026年8月2日更新</span></div></div>
+        <aside class="note-card" aria-label="この制作ノートの読み方"><span class="tape" aria-hidden="true"></span><p class="handwritten">How to read</p><h2>例えは入口。<br>ゴールは「作る時の使いどころ」が分かること。</h2><p>最初から順番に読んでも、気になる用語だけ選んでも大丈夫です。各記事にはKatakataLabでの実例、関連する制作物、定義を確認できる参考資料を付けています。</p></aside>
+      </div>
+    </section>
+    <div class="hub-content"><section class="chapter-block" aria-labelledby="chapter-1">
+      <header class="chapter-heading"><span>CHAPTER 01</span><div><h2 id="chapter-1">インフラの基礎</h2><p>ITの「土地と建物」</p></div></header>
+      <ol class="article-grid"><li><a class="article-card" href="server.html"><span class="card-number">01</span><span class="card-label">SERVER</span><h3>「サーバー」とは？雲の上ではなく、サービスを支える働き手</h3><p>サーバーとは何かを、クライアントとの関係、Web・メール・データベースの役割、障害が起きる理由まで初心者向けにやさしく解説します。</p><span class="card-action">記事を読む <span aria-hidden="true">→</span></span></a></li>
+<li><a class="article-card" href="cloud.html"><span class="card-number">02</span><span class="card-label">CLOUD</span><h3>「クラウド」とは？空の上ではなく、必要な時に使えるIT資源</h3><p>クラウドの意味を、IaaS・PaaS・SaaSの違い、オンプレミスとの比較、費用と安全性の注意点まで初心者向けに整理します。</p><span class="card-action">記事を読む <span aria-hidden="true">→</span></span></a></li>
+<li><a class="article-card" href="database.html"><span class="card-number">03</span><span class="card-label">DATABASE</span><h3>「データベース(DB)」とは？情報を整理して取り出す仕組み</h3><p>データベースとは何かを、Excelとの違い、検索を助けるインデックス、安全な更新に必要なトランザクション、SQLの例から解説します。</p><span class="card-action">記事を読む <span aria-hidden="true">→</span></span></a></li></ol>
+    </section>
+<section class="chapter-block" aria-labelledby="chapter-2">
+      <header class="chapter-heading"><span>CHAPTER 02</span><div><h2 id="chapter-2">開発の流れ</h2><p>変更を安全に届ける仕事術</p></div></header>
+      <ol class="article-grid"><li><a class="article-card" href="git.html"><span class="card-number">04</span><span class="card-label">GIT</span><h3>「Git（ギット）」とは？変更履歴を残すタイムマシン</h3><p>Gitとは何かを、コミットやブランチ、GitHubとの違い、チーム開発で変更履歴が役立つ理由まで非エンジニアにも分かる言葉で解説します。</p><span class="card-action">記事を読む <span aria-hidden="true">→</span></span></a></li>
+<li><a class="article-card" href="commit.html"><span class="card-number">05</span><span class="card-label">COMMIT</span><h3>「コミット」とは？変更を履歴に残すセーブポイント</h3><p>コミットとは何かを、上書き保存との違い、良い単位とメッセージ、revert・restore・resetの違い、バックアップとの関係から解説します。</p><span class="card-action">記事を読む <span aria-hidden="true">→</span></span></a></li>
+<li><a class="article-card" href="merge.html"><span class="card-number">06</span><span class="card-label">MERGE</span><h3>「マージ」とは？別々の変更を1つに合流する作業</h3><p>マージとは何かを、ブランチの合流、コンフリクトが起きる理由、人が判断するポイント、統合後に必要なテストまでやさしく解説します。</p><span class="card-action">記事を読む <span aria-hidden="true">→</span></span></a></li>
+<li><a class="article-card" href="pull-request.html"><span class="card-number">07</span><span class="card-label">PULL REQUEST</span><h3>「プルリクエスト」とは？変更を共有して相談する場所</h3><p>プルリクエストとは何かを、変更内容・理由・確認方法の伝え方、レビューとマージや本番公開の違い、小さく分ける利点から解説します。</p><span class="card-action">記事を読む <span aria-hidden="true">→</span></span></a></li>
+<li><a class="article-card" href="deploy.html"><span class="card-number">08</span><span class="card-label">DEPLOY</span><h3>「デプロイ」とは？作ったものを利用できる場所へ届けること</h3><p>デプロイとは何かを、開発・検証・本番環境の違い、ビルドとテスト、CI/CD、キャッシュを含む公開後確認まで初心者向けに解説します。</p><span class="card-action">記事を読む <span aria-hidden="true">→</span></span></a></li></ol>
+    </section>
+<section class="chapter-block" aria-labelledby="chapter-3">
+      <header class="chapter-heading"><span>CHAPTER 03</span><div><h2 id="chapter-3">トラブルへの備え</h2><p>不具合を見つけ、戻さないために</p></div></header>
+      <ol class="article-grid"><li><a class="article-card" href="bug.html"><span class="card-number">09</span><span class="card-label">BUG</span><h3>「バグ」とは？期待した動きとの「ずれ」</h3><p>バグとは何かを、仕様とのずれ、実装・要件・使いやすさの問題、発生する原因、見つけた後に再発を防ぐ考え方まで解説します。</p><span class="card-action">記事を読む <span aria-hidden="true">→</span></span></a></li>
+<li><a class="article-card" href="debug.html"><span class="card-number">10</span><span class="card-label">DEBUG</span><h3>「デバッグ」とは？不具合の原因を一つずつ確かめる作業</h3><p>デバッグとは何かを、症状の確認、再現、原因の切り分け、ログ・ブレークポイント・テスト・Git履歴の使い方から具体的に解説します。</p><span class="card-action">記事を読む <span aria-hidden="true">→</span></span></a></li>
+<li><a class="article-card" href="senzogaeri.html"><span class="card-number">11</span><span class="card-label">REGRESSION</span><h3>「先祖返り」とは？直した問題が戻ってくる現象</h3><p>IT現場でいう「先祖返り」を、古いファイルの上書き、マージ、公開元、キャッシュ、別変更による再発と、その予防策から解説します。</p><span class="card-action">記事を読む <span aria-hidden="true">→</span></span></a></li></ol>
+    </section>
+<section class="chapter-block" aria-labelledby="chapter-4">
+      <header class="chapter-heading"><span>CHAPTER 04</span><div><h2 id="chapter-4">システムの通信</h2><p>サービス同士が会話する仕組み</p></div></header>
+      <ol class="article-grid"><li><a class="article-card" href="api.html"><span class="card-number">12</span><span class="card-label">API</span><h3>「API」とは？ソフトウェア同士をつなぐ窓口とルール</h3><p>APIとは何かを、ソフトウェア同士をつなぐ窓口とルール、Web APIとの違い、認証・利用制限・エラーを確認する理由から解説します。</p><span class="card-action">記事を読む <span aria-hidden="true">→</span></span></a></li>
+<li><a class="article-card" href="endpoint.html"><span class="card-number">13</span><span class="card-label">ENDPOINT</span><h3>「エンドポイント」とは？Web APIの具体的な受付場所</h3><p>エンドポイントとは何かを、ベースURL・パス・HTTPメソッド・クエリパラメータの組み合わせと、失敗する代表的な理由から解説します。</p><span class="card-action">記事を読む <span aria-hidden="true">→</span></span></a></li>
+<li><a class="article-card" href="json.html"><span class="card-number">14</span><span class="card-label">JSON</span><h3>「JSON」とは？データを受け渡すためのシンプルな書式</h3><p>JSONとは何かを、文字列・数値・真偽値・配列・オブジェクト、Excelとの用途の違い、構文エラーと入力検証の必要性から解説します。</p><span class="card-action">記事を読む <span aria-hidden="true">→</span></span></a></li>
+<li><a class="article-card" href="status-code.html"><span class="card-number">15</span><span class="card-label">STATUS CODE</span><h3>「HTTPステータスコード」とは？通信結果を伝える3桁の番号</h3><p>HTTPステータスコードとは何かを、2xx・3xx・4xx・5xxの分類と、401・403・404・500・503の違い、調査時の読み方から解説します。</p><span class="card-action">記事を読む <span aria-hidden="true">→</span></span></a></li>
+<li><a class="article-card" href="security.html"><span class="card-number">16</span><span class="card-label">SECURITY</span><h3>「セキュリティ」とは？情報とサービスを守る考え方</h3><p>セキュリティとは何かを、機密性・完全性・可用性、認証と認可、パスワード保存、多要素認証、多層防御の基本から解説します。</p><span class="card-action">記事を読む <span aria-hidden="true">→</span></span></a></li></ol>
+    </section>
+      <aside class="editor-note"><p class="eyebrow">EDITOR'S NOTE</p><h2>この制作ノートについて</h2><p>作成者の「かたかた」が、KatakataLabで実際に作ったページや公開作業の中で出会った言葉を、初心者の目線へ翻訳しました。一般論の文字数を増やすことより、どこで必要になったか、何を確かめたかが伝わる構成を優先しています。</p><a href="../../who-is-katakata.html">運営者について詳しく見る →</a></aside>
+      <section class="editor-note" aria-labelledby="how-to-read">
+        <p class="eyebrow">HOW TO READ</p>
+        <h2 id="how-to-read">この連載の読み方と、サイトとの関係</h2>
+        <p>IT入門は用語の暗記集ではなく、KatakataLabを作り・公開・直す過程で何度も出会う言葉を、初学者向けに並べたものです。各記事の後半には、可能な範囲でラボでの確認例を置いています。</p>
+        <ul>
+          <li>用語の定義だけ読んで終わらず、<a href="../../guides/case-studies.html">実例集</a>や<a href="../../updates.html">更新履歴</a>も見る</li>
+          <li>わからない言葉は前後の記事へ進み、地図を広げる</li>
+          <li>実装の詳細が知りたい場合は、該当ツールの説明と<a href="../../contact.html">お問い合わせ</a>へ</li>
+        </ul>
+        <p>読み終わったあとに「自分の作業のどこに効く言葉か」を1つメモすると、ただの用語集で終わらなくなります。まずは関心のある<a href="server.html">サーバー</a>か、<a href="api.html">API</a>、<a href="deploy.html">デプロイ</a>から進むのがおすすめです。</p>
+      </section>
+    </div>
+  </main>
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <p><strong>KatakataLab</strong><br><span>作って、つまずいて、分かったことを残す小さな研究室。</span></p>
+      <nav aria-label="フッターナビゲーション">
+        <a href="../../contact.html">お問い合わせ</a>
+        <a href="../../who-is-katakata.html">運営者情報</a>
+        <a href="../../privacy.html">プライバシーポリシー</a>
+        <a href="../../sitemap.html">サイトマップ</a>
+      </nav>
+    </div>
+    <p class="copyright">&copy; 2024-2026 KatakataLab</p>
+  </footer>
+</body>
+</html>

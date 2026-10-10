@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#0a0a0c">
+  <link rel="manifest" href="manifest.json">
+  <title>Gravity-Todo | 演出付きの実験Todo</title>
+  <meta name="description" content="20文字以内のタスクを重力ブロックとして積み、完了や削除で爆破演出する実験Todo。期限や履歴はなく、データはこの端末だけに残ります。">
+  <meta name="robots" content="noindex, follow">
+  <link rel="icon" href="icon.svg" type="image/svg+xml">
+  <link rel="canonical" href="https://katakatalab.com/lab-tools/gravity-todo/">
+
+  <meta property="og:title" content="Gravity-Todo | 演出付きの実験Todo">
+  <meta property="og:description" content="短いタスクを積み上げて爆破する実験用Todo。期限管理ではなく、今日の数件を片づけるための演出です。">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://katakatalab.com/lab-tools/gravity-todo/">
+  <meta property="og:image" content="https://katakatalab.com/lab-tools/gravity-todo/og-image.png">
+  <meta property="og:locale" content="ja_JP">
+  <meta property="og:site_name" content="かたかたラボ">
+  <meta name="twitter:card" content="summary_large_image">
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "Gravity-Todo",
+    "description": "短いタスクを重力ブロックとして積み、完了や削除で爆破する実験Todo。",
+    "applicationCategory": "ProductivityApplication",
+    "operatingSystem": "All",
+    "offers": { "@type": "Offer", "price": "0", "priceCurrency": "JPY" },
+    "inLanguage": "ja"
+  }
+  </script>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;700&family=Noto+Sans+JP:wght@700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css?v=20260824-responsive">
+
+  <script src="vendor/matter.min.js"></script>
+</head>
+<body>
+    <script>try{if(localStorage.getItem('theme')==='dark')document.body.classList.add('dark-mode');}catch(e){}</script>
+  <div class="bg-particles"></div>
+  <div class="noise-overlay"></div>
+  <div id="canvas-container"></div>
+
+  <!-- ヒントバー: hiddenなしで最初から表示 -->
+  <div id="hint-bar" class="hint-bar" role="status" aria-live="polite">
+    <span class="hint-icon">💡</span>
+    <span class="hint-text">下の一覧で <strong>詳細</strong> <strong>完了</strong> <strong>削除</strong>。ブロックはドラッグ、ダブルクリックで詳細、長押しで爆破。</span>
+    <button id="hint-close" class="hint-close" aria-label="閉じる">✕</button>
+  </div>
+
+  <main id="ui-layer">
+    <header class="header">
+      <div class="header-shell">
+        <div class="header-top">
+          <div class="brand-block">
+            <h1>GRAVITY TODO</h1>
+          </div>
+          <div class="header-controls">
+            <button id="install-btn" class="icon-btn hidden" aria-label="アプリをインストール" title="アプリをインストール">📱</button>
+            <button id="rearrange-btn" class="icon-btn" aria-label="ブロックを落として整列" title="ブロックを落として整列" disabled aria-disabled="true">↧</button>
+            <button id="bgm-btn" class="icon-btn" aria-label="BGM ON/OFF" title="BGM ON/OFF">🎵</button>
+            <button id="sfx-mute-btn" class="icon-btn" aria-label="効果音 ON/OFF" title="効果音 ON/OFF" aria-pressed="false">🔇</button>
+            <button id="settings-btn" class="icon-btn" aria-label="カラー設定" aria-expanded="false" aria-controls="settings-panel">⚙</button>
+            <button id="nuke-btn" class="hidden">全爆破</button>
+          </div>
+        </div>
+
+        <div class="status-bar" aria-label="タスク状況">
+          <span class="status-label">TASKS</span>
+          <div class="status-meter" aria-hidden="true"><span id="task-meter-fill"></span></div>
+          <strong id="task-count">0</strong>
+          <span class="status-label" style="margin-left:0.8rem; color:var(--text-dim);">DESTROYED TODAY</span>
+          <strong id="destroy-count" style="color:var(--accent-color);">0</strong>
+          <button id="share-btn" class="icon-btn" aria-label="Xでシェア" title="破壊スコアをXでシェア" style="margin-left:auto; font-family:sans-serif; font-size:1.1rem; padding: 0 4px;">𝕏</button>
+        </div>
+
+        <div id="settings-panel" class="settings-panel hidden" role="dialog" aria-label="カラー設定">
+          <p class="settings-heading">ブロックカラー</p>
+          <div id="preset-list" class="preset-list" role="radiogroup" aria-label="カラープリセット"></div>
+          <div class="custom-colors">
+            <label class="color-label"><span>ブロック色</span><input type="color" id="custom-block-color" value="#1a1a2e"></label>
+            <label class="color-label"><span>枠線色</span><input type="color" id="custom-block-border" value="#ff3366"></label>
+          </div>
+          <p class="settings-note">色を変更すると全ブロックに即時反映されます</p>
+          <hr class="settings-divider">
+          <div class="settings-toggle-row">
+            <div class="settings-toggle-info">
+              <span class="settings-toggle-label">📱 ジャイロ重力</span>
+              <span class="settings-toggle-desc">端末を傾けて動かす</span>
+              <button id="gyro-calibrate-btn" class="settings-text-btn hidden">現在の角度を基準にする</button>
+            </div>
+            <button id="gyro-toggle" class="toggle-switch" role="switch" aria-checked="false" aria-label="ジャイロ重力 ON/OFF">
+              <span class="toggle-thumb"></span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <section class="task-console" aria-label="Todo操作パネル">
+      <div class="task-console-header">
+        <div>
+          <p class="task-console-kicker">TODAY'S DROP</p>
+          <h2 class="task-console-title">落として、片づける</h2>
+        </div>
+        <span id="task-summary" class="task-summary">0件</span>
+      </div>
+
+      <p class="task-guide">ブロックで遊びながら、下の一覧から普通のTodoとして操作できます。</p>
+
+      <details class="tool-guide">
+        <summary>使い方とデータ保存について</summary>
+        <div class="tool-guide-body">
+          <p>入力欄へ今日やることを20文字以内で追加すると、画面内に重力ブロックとして表示されます。完了は達成演出のあと消えます。削除はすぐ消えて、破壊数に加算されます。どちらも4秒以内なら元に戻せます。スワイプでは消しません。</p>
+          <p>タスクと設定はこの端末のブラウザ内に保存され、KatakataLabのサーバーへ送信しません。端末やブラウザを変えた場合は引き継がれず、ブラウザの保存データを消すとタスクも削除されます。大切な予定の唯一の保管場所にはせず、必要に応じて別の予定表やメモにも控えてください。</p>
+          <p>ブロックのドラッグや爆破演出は整理を楽しくするための補助機能です。通常のTodo操作は一覧側だけでも完結します。</p>
+        </div>
+      </details>
+
+      <div id="task-list" class="task-list hidden" aria-label="タスク一覧"></div>
+      <p id="task-empty-state" class="task-empty-state">まず1件DROP。タスクは重力ブロックになり、一覧から詳細・完了・削除できます。</p>
+
+      <div class="input-container">
+        <!-- 追加: カラーラベル選択 -->
+        <div class="task-color-picker" role="radiogroup" aria-label="タスクの色">
+          <label class="color-radio" title="通常">
+            <input type="radio" name="drop-color" value="default" checked>
+            <span class="color-swatch swatch-default"></span>
+          </label>
+          <label class="color-radio" title="仕事 (青)">
+            <input type="radio" name="drop-color" value="work">
+            <span class="color-swatch swatch-work"></span>
+          </label>
+          <label class="color-radio" title="プライベート (緑)">
+            <input type="radio" name="drop-color" value="private">
+            <span class="color-swatch swatch-private"></span>
+          </label>
+          <label class="color-radio" title="急ぎ (赤)">
+            <input type="radio" name="drop-color" value="urgent">
+            <span class="color-swatch swatch-urgent"></span>
+          </label>
+        </div>
+
+        <form id="task-form">
+          <input type="text" id="task-input" placeholder="タスク入力 (!で巨大化, @でピン留め)" autocomplete="off" maxlength="20" required>
+          <button type="submit" class="add-btn">DROP</button>
+        </form>
+        <div class="input-meta">
+          <span class="input-cap">MAX 20文字</span>
+          <span id="char-count">0/20</span>
+        </div>
+        <p id="save-status" class="save-status" hidden></p>
+      </div>
+    </section>
+
+    <footer class="app-footer">
+      <nav aria-label="法的情報">
+        <a href="https://katakatalab.com/privacy.html" target="_blank" rel="noopener">プライバシーポリシー</a>
+        <span class="footer-sep">|</span>
+        <a href="https://katakatalab.com/terms.html" target="_blank" rel="noopener">利用規約</a>
+        <span class="footer-sep">|</span>
+        <a href="https://katakatalab.com/contact.html" target="_blank" rel="noopener">お問い合わせ</a>
+        <span class="footer-sep">|</span>
+        <a href="https://katakatalab.com/" target="_blank" rel="noopener">KatakataLab</a>
+      </nav>
+    </footer>
+  </main>
+
+  <noscript>
+    <div style="position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:#0a0a0c;color:#f4f4f5;font-family:sans-serif;padding:2rem;text-align:center;">
+      <p>Gravity-Todoを利用するにはJavaScriptを有効にしてください。</p>
+    </div>
+  </noscript>
+
+  <!-- タスク詳細パネル（サブタスクチェックリスト） -->
+  <div id="detail-overlay" class="detail-overlay hidden" aria-hidden="true"></div>
+  <div id="task-detail-panel" class="task-detail-panel hidden" role="dialog" aria-modal="true" aria-labelledby="detail-title">
+    <div class="detail-header">
+      <div class="detail-title-block">
+        <p id="detail-subtitle" class="detail-subtitle"></p>
+        <h2 id="detail-title" class="detail-title"></h2>
+      </div>
+      <div class="detail-header-actions">
+        <div class="detail-progress-wrap" aria-hidden="false">
+          <span id="detail-progress" class="detail-progress">0%</span>
+          <span class="detail-progress-track"><span id="detail-progress-fill"></span></span>
+        </div>
+        <button id="detail-explode-btn" class="detail-explode-btn" aria-label="爆破">💥 爆破</button>
+        <button id="detail-close-btn" class="detail-close-btn" aria-label="閉じる">✕</button>
+      </div>
+    </div>
+    <ul id="detail-list" class="detail-list"></ul>
+    <!-- ブロック個別カラー -->
+    <div class="detail-colors">
+      <span class="detail-colors-label">ブロックカラー</span>
+      <label class="detail-color-label" title="背景色">
+        <span>背景</span>
+        <input type="color" id="detail-block-color" value="#1a1a2e">
+      </label>
+      <label class="detail-color-label" title="枠線色">
+        <span>枠線</span>
+        <input type="color" id="detail-block-border" value="#ff3366">
+      </label>
+    </div>
+    <form id="detail-add-form" class="detail-add-form">
+      <input type="text" id="detail-input" class="detail-input" placeholder="サブタスクを追加…" maxlength="40" autocomplete="off">
+      <button type="submit" class="detail-add-btn">追加</button>
+    </form>
+  </div>
+
+  <!-- Undo（元に戻す）スナックバー -->
+  <div id="undo-snackbar" class="undo-snackbar hidden" role="alert">
+    <span data-undo-message>タスクを削除しました</span>
+    <button id="undo-btn" class="undo-btn">元に戻す</button>
+  </div>
+
+  <script type="module" src="src/main.js"></script>
+  <script>
+    if ('serviceWorker' in navigator) {
+      const register = () => navigator.serviceWorker.register('./sw.js', { updateViaCache: 'none' }).catch(err => console.warn('SW registration failed:', err));
+      if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', register, { once: true });
+      else register();
+    }
+  </script>
+</body>
+</html>

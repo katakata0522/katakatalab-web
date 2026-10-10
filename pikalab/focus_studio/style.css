@@ -1,0 +1,359 @@
+/* ============================================
+   CSS Custom Properties (Colors)
+   ============================================ */
+:root {
+    --color-kawaii-primary: #ff9eb5;
+    --color-kawaii-primary-dark: #ff7b9c;
+    --color-kawaii-secondary: #ffd1d1;
+    --color-kawaii-accent: #cdf0ea;
+    --color-kawaii-text: #5e4b52;
+    --color-kawaii-dark: #4a3b40;
+    --color-kawaii-bg: #fff0f5;
+}
+
+#sound-drawer-close-btn,
+#chime-volume-slider,
+#vol-brown,
+#vol-pink,
+#vol-rain,
+#vol-cafe,
+#btn-brown,
+#btn-pink,
+#btn-rain,
+#btn-cafe {
+    min-height: 44px;
+}
+
+#sound-drawer-close-btn,
+#btn-brown,
+#btn-pink,
+#btn-rain,
+#btn-cafe {
+    min-width: 44px;
+}
+
+#sound-drawer details summary {
+    min-height: 44px;
+}
+
+#sound-drawer a {
+    min-height: 44px !important;
+}
+
+#sound-drawer details a {
+    display: inline-flex;
+    align-items: center;
+}
+
+/* Dark Mode */
+.dark {
+    --color-kawaii-bg: #1a1a2e;
+    --color-kawaii-text: #e8e8e8;
+    --color-kawaii-dark: #f0f0f0;
+}
+
+.dark body {
+    background-color: var(--color-kawaii-bg);
+    color: var(--color-kawaii-text);
+}
+
+.dark .glass {
+    background: rgba(40, 40, 60, 0.65);
+    border-color: rgba(80, 80, 100, 0.5);
+}
+
+.dark .task-input-header {
+    background: rgba(40, 40, 60, 0.6);
+    border-color: rgba(80, 80, 100, 0.5);
+    color: var(--color-kawaii-text);
+}
+
+.dark .task-input-header:focus {
+    background: rgba(50, 50, 70, 0.9);
+}
+
+body.theme-night #complete-count-badge {
+    background: #1e293b;
+    border-color: #475569;
+    color: #E2E8F0;
+}
+
+body.theme-night #complete-count {
+    color: #F8FAFC;
+}
+
+/* ============================================
+   Custom Scrollbar (Cross-browser)
+   ============================================ */
+/* Webkit (Chrome, Safari, Edge) */
+::-webkit-scrollbar {
+    width: 6px;
+}
+
+::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--color-kawaii-primary);
+    border-radius: 10px;
+}
+
+/* Firefox */
+* {
+    scrollbar-width: thin;
+    scrollbar-color: var(--color-kawaii-primary) transparent;
+}
+
+/* ============================================
+   Glassmorphism Effect
+   ============================================ */
+.glass {
+    background: rgba(255, 255, 255, 0.65);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 2px solid rgba(255, 255, 255, 0.9);
+    box-shadow: 0 8px 32px 0 rgba(255, 158, 181, 0.15);
+}
+
+/* ============================================
+   Button Active States
+   ============================================ */
+.timer-btn-active {
+    background-color: var(--color-kawaii-primary);
+    color: white;
+    box-shadow: 0 4px 12px rgba(255, 158, 181, 0.4);
+    transform: scale(1.05);
+    border-color: transparent;
+}
+
+.break-btn-active {
+    background-color: var(--color-kawaii-accent);
+    color: #115e59;
+    box-shadow: 0 4px 12px rgba(20, 184, 166, 0.2);
+    transform: scale(1.05);
+    border-color: transparent;
+}
+
+.preset-btn-active {
+    background-color: white;
+    border-color: var(--color-kawaii-primary);
+    color: var(--color-kawaii-primary-dark);
+    box-shadow: 0 0 0 2px #ffc1d0;
+}
+
+/* ============================================
+   Progress Ring
+   ============================================ */
+.progress-ring__circle {
+    transition: stroke-dashoffset 0.35s;
+    transform: rotate(-90deg);
+    transform-origin: 50% 50%;
+}
+
+/* ============================================
+   Task Input Header
+   ============================================ */
+.task-input-header {
+    background: rgba(255, 255, 255, 0.6);
+    border: 2px solid white;
+    transition: all 0.3s ease;
+}
+
+.task-input-header:focus {
+    background: white;
+    border-color: var(--color-kawaii-primary);
+    box-shadow: 0 0 0 3px rgba(255, 158, 181, 0.2);
+}
+
+/* ============================================
+   Reduced Motion Preference
+   ============================================ */
+@media (prefers-reduced-motion: reduce) {
+
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+}
+
+/* ============================================
+   Visibility Improvements for Buttons
+   ============================================ */
+
+/* メイン再生・一時停止ボタンの視認性強化 */
+#btn-main-action {
+    background: linear-gradient(135deg, var(--color-kawaii-primary-dark) 0%, #ff527c 100%) !important;
+    color: white !important;
+    box-shadow: 0 4px 14px rgba(255, 123, 156, 0.4) !important;
+    border: none !important;
+    transition: all 0.2s ease-in-out;
+}
+
+#btn-main-action:hover {
+    transform: scale(1.05);
+    background: linear-gradient(135deg, #ff527c 0%, #e63962 100%) !important;
+    box-shadow: 0 6px 20px rgba(255, 82, 124, 0.6) !important;
+}
+
+#btn-main-action span {
+    color: white !important;
+}
+
+/* リセットボタンの視認性強化 */
+#restart-btn {
+    background-color: #f8fafc !important; /* slate-50 */
+    border: 2px solid #cbd5e1 !important; /* slate-300 */
+    color: var(--color-kawaii-text) !important;
+    transition: all 0.2s ease-in-out;
+}
+
+#restart-btn:hover {
+    background-color: var(--color-kawaii-text) !important;
+    color: white !important;
+    border-color: var(--color-kawaii-text) !important;
+}
+
+#restart-btn span {
+    color: inherit !important;
+}
+
+/* プリセットボタンの輪郭をくっきりさせる */
+.preset-btn {
+    background-color: rgba(255, 255, 255, 0.9) !important;
+    border: 2px solid #cbd5e1 !important; /* slate-300 */
+    color: var(--color-kawaii-text) !important;
+}
+
+.preset-btn:hover {
+    background-color: white !important;
+    border-color: var(--color-kawaii-primary) !important;
+    box-shadow: 0 4px 12px rgba(255, 158, 181, 0.15);
+}
+
+.preset-btn-active, .preset-btn.preset-btn-active {
+    background-color: white !important;
+    border-color: var(--color-kawaii-primary-dark) !important;
+    color: var(--color-kawaii-primary-dark) !important;
+    box-shadow: 0 0 0 2px rgba(255, 123, 156, 0.2) !important;
+}
+
+/* カスタムタイマー（集中・休憩）ボタンの視認性強化 */
+.timer-preset {
+    border: 2px solid #cbd5e1 !important; /* 常に輪郭を見せる */
+    background-color: white !important;
+    color: var(--color-kawaii-text) !important;
+    transition: all 0.2s ease-in-out;
+}
+
+.timer-preset:hover {
+    border-color: var(--color-kawaii-primary) !important;
+    background-color: #fff8fa !important;
+}
+
+/* 集中時間のアクティブ状態 */
+.timer-btn-active, .timer-preset.timer-btn-active {
+    background-color: #c9335f !important;
+    border-color: #c9335f !important;
+    color: white !important;
+    box-shadow: 0 4px 12px rgba(255, 123, 156, 0.4) !important;
+}
+
+/* 休憩時間のアクティブ状態 */
+.break-btn-active, .timer-preset.break-btn-active {
+    background-color: #0f766e !important; /* teal-700 */
+    border-color: #0f766e !important;
+    color: white !important;
+    box-shadow: 0 4px 12px rgba(13, 148, 136, 0.3) !important;
+}
+
+/* ダークモード対応 */
+.dark #btn-main-action {
+    background: linear-gradient(135deg, var(--color-kawaii-primary-dark) 0%, #ff527c 100%) !important;
+    box-shadow: 0 4px 14px rgba(255, 123, 156, 0.4) !important;
+}
+
+.dark #restart-btn {
+    background-color: #1e1e2f !important;
+    border-color: #4b5563 !important; /* gray-600 */
+    color: var(--color-kawaii-text) !important;
+}
+
+.dark #restart-btn:hover {
+    background-color: var(--color-kawaii-text) !important;
+    color: white !important;
+    border-color: var(--color-kawaii-text) !important;
+}
+
+.dark .preset-btn {
+    background-color: rgba(30, 30, 50, 0.8) !important;
+    border-color: #4b5563 !important;
+    color: var(--color-kawaii-text) !important;
+}
+
+.dark .preset-btn:hover {
+    background-color: rgba(40, 40, 65, 0.9) !important;
+    border-color: var(--color-kawaii-primary) !important;
+}
+
+.dark .timer-preset {
+    background-color: rgba(30, 30, 50, 0.8) !important;
+    border-color: #4b5563 !important;
+    color: var(--color-kawaii-text) !important;
+}
+
+.dark .timer-preset:hover {
+    background-color: rgba(40, 40, 65, 0.9) !important;
+    border-color: var(--color-kawaii-primary) !important;
+}
+
+.dark .timer-btn-active, .dark .timer-preset.timer-btn-active {
+    background-color: #c9335f !important;
+    border-color: #c9335f !important;
+    color: white !important;
+}
+
+.dark .break-btn-active, .dark .timer-preset.break-btn-active {
+    background-color: #0f766e !important;
+    border-color: #0f766e !important;
+    color: white !important;
+}
+
+.dark #timer-label {
+    color: #be123c !important;
+    opacity: 1 !important;
+}
+
+.dark #timer-display {
+    color: #1e293b !important;
+}
+
+.dark #next-break-display {
+    color: #0f766e !important;
+}
+
+/* ============================================
+   Keyboard Accessibility Focus Rings
+   ============================================ */
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible,
+a:focus-visible,
+summary:focus-visible {
+    outline: 3px solid var(--color-kawaii-primary-dark) !important;
+    outline-offset: 3px !important;
+    box-shadow: 0 0 0 3px rgba(255, 123, 156, 0.4) !important;
+}
+
+/* 白い面に明るい継承色が重なる箇所だけ補正し、既存の配色・寸法を保つ。 */
+.dark body:not(.theme-night) header > .cursor-pointer > .bg-white,
+.dark body:not(.theme-night) #open-sound-drawer-btn,
+.dark body:not(.theme-night) #complete-count-badge .text-kawaii-text,
+.dark body:not(.theme-night) #complete-count,
+.dark #restart-btn:hover {
+    color: #334155 !important;
+}

@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>【IT用語】「マージ」とは？別々の変更を1つに合流する作業 | KatakataLab</title>
+  <meta name="description" content="マージとは何かを、ブランチの合流、コンフリクトが起きる理由、人が判断するポイント、統合後に必要なテストまでやさしく解説します。">
+  <link rel="canonical" href="https://katakatalab.com/guides/it-basics/merge.html">
+  <meta property="og:type" content="article">
+  <meta property="og:site_name" content="KatakataLab">
+  <meta property="og:title" content="【IT用語】「マージ」とは？別々の変更を1つに合流する作業">
+  <meta property="og:description" content="マージとは何かを、ブランチの合流、コンフリクトが起きる理由、人が判断するポイント、統合後に必要なテストまでやさしく解説します。">
+  <meta property="og:url" content="https://katakatalab.com/guides/it-basics/merge.html">
+  <meta property="og:image" content="https://katakatalab.com/ogp.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="icon" href="../../favicon.ico">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&family=Zen+Kurenaido&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css?v=20260824-responsive">
+  <script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": "【IT用語】「マージ」とは？別々の変更を1つに合流する作業",
+  "description": "マージとは何かを、ブランチの合流、コンフリクトが起きる理由、人が判断するポイント、統合後に必要なテストまでやさしく解説します。",
+  "datePublished": "2026-07-13",
+  "dateModified": "2026-08-04",
+  "mainEntityOfPage": "https://katakatalab.com/guides/it-basics/merge.html",
+  "inLanguage": "ja",
+  "author": {
+    "@type": "Person",
+    "name": "かたかた",
+    "url": "https://katakatalab.com/who-is-katakata.html"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "KatakataLab",
+    "url": "https://katakatalab.com/"
+  }
+}</script>
+  <script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position": 1,
+      "name": "ホーム",
+      "item": "https://katakatalab.com/"
+    },
+    {
+      "@type": "ListItem",
+      "position": 2,
+      "name": "かたかたの制作ノート",
+      "item": "https://katakatalab.com/guides/it-basics/"
+    },
+    {
+      "@type": "ListItem",
+      "position": 3,
+      "name": "【IT用語】「マージ」とは？別々の変更を1つに合流する作業",
+      "item": "https://katakatalab.com/guides/it-basics/merge.html"
+    }
+  ]
+}</script>
+</head>
+<body>
+    <script>try{if(localStorage.getItem('theme')==='dark')document.body.classList.add('dark-mode');}catch(e){}</script>
+  <a class="skip-link" href="#main-content">本文へ移動</a>
+  <header class="site-header">
+    <div class="header-inner">
+      <a class="brand" href="../../" aria-label="KatakataLab ホーム">
+        <span class="brand-mark" aria-hidden="true">K</span>
+        <span><strong>KatakataLab</strong><small>かたかたの制作ノート</small></span>
+      </a>
+      <nav class="site-nav" aria-label="主要ナビゲーション">
+        <a href="./">記事一覧</a>
+        <a href="../../#projects">作品・ツール</a>
+        <a href="../../who-is-katakata.html">運営者</a>
+      </nav>
+    </div>
+  </header>
+  <main id="main-content">
+    <nav class="breadcrumbs" aria-label="パンくずリスト">
+      <a href="../../">ホーム</a><span aria-hidden="true">/</span><a href="./">かたかたの制作ノート</a><span aria-hidden="true">/</span><span aria-current="page">「マージ」とは？別々の変更を1つに合流する作業</span>
+    </nav>
+    <article class="article-shell">
+      <header class="article-hero">
+        <div class="chapter-stamp"><span>CHAPTER 02</span><strong>MERGE</strong></div>
+        <p class="chapter-name">第2章｜開発の流れ</p>
+        <h1>【IT用語】「マージ」とは？別々の変更を1つに合流する作業</h1>
+        <p class="article-lead">マージとは何かを、ブランチの合流、コンフリクトが起きる理由、人が判断するポイント、統合後に必要なテストまでやさしく解説します。</p>
+        <div class="article-meta" aria-label="記事情報">
+          <span>作成者：かたかた</span><span>公開日：2026年7月13日</span><span>更新日：2026年8月4日</span>
+        </div>
+      </header>
+      <div class="article-layout">
+        <aside class="article-toc" aria-label="目次"><p>このページの目次</p><ol><li><a href="#section-1">結論：「マージ」＝「別の流れで進めた変更を、1つに統合すること」</a></li>
+<li><a href="#section-2">なぜブランチを分けるの？</a></li>
+<li><a href="#section-3">「コンフリクト」とは？</a></li>
+<li><a href="#section-4">コンフリクトを解決する時の考え方</a></li>
+<li><a href="#section-5">マージにも種類がある</a></li>
+<li><a href="#section-6">マージ前に確認したいこと</a></li>
+<li><a href="#section-talk">この言葉が会話に出てくるとき</a></li>
+<li><a href="#section-misread">勘違いしやすい点</a></li>
+<li><a href="#section-7">まとめ</a></li></ol></aside>
+        <div class="article-content">
+          <p>「このブランチをマージして」</p>
+<p>「マージしたらコンフリクトが出た」</p>
+<p>開発現場でよく使われる「マージ(Merge)」は、日本語にすると「合流・統合」です。</p>
+<p>今回は、マージを<strong>「道路の合流」</strong>に例えて解説します。</p>
+<section class="article-section" aria-labelledby="section-1"><h2 id="section-1">結論：「マージ」＝「別の流れで進めた変更を、1つに統合すること」</h2>
+<p>Gitでは、本流からブランチを分けて作業できます。新しい機能や修正が完成したら、その変更を本流へ取り込みます。この作業がマージです。</p>
+<h3>「道路」で例えると？</h3>
+<ul>
+<li><strong>mainブランチ：</strong> 安定した本線。</li>
+<li><strong>featureブランチ：</strong> 新しい変更を進める別の車線。</li>
+<li><strong>マージ：</strong> 別の車線から本線へ合流する作業。</li>
+</ul>
+<p>本線で直接大きな工事をする代わりに、別の場所で変更を作り、確認してから合流させます。</p>
+</section>
+<section class="article-section" aria-labelledby="section-2"><h2 id="section-2">なぜブランチを分けるの？</h2>
+<p>ブランチを分けると、作業途中の変更が、すぐに本流へ混ざるのを防げます。</p>
+<p>例えば、新しい検索機能がまだ完成していなくても、mainブランチは安定した状態を保てます。複数人が別々の課題へ取り組む時にも便利です。</p>
+<p>ただし、ブランチを使えば必ず安全になるわけではありません。テストやレビューを行い、取り込んでよい状態かを確認する必要があります。</p>
+</section>
+<section class="article-section" aria-labelledby="section-3"><h2 id="section-3">「コンフリクト」とは？</h2>
+<p>Gitが変更を自動で統合できない時に起こるのが、コンフリクト（競合）です。</p>
+<ul>
+<li>Aさんが、同じ行の色を赤へ変更した。</li>
+<li>Bさんが、その行の色を青へ変更した。</li>
+<li>Gitは、どちらを残すべきか判断できない。</li>
+</ul>
+<p>この場合、Gitは競合した場所を示し、人に判断を求めます。</p>
+<p>コンフリクトは、ファイルが壊れたという意味ではありません。<strong>「自動では決められないので、内容を確認してください」</strong>という合図です。</p>
+</section>
+<section class="article-section" aria-labelledby="section-4"><h2 id="section-4">コンフリクトを解決する時の考え方</h2>
+<ol>
+<li>それぞれの変更目的を確認する。</li>
+<li>片方を選ぶのか、両方を生かすのかを決める。</li>
+<li>修正後にテストする。</li>
+<li>解決した内容をコミットする。</li>
+</ol>
+<p>「自分の変更を全部残す」「相手の変更を全部捨てる」と機械的に決めると、必要な修正まで消す可能性があります。分からない時は、変更した人に確認するのが一番確実です。</p>
+</section>
+<section class="article-section" aria-labelledby="section-5"><h2 id="section-5">マージにも種類がある</h2>
+<p>Gitの履歴やチームのルールによって、通常のマージ、スカッシュマージ、リベースマージなどを使い分けることがあります。</p>
+<p>初心者の段階では、まず<strong>「別のブランチの変更を本流へ取り込む」</strong>という基本を理解できれば十分です。</p>
+</section>
+<section class="article-section" aria-labelledby="section-6"><h2 id="section-6">マージ前に確認したいこと</h2>
+<ul>
+<li>取り込む変更の目的を説明できるか</li>
+<li>自動テストや必要な手動確認が終わっているか</li>
+<li>意図しないファイルや一時的なデバッグ出力が混ざっていないか</li>
+<li>mainブランチの最新状態と組み合わせても動くか</li>
+</ul>
+<p>マージ操作そのものが成功しても、アプリが正しく動くとは限りません。履歴の統合と、動作の確認は分けて考えます。</p>
+</section>
+<section class="article-section" aria-labelledby="section-talk"><h2 id="section-talk">この言葉が会話に出てくるとき</h2>
+<p>例えば、文章修正とデザイン修正を別々に進めたあと、「本番に載せる1本」へまとめる会話です。</p>
+<p>例えば、同じ行を二人で直したときです。「どちらを残すか」を人が決める作業が始まります。</p>
+</section>
+<section class="article-section" aria-labelledby="section-misread"><h2 id="section-misread">勘違いしやすい点</h2>
+<ul>
+<li><strong>ボタンを押せば終わり：</strong> 結合したあと、表示・リンク・意図しない削除がないかまで見ます。</li>
+<li><strong>自動で必ず正しい：</strong> 同じ場所を別々に直していると、機械だけでは意味を判断できません。</li>
+<li><strong>取り込み前の確認は不要：</strong> 片方の修正が丸ごと消えることがあります。</li>
+</ul>
+<p>合流は結合そのものではなく、結合したあと安全に使えるかまで含む作業です。</p>
+</section>
+<section class="article-section" aria-labelledby="section-7"><h2 id="section-7">まとめ</h2>
+<ul>
+<li><strong>マージ</strong> ＝ <strong>「別々の変更を1つに統合すること」</strong></li>
+<li><strong>ブランチ</strong> ＝ <strong>「本流から分けた作業の流れ」</strong></li>
+<li><strong>コンフリクト</strong> ＝ <strong>「Gitが自動で統合できず、人の判断が必要な状態」</strong></li>
+<li><strong>確認</strong> ＝ <strong>「マージできるかだけでなく、マージ後に動くかも確かめる」</strong></li>
+</ul>
+<p>マージは、単にファイルを合体させる操作ではありません。それぞれの変更意図を確認し、1つの成果へまとめる作業です。</p>
+<p>次の記事では、マージする前に変更を共有・確認する「プルリクエスト」について解説します。</p>
+<p>ここまでお読みいただきありがとうございました！</p>
+</section>
+          <aside class="lab-example" aria-labelledby="lab-example-title">
+            <p class="eyebrow">FROM THE LAB</p>
+            <h2 id="lab-example-title">KatakataLabでの実例</h2>
+            <p>サイトでは、記事本文、HTML、トップページ、サイトマップの変更が互いに関係します。Gitがファイルを自動でマージできても、リンク先や日付まで意味が合っているとは限らないため、統合後のテストが必要です。</p>
+            <p class="related-heading">この実例につながるページ</p>
+            <ul class="related-links"><li><a href="pull-request.html">関連用語：プルリクエスト</a></li>
+<li><a href="../case-studies.html">ツールの入力・出力実例</a></li></ul>
+          </aside>
+          <section class="article-section" aria-labelledby="section-ops-merge">
+            <h2 id="section-ops-merge">取り込み前に見る3点</h2>
+            <p>ブランチや修正を取り込む直前に、表示・リンク・広告配置が意図どおりかを確認します。特にHTMLの衝突では、片方の修正が丸ごと消えることがあります。</p>
+<ul>
+<li>衝突解消後にページを開いて表示を確認する</li>
+<li>canonical や robots が意図せず変わっていないか</li>
+<li>広告コードがツール画面へ混入していないか</li>
+</ul>
+<p>マージは「結合ボタン」ではなく、「結合したあと安全に使えるか」まで含む作業です。</p>
+          </section>
+          <section class="article-section faq" aria-labelledby="faq-title">
+            <p class="eyebrow">QUICK CHECK</p>
+            <h2 id="faq-title">よくある質問</h2>
+            <h3>コンフリクトが出たら失敗ですか？</h3>
+            <p>失敗とは限りません。同じ場所へ別の変更が加わり、Gitだけでは正解を決められないという合図です。双方の目的を確認し、残す内容を人が決めます。</p>
+            <h3>次に読むなら？</h3><p><a href="pull-request.html">PULL REQUESTの記事</a>へ進むと、次の用語を順番に読めます。</p>
+          </section>
+          <section class="article-section references" aria-labelledby="references-title">
+            <h2 id="references-title">参考資料</h2>
+            <p>用語の定義や仕様を確認するため、公式文書・標準文書を参照しています。リンク先の内容は更新される場合があります。</p>
+            <ul><li><a href="https://git-scm.com/book/en/v2/Git-Branching-Basic-Branching-and-Merging" target="_blank" rel="noopener noreferrer">Git公式「Basic Branching and Merging」</a></li></ul>
+          </section>
+          <nav class="chapter-nav" aria-label="前後の記事">
+            <a class="chapter-link previous" href="commit.html"><small>前の記事</small><span>← COMMIT</span></a>
+            <a class="chapter-link next" href="pull-request.html"><small>次の記事</small><span>PULL REQUEST →</span></a>
+          </nav>
+        </div>
+      </div>
+    </article>
+  </main>
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <p><strong>KatakataLab</strong><br><span>作って、つまずいて、分かったことを残す小さな研究室。</span></p>
+      <nav aria-label="フッターナビゲーション">
+        <a href="../../contact.html">お問い合わせ</a>
+        <a href="../../who-is-katakata.html">運営者情報</a>
+        <a href="../../privacy.html">プライバシーポリシー</a>
+        <a href="../../sitemap.html">サイトマップ</a>
+      </nav>
+    </div>
+    <p class="copyright">&copy; 2024-2026 KatakataLab</p>
+  </footer>
+</body>
+</html>

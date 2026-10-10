@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="robots" content="noindex, follow">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ことわざクイズ | PikaLab</title>
+    <meta name="description" content="ことわざと四字熟語の意味を当てよう！穴埋めモードもあるよ！">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@400;700;900&family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,1,0&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="../style.css">
+    <link rel="stylesheet" href="style.css">
+
+  <link rel="canonical" href="https://katakatalab.com/pikalab/kotowaza_quiz/">
+  <meta property="og:title" content="ことわざクイズ | PikaLab">
+  <meta property="og:description" content="ことわざと四字熟語の意味を当てよう！穴埋めモードもあるよ！">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://katakatalab.com/pikalab/kotowaza_quiz/">
+  <meta property="og:image" content="https://katakatalab.com/pikalab/pikalab_ogp_compressed.jpg">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="ことわざクイズ | PikaLab">
+  <meta name="twitter:description" content="ことわざと四字熟語の意味を当てよう！穴埋めモードもあるよ！">
+  <meta name="twitter:image" content="https://katakatalab.com/pikalab/pikalab_ogp_compressed.jpg">
+  <meta name="twitter:site" content="@katakata0522">
+
+    <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"ことわざクイズ | PikaLab","url":"https://katakatalab.com/pikalab/kotowaza_quiz/","description":"ことわざと四字熟語の意味を当てよう！穴埋めモードもあるよ！","applicationCategory":"EducationalApplication","operatingSystem":"Any","isAccessibleForFree":true,"offers":{"@type":"Offer","price":"0","priceCurrency":"JPY"}}</script>
+</head>
+
+<body>
+    <script>try{var p=localStorage.getItem('wonder_school_profile_v2');if(p&&JSON.parse(p).darkMode)document.body.classList.add('theme-night');}catch(e){}</script>
+    <main>
+    <!-- ============ スタート画面 ============ -->
+    <div id="start-screen" class="screen active">
+        <div class="container">
+            <div class="start-header-nav" style="display: flex; justify-content: space-between; align-items: center; width: 100%; margin-bottom: 20px;">
+                <a href="../" class="flex-back-link" style="margin-bottom: 0;">
+                    <span>← PikaLabトップへもどる</span>
+                </a>
+                <button type="button" data-action="parents-modal-open" class="parents-guide-trigger-btn" style="background: rgba(249, 115, 22, 0.1); border: 1px solid rgba(249, 115, 22, 0.3); color: #ea580c; padding: 6px 12px; border-radius: 12px; font-weight: bold; font-size: 13px; display: flex; align-items: center; gap: 4px; cursor: pointer; transition: all 0.2s;" aria-label="保護者の方へ - 開く" aria-haspopup="dialog" aria-expanded="false">
+                    <span>👨‍👩‍👧‍👦 保護者の方へ</span>
+                </button>
+            </div>
+            <h1 class="title">📜 ことわざクイズ</h1>
+            <p class="subtitle">日本の知恵を楽しく学ぼう！</p>
+
+            <div class="mode-select">
+                <h2>🎮 モードを選んでね</h2>
+
+                <button type="button" class="btn btn-mode" data-mode="meaning">
+                    <span class="mode-icon">🤔</span>
+                    <span class="mode-name">意味当て</span>
+                    <span class="mode-desc">4択から正解を選ぼう</span>
+                </button>
+
+                <button type="button" class="btn btn-mode" data-mode="fillin">
+                    <span class="mode-icon">✏️</span>
+                    <span class="mode-name">穴埋め</span>
+                    <span class="mode-desc">空欄をひらがなで埋めよう</span>
+                </button>
+            </div>
+
+            <!-- 設定エリア (アコーディオン風) -->
+            <div class="config-section">
+                <div class="config-group">
+                    <h3>📚 カテゴリ</h3>
+                    <div class="config-buttons" id="category-select">
+                        <button type="button" class="btn btn-config active" data-value="all" aria-pressed="true">すべて</button>
+                        <button type="button" class="btn btn-config" data-value="kotowaza" aria-pressed="false">ことわざ</button>
+                        <button type="button" class="btn btn-config" data-value="yojijukugo" aria-pressed="false">四字熟語</button>
+                    </div>
+                </div>
+
+                <div class="config-group">
+                    <h3>⭐ 難易度</h3>
+                    <div class="config-buttons" id="difficulty-select">
+                        <button type="button" class="btn btn-config active" data-value="all" aria-pressed="true">全レベル</button>
+                        <button type="button" class="btn btn-config" data-value="1" aria-pressed="false">★初級</button>
+                        <button type="button" class="btn btn-config" data-value="2" aria-pressed="false">★★中級</button>
+                        <button type="button" class="btn btn-config" data-value="3" aria-pressed="false">★★★上級</button>
+                    </div>
+                </div>
+
+                <div class="config-group">
+                    <h3>📝 問題数</h3>
+                    <div class="config-buttons count-buttons">
+                        <button type="button" class="btn btn-count active" data-count="10" aria-pressed="true">10問</button>
+                        <button type="button" class="btn btn-count" data-count="30" aria-pressed="false">30問</button>
+                        <button type="button" class="btn btn-count" data-count="80" aria-pressed="false">80問</button>
+                        <button type="button" class="btn btn-count" data-count="all" aria-pressed="false">全問</button>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- ============ ゲーム画面 ============ -->
+    <div id="game-screen" class="screen">
+        <div class="container game-container">
+            <!-- 中断ボタン -->
+            <button type="button" class="btn-quit" id="quit-btn" title="タイトルに戻る">✖</button>
+
+            <!-- 進捗バー -->
+            <div class="progress-bar">
+                <div class="progress-fill" id="progress-fill"></div>
+                <span class="progress-text" id="progress-text">1 / 20</span>
+            </div>
+
+            <!-- 問題エリア -->
+            <div class="question-area">
+                <div class="question-header">
+                    <span class="difficulty-badge" id="difficulty-badge">★初級</span>
+                    <span class="keyboard-hint">キー: 1～4で選択</span>
+                </div>
+                <div class="question-label" id="question-label">このことわざの意味は？</div>
+                <div class="question-text" id="question-text">石の上にも三年</div>
+            </div>
+
+            <!-- モードA: 4択選択肢 -->
+            <div id="choices-area" class="choices-grid">
+                <button type="button" class="choice-btn" data-index="0"></button>
+                <button type="button" class="choice-btn" data-index="1"></button>
+                <button type="button" class="choice-btn" data-index="2"></button>
+                <button type="button" class="choice-btn" data-index="3"></button>
+            </div>
+
+            <!-- モードB: 穴埋め入力 -->
+            <div id="fillin-area" class="fillin-area" style="display: none;">
+                <input type="text" id="fillin-input" class="fillin-input" placeholder="ひらがなで入力"
+                    inputmode="text" enterkeyhint="done" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="穴埋めのひらがな回答入力欄">
+                
+                <!-- ひらがなオンスクリーンキーボード -->
+                <div id="keyboard-container" class="keyboard-container"></div>
+
+                <div class="fillin-buttons">
+                    <button type="button" class="btn btn-hint" id="hint-btn">💡 ヒント</button>
+                    <button type="button" class="btn btn-submit" id="submit-btn">回答する</button>
+                </div>
+            </div>
+
+            <!-- フィードバック -->
+            <div id="feedback" class="feedback" role="status" aria-live="polite"></div>
+
+            <!-- スコア表示 -->
+            <div class="score-display">
+                <span class="score-points" style="font-weight: 800; color: #3b82f6;">💎 <span id="score-points">0</span>点</span>
+                <span class="score-correct">⭕ <span id="correct-count">0</span></span>
+                <span class="score-wrong">❌ <span id="wrong-count">0</span></span>
+                <span class="score-accuracy">🎯 <span id="accuracy-rate">0%</span></span>
+            </div>
+        </div>
+    </div>
+
+    <!-- ============ リザルト画面 ============ -->
+    <div id="result-screen" class="screen">
+        <div class="container">
+            <h2 class="result-title">🎉 おつかれさま！</h2>
+            <div id="result-title-badge" class="result-title-badge"></div>
+
+            <div class="result-card">
+                <div class="result-row">
+                    <span class="result-label">総合スコア</span>
+                    <span class="result-value" id="result-total-score" style="font-size: 1.5rem; font-weight: 900; color: #3b82f6;">0</span>
+                </div>
+                <div class="result-row">
+                    <span class="result-label">正解数</span>
+                    <span class="result-value" id="result-correct">0 / 20</span>
+                </div>
+                <div class="result-row">
+                    <span class="result-label">正答率</span>
+                    <span class="result-value" id="result-accuracy">0%</span>
+                </div>
+                <div class="result-row">
+                    <span class="result-label">ハイスコア</span>
+                    <span class="result-value" id="result-highscore">ベスト: 0</span>
+                </div>
+            </div>
+
+            <div class="result-grade" id="result-grade">
+                <!-- 評価が入る -->
+            </div>
+
+            <div id="review-section" class="review-section" style="display: none;">
+                <button type="button" class="btn btn-review" id="review-btn">🔄 間違えた問題を復習する</button>
+
+                <div class="wrong-list-container">
+                    <h3>間違えた問題</h3>
+                    <ul id="wrong-answer-list" class="wrong-answer-list"></ul>
+                </div>
+            </div>
+
+            <div class="result-buttons">
+                <button type="button" class="btn btn-retry" id="retry-btn">🔄 もう一回</button>
+                <button type="button" class="btn btn-home" id="home-btn">🏠 タイトルへ</button>
+            </div>
+        </div>
+    </div>
+    </main>
+
+    <script src="../data/idioms.js"></script>
+    <script src="script.js"></script>
+
+    
+
+    
+
+    
+<!-- Parents Modal -->
+<dialog id="parents-modal"
+    class="p-0 rounded-3xl shadow-2xl open:animate-fade-in w-full max-w-lg m-auto overflow-hidden border-0"
+    aria-labelledby="parents-modal-title" style="display:none;">
+    <div class="bg-white p-6 md:p-8 max-h-[90vh] overflow-y-auto relative text-left">
+        <button type="button" data-action="parents-modal-close" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600 focus:outline-none" aria-label="閉じる">
+            <span class="material-symbols-rounded">close</span>
+        </button>
+        <div class="mb-6 border-b-2 border-indigo-100 pb-4">
+            <h2 id="parents-modal-title"
+                class="text-lg md:text-xl font-black text-slate-800 flex items-center gap-2">
+                <span class="material-symbols-rounded text-indigo-500">family_restroom</span> 保護者の方へ
+            </h2>
+            <p class="text-xs text-slate-400 font-bold mt-1">For Parents &amp; Guardians</p>
+        </div>
+
+        <div class="space-y-6 text-sm text-slate-600 leading-relaxed font-bold">
+            <!-- ウェルカムメッセージカード -->
+            <div class="bg-gradient-to-r from-indigo-50 to-purple-50 p-5 rounded-2xl border border-indigo-100 text-center">
+                <p class="mb-2 text-indigo-800 text-base">
+                    <span class="material-symbols-rounded text-xl align-bottom mr-1 text-pink-400">favorite</span>
+                    当サイト「PikaLab」に<br>ご訪問いただき、誠にありがとうございます。
+                </p>
+                <p class="text-xs text-indigo-600">
+                            大切なお子様と一緒にPikaLabを訪れていただけたこと、<br>制作者のかたかたより、心から感謝申し上げます。
+                </p>
+            </div>
+
+            <!-- 1. ねらい -->
+            <div>
+                <h3 class="text-indigo-600 font-black mb-2 flex items-center gap-2">
+                    <span class="material-symbols-rounded text-base">school</span> このアプリのねらい
+                </h3>
+                <p>「ことわざクイズ」は、ことわざ・慣用句・四字熟語の読みや代表的な意味をクイズで確かめるツールです。短い意味説明は学習用の要約なので、実際の用法には文脈や別の意味がある場合があります。気になった言葉は国語辞典や四字熟語辞典でも確認してみてください。</p>
+            </div>
+
+            <!-- 2. おねがい -->
+            <div>
+                <h3 class="text-pink-500 font-black mb-2 flex items-center gap-2">
+                    <span class="material-symbols-rounded text-base">favorite</span> 保護者様へのおねがい
+                </h3>
+                <p>クイズで出た言葉について、「どんな場面なら使えそう？」「この言い方はいつでも本当かな？」と一緒に考えるきっかけとしてご活用ください。ことわざには昔の価値観や比喩も含まれ、科学的な法則や必ず起こる結果を表すものではありません。</p>
+            </div>
+
+            <!-- 3. 活用方法 -->
+            <div>
+                <h3 class="text-green-600 font-black mb-2 flex items-center gap-2">
+                    <span class="material-symbols-rounded text-base">emoji_objects</span> おうちでの活用方法
+                </h3>
+                <p>会話や本の中で同じ表現を見つけたら、クイズの短い説明と実際の文脈を比べてみる使い方がおすすめです。意味を一つ暗記するだけでなく、どんな状況で使われているかを観察できます。</p>
+            </div>
+
+            <!-- 4. 健康への配慮 -->
+            <div>
+                <h3 class="text-orange-500 font-black mb-2 flex items-center gap-2">
+                    <span class="material-symbols-rounded text-base">timer</span> 健康への配慮（休憩の推奨）
+                </h3>
+                <p>長時間続けて画面を見ることは避け、途中で画面から目を離す時間を取ってください。クイズの進行や成績などは主にブラウザ内で扱われますが、ページ表示にはWebフォントなど外部配信サービスへの通常の通信が発生します。</p>
+            </div>
+        </div>
+        <div class="mt-8 text-center">
+            <button type="button" data-action="parents-modal-close"
+                class="w-full bg-indigo-500 text-white px-8 py-3 rounded-xl font-black hover:bg-indigo-600 transition shadow-lg shadow-indigo-200">閉じる</button>
+        </div>
+    </div>
+</dialog>
+
+    <style>
+    #parents-modal::backdrop {
+        background: rgba(15, 23, 42, 0.6);
+        backdrop-filter: blur(4px);
+    }
+    #parents-modal[open] {
+        display: block !important;
+        animation: parentsModalFadeIn 0.3s ease-out forwards;
+    }
+    @keyframes parentsModalFadeIn {
+        from { opacity: 0; transform: scale(0.95); }
+        to { opacity: 1; transform: scale(1); }
+    }
+    </style>
+<style>
+#parents-modal::backdrop {
+    background: rgba(15, 23, 42, 0.6);
+    backdrop-filter: blur(4px);
+}
+#parents-modal[open] {
+    display: block !important;
+    animation: parentsModalFadeIn 0.3s ease-out forwards;
+}
+@keyframes parentsModalFadeIn {
+    from { opacity: 0; transform: scale(0.95); }
+    to { opacity: 1; transform: scale(1); }
+}
+</style>
+</body>
+
+</html>

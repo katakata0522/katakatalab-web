@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex, nofollow">
+    <title>オフライン | KatakataLab</title>
+    <style>
+        :root {
+            --c-primary: #FF7675;
+            --c-primary-dark: #E05655;
+            --c-bg: #FCF9F2;
+            --c-surface: #FFFFFF;
+            --c-text: #2D3436;
+            --c-text-light: #636E72;
+            --c-border: rgba(45, 52, 54, 0.08);
+            --font-base: 'Helvetica Neue', Arial, 'Hiragino Kaku Gothic ProN', 'Hiragino Sans', Meiryo, sans-serif;
+        }
+
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --c-bg: #0B132B;
+                --c-surface: #1C2541;
+                --c-text: #F5F6FA;
+                --c-text-light: #A0A8C0;
+                --c-border: rgba(255, 255, 255, 0.08);
+            }
+        }
+
+        /* ユーザーが設定した localStorage のテーマを優先適用するためのクラス */
+        body.dark-mode {
+            --c-bg: #0B132B;
+            --c-surface: #1C2541;
+            --c-text: #F5F6FA;
+            --c-text-light: #A0A8C0;
+            --c-border: rgba(255, 255, 255, 0.08);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: var(--font-base);
+            background-color: var(--c-bg);
+            color: var(--c-text);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            padding: 1.5rem;
+            line-height: 1.6;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        .container {
+            max-width: 500px;
+            width: 100%;
+            background: var(--c-surface);
+            border: 1px solid var(--c-border);
+            border-radius: 24px;
+            padding: 2.5rem;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+        }
+
+        .icon {
+            font-size: 4rem;
+            margin-bottom: 1.5rem;
+            display: inline-block;
+            animation: float 4s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            50% { transform: translateY(-10px) rotate(5deg); }
+        }
+
+        h1 {
+            font-size: 1.75rem;
+            font-weight: 800;
+            margin-bottom: 1rem;
+            color: var(--c-primary);
+        }
+
+        p {
+            font-size: 1rem;
+            color: var(--c-text-light);
+            margin-bottom: 2rem;
+        }
+
+        .btn-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+            margin-bottom: 2.5rem;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0.8rem 2rem;
+            font-size: 1rem;
+            font-weight: 700;
+            border-radius: 999px;
+            text-decoration: none;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            border: none;
+            outline: none;
+        }
+
+        .btn-primary {
+            background-color: var(--c-primary);
+            color: #ffffff;
+            box-shadow: 0 4px 12px rgba(255, 118, 117, 0.2);
+        }
+
+        .btn-primary:hover {
+            background-color: var(--c-primary-dark);
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            background-color: transparent;
+            border: 1px solid var(--c-border);
+            color: var(--c-text);
+        }
+
+        .btn-secondary:hover {
+            background-color: rgba(0, 0, 0, 0.03);
+        }
+        body.dark-mode .btn-secondary:hover {
+            background-color: rgba(255, 255, 255, 0.05);
+        }
+
+        /* ミニゲームエリア */
+        .game-area {
+            border-top: 1px solid var(--c-border);
+            padding-top: 2rem;
+            margin-top: 1.5rem;
+        }
+
+        .game-title {
+            font-size: 0.9rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--c-primary);
+            margin-bottom: 0.75rem;
+        }
+
+        .game-desc {
+            font-size: 0.85rem;
+            color: var(--c-text-light);
+            margin-bottom: 1rem;
+        }
+
+        .flask-game {
+            width: 100px;
+            height: 120px;
+            margin: 0 auto 1rem;
+            position: relative;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .flask-body {
+            position: absolute;
+            bottom: 0;
+            width: 100px;
+            height: 100px;
+            border: 6px solid var(--c-text);
+            border-radius: 50%;
+            background: transparent;
+            overflow: hidden;
+        }
+
+        .flask-neck {
+            position: absolute;
+            top: 0;
+            left: 37px;
+            width: 26px;
+            height: 35px;
+            border: 6px solid var(--c-text);
+            border-bottom: none;
+            background: var(--c-surface);
+            border-radius: 4px 4px 0 0;
+            z-index: 2;
+        }
+
+        .flask-liquid {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 30%;
+            background: var(--c-primary);
+            transition: height 0.3s ease;
+        }
+
+        .score-board {
+            font-size: 1.1rem;
+            font-weight: 800;
+            color: var(--c-text);
+        }
+
+        .offline-status {
+            font-size: 0.75rem;
+            color: var(--c-text-light);
+            opacity: 0.7;
+            margin-top: 1rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="icon">🧪</div>
+        <h1>オフラインモード</h1>
+        <p>
+            インターネット接続が途切れているようです。<br>
+            電波の良い場所へ移動するか、しばらく待ってから再接続してください。
+        </p>
+
+        <div class="btn-group">
+            <button class="btn btn-primary" onclick="window.location.reload();">🔄 接続を再試行する</button>
+            <a href="./" class="btn btn-secondary">🏠 キャッシュ済みのホームに戻る</a>
+        </div>
+
+        <div class="game-area">
+            <h2 class="game-title">🧪 フラスコ培養ミニゲーム</h2>
+            <p class="game-desc">フラスコをタップして液体を満たそう！何回満杯にできるかな？</p>
+            
+            <div class="flask-game" id="flaskGame" onclick="fillFlask()">
+                <div class="flask-neck"></div>
+                <div class="flask-body">
+                    <div class="flask-liquid" id="flaskLiquid"></div>
+                </div>
+            </div>
+
+            <div class="score-board">
+                満杯にした回数: <span id="score">0</span>
+                <div style="font-size: 0.85rem; margin-top: 0.25rem; font-weight: normal; opacity: 0.8;">
+                    自己ベスト: <span id="high-score">0</span>回
+                </div>
+            </div>
+            <div class="offline-status">
+                ※このミニゲームはオフラインでも完全動作します。
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // テーマの初期化 (親ウインドウの設定を引き継ぐ)
+        try {
+            if (localStorage.getItem('theme') === 'dark') {
+                document.body.classList.add('dark-mode');
+            }
+        } catch (e) {}
+
+        let clickCount = 0;
+        let score = 0;
+        let highScore = 0;
+
+        try {
+            highScore = parseInt(localStorage.getItem('flask_high_score') || '0', 10);
+        } catch(e) {}
+
+        const liquid = document.getElementById('flaskLiquid');
+        const scoreEl = document.getElementById('score');
+        const highScoreEl = document.getElementById('high-score');
+
+        if (highScoreEl) {
+            highScoreEl.textContent = highScore;
+        }
+
+        function fillFlask() {
+            clickCount += 10;
+            if (clickCount >= 100) {
+                clickCount = 0;
+                score++;
+                scoreEl.textContent = score;
+
+                if (score > highScore) {
+                    highScore = score;
+                    if (highScoreEl) highScoreEl.textContent = highScore;
+                    try {
+                        localStorage.setItem('flask_high_score', highScore.toString());
+                    } catch(e) {}
+                }
+
+                liquid.style.height = '100%';
+                
+                // 満杯時のエフェクト
+                setTimeout(() => {
+                    liquid.style.height = '30%';
+                }, 400);
+            } else {
+                liquid.style.height = (30 + clickCount * 0.7) + '%';
+            }
+        }
+    </script>
+</body>
+</html>

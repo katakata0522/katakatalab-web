@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>【IT用語】「エンドポイント」とは？Web APIの具体的な受付場所 | KatakataLab</title>
+  <meta name="description" content="エンドポイントとは何かを、ベースURL・パス・HTTPメソッド・クエリパラメータの組み合わせと、失敗する代表的な理由から解説します。">
+  <link rel="canonical" href="https://katakatalab.com/guides/it-basics/endpoint.html">
+  <meta property="og:type" content="article">
+  <meta property="og:site_name" content="KatakataLab">
+  <meta property="og:title" content="【IT用語】「エンドポイント」とは？Web APIの具体的な受付場所">
+  <meta property="og:description" content="エンドポイントとは何かを、ベースURL・パス・HTTPメソッド・クエリパラメータの組み合わせと、失敗する代表的な理由から解説します。">
+  <meta property="og:url" content="https://katakatalab.com/guides/it-basics/endpoint.html">
+  <meta property="og:image" content="https://katakatalab.com/ogp.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="icon" href="../../favicon.ico">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&family=Zen+Kurenaido&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css?v=20260824-responsive">
+  <script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": "【IT用語】「エンドポイント」とは？Web APIの具体的な受付場所",
+  "description": "エンドポイントとは何かを、ベースURL・パス・HTTPメソッド・クエリパラメータの組み合わせと、失敗する代表的な理由から解説します。",
+  "datePublished": "2026-07-13",
+  "dateModified": "2026-08-04",
+  "mainEntityOfPage": "https://katakatalab.com/guides/it-basics/endpoint.html",
+  "inLanguage": "ja",
+  "author": {
+    "@type": "Person",
+    "name": "かたかた",
+    "url": "https://katakatalab.com/who-is-katakata.html"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "KatakataLab",
+    "url": "https://katakatalab.com/"
+  }
+}</script>
+  <script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position": 1,
+      "name": "ホーム",
+      "item": "https://katakatalab.com/"
+    },
+    {
+      "@type": "ListItem",
+      "position": 2,
+      "name": "かたかたの制作ノート",
+      "item": "https://katakatalab.com/guides/it-basics/"
+    },
+    {
+      "@type": "ListItem",
+      "position": 3,
+      "name": "【IT用語】「エンドポイント」とは？Web APIの具体的な受付場所",
+      "item": "https://katakatalab.com/guides/it-basics/endpoint.html"
+    }
+  ]
+}</script>
+</head>
+<body>
+    <script>try{if(localStorage.getItem('theme')==='dark')document.body.classList.add('dark-mode');}catch(e){}</script>
+  <a class="skip-link" href="#main-content">本文へ移動</a>
+  <header class="site-header">
+    <div class="header-inner">
+      <a class="brand" href="../../" aria-label="KatakataLab ホーム">
+        <span class="brand-mark" aria-hidden="true">K</span>
+        <span><strong>KatakataLab</strong><small>かたかたの制作ノート</small></span>
+      </a>
+      <nav class="site-nav" aria-label="主要ナビゲーション">
+        <a href="./">記事一覧</a>
+        <a href="../../#projects">作品・ツール</a>
+        <a href="../../who-is-katakata.html">運営者</a>
+      </nav>
+    </div>
+  </header>
+  <main id="main-content">
+    <nav class="breadcrumbs" aria-label="パンくずリスト">
+      <a href="../../">ホーム</a><span aria-hidden="true">/</span><a href="./">かたかたの制作ノート</a><span aria-hidden="true">/</span><span aria-current="page">「エンドポイント」とは？Web APIの具体的な受付場所</span>
+    </nav>
+    <article class="article-shell">
+      <header class="article-hero">
+        <div class="chapter-stamp"><span>CHAPTER 04</span><strong>ENDPOINT</strong></div>
+        <p class="chapter-name">第4章｜システムの通信</p>
+        <h1>【IT用語】「エンドポイント」とは？Web APIの具体的な受付場所</h1>
+        <p class="article-lead">エンドポイントとは何かを、ベースURL・パス・HTTPメソッド・クエリパラメータの組み合わせと、失敗する代表的な理由から解説します。</p>
+        <div class="article-meta" aria-label="記事情報">
+          <span>作成者：かたかた</span><span>公開日：2026年7月13日</span><span>更新日：2026年8月4日</span>
+        </div>
+      </header>
+      <div class="article-layout">
+        <aside class="article-toc" aria-label="目次"><p>このページの目次</p><ol><li><a href="#section-1">結論：「エンドポイント」＝「Web APIへ要求を送る具体的な場所」</a></li>
+<li><a href="#section-2">「役所の窓口」で例えると？</a></li>
+<li><a href="#section-3">エンドポイントを作る要素</a></li>
+<li><a href="#section-4">「エンドポイントを叩く」とは？</a></li>
+<li><a href="#section-5">正しい窓口でも失敗することがある</a></li>
+<li><a href="#section-talk">この言葉が会話に出てくるとき</a></li>
+<li><a href="#section-misread">勘違いしやすい点</a></li>
+<li><a href="#section-6">まとめ</a></li></ol></aside>
+        <div class="article-content">
+          <p>「エンドポイントが間違っている」</p>
+<p>「そのエンドポイントへリクエストを送って」</p>
+<p>Web APIを使う時に登場するのが「エンドポイント」です。</p>
+<p>今回は、エンドポイントを<strong>「役所の受付窓口」</strong>に例えて解説します。</p>
+<section class="article-section" aria-labelledby="section-1"><h2 id="section-1">結論：「エンドポイント」＝「Web APIへ要求を送る具体的な場所」</h2>
+<p>Web APIにおけるエンドポイントは、<strong>「どの機能へリクエストを送るかを示す具体的な宛先」</strong>です。</p>
+<p>多くの場合はURLで表されます。ただし、同じURLでもGET、POST、DELETEなどのHTTPメソッドによって操作が変わるため、URLだけで機能が決まるとは限りません。</p>
+</section>
+<section class="article-section" aria-labelledby="section-2"><h2 id="section-2">「役所の窓口」で例えると？</h2>
+<p>役所には、住民票、税金、転居届など、目的ごとの窓口があります。</p>
+<p>Web APIにも同じように、扱う情報ごとの宛先があります。</p>
+<pre><code class="language-text">GET https://api.example.com/users</code></pre>
+<p>ユーザー一覧を取得する窓口です。</p>
+<pre><code class="language-text">GET https://api.example.com/users/123</code></pre>
+<p>IDが123のユーザーを取得する窓口です。</p>
+<pre><code class="language-text">POST https://api.example.com/users</code></pre>
+<p>同じ<code>/users</code>でも、POSTなら新しいユーザーを作成する操作として設計できます。</p>
+<p>ここで使っている<code>example.com</code>は説明用の予約ドメインで、実在サービスのAPIではありません。</p>
+</section>
+<section class="article-section" aria-labelledby="section-3"><h2 id="section-3">エンドポイントを作る要素</h2>
+<h3>ベースURL</h3>
+<p>API全体の基本となる住所です。</p>
+<pre><code class="language-text">https://api.example.com</code></pre>
+<h3>パス</h3>
+<p>対象となる資源や機能を表します。</p>
+<pre><code class="language-text">/users/123</code></pre>
+<h3>HTTPメソッド</h3>
+<p>取得、追加、更新、削除など、何をしたいかを示します。</p>
+<ul>
+<li><strong>GET：</strong> 取得</li>
+<li><strong>POST：</strong> 作成や処理の依頼</li>
+<li><strong>PUT／PATCH：</strong> 更新</li>
+<li><strong>DELETE：</strong> 削除</li>
+</ul>
+<p>実際の意味はAPIの設計によって決まるため、必ずドキュメントを確認します。</p>
+<h3>クエリパラメータ</h3>
+<p>検索条件や並び順などを追加します。</p>
+<pre><code class="language-text">GET https://api.example.com/users?role=admin</code></pre>
+</section>
+<section class="article-section" aria-labelledby="section-4"><h2 id="section-4">「エンドポイントを叩く」とは？</h2>
+<p>開発現場で使われる「叩く」は、エンドポイントへリクエストを送るという意味のくだけた表現です。</p>
+<p>正式な説明では、「呼び出す」「リクエストを送る」と言えば十分です。言葉の由来を無理に覚えるより、具体的に何を送って何を受け取るのかを確認しましょう。</p>
+</section>
+<section class="article-section" aria-labelledby="section-5"><h2 id="section-5">正しい窓口でも失敗することがある</h2>
+<p>エンドポイントが合っていても、次の理由で失敗します。</p>
+<ul>
+<li>認証情報がない、または期限切れ</li>
+<li>必須項目が足りない</li>
+<li>HTTPメソッドが違う</li>
+<li>利用回数の上限を超えた</li>
+<li>サーバー側で問題が起きた</li>
+</ul>
+<p>その結果は、HTTPステータスコードやレスポンス本文で伝えられます。</p>
+</section>
+<section class="article-section" aria-labelledby="section-talk"><h2 id="section-talk">この言葉が会話に出てくるとき</h2>
+<p>例えば、「同じサービスでも、一覧を取る場所と、1件を取る場所が違う」と確認する会話です。住所の書き方を合わせます。</p>
+<p>例えば、404が出たときです。サービス全体が死んでいるのではなく、その受付場所が違う可能性があります。</p>
+</section>
+<section class="article-section" aria-labelledby="section-misread"><h2 id="section-misread">勘違いしやすい点</h2>
+<ul>
+<li><strong>API全体と同じ：</strong> APIは窓口の仕組み、エンドポイントはその具体的な受付場所です。</li>
+<li><strong>URLだけ見ればよい：</strong> メソッドや付属する条件が違うと、別の受付になります。</li>
+<li><strong>正しければ必ず200：</strong> 権限不足や入力不備でも、窓口自体は存在します。</li>
+</ul>
+<p>調べるときは、場所・送り方・付属条件をセットで残します。</p>
+</section>
+<section class="article-section" aria-labelledby="section-6"><h2 id="section-6">まとめ</h2>
+<ul>
+<li><strong>エンドポイント</strong> ＝ <strong>「Web APIへ要求を送る具体的な場所」</strong></li>
+<li><strong>機能を決める要素</strong> ＝ <strong>「URL、パス、HTTPメソッド、条件など」</strong></li>
+<li><strong>叩く</strong> ＝ <strong>「エンドポイントへリクエストを送る」という現場表現</strong></li>
+</ul>
+<p>「どのURLか」だけでなく、「どの方法で、何を送るか」までがWeb API利用の大切な部分です。</p>
+<p>次の記事では、APIでよく使われるデータ形式「JSON」について解説します。</p>
+<p>ここまでお読みいただきありがとうございました！</p>
+</section>
+          <aside class="lab-example" aria-labelledby="lab-example-title">
+            <p class="eyebrow">FROM THE LAB</p>
+            <h2 id="lab-example-title">KatakataLabでの実例</h2>
+            <p>公開サイトのURLにも「どこへアクセスするか」という住所の役割があります。Web APIではそれに加えてGETやPOSTなどのHTTPメソッドが意味を持つため、同じパスでも操作が変わる場合があります。</p>
+            <p class="related-heading">この実例につながるページ</p>
+            <ul class="related-links"><li><a href="api.html">関連用語：API</a></li>
+<li><a href="status-code.html">関連用語：ステータスコード</a></li></ul>
+          </aside>
+          <section class="article-section" aria-labelledby="section-ops-endpoint">
+            <h2 id="section-ops-endpoint">窓口を増やす前に決めること</h2>
+            <p>外部連携やAPIを増やすと、保守と障害点も増えます。個人サイトでは、本当にその窓口が必要か、認証や回数制限はどうするかを先に決めた方が安全です。</p>
+<ul>
+<li>誰が呼べるか（公開／自分だけ）</li>
+<li>失敗時に画面へ何を返すか</li>
+<li>ログに秘密が混ざらないか</li>
+</ul>
+<p>窓口は便利なドアでもあり、鍵のないドアにもなります。開ける数を最小にすると運用が楽です。</p>
+          </section>
+          <section class="article-section faq" aria-labelledby="faq-title">
+            <p class="eyebrow">QUICK CHECK</p>
+            <h2 id="faq-title">よくある質問</h2>
+            <h3>URLが同じなら同じエンドポイントですか？</h3>
+            <p>APIの説明では、URLだけでなくHTTPメソッドも含めて区別することがあります。同じURLでもGETは取得、POSTは作成というように役割が異なる場合があります。</p>
+            <h3>次に読むなら？</h3><p><a href="json.html">JSONの記事</a>へ進むと、次の用語を順番に読めます。</p>
+          </section>
+          <section class="article-section references" aria-labelledby="references-title">
+            <h2 id="references-title">参考資料</h2>
+            <p>用語の定義や仕様を確認するため、公式文書・標準文書を参照しています。リンク先の内容は更新される場合があります。</p>
+            <ul><li><a href="https://developer.mozilla.org/ja/docs/Web/HTTP/Reference/Methods" target="_blank" rel="noopener noreferrer">MDN「HTTP request methods」</a></li></ul>
+          </section>
+          <nav class="chapter-nav" aria-label="前後の記事">
+            <a class="chapter-link previous" href="api.html"><small>前の記事</small><span>← API</span></a>
+            <a class="chapter-link next" href="json.html"><small>次の記事</small><span>JSON →</span></a>
+          </nav>
+        </div>
+      </div>
+    </article>
+  </main>
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <p><strong>KatakataLab</strong><br><span>作って、つまずいて、分かったことを残す小さな研究室。</span></p>
+      <nav aria-label="フッターナビゲーション">
+        <a href="../../contact.html">お問い合わせ</a>
+        <a href="../../who-is-katakata.html">運営者情報</a>
+        <a href="../../privacy.html">プライバシーポリシー</a>
+        <a href="../../sitemap.html">サイトマップ</a>
+      </nav>
+    </div>
+    <p class="copyright">&copy; 2024-2026 KatakataLab</p>
+  </footer>
+</body>
+</html>

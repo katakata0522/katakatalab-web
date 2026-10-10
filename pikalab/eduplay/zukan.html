@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="robots" content="noindex, follow">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ずかん (EduPlay)</title>
+    <meta name="description" content="身近な生き物や乗り物を見て、名前と特徴に楽しく触れられる子ども向けデジタル図鑑です。">
+    <link rel="canonical" href="https://katakatalab.com/pikalab/eduplay/zukan.html">
+    <meta property="og:title" content="ずかん (EduPlay)">
+    <meta property="og:description" content="身近な生き物や乗り物を見て、名前と特徴に楽しく触れられる子ども向けデジタル図鑑です。">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://katakatalab.com/pikalab/eduplay/zukan.html">
+    <meta property="og:image" content="https://katakatalab.com/pikalab/pikalab_ogp_compressed.jpg">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="ずかん (EduPlay)">
+    <meta name="twitter:description" content="身近な生き物や乗り物を見て、名前と特徴に楽しく触れられる子ども向けデジタル図鑑です。">
+    <meta name="twitter:image" content="https://katakatalab.com/pikalab/pikalab_ogp_compressed.jpg">
+    <link rel="stylesheet" href="../style.css">
+    <link rel="stylesheet" href="common.css">
+    <script src="common.js"></script>
+    <style>
+        @keyframes jump { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-30px); } }
+        @keyframes shake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-15px); } 75% { transform: translateX(15px); } }
+        @keyframes spin-slow { 100% { transform: rotate(360deg); } }
+        @keyframes pulse-custom { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.3); } }
+        
+        .anim-jump { animation: jump 0.6s ease; }
+        .anim-shake { animation: shake 0.4s ease; }
+        .anim-spin { animation: spin-slow 1s ease; }
+        .anim-pulse { animation: pulse-custom 0.5s ease; }
+    </style>
+    <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"ずかん (EduPlay)","url":"https://katakatalab.com/pikalab/eduplay/zukan.html","description":"身近な生き物や乗り物を見て、名前と特徴に楽しく触れられる子ども向けデジタル図鑑です。","applicationCategory":"EducationalApplication","operatingSystem":"Any","isAccessibleForFree":true,"offers":{"@type":"Offer","price":"0","priceCurrency":"JPY"}}</script>
+</head>
+<body class="bg-yellow-50 h-screen w-screen overflow-auto font-sans select-none touch-manipulation text-gray-800">
+    <main id="app" class="max-w-2xl mx-auto h-full flex flex-col p-3 sm:p-5 relative">
+        
+        <!-- ヘッダー -->
+        <header id="header" class="flex justify-between items-center py-2 sm:py-4 shrink-0 relative gap-2">
+            <a id="game-back-btn" href="./" class="bg-white border-b-4 border-gray-300 px-4 py-2 sm:px-6 sm:py-3 rounded-full font-bold text-base sm:text-lg shadow-md game-card text-gray-700">⬅️ もどる</a>
+            <h1 class="text-3xl sm:text-4xl md:text-5xl font-black text-orange-500 drop-shadow-sm tracking-wide hidden sm:block">📕 ずかん 📕</h1>
+            <div class="flex gap-2">
+                <button type="button" data-action="parents-modal-open" class="bg-white border-b-4 border-gray-300 p-3 sm:p-4 rounded-full shadow-md text-lg sm:text-xl game-card flex items-center justify-center active:scale-95 transition" aria-label="保護者の方へ - 開く" aria-haspopup="dialog" aria-expanded="false" title="保護者の方へ">👨‍👩‍👦</button>
+                <button type="button" id="sound-toggle" onclick="EduSound.toggle(this)" aria-label="音を消す" aria-pressed="true" class="bg-white border-b-4 border-gray-300 p-3 sm:p-4 rounded-full shadow-md text-xl sm:text-2xl game-card">🔊</button>
+            </div>
+        </header>
+
+        <!-- メニュー画面（初期状態） -->
+        <div id="menu" class="flex-1 flex flex-col gap-4 sm:gap-6 mt-2 mb-4 overflow-y-auto no-scrollbar pb-6">
+            <div id="message" class="text-center font-bold text-xl sm:text-2xl text-orange-600 my-2 bg-white py-3 rounded-full shadow-sm border-4 border-orange-100 shrink-0">
+                すきな ずかんを えらんでね！
+            </div>
+
+            <!-- ずかんメニュー（スマホ2列、タブレット3列） -->
+            <div id="categories-container" class="grid grid-cols-2 sm:grid-cols-3 gap-3 sm:gap-5 flex-1">
+                <!-- JavaScriptでボタンが自動生成されます -->
+            </div>
+        </div>
+
+        <!-- コンテンツ画面（カテゴリー選択後） -->
+        <div id="content" class="hidden flex-1 flex flex-col">
+            <!-- 上部コントローラー -->
+            <div class="flex justify-between items-center mb-3 sm:mb-5 shrink-0">
+                <button onclick="backToMenu()" class="bg-white border-b-4 border-gray-300 px-4 py-2 sm:px-6 sm:py-3 rounded-full font-bold text-base sm:text-lg shadow-md game-card text-gray-700">⬅️ もどる</button>
+                <div id="mode-toggle" class="flex gap-1 sm:gap-2 bg-gray-200 p-1 sm:p-2 rounded-full shadow-inner">
+                    <button id="btn-learn" onclick="setMode('learn')" class="px-5 py-2 sm:px-8 sm:py-3 bg-orange-400 text-white rounded-full font-bold text-sm sm:text-lg shadow-md transition-colors">みる</button>
+                    <button id="btn-quiz" onclick="setMode('quiz')" class="px-5 py-2 sm:px-8 sm:py-3 text-gray-500 rounded-full font-bold text-sm sm:text-lg transition-colors hover:bg-white">クイズ</button>
+                </div>
+            </div>
+            
+            <div id="quiz-prompt" class="hidden mb-3 sm:mb-5 text-center text-lg sm:text-2xl font-black text-blue-600 bg-white p-3 sm:p-5 rounded-2xl shadow-sm border-4 border-blue-100 shrink-0"></div>
+            
+            <div id="grid-container" class="flex-1 grid grid-cols-2 sm:grid-cols-3 gap-3 sm:gap-5 pb-2 overflow-y-auto no-scrollbar">
+                <!-- JavaScriptで生成 -->
+            </div>
+        </div>
+    </main>
+
+    <!-- クリア画面ポップアップ -->
+    <div id="clear-overlay" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-40">
+        <div class="bg-white rounded-3xl p-8 max-w-sm w-full text-center shadow-2xl scale-up flex flex-col items-center justify-center">
+            <div class="text-8xl mb-4 inline-block">🌟</div>
+            <h2 class="text-4xl font-black text-orange-500 mb-2">クリア！</h2>
+            <p class="text-xl text-gray-700 font-bold mb-6 mt-2">すごい！<br>ずかんマスターだね！</p>
+            
+            <div class="flex flex-col gap-3 w-full">
+                <button onclick="setMode('quiz')" class="w-full bg-orange-500 text-white text-xl font-bold py-4 rounded-2xl shadow-md transition-transform active:scale-95">もういっかい！ ➡️</button>
+                <button onclick="backToMenu()" class="w-full bg-gray-200 text-gray-700 text-lg font-bold py-3 rounded-2xl shadow-sm transition-transform active:scale-95">🏠 ほかのずかん</button>
+            </div>
+            <!-- 保護者向けバナーを追加 -->
+            <div class="mt-6 pt-4 border-t border-gray-100 w-full text-left">
+                <p class="text-xs text-gray-500 font-bold mb-2 text-center">💡 おうちの方へ おすすめツール</p>
+                <div class="grid grid-cols-2 gap-2">
+                    <a href="../quest_board/" class="bg-amber-50 hover:bg-amber-100 text-amber-800 font-bold p-2.5 rounded-xl text-xs flex items-center justify-center gap-1 active:scale-95 transition text-center no-underline">
+                        <span>🎯 クエストボード</span>
+                    </a>
+                    <a href="../paper_gen/" class="bg-stone-50 hover:bg-stone-100 text-stone-800 font-bold p-2.5 rounded-xl text-xs flex items-center justify-center gap-1 active:scale-95 transition text-center no-underline">
+                        <span>📄 用紙メーカー</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 詳細ポップアップ -->
+    <div id="detail-overlay" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-40 transition-opacity" onclick="closeDetail()">
+        <div class="bg-white rounded-3xl p-6 sm:p-8 max-w-xs w-full text-center shadow-2xl scale-up flex flex-col items-center justify-center" onclick="event.stopPropagation()">
+            <div id="detail-emoji" class="text-8xl sm:text-9xl mb-4 inline-block"></div>
+            <h2 id="detail-name" class="text-3xl sm:text-4xl font-bold text-orange-600 mb-3"></h2>
+            <p id="detail-desc" class="text-lg sm:text-xl text-gray-700 font-medium"></p>
+            <button onclick="closeDetail()" class="mt-6 w-full bg-orange-400 text-white text-xl font-bold py-3 rounded-2xl game-card shadow-md">わかった！</button>
+        </div>
+    </div>
+
+    <!-- フィードバックポップアップ -->
+    <div id="feedback-overlay" class="hidden fixed inset-0 flex items-center justify-center z-50 pointer-events-none">
+        <div id="feedback-content" class="bg-white rounded-3xl py-6 px-8 shadow-2xl text-center transform transition-transform duration-200 scale-0 border-4 border-yellow-400 flex flex-col items-center">
+            <div id="feedback-icon" class="text-7xl mb-2"></div>
+            <div id="feedback-text" class="font-bold"></div>
+        </div>
+    </div>
+
+    <script>
+        const categories = [
+            { id: 'animals', title: 'どうぶつ', icon: '🦁', color: 'blue', itemIds: ['lion', 'elephant', 'giraffe', 'dog', 'cat', 'rabbit'], anim: 'anim-jump' },
+            { id: 'colors', title: 'いろ', icon: '🎨', color: 'green', itemIds: ['apple', 'circle', 'banana', 'caterpillar', 'butterfly', 'car'], anim: 'anim-pulse' }, 
+            { id: 'vehicles', title: 'のりもの', icon: '🚓', color: 'red', itemIds: ['car', 'fire_engine', 'train', 'bus', 'airplane', 'ship'], anim: 'anim-shake' },
+            { id: 'foods', title: 'たべもの', icon: '🍎', color: 'orange', itemIds: ['apple', 'onigiri', 'cake', 'banana', 'strawberry', 'donut'], anim: 'anim-pulse' },
+            { id: 'shapes', title: 'かたち', icon: '⭐', color: 'purple', itemIds: ['circle', 'triangle', 'square', 'star', 'heart', 'crescent'], anim: 'anim-spin' },
+            { id: 'bugs', title: 'むし', icon: '🦋', color: 'teal', itemIds: ['butterfly', 'ladybug', 'bee', 'caterpillar', 'ant', 'snail'], anim: 'anim-jump' }
+        ];
+
+        let currentCategory = null;
+        const gameTimers = EduUtils.createTimerScope();
+        let currentMode = 'learn';
+        let quizTarget = null;
+        let quizCount = 0;
+        let isAnimating = false;
+
+        function initMenu() {
+            const container = document.getElementById('categories-container');
+            container.innerHTML = '';
+            categories.forEach(cat => {
+                const btn = document.createElement('button');
+                btn.className = `bg-white rounded-3xl shadow-lg border-b-8 border-${cat.color}-300 game-card flex flex-col items-center justify-center transition-transform p-4`;
+                btn.innerHTML = `
+                    <span class="text-6xl sm:text-7xl mb-1">${cat.icon}</span>
+                    <span class="text-xl sm:text-2xl font-bold text-${cat.color}-600">${cat.title}</span>
+                `;
+                btn.onclick = () => {
+                    EduSound.speak(cat.title + "のずかん");
+                    showSection(cat);
+                };
+                container.appendChild(btn);
+            });
+        }
+
+        function showSection(category) {
+            currentCategory = category;
+            document.getElementById('menu').classList.add('hidden');
+            document.getElementById('content').classList.remove('hidden');
+            setMode('learn'); 
+        }
+
+        function backToMenu() {
+            resetPendingFeedback();
+            if ('speechSynthesis' in window) window.speechSynthesis.cancel();
+            document.getElementById('menu').classList.remove('hidden');
+            document.getElementById('content').classList.add('hidden');
+            document.getElementById('clear-overlay').classList.add('hidden');
+            currentCategory = null;
+        }
+
+        function resetPendingFeedback() {
+            gameTimers.clear();
+            isAnimating = false;
+            document.getElementById('feedback-overlay').classList.add('hidden');
+            document.getElementById('feedback-content').classList.replace('scale-100', 'scale-0');
+        }
+
+        function setMode(mode) {
+            resetPendingFeedback();
+            currentMode = mode;
+            if ('speechSynthesis' in window) window.speechSynthesis.cancel();
+            document.getElementById('clear-overlay').classList.add('hidden');
+            quizCount = 0;
+            const learnBtn = document.getElementById('btn-learn');
+            const quizBtn = document.getElementById('btn-quiz');
+            
+            if (mode === 'learn') {
+                learnBtn.className = "px-5 py-2 sm:px-8 sm:py-3 bg-orange-400 text-white rounded-full font-bold text-sm sm:text-lg shadow-md transition-colors";
+                quizBtn.className = "px-5 py-2 sm:px-8 sm:py-3 text-gray-500 rounded-full font-bold text-sm sm:text-lg transition-colors hover:bg-white hover:shadow-sm";
+                document.getElementById('quiz-prompt').classList.add('hidden');
+                EduSound.speak("みるモード！");
+                renderGrid();
+            } else {
+                learnBtn.className = "px-5 py-2 sm:px-8 sm:py-3 text-gray-500 rounded-full font-bold text-sm sm:text-lg transition-colors hover:bg-white hover:shadow-sm";
+                quizBtn.className = "px-5 py-2 sm:px-8 sm:py-3 bg-blue-500 text-white rounded-full font-bold text-sm sm:text-lg shadow-md transition-colors";
+                startQuiz();
+            }
+        }
+
+        function renderGrid() {
+            const container = document.getElementById('grid-container');
+            container.innerHTML = '';
+            
+            const items = EduData.getItemsByIDs(currentCategory.itemIds);
+            
+            items.forEach(item => {
+                const btn = document.createElement('button');
+                btn.className = "bg-white rounded-2xl shadow-md border-b-4 border-gray-200 game-card flex flex-col items-center justify-center transition-transform h-full w-full overflow-hidden p-1 min-h-[120px]";
+                
+                let innerContent = `<span class="text-5xl sm:text-6xl">${item.emoji}</span>`;
+                if (currentMode === 'learn') {
+                    innerContent += `<span class="text-sm sm:text-base font-bold mt-1 text-gray-700 whitespace-nowrap">${item.name}</span>`;
+                }
+                
+                btn.innerHTML = innerContent;
+                btn.onclick = () => {
+                    if (isAnimating) return;
+                    currentMode === 'learn' ? showDetail(item) : checkAnswer(item);
+                };
+                container.appendChild(btn);
+            });
+        }
+
+        function startQuiz() {
+            const items = EduData.getItemsByIDs(currentCategory.itemIds);
+            quizTarget = items[Math.floor(Math.random() * items.length)];
+            
+            const isNameQuiz = Math.random() < 0.5;
+            const promptText = isNameQuiz ? `「${quizTarget.name}」は どれかな？` : `「${quizTarget.desc}」は どれかな？`;
+
+            document.getElementById('quiz-prompt').classList.remove('hidden');
+            document.getElementById('quiz-prompt').innerText = promptText;
+            
+            EduSound.speak(promptText);
+            renderGrid();
+        }
+
+        function checkAnswer(item) {
+            isAnimating = true;
+            const overlay = document.getElementById('feedback-overlay');
+            const content = document.getElementById('feedback-content');
+            const icon = document.getElementById('feedback-icon');
+            const text = document.getElementById('feedback-text');
+            
+            overlay.classList.remove('hidden');
+            gameTimers.schedule(() => content.classList.replace('scale-0', 'scale-100'), 10);
+
+            if (item.name === quizTarget.name) {
+                icon.innerText = "⭕️";
+                text.innerText = "だいせいかい！🎉";
+                text.className = "text-2xl sm:text-3xl text-green-500 font-black";
+                EduSound.speak("だいせいかい！");
+                EduUtils.shootConfetti();
+                
+                quizCount++;
+                gameTimers.schedule(() => {
+                    hideFeedback();
+                    if (quizCount >= 3) {
+                        gameTimers.schedule(() => {
+                            EduUtils.completeGameClear("ずかんマスター！すごいね！");
+                        }, 500);
+                    } else {
+                        startQuiz();
+                    }
+                }, 2000);
+            } else {
+                icon.innerText = "❌";
+                text.innerText = "ちがうよ！\nもういっかい！";
+                text.className = "text-xl sm:text-2xl text-red-500 font-bold whitespace-pre-line";
+                EduSound.speak("ちがうよ。もういっかい！");
+                
+                gameTimers.schedule(() => {
+                    hideFeedback();
+                }, 1500);
+            }
+        }
+
+        function hideFeedback() {
+            const overlay = document.getElementById('feedback-overlay');
+            const content = document.getElementById('feedback-content');
+            content.classList.replace('scale-100', 'scale-0');
+            gameTimers.schedule(() => {
+                overlay.classList.add('hidden');
+                isAnimating = false;
+            }, 200);
+        }
+
+        function showDetail(item) {
+            const emojiEl = document.getElementById('detail-emoji');
+            emojiEl.innerText = item.emoji;
+            emojiEl.className = `text-8xl sm:text-9xl mb-4 inline-block ${currentCategory.anim}`;
+            
+            document.getElementById('detail-name').innerText = item.name;
+            document.getElementById('detail-desc').innerText = item.desc;
+            document.getElementById('detail-overlay').classList.remove('hidden');
+            
+            EduSound.speak(item.name + "。" + item.desc);
+        }
+
+        function closeDetail() {
+            document.getElementById('detail-overlay').classList.add('hidden');
+            document.getElementById('detail-emoji').className = "text-8xl sm:text-9xl mb-4 inline-block";
+        }
+
+        window.onload = () => {
+            initMenu();
+            const backBtn = document.getElementById('game-back-btn');
+            if (backBtn) {
+                EduUtils.setupLongPressBack(backBtn, 'index.html');
+            }
+        };
+    </script>
+    
+<!-- Parents Modal -->
+    
+
+    
+
+    
+<!-- Parents Modal -->
+    <dialog id="parents-modal"
+        class="p-0 rounded-3xl shadow-2xl  open:animate-fade-in w-full max-w-lg m-auto overflow-hidden border-0"
+        aria-labelledby="parents-modal-title" style="display:none;">
+        <div class="bg-white p-6 md:p-8 max-h-[90vh] overflow-y-auto relative text-left">
+            <button type="button" data-action="parents-modal-close" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600 focus:outline-none" aria-label="閉じる">
+                <span class="material-symbols-rounded">close</span>
+            </button>
+            <div class="mb-6 border-b-2 border-indigo-100 pb-4">
+                <h2 id="parents-modal-title"
+                    class="text-lg md:text-xl font-black text-slate-800 flex items-center gap-2">
+                    <span class="material-symbols-rounded text-indigo-500">family_restroom</span> 保護者の方へ
+                </h2>
+                <p class="text-xs text-slate-400 font-bold mt-1">For Parents & Guardians</p>
+            </div>
+
+            <div class="space-y-6 text-sm text-slate-600 leading-relaxed font-bold">
+                <!-- ウェルカムメッセージカード -->
+                <div class="bg-gradient-to-r from-indigo-50 to-purple-50 p-5 rounded-2xl border border-indigo-100 text-center">
+                    <p class="mb-2 text-indigo-800 text-base">
+                        <span class="material-symbols-rounded text-xl align-bottom mr-1 text-pink-400">favorite</span>
+                        当サイト「PikaLab」に<br>ご訪問いただき、誠にありがとうございます。
+                    </p>
+                    <p class="text-xs text-indigo-600">
+                            大切なお子様と一緒にPikaLabを訪れていただけたこと、<br>制作者のかたかたより、心から感謝申し上げます。
+                    </p>
+                </div>
+
+                <!-- 1. ねらい -->
+                <div>
+                    <h3 class="text-indigo-600 font-black mb-2 flex items-center gap-2">
+                        <span class="material-symbols-rounded text-base">school</span> このアプリのねらい
+                    </h3>
+                    <p>
+                        「おしゃべりずかん」は、どうぶつ、のりもの、たべものなど6つの身近なカテゴリーのアイテムをタップして、名前と説明を楽しく学ぶ音声インタラクティブ図鑑です。見るだけでなく「クイズ」モードでクイズに答えることで、言葉の語彙力や短期記憶、物事の役割や特徴への理解を深めることをねらいとしています。
+                    </p>
+                </div>
+
+                <!-- 2. おねがい -->
+                <div>
+                    <h3 class="text-pink-500 font-black mb-2 flex items-center gap-2">
+                        <span class="material-symbols-rounded text-base">favorite</span> 保護者様へのおねがい
+                    </h3>
+                    <p>
+                        みるモードでは、タップすると絵柄がジャンプしたり揺れたりする楽しいアニメーションと音声でお子様の興味を引きつけます。クイズに間違えてもペナルティはありませんので、<span class="bg-pink-100 text-pink-700 px-1 rounded">「次はどれだと思う？」</span>とヒントを出しながら、のんびり楽しんでみてください。
+                    </p>
+                </div>
+
+                <!-- 3. 活用方法 -->
+                <div>
+                    <h3 class="text-green-600 font-black mb-2 flex items-center gap-2">
+                        <span class="material-symbols-rounded text-base">emoji_objects</span> おうちでの活用方法
+                    </h3>
+                    <p>
+                        図鑑で見たどうぶつやのりものを、お散歩の途中や絵本を読んでいるときに見つけたら「あ、ずかんで見たライオンさんだね！」「きりんさんは首が長いね」と、現実世界の会話と繋げて語りかけてあげてください。これにより、お子様の知的探究心がさらに高まります。
+                    </p>
+                </div>
+
+                <!-- 4. 健康への配慮 -->
+                <div>
+                    <h3 class="text-orange-500 font-black mb-2 flex items-center gap-2">
+                        <span class="material-symbols-rounded text-base">timer</span> 健康への配慮（休憩の推奨）
+                    </h3>
+                    <p>
+                        タッチして音が鳴るおもしろさから、時間を忘れて遊んでしまうことがあります。クイズをクリア（3問正解）したら、あるいは<span class="bg-orange-100 text-orange-700 px-1 rounded">15〜20分程度</span>を目安に「今日のずかんはおしまい、よくできました！」とおててを休め、目を休ませるようお声がけください。本ゲームはお使いのブラウザ上でローカル完結して安全に動作します。
+                    </p>
+                </div>
+            </div>
+            <div class="mt-8 text-center">
+                <button type="button" data-action="parents-modal-close"
+                    class="w-full bg-indigo-500 text-white px-8 py-3 rounded-xl font-black hover:bg-indigo-600 transition shadow-lg shadow-indigo-200">閉じる</button>
+            </div>
+        </div>
+    </dialog>
+
+    <style>
+    #parents-modal::backdrop {
+        background: rgba(15, 23, 42, 0.6);
+        backdrop-filter: blur(4px);
+    }
+    #parents-modal[open] {
+        display: block !important;
+        animation: parentsModalFadeIn 0.3s ease-out forwards;
+    }
+    @keyframes parentsModalFadeIn {
+        from { opacity: 0; transform: scale(0.95); }
+        to { opacity: 1; transform: scale(1); }
+    }
+    </style>
+
+
+</body>
+</html>

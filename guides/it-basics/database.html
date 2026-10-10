@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>【IT用語】「データベース(DB)」とは？情報を整理して取り出す仕組み | KatakataLab</title>
+  <meta name="description" content="データベースとは何かを、Excelとの違い、検索を助けるインデックス、安全な更新に必要なトランザクション、SQLの例から解説します。">
+  <link rel="canonical" href="https://katakatalab.com/guides/it-basics/database.html">
+  <meta property="og:type" content="article">
+  <meta property="og:site_name" content="KatakataLab">
+  <meta property="og:title" content="【IT用語】「データベース(DB)」とは？情報を整理して取り出す仕組み">
+  <meta property="og:description" content="データベースとは何かを、Excelとの違い、検索を助けるインデックス、安全な更新に必要なトランザクション、SQLの例から解説します。">
+  <meta property="og:url" content="https://katakatalab.com/guides/it-basics/database.html">
+  <meta property="og:image" content="https://katakatalab.com/ogp.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="icon" href="../../favicon.ico">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&family=Zen+Kurenaido&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css?v=20260824-responsive">
+  <script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": "【IT用語】「データベース(DB)」とは？情報を整理して取り出す仕組み",
+  "description": "データベースとは何かを、Excelとの違い、検索を助けるインデックス、安全な更新に必要なトランザクション、SQLの例から解説します。",
+  "datePublished": "2026-07-13",
+  "dateModified": "2026-08-04",
+  "mainEntityOfPage": "https://katakatalab.com/guides/it-basics/database.html",
+  "inLanguage": "ja",
+  "author": {
+    "@type": "Person",
+    "name": "かたかた",
+    "url": "https://katakatalab.com/who-is-katakata.html"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "KatakataLab",
+    "url": "https://katakatalab.com/"
+  }
+}</script>
+  <script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position": 1,
+      "name": "ホーム",
+      "item": "https://katakatalab.com/"
+    },
+    {
+      "@type": "ListItem",
+      "position": 2,
+      "name": "かたかたの制作ノート",
+      "item": "https://katakatalab.com/guides/it-basics/"
+    },
+    {
+      "@type": "ListItem",
+      "position": 3,
+      "name": "【IT用語】「データベース(DB)」とは？情報を整理して取り出す仕組み",
+      "item": "https://katakatalab.com/guides/it-basics/database.html"
+    }
+  ]
+}</script>
+</head>
+<body>
+    <script>try{if(localStorage.getItem('theme')==='dark')document.body.classList.add('dark-mode');}catch(e){}</script>
+  <a class="skip-link" href="#main-content">本文へ移動</a>
+  <header class="site-header">
+    <div class="header-inner">
+      <a class="brand" href="../../" aria-label="KatakataLab ホーム">
+        <span class="brand-mark" aria-hidden="true">K</span>
+        <span><strong>KatakataLab</strong><small>かたかたの制作ノート</small></span>
+      </a>
+      <nav class="site-nav" aria-label="主要ナビゲーション">
+        <a href="./">記事一覧</a>
+        <a href="../../#projects">作品・ツール</a>
+        <a href="../../who-is-katakata.html">運営者</a>
+      </nav>
+    </div>
+  </header>
+  <main id="main-content">
+    <nav class="breadcrumbs" aria-label="パンくずリスト">
+      <a href="../../">ホーム</a><span aria-hidden="true">/</span><a href="./">かたかたの制作ノート</a><span aria-hidden="true">/</span><span aria-current="page">「データベース(DB)」とは？情報を整理して取り出す仕組み</span>
+    </nav>
+    <article class="article-shell">
+      <header class="article-hero">
+        <div class="chapter-stamp"><span>CHAPTER 01</span><strong>DATABASE</strong></div>
+        <p class="chapter-name">第1章｜インフラの基礎</p>
+        <h1>【IT用語】「データベース(DB)」とは？情報を整理して取り出す仕組み</h1>
+        <p class="article-lead">データベースとは何かを、Excelとの違い、検索を助けるインデックス、安全な更新に必要なトランザクション、SQLの例から解説します。</p>
+        <div class="article-meta" aria-label="記事情報">
+          <span>作成者：かたかた</span><span>公開日：2026年7月13日</span><span>更新日：2026年8月4日</span>
+        </div>
+      </header>
+      <div class="article-layout">
+        <aside class="article-toc" aria-label="目次"><p>このページの目次</p><ol><li><a href="#section-1">結論：「データベース」＝「情報を整理し、必要な時に取り出す仕組み」</a></li>
+<li><a href="#section-2">「図書館」で例えると？</a></li>
+<li><a href="#section-3">Excelとは何が違うの？</a></li>
+<li><a href="#section-4">データベースと会話する「SQL」</a></li>
+<li><a href="#section-talk">この言葉が会話に出てくるとき</a></li>
+<li><a href="#section-misread">勘違いしやすい点</a></li>
+<li><a href="#section-5">まとめ</a></li></ol></aside>
+        <div class="article-content">
+          <p>「データはDBに入れて」</p>
+<p>「DBへのアクセスが遅い」</p>
+<p>開発現場で大切に扱われる「データベース(DB)」。表にデータを並べるなら、Excelでもよさそうに見えますよね。</p>
+<p>今回は、データベースの役割を<strong>「図書館の検索システム」</strong>に例えて解説します。</p>
+<section class="article-section" aria-labelledby="section-1"><h2 id="section-1">結論：「データベース」＝「情報を整理し、必要な時に取り出す仕組み」</h2>
+<p>データベースとは、<strong>「大量のデータを一定のルールで保存し、検索・追加・更新・削除しやすくする仕組み」</strong>です。</p>
+<p>ただ保存するだけではありません。どんな項目を持つか、どう関連づけるか、誰が操作できるかといったルールも管理します。</p>
+</section>
+<section class="article-section" aria-labelledby="section-2"><h2 id="section-2">「図書館」で例えると？</h2>
+<p>本が数冊なら、棚を上から眺めるだけでも探せます。ところが、何十万冊もあれば、それでは時間がかかります。</p>
+<p>図書館には、タイトル、著者、分類などから本を探せる検索システムがあります。データベースも同じように、<strong>「インデックス（索引）」</strong>を使って目的の情報を探しやすくします。</p>
+<p>ただし、いつでも一瞬で見つかるわけではありません。速さはデータ量、検索条件、索引、サーバー性能などによって変わります。</p>
+</section>
+<section class="article-section" aria-labelledby="section-3"><h2 id="section-3">Excelとは何が違うの？</h2>
+<p>Excelは、人が表を作り、計算や分析を行うのが得意な道具です。Microsoft 365などには共同編集機能もあります。</p>
+<p>一方、データベースは、アプリや複数のユーザーから継続的に読み書きされるデータを扱うための仕組みを備えています。</p>
+<h3>1. 複数の処理を安全に扱いやすい</h3>
+<p>データベースには、複数の更新が重なっても矛盾しにくいように、<strong>トランザクション</strong>や<strong>排他制御</strong>といった仕組みがあります。</p>
+<p>例えば銀行振込では、「送金元の残高を減らす」と「送金先の残高を増やす」を、途中で片方だけ終わらないようにまとめて扱います。</p>
+<h3>2. データのルールを決められる</h3>
+<p>「この項目は数字」「空欄は禁止」「同じIDは登録しない」といった制約を設定できます。正しく設計すれば、誤ったデータが入りにくくなります。</p>
+</section>
+<section class="article-section" aria-labelledby="section-4"><h2 id="section-4">データベースと会話する「SQL」</h2>
+<p>多くのデータベースでは、SQLという言語を使います。</p>
+<pre><code class="language-sql">SELECT * FROM users WHERE age = 25;</code></pre>
+<p>25歳のユーザーを検索します。</p>
+<pre><code class="language-sql">INSERT INTO users (id, name, age) VALUES (123, 'かたかた', 25);</code></pre>
+<p>新しいユーザーを追加します。</p>
+<pre><code class="language-sql">UPDATE users SET age = 26 WHERE id = 123;</code></pre>
+<p>IDが123のユーザーの年齢を更新します。</p>
+<pre><code class="language-sql">DELETE FROM users WHERE id = 123;</code></pre>
+<p>IDが123のユーザーを削除します。</p>
+<p>UPDATEやDELETEでは、対象を絞る<code>WHERE</code>句が特に重要です。条件を間違えると、意図しないデータまで変更する可能性があります。</p>
+</section>
+<section class="article-section" aria-labelledby="section-talk"><h2 id="section-talk">この言葉が会話に出てくるとき</h2>
+<p>例えば、「昨日入力した内容を、明日も出したい」となったときです。その場限りの計算なら要りません。残して探す必要が出た瞬間に、保存先の話になります。</p>
+<p>例えば、同じ情報を複数人で直すときです。「どちらが正しい最新か」を決める仕組みが要る、という会話になります。</p>
+</section>
+<section class="article-section" aria-labelledby="section-misread"><h2 id="section-misread">勘違いしやすい点</h2>
+<ul>
+<li><strong>Excelがあれば十分：</strong> 少人数の一覧には向きます。同時更新、条件検索、取り消しの単位が増えると、向き先が変わります。</li>
+<li><strong>置けば自動で正しい：</strong> 入れる値、重複、削除の条件を決めないと、探すほど混乱します。</li>
+<li><strong>個人サイトには必須：</strong> 固定ページや端末内だけのツールなら、置かない判断もあります。</li>
+</ul>
+<p>先に決めるのは「消えて困るか」です。困らないなら、持たない方が説明も簡単です。</p>
+</section>
+<section class="article-section" aria-labelledby="section-5"><h2 id="section-5">まとめ</h2>
+<ul>
+<li><strong>データベース</strong> ＝ <strong>「情報を整理し、必要な時に取り出す仕組み」</strong></li>
+<li><strong>インデックス</strong> ＝ <strong>「検索を助ける索引」</strong></li>
+<li><strong>トランザクション</strong> ＝ <strong>「関連する処理を、ひとまとまりとして扱う仕組み」</strong></li>
+<li><strong>SQL</strong> ＝ <strong>「データを操作するための言語」</strong></li>
+</ul>
+<p>ネットショッピングの注文、SNSの投稿、銀行の残高など、多くのサービスの裏側でデータベースが使われています。その速さと正確さは、データベースだけでなく、アプリやネットワークを含めた仕組み全体で支えられています。</p>
+<p>次の記事では、ファイルの変更履歴を管理する「Git（ギット）」について解説します。</p>
+<p>ここまでお読みいただきありがとうございました！</p>
+</section>
+          <aside class="lab-example" aria-labelledby="lab-example-title">
+            <p class="eyebrow">FROM THE LAB</p>
+            <h2 id="lab-example-title">KatakataLabでの実例</h2>
+            <p>KatakataLabの計算ツールには、入力をブラウザ内で処理し、データベースを使わずに完結するものもあります。保存・共有・大量検索が必要かを考え、必要な場所だけにデータベースを使うことも大切な設計判断です。</p>
+            <p class="related-heading">この実例につながるページ</p>
+            <ul class="related-links"><li><a href="json.html">関連用語：JSON</a></li>
+<li><a href="../../password-generator/">ブラウザ内で処理するパスワード生成</a></li></ul>
+          </aside>
+          <section class="article-section" aria-labelledby="section-ops-database">
+            <h2 id="section-ops-database">個人サイトで保存先が要るかを先に決める</h2>
+            <p>最初からデータベースを置くと設計が重くなりがちです。KatakataLabの多くのツールは、入力を端末内だけで処理し、サーバーに保存しません。一方、コメントや会員機能が必要なら保存先の設計が必須になります。</p>
+<ul>
+<li>消えて困るデータか、その場限りか</li>
+<li>誰が読み書きするか（自分だけ／公開）</li>
+<li>バックアップと削除請求に答えられるか</li>
+</ul>
+<p>「とりあえずDB」より、「保存しないで済むなら保存しない」を先に検討すると、プライバシー説明も単純になります。</p>
+          </section>
+          <section class="article-section faq" aria-labelledby="faq-title">
+            <p class="eyebrow">QUICK CHECK</p>
+            <h2 id="faq-title">よくある質問</h2>
+            <h3>小さなWebサイトにもデータベースは必要ですか？</h3>
+            <p>必ずしも必要ではありません。固定ページやブラウザ内だけで完結する計算なら、静的ファイルだけで作れる場合があります。継続保存や複数人での共有が必要になると、データベースの出番が増えます。</p>
+            <h3>次に読むなら？</h3><p><a href="git.html">GITの記事</a>へ進むと、次の用語を順番に読めます。</p>
+          </section>
+          <section class="article-section references" aria-labelledby="references-title">
+            <h2 id="references-title">参考資料</h2>
+            <p>用語の定義や仕様を確認するため、公式文書・標準文書を参照しています。リンク先の内容は更新される場合があります。</p>
+            <ul><li><a href="https://www.postgresql.org/docs/current/tutorial-sql.html" target="_blank" rel="noopener noreferrer">PostgreSQL公式ドキュメント「The SQL Language」</a></li>
+<li><a href="https://support.microsoft.com/en-us/office/collaborate-on-excel-workbooks-at-the-same-time-with-co-authoring-7152aa8b-b791-414c-a3bb-3024e46fb104" target="_blank" rel="noopener noreferrer">Microsoft「Excelの共同編集」</a></li></ul>
+          </section>
+          <nav class="chapter-nav" aria-label="前後の記事">
+            <a class="chapter-link previous" href="cloud.html"><small>前の記事</small><span>← CLOUD</span></a>
+            <a class="chapter-link next" href="git.html"><small>次の記事</small><span>GIT →</span></a>
+          </nav>
+        </div>
+      </div>
+    </article>
+  </main>
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <p><strong>KatakataLab</strong><br><span>作って、つまずいて、分かったことを残す小さな研究室。</span></p>
+      <nav aria-label="フッターナビゲーション">
+        <a href="../../contact.html">お問い合わせ</a>
+        <a href="../../who-is-katakata.html">運営者情報</a>
+        <a href="../../privacy.html">プライバシーポリシー</a>
+        <a href="../../sitemap.html">サイトマップ</a>
+      </nav>
+    </div>
+    <p class="copyright">&copy; 2024-2026 KatakataLab</p>
+  </footer>
+</body>
+</html>

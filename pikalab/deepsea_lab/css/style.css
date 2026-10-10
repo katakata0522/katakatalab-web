@@ -1,0 +1,869 @@
+/* deepsea_lab/css/style.css */
+
+:root {
+    --z-bg: 0;
+    --z-field-bg: 10;
+    --z-field-fg: 20;
+    --z-light: 30;
+    --z-hud: 40;
+    --z-modal: 50;
+    --z-flash: 9999;
+}
+
+/* 深度マーカーの白文字を、小さい表示でも読み取れる濃さにする */
+.bg-ocean-twilight {
+    background-color: #075985 !important;
+}
+
+#btn-time,
+#btn-light-type,
+#btn-album,
+#btn-audio,
+nav [data-action="parents-modal-open"] {
+    min-height: 44px;
+}
+
+#btn-hud-toggle {
+    width: 44px;
+    height: 44px;
+}
+
+@media (max-width: 640px) {
+    #btn-time,
+    #btn-light-type,
+    #btn-album,
+    #btn-audio,
+    nav [data-action="parents-modal-open"] {
+        min-width: 44px;
+        padding-left: 0.55rem;
+        padding-right: 0.55rem;
+    }
+}
+
+/* Searchlight effect with proportional light intensity */
+.searchlight {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: var(--z-light);
+    will-change: background;
+    /* Uses CSS variables updated by JS (--light-intensity is 0 to 0.45) */
+    background: radial-gradient(
+        circle 500px at var(--x, 50%) var(--y, 50%),
+        rgba(255, 255, 255, calc(var(--light-intensity, 0) * 1.5)) 0%,
+        rgba(255, 255, 255, calc(var(--light-intensity, 0) * 0.5)) 20%,
+        rgba(255, 255, 255, 0) 50%,
+        rgba(0, 0, 0, var(--darkness, 0)) 80%,
+        rgba(0, 0, 0, var(--darkness, 0)) 100%
+    );
+}
+
+/* Camera Flash Animation */
+@keyframes camera-flash {
+    0% { opacity: 1; background-color: rgba(255, 255, 255, 1); }
+    100% { opacity: 0; background-color: rgba(255, 255, 255, 0); }
+}
+.flash-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: var(--z-flash);
+    pointer-events: none;
+    animation: camera-flash 0.4s ease-out forwards;
+}
+
+/* --- Custom Refactored styles for Creatures, Battles, and Vents --- */
+
+/* 生物サークル外枠 */
+.creature-circle-container {
+    position: absolute;
+    cursor: pointer;
+    transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    z-index: var(--z-field-fg);
+    will-change: transform, top;
+    backface-visibility: hidden;
+    transform: translate3d(0, 0, 0);
+}
+
+.creature-circle-container:hover {
+    transform: scale(1.1);
+}
+
+/* 生物サークルのインナー */
+.creature-circle-inner {
+    position: relative;
+    border-radius: 9999px;
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.6);
+    overflow: visible;
+}
+
+/* 生物画像 */
+.creature-img {
+    width: 100%;
+    height: 100%;
+    aspect-ratio: 1 / 1;
+    border-radius: 9999px;
+    border-width: 4px;
+    border-style: solid;
+    object-fit: cover;
+    transition: filter 0.5s ease-in-out, opacity 0.5s ease-in-out;
+}
+
+/* 未登録状態：フィルターなし、通常の明るさと彩度（そのまま表示） */
+.creature-img-unregistered {
+    filter: none;
+    opacity: 1;
+}
+
+/* 登録済み状態：フルカラー＋青いネオングロウ */
+.creature-img-registered {
+    filter: drop-shadow(0 0 10px rgba(79, 195, 247, 0.85)) brightness(1.05) saturate(1.1);
+    opacity: 1;
+}
+
+/* 生物名のテキスト */
+.creature-label {
+    margin-top: 8px;
+    text-align: center;
+    font-weight: 700;
+    font-size: 14px;
+    color: #ffffff;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.8);
+    transition: opacity 0.3s ease;
+    opacity: 0;
+    pointer-events: none;
+    max-width: 140px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* ホバー時に名前を表示 */
+.creature-circle-container:hover .creature-label {
+    opacity: 1;
+}
+
+/* 特殊な発光エフェクト */
+.creature-glow-point {
+    position: absolute;
+    width: 24px;
+    height: 24px;
+    background-color: #facc15;
+    border-radius: 9999px;
+    filter: blur(8px);
+    animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+    z-index: 31; /* サーチライトの前に配置して暗闇でも光らせる */
+}
+
+/* バトルコンテナ */
+.battle-container {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100%;
+    max-width: 768px;
+    height: 500px;
+    pointer-events: none;
+    z-index: var(--z-field-fg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.battle-inner {
+    position: relative;
+    width: 100%;
+    height: 100%;
+}
+
+.battle-whale {
+    position: absolute;
+    top: 0;
+    left: 0;
+    pointer-events: auto;
+    cursor: pointer;
+}
+
+.battle-squid {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    pointer-events: auto;
+    cursor: pointer;
+}
+
+.battle-versus {
+    position: absolute;
+    top: 0;
+    right: -100px;
+    color: #ffffff;
+    font-weight: 700;
+    font-size: 20px;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.battle-whale:hover .battle-versus {
+    opacity: 1;
+}
+
+/* 熱水噴出孔コンテナ */
+.vent-container {
+    position: absolute;
+    left: 0;
+    width: 100%;
+    text-align: center;
+    padding-bottom: 128px;
+    transform: translateY(-80%);
+    z-index: var(--z-field-fg);
+}
+
+.vent-inner {
+    display: inline-block;
+    cursor: pointer;
+}
+
+.vent-glow-red {
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 600px;
+    height: 600px;
+    background-color: rgba(220, 38, 38, 0.2);
+    filter: blur(100px);
+    border-radius: 9999px;
+    animation: pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+    z-index: 31; /* 暗闇を貫通して光らせる */
+}
+
+.vent-glow-yellow {
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 300px;
+    height: 400px;
+    background-color: rgba(234, 179, 8, 0.1);
+    filter: blur(60px);
+    border-radius: 9999px;
+    animation: pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+    z-index: 31; /* 暗闇を貫通して光らせる */
+}
+
+.vent-image {
+    border-radius: 9999px;
+    border: 8px solid #1e293b;
+    box-shadow: 0 0 100px rgba(255, 100, 0, 0.5);
+    object-fit: cover;
+    transition: transform 0.3s ease;
+    background-color: #000000;
+    margin-left: auto;
+    margin-right: auto;
+    position: relative;
+    z-index: 10;
+    max-width: 85vw;
+    max-height: 85vw;
+    height: auto;
+    aspect-ratio: 1 / 1;
+}
+
+.vent-inner:hover .vent-image {
+    transform: scale(1.05);
+}
+
+
+/* Background gradient wrapper to handle scroll size */
+.deep-sea-container {
+    height: 10500px; /* 10000m + padding */
+    background: linear-gradient(
+        to bottom,
+        #0288D1 0%,      /* Surface */
+        #01579B 200px,   /* Twilight */
+        #002137 1000px,  /* Midnight */
+        #000510 4000px,  /* Abyss */
+        #000000 6000px   /* Hadal / Trench */
+    );
+    position: relative;
+    contain: paint;
+}
+
+/* Depth Marker Labels */
+.depth-marker {
+    position: absolute;
+    left: 0;
+    width: 100%;
+    border-top: 2px dashed rgba(255, 255, 255, 0.4);
+    z-index: var(--z-hud); /* サーチライトより前面に配置して常に光らせる */
+}
+.depth-label {
+    display: inline-block;
+    padding: 6px 20px;
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    border-radius: 0 0 16px 0;
+    text-shadow: 0 0 10px rgba(255, 255, 255, 0.8), 0 0 20px rgba(0, 240, 255, 0.6);
+    box-shadow: 0 0 15px rgba(0, 240, 255, 0.4);
+}
+.marker-glow {
+    filter: drop-shadow(0 0 15px rgba(255, 255, 255, 0.9));
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar { width: 10px; }
+::-webkit-scrollbar-track { background: #000; }
+::-webkit-scrollbar-thumb { background: #0288D1; border-radius: 5px; }
+::-webkit-scrollbar-thumb:hover { background: #4FC3F7; }
+
+#scroll-container:focus-visible {
+    outline: 3px solid #7dd3fc;
+    outline-offset: -3px;
+}
+
+#scroll-container {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    overscroll-behavior: contain;
+}
+
+/* Tailwind Components */
+.deepsea-modal {
+    @apply bg-slate-900 border-2 border-ocean-surf rounded-3xl p-0 max-w-2xl w-full overflow-hidden shadow-[0_0_80px_rgba(79,195,247,0.3)] relative transform transition-all scale-100;
+}
+.stat-badge {
+    @apply bg-white/5 p-4 rounded-2xl border border-white/10 flex flex-col items-center text-center;
+}
+.note-panel {
+    @apply bg-ocean-abyss/80 p-5 rounded-2xl border border-yellow-500/30 flex gap-4 items-start shadow-inner;
+}
+.album-modal-container {
+    @apply bg-slate-900 border-2 border-indigo-500/50 rounded-3xl p-6 max-w-4xl w-full max-h-[90vh] flex flex-col shadow-[0_0_80px_rgba(99,102,241,0.2)];
+}
+
+/* WebKit/Safari はみ出し防止（ズーム画像の角丸クリッピングバグ対策） */
+#modal-creature-visual-container {
+    isolation: isolate;
+    transform: translateZ(0);
+    backface-visibility: hidden;
+}
+
+/* Layer Management Classes */
+.field-layer { z-index: var(--z-field-fg); }
+.hud-layer { z-index: var(--z-hud); }
+.modal-layer { z-index: var(--z-modal); }
+
+@keyframes sonar-wave {
+  0% {
+    width: 0px;
+    height: 0px;
+    opacity: 0.8;
+  }
+  100% {
+    width: 200vw;
+    height: 200vw;
+    opacity: 0;
+  }
+}
+.animate-sonar-wave {
+  animation: sonar-wave 3s ease-out forwards;
+}
+.sonar-detected {
+  filter: brightness(0) invert(1) drop-shadow(0 0 10px rgba(0, 255, 255, 0.8)) !important;
+  opacity: 1 !important;
+  transition: filter 0.5s, opacity 0.5s;
+}
+
+/* ==========================================================================
+   ギミック追加: 昼夜切り替え・ブラックライト・マクロズーム・クイズ
+   ========================================================================== */
+
+/* 昼夜切り替え: よるモード背景グラデーション */
+.deep-sea-container.night-mode {
+    background: linear-gradient(
+        to bottom,
+        #011420 0%,      /* Night Surface */
+        #000d17 200px,   /* Night Twilight */
+        #00070f 1000px,  /* Night Midnight */
+        #000208 4000px,  /* Night Abyss */
+        #000000 6000px   /* Night Hadal */
+    );
+    transition: background 2s ease-in-out;
+}
+
+.deep-sea-container {
+    transition: background 2s ease-in-out;
+}
+
+/* 昼夜切り替え時の生物移動トランジション */
+.creature-circle-container {
+    transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), top 2s ease-in-out;
+}
+
+/* ブラックライト: サーチライトグラデーションの切り替え */
+.searchlight.blacklight {
+    background: radial-gradient(
+        circle 500px at var(--x, 50%) var(--y, 50%),
+        rgba(139, 92, 246, calc(var(--light-intensity, 0) * 1.5)) 0%,
+        rgba(109, 40, 217, calc(var(--light-intensity, 0) * 0.6)) 20%,
+        rgba(76, 29, 149, 0) 50%,
+        rgba(0, 0, 0, var(--darkness, 0)) 80%,
+        rgba(0, 0, 0, var(--darkness, 0)) 100%
+    );
+}
+
+/* 色つき照明は演出。未確認の生物へ蛍光を付与しない。 */
+.ecology-caption {
+    position: absolute;
+    top: -19px; left: 0; width: 100%;
+    text-align: center;
+    font: 10px/1.5 monospace;
+    color: #bae6fd;
+    text-shadow: 0 1px 4px #000;
+    white-space: nowrap;
+    pointer-events: none;
+}
+.habitat-seafloor .creature-circle-inner::after {
+    content: '';
+    position: absolute;
+    left: -7%; right: -7%; bottom: -4px;
+    height: 10px;
+    border-radius: 60% 35% 15% 15%;
+    background: linear-gradient(180deg, #6b8495, #243847);
+    opacity: .8;
+    pointer-events: none;
+}
+/* 同じ深度の遭遇図。画像サイズを実物の縮尺や別の深度と混同しない。 */
+.ecology-encounter { height: 310px; max-width: 800px; }
+.ecology-encounter .battle-squid { top: 0; bottom: auto; }
+.ecology-encounter .battle-versus { right: 8px; top: auto; bottom: 8px; font-size: 14px; }
+.encounter-caption {
+    position: absolute;
+    left: 0; top: -28px; width: 256px;
+    color: #bae6fd; font-size: 10px; line-height: 14px; text-align: center; white-space: nowrap;
+}
+
+/* マクロズームエフェクト */
+.macro-zoom {
+    transform: scale(2.2) translateY(5%);
+}
+
+/* クイズ選択肢ボタンの共通スタイルと結果表示 */
+.quiz-opt-btn {
+    transition: all 0.2s ease-in-out;
+}
+.quiz-opt-btn:hover:not(:disabled) {
+    transform: translateY(-2px);
+    @apply border-indigo-400/80 bg-indigo-950/20 text-white;
+}
+.quiz-opt-btn:active:not(:disabled) {
+    transform: translateY(0);
+}
+.quiz-opt-btn:disabled {
+    cursor: default;
+}
+.quiz-correct {
+    background-color: rgba(16, 185, 129, 0.2) !important;
+    border-color: rgb(16, 185, 129) !important;
+    color: rgb(52, 211, 153) !important;
+}
+.quiz-incorrect {
+    background-color: rgba(239, 68, 68, 0.2) !important;
+    border-color: rgb(239, 68, 68) !important;
+    color: rgb(248, 113, 113) !important;
+}
+
+/* 44pxの操作領域と数値表示を分離し、最大水深でも文字を隠さない。 */
+#hud-container:not(.hud-minimized) #hud-content {
+    padding-top: 2.5rem;
+}
+@media (min-width: 768px) {
+    #depth-val[data-wide="true"] {
+        font-size: 2.25rem;
+    }
+}
+
+/* --- HUD Minimization --- */
+.hud-minimized #hud-panel {
+    width: 10rem !important;
+    padding: 0.75rem 1rem !important;
+}
+.hud-minimized #hud-content {
+    display: none !important;
+}
+.hud-minimized #hud-mini-depth {
+    display: flex !important;
+    min-height: 44px;
+    padding-right: 0;
+    padding-left: 3rem;
+}
+.hud-minimized #hud-toggle-icon {
+    transform: rotate(180deg);
+}
+
+/* 最小化HUDはナビとタイトルの間に収め、タイトルの上端を隠さない。 */
+@media (max-width: 639px) {
+    #hud-container.hud-minimized {
+        top: 4.5rem;
+    }
+}
+
+/* --- スマホ・タブレット向けレスポンシブ・リファクタリング --- */
+@media (max-width: 640px) {
+    /* ヘッダーのボタン幅調整 */
+    nav {
+        padding-left: 0.4rem !important;
+        padding-right: 0.4rem !important;
+        max-width: 640px !important;
+        margin-left: auto !important;
+        margin-right: auto !important;
+        width: 100% !important;
+    }
+    
+    nav button {
+        padding-left: 0.4rem !important;
+        padding-right: 0.4rem !important;
+        font-size: 0.7rem !important;
+    }
+    
+    .album-badge {
+        font-size: 8px !important;
+        padding: 1px 3px !important;
+        margin-left: 2px !important;
+    }
+
+    .mobile-hide {
+        display: none !important;
+    }
+
+    .button-text {
+        display: none !important;
+    }
+    
+    /* 深海タイトル縮小 */
+    h2.text-6xl {
+        font-size: 2.00rem !important; /* text-4xl */
+    }
+    h2.text-6xl span.text-4xl {
+        font-size: 1.35rem !important; /* text-2xl */
+    }
+
+    /* 詳細モーダルのレスポンシブ */
+    .deepsea-modal {
+        max-width: 95vw !important;
+        margin-left: auto;
+        margin-right: auto;
+    }
+    
+    /* モーダル画像サイズ */
+    #modal-creature-visual-container {
+        height: 12.5rem !important; /* h-50 */
+    }
+    
+    /* モーダルのパディング */
+    .deepsea-modal .p-5 {
+        padding: 1rem !important;
+    }
+    
+    /* スケール比較の高さ縮小 */
+    #sea-scale-container {
+        height: 6rem !important;
+    }
+
+    /* アルバムモーダル */
+    .album-modal-container {
+        max-width: 95vw !important;
+        max-height: 85vh !important;
+        padding: 1rem !important;
+        display: flex !important;
+        flex-direction: column !important;
+    }
+    
+    /* アルバムのグリッド（スマホで2列のとき余白を詰める） */
+    #album-grid {
+        gap: 0.5rem !important;
+        flex-grow: 1 !important;
+        overflow-y: auto !important;
+        max-height: calc(85vh - 120px) !important;
+    }
+    
+    #album-grid > div {
+        padding: 0.5rem !important;
+    }
+
+    /* クイズボタンのタッチターゲット拡大 */
+    .quiz-opt-btn {
+        padding: 12px 16px !important;
+        min-height: 48px !important;
+    }
+
+    /* ==========================================================================
+       スマホ版 抜本的リデザイン: 2Dスワイプ＆スマホ最適化
+       ========================================================================== */
+    
+    /* 2Dスワイプスクロールの構築 */
+    #scroll-container {
+        overflow-x: auto !important;
+        overflow-y: auto !important; /* 縦方向のスクロールも明示的に強制してX軸スクロールとのバグを回避 */
+        scroll-behavior: auto !important; /* ドラッグ操作を滑らかにするためスムーズスクロールを無効化 */
+        -webkit-overflow-scrolling: touch;
+    }
+    
+    /* 横スクロールバー非表示 */
+    #scroll-container::-webkit-scrollbar {
+        display: none !important;
+    }
+
+    /* マップの横幅を800pxに固定して横方向の探索領域を確保 */
+    .deep-sea-container {
+        width: 800px !important;
+    }
+
+    /* タイトルセクションの中央寄せ */
+    #title-section {
+        width: 800px !important;
+        left: 0 !important;
+    }
+
+    /* 生物サークルスマホ縮小 (通常96px -> 68px) */
+    .creature-circle-inner {
+        width: 68px !important;
+        height: 68px !important;
+    }
+    .creature-circle-inner img {
+        width: 68px !important;
+        height: 68px !important;
+        border-width: 3px !important;
+    }
+    
+    /* 巨大生物もインナーの最大値制限で一律縮小 */
+    [data-fact-id] .creature-circle-inner,
+    [data-fact-id] .creature-circle-inner img {
+        max-width: 68px !important;
+        max-height: 68px !important;
+    }
+    
+    /* ラベルの改行禁止とフォント縮小 */
+    .creature-label {
+        font-size: 11px !important;
+        white-space: nowrap !important;
+        max-width: 120px !important; /* ラベル幅を広げて改行を防ぐ */
+        opacity: 1 !important; /* スマホではホバーが無いので常時表示 */
+    }
+
+    /* バトルコンテナのスマホ最適化 (110pxに縮小して対向配置) */
+    .battle-container {
+        max-width: 800px !important;
+        width: 800px !important;
+        height: 240px !important;
+        left: 0 !important;
+        transform: none !important;
+    }
+    
+    .battle-whale .creature-circle-inner,
+    .battle-squid .creature-circle-inner,
+    .battle-whale img,
+    .battle-squid img {
+        width: 110px !important;
+        height: 110px !important;
+        max-width: 110px !important;
+        max-height: 110px !important;
+    }
+    
+    .battle-whale {
+        left: 10% !important;
+        top: 10px !important;
+    }
+    
+    .battle-squid {
+        right: 10% !important;
+        bottom: 10px !important;
+    }
+    
+    .battle-versus {
+        display: none !important;
+    }
+
+    /* 熱水噴出孔のスマホ最適化 */
+    .vent-container {
+        width: 800px !important;
+    }
+    
+    .vent-inner img.vent-image {
+        width: 260px !important; /* 384px -> 260px に縮小 */
+        height: 260px !important;
+    }
+    
+    .vent-glow-red {
+        width: 400px !important;
+        height: 400px !important;
+    }
+    
+    .vent-glow-yellow {
+        width: 200px !important;
+        height: 280px !important;
+    }
+
+    /* ==========================================================================
+       フローティングソナーレーダー（スマホ専用）
+       ========================================================================== */
+    .radar-indicator {
+        position: absolute;
+        width: 32px;
+        height: 32px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 50;
+        animation: radar-float 1.5s ease-in-out infinite alternate;
+        transition: top 0.2s ease-out, opacity 0.2s ease;
+        opacity: 0;
+        will-change: top, transform, opacity;
+        backface-visibility: hidden;
+        transform: translate3d(0, 0, 0);
+    }
+    
+    .radar-indicator.active {
+        opacity: 1;
+    }
+
+    .radar-left-indicator {
+        left: 4px;
+    }
+
+    .radar-right-indicator {
+        right: 4px;
+    }
+
+    .radar-arrow {
+        color: #00f0ff;
+        font-size: 18px;
+        font-weight: bold;
+        text-shadow: 0 0 10px rgba(0, 240, 255, 0.9);
+    }
+    
+    .radar-wave {
+        position: absolute;
+        width: 24px;
+        height: 24px;
+        border: 2px solid rgba(0, 240, 255, 0.7);
+        border-radius: 9999px;
+        animation: radar-ping 1.5s cubic-bezier(0, 0, 0.2, 1) infinite;
+        box-shadow: 0 0 10px rgba(0, 240, 255, 0.5);
+        will-change: transform, opacity;
+        backface-visibility: hidden;
+    }
+
+    @keyframes radar-float {
+        0% { transform: translateY(-4px); }
+        100% { transform: translateY(4px); }
+    }
+
+    @keyframes radar-ping {
+        0% { transform: scale(0.5); opacity: 1; }
+        100% { transform: scale(2.0); opacity: 0; }
+    }
+}
+
+/* ==========================================================================
+   最適化追加クラス: トースト通知＆アンロックフェード
+   ========================================================================== */
+
+/* トースト通知 */
+.toast-notification {
+    background: rgba(15, 23, 42, 0.95);
+    backdrop-filter: blur(8px);
+    border: 1px solid rgba(79, 195, 247, 0.4);
+    color: #ffffff;
+    border-radius: 9999px;
+    padding: 10px 20px;
+    font-size: 13px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5), 0 0 15px rgba(79, 195, 247, 0.2);
+    animation: toast-fade-in 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards, toast-fade-out 0.3s ease-in forwards 3.7s;
+    pointer-events: auto;
+    width: auto;
+    white-space: nowrap;
+}
+
+@keyframes toast-fade-in {
+    0% { transform: translateY(-20px) scale(0.95); opacity: 0; }
+    100% { transform: translateY(0) scale(1); opacity: 1; }
+}
+@keyframes toast-fade-out {
+    0% { transform: scale(1); opacity: 1; }
+    100% { transform: scale(0.9); opacity: 0; }
+}
+
+/* ロックされた生物の非表示（チラつき防止） */
+.creature-locked {
+    display: none !important;
+    opacity: 0 !important;
+    pointer-events: none !important;
+}
+
+/* アンロックされた瞬間のフェードイン効果 */
+.creature-unlocked-fade {
+    animation: fade-in-simple 1.5s ease-out forwards;
+}
+
+@keyframes fade-in-simple {
+    0% { opacity: 0; }
+    100% { opacity: 1; }
+}
+
+/* 警告レイヤーのz-index */
+.z-45 {
+    z-index: 45 !important;
+}
+
+/* 高水圧警告のアラート明滅 */
+.pressure-danger-active {
+    opacity: 1 !important;
+    animation: alert-flash 1.5s infinite alternate ease-in-out !important;
+}
+@keyframes alert-flash {
+    0% { background-color: rgba(220, 38, 38, 0.05); }
+    100% { background-color: rgba(220, 38, 38, 0.25); }
+}
+
+
+
+
+
+
+
+/* 端末幅が狭い場合も浅海の3枚を重ねず、既存の横探索へつなぐ。 */
+@media (min-width: 641px) and (max-width: 799px) {
+    #scroll-container { overflow-x: auto !important; }
+    .deep-sea-container { min-width: 800px; }
+}
+@media (max-width: 640px) {
+    .ecology-caption { font-size: 9px; }
+    .encounter-caption { top: 145px; left: 10%; width: 220px; text-align: left; }
+    .ecology-encounter .battle-whale,
+    .ecology-encounter .battle-squid { top: 0 !important; bottom: auto !important; }
+}
+.force-mobile .ecology-encounter .battle-whale,
+.force-mobile .ecology-encounter .battle-squid { top: 0 !important; bottom: auto !important; }
+
+.ecology-guide { width: min(600px, calc(100vw - 32px)); margin: 18px auto 0; padding: 0; color: #bae6fd; font-size: 11px; line-height: 1.7; text-align: center; }
+
+.force-mobile .encounter-caption { top: 145px; left: 10%; width: 220px; text-align: left; }
+
+/* 大きい遭遇画像の間の展示は、拡大で隣を隠さず色と名前で反応する。 */
+.ecology-encounter .creature-circle-container:hover,
+[data-fact-id="barreleye"]:hover,
+[data-fact-id="viperfish"]:hover { transform: translate3d(0, 0, 0); }
+.ecology-encounter .creature-circle-container:hover .creature-img,
+[data-fact-id="barreleye"]:hover .creature-img,
+[data-fact-id="viperfish"]:hover .creature-img { border-color: #bae6fd; }

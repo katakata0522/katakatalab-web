@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="robots" content="noindex, follow">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self' https:; 
+                   style-src 'self' https: https://fonts.googleapis.com 'unsafe-inline'; 
+                   font-src 'self' https: https://fonts.gstatic.com; 
+                   script-src 'self' https: 'unsafe-inline';
+                   img-src 'self' https: data: https:;
+                   connect-src 'self' https:;
+                   object-src 'none';
+                   base-uri 'self' https:;
+                   form-action 'self' https:; frame-src https:;">
+    <title>Parent's Cafe | なんでも用紙ジェネレーター</title>
+    <link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700&display=swap"
+        rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@40,400,0,0"
+        rel="stylesheet">
+    <link rel="stylesheet" href="../style.css">
+    <link rel="stylesheet" href="style.css">
+
+  <meta name="description" content="漢字練習帳、方眼紙、英語ノート、五線譜、原稿用紙を画面で作成し、A4で印刷・PDF保存できる無料ツールです。">
+  <link rel="canonical" href="https://katakatalab.com/pikalab/paper_gen/">
+  <meta property="og:title" content="Parent's Cafe | なんでも用紙ジェネレーター">
+  <meta property="og:description" content="漢字練習帳、方眼紙、英語ノート、五線譜、原稿用紙を画面で作成し、A4で印刷・PDF保存できる無料ツールです。">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://katakatalab.com/pikalab/paper_gen/">
+  <meta property="og:image" content="https://katakatalab.com/pikalab/pikalab_ogp_compressed.jpg">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Parent's Cafe | なんでも用紙ジェネレーター">
+  <meta name="twitter:description" content="漢字練習帳、方眼紙、英語ノート、五線譜、原稿用紙を画面で作成し、A4で印刷・PDF保存できる無料ツールです。">
+  <meta name="twitter:image" content="https://katakatalab.com/pikalab/pikalab_ogp_compressed.jpg">
+  <meta name="twitter:site" content="@katakata0522">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"Parent's Cafe | なんでも用紙ジェネレーター","description":"漢字練習帳、方眼紙、英語ノート、五線譜、原稿用紙を画面で作成し、A4で印刷・PDF保存できる無料ツールです。","url":"https://katakatalab.com/pikalab/paper_gen/","applicationCategory":"EducationalApplication","operatingSystem":"Web Browser","offers":{"@type":"Offer","price":"0","priceCurrency":"JPY"}}</script>
+
+</head>
+
+<body class="flex flex-col h-screen overflow-hidden">
+    <script>try{var p=localStorage.getItem('wonder_school_profile_v2');if(p&&JSON.parse(p).darkMode)document.body.classList.add('theme-night');}catch(e){}</script>
+
+    <!-- Skip Link -->
+    <a href="#main-content"
+        class="no-print sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-50 focus:bg-white focus:text-teal-600 focus:px-4 focus:py-2 focus:rounded-lg focus:shadow-lg focus:font-bold border-2 border-teal-400">メインコンテンツへスキップ</a>
+
+    <noscript>
+        <div class="fixed inset-0 z-50 flex items-center justify-center bg-stone-100/90 backdrop-blur-sm">
+            <div class="text-center p-8 bg-white rounded-3xl shadow-xl border-4 border-teal-400 max-w-md mx-4">
+                <h2 class="text-2xl font-black text-teal-600 mb-2">JavaScriptが無効です</h2>
+                <p class="text-stone-600">Parent's Cafeを使用するには、JavaScriptを有効にしてください。</p>
+            </div>
+        </div>
+    </noscript>
+
+    <header class="bg-white/90 backdrop-blur-md border-b border-stone-200 flex-shrink-0 z-50 no-print">
+        <div class="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <div class="bg-teal-50 p-2 rounded-lg">
+                    <span class="material-symbols-rounded text-teal-600 text-2xl" aria-hidden="true">description</span>
+                </div>
+                <h1 class="text-lg md:text-xl font-bold tracking-tight text-stone-700">
+                    Parent's Cafe <span class="text-stone-300 mx-2">|</span> なんでも用紙ジェネレーター
+                </h1>
+            </div>
+            <div>
+                <button type="button" data-action="parents-modal-open"
+                    class="bg-white hover:bg-stone-50 text-stone-600 hover:text-stone-800 px-3 py-2 rounded-xl text-xs font-bold shadow-sm transition-all flex items-center gap-1 border border-stone-200 active:scale-95"
+                    aria-label="保護者の方へ - 開く" aria-haspopup="dialog" aria-expanded="false">
+                    <span class="material-symbols-rounded text-lg text-teal-600">family_restroom</span>
+                    <span class="hidden sm:inline">保護者の方へ</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main id="main-content" class="flex-1 flex overflow-hidden">
+
+        <div id="paper-layout" class="flex flex-col md:flex-row w-full h-full">
+
+            <aside
+                class="w-full md:w-80 bg-white border-r border-stone-200 flex flex-col z-20 shadow-xl md:shadow-none overflow-y-auto shrink-0 no-print">
+                <div class="p-6">
+                    <h2 class="text-sm font-bold text-stone-400 uppercase tracking-wider mb-4 flex items-center gap-2">
+                        <span class="material-symbols-rounded text-base" aria-hidden="true">grid_view</span> 用紙を選んでね
+                    </h2>
+                    <div class="space-y-3">
+                        <button type="button" class="paper-btn" data-paper-type="kanji" aria-label="漢字練習帳">
+                            <span class="material-symbols-rounded paper-btn__icon" aria-hidden="true">edit_square</span>
+                            <div>
+                                <div class="paper-btn__title">漢字練習帳</div>
+                                <div class="paper-btn__desc">十字リーダー入り</div>
+                            </div>
+                        </button>
+                        <button type="button" class="paper-btn" data-paper-type="grid5" aria-label="5ミリ方眼紙">
+                            <span class="material-symbols-rounded paper-btn__icon" aria-hidden="true">grid_on</span>
+                            <div>
+                                <div class="paper-btn__title">5mm 方眼紙</div>
+                                <div class="paper-btn__desc">算数・グラフ用</div>
+                            </div>
+                        </button>
+                        <button type="button" class="paper-btn" data-paper-type="grid10" aria-label="10ミリ方眼紙">
+                            <span class="material-symbols-rounded paper-btn__icon" aria-hidden="true">grid_4x4</span>
+                            <div>
+                                <div class="paper-btn__title">10mm 方眼紙</div>
+                                <div class="paper-btn__desc">実線＋点線</div>
+                            </div>
+                        </button>
+                        <button type="button" class="paper-btn" data-paper-type="english" aria-label="英語ノート">
+                            <span class="material-symbols-rounded paper-btn__icon" aria-hidden="true">abc</span>
+                            <div>
+                                <div class="paper-btn__title">英語ノート</div>
+                                <div class="paper-btn__desc">4線 (赤ライン入)</div>
+                            </div>
+                        </button>
+                        <button type="button" class="paper-btn" data-paper-type="music" aria-label="五線譜">
+                            <span class="material-symbols-rounded paper-btn__icon" aria-hidden="true">music_note</span>
+                            <div>
+                                <div class="paper-btn__title">五線譜</div>
+                                <div class="paper-btn__desc">音楽用</div>
+                            </div>
+                        </button>
+                        <button type="button" class="paper-btn" data-paper-type="genko400" aria-label="原稿用紙（400字）">
+                            <span class="material-symbols-rounded paper-btn__icon" aria-hidden="true">grid_goldenratio</span>
+                            <div>
+                                <div class="paper-btn__title">原稿用紙 (400字)</div>
+                                <div class="paper-btn__desc">縦書き 20字×20行</div>
+                            </div>
+                        </button>
+                        <button type="button" class="paper-btn" data-paper-type="genko200" aria-label="原稿用紙（200字）">
+                            <span class="material-symbols-rounded paper-btn__icon" aria-hidden="true">grid_goldenratio</span>
+                            <div>
+                                <div class="paper-btn__title">原稿用紙 (200字)</div>
+                                <div class="paper-btn__desc">縦書き 20字×10行</div>
+                            </div>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- 漢字マスの切り替え設定パネル（漢字練習帳選択時のみJSで表示） -->
+                <div class="p-6 border-t border-stone-100 bg-teal-50/10 hidden" id="kanji-settings-panel">
+                    <h2 class="text-sm font-bold text-stone-400 uppercase tracking-wider mb-3 flex items-center gap-2">
+                        <span class="material-symbols-rounded text-base" aria-hidden="true">grid_on</span> マスの数（学年目安）
+                    </h2>
+                    <div class="grid grid-cols-3 gap-2" id="kanji-style-options" role="radiogroup" aria-label="マスの数">
+                        <label class="kanji-style-btn cursor-pointer text-center flex flex-col justify-center p-2 border border-stone-200 rounded-lg hover:bg-stone-50 transition active:scale-[0.98] [&:has(input:checked)]:border-teal-500 [&:has(input:checked)]:bg-teal-50/50 [&:has(input:checked)]:text-teal-600">
+                            <input type="radio" name="kanji-style" value="35" class="sr-only" checked>
+                            <span class="text-xs font-black">35字</span>
+                            <span class="text-[9px] text-stone-400 font-bold mt-0.5">低学年</span>
+                        </label>
+                        <label class="kanji-style-btn cursor-pointer text-center flex flex-col justify-center p-2 border border-stone-200 rounded-lg hover:bg-stone-50 transition active:scale-[0.98] [&:has(input:checked)]:border-teal-500 [&:has(input:checked)]:bg-teal-50/50 [&:has(input:checked)]:text-teal-600">
+                            <input type="radio" name="kanji-style" value="84" class="sr-only">
+                            <span class="text-xs font-black">84字</span>
+                            <span class="text-[9px] text-stone-400 font-bold mt-0.5">中学年</span>
+                        </label>
+                        <label class="kanji-style-btn cursor-pointer text-center flex flex-col justify-center p-2 border border-stone-200 rounded-lg hover:bg-stone-50 transition active:scale-[0.98] [&:has(input:checked)]:border-teal-500 [&:has(input:checked)]:bg-teal-50/50 [&:has(input:checked)]:text-teal-600">
+                            <input type="radio" name="kanji-style" value="104" class="sr-only">
+                            <span class="text-xs font-black">104字</span>
+                            <span class="text-[9px] text-stone-400 font-bold mt-0.5">高学年</span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- 文字流し込み連携パネル -->
+                <div class="p-6 border-t border-stone-100 bg-stone-50/50" id="draft-flow-panel">
+                    <h2 class="text-sm font-bold text-stone-400 uppercase tracking-wider mb-3 flex items-center gap-2">
+                        <span class="material-symbols-rounded text-base" aria-hidden="true">edit_note</span> 文字流し込み (任意)
+                    </h2>
+                    <button type="button"
+                        class="w-full bg-white hover:bg-stone-50 text-teal-600 font-bold py-2 px-3 border border-teal-200 rounded-lg text-xs flex items-center justify-center gap-1 shadow-sm transition active:scale-[0.98] mb-3"
+                        id="load-draft-btn">
+                        <span class="material-symbols-rounded text-sm" aria-hidden="true">auto_awesome</span> 感想文クエストから読み込む 🪄
+                    </button>
+                    <textarea id="paper-draft-textarea" rows="4" aria-label="原稿用紙に流し込む文字"
+                        class="w-full text-xs p-3 border border-stone-200 rounded-lg focus:outline-none focus:border-teal-500 font-normal leading-relaxed resize-none"
+                        placeholder="ここに書いた文字が原稿用紙に流し込まれます。手入力もOK！" disabled></textarea>
+                    <div class="text-[10px] text-stone-400 mt-1 flex justify-between">
+                        <span>文字数: <span id="draft-char-count">0</span>文字</span>
+                        <span id="draft-sheet-estimate">目安: 0.0枚</span>
+                    </div>
+                </div>
+
+                <div id="paper-actions" class="mt-auto p-6 border-t border-stone-100 bg-stone-50 space-y-3">
+                    <button type="button"
+                        class="w-full bg-teal-600 hover:bg-teal-700 text-white font-bold py-4 rounded-xl shadow-lg hover:shadow-xl transition flex items-center justify-center gap-2 transform active:scale-[0.98] text-base"
+                        id="print-paper-btn" aria-label="印刷またはPDFとして保存">
+                        <span class="material-symbols-rounded text-xl" aria-hidden="true">print</span>
+                        <span>印刷・PDFとして保存</span>
+                    </button>
+                    <button type="button"
+                        class="w-full bg-[#06C755] hover:bg-[#05B04B] text-white font-bold py-3 rounded-xl shadow-md hover:shadow-lg transition flex items-center justify-center gap-2 transform active:scale-[0.98] text-sm"
+                        id="share-paper-btn" aria-label="家族に共有する">
+                        <span class="material-symbols-rounded text-lg" aria-hidden="true">share</span>
+                        <span>家族に共有する</span>
+                    </button>
+                    <p class="text-center text-[10px] text-stone-400 mt-2 font-medium">
+                        ※A4用紙に100%（倍率なし）で印刷してください
+                    </p>
+                </div>
+            </aside>
+
+            <div id="paper-workspace" class="flex-1 bg-stone-200 relative overflow-hidden flex flex-col">
+                <div
+                    class="bg-white/50 backdrop-blur border-b border-stone-200 px-6 py-2 flex justify-between items-center text-xs font-bold text-stone-500 no-print">
+                    <span>PREVIEW: A4 (210mm x 297mm)</span>
+                    <div class="flex gap-2">
+                        <button type="button" class="hover:bg-white/80 p-1.5 rounded transition" id="zoom-in-btn" title="拡大"
+                            aria-label="プレビューを拡大">
+                            <span class="material-symbols-rounded text-lg" aria-hidden="true">add</span>
+                        </button>
+                        <button type="button" class="hover:bg-white/80 p-1.5 rounded transition" id="zoom-out-btn" title="縮小"
+                            aria-label="プレビューを縮小">
+                            <span class="material-symbols-rounded text-lg" aria-hidden="true">remove</span>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="flex-1 paper-preview-container" id="preview-container" tabindex="0" role="region"
+                    aria-label="作成した用紙のプレビュー">
+                    <div id="paper-preview-sizer">
+                        <div class="transition-transform duration-200 ease-out flex flex-col gap-8 items-center" id="print-target">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    
+
+    
+
+    
+
+    <script defer src="script.js"></script>
+
+<!-- Parents Modal -->
+<dialog id="parents-modal"
+    class="p-0 rounded-3xl shadow-2xl open:animate-fade-in w-full max-w-lg m-auto overflow-hidden border-0"
+    aria-labelledby="parents-modal-title" style="display:none;">
+    <div class="bg-white p-6 md:p-8 max-h-[90vh] overflow-y-auto relative text-left">
+        <button type="button" data-action="parents-modal-close" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600 focus:outline-none" aria-label="閉じる">
+            <span class="material-symbols-rounded">close</span>
+        </button>
+        <div class="mb-6 border-b-2 border-indigo-100 pb-4">
+            <h2 id="parents-modal-title"
+                class="text-lg md:text-xl font-black text-slate-800 flex items-center gap-2">
+                <span class="material-symbols-rounded text-indigo-500">family_restroom</span> 保護者の方へ
+            </h2>
+            <p class="text-xs text-slate-400 font-bold mt-1">For Parents &amp; Guardians</p>
+        </div>
+
+        <div class="space-y-6 text-sm text-slate-600 leading-relaxed font-bold">
+            <!-- ウェルカムメッセージカード -->
+            <div class="bg-gradient-to-r from-indigo-50 to-purple-50 p-5 rounded-2xl border border-indigo-100 text-center">
+                <p class="mb-2 text-indigo-800 text-base">
+                    <span class="material-symbols-rounded text-xl align-bottom mr-1 text-pink-400">favorite</span>
+                    当サイト「PikaLab」に<br>ご訪問いただき、誠にありがとうございます。
+                </p>
+                <p class="text-xs text-indigo-600">
+                            大切なお子様と一緒にPikaLabを訪れていただけたこと、<br>制作者のかたかたより、心から感謝申し上げます。
+                </p>
+            </div>
+
+            <!-- 1. ねらい -->
+            <div>
+                <h3 class="text-indigo-600 font-black mb-2 flex items-center gap-2">
+                    <span class="material-symbols-rounded text-base">school</span> このアプリのねらい
+                </h3>
+                    <p>「なんでも用紙ジェネレーター」は、<span class="bg-indigo-100 text-indigo-700 px-1 rounded">漢字練習帳、方眼紙、英語ノート、五線譜、原稿用紙</span>から必要な用紙を選び、画面で作成・印刷できるツールです。</p>
+            </div>
+
+            <!-- 2. おねがい -->
+            <div>
+                <h3 class="text-pink-500 font-black mb-2 flex items-center gap-2">
+                    <span class="material-symbols-rounded text-base">favorite</span> 保護者様へのおねがい
+                </h3>
+                    <p>作成した用紙は、<span class="bg-pink-100 text-pink-700 px-1 rounded">プレッシャーを与えず</span>、お子様のペースに合わせて使ってください。取り組んだページに花丸をつけることも、達成した実感を支える一つの方法です。</p>
+            </div>
+
+            <!-- 3. 活用方法 -->
+            <div>
+                <h3 class="text-green-600 font-black mb-2 flex items-center gap-2">
+                    <span class="material-symbols-rounded text-base">emoji_objects</span> おうちでの活用方法
+                </h3>
+                    <p>印刷した用紙をバインダーに綴じて「マイブック」として残すと、取り組んだ内容をあとから振り返れます。</p>
+            </div>
+
+            <!-- 4. 健康への配慮 -->
+            <div>
+                <h3 class="text-orange-500 font-black mb-2 flex items-center gap-2">
+                    <span class="material-symbols-rounded text-base">timer</span> 健康への配慮（休憩の推奨）
+                </h3>
+                    <p>長時間続けず、<span class="bg-orange-100 text-orange-700 px-1 rounded">目や体が疲れる前にこまめに休憩</span>してください。作成した用紙を印刷すれば、画面から離れて使えます。通常の作成・保存では、用紙へ入力した文字や設定を外部サーバーへ送信しません。共有機能を使うと、原稿用紙の下書き（最大1000文字。文字の組み合わせによっては、リンクの長さに合わせて短くなります）や用紙設定の一部が共有URLに含まれ、選択した共有先へ渡されます。氏名など共有したくない情報は、共有前に下書きから外してください。</p>
+            </div>
+        </div>
+        <div class="mt-8 text-center">
+            <button type="button" data-action="parents-modal-close"
+                class="w-full bg-indigo-500 text-white px-8 py-3 rounded-xl font-black hover:bg-indigo-600 transition shadow-lg shadow-indigo-200">閉じる</button>
+        </div>
+    </div>
+</dialog>
+
+    <style>
+    #parents-modal::backdrop {
+        background: rgba(15, 23, 42, 0.6);
+        backdrop-filter: blur(4px);
+    }
+    #parents-modal[open] {
+        display: block !important;
+        animation: parentsModalFadeIn 0.3s ease-out forwards;
+    }
+    @keyframes parentsModalFadeIn {
+        from { opacity: 0; transform: scale(0.95); }
+        to { opacity: 1; transform: scale(1); }
+    }
+    </style>
+
+    <script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const openBtns = document.querySelectorAll('[data-action="parents-modal-open"]');
+        const closeBtns = document.querySelectorAll('[data-action="parents-modal-close"]');
+        const dialog = document.getElementById('parents-modal');
+
+        if (dialog) {
+            const restoreTrigger = () => {
+                // 前回のcloseイベントより先に開き直した場合は現在の状態を保つ。
+                if (dialog.open) return;
+                openBtns.forEach(btn => btn.setAttribute('aria-expanded', 'false'));
+                openBtns[0]?.focus();
+            };
+            dialog.addEventListener('close', restoreTrigger);
+            openBtns.forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    if (typeof dialog.showModal === 'function') {
+                        dialog.showModal();
+                    } else {
+                        dialog.setAttribute('open', '');
+                        dialog.style.display = 'block';
+                    }
+                    btn.setAttribute('aria-expanded', 'true');
+                });
+            });
+
+            closeBtns.forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    if (typeof dialog.close === 'function') {
+                        dialog.close();
+                    } else {
+                        dialog.removeAttribute('open');
+                        dialog.style.display = 'none';
+                        restoreTrigger();
+                    }
+                    const openBtn = document.querySelector('[data-action="parents-modal-open"]');
+                    if (openBtn) {
+                        openBtn.setAttribute('aria-expanded', 'false');
+                        openBtn.focus();
+                    }
+                });
+            });
+
+            dialog.addEventListener('click', (e) => {
+                if (e.target === dialog) {
+                    if (typeof dialog.close === 'function') {
+                        dialog.close();
+                    } else {
+                        dialog.removeAttribute('open');
+                        dialog.style.display = 'none';
+                        restoreTrigger();
+                    }
+                    const openBtn = document.querySelector('[data-action="parents-modal-open"]');
+                    if (openBtn) {
+                        openBtn.setAttribute('aria-expanded', 'false');
+                    }
+                }
+            });
+        }
+    });
+    </script>
+</body>
+
+</html>
+

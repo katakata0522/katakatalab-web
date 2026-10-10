@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>言葉当てパズル | Pikalab</title>
+    <meta name="description" content="ひらがなを使った新感覚Wordle風パズル！直感的な五十音キーボードでサクサク遊べる知育ゲーム。">
+    
+    <!-- OGP Settings -->
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="言葉当てパズル | Pikalab">
+    <meta property="og:description" content="ひらがなを使った新感覚Wordle風パズル！五十音キーボードでサクサク遊べる。">
+    <meta property="og:image" content="https://katakatalab.com/pikalab/kotoba/ogp.png">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:image" content="https://katakatalab.com/pikalab/kotoba/ogp.png">
+  <script src="./assets/storage.js"></script>
+  <script type="module" crossorigin src="./assets/index-44c04f7bd66f.js"></script>
+  <link rel="stylesheet" crossorigin href="./assets/index-BU-gmKLn.css">
+</head>
+<body>
+    <button id="pwa-install-btn" style="display: none;">📲 アプリをインストール</button>
+    
+    <div id="app" class="main-container">
+        <header>
+            <h1>言葉当てパズル</h1>
+            <div class="game-info">
+                <span id="category-info" class="badge badge-category">カテゴリ: -</span>
+                <span id="life-info" class="badge badge-life">💖💖💖💖💖</span>
+                <span id="score-info" class="badge badge-score">スコア: 0</span>
+                <span id="best-score-info" class="badge badge-best">👑 ベスト: 0</span>
+            </div>
+        </header>
+
+        <main>
+            <!-- お題の文字が並ぶエリア（Wordle風のマス目） -->
+            <div id="word-display-container" class="word-display-container">
+                <!-- JSで動的に生成される -->
+            </div>
+
+            <div id="message-display" class="message-display">
+                ゲーム開始！
+            </div>
+
+            <div class="controls">
+                <button id="hint-button" class="btn btn-secondary">💡 ヒント</button>
+                <button id="solve-button" class="btn btn-primary">✨ わかった！</button>
+                <button id="next-button" class="btn btn-primary" style="display: none;">⏭️ 次の問題へ</button>
+            </div>
+
+            <!-- キーボードタブ -->
+            <div class="keyboard-tabs">
+                <button id="tab-basic" class="tab-btn active">あ〜ん</button>
+                <button id="tab-extra" class="tab-btn">が〜ぽ / ゃ〜っ</button>
+            </div>
+
+            <!-- 五十音キーボード（スマホ対応） -->
+            <div id="keyboard-container" class="keyboard-container">
+                <!-- JSで動的に五十音パネルが生成される -->
+            </div>
+        </main>
+    </div>
+
+    <!-- 一発解答用カスタムモーダル -->
+    <div id="solve-modal-overlay" class="modal-overlay" style="display: none;">
+        <div class="modal-content">
+            <h2>✨ 答えがわかった！</h2>
+            <p>答えの言葉（ひらがな）を入力してください。</p>
+            <input type="text" id="solve-input" placeholder="例: しんかんせん" autocomplete="off">
+            <div class="modal-controls">
+                <button id="modal-cancel" class="btn btn-secondary">キャンセル</button>
+                <button id="modal-submit" class="btn btn-primary">解答する</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- PWA用 -->
+</body>
+</html>

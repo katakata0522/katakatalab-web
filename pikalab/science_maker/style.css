@@ -1,0 +1,293 @@
+/* ===================================
+   Science Maker - Styles
+   自由研究「テーマ診断」＆「計画書」メーカー
+   =================================== */
+
+/* --- CSS Variables for Design System --- */
+:root {
+    --color-bg: #F1F8E9;
+    --color-text: #4B5563;
+    --color-primary: #8BC34A;
+    --color-primary-dark: #689F38;
+    --color-primary-light: #DCEDC8;
+    --color-accent-blue: #42A5F5;
+    --color-accent-yellow: #FFEE58;
+    --color-accent-red: #EF5350;
+    --color-accent-purple: #AB47BC;
+    --font-family: 'Zen Maru Gothic', sans-serif;
+}
+
+.theme-night {
+    --color-bg: #1B2E0F; /* 深い緑 */
+    --color-text: #ECFDF5;
+    --color-primary: #8BC34A;
+    --color-primary-dark: #A3E635;
+    --color-primary-light: #3F6212;
+    --color-accent-blue: #60A5FA;
+    --color-accent-yellow: #FDE047;
+    --color-accent-red: #FCA5A5;
+    --color-accent-purple: #E9D5FF;
+}
+
+/* --- Base Styles --- */
+body {
+    background-color: var(--color-bg);
+    /* 方眼紙風パターン */
+    background-image: linear-gradient(#E1E1E1 1px, transparent 1px), linear-gradient(90deg, #E1E1E1 1px, transparent 1px);
+    background-size: 20px 20px;
+    color: var(--color-text);
+}
+
+/* --- Step Section Animation --- */
+.step-section {
+    display: none;
+    animation: fadeIn 0.5s ease-out forwards;
+}
+
+.step-section.active {
+    display: block;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* --- Skip Link --- */
+.skip-link {
+    position: absolute;
+    top: -40px;
+    left: 0;
+    background: #000;
+    color: #fff;
+    padding: 8px 16px;
+    z-index: 100;
+    text-decoration: none;
+    font-weight: bold;
+    border-radius: 0 0 4px 0;
+}
+
+.skip-link:focus {
+    top: 0;
+}
+
+/* --- Toast Notifications --- */
+#toast-container {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    z-index: 9999;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.toast {
+    padding: 12px 20px;
+    border-radius: 12px;
+    font-weight: bold;
+    font-size: 14px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    animation: toast-in 0.3s ease-out;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.toast.success {
+    background-color: #10B981;
+    color: white;
+}
+
+.toast.error {
+    background-color: #EF4444;
+    color: white;
+}
+
+.toast.info {
+    background-color: #3B82F6;
+    color: white;
+}
+
+@keyframes toast-in {
+    from {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+/* --- Quiz Button Styles --- */
+.quiz-btn {
+    transition: all 0.2s ease;
+}
+
+.quiz-btn.selected {
+    background-color: var(--color-primary-light);
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 2px rgba(139, 195, 74, 0.3);
+}
+
+/* --- Result Card Styles --- */
+.result-card {
+    transition: all 0.3s ease;
+}
+
+.result-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 20px 30px -10px rgba(0, 0, 0, 0.15);
+}
+
+/* --- Custom Scrollbar --- */
+::-webkit-scrollbar {
+    width: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: #f1f1f1;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #AED581;
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--color-primary);
+}
+
+/* --- Print Styles --- */
+@media print {
+    @page {
+        margin: 10mm 15mm;
+        size: A4;
+    }
+
+    body {
+        background: white !important;
+        color: black !important;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+    }
+
+    /* 印刷時のレイアウト調整 */
+    #main-content {
+        margin: 0 !important;
+        padding: 0 !important;
+        max-width: 100% !important;
+    }
+
+    #app-container {
+        border: none !important;
+        box-shadow: none !important;
+        border-radius: 0 !important;
+    }
+
+    #plan-paper {
+        border: none !important;
+        box-shadow: none !important;
+        padding: 0 !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        margin: 0 !important;
+    }
+
+    /* 印刷時のみ表示する div/span */
+    .print-text-view, span[id^="print-"], div[id^="print-"] {
+        display: block !important;
+    }
+
+    span[id="print-student-name"] {
+        display: inline-block !important;
+    }
+
+    /* 印刷時に非表示にする input/textarea/button */
+    input, textarea, button, .print\:hidden {
+        display: none !important;
+    }
+
+    /* 安全チェックリストなどの背景調整 */
+    .bg-red-50 {
+        background-color: #FEF2F2 !important;
+        border-color: #FEE2E2 !important;
+    }
+    .bg-science-50 {
+        background-color: #F7FEE7 !important;
+        border-color: #ECFCCB !important;
+    }
+}
+
+/* --- Dialog & Modal --- */
+dialog::backdrop {
+    background: rgba(17, 24, 39, 0.6);
+    backdrop-filter: blur(4px);
+}
+
+dialog {
+    border: none;
+    border-radius: 1rem;
+    padding: 0;
+}
+
+dialog[open] {
+    animation: fadeIn 0.3s ease-out forwards;
+}
+
+/* --- Difficulty Stars --- */
+.difficulty-stars {
+    color: #FBBF24;
+    letter-spacing: 2px;
+}
+
+/* --- Focus-visible styling for accessibility --- */
+input[type="radio"].sr-only:focus-visible + label {
+    outline: 3px solid var(--color-accent-blue);
+    outline-offset: 2px;
+    box-shadow: 0 0 0 4px rgba(66, 165, 245, 0.4);
+}
+
+@media (max-width: 768px) {
+    input, textarea, select {
+        font-size: 16px !important; /* iOSオートズームバグ防止 */
+    }
+
+    #plan-hypothesis-help-tooltip {
+        right: -10px !important;
+        left: auto !important;
+        width: 280px !important;
+        max-width: calc(100vw - 40px) !important; /* 画面外へのはみ出し防止 */
+    }
+}
+
+/* 明るいテーマのブランド色だけをAA相当まで濃くする */
+body:not(.theme-night) .text-emerald-500 {
+    color: #047857;
+}
+
+body:not(.theme-night) .text-science-600 {
+    color: #558B2F;
+}
+
+body:not(.theme-night) .text-science-700,
+body:not(.theme-night) .text-science-800 {
+    color: #3F6212;
+}
+
+body:not(.theme-night) .bg-science-500 {
+    background-color: #4D7C0F;
+}
+
+body:not(.theme-night) .bg-lab-blue {
+    background-color: #1976D2;
+}

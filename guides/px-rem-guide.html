@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-FYFPS7L9X9"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag() { dataLayer.push(arguments); }
+        gtag('js', new Date());
+        gtag('config', 'G-FYFPS7L9X9', { 'anonymize_ip': true });
+    </script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>px / rem の使い方ガイド | 変換の考え方と実務の基準</title>
+    <meta name="description" content="px と rem の違い、root の font-size と rem の関係、文字サイズと余白の考え方を実例で整理したガイドです。16px相当は一般的な初期値で、固定値ではない点も含めて説明します。">
+    <link rel="canonical" href="https://katakatalab.com/guides/px-rem-guide.html">
+    <meta property="og:title" content="px / rem の使い方ガイド | 変換の考え方と実務の基準">
+    <meta property="og:description" content="文字サイズ、余白、レスポンシブ設計で px と rem をどう使い分けるかをまとめたガイドです。">
+    <meta property="og:type" content="article">
+    <meta property="og:url" content="https://katakatalab.com/guides/px-rem-guide.html">
+    <meta property="og:image" content="https://katakatalab.com/ogp.png">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="px / rem の使い方ガイド | 変換の考え方と実務の基準">
+    <meta name="twitter:description" content="文字サイズ、余白、レスポンシブ設計で px と rem をどう使い分けるかをまとめたガイドです。">
+    <meta name="twitter:image" content="https://katakatalab.com/ogp.png">
+    <meta name="twitter:site" content="@Katakata_toybox">
+    <link rel="stylesheet" href="../style.css?v=20260824-responsive">
+    <link rel="icon" href="../icon.svg" type="image/svg+xml">
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Article",
+      "headline": "px / rem の使い方ガイド | 変換の考え方と実務の基準",
+      "description": "px と rem の違い、root の font-size と rem の関係、文字サイズと余白の考え方を実例で整理したガイドです。",
+      "datePublished": "2026-05-25",
+      "dateModified": "2026-09-22",
+      "author": {
+        "@type": "Person",
+        "name": "かたかた"
+      },
+      "publisher": {
+        "@type": "Organization",
+        "name": "KatakataLab",
+        "logo": {
+          "@type": "ImageObject",
+          "url": "https://katakatalab.com/ogp.png"
+        }
+      },
+      "mainEntityOfPage": "https://katakatalab.com/guides/px-rem-guide.html"
+    }
+    </script>
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3845885843809455"
+     crossorigin="anonymous"></script>
+</head>
+<body>
+    <script>try{if(localStorage.getItem('theme')==='dark')document.body.classList.add('dark-mode');}catch(e){}</script>
+    <header class="header">
+        <div class="container header-container">
+            <a href="../#home" class="logo">
+                <span class="logo-icon">🧪</span>
+                <span class="logo-text">KatakataLab</span>
+            </a>
+            <nav class="nav">
+                <ul class="nav-list">
+                    <li><a href="../#projects" class="nav-link">ツール</a></li>
+                    <li><a href="../who-is-katakata.html" class="nav-link">運営者</a></li>
+                    <li><a href="../contact.html" class="nav-link">お問い合わせ</a></li>
+                </ul>
+            </nav>
+            <div class="header-actions">
+                <button type="button" id="theme-toggle" class="theme-btn" aria-label="テーマ切り替え">
+    <svg viewBox="0 0 24 24" class="svg-icon svg-moon" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/>
+    </svg>
+    <svg viewBox="0 0 24 24" class="svg-icon svg-sun" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="display: none;">
+        <circle cx="12" cy="12" r="4"/>
+        <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/>
+    </svg>
+</button>
+                <button type="button" class="menu-toggle" aria-label="メニューを開く">
+                    <span class="bar"></span><span class="bar"></span><span class="bar"></span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main class="guide-page">
+
+        <section class="section">
+            <div class="guide-hero-card">
+                <span class="guide-kicker">PX / REM Guide</span>
+                <h1>pxとrem、どっちで書けばいいの？──「なんとなく」使い分けていた私（わたくし）が調べた記録</h1>
+                <p class="guide-intro">Web制作をしていて「font-size: 24px」と書くか「1.5rem」と書くか、迷ったことはありませんか？ 以前の私（わたくし）は「なんとなくpxが分かりやすいから」とずっとpxばかり使っていました。しかし、「アクセシビリティ（誰にとっても読みやすいこと）」を意識し始めると、remの重要性に気づかされました。このページでは、その時に調べまくって整理した「文字サイズと余白の単位選びの基準」をまとめます。もう「なんとなく」での単位選びは卒業しましょう。</p>
+                <div class="guide-summary">
+                    <span class="guide-chip">文字サイズ</span>
+                    <span class="guide-chip">余白スケール</span>
+                    <span class="guide-chip">アクセシビリティ</span>
+                </div>
+                <p class="guide-note" style="margin-top: 1rem;">作成者: かたかた / 更新日: 2026年9月22日</p>
+                <div class="guide-actions">
+                    <a href="../px-rem-converter/" class="btn btn-primary">変換ツールを開く</a>
+                    <a href="../#featured-guides" class="btn btn-secondary">他のガイドも読む</a>
+                </div>
+            </div>
+        </section>
+
+        <section class="section">
+            <div class="guide-section-card">
+                <h2>ざっくり言うと</h2>
+                <p>動かしたくないものはpx、ユーザーに合わせて伸び縮みしてほしいものはrem。これが基本線です。</p>
+                <p>たとえばボーダー線の1pxやアイコンの微調整は、ユーザーがブラウザの文字サイズ設定を変えても「この太さで固定してほしい」。だからpx。本文の文字サイズや余白は、ブラウザの設定で文字を大きくしている人にも合わせて伸びてほしい。だからrem。</p>
+                <p>ちなみに「全部の単位をremにしろ」と言われることがありますが、それは極端です。使い分けが正解です。</p>
+            </div>
+
+            <div class="guide-section-card">
+                <h2>よくある実務パターン</h2>
+                <div class="responsive-table-container"><table class="guide-table">
+                    <thead>
+                        <tr>
+                            <th>場面</th>
+                            <th>おすすめ</th>
+                            <th>理由</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>本文テキスト</td>
+                            <td>rem</td>
+                            <td>ユーザーの文字サイズ設定に追従しやすい</td>
+                        </tr>
+                        <tr>
+                            <td>余白・マージン</td>
+                            <td>rem</td>
+                            <td>文字が大きくなったときに全体のレイアウト比率を保ちやすい</td>
+                        </tr>
+                        <tr>
+                            <td>1px / 2px の罫線</td>
+                            <td>px</td>
+                            <td>意図した太さをシャープに保ちやすい</td>
+                        </tr>
+                        <tr>
+                            <td>小さなアイコンの微調整</td>
+                            <td>px</td>
+                            <td>ズレが見えやすいので固定値が扱いやすい</td>
+                        </tr>
+                    </tbody>
+                </table></div>
+            </div>
+
+            <div class="guide-section-card">
+                <h2>1rem = 16px？10px？──ここが一番混乱するところ</h2>
+                <p><code>rem</code> は、ルート要素（通常は <code>html</code>）の <code>font-size</code> を基準にする相対単位です。多くのブラウザでは初期値が16px相当ですが、ユーザー設定やCSSでrootの文字サイズが変われば、<code>1rem</code>の実寸も変わります。</p>
+                <p>rootが16px相当なら、<code>24px = 1.5rem</code>、<code>32px = 2rem</code>、<code>14px = 0.875rem</code>です。ここで暗算がしんどくなる。</p>
+                <p><code>html { font-size: 62.5%; }</code> として計算を簡単にする方法もあります。ただし、<strong>ブラウザ側の基準が16px相当なら1remが10px相当になる</strong>という話で、常に10pxへ固定されるわけではありません。ユーザーの文字サイズ設定を尊重したい場合は、rootの基準値を上書きしない設計も検討します。</p>
+                <p>ただし！<strong>複数人でコードを触る時はこのルールを共有してないと大カオスになります。</strong>「え、1remって16pxじゃないの？」って人が混ざるとレイアウトがすべてズレます。個人開発なら好きなほうでいい。チームなら先に決めてREADMEに書く。</p>
+                <div class="guide-callout">
+                    <strong>私（わたくし）の結論:</strong> KatakataLabでは16px基準で統一して開発しています。他の人のコードやライブラリと混ぜたときに事故りにくいのが一番の理由です。
+                </div>
+            </div>
+
+            <div class="guide-section-card">
+                <h2>やりがちなミス</h2>
+                <h3>文字だけremにして余白はpxのまま</h3>
+                <p>これが一番多い。ブラウザの文字サイズを大きくした人が見たとき、文字は大きくなるのに余白はそのままで窮屈になる。文字と余白は同じ単位で揃える。</p>
+
+                <h3>「1rem = 10pxだよね？」を書かない</h3>
+                <p>あとから入った人が16px前提で書いて全部ズレる、という事故が起きます。READMEかスタイルガイドに書いておくだけで防げるので、忘れずに。</p>
+            </div>
+
+            <div class="guide-section-card">
+                <h2>KatakataLabの「px ⇔ rem 変換ツール」はここが便利！</h2>
+                <p>「このデザインの14pxって何remだっけ？」「0.875remって何ピクセル？」と迷ったときに、秒速で変換できるのがKatakataLabの変換ツールです。</p>
+                <div class="guide-callout" style="background-color: var(--card-bg); border-left-color: var(--accent-color); padding: 1.5rem; border-left: 4px solid var(--primary-color); margin: 1rem 0; border-radius: 8px;">
+                    <h3 style="margin-top: 0; color: var(--text-color);">💡 主な特徴</h3>
+                    <ul style="list-style-type: disc; padding-left: 1.5rem; margin-top: 0.5rem; line-height: 1.6;">
+                        <li><strong>双方向のリアルタイム変換：</strong>pxを入力すればremが、remを入力すればpxが、入力に合わせてその場で計算されます。</li>
+                        <li><strong>「16px基準」も「10px基準」も、基準入力の横のボタンで切り替え：</strong>プロジェクトの実際の root を入れて計算できます。</li>
+                        <li><strong>文字サイズプレビュー機能：</strong>数値だけではなく、「このサイズで文字がどう見えるか」が画面上にサンプルテキストとして表示されるため、仕上がりの視覚的なイメージが湧きやすいです。</li>
+                    </ul>
+                </div>
+                <h3 style="margin-top: 1.5rem;">🙌 こんな人に特におすすめです！</h3>
+                <p>「CSSコーディングをする際に、ピクセル数からremへの計算が面倒でついつい暗算や電卓で時間を取られているコーダー・開発者の方」に最適です。ブックマークに登録しておくだけで、日々のコーディング速度がぐっと上がりますよ！</p>
+                <div class="guide-actions" style="margin-top: 1.5rem;">
+                    <a href="../px-rem-converter/" class="btn btn-primary">px ⇔ rem 変換ツールを使ってみる</a>
+                </div>
+            </div>
+
+            <div class="guide-section-card">
+                <h2>サイズ段階を揃えるときの実務メモ</h2>
+                <p>見出し・本文・注釈・ボタンをバラバラのpxで書いてしまうと、後から「ちょっと大きく」が地獄になります。次のように段階を先に決めると安定します。</p>
+                <div class="responsive-table-container"><table class="guide-table">
+                    <thead><tr><th>役割</th><th>16px基準の例</th><th>rem</th><th>メモ</th></tr></thead>
+                    <tbody>
+                        <tr><td>本文</td><td>16px</td><td>1rem</td><td>基準そのもの</td></tr>
+                        <tr><td>小さめ注釈</td><td>14px</td><td>0.875rem</td><td>可読性の下限に注意</td></tr>
+                        <tr><td>小見出し</td><td>20px</td><td>1.25rem</td><td>本文との差をはっきり</td></tr>
+                        <tr><td>見出し</td><td>24px</td><td>1.5rem</td><td>ページ内で統一</td></tr>
+                        <tr><td>大きい見出し</td><td>32px</td><td>2rem</td><td>ヒーローなど限定利用</td></tr>
+                    </tbody>
+                </table></div>
+                <p><a href="../px-rem-converter/">px / rem 変換</a>で双方向に確認し、デザイン稿がpxでも実装がremでも、同じ段階表に戻せるようにします。</p>
+            </div>
+
+            <div class="guide-section-card">
+                <h2>アクセシビリティとユーザー設定</h2>
+                <p>ブラウザやOSで文字サイズを大きくしている人でも読めるかは、rem を使う理由のひとつです。ルートのフォントサイズが変わると rem は連動しますが、固定pxだらけのレイアウトははみ出しや重なりが起きやすくなります。</p>
+                <ul>
+                    <li>本文に近い要素は rem で段階管理する。</li>
+                    <li>1pxの境界線など「見た目の線」は px のままでよいことが多い。</li>
+                    <li>完成後は、ブラウザの文字サイズを大きくして崩れないか一度見る。</li>
+                </ul>
+            </div>
+
+            <div class="guide-section-card">
+                <h2>よくある質問</h2>
+                <h3>Q. 全部remにすればいい？</h3>
+                <p>A. それはやりすぎです。ボーダー線を<code>0.0625rem</code>とか書いてもコードが読めなくなるだけなので、罫線やシャドウの微調整はpxのほうがいいです。</p>
+                <h3>Q. 16px基準と10px基準、どっち？</h3>
+                <p>A. チーム全員が同じ前提を持てることが最優先です。1人での開発や外部CSSと混ぜる場合も、まずrootの設定を確認します。特別な理由がなければ、ブラウザの一般的な初期値（16px相当）を前提にし、必要なら変換ツール側の基準値を合わせる方が前提を共有しやすいです。</p>
+                <h3>Q. デザインがpx指定なのに実装はrem。どう付き合う？</h3>
+                <p>A. まず基準（多くの場合16）を合意し、変換表で往復できるようにします。レビュー時は「この24pxは1.5remか」をツールで確認し、感覚のズレを減らします。</p>
+                <p class="guide-note">参考: <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Values/length" target="_blank" rel="noopener noreferrer">MDN &lt;length&gt; — rem</a>（remはrootのfont-sizeに対する相対値。16pxは一般的なブラウザ初期値で、ユーザー設定により変わり得ます。）</p>
+                <p class="guide-note">更新日: 2026年9月22日 / 作成者: <a href="../who-is-katakata.html">かたかた</a></p>
+            </div>
+
+            <div class="guide-section-card">
+                <h2>変換ミスで起きやすい事故</h2>
+                <ul>
+                    <li>基準が16なのに、別プロジェクトの10px前提の数値をそのまま貼る</li>
+                    <li>見出しだけrem、本文がpxで、ユーザーの文字サイズ変更時にバランスが崩れる</li>
+                    <li>デザインの「見た目24px」と実装の「line-height込みの高さ」を混同する</li>
+                    <li>余白を全部remにすると、1pxのズレ調整が難しくなる</li>
+                </ul>
+                <p>迷ったら<a href="../px-rem-converter/">変換ツール</a>で往復し、<a href="case-studies.html">実例集</a>のpx/rem例と同じ入力で一度確認すると安心です。チームでは「基準は16」とREADMEに1行書いておくだけでも事故が減ります。</p>
+            </div>
+
+            <div class="guide-section-card">
+                <h2>デザイン稿（px）からCSS（rem）へ渡す手順</h2>
+                <p>Figma などの稿が px 指定でも、実装を rem にしたい場面はよくあります。KatakataLabでの実務手順は次のとおりです。</p>
+                <ol>
+                    <li>基準を決める（個人開発・外部CSS併用なら多くの場合 16px）。</li>
+                    <li>稿の文字サイズ・余白のうち、段階管理したい値だけを表に書き出す。</li>
+                    <li><a href="../px-rem-converter/">px / rem 変換</a>で 16 基準にそろえて rem を出す。</li>
+                    <li>見出し・本文・注釈・ボタンの4段階に丸めて、近い値は統一する。</li>
+                    <li>実装後にブラウザの文字サイズを大きくし、はみ出しがないか見る。</li>
+                </ol>
+                <p>「全部ぴったり変換」より「段階として一貫している」方が、後からの調整が楽です。1px差の影や境界線は、無理に rem にしない判断もアリです。</p>
+            </div>
+
+            <div class="guide-section-card">
+                <h2>いつ px のまま残すか</h2>
+                <div class="responsive-table-container"><table class="guide-table">
+                    <thead><tr><th>対象</th><th>おすすめ</th><th>理由</th></tr></thead>
+                    <tbody>
+                        <tr><td>本文・見出し</td><td>rem</td><td>文字サイズ設定の影響を受けやすい</td></tr>
+                        <tr><td>大きな余白の段階</td><td>rem か 段階トークン</td><td>レイアウトの比率を保ちやすい</td></tr>
+                        <tr><td>1px の線・影</td><td>px</td><td>端数の rem が読みにくい</td></tr>
+                        <tr><td>アイコンの見た目サイズ</td><td>場合による</td><td>フォント連動なら rem、固定絵なら px も可</td></tr>
+                    </tbody>
+                </table></div>
+                <p>「全部 rem」はルールとしては綺麗でも、コードの読みやすさと現場の速度を落とすことがあります。目的は単位の統一ではなく、読みやすさと保守のしやすさです。</p>
+            </div>
+
+            <div class="guide-section-card">
+                <h2>このガイドの限界</h2>
+                <p>ブラウザやOSの文字サイズ、ズーム、ユーザーCSSは環境差があります。変換ツールは入力値から rem/px を求めるだけで、完成画面の見栄えまでは保証しません。公開前の最終確認は、実際の端末幅と文字サイズ設定で行ってください。</p>
+            </div>
+        </section>
+    </main>
+
+    <div class="menu-overlay" id="menu-overlay" aria-hidden="true"></div>
+    <div class="mobile-menu drawer-menu" aria-hidden="true">
+        <div class="mobile-menu-inner">
+            <nav class="mobile-nav" aria-label="モバイルナビゲーション">
+                <ul class="mobile-nav-list">
+                    <li><a href="../who-is-katakata.html" class="mobile-nav-link">🧑‍💻 かたかたって誰？</a></li>
+                    <li><a href="../about-katakatalab.html" class="mobile-nav-link">🧪 KatakataLabについて</a></li>
+                    <li><a href="../note-selection.html" class="mobile-nav-link">📝 かたかたのnote</a></li>
+                    <li><a href="../contact.html" class="mobile-nav-link">✉️ お問い合わせ</a></li>
+                    <li class="mobile-nav-sep"></li>
+                    <li><a href="../terms.html" class="mobile-nav-link">📄 利用規約</a></li>
+                    <li><a href="../privacy.html" class="mobile-nav-link">🔒 プライバシーポリシー</a></li>
+                </ul>
+            </nav>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-links">
+                <a href="../contact.html">お問い合わせ</a>
+                <a href="../who-is-katakata.html">運営者情報</a>
+                <a href="../terms.html" target="_blank" rel="noopener noreferrer">利用規約</a>
+                <a href="../privacy.html" target="_blank" rel="noopener noreferrer">プライバシーポリシー</a>
+                <a href="../sitemap.html">サイトマップ</a>
+            </div>
+            <p>&copy; 2024-2026 KatakataLab. All Rights Reserved.</p>
+        </div>
+    </footer>
+    <script src="../script.js"></script>
+</body>
+</html>

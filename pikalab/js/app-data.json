@@ -1,0 +1,435 @@
+{
+  "apps": [
+    {
+      "id": "deepsea-lab",
+      "categories": [
+        "low",
+        "high",
+        "middle",
+        "rikei",
+        "all"
+      ],
+      "appName": "Deepsea Lab",
+      "url": "deepsea_lab/",
+      "indexable": true,
+      "title": "PIKALAB DEEP SEA",
+      "description": "水深1万m級まで広がる深海世界を探検しよう！<br>深度ごとの環境や深海生物を見てみよう。",
+      "subjectTag": "理科・海洋",
+      "subjectTagColor": "bg-blue-600",
+      "gradeTag": "全学年",
+      "icon": "scuba_diving",
+      "iconColor": "text-blue-500 bg-blue-50",
+      "buttonText": "探検に出発",
+      "buttonHoverColor": "hover:bg-blue-600",
+      "headerBgClass": "bg-gradient-to-br from-blue-900 via-blue-800 to-black",
+      "badge": {
+        "name": "深海探検家",
+        "icon": "scuba_diving",
+        "color": "text-blue-500 bg-blue-50"
+      }
+    },
+    {
+      "id": "color-lab",
+      "categories": [
+        "low",
+        "rikei",
+        "all"
+      ],
+      "appName": "Color Lab",
+      "url": "color_lab/",
+      "title": "いろのじっけんしつ DX",
+      "description": "画面の赤・緑・青（RGB）を組み合わせて色をつくろう！<br>光の色の変化を確かめてみよう。",
+      "subjectTag": "図工・理科",
+      "subjectTagColor": "bg-yellow-400",
+      "gradeTag": "低学年〜",
+      "icon": "palette",
+      "iconColor": "text-yellow-400 bg-yellow-50",
+      "buttonText": "じっけんを はじめる",
+      "buttonHoverColor": "hover:bg-yellow-400",
+      "headerBgClass": "bg-gradient-to-br from-yellow-100 via-yellow-50 to-orange-100",
+      "badge": {
+        "name": "いろ博士",
+        "icon": "palette",
+        "color": "text-yellow-500 bg-yellow-50"
+      }
+    },
+    {
+      "id": "kanji-lab",
+      "categories": [
+        "high",
+        "bunkei",
+        "all"
+      ],
+      "appName": "Kanji Lab",
+      "url": "kanji_lab/",
+      "indexable": true,
+      "title": "かんじ・ガッタイ・ラボ",
+      "description": "へん・つくりなどの部品を組み合わせて漢字をつくろう！<br>形・読み・意味をパズル感覚で確かめよう。",
+      "subjectTag": "国語",
+      "subjectTagColor": "bg-orange-500",
+      "gradeTag": "高学年〜",
+      "icon": "extension",
+      "iconColor": "text-orange-400 bg-orange-50",
+      "buttonText": "実験をはじめる",
+      "buttonHoverColor": "hover:bg-orange-500",
+      "headerBgClass": "bg-gradient-to-br from-orange-100 via-orange-50 to-red-100",
+      "badge": {
+        "name": "漢字王",
+        "icon": "extension",
+        "color": "text-orange-500 bg-orange-50"
+      }
+    },
+    {
+      "id": "rhythm-lab",
+      "categories": [
+        "low",
+        "high",
+        "middle",
+        "bunkei",
+        "all"
+      ],
+      "appName": "Rhythm Lab",
+      "url": "rhythm_lab/",
+      "title": "リズム・スタジオ",
+      "description": "好きな音をならべて、自分だけのリズムをつくろう。<br>音の並びやテンポの違いを自由に試そう！",
+      "subjectTag": "音楽",
+      "subjectTagColor": "bg-pink-500",
+      "gradeTag": "全学年",
+      "icon": "music_note",
+      "iconColor": "text-pink-400 bg-pink-50",
+      "buttonText": "セッション開始",
+      "buttonHoverColor": "hover:bg-pink-500",
+      "headerBgClass": "bg-gradient-to-br from-pink-100 via-pink-50 to-rose-100",
+      "badge": {
+        "name": "音楽家",
+        "icon": "music_note",
+        "color": "text-pink-500 bg-pink-50"
+      }
+    },
+    {
+      "id": "manabi-land",
+      "categories": [
+        "low",
+        "rikei",
+        "all"
+      ],
+      "appName": "Manabi Land",
+      "url": "manabi_land/",
+      "title": "わくわく！まなびランド",
+      "description": "おかいもの、とけい、もじさがし。<br>3つのゲームで あそぼう！",
+      "subjectTag": "生活・算数",
+      "subjectTagColor": "bg-orange-500",
+      "gradeTag": "低学年〜",
+      "icon": "school",
+      "iconColor": "text-orange-400 bg-orange-50",
+      "buttonText": "あそびにいく",
+      "buttonHoverColor": "hover:bg-orange-500",
+      "headerBgClass": "bg-gradient-to-br from-orange-100 via-orange-50 to-yellow-100",
+      "headerPattern": true,
+      "badge": {
+        "name": "ものしり博士",
+        "icon": "school",
+        "color": "text-orange-500 bg-orange-50"
+      }
+    },
+    {
+      "id": "speed-reader",
+      "categories": [
+        "low",
+        "high",
+        "middle",
+        "bunkei",
+        "all"
+      ],
+      "appName": "Speed Reader",
+      "url": "speed_reader/",
+      "title": "瞬読・スピードリーダー",
+      "description": "名作文学の文章を1〜3語ずつ表示して読む練習。<br>無理のない速度から試してみよう。",
+      "subjectTag": "国語・読書",
+      "subjectTagColor": "bg-teal-600",
+      "gradeTag": "全学年",
+      "icon": "speed",
+      "iconColor": "text-teal-400 bg-teal-50",
+      "buttonText": "読書する",
+      "buttonHoverColor": "hover:bg-teal-600",
+      "headerBgClass": "bg-gradient-to-br from-teal-100 via-teal-50 to-emerald-100",
+      "badge": {
+        "name": "速読王",
+        "icon": "speed",
+        "color": "text-teal-500 bg-teal-50"
+      }
+    },
+    {
+      "id": "typing-dojo",
+      "categories": [
+        "low",
+        "high",
+        "middle",
+        "bunkei",
+        "all"
+      ],
+      "appName": "Typing Dojo",
+      "url": "typing_dojo/",
+      "indexable": true,
+      "title": "タイピング道場",
+      "description": "ひらがなをローマ字でタイピング！<br>難易度や出題数を選び、正確さと速さを記録して練習できます。",
+      "subjectTag": "情報・国語",
+      "subjectTagColor": "bg-pink-500",
+      "gradeTag": "全学年",
+      "icon": "keyboard",
+      "iconColor": "text-pink-400 bg-pink-50",
+      "buttonText": "道場へ入門",
+      "buttonHoverColor": "hover:bg-pink-500",
+      "headerBgClass": "bg-gradient-to-br from-pink-100 via-rose-50 to-purple-100",
+      "badge": {
+        "name": "タイピング師範",
+        "icon": "keyboard",
+        "color": "text-pink-500 bg-pink-50"
+      }
+    },
+    {
+      "id": "kotowaza-quiz",
+      "categories": [
+        "low",
+        "high",
+        "middle",
+        "bunkei",
+        "all"
+      ],
+      "appName": "Kotowaza Quiz",
+      "url": "kotowaza_quiz/",
+      "title": "ことわざクイズ",
+      "description": "ことわざ・四字熟語の意味当て＆穴埋め！<br>意味や表記をクイズで確かめよう。",
+      "subjectTag": "国語・教養",
+      "subjectTagColor": "bg-amber-600",
+      "gradeTag": "全学年",
+      "icon": "school",
+      "iconColor": "text-amber-400 bg-amber-50",
+      "buttonText": "クイズに挑戦",
+      "buttonHoverColor": "hover:bg-amber-600",
+      "headerBgClass": "bg-gradient-to-br from-amber-100 via-amber-50 to-yellow-100",
+      "badge": {
+        "name": "ことわざ博士",
+        "icon": "menu_book",
+        "color": "text-amber-500 bg-amber-50"
+      }
+    },
+    {
+      "id": "fraction-lab",
+      "categories": [
+        "high",
+        "middle",
+        "rikei",
+        "all"
+      ],
+      "appName": "Fraction Lab",
+      "url": "fraction_lab/",
+      "indexable": true,
+      "title": "分数・パーフェクトラボ",
+      "description": "分数の大きさや同分母の足し算・引き算を図で確認。<br>古代エジプトの単位分数にも挑戦しよう。",
+      "subjectTag": "算数・数学",
+      "subjectTagColor": "bg-sky-600",
+      "gradeTag": "高学年〜",
+      "icon": "functions",
+      "iconColor": "text-sky-400 bg-sky-50",
+      "buttonText": "研究室へ",
+      "buttonHoverColor": "hover:bg-sky-600",
+      "headerBgClass": "bg-gradient-to-br from-sky-100 via-indigo-100 to-blue-100",
+      "badge": {
+        "name": "数学者",
+        "icon": "functions",
+        "color": "text-sky-500 bg-sky-50"
+      }
+    },
+    {
+      "id": "space-lab",
+      "categories": [
+        "high",
+        "middle",
+        "rikei",
+        "all"
+      ],
+      "appName": "Space Lab",
+      "url": "space_lab/",
+      "title": "ほしぞら・アドベンチャー",
+      "description": "太陽系の天体を旅しながら、特徴を比べよう！<br>大きさや太陽からの距離も確かめられるよ。",
+      "subjectTag": "理科・天体",
+      "subjectTagColor": "bg-indigo-600",
+      "gradeTag": "高学年〜",
+      "icon": "public",
+      "iconColor": "text-indigo-400 bg-indigo-50",
+      "buttonText": "宇宙の旅に出る",
+      "buttonHoverColor": "hover:bg-indigo-600",
+      "headerBgClass": "bg-gradient-to-br from-slate-900 via-indigo-900 to-purple-900",
+      "headerStarsPattern": true,
+      "badge": {
+        "name": "宇宙飛行士",
+        "icon": "rocket_launch",
+        "color": "text-indigo-500 bg-indigo-50"
+      }
+    },
+    {
+      "id": "focus-timer",
+      "categories": [
+        "low",
+        "high",
+        "middle",
+        "parents",
+        "bunkei",
+        "rikei",
+        "all"
+      ],
+      "appName": "Focus Studio",
+      "url": "focus_studio/",
+      "title": "集中・ポモドーロスタジオ",
+      "description": "集中時間と休憩時間を自分で設定できるタイマー。<br>必要に応じて環境音も組み合わせられます。",
+      "subjectTag": "集中・習慣",
+      "subjectTagColor": "bg-rose-500",
+      "gradeTag": "全世代",
+      "icon": "headphones",
+      "iconColor": "text-rose-400 bg-rose-100",
+      "buttonText": "スタジオへ",
+      "buttonHoverColor": "hover:bg-rose-500",
+      "headerBgClass": "bg-gradient-to-br from-rose-100 via-rose-50 to-pink-100",
+      "badge": {
+        "name": "集中マスター",
+        "icon": "headphones",
+        "color": "text-rose-500 bg-rose-100"
+      }
+    },
+    {
+      "id": "paper-gen",
+      "categories": [
+        "parents"
+      ],
+      "appName": "Paper Gen",
+      "url": "paper_gen/",
+      "title": "なんでも用紙メーカー",
+      "description": "漢字練習帳、原稿用紙、五線譜などの用紙を作成。<br>必要な形式を選んで印刷できます。",
+      "subjectTag": "便利ツール",
+      "subjectTagColor": "bg-stone-600",
+      "gradeTag": null,
+      "icon": "description",
+      "iconColor": "text-stone-400 bg-stone-100",
+      "buttonText": "作成する",
+      "buttonHoverColor": "hover:bg-stone-600",
+      "headerBgClass": "bg-gradient-to-br from-stone-100 via-stone-50 to-stone-200",
+      "badge": {
+        "name": "手帳マスター",
+        "icon": "print",
+        "color": "text-stone-500 bg-stone-100"
+      }
+    },
+    {
+      "id": "quest-board",
+      "categories": [
+        "parents"
+      ],
+      "appName": "Quest Board",
+      "url": "quest_board/",
+      "title": "おうちクエストボード",
+      "description": "日々の「お手伝い」や「宿題」をクエスト風に整理。<br>スタンプ表で取り組みを見える形に。",
+      "subjectTag": "生活・習慣",
+      "subjectTagColor": "bg-orange-500",
+      "gradeTag": null,
+      "icon": "emoji_events",
+      "iconColor": "text-orange-400 bg-orange-100",
+      "buttonText": "ボードを作る",
+      "buttonHoverColor": "hover:bg-orange-500",
+      "headerBgClass": "bg-gradient-to-br from-orange-100 via-orange-50 to-yellow-100",
+      "badge": {
+        "name": "クエスト勇者",
+        "icon": "stars",
+        "color": "text-orange-500 bg-orange-100"
+      }
+    },
+    {
+      "id": "book-report",
+      "categories": [
+        "parents"
+      ],
+      "appName": "Book Report",
+      "url": "book_report/",
+      "indexable": true,
+      "title": "読書感想文メーカー",
+      "description": "質問に答えながら、本の感想や理由を整理。<br>書き出しや構成を考えるためのヒントを作れます。",
+      "subjectTag": "宿題サポート",
+      "subjectTagColor": "bg-cyan-600",
+      "gradeTag": null,
+      "icon": "history_edu",
+      "iconColor": "text-cyan-400 bg-cyan-100",
+      "buttonText": "構成を作る",
+      "buttonHoverColor": "hover:bg-cyan-600",
+      "headerBgClass": "bg-gradient-to-br from-cyan-100 via-cyan-50 to-blue-100",
+      "badge": {
+        "name": "読書家",
+        "icon": "edit_note",
+        "color": "text-cyan-500 bg-cyan-100"
+      }
+    },
+    {
+      "id": "science-maker",
+      "categories": [
+        "parents"
+      ],
+      "appName": "Science Maker",
+      "url": "science_maker/",
+      "indexable": true,
+      "title": "自由研究・テーマメーカー",
+      "description": "学年・使える時間などの条件から研究テーマ候補を探そう。<br>選んだテーマの研究計画も整理できます。",
+      "subjectTag": "自由研究",
+      "subjectTagColor": "bg-green-600",
+      "gradeTag": null,
+      "icon": "psychology",
+      "iconColor": "text-green-400 bg-green-100",
+      "buttonText": "候補を探す",
+      "buttonHoverColor": "hover:bg-green-600",
+      "headerBgClass": "bg-gradient-to-br from-green-100 via-green-50 to-emerald-100",
+      "badge": {
+        "name": "研究者",
+        "icon": "science",
+        "color": "text-green-500 bg-green-100"
+      }
+    },
+    {
+      "id": "amazon-bookshelf",
+      "categories": [
+        "parents"
+      ],
+      "isAmazonCard": true,
+      "appName": "研究室のセレクト",
+      "gradeTag": "Amazon",
+      "gradeLabelClass": "absolute top-3 right-3 bg-white/90 backdrop-blur text-slate-600 text-[10px] font-bold px-2 py-1 rounded-lg border border-slate-200",
+      "title": "研究室のセレクト",
+      "subjectTag": "学習グッズ",
+      "subjectTagColor": "bg-slate-600",
+      "headerBgClass": "bg-slate-50 border-b border-slate-100",
+      "amazonLinks": [
+        {
+          "url": "https://www.amazon.co.jp/s?k=%E5%AD%A6%E7%BF%92%E3%81%BE%E3%82%93%E3%81%8C+%E6%97%A5%E6%9C%AC%E3%81%AE%E6%AD%B4%E5%8F%B2&tag=katakatalab-22",
+          "icon": "history_edu",
+          "iconBgClass": "bg-amber-100 text-amber-500",
+          "hoverClass": "hover:bg-amber-50",
+          "title": "学習まんが 日本の歴史",
+          "desc": "歴史を読む入口に"
+        },
+        {
+          "url": "https://www.amazon.co.jp/s?k=%E8%87%AA%E7%94%B1%E7%A0%94%E7%A9%B6+%E3%82%AD%E3%83%83%E3%83%88&tag=katakatalab-22",
+          "icon": "science",
+          "iconBgClass": "bg-green-100 text-green-500",
+          "hoverClass": "hover:bg-green-50",
+          "title": "自由研究キット",
+          "desc": "おうち実験の候補に"
+        },
+        {
+          "url": "https://www.amazon.co.jp/s?k=%E5%88%86%E6%95%B0+%E5%AD%A6%E7%BF%92%E3%83%89%E3%83%AA%E3%83%AB&tag=katakatalab-22",
+          "icon": "functions",
+          "iconBgClass": "bg-sky-100 text-sky-500",
+          "hoverClass": "hover:bg-sky-50",
+          "title": "算数ドリル (分数)",
+          "desc": "分数の練習に"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TailSnap プライバシーポリシー | KatakataLab</title>
+    <meta name="description" content="Chrome拡張機能TailSnap v2.6.1が扱うWebサイト内容、ローカル保存、権限、外部通信、削除方法について説明します。">
+    <link rel="canonical" href="https://katakatalab.com/privacy/tailsnap/">
+    <link rel="stylesheet" href="/style.css?v=20260825-tailsnap">
+    <link rel="icon" href="/icon.svg" type="image/svg+xml">
+    <meta name="theme-color" content="#FF7675">
+    <meta property="og:title" content="TailSnap プライバシーポリシー | KatakataLab">
+    <meta property="og:description" content="TailSnapが扱うデータ、権限、保存、外部通信を明確に説明します。">
+    <meta property="og:type" content="article">
+    <meta property="og:url" content="https://katakatalab.com/privacy/tailsnap/">
+    <meta property="og:image" content="https://katakatalab.com/ogp.png">
+    <meta name="twitter:card" content="summary_large_image">
+    <style>
+        .tailsnap-policy {
+            max-width: 920px;
+            margin: 0 auto;
+            padding: clamp(1rem, 3vw, 2rem);
+        }
+        .policy-hero,
+        .policy-section,
+        .policy-summary {
+            background: var(--c-surface);
+            border: 1px solid color-mix(in srgb, var(--c-primary) 20%, transparent);
+            border-radius: var(--radius-lg);
+            box-shadow: 0 12px 36px rgba(15, 23, 42, 0.08);
+        }
+        .policy-hero {
+            padding: clamp(1.5rem, 5vw, 3rem);
+            margin-bottom: 1.25rem;
+        }
+        .policy-eyebrow {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 0.75rem;
+            color: var(--c-primary);
+            font-weight: 800;
+        }
+        .policy-meta {
+            color: var(--c-text-light);
+            margin-top: 1rem;
+        }
+        .policy-summary {
+            padding: 1.25rem;
+            margin-bottom: 1.25rem;
+            border-color: color-mix(in srgb, var(--c-accent) 45%, transparent);
+        }
+        .policy-summary strong {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: var(--c-text);
+        }
+        .policy-section {
+            padding: clamp(1.25rem, 4vw, 2rem);
+            margin-bottom: 1rem;
+        }
+        .policy-section h2 {
+            color: var(--c-primary);
+            font-size: clamp(1.2rem, 3vw, 1.55rem);
+            margin: 0 0 0.9rem;
+        }
+        .policy-section h3 {
+            color: var(--c-text);
+            font-size: 1.05rem;
+            margin: 1.25rem 0 0.5rem;
+        }
+        .policy-section p,
+        .policy-section li {
+            line-height: 1.85;
+        }
+        .policy-section ul {
+            padding-left: 1.3rem;
+            margin: 0.6rem 0 0;
+        }
+        .policy-section code {
+            padding: 0.1em 0.35em;
+            border-radius: 0.35rem;
+            background: color-mix(in srgb, var(--c-primary) 12%, transparent);
+            color: var(--c-text);
+        }
+        .policy-footer-links {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.75rem 1.25rem;
+        }
+        @media (max-width: 480px) {
+            .tailsnap-policy { padding: 0.75rem; }
+            .policy-hero h1 {
+                font-size: 1.65rem;
+                line-height: 1.25;
+            }
+            .policy-title-name {
+                display: block;
+                white-space: nowrap;
+            }
+            .policy-section ul { padding-left: 1.05rem; }
+        }
+    </style>
+</head>
+<body>
+    <script>try{if(localStorage.getItem('theme')==='dark')document.body.classList.add('dark-mode');}catch(e){}</script>
+    <header class="header">
+        <div class="container header-container">
+            <a href="/" class="logo" aria-label="KatakataLab ホーム">
+                <span class="logo-icon" aria-hidden="true">🧪</span>
+                <span class="logo-text">KatakataLab</span>
+            </a>
+            <nav class="nav" aria-label="主要ナビゲーション">
+                <ul class="nav-list">
+                    <li><a href="/" class="nav-link">ホーム</a></li>
+                    <li><a href="/#projects" class="nav-link">作ったもの</a></li>
+                    <li><a href="/contact.html" class="nav-link">お問い合わせ</a></li>
+                </ul>
+            </nav>
+            <div class="header-actions">
+                <button type="button" id="theme-toggle" class="theme-btn" aria-label="テーマ切り替え">
+                    <svg viewBox="0 0 24 24" class="svg-icon svg-moon" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/>
+                    </svg>
+                    <svg viewBox="0 0 24 24" class="svg-icon svg-sun" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="display: none;">
+                        <circle cx="12" cy="12" r="4"/>
+                        <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main class="tailsnap-policy">
+        <nav class="breadcrumbs" aria-label="パンくずリスト">
+            <a href="/">KatakataLab</a>
+            <span class="breadcrumbs-sep" aria-hidden="true">/</span>
+            <span class="breadcrumbs-current" aria-current="page">TailSnap プライバシーポリシー</span>
+        </nav>
+
+        <section class="policy-hero">
+            <div class="policy-eyebrow"><span aria-hidden="true">🔒</span> Chrome拡張機能 TailSnap v2.6.1</div>
+            <h1><span>TailSnap</span> <span class="policy-title-name">プライバシーポリシー</span></h1>
+            <p>TailSnapが何を読み取り、どこに保存し、どこへ通信する可能性があるかを説明します。</p>
+            <p class="policy-meta">最終更新：2026年8月25日</p>
+        </section>
+
+        <aside class="policy-summary" aria-label="重要な要約">
+            <strong>重要な要約</strong>
+            <p>TailSnapは、ユーザーが明示的に調査を開始した現在のタブだけを解析します。調査結果、閲覧履歴、個人情報を開発者・解析サービス・広告サービスへ送信しません。</p>
+        </aside>
+
+        <section class="policy-section">
+            <h2>1. TailSnapが扱う情報</h2>
+            <p>TailSnapは、Web UIの調査、説明、コード生成、AI向け実装指示の生成に必要な範囲で、ユーザーが選択した要素と現在のページをブラウザー内で解析します。</p>
+            <ul>
+                <li>選択要素のDOM構造、表示文字、計算済みスタイル</li>
+                <li>寸法、余白、配置、色、フォント、コントラスト関連情報</li>
+                <li>ページ内の画像・SVG・フォントなどの素材URL</li>
+                <li>ユーザーが選択したTailwind CSSバージョン、出力形式、言語などの設定</li>
+            </ul>
+            <p>これらは、ユーザーが操作しているTailSnapの画面に結果を表示するために使います。元サイトのTailwindクラスや設計データを完全に復元するものではなく、計算済みスタイルから近い表現を提案します。</p>
+        </section>
+
+        <section class="policy-section">
+            <h2>2. 端末内での処理と保存</h2>
+            <h3>ブラウザー内で処理する機能</h3>
+            <p>スタイル解析、色の照合、フォント解析、WCAGコントラストの事前確認、コード生成、AI向け指示文生成、Tailwind辞典検索はブラウザー内で処理します。</p>
+            <h3>端末内に保存する情報</h3>
+            <p>言語、辞典のお気に入り、カスタム辞典、最近の調査履歴を拡張機能の<code>localStorage</code>へ保存します。履歴は再表示に必要な最小限のスタイル情報に限定し、ページ本文、フォーム入力値、素材URL、生成済みコードは履歴へ保存しません。</p>
+            <h3>削除方法</h3>
+            <p>調査履歴はTailSnap内の履歴削除操作で消去できます。ChromeからTailSnapを削除すると、Chromeの仕組みにより拡張機能のローカル保存領域も削除されます。開発者側にサーバー保存された複製はありません。</p>
+        </section>
+
+        <section class="policy-section">
+            <h2>3. 外部通信</h2>
+            <ul>
+                <li>TailSnapは調査結果、閲覧履歴、操作ログを開発者のサーバー、アクセス解析、広告サービスへ送信しません。</li>
+                <li>画像などをプレビューまたは書き出すときは、ユーザーの操作により元の素材配信元へ取得通信が発生する場合があります。TailSnapは認証情報を付けず、開発者サーバーを経由しません。</li>
+                <li>AI向け指示文は端末内で生成します。TailSnapがAIサービスへ自動送信することはありません。コピー後にどこへ渡すかはユーザーが決めます。</li>
+                <li>Tailwind CSS公式ドキュメントなどの外部リンクを押した場合は、そのリンク先が開きます。</li>
+            </ul>
+        </section>
+
+        <section class="policy-section">
+            <h2>4. Chrome権限</h2>
+            <ul>
+                <li><code>activeTab</code>：ユーザーがTailSnapを起動した現在のタブだけを調査するために使用します。</li>
+                <li><code>scripting</code>：明示的な起動後に、現在のタブへ調査用スクリプトとスタイルを注入するために使用します。</li>
+                <li><code>sidePanel</code>：調査結果、コード、履歴、素材、辞典をサイドパネルへ表示するために使用します。</li>
+            </ul>
+            <p>TailSnapは常時サイトアクセスを要求するhost permissionsや、全ページで常時動作するcontent scriptを宣言していません。</p>
+        </section>
+
+        <section class="policy-section">
+            <h2>5. Pro販売・ライセンスキー</h2>
+            <p>TailSnap v2.6.1ではPro販売とオンライン購入確認を行っていません。購入ボタンとライセンスキー入力は無効で、ライセンスキーを外部へ送信しません。購入確認サービスを有効化する前に、本ポリシーとChrome Web Store上の開示を更新します。</p>
+        </section>
+
+        <section class="policy-section">
+            <h2>6. Chrome Web Store Limited Use</h2>
+            <p>TailSnapが権限を通じて扱う情報は、ユーザーが明示的に開始するWeb UI調査・説明・デザイン変換という単一目的の提供と改善にのみ使用します。</p>
+            <ul>
+                <li>パーソナライズ広告、リターゲティング広告、興味関心広告に使用しません。</li>
+                <li>データブローカー、広告事業者、目的と無関係な第三者へ提供しません。</li>
+                <li>開発者が調査対象のページ内容を人手で閲覧することはありません。</li>
+            </ul>
+        </section>
+
+        <section class="policy-section">
+            <h2>7. セキュリティとユーザーへのお願い</h2>
+            <p>TailSnapは、権限と保存情報を最小化し、リモートで配信されるコードを拡張機能内で実行しません。ユーザーは、権限を持たないページ内容や機密情報を調査・コピーしないでください。</p>
+        </section>
+
+        <section class="policy-section">
+            <h2>8. ポリシーの変更</h2>
+            <p>データの扱い、外部通信、販売・認証機能に変更がある場合は、変更した機能を公開する前に本ページとChrome Web Store上の開示を更新します。</p>
+        </section>
+
+        <section class="policy-section">
+            <h2>9. お問い合わせ</h2>
+            <div class="policy-footer-links">
+                <a href="/contact.html">KatakataLab お問い合わせ</a>
+                <a href="/privacy.html">KatakataLab共通プライバシーポリシー</a>
+                <a href="/terms.html">KatakataLab利用規約</a>
+            </div>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-links">
+                <a href="/contact.html">お問い合わせ</a>
+                <a href="/privacy.html">共通プライバシーポリシー</a>
+                <a href="/terms.html">利用規約</a>
+            </div>
+            <p>&copy; 2024-2026 KatakataLab. All Rights Reserved.</p>
+        </div>
+    </footer>
+    <script src="/script.js?v=20260825-tailsnap"></script>
+</body>
+</html>

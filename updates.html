@@ -1,0 +1,553 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>アップデート情報 | KatakataLab</title>
+    <meta name="description" content="KatakataLabのサイト更新履歴、新機能の追加、メンテナンス情報などをまとめたログページです。">
+    <link rel="canonical" href="https://katakatalab.com/updates.html">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@400;500;700;800&family=Outfit:wght@400;600;700&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="style.css?v=20260824-responsive">
+    <link rel="icon" href="icon.svg" type="image/svg+xml">
+
+    <!-- Google Search Console -->
+    <meta name="google-site-verification" content="DST75bkpvPm0TzZR7ms_3KgaAm3i37zZQVWUAkPdbIg" />
+    
+    <style>
+        .updates-container {
+            max-width: 800px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+        }
+
+        .update-timeline {
+            position: relative;
+            padding-left: 2rem;
+            margin-top: 2rem;
+        }
+
+        .update-timeline::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: #e0e0e0;
+        }
+
+        [data-theme="dark"] .update-timeline::before {
+            background: #444;
+        }
+
+        .update-entry {
+            position: relative;
+            margin-bottom: 2.5rem;
+            background: var(--card-bg, #fff);
+            padding: 1.5rem;
+            border-radius: 12px;
+            border: 1px solid var(--border-color, #eee);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            color: var(--text-color, #333);
+        }
+
+        [data-theme="dark"] .update-entry {
+            border-color: #444;
+        }
+
+        .update-entry::after {
+            content: '';
+            position: absolute;
+            left: -2.4rem;
+            top: 1.5rem;
+            width: 12px;
+            height: 12px;
+            background: #007bff;
+            border: 3px solid var(--bg-color, #fff);
+            border-radius: 50%;
+            z-index: 1;
+        }
+
+        .update-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 0.8rem;
+            flex-wrap: wrap;
+        }
+
+        .update-date {
+            font-family: 'Outfit', sans-serif;
+            font-weight: 700;
+            color: var(--text-light, #666);
+            font-size: 1.1rem;
+        }
+
+        .update-version {
+            font-family: monospace;
+            background: var(--bg-color, #eee);
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 0.85rem;
+            color: var(--text-color, #555);
+            border: 1px solid var(--border-color, #ddd);
+        }
+
+        .tag-system { background: linear-gradient(135deg, #6c5ce7, #a29bfe); color: white; padding: 2px 8px; border-radius: 12px; font-size: 0.75rem; font-weight: bold; }
+        .tag-content { background: linear-gradient(135deg, #00b894, #55efc4); color: white; padding: 2px 8px; border-radius: 12px; font-size: 0.75rem; font-weight: bold; }
+        .tag-fix { background: linear-gradient(135deg, #ff7675, #fab1a0); color: white; padding: 2px 8px; border-radius: 12px; font-size: 0.75rem; font-weight: bold; }
+
+        .update-title {
+            font-size: 1.2rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            color: var(--text-color, #333);
+        }
+
+        .update-body {
+            font-size: 0.95rem;
+            line-height: 1.7;
+            color: var(--text-color, #333);
+        }
+        
+        /* リンク色などの調整 */
+        .update-body a {
+            color: #007bff;
+        }
+        [data-theme="dark"] .update-body a {
+            color: #54a0ff;
+        }
+
+        .update-body ul {
+            padding-left: 1.5rem;
+            margin-top: 0.5rem;
+            color: var(--text-color, #333);
+        }
+
+        .back-link {
+            display: block;
+            text-align: center;
+            margin-top: 3rem;
+            margin-bottom: 2rem;
+        }
+        
+        .hero-title {
+            color: var(--text-color, #333);
+        }
+        
+        /* サブタイトル用 */
+        main > p {
+            color: var(--text-light, #666);
+        }
+    </style>
+
+  <meta property="og:title" content="アップデート情報 | KatakataLab">
+  <meta property="og:description" content="KatakataLabのサイト更新履歴、新機能の追加、メンテナンス情報などをまとめたログページです。">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="https://katakatalab.com/updates.html">
+  <meta property="og:image" content="https://katakatalab.com/ogp.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="アップデート情報 | KatakataLab">
+  <meta name="twitter:description" content="KatakataLabのサイト更新履歴、新機能の追加、メンテナンス情報などをまとめたログページです。">
+  <meta name="twitter:image" content="https://katakatalab.com/ogp.png">
+  <meta name="twitter:site" content="@Katakata_toybox">
+</head>
+
+<body>
+    <script>try{if(localStorage.getItem('theme')==='dark')document.body.classList.add('dark-mode');}catch(e){}</script>
+    <header class="header">
+        <div class="container header-container">
+            <a href="./" class="logo">
+                <span class="logo-icon">🧪</span>
+                <span class="logo-text">KatakataLab</span>
+            </a>
+            <div class="header-actions">
+                <button type="button" id="theme-toggle" class="theme-btn" aria-label="テーマ切り替え">
+    <svg viewBox="0 0 24 24" class="svg-icon svg-moon" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/>
+    </svg>
+    <svg viewBox="0 0 24 24" class="svg-icon svg-sun" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="display: none;">
+        <circle cx="12" cy="12" r="4"/>
+        <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/>
+    </svg>
+</button>
+            </div>
+        </div>
+    </header>
+
+    <main class="updates-container">
+
+        <h1 class="hero-title" style="font-size: 2rem; text-align: center; margin-bottom: 1rem;">Update Log</h1>
+        <p style="text-align: center; color: #666;">KatakataLabの進化の記録</p>
+
+        <div class="update-timeline">
+
+            <!-- 2026/08/04 品質集中（薄いページ整理とガイド増厚） -->
+            <div class="update-entry">
+                <div class="update-header">
+                    <span class="update-date">2026.08.04</span>
+                    <span class="update-version">v2.8.0</span>
+                    <span class="tag-content">Content</span>
+                    <span class="tag-fix">Review</span>
+                </div>
+                <h3 class="update-title">薄いページを審査対象外にし、主力ガイドを厚くした</h3>
+                <div class="update-body">
+                    「数」より「各ページの完成度」を優先し、公開インデックスの対象を整理しました。
+                    <ul>
+                        <li><strong>薄い補助ページ:</strong> 短文のQR用途ガイド、実験的lab-tools、補助ガイドなどを noindex にし、XMLサイトマップから除外</li>
+                        <li><strong>増厚:</strong> 実例集・用途選択・パスワード・比率・px/rem、IT入門のAPI/セキュリティ/デプロイを拡充</li>
+                        <li><strong>トップ:</strong> まず読むおすすめガイドをヒーロー直後に配置</li>
+                        <li><strong>問い合わせ:</strong> 対応範囲・返信目安・報告に書いてほしい項目を追加</li>
+                        <li><strong>方針:</strong> ツール本体は利用可能のまま残し、説明が薄いページは検索・審査の主対象から外す</li>
+                        <li><strong>追加確認:</strong> トップの薄いQRサブガイド誘導を整理、IT入門各記事に現場メモを追加、問い合わせ・About・HTMLサイトマップを品質優先に更新</li>
+                        <li><strong>深掘り対応:</strong> PikaLabミニアプリを noindex、PikaLab sitemap を記事中心に縮小、英語ツールを sitemap 外、広告を厚いガイド6本に限定、二次プロジェクトを折りたたみ既定に</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- 2026/08/02 公開範囲と制作ノートの整理 -->
+            <div class="update-entry">
+                <div class="update-header">
+                    <span class="update-date">2026.08.02</span>
+                    <span class="update-version">v2.7.0</span>
+                    <span class="tag-system">System</span>
+                    <span class="tag-content">Content</span>
+                </div>
+                <h3 class="update-title">作品棚と制作ノートを整理</h3>
+                <div class="update-body">
+                    初めて訪れた方が、使えるツールと制作記録の関係をつかみやすいように公開範囲と案内を見直しました。
+                    <ul>
+                        <li><strong>便利ツール：</strong>Gravity TODOを作品棚から直接開けるように変更</li>
+                        <li><strong>教育カテゴリ：</strong>キッズ・スマイル・ランドをPikaLabと同じ学習棚へ追加</li>
+                        <li><strong>制作ノート：</strong>IT用語16記事を、KatakataLabで実際に作ったページや公開作業につながる構成へ更新</li>
+                        <li><strong>PikaLab：</strong>個人制作者であることが伝わる著者表記に統一し、学習効果を断定しない案内へ調整</li>
+                        <li><strong>公開品質：</strong>公開ファイルの参照切れをビルド時に検査する仕組みを追加</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- 2026/07/22 実測情報とサイト構造の明確化 -->
+            <div class="update-entry">
+                <div class="update-header">
+                    <span class="update-date">2026.07.22</span>
+                    <span class="update-version">v2.6.1</span>
+                    <span class="tag-content">Content</span>
+                    <span class="tag-fix">Review</span>
+                </div>
+                <h3 class="update-title">実測情報・3本柱・広告範囲を再整理</h3>
+                <div class="update-body">
+                    主要ツールの価値と確認範囲がページ内だけで分かるよう、実例・分類・運営方針をそろえました。
+                    <ul>
+                        <li><strong>実測記録：</strong>QR、割引、アスペクト比、文章比較、パスワード生成に入力・結果・確認範囲を追加</li>
+                        <li><strong>サイト構造：</strong>実用ツールを「制作・デザイン」「開発・文章」「日常・情報共有」の3本柱に整理</li>
+                        <li><strong>学習エリア：</strong>PikaLabを実用ツールと混ぜず、子ども向け学習ラボとして独立表示</li>
+                        <li><strong>広告範囲：</strong>運営説明と短文ガイド7ページを追加で広告なしにし、掲載対象を24ページへ縮小</li>
+                        <li><strong>透明性：</strong>計算、ブラウザ操作、自動テスト、出典、訂正経路の検証方針を公開</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- 2026/07/22 実例と公開方針の整理（重複エントリ防止のため統合済み） -->
+
+            <!-- 2026/07/16 サイト構成と掲載方針の整理 -->
+            <div class="update-entry">
+                <div class="update-header">
+                    <span class="update-date">2026.07.16</span>
+                    <span class="update-version">v2.5.0</span>
+                    <span class="tag-system">System</span>
+                    <span class="tag-content">Content</span>
+                    <span class="tag-fix">Review</span>
+                </div>
+                <h3 class="update-title">実用ツールを中心にした構成と公開品質の見直し</h3>
+                <div class="update-body">
+                    初めて訪れた方がサイトの目的と使える機能を判断しやすいよう、表示・記事・公開範囲を整理しました。
+                    <ul>
+                        <li><strong>トップページ再構成：</strong>登録不要・ブラウザ完結の実用ツールを主役にし、別プロジェクトや読みものを分けて掲載しました。</li>
+                        <li><strong>読み込み耐性：</strong>JavaScriptの取得に失敗しても主要ツールが表示されるよう、静的なカードをHTMLへ組み込む生成処理を追加しました。</li>
+                        <li><strong>IT入門ガイド更新：</strong>Git・コミット・デプロイ・バグ・デバッグの記事に、KatakataLabで実際に行った確認例を追記しました。</li>
+                        <li><strong>広告掲載範囲の整理：</strong>子ども向け学習プロジェクトPikaLabと、規約・問い合わせなどの案内ページから広告コードを外しました。</li>
+                        <li><strong>公開ファイルの限定：</strong>デプロイ対象を明示的な許可リストに切り替え、開発資料や試作ファイルが公開領域へ混ざらない構成にしました。</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- 2026/05/28 大型更新 -->
+            <div class="update-entry">
+                <div class="update-header">
+                    <span class="update-date">2026.05.28</span>
+                    <span class="update-version">v2.4.0</span>
+                    <span class="tag-system">System</span>
+                    <span class="tag-content">Content</span>
+                    <span class="tag-fix">Review</span>
+                </div>
+                <h3 class="update-title">サイト全域の案内・品質アップデート</h3>
+                <div class="update-body">
+                    初めて訪れた方が、用途と運営方針を把握しやすくなるよう、全ページにわたる改善を実施しました。
+                    <ul>
+                        <li><strong>トップページ About Lab 本文強化：</strong>「このラボって最初はただのメモ帳でした」をはじめ、かたかたの人柄と制作姿勢が伝わる本文3段落を新たに追加しました。</li>
+                        <li><strong>公開範囲の整理（3ページ）：</strong>note厳選記事ページ・野望ページ・Desk＆Gearページを、サイト内から見つけられる公開ページとして整理しました。</li>
+                        <li><strong>サイト内案内の更新：</strong>公開ページの追加に合わせて、サイトマップと更新日時を整理しました。</li>
+                        <li><strong>KatakataLabについてページ 本文追記：</strong>QR Maker Labの説明と、使い方ガイドシリーズの紹介を追加しました。</li>
+                        <li><strong>著作権表記の統一：</strong>全サブページのフッター著作権年を「2024-2026」に統一しました。</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- 2026/05/28 UI改修 -->
+            <div class="update-entry">
+                <div class="update-header">
+                    <span class="update-date">2026.05.28</span>
+                    <span class="update-version">v2.3.5</span>
+                    <span class="tag-system">System</span>
+                    <span class="tag-fix">UI</span>
+                </div>
+                <h3 class="update-title">トップページの表示・操作性・コード品質を大幅改善</h3>
+                <div class="update-body">
+                    ユーザビリティとサイト健全性の両面を強化するアップデートを連続して実施しました。
+                    <ul>
+                        <li><strong>サイトマップページのリデザイン：</strong>ダークモード対応・デスクトップ用ハンバーガーメニューの復旧・全HTMLファイルへのキャッシュバスティング自動化を実施しました。</li>
+                        <li><strong>カード説明文の初心者向け最適化：</strong>主要ツール4種の説明を、Web用語に不慣れな方でも理解しやすいよう書き直しました。</li>
+                        <li><strong>ページ内レイアウトの整理：</strong>本文と操作が窮屈にならないよう、主要ページの余白と表示領域を調整しました。</li>
+                        <li><strong>検索結果0件UIの追加：</strong>ツール検索で一致なしの場合に「見つかりませんでした」を表示するフィードバックUIを実装しました。</li>
+                        <li><strong>JSモジュール化リファクタリング：</strong>メインスクリプトを責務別にカプセル化し、try-catch防護・CSS変数集約・コントラスト比改善などを実施しました。</li>
+                        <li><strong>PWA強化：</strong>Service Workerのキャッシュマッチング最適化と、.htaccessでのsw.jsキャッシュ無効化を実施しました。</li>
+                        <li><strong>グラスモルフィズムデザインの導入：</strong>カテゴリ切り替えタブとサイドドロワーに半透明ガラス効果を適用しました。</li>
+                        <li><strong>ひみつきちカードをサイドメニューへ移動：</strong>トップページのカードレイアウトをすっきりと整理しました。</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- 2026/05/27 PikaLab カラーラボ刷新 -->
+            <div class="update-entry">
+                <div class="update-header">
+                    <span class="update-date">2026.05.27</span>
+                    <span class="update-version">v2.3.0</span>
+                    <span class="tag-content">Feature</span>
+                    <span class="tag-fix">UI</span>
+                </div>
+                <h3 class="update-title">PikaLab「カラーラボ」大型ビジュアル刷新</h3>
+                <div class="update-body">
+                    子ども向け学習ツール「PikaLab カラーラボ（色のまぜまぜラボ）」のデザインと機能を全面的にアップグレードしました。
+                    <ul>
+                        <li><strong>コース選択画面の3Dポップデザイン化：</strong>タイトルをカラフルかつ立体的なポップデザインに全面刷新しました。</li>
+                        <li><strong>きせかえアイテムの解放・アンロック機能：</strong>実績に応じてキャラクターの装備を解放できる新機能と演出エフェクトを追加しました。</li>
+                        <li><strong>キラお題の演出改善：</strong>枠の回転アニメを廃止し、星のパーティクルエフェクトに変更しました。</li>
+                        <li><strong>まっしろ時の装備演出：</strong>色がすべて白になった際の特別演出として「おしゃれなサングラス」を実装しました。</li>
+                        <li><strong>コード品質向上：</strong>例外安全なストレージラッパーの適用、DOMContentLoaded初期化の安全化、ゲーム状態リセットの整合性確保を実施しました。</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- 2026/04/28 →(元のエントリに続く) -->
+
+            <div class="update-entry">
+                <div class="update-header">
+                    <span class="update-date">2026.04.28</span>
+                    <span class="update-version">v2.2.1</span>
+                    <span class="tag-content">Content</span>
+                    <span class="tag-fix">Maintenance</span>
+                </div>
+                <h3 class="update-title">入力情報の扱いと実験棚の見え方を調整</h3>
+                <div class="update-body">
+                    主要ツールを初めて使う人が不安になりやすい点を、短い説明で補いました。
+                    <ul>
+                        <li>QR作成やパスワード生成で、入力内容の扱いが伝わるように調整</li>
+                        <li>PikaLabとPlayPointを「ほかの実験棚」として控えめに案内</li>
+                        <li>更新履歴の表現を、運用記録として読みやすい形に整理</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- 2026/04/27 -->
+            <div class="update-entry">
+                <div class="update-header">
+                    <span class="update-date">2026.04.27</span>
+                    <span class="update-version">v2.2.0</span>
+                    <span class="tag-content">Content</span>
+                    <span class="tag-fix">Maintenance</span>
+                </div>
+                <h3 class="update-title">トップページの導線を整理</h3>
+                <div class="update-body">
+                    KatakataLabの主役が伝わりやすくなるように、トップページの並びを見直しました。
+                    <ul>
+                        <li>主力ツール4つを先に見られる構成に変更</li>
+                        <li>使い方ガイドはツールの後ろに移動</li>
+                        <li>重複していた説明や、後から足したように見える案内を整理</li>
+                    </ul>
+                    小さな研究室らしさは残しつつ、初めて来た人が迷いにくい形に調整しています。
+                </div>
+            </div>
+
+            <!-- 2026/03/12 -->
+            <div class="update-entry">
+                <div class="update-header">
+                    <span class="update-date">2026.03.12</span>
+                    <span class="update-version">v2.1.3</span>
+                    <span class="tag-content">Content</span>
+                    <span class="tag-fix">UI</span>
+                </div>
+                <h3 class="update-title">PikaLabの読みものを追加・読みやすく調整</h3>
+                <div class="update-body">
+                    PikaLabの保護者向け・学習向けの読みものを増やし、記事一覧や本文の見た目も調整しました。
+                    <ul>
+                        <li>学習習慣、集中力、失敗への向き合い方などの記事を追加</li>
+                        <li>記事カード、見出し、本文の可読性を改善</li>
+                        <li>読みもの広場への導線と、細かな表示の違和感を調整</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- 2026/03/06-03/07 -->
+            <div class="update-entry">
+                <div class="update-header">
+                    <span class="update-date">2026.03.06 - 2026.03.07</span>
+                    <span class="update-version">v2.1.1</span>
+                    <span class="tag-system">Review</span>
+                    <span class="tag-fix">Maintenance</span>
+                </div>
+                <h3 class="update-title">サイト構成と信頼導線を整理</h3>
+                <div class="update-body">
+                    初めて訪れた人が迷わないように、サイト内の見え方と信頼導線を整理しました。
+                    <ul>
+                        <li>トップにかたかた紹介コンテンツを追加</li>
+                        <li>index対象やポリシー記述を現行運用に合わせて整理</li>
+                        <li>PikaLabの外部カードを前面に出しすぎない形へ変更</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- 2026/02/28 -->
+            <div class="update-entry">
+                <div class="update-header">
+                    <span class="update-date">2026.02.28</span>
+                    <span class="update-version">v2.1.0</span>
+                    <span class="tag-system">Review</span>
+                    <span class="tag-content">Content</span>
+                </div>
+                <h3 class="update-title">本文・導線・公開設定を総点検</h3>
+                <div class="update-body">
+                    低テキストに見えやすいページや信頼性シグナルを見直し、必要な説明と内部導線を補強しました。
+                    <ul>
+                        <li>QRガイドのFAQ構造化データと内部導線を追加</li>
+                        <li>トップページや開発記事の本文を補強</li>
+                        <li>公開設定、カテゴリ表記、ページ同士のつながりを点検</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- 2026/02/19-02/20 -->
+            <div class="update-entry">
+                <div class="update-header">
+                    <span class="update-date">2026.02.19 - 2026.02.20</span>
+                    <span class="update-version">v2.0.5</span>
+                    <span class="tag-content">QR</span>
+                    <span class="tag-fix">UI</span>
+                </div>
+                <h3 class="update-title">QR Maker Labの導線とテンプレートUIを強化</h3>
+                <div class="update-body">
+                    QR Maker Labで、用途別に使いやすくなるよう導線とUIを調整しました。
+                    <ul>
+                        <li>テンプレート導線とブランド表記を整理</li>
+                        <li>業種別LPへの導線を追加</li>
+                        <li>案内導線、開閉UI、公開導線を改善</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- 2026/02/04 (2) -->
+            <div class="update-entry">
+                <div class="update-header">
+                    <span class="update-date">2026.02.04</span>
+                    <span class="update-version">v2.0.2</span>
+                    <span class="tag-content">New Tool</span>
+                </div>
+                <h3 class="update-title">便利ツール3種をラインナップに追加</h3>
+                <div class="update-body">
+                    Projects一覧に、以下のWebツールへのリンクを追加・復旧させました。
+                    <ul>
+                        <li><strong>アスペクト比計算機</strong>: 画像や動画のリサイズ計算に。</li>
+                        <li><strong>強力パスワード生成</strong>: セキュアなランダムパスワードを作成。</li>
+                        <li><strong>px / rem 変換</strong>: Web制作(CSS)の数値変換を補助。</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- 2026/02/04 (1) -->
+            <div class="update-entry">
+                <div class="update-header">
+                    <span class="update-date">2026.02.04</span>
+                    <span class="update-version">v2.0.1</span>
+                    <span class="tag-system">System</span>
+                    <span class="tag-content">Content</span>
+                </div>
+                <h3 class="update-title">自動デプロイ刷新 & アップデート情報ページ新設</h3>
+                <div class="update-body">
+                    GitHub Actionsによる自動デプロイシステムを、より堅牢なセキュリティ構成（SSH鍵認証の強化）に刷新しました。<br>
+                    また、これまでトップページには無かった「更新履歴」への入り口を作成し、この詳細ページをオープンしました。
+                </div>
+            </div>
+
+            <!-- 2026/02/03 -->
+            <div class="update-entry">
+                <div class="update-header">
+                    <span class="update-date">2026.02.03</span>
+                    <span class="update-version">v2.0.0</span>
+                    <span class="tag-content">Content</span>
+                </div>
+                <h3 class="update-title">Playポイント計算機の案内・表示アップデート</h3>
+                <div class="update-body">
+                    姉妹サイト「Playポイント計算機」にて、ページ情報と更新履歴の表示を整理しました。<br>
+                    必要な情報へたどり着きやすい構成にしました。
+                </div>
+            </div>
+
+            <!-- 2025/12/31 -->
+            <div class="update-entry">
+                <div class="update-header">
+                    <span class="update-date">2025.12.31</span>
+                    <span class="update-version">v1.9.5</span>
+                    <span class="tag-fix">Maintenance</span>
+                </div>
+                <h3 class="update-title">年末年始のシステムメンテナンス</h3>
+                <div class="update-body">
+                    <ul>
+                        <li>各種ツールの動作確認とライブラリ更新</li>
+                        <li>コピーライト表記の更新準備</li>
+                        <li>サーバーのパフォーマンスチューニング</li>
+                    </ul>
+                </div>
+            </div>
+
+             <!-- 2025/05/10 -->
+             <div class="update-entry">
+                <div class="update-header">
+                    <span class="update-date">2025.05.10</span>
+                    <span class="update-version">v1.9.0</span>
+                    <span class="tag-content">Feature</span>
+                </div>
+                <h3 class="update-title">Playポイント計算機 v1.9.0 リリース</h3>
+                <div class="update-body">
+                    多言語対応（英語）、ダークモード機能、そしてユーザー待望の「ほくほくリワード日記」機能を追加しました。
+                </div>
+            </div>
+        </div>
+
+        <div class="back-link">
+            <a href="./" class="btn btn-secondary">← ラボに戻る</a>
+        </div>
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2024-2026 KatakataLab. All Rights Reserved.</p>
+        </div>
+    </footer>
+
+    <script src="script.js?v=20260610"></script>
+</body>
+</html>

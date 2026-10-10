@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>お問い合わせ | KatakataLab</title>
+    <meta name="description" content="KatakataLabへのお問い合わせ、ご意見、不具合報告はこちらから受け付けています。">
+    <meta name="author" content="かたかた">
+    <link rel="canonical" href="https://katakatalab.com/contact.html">
+    <meta property="og:title" content="お問い合わせ | KatakataLab">
+    <meta property="og:description" content="KatakataLabへのお問い合わせ、ご意見、不具合報告はこちらから受け付けています。">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://katakatalab.com/contact.html">
+    <meta property="og:image" content="https://katakatalab.com/ogp.png">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="お問い合わせ | KatakataLab">
+    <meta name="twitter:description" content="KatakataLabへのお問い合わせ、ご意見、不具合報告はこちらから受け付けています。">
+    <meta name="twitter:image" content="https://katakatalab.com/ogp.png">
+    <meta name="twitter:site" content="@Katakata_toybox">
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "ツールの利用は無料ですか？",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "KatakataLabの基本機能は無料で利用できます。登録不要で使える機能を中心に、一部ツールでは任意の有料機能も提供しています。"
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "商用利用は可能ですか？",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "ツールで生成されたデータは商用・非商用問わず利用できます。ただしツール自体の再配布や販売は禁止しています。"
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "リンクを貼ってもいいですか？",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "各ページへのリンクは自由です。SNSでのシェアも歓迎しています。"
+          }
+        }
+      ]
+    }
+    </script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@400;500;700;800&family=Outfit:wght@400;600;700&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="style.css?v=20260824-responsive">
+    <link rel="icon" href="icon.svg" type="image/svg+xml">
+
+    <style>
+        .contact-container {
+            max-width: 800px;
+            margin: 3rem auto;
+            padding: 0 1rem;
+            text-align: center;
+        }
+
+        .contact-card {
+            background: var(--c-glass-bg);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            padding: 3rem 2rem;
+            border-radius: var(--radius-md);
+            border: 1px solid var(--c-glass-border);
+            box-shadow: var(--glass-shadow);
+            margin-bottom: 3rem;
+        }
+
+        .contact-desc {
+            font-size: 1.1rem;
+            color: var(--c-text);
+            margin-bottom: 2rem;
+            line-height: 1.8;
+        }
+
+        .btn-contact {
+            display: inline-block;
+            background: linear-gradient(135deg, #00b894, #00cec9);
+            color: white;
+            padding: 1rem 3rem;
+            border-radius: 50px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            text-decoration: none;
+            transition: transform 0.2s, box-shadow 0.2s;
+            box-shadow: 0 4px 15px rgba(0, 184, 148, 0.3);
+        }
+
+        .btn-contact:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(0, 184, 148, 0.4);
+        }
+
+        .faq-section {
+            text-align: left;
+            margin-top: 4rem;
+        }
+
+        .contact-guidance {
+            text-align: left;
+            background: var(--c-glass-bg);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            padding: 2rem;
+            border-radius: var(--radius-md);
+            border: 1px solid var(--c-glass-border);
+            box-shadow: var(--glass-shadow);
+            margin-top: 2.5rem;
+        }
+
+        .contact-guidance h2 {
+            font-size: 1.35rem;
+            margin-bottom: 1rem;
+            color: var(--c-text);
+        }
+
+        .contact-guidance p {
+            color: var(--c-text-light);
+            line-height: 1.85;
+            margin-bottom: 1rem;
+        }
+
+        .contact-guidance ul {
+            margin: 0;
+            padding-left: 1.2rem;
+            color: var(--c-text-light);
+            line-height: 1.8;
+        }
+
+        .contact-guidance li {
+            margin-bottom: 0.7rem;
+        }
+
+        .faq-section h2 {
+            font-size: 1.5rem;
+            margin-bottom: 1.5rem;
+            color: var(--c-text);
+            border-bottom: 2px solid var(--c-glass-border);
+            padding-bottom: 0.5rem;
+        }
+
+        .faq-item {
+            margin-bottom: 1.5rem;
+        }
+
+        .faq-q {
+            font-weight: 700;
+            color: var(--c-primary, #6c5ce7);
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .faq-q::before {
+            content: 'Q.';
+            background: rgba(45, 52, 54, 0.05);
+            color: var(--c-text-light);
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 0.9rem;
+        }
+
+        body.dark-mode .faq-q::before {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .faq-a {
+            padding-left: 2.5rem;
+            color: var(--c-text-light);
+            line-height: 1.7;
+        }
+    </style>
+</head>
+
+<body>
+    <script>try{if(localStorage.getItem('theme')==='dark')document.body.classList.add('dark-mode');}catch(e){}</script>
+    <header class="header">
+        <div class="container header-container">
+            <a href="./" class="logo">
+                <span class="logo-icon">🧪</span>
+                <span class="logo-text">KatakataLab</span>
+            </a>
+            <nav class="nav">
+                <ul class="nav-list">
+                    <li><a href="./#home" class="nav-link">ホーム</a></li>
+                    <li><a href="./#projects" class="nav-link">作ったもの</a></li>
+                    <li><a href="./#about" class="nav-link">ラボについて</a></li>
+                    <li><a href="contact.html" class="nav-link active">お問い合わせ</a></li>
+                </ul>
+            </nav>
+            <div class="header-actions">
+                <button type="button" id="theme-toggle" class="theme-btn" aria-label="テーマ切り替え">
+    <svg viewBox="0 0 24 24" class="svg-icon svg-moon" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/>
+    </svg>
+    <svg viewBox="0 0 24 24" class="svg-icon svg-sun" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="display: none;">
+        <circle cx="12" cy="12" r="4"/>
+        <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/>
+    </svg>
+</button>
+                <button type="button" class="menu-toggle" aria-label="メニューを開く">
+                    <span class="bar"></span><span class="bar"></span><span class="bar"></span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <div class="menu-overlay" id="menu-overlay" aria-hidden="true"></div>
+    <div class="mobile-menu drawer-menu" aria-hidden="true">
+        <button type="button" class="menu-close-btn" aria-label="メニューを閉じる">✕</button>
+        <div class="mobile-menu-inner">
+            <nav class="mobile-nav" aria-label="サイト内ナビゲーション">
+                <ul class="mobile-nav-list">
+                    <li><a href="who-is-katakata.html" class="mobile-nav-link">🧑‍💻 かたかたって誰？</a></li>
+                    <li><a href="about-katakatalab.html" class="mobile-nav-link">🧪 KatakataLabについて</a></li>
+                    <li><a href="note-selection.html" class="mobile-nav-link">📝 かたかたのnote</a></li>
+                    <li><a href="contact.html" class="mobile-nav-link">✉️ お問い合わせ</a></li>
+                    <li class="mobile-nav-sep"></li>
+                    <li><a href="terms.html" class="mobile-nav-link" target="_blank" rel="noopener noreferrer">📄 利用規約</a></li>
+                    <li><a href="privacy.html" class="mobile-nav-link" target="_blank" rel="noopener noreferrer">🔒 プライバシーポリシー</a></li>
+                </ul>
+            </nav>
+        </div>
+    </div>
+
+    <main class="contact-container">
+
+        <h1 class="hero-title" style="margin-bottom: 2rem;">Contact</h1>
+
+        <div class="contact-card">
+            <p class="contact-desc">
+                当サイト「KatakataLab」へのご意見・ご感想、<br>
+                ツールの不具合報告、お仕事のご依頼などは<br>
+                以下のGoogleフォームよりお気軽にお送りください。
+            </p>
+            <a href="https://docs.google.com/forms/d/e/1FAIpQLSdzF0t_iMp3mwG0SXhQhUuZsJhYElFwIhiUSxX5bLJP3aTgzA/viewform" target="_blank" rel="noopener noreferrer" class="btn-contact">
+                お問い合わせフォームへ
+            </a>
+            <p style="margin-top: 1.5rem; font-size: 0.9rem; color: #888;">
+                ※通常、3日以内を目安に返信いたします。<br>
+                ※内容によってはお返事できない場合もございます。<br>
+                ※フォームがご利用いただけない場合は、X（旧Twitter）の
+                <a href="https://x.com/Katakata_toybox" target="_blank" rel="noopener noreferrer" style="color:var(--c-primary,#6c5ce7);">@Katakata_toybox</a>
+                へのDMでもお受けしています。
+            </p>
+
+            <div style="margin-top: 1.5rem; padding: 1.25rem 1.5rem; background: var(--c-glass-bg); border: 1px solid var(--c-glass-border); border-radius: var(--radius-md); text-align: left;">
+                <p style="font-size: 1rem; color: var(--c-text); margin: 0 0 0.5rem 0; font-weight: 700;">📬 メールでもお気軽にどうぞ！</p>
+                <p style="font-size: 0.92rem; color: var(--c-text-light); margin: 0 0 0.75rem 0; line-height: 1.7;">フォームが使いにくい場合や、ファイルを添付してご連絡したい場合は、<strong>こちらのアドレスへ直接ご連絡ください。</strong></p>
+                <a href="mailto:katakatalab.dev@gmail.com" style="display: inline-block; color: var(--c-primary, #6c5ce7); font-size: 1.05rem; font-weight: 700; word-break: break-all; text-decoration: underline; text-underline-offset: 3px;">katakatalab.dev@gmail.com</a>
+            </div>
+        </div>
+
+
+
+        <section class="contact-guidance" aria-labelledby="contact-guidance-title">
+            <h2 id="contact-guidance-title">お問い合わせ前のご案内</h2>
+            <p>
+                KatakataLabは、登録不要のブラウザ実用ツールと、その使い方・判断基準を書いたガイドを公開している個人運営のサイトです。お問い合わせ内容を具体的に書いていただくほど、再現確認と修正判断が早くなります。特に不具合報告では「どのページで」「何を操作したときに」「どのような表示になったか」を記載いただけると助かります。
+            </p>
+            <p>
+                広告・プライバシー・利用規約に関する質問もこの窓口で受け付けています。返信では、該当ページのURLと運用上の判断理由をセットでお返しする方針です。ユーザーが判断しやすい情報提供を最優先にしています。
+            </p>
+            <h3>対応できること</h3>
+            <ul>
+                <li>ツールの不具合・表示崩れ・計算結果の違和感</li>
+                <li>ガイド記事の誤りの指摘、分かりにくい説明の改善提案</li>
+                <li>リンク切れ、アクセシビリティ、プライバシー表記に関する指摘</li>
+                <li>掲載範囲（どのページに何があるか）や運営方針に関する質問</li>
+                <li>個人開発・Web制作に関するお仕事のご相談（内容によりお受けできない場合があります）</li>
+            </ul>
+            <h3>対応が難しいこと</h3>
+            <ul>
+                <li>第三者サービスのアカウント復旧や公式サポート代行</li>
+                <li>法律・税務・医療などの専門判断</li>
+                <li>即時対応が必須の緊急インシデント対応</li>
+                <li>利用規約に反する改変・再配布の許可依頼</li>
+            </ul>
+            <h3>返信の目安</h3>
+            <p>通常は3日以内を目安にしています。土日祝や内容の調査が必要な場合は、もう少しお時間をいただくことがあります。すべてのメッセージに必ず返信できるとは限りませんが、不具合の再現情報がある報告は優先して確認します。</p>
+            <h3>書くと助かる項目</h3>
+            <ul>
+                <li>不具合報告: OS、ブラウザ名、再現手順、スクリーンショットの有無、該当URL</li>
+                <li>機能要望: 目的、現在困っていること、欲しい出力形式</li>
+                <li>お仕事のご相談: ご依頼内容、希望納期、公開範囲、連絡先</li>
+            </ul>
+            <h3>よくある問い合わせの行き先</h3>
+            <p>質問の種類によっては、先に公開ページを見ると早いことがあります。</p>
+            <ul>
+                <li>どのツールを使えばよいか → <a href="guides/tool-selection-guide.html">用途から選ぶガイド</a></li>
+                <li>入力例と最後の確認 → <a href="guides/case-studies.html">実例集</a></li>
+                <li>運営者・方針 → <a href="who-is-katakata.html">かたかたって誰？</a> / <a href="about-katakatalab.html">KatakataLabについて</a></li>
+                <li>最近の変更 → <a href="updates.html">更新履歴</a></li>
+                <li>個人情報・広告の扱い → <a href="privacy.html">プライバシーポリシー</a></li>
+            </ul>
+            <h3>個人運営であること</h3>
+            <p>KatakataLabは法人サポート窓口ではなく、個人が公開している研究室サイトです。返信は可能な範囲で行い、調査が必要な不具合は公開後の修正として反映することがあります。修正した場合は、必要に応じて更新履歴にも残します。</p>
+            <h3>フォーム送信時の注意</h3>
+            <ul>
+                <li>秘密のパスワードや、他人の個人情報を本文に貼らないでください</li>
+                <li>業務上の機密が含まれる資料は、共有範囲を明記してください</li>
+                <li>広告やアフィリエイトの提案は、サイト方針と合わない場合お断りすることがあります</li>
+            </ul>
+            <p style="font-size:0.9rem;color:var(--c-text-light);">更新日: 2026年8月4日</p>
+        </section>
+
+        <section class="faq-section">
+            <h2>よくある質問(FAQ)</h2>
+            
+            <div class="faq-item">
+                <div class="faq-q">ツールの利用は無料ですか？</div>
+                <div class="faq-a">基本機能は無料でご利用いただけます。登録不要で使える機能を中心に、一部ツールでは任意の有料機能も提供しています。</div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-q">商用利用は可能ですか？</div>
+                <div class="faq-a">当サイトのツールで生成されたデータ（パスワードや計算結果など）は、商用・非商用問わずご自由にお使いいただけます。ただし、ツール自体の再配布や販売は禁止しています。</div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-q">リンクを貼ってもいいですか？</div>
+                <div class="faq-a">大歓迎です！どのページへのリンクもフリーです。SNSでのシェアも励みになります。</div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-links">
+                <a href="contact.html">お問い合わせ</a>
+                <a href="who-is-katakata.html">運営者情報</a>
+                <a href="terms.html" target="_blank" rel="noopener noreferrer">利用規約</a>
+                <a href="privacy.html" target="_blank" rel="noopener noreferrer">プライバシーポリシー</a>
+                <a href="sitemap.html">サイトマップ</a>
+            </div>
+            <p>&copy; 2024-2026 KatakataLab. All Rights Reserved.</p>
+        </div>
+    </footer>
+
+    <script src="script.js?v=20260610"></script>
+</body>
+</html>

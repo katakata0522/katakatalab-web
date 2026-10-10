@@ -1,0 +1,1658 @@
+/* ============================================
+   タイピング道場 - style.css
+   🔥 熱血道場テーマ（ダーク×炎×和風）
+   ============================================ */
+
+:root {
+    --primary: #FF4500;
+    --primary-dark: #CC3700;
+    --secondary: #FFD700;
+    --accent: #FF6B00;
+    --fire-gradient: linear-gradient(180deg, #FF4500 0%, #FF6B00 50%, #FFD700 100%);
+    --bg-dark: #1A0A00;
+    --bg-card: rgba(30, 15, 5, 0.95);
+    --bg-gradient: radial-gradient(ellipse at center bottom, #3D1500 0%, #1A0A00 60%, #0D0500 100%);
+    --text: #FFF5E6;
+    --text-muted: #B8A090;
+    --shadow: 0 8px 32px rgba(255, 69, 0, 0.3);
+    --glow: 0 0 20px rgba(255, 69, 0, 0.5);
+    --radius: 12px;
+    --font: 'M PLUS Rounded 1c', sans-serif;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: var(--font);
+    background: var(--bg-gradient);
+    min-height: 100vh;
+    min-height: 100dvh;
+    color: var(--text);
+    overflow-x: hidden;
+    touch-action: manipulation;
+}
+
+/* 炎のパーティクル背景 */
+body::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image:
+        radial-gradient(circle at 20% 80%, rgba(255, 69, 0, 0.15) 0%, transparent 50%),
+        radial-gradient(circle at 80% 20%, rgba(255, 107, 0, 0.1) 0%, transparent 40%),
+        radial-gradient(circle at 50% 50%, rgba(255, 215, 0, 0.05) 0%, transparent 60%);
+    pointer-events: none;
+    z-index: 0;
+}
+
+/* ============ 共通コンポーネント ============ */
+.screen {
+    display: none;
+    min-height: 100vh;
+    min-height: 100dvh;
+    padding: 2rem 1rem;
+    position: relative;
+    z-index: 1;
+}
+
+.screen.active {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    animation: fadeIn 0.5s ease;
+    padding-bottom: max(2rem, env(safe-area-inset-bottom));
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: scale(0.95);
+    }
+
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+.container {
+    background: var(--bg-card);
+    border: 2px solid var(--primary);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow), inset 0 0 60px rgba(255, 69, 0, 0.1);
+    padding: 2.5rem;
+    width: 100%;
+    max-width: 480px;
+    text-align: center;
+    position: relative;
+}
+
+/* 道場の額縁風デコレーション */
+.container::before {
+    content: '🔥';
+    position: absolute;
+    top: -15px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 1.5rem;
+    background: transparent;
+    padding: 0;
+    filter: drop-shadow(0 0 8px rgba(255, 107, 0, 0.55));
+}
+
+/* ============ スタート画面 ============ */
+.title {
+    font-size: 2.5rem;
+    font-weight: 800;
+    color: var(--secondary);
+    text-shadow:
+        0 0 8px rgba(255, 69, 0, 0.75),
+        0 0 20px rgba(255, 69, 0, 0.45),
+        0 0 30px rgba(255, 107, 0, 0.25);
+    margin-bottom: 0.5rem;
+    letter-spacing: 0.1em;
+    animation: flameGlow 2s ease-in-out infinite alternate;
+}
+
+@keyframes flameGlow {
+    from {
+        text-shadow: 0 0 8px rgba(255, 69, 0, 0.75), 0 0 20px rgba(255, 69, 0, 0.45), 0 0 30px rgba(255, 107, 0, 0.25);
+    }
+
+    to {
+        text-shadow: 0 0 12px rgba(255, 69, 0, 0.85), 0 0 24px rgba(255, 69, 0, 0.55), 0 0 34px rgba(255, 215, 0, 0.35);
+    }
+}
+
+.subtitle {
+    color: var(--text-muted);
+    font-size: 1rem;
+    line-height: 1.6;
+    margin-bottom: 2rem;
+    font-weight: 700;
+}
+
+.select-label {
+    font-weight: 800;
+    margin-bottom: 1rem;
+    color: var(--secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.2em;
+    font-size: 0.9rem;
+}
+
+.difficulty-select {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.btn {
+    padding: 1rem 2rem;
+    font-size: 1.2rem;
+    font-weight: 800;
+    font-family: var(--font);
+    border: 2px solid transparent;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    position: relative;
+    overflow: hidden;
+}
+
+.btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    transition: left 0.5s;
+}
+
+.btn:hover::before {
+    left: 100%;
+}
+
+.btn:hover {
+    transform: translateY(-3px) scale(1.02);
+    box-shadow: var(--glow);
+}
+
+.btn:active {
+    transform: translateY(-1px) scale(0.98);
+}
+
+.btn:focus-visible,
+.control-btn:focus-visible,
+.typing-input:focus-visible,
+.back-link:focus-visible {
+    outline: 3px solid var(--secondary);
+    outline-offset: 3px;
+}
+
+.btn-easy {
+    background: linear-gradient(135deg, #2D5A27, #4A7C42);
+    border-color: #5A9E50;
+    color: white;
+}
+
+.btn-easy:hover {
+    background: linear-gradient(135deg, #3D7A37, #5A9C52);
+}
+
+.btn-normal {
+    background: linear-gradient(135deg, #8B4513, #A0522D);
+    border-color: #CD853F;
+    color: white;
+}
+
+.btn-normal:hover {
+    background: linear-gradient(135deg, #9B5523, #B0623D);
+}
+
+.btn-hard {
+    background: var(--fire-gradient);
+    border-color: var(--secondary);
+    color: #1A0A00;
+    animation: fireButton 2s ease-in-out infinite alternate;
+}
+
+@keyframes fireButton {
+    from {
+        box-shadow: 0 0 8px rgba(255, 69, 0, 0.45);
+    }
+
+    to {
+        box-shadow: 0 0 16px rgba(255, 69, 0, 0.65), 0 0 28px rgba(255, 107, 0, 0.45);
+    }
+}
+
+.btn-hard:hover {
+    transform: translateY(-5px) scale(1.05);
+}
+
+.back-link {
+    display: inline-block;
+    margin-top: 2rem;
+    color: var(--text-muted);
+    text-decoration: none;
+    font-size: 0.9rem;
+    transition: color 0.3s;
+    font-weight: 700;
+}
+
+.back-link:hover {
+    color: var(--secondary);
+}
+
+/* ============ カウントダウンオーバーレイ ============ */
+.countdown-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.9);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 200;
+}
+
+.countdown-overlay.active {
+    display: flex;
+}
+
+.countdown-content {
+    text-align: center;
+}
+
+.countdown-level {
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: var(--text-muted);
+    margin-bottom: 1rem;
+    text-transform: uppercase;
+    letter-spacing: 0.2em;
+}
+
+.countdown-number {
+    font-size: 10rem;
+    font-weight: 900;
+    color: var(--secondary);
+    text-shadow:
+        0 0 30px var(--primary),
+        0 0 60px var(--accent),
+        0 0 100px var(--primary);
+    animation: countdownPulse 1s ease-in-out infinite;
+}
+
+@keyframes countdownPulse {
+
+    0%,
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+
+    50% {
+        transform: scale(1.1);
+        opacity: 0.8;
+    }
+}
+
+/* ============ 一時停止オーバーレイ ============ */
+.pause-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.95);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 150;
+    backdrop-filter: blur(10px);
+}
+
+.pause-overlay.active {
+    display: flex;
+}
+
+.pause-content {
+    text-align: center;
+    padding: 3rem;
+}
+
+.pause-icon {
+    font-size: 5rem;
+    margin-bottom: 1rem;
+    animation: pauseBounce 2s ease-in-out infinite;
+}
+
+@keyframes pauseBounce {
+
+    0%,
+    100% {
+        transform: translateY(0);
+    }
+
+    50% {
+        transform: translateY(-10px);
+    }
+}
+
+.pause-text {
+    font-size: 2.5rem;
+    font-weight: 900;
+    color: var(--secondary);
+    text-shadow: 0 0 20px var(--primary);
+    margin-bottom: 0.5rem;
+}
+
+.pause-hint {
+    color: var(--text-muted);
+    font-size: 1rem;
+    margin-bottom: 2rem;
+}
+
+.pause-actions {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.btn-resume {
+    background: var(--fire-gradient);
+    border-color: var(--secondary);
+    color: #1A0A00;
+    min-width: 140px;
+}
+
+.btn-quit-pause {
+    background: transparent;
+    border: 2px solid var(--text-muted);
+    color: var(--text);
+    min-width: 140px;
+}
+
+.btn-quit-pause:hover {
+    border-color: #EF4444;
+    color: #EF4444;
+}
+
+/* ============ ゲームトップバー ============ */
+.game-top-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+    padding: 0 0.5rem;
+}
+
+.level-badge {
+    background: var(--bg-card);
+    border: 1px solid var(--primary);
+    padding: 0.5rem 1rem;
+    border-radius: 50px;
+    font-size: 0.9rem;
+    font-weight: 800;
+    color: var(--secondary);
+    text-shadow: 0 0 10px var(--accent);
+}
+
+.game-controls {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.control-btn {
+    width: 44px;
+    height: 44px;
+    border-radius: 8px;
+    border: 1px solid var(--primary);
+    background: var(--bg-card);
+    color: var(--text);
+    font-size: 1.2rem;
+    font-family: 'Segoe UI Emoji', 'Apple Color Emoji', 'Noto Color Emoji', var(--font);
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.control-btn:hover {
+    background: var(--primary);
+    transform: scale(1.1);
+}
+
+.control-btn-quit:hover {
+    background: #EF4444;
+    border-color: #EF4444;
+}
+
+/* ============ ゲーム画面 ============ */
+#game-screen.screen.active {
+    align-items: flex-start;
+    padding-top: 0.75rem;
+}
+
+.game-container {
+    width: 100%;
+    max-width: 620px;
+    padding: 0.8rem;
+    margin: 0 auto;
+}
+
+.game-header {
+    display: flex;
+    justify-content: center;
+    gap: 0.8rem;
+    margin-bottom: 1.1rem;
+    flex-wrap: wrap;
+}
+
+.stat {
+    background: var(--bg-card);
+    border: 1px solid var(--primary);
+    padding: 0.62rem 1rem;
+    border-radius: 8px;
+    box-shadow: var(--shadow);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.stat-label {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+}
+
+.stat-value {
+    font-size: 1.35rem;
+    font-weight: 800;
+    color: var(--secondary);
+    text-shadow: 0 0 10px var(--accent);
+}
+
+.stat-unit {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+}
+
+/* 問題数カウント */
+#word-count {
+    font-size: 1rem;
+    font-weight: 700;
+}
+
+/* ハイスコア新記録アニメーション */
+.new-record {
+    color: var(--secondary);
+    animation: newRecordFire 0.5s ease infinite alternate;
+}
+
+@keyframes newRecordFire {
+    from {
+        text-shadow: 0 0 10px var(--primary);
+        transform: scale(1);
+    }
+
+    to {
+        text-shadow: 0 0 20px var(--secondary), 0 0 40px var(--primary);
+        transform: scale(1.1);
+    }
+}
+
+.question-area {
+    background: var(--bg-card);
+    border: 3px solid var(--primary);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow), inset 0 0 40px rgba(255, 69, 0, 0.15);
+    padding: 2rem 1.4rem;
+    margin-bottom: 1rem;
+    position: relative;
+}
+
+/* 道場の掛け軸風 */
+.question-area::before,
+.question-area::after {
+    content: '道';
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 3rem;
+    color: rgba(255, 69, 0, 0.1);
+    font-weight: 900;
+}
+
+.question-area::before {
+    left: 10px;
+}
+
+.question-area::after {
+    right: 10px;
+    content: '場';
+}
+
+.hiragana {
+    font-size: clamp(2rem, 6.8vw, 3.5rem);
+    font-weight: 900;
+    color: var(--secondary);
+    margin-bottom: 0.5rem;
+    letter-spacing: 0.15em;
+    line-height: 1.3;
+    overflow-wrap: anywhere;
+    word-break: break-word;
+    text-shadow:
+        0 0 10px var(--primary),
+        0 0 30px var(--accent);
+    animation: hiraganaGlow 1.5s ease-in-out infinite alternate;
+}
+
+@keyframes hiraganaGlow {
+    from {
+        text-shadow: 0 0 10px var(--primary), 0 0 30px var(--accent);
+    }
+
+    to {
+        text-shadow: 0 0 20px var(--primary), 0 0 50px var(--secondary);
+    }
+}
+
+.romaji-hint {
+    font-size: 1.05rem;
+    color: var(--text-muted);
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    line-height: 1.5;
+    overflow-wrap: anywhere;
+    word-break: break-all;
+}
+
+/* ローマ字進捗ハイライト */
+.romaji-typed {
+    color: var(--secondary);
+    text-shadow: 0 0 10px var(--accent);
+    font-weight: 800;
+}
+
+.romaji-pending {
+    color: var(--text-muted);
+    opacity: 0.6;
+}
+
+.input-area {
+    position: relative;
+}
+
+.typing-input {
+    width: 100%;
+    padding: 1rem 1.2rem;
+    font-size: 1.35rem;
+    font-family: var(--font);
+    font-weight: 800;
+    text-align: center;
+    text-transform: lowercase;
+    border: 3px solid var(--primary);
+    border-radius: 8px;
+    background: rgba(26, 10, 0, 0.9);
+    color: var(--text);
+    outline: none;
+    transition: all 0.3s;
+    letter-spacing: 0.1em;
+}
+
+.typing-input::placeholder {
+    color: var(--text-muted);
+    opacity: 0.5;
+}
+
+.typing-input:focus {
+    border-color: var(--secondary);
+    box-shadow: 0 0 20px var(--primary), 0 0 40px rgba(255, 69, 0, 0.3);
+}
+
+.typing-input.correct {
+    border-color: #4ADE80;
+    box-shadow: 0 0 30px #22C55E;
+    animation: correctFlash 0.3s ease;
+}
+
+.typing-input.wrong {
+    border-color: #EF4444;
+    box-shadow: 0 0 30px #EF4444;
+    animation: wrongShake 0.3s ease;
+}
+
+@keyframes correctFlash {
+
+    0%,
+    100% {
+        background: rgba(26, 10, 0, 0.9);
+    }
+
+    50% {
+        background: rgba(34, 197, 94, 0.3);
+    }
+}
+
+@keyframes wrongShake {
+
+    0%,
+    100% {
+        transform: translateX(0);
+    }
+
+    25% {
+        transform: translateX(-8px);
+    }
+
+    75% {
+        transform: translateX(8px);
+    }
+}
+
+/* ボーナスポップアップ - 上部中央に表示 */
+.bonus-popup {
+    position: fixed;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%) scale(0);
+    background: var(--fire-gradient);
+    color: #1A0A00;
+    padding: 0.75rem 1.5rem;
+    border-radius: 50px;
+    font-size: 1.2rem;
+    font-weight: 900;
+    box-shadow: 0 0 30px var(--primary), 0 0 60px var(--accent);
+    opacity: 0;
+    pointer-events: none;
+    z-index: 100;
+    letter-spacing: 0.05em;
+    white-space: nowrap;
+}
+
+.bonus-popup.show {
+    animation: bonusSlideIn 1.2s ease forwards;
+}
+
+@keyframes bonusSlideIn {
+    0% {
+        transform: translateX(-50%) scale(0) translateY(-20px);
+        opacity: 0;
+    }
+
+    20% {
+        transform: translateX(-50%) scale(1.1) translateY(0);
+        opacity: 1;
+    }
+
+    40% {
+        transform: translateX(-50%) scale(1) translateY(0);
+        opacity: 1;
+    }
+
+    100% {
+        transform: translateX(-50%) scale(0.9) translateY(-30px);
+        opacity: 0;
+    }
+}
+
+/* ============ リザルト画面 ============ */
+.result-title {
+    font-size: 2.5rem;
+    font-weight: 900;
+    color: var(--secondary);
+    margin-bottom: 1.5rem;
+    text-shadow: 0 0 20px var(--primary);
+    letter-spacing: 0.1em;
+}
+
+.result-card {
+    background: linear-gradient(180deg, rgba(255, 69, 0, 0.2), transparent);
+    border: 2px solid var(--primary);
+    border-radius: var(--radius);
+    padding: 2rem;
+    margin-bottom: 2rem;
+}
+
+.result-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.75rem 0;
+    border-bottom: 1px solid rgba(255, 69, 0, 0.3);
+}
+
+.result-item:last-child {
+    border-bottom: none;
+}
+
+.result-label {
+    font-size: 1rem;
+    color: var(--text-muted);
+    font-weight: 700;
+}
+
+.result-value {
+    font-size: 1.5rem;
+    font-weight: 900;
+    color: var(--secondary);
+    text-shadow: 0 0 10px var(--accent);
+}
+
+.result-actions {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.btn-retry {
+    background: var(--fire-gradient);
+    border-color: var(--secondary);
+    color: #1A0A00;
+    flex: 1;
+    min-width: 140px;
+}
+
+.btn-home {
+    background: transparent;
+    color: var(--text);
+    border: 2px solid var(--text-muted);
+    flex: 1;
+    min-width: 140px;
+}
+
+.btn-home:hover {
+    border-color: var(--secondary);
+    color: var(--secondary);
+}
+
+/* ============ 拡張UI（選択・設定・チュートリアル） ============ */
+.start-container {
+    max-width: 1080px;
+    border: none;
+    box-shadow: none;
+    background: transparent;
+    padding: 0.95rem 1.1rem 0.9rem;
+    text-align: left;
+}
+
+.start-container::before {
+    content: none;
+}
+
+.start-header-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 0.45rem;
+}
+
+.start-back-link {
+    margin-top: 0;
+    font-size: 1.08rem;
+    font-weight: 800;
+    letter-spacing: 0.02em;
+    padding: 0.2rem 0.1rem;
+    min-height: 40px;
+    display: inline-flex;
+    align-items: center;
+}
+
+.start-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: 0.65rem;
+    align-items: stretch;
+    margin-top: 0.1rem;
+    min-height: min(76vh, 700px);
+}
+
+.start-main-panel,
+.start-config-panel {
+    border: 1px solid rgba(255, 107, 0, 0.45);
+    border-radius: 14px;
+    background: rgba(20, 8, 2, 0.74);
+    box-shadow: inset 0 0 36px rgba(255, 69, 0, 0.08);
+}
+
+.start-main-panel {
+    padding: 0.95rem 0.9rem 0.8rem;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    gap: 0.55rem;
+    justify-content: space-between;
+}
+
+.start-main-top {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.start-main-bottom {
+    margin-top: auto;
+}
+
+.start-config-panel {
+    padding: 0.68rem 0.62rem;
+    overflow: visible;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.45rem;
+    align-content: start;
+}
+
+.start-config-panel>.start-header-row {
+    grid-column: 1 / -1;
+    margin-bottom: 0.1rem;
+}
+
+.start-toolbar {
+    display: flex;
+    gap: 0.35rem;
+    padding: 0.14rem;
+    border-radius: 12px;
+    background: rgba(20, 8, 2, 0.75);
+    border: 1px solid rgba(255, 107, 0, 0.45);
+}
+
+.start-main-panel .title {
+    margin-bottom: 0;
+}
+
+.start-main-panel .subtitle {
+    margin-bottom: 0;
+}
+
+.start-main-panel .difficulty-select {
+    margin-top: 0.02rem;
+    gap: 0.58rem;
+}
+
+.start-main-panel .difficulty-select .btn {
+    width: 100%;
+    padding: 0.78rem 0.95rem;
+    font-size: 1.04rem;
+    letter-spacing: 0.06em;
+    transition-duration: 0.12s;
+}
+
+.start-main-panel .difficulty-select .btn.active {
+    outline: 2px solid rgba(255, 215, 0, 0.9);
+    outline-offset: 1px;
+    transform: translateY(-1px);
+}
+
+.player-status-row {
+    display: flex;
+    justify-content: center;
+    gap: 0.75rem;
+    margin-bottom: 0.4rem;
+    flex-wrap: wrap;
+}
+
+.player-rank,
+.streak-badge,
+.rank-badge {
+    border: 1px solid rgba(255, 215, 0, 0.6);
+    border-radius: 999px;
+    padding: 0.35rem 0.8rem;
+    font-size: 0.8rem;
+    font-weight: 800;
+    color: var(--secondary);
+    background: rgba(26, 10, 0, 0.75);
+}
+
+.game-top-left {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
+
+.resume-card,
+.goal-select,
+.mode-select,
+.unit-select,
+.char-train-select {
+    margin-bottom: 0;
+}
+
+.resume-card {
+    border: 1px solid rgba(255, 215, 0, 0.65);
+    border-radius: 10px;
+    padding: 0.9rem;
+    background: rgba(255, 107, 0, 0.16);
+    text-align: left;
+}
+
+.resume-title {
+    font-size: 0.95rem;
+    font-weight: 800;
+    color: var(--secondary);
+    margin-bottom: 0.4rem;
+}
+
+.resume-desc {
+    font-size: 0.85rem;
+    color: var(--text);
+    margin-bottom: 0.7rem;
+}
+
+.resume-actions {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
+
+.chip-group,
+.chip-grid {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.chip-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    width: 100%;
+}
+
+.mode-select .chip-group {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    width: 100%;
+}
+
+.mode-select .chip-btn {
+    width: 100%;
+    border-radius: 12px;
+}
+
+.chip-grid .chip-btn {
+    width: 100%;
+    border-radius: 12px;
+}
+
+.chip-btn {
+    border: 1px solid rgba(255, 107, 0, 0.65);
+    background: rgba(26, 10, 0, 0.8);
+    color: var(--text);
+    border-radius: 999px;
+    padding: 0.45rem 0.85rem;
+    font-family: var(--font);
+    font-size: 0.72rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    line-height: 1.3;
+    min-height: 40px;
+}
+
+.chip-btn:hover {
+    border-color: var(--secondary);
+    transform: translateY(-1px);
+}
+
+.chip-btn.active {
+    background: var(--fire-gradient);
+    border-color: var(--secondary);
+    color: #1A0A00;
+}
+
+.goal-progress,
+.difficulty-help,
+.difficulty-sample {
+    margin-top: 0.5rem;
+    font-size: 0.82rem;
+    color: var(--text-muted);
+    line-height: 1.5;
+}
+
+.goal-progress {
+    color: var(--secondary);
+    font-weight: 700;
+    text-align: center;
+}
+
+.start-config-panel .goal-select,
+.start-config-panel .mode-select,
+.start-config-panel .unit-select,
+.start-config-panel .char-train-select {
+    border: 1px solid rgba(255, 107, 0, 0.35);
+    border-radius: 12px;
+    background: rgba(255, 69, 0, 0.05);
+    padding: 0.58rem 0.5rem;
+    margin-bottom: 0;
+}
+
+.start-config-panel .primary-config {
+    background: rgba(255, 69, 0, 0.1);
+    border-color: rgba(255, 140, 0, 0.5);
+}
+
+.start-config-panel .secondary-config {
+    background: rgba(255, 69, 0, 0.04);
+    border-color: rgba(255, 107, 0, 0.3);
+}
+
+.start-config-panel .select-label {
+    margin-bottom: 0.42rem;
+    font-size: 0.72rem;
+    letter-spacing: 0.1em;
+    text-align: left;
+    padding-left: 0.15rem;
+}
+
+.start-config-panel .mode-select .chip-group {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.start-config-panel .mode-select .chip-btn {
+    font-size: 0.68rem;
+}
+
+.bonus-word-badge {
+    position: absolute;
+    top: -14px;
+    right: 18px;
+    background: linear-gradient(135deg, #FFD700, #FF8C00);
+    color: #1A0A00;
+    border-radius: 999px;
+    font-size: 0.75rem;
+    font-weight: 900;
+    letter-spacing: 0.08em;
+    padding: 0.25rem 0.65rem;
+    box-shadow: 0 0 12px rgba(255, 215, 0, 0.45);
+}
+
+.growth-panel {
+    border: 1px solid rgba(255, 107, 0, 0.55);
+    border-radius: 12px;
+    padding: 0.9rem;
+    background: rgba(255, 69, 0, 0.08);
+    margin-bottom: 1.5rem;
+}
+
+.growth-title {
+    font-size: 0.9rem;
+    font-weight: 800;
+    color: var(--secondary);
+    margin-bottom: 0.65rem;
+}
+
+.growth-chart {
+    width: 100%;
+    height: auto;
+    border-radius: 10px;
+    background: rgba(10, 5, 0, 0.55);
+    border: 1px solid rgba(255, 107, 0, 0.4);
+}
+
+.chart-line {
+    fill: none;
+    stroke-width: 2.5;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+.chart-line-wpm {
+    stroke: #FFD700;
+}
+
+.chart-line-accuracy {
+    stroke: #60A5FA;
+}
+
+.chart-line-miss {
+    stroke: #F87171;
+}
+
+.growth-legend {
+    display: flex;
+    justify-content: center;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+    margin-top: 0.6rem;
+}
+
+.legend-item {
+    font-size: 0.72rem;
+    font-weight: 700;
+    padding: 0.2rem 0.55rem;
+    border-radius: 999px;
+    background: rgba(26, 10, 0, 0.7);
+}
+
+.legend-wpm {
+    color: #FFD700;
+}
+
+.legend-accuracy {
+    color: #60A5FA;
+}
+
+.legend-miss {
+    color: #F87171;
+}
+
+.settings-overlay,
+.tutorial-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 220;
+    background: rgba(0, 0, 0, 0.78);
+    backdrop-filter: blur(8px);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+}
+
+.settings-overlay.active,
+.tutorial-overlay.active {
+    display: flex;
+}
+
+.settings-card,
+.tutorial-card {
+    width: 100%;
+    max-width: 500px;
+    border-radius: 14px;
+    border: 2px solid var(--primary);
+    background: rgba(28, 12, 4, 0.96);
+    box-shadow: var(--shadow), inset 0 0 60px rgba(255, 69, 0, 0.1);
+    padding: 1.25rem;
+}
+
+.settings-title,
+.tutorial-title {
+    font-size: 1.2rem;
+    font-weight: 900;
+    color: var(--secondary);
+    margin-bottom: 0.8rem;
+}
+
+.settings-group {
+    border: 1px solid rgba(255, 107, 0, 0.35);
+    border-radius: 10px;
+    padding: 0.75rem;
+    margin-bottom: 0.75rem;
+    background: rgba(255, 69, 0, 0.07);
+}
+
+.settings-group-title {
+    font-size: 0.85rem;
+    font-weight: 800;
+    color: var(--secondary);
+    margin-bottom: 0.5rem;
+}
+
+.settings-row,
+.settings-slider-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 0.7rem;
+    font-size: 0.88rem;
+    line-height: 1.4;
+    color: var(--text);
+}
+
+.settings-slider-row {
+    margin-top: 0.5rem;
+}
+
+.settings-slider-row input[type="range"] {
+    width: 40%;
+}
+
+.tutorial-step-title {
+    font-size: 1rem;
+    font-weight: 800;
+    color: var(--secondary);
+    margin-bottom: 0.45rem;
+}
+
+.tutorial-step-body {
+    font-size: 0.9rem;
+    line-height: 1.7;
+    color: var(--text);
+    margin-bottom: 0.9rem;
+    min-height: 4.8em;
+}
+
+.tutorial-progress {
+    width: 100%;
+    height: 7px;
+    border-radius: 999px;
+    background: rgba(255, 107, 0, 0.25);
+    overflow: hidden;
+    margin-bottom: 0.9rem;
+}
+
+.tutorial-progress-bar {
+    width: 0%;
+    height: 100%;
+    background: var(--fire-gradient);
+    transition: width 0.25s ease;
+}
+
+.tutorial-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.6rem;
+    flex-wrap: wrap;
+}
+
+body.focus-mode::before {
+    opacity: 0.25;
+    filter: saturate(0.65);
+}
+
+body.focus-mode .title,
+body.focus-mode .hiragana,
+body.focus-mode .btn-hard,
+body.focus-mode .bonus-popup {
+    animation: none !important;
+}
+
+/* ============ レスポンシブ ============ */
+
+/* タブレット */
+@media (max-width: 768px) {
+    .start-container {
+        max-width: 560px;
+        padding: 1.4rem 1.1rem 1.2rem;
+        text-align: center;
+    }
+
+    .start-header-row {
+        margin-bottom: 0.45rem;
+    }
+
+    .start-back-link {
+        font-size: 0.9rem;
+    }
+
+    .start-grid {
+        grid-template-columns: 1fr;
+        gap: 0.8rem;
+        min-height: auto;
+    }
+
+    .start-main-panel,
+    .start-config-panel {
+        padding: 0.95rem 0.8rem;
+    }
+
+    .mode-select .chip-group {
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .start-config-panel .mode-select .chip-group {
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .chip-btn {
+        font-size: 0.74rem;
+    }
+
+    .settings-card,
+    .tutorial-card {
+        max-width: 92vw;
+    }
+
+    .game-top-bar {
+        padding: 0.5rem 1rem;
+        gap: 0.5rem;
+    }
+
+    .level-badge {
+        font-size: 0.8rem;
+        padding: 0.3rem 0.6rem;
+    }
+
+    .control-btn {
+        width: 44px;
+        height: 44px;
+        font-size: 1rem;
+    }
+
+    .countdown-number {
+        font-size: 6rem;
+    }
+
+    .pause-text {
+        font-size: 2rem;
+    }
+}
+
+@media (min-width: 769px) {
+    #start-screen.screen.active {
+        align-items: flex-start;
+        padding-top: 0.95rem;
+        padding-bottom: 1rem;
+    }
+
+    .start-main-panel {
+        order: 2;
+    }
+
+    .start-config-panel {
+        order: 1;
+        gap: 0.6rem;
+    }
+
+    .char-train-select .chip-group {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .start-config-panel .chip-btn {
+        font-size: 0.74rem;
+        min-height: 40px;
+    }
+}
+
+@media (min-width: 769px) and (max-height: 900px) {
+    .game-top-bar {
+        margin-bottom: 0.55rem;
+    }
+
+    .game-header {
+        gap: 0.45rem;
+        margin-bottom: 0.75rem;
+    }
+
+    .stat {
+        padding: 0.5rem 0.75rem;
+    }
+
+    .stat-value {
+        font-size: 1.18rem;
+    }
+
+    .question-area {
+        padding: 1.45rem 1.05rem;
+        margin-bottom: 0.7rem;
+    }
+
+    .hiragana {
+        font-size: clamp(1.8rem, 5.8vw, 3rem);
+    }
+
+    .typing-input {
+        padding: 0.82rem 1rem;
+        font-size: 1.2rem;
+    }
+}
+
+/* モバイル */
+@media (max-width: 480px) {
+    .start-container {
+        padding-top: 1.2rem;
+    }
+
+    .start-header-row {
+        align-items: flex-start;
+        gap: 0.5rem;
+    }
+
+    .start-main-panel,
+    .start-config-panel {
+        padding: 0.8rem 0.65rem;
+    }
+
+    .chip-group,
+    .chip-grid {
+        gap: 0.4rem;
+    }
+
+    .chip-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .mode-select .chip-group {
+        grid-template-columns: 1fr;
+    }
+
+    .chip-btn {
+        font-size: 0.68rem;
+        padding: 0.38rem 0.7rem;
+        min-height: 40px;
+    }
+
+    .resume-card {
+        padding: 0.75rem;
+    }
+
+    .settings-card,
+    .tutorial-card {
+        padding: 1rem;
+    }
+
+    .container:not(.start-container) {
+        padding: 1.5rem;
+        margin: 0.5rem;
+    }
+
+    .title {
+        font-size: 2rem;
+    }
+
+    .romaji-hint {
+        font-size: 1rem;
+        letter-spacing: 0.14em;
+    }
+
+    .typing-input {
+        font-size: 1.2rem;
+        padding: 0.8rem;
+    }
+
+    .game-header {
+        gap: 0.3rem;
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+
+    .stat {
+        padding: 0.4rem 0.6rem;
+        min-width: auto;
+    }
+
+    .stat-label {
+        font-size: 0.6rem;
+    }
+
+    .stat-value {
+        font-size: 1rem;
+    }
+
+    .question-area {
+        padding: 1.5rem 1rem;
+    }
+
+    .question-area::before,
+    .question-area::after {
+        display: none;
+    }
+
+    .bonus-popup {
+        font-size: 1rem;
+        padding: 0.5rem 1rem;
+        top: 10px;
+    }
+
+    .game-top-bar {
+        padding: 0.5rem;
+        gap: 0.3rem;
+    }
+
+    .level-badge {
+        font-size: 0.7rem;
+        padding: 0.2rem 0.5rem;
+    }
+
+    .control-btn {
+        width: 44px;
+        height: 44px;
+        font-size: 0.9rem;
+    }
+
+    .countdown-number {
+        font-size: 4rem;
+    }
+
+    .countdown-level {
+        font-size: 1.2rem;
+    }
+
+    .pause-text {
+        font-size: 1.5rem;
+    }
+
+    .pause-content .btn {
+        padding: 0.8rem 1.5rem;
+        font-size: 1rem;
+    }
+
+    .result-item {
+        padding: 0.8rem;
+    }
+
+    .btn {
+        padding: 0.8rem 1.5rem;
+        font-size: 1rem;
+    }
+
+    .difficulty-select {
+        gap: 0.5rem;
+    }
+
+    .difficulty-select .btn {
+        padding: 0.6rem 1rem;
+        font-size: 0.9rem;
+    }
+}
+
+/* 極小画面 */
+@media (max-width: 360px) {
+    .container {
+        padding: 1rem;
+    }
+
+    .game-container {
+        padding: 0.5rem;
+    }
+
+    .stat {
+        padding: 0.35rem 0.45rem;
+    }
+
+    .typing-input {
+        font-size: 1rem;
+        letter-spacing: 0.06em;
+    }
+}
+
+/* 動きを抑えたいユーザー向け */
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+    }
+}
+
+/* にがて特訓セクション */
+.review-section {
+    background: rgba(239, 68, 68, 0.1);
+    border: 2px dashed #EF4444;
+    border-radius: var(--radius);
+    padding: 1.25rem;
+    margin-bottom: 2rem;
+    text-align: center;
+}
+
+.review-title {
+    color: #F87171;
+    font-weight: 800;
+    font-size: 1.1rem;
+    margin-bottom: 0.75rem;
+}
+
+.btn-review {
+    background: linear-gradient(135deg, #DC2626, #EF4444);
+    border-color: #F87171;
+    color: white;
+    font-size: 1.1rem;
+    width: 100%;
+}
+
+.btn-review:hover {
+    background: linear-gradient(135deg, #B91C1C, #DC2626);
+    box-shadow: 0 0 15px rgba(239, 68, 68, 0.4);
+}
+
+/* ポータル設定との同期（文字サイズ・動きを減らす） */
+body.reduce-motion *,
+body.reduce-motion *::before,
+body.reduce-motion *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+}
+
+body.text-large {
+    font-size: 1.12rem;
+}
+
+body.text-large .hiragana {
+    font-size: clamp(2.3rem, 7.5vw, 4rem);
+}
+
+body.text-large .typing-input {
+    font-size: 1.5rem;
+}
+
+body.text-large .romaji-hint {
+    font-size: 1.18rem;
+}
+
+
+/* 横向きなど高さの小さい画面でも設定・再開操作へ到達できるようにする。 */
+.settings-card,
+.tutorial-card {
+    max-height: calc(100dvh - 2rem);
+    overflow-y: auto;
+}
+.pause-content {
+    max-height: 100dvh;
+    overflow-y: auto;
+}
+
+/* ネイティブの明るいselect背景に本文の白色を継承させない。 */
+#keyboard-type-select {
+    color: #1c0c04;
+}

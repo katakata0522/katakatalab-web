@@ -1,0 +1,908 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; 
+                 object-src 'none';
+                 base-uri 'self';
+                 style-src 'self' https://fonts.googleapis.com 'unsafe-inline'; 
+                 font-src 'self' https://fonts.gstatic.com; 
+                 script-src 'self' 'unsafe-inline';
+                 img-src 'self' data: https:; frame-src https:;">
+    <title>分数ゲーム｜小学生向け・図でわかる無料学習ゲーム | PikaLab</title>
+    <meta name="description" content="分数の大きさや同分母の足し算・引き算を、図形や色で確かめながら遊べる小学生向け無料ブラウザ学習ゲームです。">
+    <link rel="canonical" href="https://katakatalab.com/pikalab/fraction_lab/">
+    <meta property="og:title" content="分数ゲーム｜小学生向け・図でわかる無料学習ゲーム | PikaLab">
+    <meta property="og:description" content="分数の大きさや同分母の足し算・引き算を、図形や色で確かめながら遊べる小学生向け無料ブラウザ学習ゲームです。">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://katakatalab.com/pikalab/fraction_lab/">
+    <meta property="og:image" content="https://katakatalab.com/pikalab/pikalab_ogp_compressed.jpg">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="分数ゲーム｜小学生向け・図でわかる無料学習ゲーム | PikaLab">
+    <meta name="twitter:description" content="分数の大きさや同分母の足し算・引き算を、図形や色で確かめながら遊べる小学生向け無料ブラウザ学習ゲームです。">
+    <meta name="twitter:image" content="https://katakatalab.com/pikalab/pikalab_ogp_compressed.jpg">
+    <link rel="stylesheet" href="tailwind.generated.css">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@40,600,0,0"
+        rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <script src="script.js" defer></script>
+    <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"分数ゲーム｜小学生向け・図でわかる無料学習ゲーム | PikaLab","url":"https://katakatalab.com/pikalab/fraction_lab/","description":"分数の大きさや同分母の足し算・引き算を、図形や色で確かめながら遊べる小学生向け無料ブラウザ学習ゲームです。","applicationCategory":"EducationalApplication","operatingSystem":"Any","isAccessibleForFree":true,"offers":{"@type":"Offer","price":"0","priceCurrency":"JPY"},"audience":{"@type":"EducationalAudience","educationalRole":"student"}}</script>
+</head>
+
+<body>
+
+    <!-- Skip Link -->
+    <a href="#main-content"
+        class="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-50 focus:bg-white focus:text-blue-600 focus:px-4 focus:py-2 focus:rounded-lg focus:shadow-lg focus:font-bold border-2 border-blue-400">メインコンテンツへスキップ</a>
+
+    <noscript>
+        <div class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/90 backdrop-blur-sm">
+            <div class="text-center p-8 bg-white rounded-3xl shadow-xl border-4 border-sky-400 max-w-md mx-4">
+                <h2 class="text-2xl font-black text-sky-600 mb-2">JavaScriptが無効です</h2>
+                <p class="text-slate-600">Fraction Labであそぶには、JavaScriptを有効にしてね！</p>
+            </div>
+        </div>
+    </noscript>
+
+    <!-- Toast Container -->
+    <div id="toast-container"></div>
+
+    <header class="bg-slate-900/90 backdrop-blur-md border-b border-slate-700 h-16 flex-shrink-0 z-50">
+        <div class="fraction-header-inner max-w-7xl mx-auto px-4 h-full flex items-center justify-between">
+            <div class="fraction-header-brand flex items-center gap-3">
+                <a href="../" class="flex items-center gap-1 text-slate-400 hover:text-slate-200 transition font-bold text-sm bg-slate-800 hover:bg-slate-700 px-3 py-1.5 rounded-lg border border-slate-700 mr-2">
+                    <span class="material-symbols-rounded text-base">arrow_back</span> もどる
+                </a>
+                <div
+                    class="fraction-brand-icon bg-sky-500/10 p-2 rounded-lg border border-sky-500/30 shadow-[0_0_10px_rgba(14,165,233,0.2)]">
+                    <span class="material-symbols-rounded text-sky-400" aria-hidden="true">pie_chart</span>
+                </div>
+                <div class="fraction-brand-title">
+                    <h1 class="text-lg md:text-xl font-black tracking-tight text-slate-100 neon-text">FRACTION LAB</h1>
+                    <p class="text-[10px] text-slate-400 tracking-wider font-bold">分数マスターへの道</p>
+                </div>
+            </div>
+            <div class="flex items-center gap-2">
+                <button type="button" id="parents-modal-open-btn" data-action="open-modal" data-target="parents-modal"
+                    class="bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white px-3 py-1.5 rounded-lg border border-slate-700 transition flex items-center gap-1.5 text-xs font-bold shrink-0"
+                    aria-label="保護者の方へ - 説明を開く" aria-haspopup="dialog" aria-controls="parents-modal" aria-expanded="false">
+                    <span class="material-symbols-rounded text-base text-sky-400">family_restroom</span>
+                    <span class="hidden sm:inline">保護者の方へ</span>
+                </button>
+                <button type="button" id="settings-modal-open-btn" data-action="open-modal" data-target="settings-modal"
+                    class="bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white p-1.5 rounded-lg border border-slate-700 transition flex items-center justify-center shrink-0"
+                    aria-label="設定を開く" aria-haspopup="dialog" aria-controls="settings-modal" aria-expanded="false">
+                    <span class="material-symbols-rounded text-base text-slate-400">settings</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <nav class="bg-slate-900 border-b border-slate-800 flex-shrink-0">
+        <div class="max-w-5xl mx-auto flex overflow-x-auto no-scrollbar" role="tablist" aria-label="分数学習メニュー">
+            <button id="tab-whatis" role="tab" aria-selected="true" aria-controls="view-whatis" tabindex="0" class="nav-btn min-w-[120px] active" data-tab="whatis">
+                <span class="material-symbols-rounded text-xl" aria-hidden="true">help</span> 分数とは？
+            </button>
+            <button id="tab-visual" role="tab" aria-selected="false" aria-controls="view-visual" tabindex="-1" class="nav-btn min-w-[120px]" data-tab="visual">
+                <span class="material-symbols-rounded text-xl" aria-hidden="true">visibility</span> 見てわかる
+            </button>
+            <button id="tab-compare" role="tab" aria-selected="false" aria-controls="view-compare" tabindex="-1" class="nav-btn min-w-[120px]" data-tab="compare">
+                <span class="material-symbols-rounded text-xl" aria-hidden="true">compare_arrows</span> 比べる
+            </button>
+            <button id="tab-calc" role="tab" aria-selected="false" aria-controls="view-calc" tabindex="-1" class="nav-btn min-w-[120px]" data-tab="calc">
+                <span class="material-symbols-rounded text-xl" aria-hidden="true">add</span> 足し算
+            </button>
+            <button id="tab-sub" role="tab" aria-selected="false" aria-controls="view-sub" tabindex="-1" class="nav-btn min-w-[120px]" data-tab="sub">
+                <span class="material-symbols-rounded text-xl" aria-hidden="true">remove</span> 引き算
+            </button>
+            <button id="tab-secret" role="tab" aria-selected="false" aria-controls="view-secret" tabindex="-1" class="nav-btn text-amber-400 hover:text-amber-300 min-w-[140px]" data-tab="secret">
+                <span class="material-symbols-rounded text-xl" aria-hidden="true">history_edu</span> 秘密のラボ
+            </button>
+        </div>
+    </nav>
+
+    <main id="main-content" class="flex-1 w-full max-w-5xl mx-auto p-4 md:p-6 overflow-y-auto">
+        <p id="fraction-live-status" class="sr-only" aria-live="polite" aria-atomic="true"></p>
+
+        <section class="fade-in w-full flex flex-col gap-6" id="view-whatis" role="tabpanel" aria-labelledby="tab-whatis" tabindex="0">
+            <!-- ヒーロー解説エリア -->
+            <div class="glass-panel p-6 md:p-8 rounded-3xl border-l-4 border-sky-500 relative overflow-hidden">
+                <div class="absolute right-0 top-0 opacity-10 pointer-events-none translate-x-1/4 -translate-y-1/4">
+                    <span class="material-symbols-rounded text-[200px] text-sky-400">help</span>
+                </div>
+                <div class="relative z-10">
+                    <h2 class="light-panel-heading text-2xl md:text-3xl font-black text-white mb-4 tracking-tight">分数（ぶんすう）ってなんだろう？</h2>
+                    <p class="light-panel-copy text-sm md:text-base text-slate-300 leading-relaxed font-bold">
+                        分数は、整数(1, 2, 3...)だけでは表せない<span class="light-panel-copy text-sky-400">「中途半端な大きさ」や「割り切れない量」</span>を、ピタッと表すことができる魔法の数字だよ！<br>
+                        算数の教科書で習う大切なきまりと、日常生活での使いみちを3つのポイントでスッキリ理解しよう。
+                    </p>
+                </div>
+            </div>
+
+            <!-- 3つの顔（グリッドレイアウト） -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <!-- 1. 分割分数 -->
+                <div class="glass-panel p-6 rounded-2xl border border-slate-700 flex flex-col justify-between">
+                    <div>
+                        <div class="flex items-center gap-2 mb-3">
+                            <span class="bg-sky-500/10 p-1.5 rounded-lg border border-sky-500/30">
+                                <span class="material-symbols-rounded text-sky-400">local_pizza</span>
+                            </span>
+                            <h3 class="light-panel-heading text-base font-black text-white">① ピザの切り分け</h3>
+                        </div>
+                        <p class="light-panel-copy text-xs text-slate-400 font-bold mb-3">【分割分数：部分と全体】</p>
+                        <p class="light-panel-copy text-xs md:text-sm text-slate-300 leading-relaxed mb-4">
+                            1つのものを<b>「同じ大きさ（等分）」</b>に分けたうちの、どれくらいかを表すよ。<br>
+                            例えば、1枚のピザを2人で半分こ（2等分）した1つ分が「2分の1(1/2)」、4等分した1つ分が「4分の1(1/4)」になるよ。
+                        </p>
+                    </div>
+
+                    <div class="bg-slate-900/50 p-4 rounded-xl border border-slate-800/80 my-2">
+                        <div class="flex gap-4 items-center justify-center">
+                            <div class="flex flex-col items-center gap-1">
+                                <div class="w-14 h-14 bg-slate-800 rounded-full relative overflow-hidden border border-slate-600">
+                                    <div class="absolute inset-0 bg-sky-500 w-1/2"></div>
+                                    <div class="absolute top-0 bottom-0 left-1/2 w-0.5 bg-slate-900"></div>
+                                </div>
+                                <span class="text-[10px] text-slate-400 font-mono">1/2 (半分)</span>
+                            </div>
+                            <div class="flex flex-col items-center gap-1">
+                                <div class="w-14 h-14 bg-slate-800 rounded-full relative overflow-hidden border border-slate-600">
+                                    <div class="absolute inset-0 bg-sky-500" style="clip-path: polygon(50% 50%, 50% 0%, 100% 0%, 100% 50%);"></div>
+                                    <div class="absolute top-0 bottom-0 left-1/2 w-0.5 bg-slate-900"></div>
+                                    <div class="absolute left-0 right-0 top-1/2 h-0.5 bg-slate-900"></div>
+                                </div>
+                                <span class="text-[10px] text-slate-400 font-mono">1/4 (4等分の1)</span>
+                            </div>
+                        </div>
+                        <div class="mt-3 pt-2 border-t border-slate-800 text-[10px] text-amber-400 font-bold leading-tight">
+                            ⚠️ ひとつの全体を分けて分数で表すときは、「同じ大きさ」に分けるのがポイント！
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 2. 測定分数 -->
+                <div class="glass-panel p-6 rounded-2xl border border-slate-700 flex flex-col justify-between">
+                    <div>
+                        <div class="flex items-center gap-2 mb-3">
+                            <span class="bg-pink-500/10 p-1.5 rounded-lg border border-pink-500/30">
+                                <span class="material-symbols-rounded text-pink-400">straighten</span>
+                            </span>
+                            <h3 class="light-panel-heading text-base font-black text-white">② 長さや水のかさ</h3>
+                        </div>
+                        <p class="light-panel-copy text-xs text-slate-400 font-bold mb-3">【測定分数：単位分数と測定】</p>
+                        <p class="light-panel-copy text-xs md:text-sm text-slate-300 leading-relaxed mb-4">
+                            「1mより短いリボン」や「1Lに満たない水」のように、基準となる「1の単位」の端数を表すよ。<br>
+                            1mを3等分した1つ分（3分の1メートル：1/3 m）を基準として、それが2つ集まった長さを「3分の2メートル(2/3 m)」と呼ぶんだ。
+                        </p>
+                    </div>
+
+                    <div class="bg-slate-900/50 p-4 rounded-xl border border-slate-800/80 my-2">
+                        <!-- ビジュアル図解：リットルマスとリボン -->
+                        <div class="flex items-center justify-around gap-2">
+                            <div class="flex flex-col items-center gap-1">
+                                <div class="w-10 h-16 bg-slate-800 border-2 border-slate-600 rounded-b relative flex flex-col justify-end overflow-hidden">
+                                    <div class="h-[75%] w-full bg-pink-500/80"></div>
+                                    <!-- 目盛り -->
+                                    <div class="absolute left-0 right-0 top-1/4 h-0.5 bg-slate-900/40"></div>
+                                    <div class="absolute left-0 right-0 top-2/4 h-0.5 bg-slate-900/40"></div>
+                                    <div class="absolute left-0 right-0 top-3/4 h-0.5 bg-slate-900/40"></div>
+                                </div>
+                                <span class="text-[10px] text-slate-400 font-mono">3/4 L (リットル)</span>
+                            </div>
+                            <div class="flex flex-col items-center gap-1 w-full max-w-[120px]">
+                                <!-- ribbons -->
+                                <div class="w-full h-4 bg-slate-800 rounded border border-slate-600 relative overflow-hidden flex">
+                                    <div class="w-[66.6%] h-full bg-pink-500/80"></div>
+                                    <div class="absolute top-0 bottom-0 left-[33.3%] w-0.5 bg-slate-900"></div>
+                                    <div class="absolute top-0 bottom-0 left-[66.6%] w-0.5 bg-slate-900"></div>
+                                </div>
+                                <span class="text-[10px] text-slate-400 font-mono">2/3 m (メートル)</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 3. 商分数 -->
+                <div class="glass-panel p-6 rounded-2xl border border-slate-700 flex flex-col justify-between">
+                    <div>
+                        <div class="flex items-center gap-2 mb-3">
+                            <span class="bg-amber-500/10 p-1.5 rounded-lg border border-amber-500/30">
+                                <span class="material-symbols-rounded text-amber-400">restaurant</span>
+                            </span>
+                            <h3 class="light-panel-heading text-base font-black text-white">③ 割り切れない割り算</h3>
+                        </div>
+                        <p class="light-panel-copy text-xs text-slate-400 font-bold mb-3">【商分数：割り算の答え】</p>
+                        <p class="light-panel-copy text-xs md:text-sm text-slate-300 leading-relaxed mb-4">
+                            「2枚のクッキーを3人で分ける」とき、割り算の式は「2 ÷ 3」だよね。<br>
+                            割り切れないこの計算も、分数を使えば「2/3」と一瞬で答えを表せるよ！<br>
+                            「割られる数」が上（分子）になり、「割る数」が下（分母）になるんだ。
+                        </p>
+                    </div>
+
+                    <div class="bg-slate-900/50 p-4 rounded-xl border border-slate-800/80 my-2">
+                        <div class="text-center font-mono py-1">
+                            <div class="inline-flex items-center justify-center gap-2 bg-slate-900 px-3 py-2 rounded-lg border border-slate-800 text-sm">
+                                <span class="text-amber-400 font-bold">2</span>
+                                <span class="text-slate-500">÷</span>
+                                <span class="text-sky-400 font-bold">3</span>
+                                <span class="text-slate-500">=</span>
+                                <span class="flex flex-col items-center leading-none text-xs font-bold pt-1">
+                                    <span class="text-amber-400 font-mono">2</span>
+                                    <span class="w-4 h-0.5 bg-slate-500 my-0.5"></span>
+                                    <span class="text-sky-400 font-mono">3</span>
+                                </span>
+                            </div>
+                        </div>
+                        <div class="mt-2 text-[9px] text-slate-500 font-bold text-center leading-tight">
+                            ※ 小数だと「0.6666...」と無限に続いちゃうけど、分数なら「2/3」でピタッと表せてスッキリ！
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 分数のしくみ（分母と分子の教科書的定義） -->
+            <div class="glass-panel p-6 rounded-2xl border border-slate-700">
+                <h3 class="light-panel-heading text-lg font-black text-emerald-400 mb-4 flex items-center gap-2">
+                    <span class="material-symbols-rounded">menu_book</span> 教科書に出てくる「分母」と「分子」のきまり
+                </h3>
+                <div class="flex flex-col md:flex-row gap-6 items-center">
+                    <!-- 分数ビジュアルパーツ図解 -->
+                    <div class="flex items-center justify-center bg-slate-900/60 p-6 rounded-xl border border-slate-800/80 w-full md:w-fit shrink-0">
+                        <div class="flex flex-col items-center font-mono">
+                            <!-- 分子 -->
+                            <div class="flex items-center gap-4">
+                                <span class="text-4xl font-black text-pink-400">3</span>
+                                <span class="text-xs font-bold text-slate-400">← 分子（ぶんし）: 選んだ数 （いくつ分あるか）</span>
+                            </div>
+                            <!-- 分数線 -->
+                            <div class="w-64 h-1 bg-slate-600 my-2 rounded"></div>
+                            <!-- 分母 -->
+                            <div class="flex items-center gap-4">
+                                <span class="text-4xl font-black text-sky-400">4</span>
+                                <span class="text-xs font-bold text-slate-400">← 分母（ぶんぼ）: 全体で何等分したか</span>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- 言葉の定義 -->
+                    <div class="light-panel-copy flex-1 text-sm text-slate-300 space-y-3 leading-relaxed font-medium">
+                        <p>
+                            教科書では、分数の下の数を「<b>分母（ぶんぼ）</b>」、上の数を「<b>分子（ぶんし）</b>」と呼ぶよ。
+                        </p>
+                        <div class="space-y-2 border-l-2 border-slate-700 pl-4 py-1">
+                            <p class="light-panel-copy text-xs text-slate-400">
+                                <strong class="light-panel-copy text-sky-400">分母（ぶんぼ）:</strong> <br>
+                                お母さんのように下から全体を支える数。元の「1つ」を<b>全部でいくつに分けたか</b>を表すよ。
+                            </p>
+                            <p class="light-panel-copy text-xs text-slate-400">
+                                <strong class="light-panel-copy text-pink-400">分子（ぶんし）:</strong> <br>
+                                お母さんの上に乗る子どもの数。分けたもののうち、<b>今注目している「いくつ分」</b>にあたるかを表すよ。
+                            </p>
+                        </div>
+                        <p class="light-panel-copy text-xs text-emerald-400 font-bold">
+                            💡 「4分の3(3/4)」なら、「全体を4つに分けたうちの3つ分」という意味になるんだね！
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 次のステップへの案内 -->
+            <div class="text-center py-4">
+                <button type="button" class="btn-navigate-visual bg-gradient-to-r from-sky-500 to-indigo-600 hover:from-sky-600 hover:to-indigo-700 text-white font-black px-8 py-3.5 rounded-2xl shadow-lg hover:shadow-sky-500/20 transition-all active:scale-95 flex items-center gap-2 mx-auto">
+                    <span>実際に分数を作って動かしてみよう！</span>
+                    <span class="material-symbols-rounded">arrow_forward</span>
+                </button>
+            </div>
+        </section>
+
+        <section class="fade-in w-full flex flex-col gap-6 hidden" id="view-visual" role="tabpanel" aria-labelledby="tab-visual" tabindex="0">
+            <!-- あそびかたガイド -->
+            <details class="glass-panel rounded-2xl border border-sky-500/20 overflow-hidden transition-all duration-300">
+                <summary class="light-panel-copy flex justify-between items-center p-4 font-bold text-sky-400 cursor-pointer hover:bg-sky-500/10 focus:outline-none select-none">
+                    <span class="flex items-center gap-2">
+                        <span class="material-symbols-rounded text-xl">help</span> このラボのあそびかた
+                    </span>
+                    <span class="material-symbols-rounded transition-transform duration-300 pointer-events-none" id="guide-arrow-vis">expand_more</span>
+                </summary>
+                <div class="light-panel-copy p-4 border-t border-slate-700/50 text-sm text-slate-300 space-y-2 bg-slate-900/30">
+                    <p class="leading-relaxed">
+                        「分母（ぜんぶで何個？）」のスライダーを動かすと、全体が何等分されるかが決まるよ。<br>
+                        「分子（選んだのは何個？）」のスライダーを動かすと、そのうちの何個分を選ぶかが決まるよ。<br>
+                        スライダーの左右にある <span class="bg-slate-800 border border-slate-700/50 px-1 py-0.5 rounded text-xs font-bold font-mono">−</span> と <span class="bg-slate-800 border border-slate-700/50 px-1 py-0.5 rounded text-xs font-bold font-mono">+</span> ボタンを使えば、1つずつ細かく調整できるよ！
+                    </p>
+                </div>
+            </details>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="glass-panel p-6 rounded-2xl border-l-4 border-sky-500 h-fit">
+                    <h2 class="light-panel-heading text-lg font-bold text-white mb-6 flex items-center gap-2">
+                        <span class="material-symbols-rounded text-sky-400" aria-hidden="true">tune</span> 分数を作ろう
+                    </h2>
+                    <div class="mb-8">
+                        <div class="flex justify-between mb-2 items-end">
+                            <label for="vis-denom" class="light-panel-copy text-xs font-bold text-slate-400">分母 (ぜんぶで何個？)</label>
+                            <span class="light-panel-copy text-3xl text-sky-400 font-black font-mono leading-none"
+                                id="vis-denom-val">4</span>
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <button type="button" class="btn-adjust text-slate-400 hover:text-white bg-slate-800 hover:bg-slate-700 w-8 h-8 rounded-full flex items-center justify-center border border-slate-700 transition active:scale-95 select-none shrink-0" data-target="vis-denom" data-action="dec" aria-label="分母を減らす">
+                                <span class="material-symbols-rounded text-lg">remove</span>
+                            </button>
+                            <input class="w-full accent-sky-500 bg-slate-700 rounded-lg h-3 cursor-pointer appearance-none"
+                                id="vis-denom" max="12" min="1" type="range" value="4">
+                            <button type="button" class="btn-adjust text-slate-400 hover:text-white bg-slate-800 hover:bg-slate-700 w-8 h-8 rounded-full flex items-center justify-center border border-slate-700 transition active:scale-95 select-none shrink-0" data-target="vis-denom" data-action="inc" aria-label="分母を増やす">
+                                <span class="material-symbols-rounded text-lg">add</span>
+                            </button>
+                        </div>
+                        <div class="flex justify-between text-[10px] text-slate-500 mt-1 font-mono">
+                            <span>1</span><span>12</span>
+                        </div>
+                    </div>
+                    <div class="mb-4">
+                        <div class="flex justify-between mb-2 items-end">
+                            <label for="vis-numer" class="light-panel-copy text-xs font-bold text-slate-400">分子 (選んだのは何個？)</label>
+                            <span class="light-panel-copy text-3xl text-pink-400 font-black font-mono leading-none"
+                                id="vis-numer-val">1</span>
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <button type="button" class="btn-adjust text-slate-400 hover:text-white bg-slate-800 hover:bg-slate-700 w-8 h-8 rounded-full flex items-center justify-center border border-slate-700 transition active:scale-95 select-none shrink-0" data-target="vis-numer" data-action="dec" aria-label="分子を減らす">
+                                <span class="material-symbols-rounded text-lg">remove</span>
+                            </button>
+                            <input class="w-full accent-pink-500 bg-slate-700 rounded-lg h-3 cursor-pointer appearance-none"
+                                id="vis-numer" max="4" min="0" type="range" value="1">
+                            <button type="button" class="btn-adjust text-slate-400 hover:text-white bg-slate-800 hover:bg-slate-700 w-8 h-8 rounded-full flex items-center justify-center border border-slate-700 transition active:scale-95 select-none shrink-0" data-target="vis-numer" data-action="inc" aria-label="分子を増やす">
+                                <span class="material-symbols-rounded text-lg">add</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div
+                    class="glass-panel p-6 rounded-2xl flex flex-col items-center justify-center relative min-h-[300px]">
+                    <div class="absolute top-4 left-4 bg-slate-800 px-3 py-1 rounded-full border border-slate-600">
+                        <span class="text-xs font-bold text-slate-300">円モデル (Pizza)</span>
+                    </div>
+                    <div class="pizza-container" id="vis-pizza">
+                        <svg class="w-full h-full filter drop-shadow-[0_0_15px_rgba(14,165,233,0.2)]" id="vis-pizza-svg"
+                            viewBox="-1.1 -1.1 2.2 2.2"></svg>
+                        <div class="absolute inset-0 flex items-center justify-center pointer-events-none">
+                            <div
+                                class="bg-slate-900/80 backdrop-blur px-5 py-3 rounded-2xl border border-sky-500/30 shadow-2xl">
+                                <span class="text-5xl font-black text-white font-mono tracking-tighter neon-text"
+                                    id="vis-display">1/4</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="glass-panel p-6 rounded-2xl">
+                    <div class="flex justify-between items-center mb-4">
+                        <span
+                            class="text-xs font-bold text-slate-300 bg-slate-800 px-3 py-1 rounded-full border border-slate-600">棒モデル
+                            (Bar)</span>
+                        <span class="light-panel-copy text-sm font-mono text-pink-400 font-bold" id="vis-percent">25%</span>
+                    </div>
+                    <div class="bar-container" id="vis-bar"></div>
+                    <p class="text-xs text-slate-500">※クリックでも操作できるよ</p>
+                </div>
+                <div class="glass-panel p-6 rounded-2xl">
+                    <div class="flex justify-between items-center mb-2">
+                        <span
+                            class="text-xs font-bold text-slate-300 bg-slate-800 px-3 py-1 rounded-full border border-slate-600">数直線
+                            (Line)</span>
+                        <span class="light-panel-copy text-sm font-mono text-sky-400 font-bold" id="vis-decimal">0.25</span>
+                    </div>
+                    <div class="number-line-container" id="vis-line">
+                        <div class="nl-track"></div>
+                        <div class="nl-fill" id="vis-line-fill" style="width: 25%;"></div>
+                        <div class="nl-current" id="vis-line-dot" style="left: 25%;"></div>
+                        <div id="vis-line-marks"></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="fade-in w-full h-full flex-col gap-6 hidden" id="view-compare" role="tabpanel" aria-labelledby="tab-compare" tabindex="0">
+            <p id="cmp-status" class="sr-only" role="status" aria-live="polite" aria-atomic="true"></p>
+            <!-- あそびかたガイド -->
+            <details class="glass-panel rounded-2xl border border-pink-500/20 overflow-hidden transition-all duration-300">
+                <summary class="light-panel-copy flex justify-between items-center p-4 font-bold text-pink-400 cursor-pointer hover:bg-pink-500/10 focus:outline-none select-none">
+                    <span class="flex items-center gap-2">
+                        <span class="material-symbols-rounded text-xl">help</span> このラボのあそびかた
+                    </span>
+                    <span class="material-symbols-rounded transition-transform duration-300 pointer-events-none" id="guide-arrow-cmp">expand_more</span>
+                </summary>
+                <div class="light-panel-copy p-4 border-t border-slate-700/50 text-sm text-slate-300 space-y-2 bg-slate-900/30">
+                    <p class="leading-relaxed">
+                        左と右の分数の「分子」と「分母」のスライダーを動かして、大きさを比べてみよう。<br>
+                        一番下にある丸いマーク（＝、＞、＜）が、どちらの分数が大きいかを示してくれるよ！<br>
+                        小数の値も表示されるから、分数と小数の関係もよくわかるね。
+                    </p>
+                </div>
+            </details>
+
+            <div class="glass-panel p-4 rounded-2xl border-t-4 border-pink-500 text-center">
+                <h2 class="light-panel-heading text-xl font-bold text-white mb-1">どっちが大きい？</h2>
+                <p class="light-panel-copy text-xs text-slate-400">スライダーを動かして大きさを比べてみよう！</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-stretch">
+                <div class="glass-panel p-6 rounded-2xl flex flex-col gap-4 border border-sky-500/20">
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="light-panel-copy text-sky-400 font-bold text-sm">左の分数</span>
+                        <span class="light-panel-heading text-2xl font-black text-white font-mono" id="cmp-disp-1">1/2</span>
+                    </div>
+
+                    <div class="relative w-40 h-40 mx-auto">
+                        <svg class="w-full h-full" id="cmp-svg-1" viewBox="-1.1 -1.1 2.2 2.2"></svg>
+                    </div>
+
+                    <div class="space-y-4 mt-2">
+                        <div class="space-y-3">
+                            <div>
+                                <label for="cmp-n1" class="light-panel-copy text-xs text-slate-400 font-bold">分子 (左)</label>
+                                <div class="flex items-center gap-2 mt-1">
+                                    <button type="button" class="btn-adjust text-slate-400 hover:text-white bg-slate-800 hover:bg-slate-700 w-7 h-7 rounded-full flex items-center justify-center border border-slate-700 transition active:scale-95 select-none shrink-0" data-target="cmp-n1" data-action="dec" aria-label="左分子を減らす">
+                                        <span class="material-symbols-rounded text-base">remove</span>
+                                    </button>
+                                    <input class="w-full accent-sky-500 bg-slate-700 rounded-lg h-2 cursor-pointer"
+                                        id="cmp-n1" max="12" min="0" type="range" value="1">
+                                    <button type="button" class="btn-adjust text-slate-400 hover:text-white bg-slate-800 hover:bg-slate-700 w-7 h-7 rounded-full flex items-center justify-center border border-slate-700 transition active:scale-95 select-none shrink-0" data-target="cmp-n1" data-action="inc" aria-label="左分子を増やす">
+                                        <span class="material-symbols-rounded text-base">add</span>
+                                    </button>
+                                </div>
+                            </div>
+                            <div>
+                                <label for="cmp-d1" class="light-panel-copy text-xs text-slate-400 font-bold">分母 (左)</label>
+                                <div class="flex items-center gap-2 mt-1">
+                                    <button type="button" class="btn-adjust text-slate-400 hover:text-white bg-slate-800 hover:bg-slate-700 w-7 h-7 rounded-full flex items-center justify-center border border-slate-700 transition active:scale-95 select-none shrink-0" data-target="cmp-d1" data-action="dec" aria-label="左分母を減らす">
+                                        <span class="material-symbols-rounded text-base">remove</span>
+                                    </button>
+                                    <input class="w-full accent-sky-500 bg-slate-700 rounded-lg h-2 cursor-pointer"
+                                        id="cmp-d1" max="12" min="1" type="range" value="2">
+                                    <button type="button" class="btn-adjust text-slate-400 hover:text-white bg-slate-800 hover:bg-slate-700 w-7 h-7 rounded-full flex items-center justify-center border border-slate-700 transition active:scale-95 select-none shrink-0" data-target="cmp-d1" data-action="inc" aria-label="左分母を増やす">
+                                        <span class="material-symbols-rounded text-base">add</span>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="h-4 bg-slate-800 rounded-full overflow-hidden border border-slate-700">
+                            <div id="cmp-bar-1" class="h-full bg-sky-500 transition-all duration-300"
+                                style="width: 50%"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="glass-panel p-6 rounded-2xl flex flex-col gap-4 border border-pink-500/20">
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="light-panel-copy text-pink-400 font-bold text-sm">右の分数</span>
+                        <span class="light-panel-heading text-2xl font-black text-white font-mono" id="cmp-disp-2">2/4</span>
+                    </div>
+
+                    <div class="relative w-40 h-40 mx-auto">
+                        <svg class="w-full h-full" id="cmp-svg-2" viewBox="-1.1 -1.1 2.2 2.2"></svg>
+                    </div>
+
+                    <div class="space-y-4 mt-2">
+                        <div class="space-y-3">
+                            <div>
+                                <label for="cmp-n2" class="light-panel-copy text-xs text-slate-400 font-bold">分子 (右)</label>
+                                <div class="flex items-center gap-2 mt-1">
+                                    <button type="button" class="btn-adjust text-slate-400 hover:text-white bg-slate-800 hover:bg-slate-700 w-7 h-7 rounded-full flex items-center justify-center border border-slate-700 transition active:scale-95 select-none shrink-0" data-target="cmp-n2" data-action="dec" aria-label="右分子を減らす">
+                                        <span class="material-symbols-rounded text-base">remove</span>
+                                    </button>
+                                    <input class="w-full accent-pink-500 bg-slate-700 rounded-lg h-2 cursor-pointer"
+                                        id="cmp-n2" max="12" min="0" type="range" value="2">
+                                    <button type="button" class="btn-adjust text-slate-400 hover:text-white bg-slate-800 hover:bg-slate-700 w-7 h-7 rounded-full flex items-center justify-center border border-slate-700 transition active:scale-95 select-none shrink-0" data-target="cmp-n2" data-action="inc" aria-label="右分子を増やす">
+                                        <span class="material-symbols-rounded text-base">add</span>
+                                    </button>
+                                </div>
+                            </div>
+                            <div>
+                                <label for="cmp-d2" class="light-panel-copy text-xs text-slate-400 font-bold">分母 (右)</label>
+                                <div class="flex items-center gap-2 mt-1">
+                                    <button type="button" class="btn-adjust text-slate-400 hover:text-white bg-slate-800 hover:bg-slate-700 w-7 h-7 rounded-full flex items-center justify-center border border-slate-700 transition active:scale-95 select-none shrink-0" data-target="cmp-d2" data-action="dec" aria-label="右分母を減らす">
+                                        <span class="material-symbols-rounded text-base">remove</span>
+                                    </button>
+                                    <input class="w-full accent-pink-500 bg-slate-700 rounded-lg h-2 cursor-pointer"
+                                        id="cmp-d2" max="12" min="1" type="range" value="4">
+                                    <button type="button" class="btn-adjust text-slate-400 hover:text-white bg-slate-800 hover:bg-slate-700 w-7 h-7 rounded-full flex items-center justify-center border border-slate-700 transition active:scale-95 select-none shrink-0" data-target="cmp-d2" data-action="inc" aria-label="右分母を増やす">
+                                        <span class="material-symbols-rounded text-base">add</span>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="h-4 bg-slate-800 rounded-full overflow-hidden border border-slate-700">
+                            <div id="cmp-bar-2" class="h-full bg-pink-500 transition-all duration-300"
+                                style="width: 50%"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div
+                class="glass-panel p-4 rounded-full flex justify-center items-center gap-4 border-2 border-slate-700/50 mt-4 max-w-md mx-auto w-full">
+                <span class="light-panel-copy text-sky-400 font-black text-xl" id="cmp-val-1">0.5</span>
+                <div
+                    class="bg-slate-800 rounded-full w-12 h-12 flex items-center justify-center border border-slate-600">
+                    <span class="material-symbols-rounded text-4xl text-white transition-all duration-300" id="cmp-icon"
+                        aria-hidden="true">equal</span>
+                </div>
+                <span class="light-panel-copy text-pink-400 font-black text-xl" id="cmp-val-2">0.5</span>
+            </div>
+        </section>
+
+        <section class="fade-in w-full h-full flex-col gap-6 hidden" id="view-calc" role="tabpanel" aria-labelledby="tab-calc" tabindex="0">
+            <!-- あそびかたガイド -->
+            <details class="glass-panel rounded-2xl border border-green-500/20 overflow-hidden transition-all duration-300">
+                <summary class="light-panel-copy flex justify-between items-center p-4 font-bold text-green-400 cursor-pointer hover:bg-green-500/10 focus:outline-none select-none">
+                    <span class="flex items-center gap-2">
+                        <span class="material-symbols-rounded text-xl">help</span> このラボのあそびかた
+                    </span>
+                    <span class="material-symbols-rounded transition-transform duration-300 pointer-events-none" id="guide-arrow-calc">expand_more</span>
+                </summary>
+                <div class="light-panel-copy p-4 border-t border-slate-700/50 text-sm text-slate-300 space-y-2 bg-slate-900/30">
+                    <p class="leading-relaxed">
+                        分母（下の数）が同じ分数の足し算を学ぼう！<br>
+                        分母が同じときは、分母はそのままで、分子（上の数）だけを足し算するよ。<br>
+                        「分母を変える」スライダーや、各分子の左右にある <span class="bg-slate-800 border border-slate-700/50 px-1 py-0.5 rounded text-xs font-bold font-mono">−</span> と <span class="bg-slate-800 border border-slate-700/50 px-1 py-0.5 rounded text-xs font-bold font-mono">+</span> ボタンで数を変えてみてね。<br>
+                        ※答えが1を超えるときは、ピザ1枚では表しきれない部分も含めて分数で表示するよ。
+                    </p>
+                </div>
+            </details>
+
+            <div class="glass-panel p-6 rounded-2xl border-l-4 border-green-500">
+                <h2 class="light-panel-heading text-lg font-bold text-white mb-2">分数の足し算 (同分母)</h2>
+                <p class="light-panel-copy text-sm text-slate-400">分母が同じなら、分子を足すだけ！目で見て確認しよう。</p>
+            </div>
+            <div class="flex flex-col md:flex-row items-center justify-center gap-4 md:gap-8 py-8">
+                <div class="text-center">
+                    <div class="w-32 h-32 mb-2 mx-auto">
+                        <svg class="w-full h-full" id="calc-svg-1" viewBox="-1.1 -1.1 2.2 2.2"></svg>
+                    </div>
+                    <div class="flex items-center justify-center gap-1.5 mt-2">
+                        <button type="button" class="btn-adjust text-slate-400 hover:text-white bg-slate-800 hover:bg-slate-700 w-7 h-7 rounded-full flex items-center justify-center border border-slate-700 transition active:scale-95 select-none shrink-0" data-target="calc-n1" data-action="dec" aria-label="左分子を減らす">
+                            <span class="material-symbols-rounded text-base">remove</span>
+                        </button>
+                        <input
+                            class="w-12 bg-slate-800 text-white text-center font-bold rounded border border-slate-600 focus:border-sky-500 outline-none p-1"
+                            id="calc-n1" max="9" min="1" type="number" value="1" aria-label="左の分数の分子">
+                        <button type="button" class="btn-adjust text-slate-400 hover:text-white bg-slate-800 hover:bg-slate-700 w-7 h-7 rounded-full flex items-center justify-center border border-slate-700 transition active:scale-95 select-none shrink-0" data-target="calc-n1" data-action="inc" aria-label="左分子を増やす">
+                            <span class="material-symbols-rounded text-base">add</span>
+                        </button>
+                        <span class="light-panel-copy text-xl text-slate-400 mx-1">/</span>
+                        <span class="light-panel-copy text-xl text-slate-400 font-bold" id="calc-d-common-1">5</span>
+                    </div>
+                </div>
+                <div class="text-4xl font-black text-slate-500">+</div>
+                <div class="text-center">
+                    <div class="w-32 h-32 mb-2 mx-auto">
+                        <svg class="w-full h-full" id="calc-svg-2" viewBox="-1.1 -1.1 2.2 2.2"></svg>
+                    </div>
+                    <div class="flex items-center justify-center gap-1.5 mt-2">
+                        <button type="button" class="btn-adjust text-slate-400 hover:text-white bg-slate-800 hover:bg-slate-700 w-7 h-7 rounded-full flex items-center justify-center border border-slate-700 transition active:scale-95 select-none shrink-0" data-target="calc-n2" data-action="dec" aria-label="右分子を減らす">
+                            <span class="material-symbols-rounded text-base">remove</span>
+                        </button>
+                        <input
+                            class="w-12 bg-slate-800 text-white text-center font-bold rounded border border-slate-600 focus:border-pink-500 outline-none p-1"
+                            id="calc-n2" max="9" min="1" type="number" value="2" aria-label="右の分数の分子">
+                        <button type="button" class="btn-adjust text-slate-400 hover:text-white bg-slate-800 hover:bg-slate-700 w-7 h-7 rounded-full flex items-center justify-center border border-slate-700 transition active:scale-95 select-none shrink-0" data-target="calc-n2" data-action="inc" aria-label="右分子を増やす">
+                            <span class="material-symbols-rounded text-base">add</span>
+                        </button>
+                        <span class="light-panel-copy text-xl text-slate-400 mx-1">/</span>
+                        <span class="light-panel-copy text-xl text-slate-400 font-bold" id="calc-d-common-2">5</span>
+                    </div>
+                </div>
+                <div class="text-4xl font-black text-slate-500">=</div>
+                <div class="text-center relative">
+                    <div class="w-40 h-40 mb-2 mx-auto relative">
+                        <svg class="w-full h-full filter drop-shadow-[0_0_10px_rgba(34,197,94,0.3)]" id="calc-svg-res"
+                            viewBox="-1.1 -1.1 2.2 2.2"></svg>
+                        <div class="absolute inset-0 flex items-center justify-center">
+                            <span class="text-2xl font-black text-white bg-slate-900/50 px-2 rounded backdrop-blur-sm"
+                                id="calc-res-text">3/5</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="glass-panel p-4 rounded-xl flex flex-col md:flex-row justify-center items-center gap-4">
+                <label for="calc-denom" class="light-panel-copy text-sm font-bold text-slate-400">分母を変える:</label>
+                <div class="flex items-center gap-4 w-full md:w-auto">
+                    <button type="button" class="btn-adjust text-slate-400 hover:text-white bg-slate-800 hover:bg-slate-700 w-8 h-8 rounded-full flex items-center justify-center border border-slate-700 transition active:scale-95 select-none shrink-0" data-target="calc-denom" data-action="dec" aria-label="分母を減らす">
+                        <span class="material-symbols-rounded text-lg">remove</span>
+                    </button>
+                    <input class="accent-green-500 w-full md:w-48 h-2 bg-slate-700 rounded-lg cursor-pointer"
+                        id="calc-denom" max="10" min="2" type="range" value="5">
+                    <button type="button" class="btn-adjust text-slate-400 hover:text-white bg-slate-800 hover:bg-slate-700 w-8 h-8 rounded-full flex items-center justify-center border border-slate-700 transition active:scale-95 select-none shrink-0" data-target="calc-denom" data-action="inc" aria-label="分母を増やす">
+                        <span class="material-symbols-rounded text-lg">add</span>
+                    </button>
+                    <span class="light-panel-copy text-xl font-bold text-green-400 font-mono" id="calc-d-val">5</span>
+                </div>
+            </div>
+            <!-- 教育的フィードバックエリア -->
+            <div id="calc-warning" role="status" aria-live="polite" aria-atomic="true" class="light-panel-copy hidden p-3 bg-amber-500/20 border border-amber-500/40 text-amber-300 rounded-xl text-xs font-bold transition-all duration-300 flex items-center justify-center gap-2 max-w-xl mx-auto w-full"></div>
+        </section>
+
+        <section class="fade-in w-full h-full flex-col gap-6 hidden" id="view-sub" role="tabpanel" aria-labelledby="tab-sub" tabindex="0">
+            <!-- あそびかたガイド -->
+            <details class="glass-panel rounded-2xl border border-red-500/20 overflow-hidden transition-all duration-300">
+                <summary class="flex justify-between items-center p-4 font-bold text-red-400 cursor-pointer hover:bg-red-500/10 focus:outline-none select-none">
+                    <span class="flex items-center gap-2">
+                        <span class="material-symbols-rounded text-xl">help</span> このラボのあそびかた
+                    </span>
+                    <span class="material-symbols-rounded transition-transform duration-300 pointer-events-none" id="guide-arrow-sub">expand_more</span>
+                </summary>
+                <div class="light-panel-copy p-4 border-t border-slate-700/50 text-sm text-slate-300 space-y-2 bg-slate-900/30">
+                    <p class="leading-relaxed">
+                        分母（下の数）が同じ分数の引き算を学ぼう！<br>
+                        分母が同じときは、分母はそのままで、左の分子から右の分子を引き算するよ。<br>
+                        「分母を変える」スライダーや、各分子の左右にある <span class="bg-slate-800 border border-slate-700/50 px-1 py-0.5 rounded text-xs font-bold font-mono">−</span> と <span class="bg-slate-800 border border-slate-700/50 px-1 py-0.5 rounded text-xs font-bold font-mono">+</span> ボタンで数を変えてみてね。<br>
+                        ※答えが0より小さくなるときも、マイナスの分数としてそのまま表示するよ。
+                    </p>
+                </div>
+            </details>
+
+            <div class="glass-panel p-6 rounded-2xl border-l-4 border-red-500">
+                <h2 class="light-panel-heading text-lg font-bold text-white mb-2">分数の引き算 (同分母)</h2>
+                <p class="light-panel-copy text-sm text-slate-400">分母が同じなら、分子を引くだけ！減っていく様子を見てみよう。</p>
+            </div>
+            <div class="flex flex-col md:flex-row items-center justify-center gap-4 md:gap-8 py-8">
+                <div class="text-center">
+                    <div class="w-32 h-32 mb-2 mx-auto">
+                        <svg class="w-full h-full" id="sub-svg-1" viewBox="-1.1 -1.1 2.2 2.2"></svg>
+                    </div>
+                    <div class="flex items-center justify-center gap-1.5 mt-2">
+                        <button type="button" class="btn-adjust text-slate-400 hover:text-white bg-slate-800 hover:bg-slate-700 w-7 h-7 rounded-full flex items-center justify-center border border-slate-700 transition active:scale-95 select-none shrink-0" data-target="sub-n1" data-action="dec" aria-label="左分子を減らす">
+                            <span class="material-symbols-rounded text-base">remove</span>
+                        </button>
+                        <input
+                            class="w-12 bg-slate-800 text-white text-center font-bold rounded border border-slate-600 focus:border-sky-500 outline-none p-1"
+                            id="sub-n1" max="9" min="1" type="number" value="3" aria-label="引かれる分数の分子">
+                        <button type="button" class="btn-adjust text-slate-400 hover:text-white bg-slate-800 hover:bg-slate-700 w-7 h-7 rounded-full flex items-center justify-center border border-slate-700 transition active:scale-95 select-none shrink-0" data-target="sub-n1" data-action="inc" aria-label="左分子を増やす">
+                            <span class="material-symbols-rounded text-base">add</span>
+                        </button>
+                        <span class="light-panel-copy text-xl text-slate-400 mx-1">/</span>
+                        <span class="light-panel-copy text-xl text-slate-400 font-bold" id="sub-d-common-1">5</span>
+                    </div>
+                </div>
+                <div class="text-4xl font-black text-slate-500">-</div>
+                <div class="text-center">
+                    <div class="w-32 h-32 mb-2 mx-auto">
+                        <svg class="w-full h-full" id="sub-svg-2" viewBox="-1.1 -1.1 2.2 2.2"></svg>
+                    </div>
+                    <div class="flex items-center justify-center gap-1.5 mt-2">
+                        <button type="button" class="btn-adjust text-slate-400 hover:text-white bg-slate-800 hover:bg-slate-700 w-7 h-7 rounded-full flex items-center justify-center border border-slate-700 transition active:scale-95 select-none shrink-0" data-target="sub-n2" data-action="dec" aria-label="右分子を減らす">
+                            <span class="material-symbols-rounded text-base">remove</span>
+                        </button>
+                        <input
+                            class="w-12 bg-slate-800 text-white text-center font-bold rounded border border-slate-600 focus:border-pink-500 outline-none p-1"
+                            id="sub-n2" max="5" min="0" type="number" value="1" aria-label="引く分数の分子">
+                        <button type="button" class="btn-adjust text-slate-400 hover:text-white bg-slate-800 hover:bg-slate-700 w-7 h-7 rounded-full flex items-center justify-center border border-slate-700 transition active:scale-95 select-none shrink-0" data-target="sub-n2" data-action="inc" aria-label="右分子を増やす">
+                            <span class="material-symbols-rounded text-base">add</span>
+                        </button>
+                        <span class="light-panel-copy text-xl text-slate-400 mx-1">/</span>
+                        <span class="light-panel-copy text-xl text-slate-400 font-bold" id="sub-d-common-2">5</span>
+                    </div>
+                </div>
+                <div class="text-4xl font-black text-slate-500">=</div>
+                <div class="text-center relative">
+                    <div class="w-40 h-40 mb-2 mx-auto relative">
+                        <svg class="w-full h-full filter drop-shadow-[0_0_10px_rgba(239,68,68,0.3)]" id="sub-svg-res"
+                            viewBox="-1.1 -1.1 2.2 2.2"></svg>
+                        <div class="absolute inset-0 flex items-center justify-center">
+                            <span class="text-2xl font-black text-white bg-slate-900/50 px-2 rounded backdrop-blur-sm"
+                                id="sub-res-text">2/5</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="glass-panel p-4 rounded-xl flex flex-col md:flex-row justify-center items-center gap-4">
+                <label for="sub-denom" class="light-panel-copy text-sm font-bold text-slate-400">分母を変える:</label>
+                <div class="flex items-center gap-4 w-full md:w-auto">
+                    <button type="button" class="btn-adjust text-slate-400 hover:text-white bg-slate-800 hover:bg-slate-700 w-8 h-8 rounded-full flex items-center justify-center border border-slate-700 transition active:scale-95 select-none shrink-0" data-target="sub-denom" data-action="dec" aria-label="分母を減らす">
+                        <span class="material-symbols-rounded text-lg">remove</span>
+                    </button>
+                    <input class="accent-red-500 w-full md:w-48 h-2 bg-slate-700 rounded-lg cursor-pointer"
+                        id="sub-denom" max="10" min="2" type="range" value="5">
+                    <button type="button" class="btn-adjust text-slate-400 hover:text-white bg-slate-800 hover:bg-slate-700 w-8 h-8 rounded-full flex items-center justify-center border border-slate-700 transition active:scale-95 select-none shrink-0" data-target="sub-denom" data-action="inc" aria-label="分母を増やす">
+                        <span class="material-symbols-rounded text-lg">add</span>
+                    </button>
+                    <span class="text-xl font-bold text-red-400 font-mono" id="sub-d-val">5</span>
+                </div>
+            </div>
+            <!-- 教育的フィードバックエリア -->
+            <div id="sub-warning" role="status" aria-live="polite" aria-atomic="true" class="light-panel-copy hidden p-3 bg-amber-500/20 border border-amber-500/40 text-amber-300 rounded-xl text-xs font-bold transition-all duration-300 flex items-center justify-center gap-2 max-w-xl mx-auto w-full"></div>
+        </section>
+
+        <section class="fade-in w-full flex-col gap-8 pb-12 hidden" id="view-secret" role="tabpanel" aria-labelledby="tab-secret" tabindex="0">
+            <div class="egypt-panel p-6 md:p-8 rounded-2xl shadow-2xl relative">
+                <div class="egypt-bg-pattern"></div>
+                <div class="absolute top-4 right-4 opacity-30 pointer-events-none">
+                    <span class="material-symbols-rounded text-9xl text-amber-500" aria-hidden="true">history</span>
+                </div>
+                <div class="relative z-10">
+                    <h2 class="text-2xl md:text-3xl font-black text-amber-400 mb-4 flex items-center gap-3">
+                        <span class="material-symbols-rounded" aria-hidden="true">history_edu</span> 古代エジプトの分数
+                    </h2>
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+                        <div class="text-slate-300 text-sm md:text-base leading-relaxed space-y-4">
+                            <p>
+                                約3600年前のリンド・パピルスには、古代エジプトで分数を扱った計算が残っています。<br>
+                                多くの分数は<strong class="text-amber-200">「分子が 1 の分数（単位分数）」の和</strong>として表され、2/3などには特別な表し方もありました。
+                            </p>
+                            <div class="bg-slate-900/60 p-4 rounded-lg border border-amber-900/50">
+                                <h4 class="font-bold text-amber-500 mb-2">パンを公平に分けるには？</h4>
+                                <p class="text-xs md:text-sm text-slate-400">
+                                    3個のパンを4人で分けるとき、「3/4個ずつ」切るのは大変です。<br>
+                                    でも<strong class="text-white">「半分(1/2)ずつ配って、残りを4等分(1/4)」</strong>なら簡単！<br>
+                                    これが <span class="font-mono text-amber-300">3/4 = 1/2 + 1/4</span> という考え方です。
+                                </p>
+                            </div>
+                        </div>
+                        <div class="bg-slate-900/80 p-6 rounded-xl border border-amber-500/30 shadow-inner">
+                            <h3 class="text-amber-400 font-bold mb-4 flex items-center gap-2">
+                                <span class="material-symbols-rounded" aria-hidden="true">calculate</span> エジプト分数変換機
+                            </h3>
+                            <div class="flex flex-col gap-4">
+                                <div class="flex items-center gap-2 justify-center bg-slate-800 p-2 rounded-lg">
+                                    <div class="flex items-center gap-1">
+                                        <button type="button" class="btn-adjust text-slate-400 hover:text-white bg-slate-700 hover:bg-slate-600 w-7 h-7 rounded-full flex items-center justify-center border border-slate-600 transition active:scale-95 select-none shrink-0" data-target="egypt-n" data-action="dec" aria-label="分子を減らす">
+                                            <span class="material-symbols-rounded text-base">remove</span>
+                                        </button>
+                                        <input
+                                            class="w-12 bg-transparent text-white text-center font-bold text-xl border-b-2 border-amber-500 focus:outline-none"
+                                                id="egypt-n" max="99" min="1" type="number" value="3" aria-label="分子">
+                                        <button type="button" class="btn-adjust text-slate-400 hover:text-white bg-slate-700 hover:bg-slate-600 w-7 h-7 rounded-full flex items-center justify-center border border-slate-600 transition active:scale-95 select-none shrink-0" data-target="egypt-n" data-action="inc" aria-label="分子を増やす">
+                                            <span class="material-symbols-rounded text-base">add</span>
+                                        </button>
+                                    </div>
+                                    <span class="text-2xl text-slate-400">/</span>
+                                    <div class="flex items-center gap-1">
+                                        <button type="button" class="btn-adjust text-slate-400 hover:text-white bg-slate-700 hover:bg-slate-600 w-7 h-7 rounded-full flex items-center justify-center border border-slate-600 transition active:scale-95 select-none shrink-0" data-target="egypt-d" data-action="dec" aria-label="分母を減らす">
+                                            <span class="material-symbols-rounded text-base">remove</span>
+                                        </button>
+                                        <input
+                                            class="w-12 bg-transparent text-white text-center font-bold text-xl border-b-2 border-amber-500 focus:outline-none"
+                                                id="egypt-d" max="100" min="2" type="number" value="4" aria-label="分母">
+                                        <button type="button" class="btn-adjust text-slate-400 hover:text-white bg-slate-700 hover:bg-slate-600 w-7 h-7 rounded-full flex items-center justify-center border border-slate-600 transition active:scale-95 select-none shrink-0" data-target="egypt-d" data-action="inc" aria-label="分母を増やす">
+                                            <span class="material-symbols-rounded text-base">add</span>
+                                        </button>
+                                    </div>
+                                </div>
+                                <button id="btn-calc-egypt"
+                                    class="bg-gradient-to-r from-amber-600 to-yellow-600 hover:from-amber-500 hover:to-yellow-500 text-white font-bold py-3 px-6 rounded-lg transition shadow-lg transform active:scale-95 flex items-center justify-center gap-2">
+                                    <span class="material-symbols-rounded" aria-hidden="true">auto_awesome</span> 分解する！
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- 教育的フィードバックエリア -->
+                    <div id="egypt-warning" role="status" aria-live="polite" aria-atomic="true" class="hidden mb-4 p-4 bg-amber-500/20 border border-amber-500/40 text-amber-300 rounded-xl text-xs leading-relaxed transition-all duration-300"></div>
+                    <div class="min-h-[120px] bg-slate-900 rounded-xl border-2 border-amber-900/50 p-6 relative overflow-hidden"
+                        id="egypt-result-box" aria-live="polite" aria-atomic="true">
+                        <div class="text-center" id="egypt-placeholder">
+                            <p class="text-slate-500">上のボタンを押すと、ここに結果が表示されます</p>
+                        </div>
+                        <div class="hidden flex-col gap-4" id="egypt-content">
+                            <div class="flex flex-wrap items-center justify-center gap-3 text-xl md:text-3xl font-mono font-bold text-white"
+                                id="egypt-formula"></div>
+                            <div class="text-xs text-slate-400 text-center border-t border-slate-700 pt-3 mt-2"
+                                id="egypt-steps"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- 既存の設定ボタンが参照するダイアログ。配色と動きを同じプロフィールへ保存する。 -->
+    <dialog id="settings-modal" class="fraction-settings" aria-labelledby="settings-modal-title">
+        <div class="fraction-settings-header">
+            <h2 id="settings-modal-title">設定</h2>
+            <button type="button" data-action="close-modal" data-target="settings-modal" aria-label="閉じる" class="fraction-settings-close"><span class="material-symbols-rounded" aria-hidden="true">close</span></button>
+        </div>
+        <div class="fraction-setting-row">
+            <span id="dark-mode-label">ダークモード</span>
+            <button type="button" id="dark-mode-toggle" class="fraction-setting-toggle" aria-labelledby="dark-mode-label" aria-pressed="true"><span id="dark-mode-knob"></span></button>
+        </div>
+        <div class="fraction-setting-row">
+            <span id="motion-label">動きを減らす</span>
+            <button type="button" id="motion-toggle" class="fraction-setting-toggle" aria-labelledby="motion-label" aria-pressed="false"><span id="motion-knob"></span></button>
+        </div>
+        <button type="button" data-action="close-modal" data-target="settings-modal" class="fraction-settings-done">閉じる</button>
+    </dialog>
+
+    <!-- Parents Modal -->
+<dialog id="parents-modal"
+    class="p-0 rounded-3xl shadow-2xl open:animate-fade-in w-full max-w-lg m-auto overflow-hidden border-0"
+    aria-labelledby="parents-modal-title" style="display:none;">
+    <div class="bg-white p-6 md:p-8 max-h-[90vh] overflow-y-auto relative text-left">
+        <button type="button" data-action="close-modal" data-target="parents-modal" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600 focus:outline-none" aria-label="閉じる">
+            <span class="material-symbols-rounded">close</span>
+        </button>
+        <div class="mb-6 border-b-2 border-indigo-100 pb-4">
+            <h2 id="parents-modal-title"
+                class="text-lg md:text-xl font-black text-slate-800 flex items-center gap-2">
+                <span class="material-symbols-rounded text-indigo-500">family_restroom</span> 保護者の方へ
+            </h2>
+            <p class="text-xs text-slate-400 font-bold mt-1">For Parents &amp; Guardians</p>
+        </div>
+
+        <div class="space-y-6 text-sm text-slate-600 leading-relaxed font-bold">
+            <!-- ウェルカムメッセージカード -->
+            <div class="bg-gradient-to-r from-indigo-50 to-purple-50 p-5 rounded-2xl border border-indigo-100 text-center">
+                <p class="mb-2 text-indigo-800 text-base">
+                    <span class="material-symbols-rounded text-xl align-bottom mr-1 text-pink-400">favorite</span>
+                    当サイト「PikaLab」に<br>ご訪問いただき、誠にありがとうございます。
+                </p>
+                <p class="text-xs text-indigo-600">
+                            大切なお子様と一緒にPikaLabを訪れていただけたこと、<br>制作者のかたかたより、心から感謝申し上げます。
+                </p>
+            </div>
+
+            <!-- 1. ねらい -->
+            <div>
+                <h3 class="text-indigo-600 font-black mb-2 flex items-center gap-2">
+                    <span class="material-symbols-rounded text-base">school</span> このアプリのねらい
+                </h3>
+                <p>「分数ラボ」は、分数の大きさや同分母の足し算・引き算を、<span class="bg-indigo-100 text-indigo-700 px-1 rounded">図形や色のブロック</span>で見比べながら確かめられる学習ツールです。数字だけでは分かりにくいときに、同じ分数を図と式の両方で確認できます。</p>
+            </div>
+
+            <!-- 2. おねがい -->
+            <div>
+                <h3 class="text-pink-500 font-black mb-2 flex items-center gap-2">
+                    <span class="material-symbols-rounded text-base">favorite</span> 保護者様へのおねがい
+                </h3>
+                <p>お子様が「わかった！」と言ったときは、<span class="bg-pink-100 text-pink-700 px-1 rounded">「ピザを半分に切ったら1/2だね」</span>のように、画面の図と身近な分け方を行き来して確かめてみてください。</p>
+            </div>
+
+            <!-- 3. 活用方法 -->
+            <div>
+                <h3 class="text-green-600 font-black mb-2 flex items-center gap-2">
+                    <span class="material-symbols-rounded text-base">emoji_objects</span> おうちでの活用方法
+                </h3>
+                <p>おやつのケーキやピザを同じ大きさに分けたとき、「これは何分の何かな？」と声をかけてみてください。アプリの図と実際の分け方を比べる練習になります。</p>
+            </div>
+
+            <!-- 4. 健康への配慮 -->
+            <div>
+                <h3 class="text-orange-500 font-black mb-2 flex items-center gap-2">
+                    <span class="material-symbols-rounded text-base">timer</span> 健康への配慮（休憩の推奨）
+                </h3>
+                <p>大切なお子様の健康のために、<span class="bg-orange-100 text-orange-700 px-1 rounded">30分に1回程度の休憩</span>を推奨しています。ゲームに夢中になりすぎず、適度に目を休めるよう声をかけてあげてください。各ツールへ入力した内容や端末内の記録はブラウザ内で処理・保存し、運営者のサーバー、広告サービス、アクセス解析サービスへ送信しません。ページ表示時にはWebフォント等の外部配信サービスへの通常の通信が発生する場合があります。</p>
+            </div>
+        </div>
+        <div class="mt-8 text-center">
+            <button type="button" data-action="close-modal" data-target="parents-modal"
+                class="w-full bg-indigo-500 text-white px-8 py-3 rounded-xl font-black hover:bg-indigo-600 transition shadow-lg shadow-indigo-200">閉じる</button>
+        </div>
+    </div>
+</dialog>
+
+    <style>
+    #parents-modal::backdrop {
+        background: rgba(15, 23, 42, 0.6);
+        backdrop-filter: blur(4px);
+    }
+    #parents-modal[open] {
+        display: block !important;
+        animation: parentsModalFadeIn 0.3s ease-out forwards;
+    }
+    @keyframes parentsModalFadeIn {
+        from { opacity: 0; transform: scale(0.95); }
+        to { opacity: 1; transform: scale(1); }
+    }
+    
+    #settings-modal::backdrop {
+        background: rgba(15, 23, 42, 0.7);
+        backdrop-filter: blur(4px);
+    }
+</style>
+
+</body>
+
+</html>
+

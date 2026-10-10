@@ -1,0 +1,17 @@
+{
+  "name": "Gravity-Todo",
+  "short_name": "GravityTodo",
+  "description": "タスクを爆破する爽快なTodoアプリ",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#0a0a0c",
+  "theme_color": "#ff3366",
+  "icons": [
+    {
+      "src": "icon.svg",
+      "sizes": "512x512",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

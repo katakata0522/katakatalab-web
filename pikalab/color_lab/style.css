@@ -1,0 +1,1005 @@
+/* Base Styles */
+body {
+    font-family: 'M PLUS Rounded 1c', sans-serif;
+    background-color: #FFFBEB;
+    /* Light yellow */
+    background-image: radial-gradient(#FDE68A 2px, transparent 2px);
+    background-size: 24px 24px;
+    -webkit-tap-highlight-color: transparent;
+    /* Remove tap highlight on mobile */
+    overflow-x: hidden;
+    /* Prevent horizontal scroll on mobile */
+}
+
+@media (max-width: 640px) {
+    header {
+        flex-wrap: wrap;
+        gap: 0.75rem;
+        align-items: center;
+    }
+
+    header > div:first-of-type {
+        flex: 1 1 100%;
+        min-width: 0;
+    }
+
+    header h1 {
+        font-size: clamp(1.15rem, 6vw, 1.65rem);
+        max-width: 100%;
+        flex-wrap: wrap;
+        row-gap: 0.1rem;
+    }
+
+    header [role="tablist"] {
+        margin-left: auto;
+        max-width: 100%;
+    }
+}
+
+/* インラインstyleを使わない装飾定義 */
+.lab-card-pattern {
+    background-image: radial-gradient(#000 1px, transparent 1px);
+    background-size: 20px 20px;
+}
+
+.blob-shape {
+    background-color: rgb(128, 128, 128);
+    border-radius: 50% 50% 48% 48% / 50% 50% 50% 50%;
+}
+
+#game-target {
+    background-color: #ff0000;
+}
+
+#game-player {
+    background-color: #808080;
+}
+
+.game-rgb-chip {
+    min-width: 172px;
+    padding: 0.3rem 0.75rem;
+    border-radius: 9999px;
+    border: 2px solid #cbd5e1;
+    background: linear-gradient(180deg, #f8fafc 0%, #eef2ff 100%);
+    color: #334155;
+    font-size: 0.76rem;
+    line-height: 1.25rem;
+    font-weight: 800;
+    letter-spacing: 0.04em;
+    text-align: center;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+    box-shadow: 0 2px 0 rgba(148, 163, 184, 0.5);
+}
+
+/* Custom Slider - Base */
+input[type=range] {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 100%;
+    background: transparent;
+    min-height: 44px;
+    cursor: pointer;
+    touch-action: manipulation;
+    /* Improve touch responsiveness */
+}
+
+input[type=range]::-webkit-slider-runnable-track {
+    width: 100%;
+    height: 16px;
+    border-radius: 10px;
+    border: 2px solid rgba(0, 0, 0, 0.1);
+}
+
+#tab-lab,
+#tab-game,
+#recipe-tab-basic,
+#recipe-tab-fantasy,
+#edit-name-btn,
+#hex-code,
+#blend-colors-btn,
+#open-dressup-btn {
+    min-height: 44px;
+}
+
+#edit-name-btn {
+    min-width: 44px;
+    justify-content: center;
+}
+
+#hex-code {
+    padding-block: 0.35rem;
+}
+
+input[type=range]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    height: 36px;
+    width: 36px;
+    border-radius: 50%;
+    margin-top: -12px;
+    border: 4px solid white;
+    box-shadow: 0 4px 0 rgba(0, 0, 0, 0.1);
+    transition: transform 0.1s;
+}
+
+input[type=range]::-webkit-slider-thumb:active {
+    transform: scale(1.15);
+}
+
+/* Firefox slider support */
+input[type=range]::-moz-range-track {
+    width: 100%;
+    height: 16px;
+    border-radius: 10px;
+    border: 2px solid rgba(0, 0, 0, 0.1);
+}
+
+input[type=range]::-moz-range-thumb {
+    height: 32px;
+    width: 32px;
+    border-radius: 50%;
+    border: 4px solid white;
+    box-shadow: 0 4px 0 rgba(0, 0, 0, 0.1);
+}
+
+/* Color-specific slider decoration */
+#slider-r::-webkit-slider-runnable-track {
+    background: #FECACA;
+}
+
+#slider-r::-webkit-slider-thumb {
+    background: #EF4444;
+}
+
+#slider-r::-moz-range-track {
+    background: #FECACA;
+}
+
+#slider-r::-moz-range-thumb {
+    background: #EF4444;
+}
+
+#slider-g::-webkit-slider-runnable-track {
+    background: #BBF7D0;
+}
+
+#slider-g::-webkit-slider-thumb {
+    background: #22C55E;
+}
+
+#slider-g::-moz-range-track {
+    background: #BBF7D0;
+}
+
+#slider-g::-moz-range-thumb {
+    background: #22C55E;
+}
+
+#slider-b::-webkit-slider-runnable-track {
+    background: #BFDBFE;
+}
+
+#slider-b::-webkit-slider-thumb {
+    background: #3B82F6;
+}
+
+#slider-b::-moz-range-track {
+    background: #BFDBFE;
+}
+
+#slider-b::-moz-range-thumb {
+    background: #3B82F6;
+}
+
+/* Game slider */
+.game-slider::-webkit-slider-runnable-track {
+    background: #E2E8F0;
+}
+
+.game-slider::-webkit-slider-thumb {
+    background: #64748B;
+}
+
+.game-slider::-moz-range-track {
+    background: #E2E8F0;
+}
+
+.game-slider::-moz-range-thumb {
+    background: #64748B;
+}
+
+/* Pop Card */
+.pop-card {
+    background: white;
+    border-radius: 24px;
+    border: 4px solid #F3F4F6;
+    box-shadow: 0 8px 0 #E5E7EB;
+    transition: transform 0.2s;
+}
+
+/* Custom Text Shadow */
+.text-shadow-sm {
+    text-shadow: 2px 2px 0px rgba(0, 0, 0, 0.1);
+}
+
+/* Toast Notification */
+#toast-container {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 100;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    pointer-events: none;
+}
+
+.toast {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(5px);
+    padding: 12px 24px;
+    border-radius: 50px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    font-weight: bold;
+    color: #334155;
+    border: 2px solid #E2E8F0;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    pointer-events: none; /* 操作のない通知で背後のパレットを遮らない。 */
+    animation: fadeInUp 0.3s ease-out forwards;
+    min-width: auto;
+    /* Reset */
+}
+
+.toast-info {
+    border-color: #3B82F6;
+    color: #3B82F6;
+}
+
+.toast-success {
+    border-color: #22C55E;
+    color: #22C55E;
+}
+
+.toast-warning {
+    border-color: #F59E0B;
+    color: #F59E0B;
+}
+
+.toast-error {
+    border-color: #EF4444;
+    color: #EF4444;
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* 動きを減らす設定を尊重 */
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+    }
+
+    .animate-blob,
+    .animate-jelly,
+    .animate-bounce {
+        animation: none !important;
+    }
+}
+
+/* ==================== MOBILE RESPONSIVE ==================== */
+
+/* Mobile-specific styles (screens < 768px) */
+@media (max-width: 767px) {
+
+    /* Larger touch targets for sliders on mobile */
+    input[type=range] {
+        height: 32px;
+        padding: 8px 0;
+    }
+
+    input[type=range]::-webkit-slider-thumb {
+        height: 44px;
+        width: 44px;
+        margin-top: -16px;
+    }
+
+    input[type=range]::-moz-range-thumb {
+        height: 40px;
+        width: 40px;
+    }
+
+    /* Slider track slightly taller on mobile */
+    input[type=range]::-webkit-slider-runnable-track {
+        height: 18px;
+    }
+
+    input[type=range]::-moz-range-track {
+        height: 18px;
+    }
+
+    /* Pop card adjustments for mobile */
+    .pop-card {
+        border-radius: 20px;
+        border-width: 3px;
+        box-shadow: 0 6px 0 #E5E7EB;
+    }
+
+    /* Recipe buttons - larger touch targets */
+    [data-rgb] {
+        min-height: 56px;
+        padding: 12px !important;
+    }
+
+    /* Improve scrolling performance on mobile */
+    #view-lab,
+    #view-game {
+        -webkit-overflow-scrolling: touch;
+        scroll-behavior: smooth;
+    }
+
+    /* Toast position adjustment for mobile */
+    #toast-container {
+        bottom: 80px;
+        /* Above mobile navigation if any */
+        left: 16px;
+        right: 16px;
+        transform: none;
+    }
+
+    .toast {
+        padding: 14px 20px;
+        font-size: 14px;
+    }
+
+    /* Game section mobile optimizations */
+    #game-main {
+        padding-bottom: 20px;
+    }
+
+    .game-rgb-chip {
+        min-width: 150px;
+        font-size: 0.68rem;
+    }
+
+    /* Smaller VS text on mobile */
+    #game-vs-label {
+        font-size: 1.5rem !important;
+        margin: 0.5rem 0 !important;
+    }
+
+    /* Game sliders with colored tracks for mobile */
+    #game-r::-webkit-slider-runnable-track {
+        background: #FECACA;
+    }
+
+    #game-r::-webkit-slider-thumb {
+        background: #EF4444;
+    }
+
+    #game-g::-webkit-slider-runnable-track {
+        background: #BBF7D0;
+    }
+
+    #game-g::-webkit-slider-thumb {
+        background: #22C55E;
+    }
+
+    #game-b::-webkit-slider-runnable-track {
+        background: #BFDBFE;
+    }
+
+    #game-b::-webkit-slider-thumb {
+        background: #3B82F6;
+    }
+}
+
+/* Small phone adjustments (< 375px) */
+@media (max-width: 374px) {
+
+    /* Smaller header on very small screens */
+    header h1 {
+        font-size: 1rem !important;
+    }
+
+    /* Compact recipe grid */
+    .grid-cols-2 {
+        gap: 8px !important;
+    }
+
+    [data-rgb] {
+        padding: 10px !important;
+    }
+
+    [data-rgb] span {
+        font-size: 12px;
+    }
+
+    /* Smaller blob on tiny screens */
+    #blob-character {
+        width: 200px !important;
+        height: 200px !important;
+    }
+}
+
+/* Landscape mobile */
+@media (max-height: 500px) and (orientation: landscape) {
+    #view-lab {
+        padding-bottom: 16px;
+    }
+
+    /* Smaller blob in landscape */
+    #blob-character {
+        width: 150px !important;
+        height: 150px !important;
+    }
+
+    #blob-character svg {
+        width: 80px;
+        height: 80px;
+    }
+
+    /* Compact game view in landscape */
+    #game-target,
+    #game-player {
+        width: 100px !important;
+        height: 100px !important;
+    }
+
+    .game-rgb-chip {
+        margin-bottom: 0.5rem !important;
+    }
+}
+
+/* Touch device hover states */
+@media (hover: none) and (pointer: coarse) {
+
+    /* Remove hover effects that don't work well on touch */
+    button:hover {
+        transform: none;
+    }
+
+    /* Add active states instead */
+    button:active {
+        transform: scale(0.97);
+        opacity: 0.9;
+    }
+
+    [data-rgb]:active {
+        background-color: #FEF3C7 !important;
+        border-color: #FCD34D !important;
+    }
+
+    /* Game course buttons */
+    #start-normal-game:active,
+    #start-challenge-game:active {
+        transform: scale(0.98);
+    }
+}
+
+/* ==================== おきにいりカラー保存スロット ==================== */
+.palette-slot {
+    width: 48px;
+    height: 48px;
+    border-radius: 16px;
+    border: 3px solid #e2e8f0;
+    position: relative;
+    cursor: pointer;
+    transition: transform 0.15s, border-color 0.15s;
+    box-shadow: 0 3px 0 #e2e8f0;
+}
+.palette-slot:hover {
+    transform: scale(1.05);
+    border-color: #cbd5e1;
+}
+.palette-slot:active {
+    transform: scale(0.95);
+}
+.palette-slot.empty {
+    background-color: #f8fafc;
+    border-style: dashed;
+    border-color: #cbd5e1;
+    box-shadow: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.palette-slot.empty::before {
+    content: "+";
+    color: #94a3b8;
+    font-size: 1.5rem;
+    font-weight: bold;
+}
+.palette-delete-btn {
+    position: absolute;
+    top: -6px;
+    right: -6px;
+    width: 20px;
+    height: 20px;
+    background-color: #ef4444;
+    color: white;
+    border-radius: 50%;
+    border: 2px solid white;
+    font-size: 11px;
+    line-height: 1;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+    cursor: pointer;
+    transition: transform 0.15s, background-color 0.15s;
+    z-index: 10;
+}
+.palette-delete-btn:hover {
+    background-color: #dc2626;
+    transform: scale(1.1);
+}
+.palette-delete-btn:active {
+    transform: scale(0.9);
+}
+
+/* パレット複数選択（ブレンド用）とドラッグ操作用のスタイル */
+.palette-slot.selected {
+    border-color: #F59E0B;
+    box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.4);
+    transform: scale(1.08);
+}
+.palette-slot.dragging {
+    opacity: 0.4;
+}
+.palette-slot.drag-over {
+    border-color: #3B82F6;
+    background-color: #EFF6FF;
+    border-style: dashed;
+    transform: scale(1.1);
+}
+
+/* レシピタブ等のフォーカス状態 */
+[role="tab"]:focus-visible {
+    outline: 3px solid #F59E0B;
+    outline-offset: 1px;
+}
+#hex-code:focus-visible {
+    outline: 2px dashed #F59E0B;
+    outline-offset: 4px;
+}
+
+/* きせかえアイテムボタンのアクティブ状態 */
+.dressup-item-btn.active {
+    border-color: #F59E0B;
+    background-color: #FEF3C7;
+    box-shadow: 0 4px 0 rgba(245, 158, 11, 0.2);
+}
+
+/* SVGアクセサリーの表示制御 */
+.accessory-part.hidden {
+    display: none;
+}
+
+/* 目のぐるぐる（スピン）演出 */
+.face-part.eye-spin {
+    animation: spin-eye 0.8s linear infinite;
+    transform-origin: center;
+}
+@keyframes spin-eye {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+/* カレンダーの曜日・日付デザイン */
+.calendar-header-cell {
+    font-weight: 900;
+    color: #64748b;
+    padding: 4px 0;
+}
+.calendar-day-cell {
+    aspect-ratio: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    border: 2px solid transparent;
+    color: #475569;
+    font-size: 0.85rem;
+    position: relative;
+    cursor: default;
+    background-color: #f8fafc;
+    transition: background-color 0.2s;
+}
+.calendar-day-cell.today {
+    border-color: #3b82f6;
+    font-weight: bold;
+}
+.calendar-day-cell.stamped {
+    background-color: #fef3c7;
+    color: #b45309;
+    font-weight: bold;
+}
+.calendar-day-cell.stamped::after {
+    content: "🌸"; /* 可愛い桜スタンプ */
+    position: absolute;
+    font-size: 1.1rem;
+    opacity: 0.85;
+    transform: scale(0.9);
+    animation: stamp-jelly 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+}
+
+@keyframes stamp-jelly {
+    0% { transform: scale(0); opacity: 0; }
+    100% { transform: scale(1); opacity: 0.85; }
+}
+
+.calendar-day-cell.empty-day {
+    background-color: transparent;
+    color: transparent;
+    pointer-events: none;
+}
+
+/* アワード表示用 */
+#award-display-panel {
+    animation: award-bounce 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+}
+
+@keyframes award-bounce {
+    0% { transform: translateY(20px) scale(0.8); opacity: 0; }
+    100% { transform: translateY(0) scale(1); opacity: 1; }
+}
+
+/* キラお題のお手本カードの光彩オーラ */
+.shiny-glow-aura {
+    box-shadow: 0 0 25px rgba(245, 158, 11, 0.6);
+    animation: shiny-glow-pulse 2s ease-in-out infinite;
+}
+
+@keyframes shiny-glow-pulse {
+    0%, 100% { box-shadow: 0 0 15px rgba(245, 158, 11, 0.4); border-color: #f59e0b; }
+    50% { box-shadow: 0 0 35px rgba(251, 191, 36, 0.9); border-color: #fbbf24; }
+}
+
+/* キラキラパーティクル */
+.shiny-particle {
+    position: absolute;
+    pointer-events: none;
+    z-index: 10;
+    font-size: 1.3rem;
+    color: #fbbf24;
+    text-shadow: 0 0 5px rgba(251, 191, 36, 0.8);
+    animation: shiny-particle-fade-up 1.2s ease-out forwards;
+}
+
+@keyframes shiny-particle-fade-up {
+    0% {
+        opacity: 0;
+        transform: translate(0, 0) scale(0.5) rotate(0deg);
+    }
+    15% {
+        opacity: 1;
+        transform: translate(0, -5px) scale(1) rotate(45deg);
+    }
+    100% {
+        opacity: 0;
+        transform: translate(var(--fly-x), var(--fly-y)) scale(0.3) rotate(180deg);
+    }
+}
+
+/* コース選択画面のレスポンシブグリッド（Tailwindビルド依存を回避するためプレーンCSSで定義） */
+.game-course-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+    width: 100%;
+    max-width: 64rem;
+    padding: 0 1rem;
+}
+
+.game-course-card {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    min-height: 210px;
+}
+
+@media (min-width: 768px) {
+    .game-course-grid {
+        flex-direction: row;
+        justify-content: center;
+        gap: 1.5rem;
+    }
+    .game-course-card {
+        flex: 1;
+        max-width: 280px;
+        min-height: 230px;
+    }
+}
+
+/* ヘッダーのパディング上書き（Tailwindのビルド依存を完全に回避して14pxに固定） */
+header {
+    padding-top: 14px !important;
+    padding-bottom: 14px !important;
+}
+
+/* タイトルのカラフル化用クラス（Tailwindパージ対策） */
+.title-char-purple {
+    color: #a855f7 !important;
+}
+.title-char-pink {
+    color: #ec4899 !important;
+}
+.title-char-teal {
+    color: #14b8a6 !important;
+}
+
+/* DXバッジのババン！と横広な立体デザインクラス */
+.badge-dx-pop {
+    background: linear-gradient(135deg, #facc15, #f59e0b) !important;
+    border-radius: 10px !important;
+    box-shadow: 0 4px 0 #b45309 !important;
+    text-shadow: 1px 1px 0 rgba(0,0,0,0.3) !important;
+    border: 2px solid #fff !important;
+    line-height: 1 !important;
+    letter-spacing: 0.12em !important;
+    text-indent: 0.12em !important;
+}
+
+/* ==================== PLAYFUL PHYSICS & ANIMATIONS ==================== */
+
+/* 液滴のポタポタ落下アニメーション */
+.color-drop {
+    position: absolute;
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    z-index: 30;
+    pointer-events: none;
+    box-shadow: inset -2px -2px 0px rgba(0, 0, 0, 0.2), 0 2px 4px rgba(0, 0, 0, 0.15);
+    animation: droplet-fall-physics 0.7s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+}
+
+@keyframes droplet-fall-physics {
+    0% {
+        transform: translate(0, 0) scale(0.6);
+        opacity: 0.9;
+    }
+    15% {
+        transform: translate(0, -10px) scale(1);
+        opacity: 1;
+    }
+    85% {
+        transform: translate(var(--drop-x), var(--drop-y)) scale(1.1);
+        opacity: 1;
+    }
+    100% {
+        transform: translate(var(--drop-x), calc(var(--drop-y) + 30px)) scale(0);
+        opacity: 0;
+    }
+}
+
+/* ミキサー回転アニメーション */
+.character-mixer-spin {
+    animation: mixer-spin 0.3s linear infinite !important;
+}
+
+@keyframes mixer-spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+/* 回転終了時の弾けるバウンドアニメーション */
+.character-pop-burst {
+    animation: pop-burst 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards !important;
+}
+
+@keyframes pop-burst {
+    0% { transform: scale(0.7); }
+    50% { transform: scale(1.3); }
+    75% { transform: scale(0.95); }
+    100% { transform: scale(1); }
+}
+
+/* 飛び散る光の粒子用アニメーション */
+.blend-sparkle {
+    position: absolute;
+    pointer-events: none;
+    z-index: 25;
+    box-shadow: inset -1px -1px 0px rgba(0, 0, 0, 0.1);
+    animation: sparkle-fly 0.8s cubic-bezier(0.1, 0.8, 0.3, 1) forwards;
+}
+
+@keyframes sparkle-fly {
+    0% {
+        transform: translate(0, 0) scale(1) rotate(0deg);
+        opacity: 1;
+    }
+    50% {
+        opacity: 1;
+    }
+    100% {
+        transform: translate(var(--fly-x), var(--fly-y)) scale(0) rotate(180deg);
+        opacity: 0;
+    }
+}
+
+/* きせかえ未解放アイテムのロック表示 */
+.dressup-item-btn.locked {
+    filter: grayscale(1) opacity(0.5);
+    border-style: dashed !important;
+    border-color: #cbd5e1 !important;
+    background-color: #f1f5f9 !important;
+}
+
+.dressup-item-btn.locked .lock-overlay {
+    display: flex !important;
+    align-items: center;
+    justify-content: center;
+    background-color: rgba(15, 23, 42, 0.85);
+    color: #ffffff;
+    border-radius: 50%;
+    width: 22px;
+    height: 22px;
+    border: 1.5px solid #ffffff;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
+}
+
+/* ==================== REVAMPED 3D GAME SELECT SCREEN ==================== */
+
+/* サブ機能ボタンの3Dポップ化 */
+.btn-game-sub {
+    border: 2px solid #e2e8f0;
+    box-shadow: 0 4px 0 #cbd5e1;
+    transition: transform 0.1s, box-shadow 0.1s, background-color 0.1s;
+    cursor: pointer;
+}
+.btn-game-sub:hover {
+    background-color: #f8fafc;
+    transform: translateY(-1px);
+    box-shadow: 0 5px 0 #cbd5e1;
+}
+.btn-game-sub:active {
+    transform: translateY(3px);
+    box-shadow: 0 1px 0 #cbd5e1;
+}
+
+/* ゲーム選択カードの3Dポップ＆アニメーション化 */
+.game-course-card {
+    transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.2s;
+    cursor: pointer;
+    border: 4px solid #f3f4f6;
+    box-shadow: 0 8px 0 #e5e7eb;
+}
+
+/* ホバー時のぷくっと浮き上がる3Dアクション */
+.game-course-card:hover {
+    transform: translateY(-6px);
+}
+.game-course-card:active {
+    transform: translateY(4px);
+}
+
+/* コースごとの独自の太枠＆色付き3Dシャドウ定義 (Tailwindパージ完全回避) */
+.course-card-normal {
+    border-color: #4ade80 !important; /* 明るいポップグリーン */
+    box-shadow: 0 8px 0 #22c55e !important;
+}
+.course-card-normal:hover {
+    box-shadow: 0 14px 0 #22c55e !important;
+    background-color: #f0fdf4 !important;
+}
+.course-card-normal:active {
+    box-shadow: 0 2px 0 #22c55e !important;
+}
+
+.course-card-challenge {
+    border-color: #c084fc !important; /* 明るいポップパープル */
+    box-shadow: 0 8px 0 #a855f7 !important;
+}
+.course-card-challenge:hover {
+    box-shadow: 0 14px 0 #a855f7 !important;
+    background-color: #faf5ff !important;
+}
+.course-card-challenge:active {
+    box-shadow: 0 2px 0 #a855f7 !important;
+}
+
+.course-card-timeattack {
+    border-color: #f87171 !important; /* ポップな赤 (Tailwindパージ完全回避) */
+    box-shadow: 0 8px 0 #ef4444 !important;
+}
+.course-card-timeattack:hover {
+    box-shadow: 0 14px 0 #ef4444 !important;
+    background-color: #fff5f5 !important;
+}
+.course-card-timeattack:active {
+    box-shadow: 0 2px 0 #ef4444 !important;
+}
+
+
+
+/* WCAG AA: 白・淡色背景上のタブとRGBラベルを読み取りやすくする */
+#tab-lab,
+#tab-game {
+    color: #475569 !important;
+}
+
+#tab-lab[aria-selected="true"],
+#tab-game[aria-selected="true"] {
+    color: #422006 !important;
+}
+
+label[for="slider-r"] {
+    color: #b91c1c !important;
+}
+
+label[for="slider-g"] {
+    color: #166534 !important;
+}
+
+label[for="slider-b"] {
+    color: #1d4ed8 !important;
+}
+
+header .material-symbols-rounded {
+    display: inline-block;
+    width: 1em;
+    max-width: 1em;
+    overflow: hidden;
+    line-height: 1;
+    flex: 0 0 auto;
+}
+
+header .bg-yellow-400 > .material-symbols-rounded {
+    color: #713f12 !important;
+}
+
+header .text-yellow-500 {
+    color: #a16207 !important;
+}
+
+#recipe-tab-fantasy {
+    color: #475569 !important;
+}
+
+[id^="recipe-tab-"] {
+    min-width: 44px;
+    min-height: 44px;
+}
+
+#color-name-display {
+    color: #4f46e5 !important;
+}
+
+#edit-name-btn {
+    color: #64748b !important;
+}
+
+
+/* 操作用と削除用のボタンを兄弟にし、元のスロット寸法を保つ。 */
+.palette-use-btn {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    border-radius: inherit;
+    background: transparent;
+}
+.palette-delete-btn[hidden] { display: none; }
+
+@media (prefers-reduced-motion: reduce) {
+    .character-mixer-spin, .character-pop-burst { animation: none !important; }
+}
+

@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="index, follow">
+  <meta name="format-detection" content="telephone=no">
+  
+  <title>テキスト差分チェックツール【無料】文章・コードの差分をリアルタイム比較（ブラウザ完結・安全） - KatakataLab</title>
+  <meta name="description" content="文章やコードの違いを色で表示する差分ツール。文字単位と行単位、左右比較と統合表示に対応。入力は比較のために外部送信しません。">
+  <link rel="canonical" href="https://katakatalab.com/text-diff/">
+  <link rel="alternate" hreflang="ja" href="https://katakatalab.com/text-diff/">
+  <link rel="alternate" hreflang="en" href="https://katakatalab.com/text-diff/en/">
+  <link rel="alternate" hreflang="x-default" href="https://katakatalab.com/text-diff/">
+  
+  <meta property="og:title" content="テキスト差分チェックツール - Text Diff Tool">
+  <meta property="og:description" content="ブラウザ完結で安全。文章・コードの差分を一瞬で可視化。">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://katakatalab.com/text-diff/">
+  <meta property="og:image" content="https://katakatalab.com/ogp.png">
+  <meta property="og:site_name" content="KatakataLab">
+  <meta name="twitter:card" content="summary_large_image">
+
+  <link rel="icon" href="/favicon.ico">
+  <link rel="stylesheet" href="style.css?v=20260824-responsive">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jsdiff/5.1.0/diff.min.js"></script>
+    <link rel="stylesheet" href="../tool-chrome.css?v=source">
+</head>
+<body>
+    <script>try{if(localStorage.getItem('theme')==='dark')document.body.classList.add('dark-mode');}catch(e){}</script>
+
+<main class="tool-wrapper">
+
+    <!-- Unified Mini Header / Breadcrumbs -->
+    <nav class="breadcrumbs-tool breadcrumbs-tool--bar" aria-label="パンくずリスト">
+        <div class="breadcrumbs-tool__trail">
+            <a href="../" class="breadcrumbs-tool__brand">
+                <span class="breadcrumbs-tool__mark">🧪</span> KatakataLab
+            </a>
+            <span class="breadcrumbs-tool__sep">/</span>
+            <span class="breadcrumbs-tool__current" aria-current="page">テキスト差分チェック</span>
+        </div>
+        <a href="../#projects" class="breadcrumbs-tool__index">
+            <span>🧰</span> ツール一覧へ
+        </a>
+    </nav>
+
+    <!-- Auto-Injected noscript fallback -->
+    <noscript>
+        <div class="tool-noscript">
+            <p class="tool-noscript__title">⚠️ JavaScriptが無効になっています</p>
+            <p class="tool-noscript__text">このツールはブラウザ上での計算のためにJavaScriptを使用します。有効にしてからご利用ください。</p>
+        </div>
+    </noscript>
+
+
+
+  
+  <header class="tool-header">
+    <div class="header-inner">
+      <h1 class="app-title">Text Diff <span class="accent">Tool</span></h1>
+      <p class="app-desc">Secure Text & Code Comparator</p>
+    </div>
+    <span class="badge-security" title="入力した文章は比較処理のために外部送信しません">
+      <span class="icon-lock">🔒</span> Client-Side Only
+    </span>
+  </header>
+
+  <nav class="control-bar" aria-label="ツール操作メニュー">
+    <div class="control-group">
+      <span class="control-label">Method:</span>
+      <div class="toggle-switch">
+        <label class="radio-label">
+          <input type="radio" name="diffMode" value="chars" checked aria-label="文字単位で比較する">
+          <span class="radio-btn">文字 (Char)</span>
+        </label>
+        <label class="radio-label">
+          <input type="radio" name="diffMode" value="lines" aria-label="行単位で比較する">
+          <span class="radio-btn">行 (Line)</span>
+        </label>
+      </div>
+    </div>
+
+    <div class="control-group" id="viewToggle" style="display:none;">
+      <span class="control-label">View:</span>
+      <div class="toggle-switch">
+        <label class="radio-label">
+          <input type="radio" name="viewMode" value="split" checked aria-label="左右分割で表示する">
+          <span class="radio-btn">左右 (Split)</span>
+        </label>
+        <label class="radio-label">
+          <input type="radio" name="viewMode" value="unified" aria-label="統合ビューで表示する">
+          <span class="radio-btn">統合 (Unified)</span>
+        </label>
+      </div>
+    </div>
+    
+    <div class="actions">
+      <button type="button" id="swapBtn" class="btn-secondary" aria-label="左右のテキストを入れ替え" title="Swap Texts">
+        <span class="icon-swap">⇄</span> Swap
+      </button>
+      <button type="button" id="clearBtn" class="btn-text" aria-label="両方の入力をすべてクリア">🗑 全クリア</button>
+      <button type="button" id="compareBtn" class="btn-primary" aria-label="差分を比較 (Ctrl+Enter)">
+        <span class="icon-search">🔍</span> Compare
+      </button>
+    </div>
+  </nav>
+
+  <div id="alertBox" class="alert-box" role="alert" style="display:none;"></div>
+
+  <div id="undoToast" class="undo-toast" role="status" aria-live="polite" style="display:none;">
+    <div class="undo-toast-inner">
+      <span class="undo-msg">📥 入力をクリアしました</span>
+      <button type="button" id="undoBtn" class="btn-undo">元に戻す (Undo)</button>
+    </div>
+    <div class="undo-progress"></div>
+  </div>
+
+  <section id="inputSection" class="editor-container two-pane">
+    <div class="pane">
+      <div class="pane-header">
+        <label for="textOriginal" class="pane-label">Original (変更前)</label>
+        <div class="pane-actions">
+          <span id="fileInfoOriginal" class="file-info-badge" style="display:none;"></span>
+          <span id="charCountOriginal" class="char-count">0 chars</span>
+          <button type="button" class="btn-paste" data-target="original" aria-label="Originalに貼り付け">Paste</button>
+          <label class="btn-file-label" title="ファイルから読み込み" aria-label="ファイルから読み込み">
+            <input type="file" class="file-input" data-target="original" accept=".txt,.md,.js,.css,.html,.json,.xml" style="display:none;" aria-label="Originalのファイルをアップロードする">
+            📁 File
+          </label>
+        </div>
+      </div>
+      <textarea id="textOriginal" class="input-area" placeholder="ここに元の文章を入力...（テキストファイルのドロップにも対応）" spellcheck="false"></textarea>
+    </div>
+    
+    <div class="pane">
+      <div class="pane-header">
+        <label for="textNew" class="pane-label">New (変更後)</label>
+        <div class="pane-actions">
+          <span id="fileInfoNew" class="file-info-badge" style="display:none;"></span>
+          <span id="charCountNew" class="char-count">0 chars</span>
+          <button type="button" class="btn-paste" data-target="new" aria-label="Newに貼り付け">Paste</button>
+          <label class="btn-file-label" title="ファイルから読み込み" aria-label="ファイルから読み込み">
+            <input type="file" class="file-input" data-target="new" accept=".txt,.md,.js,.css,.html,.json,.xml" style="display:none;" aria-label="Newのファイルをアップロードする">
+            📁 File
+          </label>
+        </div>
+      </div>
+      <textarea id="textNew" class="input-area" placeholder="ここに新しい文章を入力...（テキストファイルのドロップにも対応）" spellcheck="false"></textarea>
+    </div>
+  </section>
+
+  <section id="resultSection" class="result-container" style="display:none;">
+    <div class="result-header">
+      <h2>Diff Result</h2>
+      <div class="result-actions">
+        <!-- 差分統計バッジ & スマートジャンプナビ -->
+        <div id="diffNav" class="diff-nav" style="display:none;">
+          <span id="diffStat" class="diff-stat"></span>
+          <div class="jump-group">
+            <button type="button" id="btnPrevDiff" class="btn-jump" aria-label="前の差分へ" title="Previous Diff">▲</button>
+            <button type="button" id="btnNextDiff" class="btn-jump" aria-label="次の差分へ" title="Next Diff">▼</button>
+          </div>
+        </div>
+
+        <!-- 統合ビュー用コピーボタン -->
+        <button type="button" id="btnCopyDiff" class="btn-secondary btn-copy-diff" aria-label="差分をコピー" title="Copy Diff Text" style="display:none;">
+          <span class="icon-copy">📋</span> Copy Diff
+        </button>
+
+        <span id="statusMessage" class="status-msg" style="display:none;">
+          <span class="icon-check">✅</span> 完全一致 (Identical)
+        </span>
+        <button type="button" id="editBtn" class="btn-secondary" aria-label="編集に戻る">
+          <span class="icon-edit">✏️</span> Edit
+        </button>
+      </div>
+    </div>
+    
+    <div id="diffViewSplit" class="diff-viewer split-view">
+      <div class="pane diff-pane">
+        <div class="pane-sticky-header">Original</div>
+        <div id="diffOriginal" class="diff-content" tabindex="0"></div>
+      </div>
+      <div class="pane diff-pane">
+        <div class="pane-sticky-header">New</div>
+        <div id="diffNew" class="diff-content" tabindex="0"></div>
+      </div>
+    </div>
+
+    <div id="diffViewUnified" class="diff-viewer unified-view" style="display:none;">
+      <div class="pane diff-pane full-width">
+        <div class="pane-sticky-header">Combined Result</div>
+        <div id="diffUnified" class="diff-content" tabindex="0"></div>
+      </div>
+    </div>
+    
+    <div class="legend" aria-hidden="true">
+      <span class="legend-item del"><span class="swatch"></span>削除 (Deleted)</span>
+      <span class="legend-item add"><span class="swatch"></span>追加 (Added)</span>
+      <span class="legend-item note"><small>※ 緑は追加、赤は削除です。改行の増減も同じ色で示します</small></span>
+    </div>
+  </section>
+
+  <div id="loadingOverlay" class="loading-overlay" style="display:none;" aria-live="assertive">
+    <div class="spinner"></div>
+    <p>Comparing...</p>
+  </div>
+
+  <article class="article-content">
+    <h2>テキスト差分チェックツールの使い方</h2>
+    <p>作成者: かたかた / 更新日: 2026年7月22日</p>
+
+    <div class="feature-box">
+      <h3>💡 クイック使い方とポイント</h3>
+      <p>変更前（Original）と変更後（New）のテキストを入力し、「差分を比較」を押すだけで追加・削除された箇所をハイライト表示します。入力した文章は外部送信せず、比較処理はすべてブラウザ内で完結します。</p>
+    </div>
+
+    <section class="feature-box" data-verification-note aria-labelledby="diff-verification-title">
+      <h3 id="diff-verification-title">🧪 実際の入力で確認した結果</h3>
+      <p><strong>確認日: 2026年7月22日</strong>（Windows版Chrome）</p>
+      <ul>
+        <li><strong>入力:</strong> 「料金は1,000円です。」から「料金は1,200円（税込）です。」へ変更。</li>
+        <li><strong>結果:</strong> 文字単位の比較で、削除1箇所・追加2箇所として金額の変更と「（税込）」の追加が表示されることを確認しました。</li>
+        <li><strong>確認範囲:</strong> 文字・行の差分表示までです。文章の正しさ、計算内容、コードの動作までは判定しません。</li>
+      </ul>
+      <p><a href="../about-katakatalab.html#verification-policy" class="guide-link">KatakataLabの検証方法を見る →</a> | <a href="../guides/case-studies.html" class="guide-link">料金案内を比較する入力・出力例を見る →</a></p>
+    </section>
+
+    <!-- アコーディオン 1: 差分結果の読み方と使いどころ -->
+    <details class="tool-accordion">
+      <summary class="tool-accordion__summary">
+        <span>🧩 差分結果の読み方と使いどころ（文字単位・行単位の比較）</span>
+        <span class="tool-accordion__icon">▼</span>
+      </summary>
+      <div class="tool-accordion__body">
+        <h4>文字単位 vs 行単位の使い分け</h4>
+        <p>比較前に「文字単位」か「行単位」かを選ぶと、目的に合った見え方になります。短い文章の誤字脱字チェックや推敲は文字単位、プログラムコードや長い段落原稿の変更確認は行単位の比較が向いています。</p>
+
+        <h4>ハイライト色の意味</h4>
+        <ul>
+          <li><strong>追加（緑）:</strong> 新しい文章にだけ存在する部分を示します。</li>
+          <li><strong>削除（赤）:</strong> 元の文章にだけ存在する部分を示します。</li>
+          <li><strong>行単位の比較:</strong> 段落やコードのまとまりを確認しやすく、前後の文脈を保ったままレビューできます。</li>
+        </ul>
+
+        <h4>ファイル読み込みとサイズ目安</h4>
+        <p>テキストファイルを直接ドラッグ＆ドロップまたはファイル選択で読み込めます。2MBを超えるファイルや5万文字を超える入力は、端末によって動作が重くなるため分割比較をおすすめします。</p>
+      </div>
+    </details>
+
+    <!-- アコーディオン 2: よくある質問 -->
+    <details class="tool-accordion">
+      <summary class="tool-accordion__summary">
+        <span>❓ よくある質問 (FAQ)</span>
+        <span class="tool-accordion__icon">▼</span>
+      </summary>
+      <div class="tool-accordion__body">
+        <h4>Q. セキュリティは安全ですか？社外秘の文章を入れても大丈夫？</h4>
+        <p>A. 入力した文章は外部サーバーへ送信せず、比較処理はブラウザ内（ローカル環境）で行われます。詳しくは<a href="../privacy.html">プライバシーポリシー</a>をご確認ください。</p>
+
+        <h4>Q. 比較できる文字数に制限はありますか？</h4>
+        <p>A. 推奨は5万文字以内です。それ以上の長文も比較可能ですが、お使いの端末スペックによっては動作が重くなる場合があります。</p>
+
+        <h4>Q. 改行だけの違いや空白文字の違いも検出できますか？</h4>
+        <p>A. はい。改行コードの増減やスペースの有無も差分として検出します。</p>
+      </div>
+    </details>
+  </article>
+
+    <section class="sister-tools">
+      <h3>🧪 他の実験ツールも試してみませんか？</h3>
+      <div class="sister-grid">
+        <a href="../aspect-ratio-calc/" class="sister-card">
+          <div class="sister-icon">📐</div>
+          <div class="sister-info">
+            <h4>アスペクト比計算ツール</h4>
+            <p>画像トリミングや動画の比率を瞬時に計算！SNSの見切れ防止に大活躍します。</p>
+          </div>
+        </a>
+        <a href="../discount-calc/" class="sister-card">
+          <div class="sister-icon">🛍️</div>
+          <div class="sister-info">
+            <h4>割引価格計算ツール</h4>
+            <p>「〇％引き」「さらにポイント還元」を視覚的にスッキリ可視化して計算します！</p>
+          </div>
+        </a>
+      </div>
+    </section>
+  </article>
+
+
+
+  <!-- Auto-Injected Unified Footer -->
+  <footer class="tool-footer tool-footer--bar" aria-label="サイト情報">
+      <a href="../" class="tool-footer__brand">🧪 KatakataLab</a>
+      <span class="tool-footer__sep" aria-hidden="true">|</span>
+      <a href="../who-is-katakata.html">運営者情報</a>
+      <span class="tool-footer__sep" aria-hidden="true">|</span>
+      <a href="../terms.html">利用規約</a>
+      <span class="tool-footer__sep" aria-hidden="true">|</span>
+      <a href="../privacy.html">プライバシーポリシー</a>
+      <span class="tool-footer__sep" aria-hidden="true">|</span>
+      <a href="../contact.html">お問い合わせ</a>
+  </footer>
+
+</main>
+
+<script type="application/ld+json">
+[
+  {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    "name": "Text Diff Tool",
+    "url": "https://katakatalab.com/text-diff/",
+    "applicationCategory": "UtilitiesApplication",
+    "operatingSystem": "Browser",
+    "offers": {
+      "@type": "Offer",
+      "price": "0",
+      "priceCurrency": "JPY"
+    },
+    "description": "ブラウザ完結型のテキスト差分チェックツール。Split/Unified表示切り替え対応。"
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {
+        "@type": "Question",
+        "name": "セキュリティは安全ですか？",
+        "acceptedAnswer": { "@type": "Answer", "text": "入力した文章は比較処理のために外部送信しません。ページ表示時には差分表示用ライブラリをCDNから読み込みますが、入力した文章がCDNへ送られることはありません。この操作画面では広告スクリプトを読み込みません。" }
+      },
+      {
+        "@type": "Question",
+        "name": "比較できる文字数に制限はありますか？",
+        "acceptedAnswer": { "@type": "Answer", "text": "推奨は5万文字以内です。" }
+      }
+    ]
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      { "@type": "ListItem", "position": 1, "name": "KatakataLab", "item": "https://katakatalab.com/" },
+      { "@type": "ListItem", "position": 2, "name": "テキスト差分チェックツール", "item": "https://katakatalab.com/text-diff/" }
+    ]
+  }
+]
+</script>
+
+<script src="script.js" defer></script>
+</body>
+</html>

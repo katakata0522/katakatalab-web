@@ -1,0 +1,413 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="format-detection" content="telephone=no">
+  <meta name="referrer" content="no-referrer">
+  <meta name="application-name" content="スクショ端カット">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="端カット">
+  <meta name="author" content="KatakataLab">
+  <title>スクショの上下を切る・ステータスバーを消す｜スクショ端カット - KatakataLab</title>
+  <meta name="description" content="SNS投稿前のスクショから、上・下・左・右の見せたくない画面端を選んで切り落とす無料ツール。複数枚をまとめて選択でき、画像は外部AIやサーバーへ送らずブラウザ内で処理します。">
+  <meta name="robots" content="index,follow">
+  <link rel="canonical" href="https://katakatalab.com/screenshot-crop/">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="KatakataLab">
+  <meta property="og:locale" content="ja_JP">
+  <meta property="og:title" content="スクショ端カット｜投稿前に、画面の端だけサッと切る">
+  <meta property="og:description" content="ステータスバーやナビゲーションバーなど、見せたくない画面端を選んで切り落とせます。ログイン不要・画像アップロード不要。">
+  <meta property="og:url" content="https://katakatalab.com/screenshot-crop/">
+  <meta property="og:image" content="https://katakatalab.com/ogp.png">
+  <meta property="og:image:alt" content="KatakataLab スクショ端カット">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:site" content="@Katakata_toybox">
+  <meta name="twitter:title" content="スクショ端カット｜投稿前に、画面の端だけサッと切る">
+  <meta name="twitter:description" content="ステータスバーやナビゲーションバーなど、見せたくない画面端をブラウザ内だけで切り落とします。">
+  <meta name="twitter:image" content="https://katakatalab.com/ogp.png">
+  <meta name="twitter:image:alt" content="KatakataLab スクショ端カット">
+  <meta name="theme-color" content="#f8fafc">
+  <link rel="manifest" href="./manifest.webmanifest">
+  <link rel="icon" href="./pwa-icon.svg" type="image/svg+xml">
+  <link rel="icon" href="/favicon.ico" sizes="any">
+  <link rel="apple-touch-icon" href="./pwa-icon.svg">
+  <link rel="stylesheet" href="./style.css?v=20261002-v33-usability">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "WebApplication",
+        "@id": "https://katakatalab.com/screenshot-crop/#app",
+        "name": "スクショ端カット",
+        "url": "https://katakatalab.com/screenshot-crop/",
+        "applicationCategory": "UtilitiesApplication",
+        "operatingSystem": "Web",
+        "inLanguage": "ja",
+        "browserRequirements": "JavaScriptを有効にしたモダンブラウザ",
+        "isAccessibleForFree": true,
+        "featureList": [
+          "複数のスクリーンショットをまとめて選択",
+          "上・下・左・右から切る辺を選択",
+          "スクリーンショット端の自動トリミング候補",
+          "上下左右の1px手動微調整",
+          "3つまで保存できる切り取りプリセット",
+          "加工画像のクリップボードコピー",
+          "ブラウザ内画像処理",
+          "メタデータを引き継がない画像書き出し"
+        ],
+        "offers": {
+          "@type": "Offer",
+          "price": "0",
+          "priceCurrency": "JPY"
+        },
+        "description": "SNS投稿前のスクリーンショットから、ステータスバーやナビゲーションバーなど画面端をブラウザ内で切り落とす無料ツール。",
+        "publisher": {
+          "@type": "Organization",
+          "name": "KatakataLab",
+          "url": "https://katakatalab.com/"
+        }
+      },
+      {
+        "@type": "WebPage",
+        "@id": "https://katakatalab.com/screenshot-crop/#webpage",
+        "url": "https://katakatalab.com/screenshot-crop/",
+        "name": "スクショ端カット",
+        "description": "SNS投稿前のスクショから、見せたくない画面端をブラウザ内で切り落とします。",
+        "inLanguage": "ja",
+        "mainEntity": {
+          "@id": "https://katakatalab.com/screenshot-crop/#app"
+        }
+      },
+      {
+        "@type": "BreadcrumbList",
+        "itemListElement": [
+          {
+            "@type": "ListItem",
+            "position": 1,
+            "name": "KatakataLab",
+            "item": "https://katakatalab.com/"
+          },
+          {
+            "@type": "ListItem",
+            "position": 2,
+            "name": "スクショ端カット",
+            "item": "https://katakatalab.com/screenshot-crop/"
+          }
+        ]
+      }
+    ]
+  }
+  </script>
+</head>
+<body>
+  <header class="site-bar">
+    <a class="brand-link" href="../" aria-label="KatakataLabトップへ">
+      <span class="brand-mark" aria-hidden="true">🧪</span>
+      <span>KatakataLab</span>
+    </a>
+    <div class="site-actions">
+      <button class="pwa-install-button" id="pwaInstallButton" type="button" hidden>アプリに追加</button>
+      <a class="tools-link" href="../#projects">ツール一覧</a>
+    </div>
+  </header>
+
+  <main class="page-shell">
+    <noscript class="noscript-block">
+      <strong>JavaScriptを有効にしてください</strong>
+      <span>画像の読み込み・切り抜き・保存はブラウザ内のJavaScriptで行います。</span>
+    </noscript>
+    <section class="tool-start" aria-labelledby="page-title">
+      <header class="compact-tool-header">
+        <div class="tool-title-block">
+          <h1 id="page-title">スクショ端カット</h1>
+          <p class="tool-tagline">見せたくない画面端だけを、投稿前にサッと切ります。</p>
+        </div>
+        <div class="privacy-badge" aria-label="プライバシー設計">
+          <span aria-hidden="true">🔒</span>
+          <span><strong>画像はこの端末から外へ送りません</strong><small>ブラウザ内だけで処理します</small></span>
+        </div>
+      </header>
+
+      <section class="upload-card" id="uploadSection" aria-labelledby="upload-title">
+        <h2 id="upload-title" class="visually-hidden">画像を選ぶ</h2>
+
+        <label class="drop-zone" id="dropZone" for="fileInput" role="button" tabindex="0" aria-describedby="uploadHelp">
+          <input id="fileInput" class="visually-hidden" type="file" accept=".png,.jpg,.jpeg,.webp,image/png,image/jpeg,image/webp" multiple>
+          <span class="drop-icon" aria-hidden="true">＋</span>
+          <strong>画像を選ぶ</strong>
+          <span id="uploadHelp">1〜8枚・PNG / JPG / WebP</span>
+          <small>PCはまとめてドラッグ＆ドロップもOK</small>
+        </label>
+
+        <div class="upload-foot">
+          <button class="text-button" id="pasteButton" type="button">クリップボードから貼り付け</button>
+        </div>
+        <p class="inline-message" id="uploadMessage" role="status" aria-live="polite"></p>
+      </section>
+    </section>
+
+    <section class="editor-section" id="editorSection" hidden aria-labelledby="editor-title">
+      <div class="editor-topline">
+        <div>
+          <h2 id="editor-title">切る範囲を確認</h2>
+          <p class="batch-progress" id="batchProgress" aria-live="polite" hidden>1枚を編集中</p>
+          <p class="ready-hint" id="readyHint" role="status" aria-live="polite">自動調整中…</p>
+        </div>
+        <div class="editor-header-actions">
+          <button class="secondary-button compact" id="replaceButton" type="button">画像を追加</button>
+          <button class="text-button compact danger-lite" id="removeCurrentButton" type="button" aria-label="現在の画像を一覧から外す">画像を外す</button>
+        </div>
+      </div>
+
+      <section class="batch-strip" id="batchStrip" hidden aria-label="選択した画像一覧">
+        <button type="button" class="batch-arrow" id="prevImageButton" aria-label="前の画像">‹</button>
+        <div class="batch-list" id="batchList" role="list"></div>
+        <button type="button" class="batch-arrow" id="nextImageButton" aria-label="次の画像">›</button>
+      </section>
+
+      <div class="editor-grid">
+        <div class="preview-column">
+          <div class="preview-toolbar preview-toolbar-simple">
+            <span class="edit-state visually-hidden" id="editState">自動調整</span>
+            <button class="text-button compare-button" id="compareButton" type="button" aria-pressed="false">元画像と比較</button>
+          </div>
+
+          <div class="canvas-shell" id="canvasShell">
+            <canvas id="previewCanvas" aria-label="切り抜き範囲プレビュー" aria-describedby="canvasHelp">画像プレビューはCanvas対応ブラウザで表示されます。</canvas>
+            <p class="canvas-help" id="canvasHelp">黄色いバーを動かして調整できます</p>
+          </div>
+
+          <div class="crop-summary" aria-live="polite">
+            <span>出力</span>
+            <strong id="resultSize">—</strong>
+            <span id="removedSummary">—</span>
+          </div>
+        </div>
+
+        <div class="control-column">
+          <section class="edge-control-card" aria-labelledby="edge-control-title">
+            <div class="control-heading">
+              <h3 id="edge-control-title">切る場所</h3>
+            </div>
+
+            <fieldset class="edge-fieldset edge-fieldset-simple">
+              <legend class="visually-hidden">切り取る辺を選択</legend>
+              <label class="edge-toggle is-active">
+                <input type="checkbox" id="edgeTop" data-edge="top" checked>
+                <span><strong>上</strong></span>
+              </label>
+              <label class="edge-toggle">
+                <input type="checkbox" id="edgeBottom" data-edge="bottom">
+                <span><strong>下</strong></span>
+              </label>
+              <label class="edge-toggle">
+                <input type="checkbox" id="edgeLeft" data-edge="left">
+                <span><strong>左</strong></span>
+              </label>
+              <label class="edge-toggle">
+                <input type="checkbox" id="edgeRight" data-edge="right">
+                <span><strong>右</strong></span>
+              </label>
+            </fieldset>
+
+            <p class="edge-help">画像ごとに合う辺を自動で選びます。ここでの変更は、いま表示している画像だけに反映します。</p>
+          </section>
+
+          <section class="preset-bar" id="presetBar" aria-labelledby="presetTitle">
+            <div class="preset-bar-row">
+              <div class="preset-copy">
+                <strong id="presetTitle">プリセット</strong>
+                <span>よく使う切り方を3つまで</span>
+              </div>
+              <div class="preset-slots" role="group" aria-label="切り取りプリセット">
+                <button class="preset-slot" id="presetSlot1" type="button" data-preset-slot="1" aria-pressed="false">
+                  <span>1</span><small data-preset-state>＋</small>
+                </button>
+                <button class="preset-slot" id="presetSlot2" type="button" data-preset-slot="2" aria-pressed="false">
+                  <span>2</span><small data-preset-state>＋</small>
+                </button>
+                <button class="preset-slot" id="presetSlot3" type="button" data-preset-slot="3" aria-pressed="false">
+                  <span>3</span><small data-preset-state>＋</small>
+                </button>
+              </div>
+            </div>
+            <div class="preset-manager" id="presetManager" hidden>
+              <p id="presetManagerText" role="status" aria-live="polite"></p>
+              <div class="preset-manager-actions">
+                <button class="secondary-button compact" id="presetSaveButton" type="button">現在の切り方を保存</button>
+                <button class="text-button preset-delete-button" id="presetDeleteButton" type="button" hidden>削除</button>
+                <button class="text-button" id="presetCloseButton" type="button">閉じる</button>
+              </div>
+            </div>
+          </section>
+
+
+          <div class="export-card">
+            <div class="export-heading">
+              <h3>保存</h3>
+              <p id="exportPrivacy">位置情報や撮影日時は引き継ぎません。</p>
+            </div>
+            <div class="batch-review" id="batchReview" hidden>
+              <div>
+                <strong>確認状況</strong>
+                <p id="batchReviewText" aria-live="polite"></p>
+              </div>
+              <button class="text-button batch-review-next" id="reviewNextButton" type="button" hidden>未確認を見る</button>
+            </div>
+            <button class="primary-button" id="saveButton" type="button" aria-describedby="exportPrivacy">画像を保存</button>
+            <button class="secondary-button copy-button" id="copyButton" type="button" hidden>加工画像をコピー</button>
+            <button class="secondary-button batch-save-button" id="saveAllIndividualButton" type="button" hidden>まとめて個別保存</button>
+            <button class="secondary-button batch-save-button" id="saveAllButton" type="button" hidden>1つにまとめる（ZIP）</button>
+            <p class="batch-auto-note" id="batchAutoNote" hidden>未確認の画像も自動候補のまま処理できます。必要なら「未確認を見る」で順に確認できます。</p>
+            <button class="secondary-button share-button" id="shareButton" type="button" hidden>共有メニューを開く</button>
+            <p class="inline-message" id="exportMessage" role="status" aria-live="polite"></p>
+          </div>
+
+          <details class="advanced-panel">
+            <summary>
+              <span>
+                <span class="mini-label">必要な人だけ</span>
+                <strong>詳細設定</strong>
+              </span>
+              <span class="chevron" aria-hidden="true">⌄</span>
+            </summary>
+
+            <div class="advanced-panel-body">
+              <section class="advanced-section" aria-labelledby="auto-setting-title">
+                <div class="control-heading compact-heading">
+                  <div>
+                    <span class="mini-label">自動判定</span>
+                    <h3 id="auto-setting-title">画像の種類</h3>
+                    <p class="detected-inline">判定：<strong id="detectedLabel" role="status" aria-live="polite">確認中…</strong></p>
+                  </div>
+                  <button class="secondary-button compact" id="autoAgainButton" type="button">やり直す</button>
+                </div>
+                <div class="mode-switch" role="group" aria-label="画像種別">
+                  <button type="button" class="mode-button is-active" data-mode="auto" aria-pressed="true">自動</button>
+                  <button type="button" class="mode-button" data-mode="phone" aria-pressed="false">スマホ</button>
+                  <button type="button" class="mode-button" data-mode="desktop" aria-pressed="false">PC</button>
+                </div>
+                <label class="check-row">
+                  <input id="safeMargin" type="checkbox" checked>
+                  <span>
+                    <strong>少し多めに切る</strong>
+                    <small>システムUIのすぐ内側まで、わずかに安全マージンを足します</small>
+                  </span>
+                </label>
+              </section>
+
+              <section class="advanced-section manual-section" aria-labelledby="manual-setting-title">
+                <div>
+                  <span class="mini-label">手動調整</span>
+                  <h3 id="manual-setting-title">1px単位で微調整</h3>
+                </div>
+                <p class="range-help">選択中の辺だけ調整できます。画像上の黄色いバーを直接動かすこともできます。</p>
+                <div class="range-list">
+                  <label class="range-row" for="cropTop">
+                    <span>上 <output id="cropTopValue">0px</output></span>
+                    <input id="cropTop" type="range" min="0" max="100" value="0" step="1">
+                  </label>
+                  <label class="range-row" for="cropBottom">
+                    <span>下 <output id="cropBottomValue">0px</output></span>
+                    <input id="cropBottom" type="range" min="0" max="100" value="0" step="1">
+                  </label>
+                  <label class="range-row" for="cropLeft">
+                    <span>左 <output id="cropLeftValue">0px</output></span>
+                    <input id="cropLeft" type="range" min="0" max="100" value="0" step="1">
+                  </label>
+                  <label class="range-row" for="cropRight">
+                    <span>右 <output id="cropRightValue">0px</output></span>
+                    <input id="cropRight" type="range" min="0" max="100" value="0" step="1">
+                  </label>
+                </div>
+              </section>
+            </div>
+          </details>
+
+          <p class="privacy-inline-note">🔒 画像本体をサーバーや外部AIへ送りません</p>
+        </div>
+      </div>
+    </section>
+
+    <div class="quick-action-dock" id="quickActionDock" hidden aria-label="クイック操作">
+      <button class="quick-action secondary-button" id="quickCopyButton" type="button" hidden>コピー</button>
+      <button class="quick-action secondary-button" id="quickShareButton" type="button" hidden>共有</button>
+      <button class="quick-action primary-button" id="quickSaveButton" type="button">保存</button>
+    </div>
+
+    <section class="explain-section" aria-labelledby="why-title">
+      <div class="explain-main">
+        <p class="eyebrow">こんな時に便利</p>
+        <h2 id="why-title">投稿前に、見せたくない画面端だけを整理。</h2>
+        <p>時刻や通知、ナビゲーションバー、PCのタスクバーなど、スクショの端に写った不要な情報だけを手早く切れます。基本は「上」だけ。必要なときだけ下・左・右も追加できます。</p>
+      </div>
+      <div class="use-cases">
+        <article>
+          <span aria-hidden="true">📱</span>
+          <h3>スマホのスクショ</h3>
+          <p>縦・横やロングスクショを見分け、以前使った同じ端末なら前回のpx位置をそのまま合わせます。</p>
+        </article>
+        <article>
+          <span aria-hidden="true">🖥️</span>
+          <h3>PCのスクショ</h3>
+          <p>下端のタスクバーらしい境界を探し、見つからないときは勝手に大きく切りません。</p>
+        </article>
+        <article>
+          <span aria-hidden="true">↔</span>
+          <h3>左右も必要なら</h3>
+          <p>画像上の黄色いバーか詳細スライダーで、4辺すべてを手動調整できます。</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="faq-section" aria-labelledby="faq-title">
+      <h2 id="faq-title">よくある確認</h2>
+      <details>
+        <summary>本当に画像はアップロードされませんか？</summary>
+        <p>このツールの画像読み込み・判定・切り抜き・書き出し処理はブラウザ内で行います。画像本体・サムネイル・ファイル名は永続保存しません。保存・コピー・共有が正常に終わったときだけ、同じ端末で次回も合わせられるよう、端末の種類・向き・基準サイズ・切る辺・px値をこの端末内に保存します。これらの個別値をアクセス解析へ送りません。</p>
+      </details>
+      <details>
+        <summary>自動判定で必ずきれいに切れますか？</summary>
+        <p>端末やアプリによってバーの高さ・背景色・表示方法が違うため、完全自動を保証するものではありません。自動判定は最初の候補を出すための機能で、最後はプレビューの黄色いバーを動かして確認してください。</p>
+      </details>
+      <details>
+        <summary>複数枚はどうやって保存しますか？</summary>
+        <p>1枚ずつ確認して保存するほか、「個別保存」なら加工後の画像を通常の画像ファイルとして順に保存でき、「1つにまとめる（ZIP）」ならすべてを1つのファイルにまとめられます。どちらも未確認の画像を1枚ずつ端末・向き・サイズから判定し、それぞれに合う切り位置でブラウザ内処理します。「まとめて個別保存」では、ブラウザから複数ファイルのダウンロード許可を求められる場合があります。</p>
+      </details>
+      <details>
+        <summary>プリセットや前回の切り取り位置はどこに保存されますか？</summary>
+        <p>この端末のこのブラウザ内の保存領域に保存し、アカウントやクラウドへ同期しません。プリセットは「現在の切り方を保存」または「現在の切り方で上書き」を押したときだけ保存されます。ブラウザのサイトデータやストレージを削除した場合、プライベートブラウジングを利用した場合、ブラウザや端末を変更・初期化した場合などは、保存したプリセットや前回の切り取り位置が消える、または引き継がれないことがあります。現在はバックアップ・復元・端末間同期には対応していません。</p>
+      </details>
+      <details>
+        <summary>保存せず、そのまま貼り付けられますか？</summary>
+        <p>対応ブラウザでは「加工画像をコピー」でクリップボードへ入れられます。コピー後は、対応するSNSやチャットの投稿欄へそのまま貼り付けできます。</p>
+      </details>
+      <details>
+        <summary>元画像は消えますか？</summary>
+        <p>元画像そのものは変更しません。切り抜いた結果を別ファイルとして作成します。</p>
+      </details>
+    </section>
+  </main>
+
+  <div class="profile-toast" id="profileToast" role="status" aria-live="polite" aria-atomic="true" hidden></div>
+
+  <footer class="site-footer">
+    <a href="../privacy.html">プライバシーポリシー</a>
+    <a href="../terms.html">利用規約</a>
+    <a href="../contact.html">お問い合わせ</a>
+    <span>© 2024-2026 KatakataLab</span>
+  </footer>
+
+  <script src="./core.js?v=20261002-v31-mobile-density" defer></script>
+  <script src="./device-profiles.js?v=20261002-v31-mobile-density" defer></script>
+  <script src="./crop-presets.js?v=20261002-v31-mobile-density" defer></script>
+  <script src="./image.js?v=20261002-v31-mobile-density" defer></script>
+  <script src="./preview.js?v=20261002-v31-mobile-density" defer></script>
+  <script src="./zip.js?v=20261002-v31-mobile-density" defer></script>
+  <script src="./script.js?v=20261002-v33-usability" defer></script>
+  <script src="./pwa.js?v=20261002-v31-mobile-density" defer></script>
+</body>
+</html>

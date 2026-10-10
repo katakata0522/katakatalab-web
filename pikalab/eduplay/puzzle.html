@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="robots" content="noindex, follow">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>かたち合わせパズル</title>
+    <meta name="description" content="シルエットに合う形を見つけながら、観察力と形の認識を育てる子ども向けパズルです。">
+    <link rel="canonical" href="https://katakatalab.com/pikalab/eduplay/puzzle.html">
+    <meta property="og:title" content="かたち合わせパズル">
+    <meta property="og:description" content="シルエットに合う形を見つけながら、観察力と形の認識を育てる子ども向けパズルです。">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://katakatalab.com/pikalab/eduplay/puzzle.html">
+    <meta property="og:image" content="https://katakatalab.com/pikalab/pikalab_ogp_compressed.jpg">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="かたち合わせパズル">
+    <meta name="twitter:description" content="シルエットに合う形を見つけながら、観察力と形の認識を育てる子ども向けパズルです。">
+    <meta name="twitter:image" content="https://katakatalab.com/pikalab/pikalab_ogp_compressed.jpg">
+    <link rel="stylesheet" href="../style.css">
+    <link rel="stylesheet" href="common.css">
+    <script src="common.js"></script>
+    <style>
+        .silhouette {
+            color: transparent;
+            text-shadow: 0 0 0 #cbd5e1;
+            opacity: 0.5;
+            filter: drop-shadow(0px 4px 2px rgba(0,0,0,0.1)) inset;
+        }
+
+        @keyframes pulse-soft {
+            0%, 100% { transform: scale(1); opacity: 0.5; }
+            50% { transform: scale(1.05); opacity: 0.8; }
+        }
+        .target-hint { animation: pulse-soft 2s infinite; }
+
+        .draggable {
+            touch-action: none;
+            user-select: none;
+            cursor: grab;
+            position: relative;
+        }
+        .draggable:active { cursor: grabbing; }
+        .dragging {
+            z-index: 50;
+            filter: drop-shadow(0 15px 15px rgba(0,0,0,0.3));
+        }
+
+        .snap-anim { transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1); }
+
+        @keyframes popIn {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.2); }
+            100% { transform: scale(1); }
+        }
+        .pop-in { animation: popIn 0.3s ease-out forwards; }
+    </style>
+    <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"かたち合わせパズル","url":"https://katakatalab.com/pikalab/eduplay/puzzle.html","description":"シルエットに合う形を見つけながら、観察力と形の認識を育てる子ども向けパズルです。","applicationCategory":"EducationalApplication","operatingSystem":"Any","isAccessibleForFree":true,"offers":{"@type":"Offer","price":"0","priceCurrency":"JPY"}}</script>
+</head>
+<body class="bg-blue-50 h-screen w-screen overflow-auto font-sans select-none text-gray-800">
+    <main id="app" class="max-w-2xl mx-auto h-full flex flex-col p-3 sm:p-5 relative">
+        <!-- ヘッダー -->
+        <header class="flex justify-between items-center py-2 sm:py-4 shrink-0 gap-2">
+            <a id="game-back-btn" href="./" class="bg-white border-b-4 border-gray-300 px-4 py-2 sm:px-6 sm:py-3 rounded-full font-bold text-base sm:text-lg shadow-md game-card text-gray-700">⬅️ もどる</a>
+            <h1 class="text-3xl sm:text-4xl md:text-5xl font-black text-blue-500 drop-shadow-sm tracking-wide hidden sm:block">🧩 パズル 🧩</h1>
+            <div class="flex gap-2">
+                <button type="button" data-action="parents-modal-open" class="bg-white border-b-4 border-gray-300 p-3 sm:p-4 rounded-full shadow-md text-lg sm:text-xl game-card flex items-center justify-center active:scale-95 transition" aria-label="保護者の方へ - 開く" aria-haspopup="dialog" aria-expanded="false" title="保護者の方へ">👨‍👩‍👦</button>
+                <button type="button" id="sound-toggle" onclick="EduSound.toggle(this)" aria-label="音を消す" aria-pressed="true" class="bg-white border-b-4 border-gray-300 p-3 sm:p-4 rounded-full shadow-md text-xl sm:text-2xl game-card">🔊</button>
+            </div>
+        </header>
+
+        <div id="message" class="text-center font-bold text-xl sm:text-2xl text-blue-600 my-2 sm:my-4 bg-white py-3 sm:py-4 rounded-full shadow-sm border-4 border-blue-100 shrink-0">
+            おなじ かたちに いれてね！
+        </div>
+
+        <div class="flex-1 flex flex-col justify-around py-2 sm:py-4 sm:gap-4 overflow-hidden">
+            <div id="targets-container" class="sticky top-0 z-30 flex justify-around items-center bg-white/95 backdrop-blur-md p-2 sm:p-6 rounded-3xl shadow-sm border-4 border-dashed border-blue-300 flex-1 min-h-[100px] max-h-[30vh]"></div>
+            <div id="sources-container" class="flex justify-around items-center bg-yellow-100 p-2 sm:p-6 rounded-3xl shadow-inner flex-1 min-h-[100px] max-h-[30vh]"></div>
+        </div>
+    </main>
+
+    <div id="clear-overlay" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-40">
+        <div class="bg-white rounded-3xl p-8 max-w-sm w-full text-center shadow-2xl scale-up flex flex-col items-center justify-center">
+            <div class="text-8xl mb-4 inline-block">👑</div>
+            <h2 class="text-4xl font-black text-orange-500 mb-2">クリア！</h2>
+            <p class="text-xl text-gray-700 font-bold mb-6">すごいね！よくできたね！</p>
+            <div class="flex flex-col gap-3 w-full">
+                <button onclick="initGame()" class="w-full bg-blue-500 text-white text-xl font-bold py-4 rounded-2xl shadow-md transition-transform active:scale-95">つぎへ！ ➡️</button>
+                <button onclick="location.href='./'" class="w-full bg-gray-200 text-gray-700 text-lg font-bold py-3 rounded-2xl shadow-sm transition-transform active:scale-95">🏠 ひろばへもどる</button>
+            </div>
+            <!-- 保護者向けバナーを追加 -->
+            <div class="mt-6 pt-4 border-t border-gray-100 w-full text-left">
+                <p class="text-xs text-gray-500 font-bold mb-2 text-center">💡 おうちの方へ おすすめツール</p>
+                <div class="grid grid-cols-2 gap-2">
+                    <a href="../quest_board/" class="bg-amber-50 hover:bg-amber-100 text-amber-800 font-bold p-2.5 rounded-xl text-xs flex items-center justify-center gap-1 active:scale-95 transition text-center no-underline">
+                        <span>🎯 クエストボード</span>
+                    </a>
+                    <a href="../paper_gen/" class="bg-stone-50 hover:bg-stone-100 text-stone-800 font-bold p-2.5 rounded-xl text-xs flex items-center justify-center gap-1 active:scale-95 transition text-center no-underline">
+                        <span>📄 用紙メーカー</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let matchedCount = 0;
+        const TOTAL_ITEMS = 3;
+
+        function initGame() {
+            document.getElementById('clear-overlay').classList.add('hidden');
+            matchedCount = 0;
+            
+            const targetsContainer = document.getElementById('targets-container');
+            const sourcesContainer = document.getElementById('sources-container');
+            
+            targetsContainer.innerHTML = '';
+            sourcesContainer.innerHTML = '';
+
+            const selectedItems = EduUtils.shuffleArray(EduData.items).slice(0, TOTAL_ITEMS);
+            const sourceItems = EduUtils.shuffleArray(selectedItems);
+
+            selectedItems.forEach(item => {
+                const targetBox = document.createElement('div');
+                targetBox.className = "w-16 h-16 sm:w-20 sm:h-20 flex items-center justify-center relative";
+                
+                const silhouette = document.createElement('div');
+                silhouette.className = "text-5xl sm:text-6xl silhouette absolute target-hint";
+                silhouette.innerText = item.emoji;
+                silhouette.id = `target-${item.id}`;
+                
+                targetBox.appendChild(silhouette);
+                targetsContainer.appendChild(targetBox);
+            });
+
+            sourceItems.forEach(item => {
+                const sourceBox = document.createElement('div');
+                sourceBox.className = "w-16 h-16 sm:w-20 sm:h-20 flex items-center justify-center relative";
+                
+                const emojiEl = document.createElement('button');
+                emojiEl.type = 'button';
+                emojiEl.className = "text-5xl sm:text-6xl draggable snap-anim";
+                emojiEl.innerText = item.emoji;
+                emojiEl.dataset.id = item.id;
+                emojiEl.dataset.name = item.name;
+                emojiEl.setAttribute('aria-label', `${item.name}を同じ形にはめる`);
+                
+                const randomRot = Math.floor(Math.random() * 30) - 15;
+                emojiEl.dataset.rot = randomRot;
+                emojiEl.style.transform = `translate(0px, 0px) rotate(${randomRot}deg)`;
+                
+                makeDraggable(emojiEl);
+                
+                sourceBox.appendChild(emojiEl);
+                sourcesContainer.appendChild(sourceBox);
+            });
+            
+            setTimeout(() => EduSound.speak("かたちを、あわせてね！"), 500);
+        }
+
+        function makeDraggable(el) {
+            let startX = 0, startY = 0;
+            let currentX = 0, currentY = 0;
+            let isMatched = false;
+            let originalRot = parseInt(el.dataset.rot) || 0;
+
+            const resetDrag = () => {
+                el.classList.remove('dragging');
+                el.classList.add('snap-anim');
+                currentX = 0;
+                currentY = 0;
+                el.style.transform = `translate(0px, 0px) scale(1) rotate(${originalRot}deg)`;
+            };
+
+            el.addEventListener('pointerdown', (e) => {
+                if (isMatched) return;
+                el.setPointerCapture(e.pointerId);
+                el.classList.add('dragging');
+                el.classList.remove('snap-anim');
+                
+                // ドラッグ中、画面全体のスクロール（パン）を防ぐためにbodyをロック
+                document.body.style.overflow = 'hidden';
+                
+                // ズームスケールを取得
+                const scale = window.visualViewport ? window.visualViewport.scale : 1;
+                
+                el.style.transform = `translate(${currentX}px, ${currentY}px) scale(1.2) rotate(0deg)`;
+                startX = (e.clientX / scale) - currentX;
+                startY = (e.clientY / scale) - currentY;
+                EduSound.speak(el.dataset.name);
+            });
+
+            el.addEventListener('pointermove', (e) => {
+                if (isMatched || !el.hasPointerCapture(e.pointerId)) return;
+                
+                const scale = window.visualViewport ? window.visualViewport.scale : 1;
+                currentX = (e.clientX / scale) - startX;
+                currentY = (e.clientY / scale) - startY;
+                el.style.transform = `translate(${currentX}px, ${currentY}px) scale(1.2) rotate(0deg)`;
+            });
+
+            el.addEventListener('pointerup', (e) => {
+                if (isMatched) return;
+                el.releasePointerCapture(e.pointerId);
+                el.classList.remove('dragging');
+                el.classList.add('snap-anim');
+                
+                // ドラッグ終了時にbodyのスクロールロックを解除
+                document.body.style.overflow = '';
+                
+                if (checkMatch(el, currentX, currentY)) {
+                    isMatched = true;
+                } else {
+                    resetDrag();
+                }
+            });
+
+            // システム割り込み対応（超重要）
+            el.addEventListener('pointercancel', (e) => {
+                if (isMatched) return;
+                el.releasePointerCapture(e.pointerId);
+                
+                // ドラッグ中止時にbodyのスクロールロックを解除
+                document.body.style.overflow = '';
+                
+                resetDrag();
+            });
+
+            // Enter/Spaceではドラッグせず、対応する形へ直接はめる
+            el.addEventListener('click', (e) => {
+                if (e.detail !== 0 || isMatched) return;
+                isMatched = matchByKeyboard(el);
+            });
+        }
+
+        function matchByKeyboard(el) {
+            const targetEl = document.getElementById(`target-${el.dataset.id}`);
+            if (!targetEl) return false;
+            return completeMatch(el, targetEl);
+        }
+
+        function checkMatch(el, currentX, currentY) {
+            const targetId = `target-${el.dataset.id}`;
+            const targetEl = document.getElementById(targetId);
+            if (!targetEl) return false;
+
+            const elRect = el.getBoundingClientRect();
+            const targetRect = targetEl.getBoundingClientRect();
+
+            const elCenterX = elRect.left + elRect.width / 2;
+            const elCenterY = elRect.top + elRect.height / 2;
+            const targetCenterX = targetRect.left + targetRect.width / 2;
+            const targetCenterY = targetRect.top + targetRect.height / 2;
+
+            const distance = Math.hypot(elCenterX - targetCenterX, elCenterY - targetCenterY);
+            
+            // 改善点：絶対値(80px)から、ターゲットの幅の半分以内という相対値に変更
+            const threshold = targetRect.width * 0.6; 
+
+            if (distance < threshold) {
+                return completeMatch(el, targetEl);
+            }
+            return false;
+        }
+
+        function completeMatch(el, targetEl) {
+            const targetRect = targetEl.getBoundingClientRect();
+            const targetCenterX = targetRect.left + targetRect.width / 2;
+            const targetCenterY = targetRect.top + targetRect.height / 2;
+
+            targetEl.classList.remove('silhouette', 'target-hint');
+            targetEl.classList.add('pop-in');
+            targetEl.setAttribute('aria-label', `${el.dataset.name}、はめ込み済み`);
+            el.remove();
+
+            EduSound.speak("ぴったんこ！");
+
+            const star = document.createElement('div');
+            star.innerText = "✨";
+            star.className = "absolute text-4xl scale-up pointer-events-none z-50";
+            star.style.left = `${targetCenterX - 20}px`;
+            star.style.top = `${targetCenterY - 20}px`;
+            document.body.appendChild(star);
+            setTimeout(() => star.remove(), 1000);
+
+            matchedCount++;
+            if (matchedCount === TOTAL_ITEMS) {
+                setTimeout(() => {
+                    EduUtils.completeGameClear("だいせいかい！すごいね！");
+                }, 800);
+            }
+            return true;
+        }
+
+        window.onload = () => {
+            initGame();
+        };
+    </script>
+    
+<!-- Parents Modal -->
+    
+
+    
+
+    
+<!-- Parents Modal -->
+    <dialog id="parents-modal"
+        class="p-0 rounded-3xl shadow-2xl  open:animate-fade-in w-full max-w-lg m-auto overflow-hidden border-0"
+        aria-labelledby="parents-modal-title" style="display:none;">
+        <div class="bg-white p-6 md:p-8 max-h-[90vh] overflow-y-auto relative text-left">
+            <button type="button" data-action="parents-modal-close" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600 focus:outline-none" aria-label="閉じる">
+                <span class="material-symbols-rounded">close</span>
+            </button>
+            <div class="mb-6 border-b-2 border-indigo-100 pb-4">
+                <h2 id="parents-modal-title"
+                    class="text-lg md:text-xl font-black text-slate-800 flex items-center gap-2">
+                    <span class="material-symbols-rounded text-indigo-500">family_restroom</span> 保護者の方へ
+                </h2>
+                <p class="text-xs text-slate-400 font-bold mt-1">For Parents & Guardians</p>
+            </div>
+
+            <div class="space-y-6 text-sm text-slate-600 leading-relaxed font-bold">
+                <!-- ウェルカムメッセージカード -->
+                <div class="bg-gradient-to-r from-indigo-50 to-purple-50 p-5 rounded-2xl border border-indigo-100 text-center">
+                    <p class="mb-2 text-indigo-800 text-base">
+                        <span class="material-symbols-rounded text-xl align-bottom mr-1 text-pink-400">favorite</span>
+                        当サイト「PikaLab」に<br>ご訪問いただき、誠にありがとうございます。
+                    </p>
+                    <p class="text-xs text-indigo-600">
+                            大切なお子様と一緒にPikaLabを訪れていただけたこと、<br>制作者のかたかたより、心から感謝申し上げます。
+                    </p>
+                </div>
+
+                <!-- 1. ねらい -->
+                <div>
+                    <h3 class="text-indigo-600 font-black mb-2 flex items-center gap-2">
+                        <span class="material-symbols-rounded text-base">school</span> このアプリのねらい
+                    </h3>
+                    <p>
+                        「かたち合わせパズル」は、下に並んだイラストをドラッグして、上にある同じ形の白いシルエット（影）にはめ込むゲームです。物の形状を正しく捉える「形態認知力」、位置を調整してぴったり合わせる「空間認知力」、安定したドラッグ操作によって指先と目線を連動させる「協調運動力」を総合的に刺激します。
+                    </p>
+                </div>
+
+                <!-- 2. おねがい -->
+                <div>
+                    <h3 class="text-pink-500 font-black mb-2 flex items-center gap-2">
+                        <span class="material-symbols-rounded text-base">favorite</span> 保護者様へのおねがい
+                    </h3>
+                    <p>
+                        ドラッグ操作は小さな幼児のお子様にとって、タップよりも高度な指先のコントロールを必要とします。最初はうまく目的の場所に運べずイライラすることもありますが、おうちの方が<span class="bg-pink-100 text-pink-700 px-1 rounded">「ゆっくり連れていってあげようね」</span>などと声をかけながら、焦らず見守ってあげてください。
+                    </p>
+                </div>
+
+                <!-- 3. 活用方法 -->
+                <div>
+                    <h3 class="text-green-600 font-black mb-2 flex items-center gap-2">
+                        <span class="material-symbols-rounded text-base">emoji_objects</span> おうちでの活用方法
+                    </h3>
+                    <p>
+                        パズルが完成してイラストの色が戻ったときに、「ライオンさんだ！何て鳴くかな？」「これは『ぞう』さんだね」と、お名前を呼んであげてください。また、日常の中で「おもちゃ箱の『この隙間』に『このおもちゃ』を片付けてみよう」というように、現実の片付けや形合わせと結びつけるのも効果的です。
+                    </p>
+                </div>
+
+                <!-- 4. 健康への配慮 -->
+                <div>
+                    <h3 class="text-orange-500 font-black mb-2 flex items-center gap-2">
+                        <span class="material-symbols-rounded text-base">timer</span> 健康への配慮（休憩の推奨）
+                    </h3>
+                    <p>
+                        画面を引きずって動かすため、指や手が疲れやすくなります。<span class="bg-orange-100 text-orange-700 px-1 rounded">15〜20分程度</span>を目安に「ピッタリできてすごいね！ちょっとおててを休めようか」と促してあげてください。また、本ゲームはお使いのデバイスのブラウザ上でローカル完結して安全に動作します。
+                    </p>
+                </div>
+            </div>
+            <div class="mt-8 text-center">
+                <button type="button" data-action="parents-modal-close"
+                    class="w-full bg-indigo-500 text-white px-8 py-3 rounded-xl font-black hover:bg-indigo-600 transition shadow-lg shadow-indigo-200">閉じる</button>
+            </div>
+        </div>
+    </dialog>
+
+    <style>
+    #parents-modal::backdrop {
+        background: rgba(15, 23, 42, 0.6);
+        backdrop-filter: blur(4px);
+    }
+    #parents-modal[open] {
+        display: block !important;
+        animation: parentsModalFadeIn 0.3s ease-out forwards;
+    }
+    @keyframes parentsModalFadeIn {
+        from { opacity: 0; transform: scale(0.95); }
+        to { opacity: 1; transform: scale(1); }
+    }
+    </style>
+
+
+</body>
+</html>

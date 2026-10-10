@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="robots" content="noindex, follow">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; 
+                 style-src 'self' https://fonts.googleapis.com 'unsafe-inline'; 
+                 font-src 'self' https://fonts.gstatic.com; 
+                 script-src 'self' 'unsafe-inline';
+                 worker-src 'self' blob:;
+                 connect-src 'self' https:;
+                 img-src 'self' data: https:; frame-src https:;">
+    <title>Focus Studio | 集中タイマー</title>
+    <meta name="description" content="集中と休憩のリズムを作るポモドーロタイマー。学校のチャイムと環境音で、あなたの作業を快適にサポートします。">
+    <meta name="theme-color" content="#ff9eb5">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <link rel="icon" type="image/png" href="favicon.png">
+    <link rel="apple-touch-icon" href="favicon.png">
+    <link rel="manifest" href="manifest.json">
+    <script src="../js/tone-loader.js"></script>
+    <link
+        href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@400;500;700;800&family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,1,0"
+        rel="stylesheet">
+    <link rel="stylesheet" href="../style.css">
+    <link rel="stylesheet" href="style.css">
+
+  <link rel="canonical" href="https://katakatalab.com/pikalab/focus_studio/">
+  <meta property="og:title" content="Focus Studio | 集中タイマー">
+  <meta property="og:description" content="集中と休憩のリズムを作るポモドーロタイマー。学校のチャイムと環境音で、あなたの作業を快適にサポートします。">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://katakatalab.com/pikalab/focus_studio/">
+  <meta property="og:image" content="https://katakatalab.com/pikalab/pikalab_ogp_compressed.jpg">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Focus Studio | 集中タイマー">
+  <meta name="twitter:description" content="集中と休憩のリズムを作るポモドーロタイマー。学校のチャイムと環境音で、あなたの作業を快適にサポートします。">
+  <meta name="twitter:image" content="https://katakatalab.com/pikalab/pikalab_ogp_compressed.jpg">
+  <meta name="twitter:site" content="@katakata0522">
+
+    <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"Focus Studio | 集中タイマー","url":"https://katakatalab.com/pikalab/focus_studio/","description":"集中と休憩のリズムを作るポモドーロタイマー。学校のチャイムと環境音で、あなたの作業を快適にサポートします。","applicationCategory":"EducationalApplication","operatingSystem":"Any","isAccessibleForFree":true,"offers":{"@type":"Offer","price":"0","priceCurrency":"JPY"}}</script>
+</head>
+
+<body
+    class="min-h-screen md:h-screen md:max-h-screen bg-kawaii-bg text-kawaii-text overflow-x-hidden md:overflow-hidden flex flex-col">
+    <script>try{var p=localStorage.getItem('wonder_school_profile_v2');if(p&&JSON.parse(p).darkMode)document.body.classList.add('theme-night');}catch(e){}</script>
+
+    <div class="fixed inset-0 z-0 pointer-events-none overflow-hidden">
+        <div class="absolute top-[-10%] left-[-10%] w-[500px] h-[500px] bg-pink-200 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-float"
+            aria-hidden="true"></div>
+        <div class="absolute bottom-[-10%] right-[-10%] w-[500px] h-[500px] bg-blue-100 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-float"
+            style="animation-delay: 2s" aria-hidden="true"></div>
+    </div>
+
+    <noscript>
+        <div class="fixed inset-0 z-50 flex items-center justify-center bg-kawaii-bg/90 backdrop-blur-sm">
+            <div class="text-center p-8 bg-white rounded-3xl shadow-xl border-4 border-kawaii-primary max-w-md mx-4">
+                <span class="material-symbols-rounded text-6xl text-kawaii-primary mb-4 block">javascript</span>
+                <h2 class="text-2xl font-bold text-kawaii-dark mb-2">JavaScriptが無効です</h2>
+                <p class="text-kawaii-text">このアプリケーションを使用するには、ブラウザの設定でJavaScriptを有効にしてください。</p>
+            </div>
+        </div>
+    </noscript>
+
+
+
+    <header
+        class="relative z-20 px-4 py-2 md:py-3 md:px-8 flex flex-col md:flex-row justify-between items-start md:items-center gap-2 md:gap-4 flex-shrink-0">
+        <div class="flex items-center gap-3 cursor-pointer">
+            <div
+                class="w-12 h-12 bg-white rounded-2xl flex items-center justify-center text-kawaii-primary shadow-md rotate-3 border-2 border-white flex-shrink-0">
+                <span class="material-symbols-rounded text-3xl" aria-hidden="true">timer</span>
+            </div>
+            <h1 class="text-xl md:text-2xl font-extrabold tracking-tight text-kawaii-dark">Focus Studio</h1>
+        </div>
+        <div class="flex flex-col md:flex-row items-center gap-3 w-full md:w-auto">
+            <div class="w-full md:w-80 relative group order-2 md:order-1">
+                <input
+                    class="task-input-header w-full rounded-xl px-4 py-2 text-sm md:text-base font-bold text-kawaii-dark placeholder-kawaii-text/40 outline-none shadow-sm text-left pl-10"
+                    id="task-input" placeholder="✨ 今の目標を入力..." type="text" aria-label="今の目標">
+                <div
+                    class="absolute left-3 top-1/2 transform -translate-y-1/2 opacity-40 group-hover:opacity-100 transition-opacity pointer-events-none">
+                    <span class="material-symbols-rounded text-kawaii-primary text-xl"
+                        aria-hidden="true">edit_note</span>
+                </div>
+            </div>
+            <div class="flex items-center gap-2 order-1 md:order-2 w-full md:w-auto justify-end">
+                <div id="complete-count-badge"
+                    class="flex items-center bg-white/80 backdrop-blur px-3 py-1.5 rounded-full shadow-sm border border-white gap-2">
+                    <span class="material-symbols-rounded text-yellow-500 text-lg"
+                        aria-hidden="true">emoji_events</span>
+                    <span class="text-xs font-bold text-kawaii-text whitespace-nowrap"><span
+                            class="text-lg text-kawaii-primaryDark" id="complete-count">0</span> 回</span>
+                </div>
+                <button type="button"
+                    class="bg-white hover:bg-slate-700 hover:text-white text-slate-600 w-10 h-10 rounded-full flex items-center justify-center shadow-md transition-all group flex-shrink-0"
+                    id="dark-mode-toggle-btn" title="ダークモード切り替え" aria-label="ダークモード切り替え">
+                    <span class="material-symbols-rounded text-xl group-hover:rotate-12 transition-transform"
+                        aria-hidden="true" id="dark-mode-icon">dark_mode</span>
+                </button>
+                <button type="button" data-action="parents-modal-open"
+                    class="bg-white hover:bg-kawaii-primary hover:text-white text-kawaii-primary w-10 h-10 rounded-full flex items-center justify-center shadow-md transition-all group flex-shrink-0 active:scale-95"
+                    title="保護者の方へ" aria-label="保護者の方へを開く" aria-haspopup="dialog" aria-expanded="false">
+                    <span class="material-symbols-rounded text-xl text-yellow-500 group-hover:scale-110 transition-transform"
+                        aria-hidden="true">family_restroom</span>
+                </button>
+                <button type="button"
+                    class="bg-white hover:bg-kawaii-primary hover:text-white text-kawaii-primary w-10 h-10 rounded-full flex items-center justify-center shadow-md transition-all relative group flex-shrink-0"
+                    id="open-sound-drawer-btn" title="環境音設定" aria-label="環境音設定を開く">
+                    <span class="material-symbols-rounded text-xl group-hover:animate-bounce-slight"
+                        aria-hidden="true">tune</span>
+                    <span class="absolute top-0 right-0 w-3 h-3 bg-green-400 rounded-full border-2 border-white hidden"
+                        id="sound-badge"></span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main id="main-content"
+        class="relative z-10 flex-grow flex flex-col md:flex-row items-center justify-center px-4 md:px-8 gap-6 md:gap-10 py-2 md:py-0 md:min-h-0">
+
+        <div class="glass p-4 md:p-5 rounded-[2rem] shadow-xl w-full max-w-sm flex-shrink-0 order-2 md:order-1 max-h-[85vh] overflow-y-auto">
+            <!-- おすすめプリセット -->
+            <div class="mb-4">
+                <h2 class="text-xs font-bold text-kawaii-text/60 mb-2 uppercase tracking-wider flex items-center gap-1">
+                    <span class="material-symbols-rounded text-sm" aria-hidden="true">child_care</span>
+                    おすすめプリセット
+                </h2>
+                <div class="grid grid-cols-3 gap-2">
+                    <button type="button"
+                        class="preset-btn bg-white/50 hover:bg-white border-2 border-transparent rounded-xl p-2 text-center transition-all group"
+                        data-focus='25' data-break='5' aria-label="集中25分 休憩5分">
+                        <div class="text-kawaii-primary font-black text-lg group-hover:scale-110 transition-transform">
+                            25<span class="text-[10px] text-kawaii-text font-normal">+5</span></div>
+                        <div class="text-[10px] text-kawaii-text/60 font-bold">Standard</div>
+                    </button>
+                    <button type="button"
+                        class="preset-btn bg-white/50 hover:bg-white border-2 border-transparent rounded-xl p-2 text-center transition-all group"
+                        data-focus='50' data-break='10' aria-label="集中50分 休憩10分">
+                        <div class="text-kawaii-primary font-black text-lg group-hover:scale-110 transition-transform">
+                            50<span class="text-[10px] text-kawaii-text font-normal">+10</span></div>
+                        <div class="text-[10px] text-kawaii-text/60 font-bold">Deep</div>
+                    </button>
+                    <button type="button"
+                        class="preset-btn bg-white/50 hover:bg-white border-2 border-transparent rounded-xl p-2 text-center transition-all group"
+                        data-focus='60' data-break='15' aria-label="集中60分 休憩15分">
+                        <div class="text-kawaii-primary font-black text-lg group-hover:scale-110 transition-transform">
+                            60<span class="text-[10px] text-kawaii-text font-normal">+15</span></div>
+                        <div class="text-[10px] text-kawaii-text/60 font-bold">Long</div>
+                    </button>
+                </div>
+            </div>
+
+            <div class="border-t border-kawaii-text/10 mb-4"></div>
+            
+            <div class="mb-4">
+                <div class="flex items-center gap-2 mb-1.5 text-kawaii-dark font-bold text-sm">
+                    <span class="material-symbols-rounded text-base text-orange-400"
+                        aria-hidden="true">local_fire_department</span> <span>集中 (分)</span>
+                </div>
+                <div class="grid grid-cols-4 gap-2">
+                    <button type="button"
+                        class="timer-preset aspect-square rounded-xl bg-kawaii-primary text-white font-bold shadow-lg scale-105 border-2 border-transparent transition-all flex items-center justify-center timer-btn-active"
+                        data-mode='focus' data-value='5' aria-label="集中時間5分">5</button>
+                    <button type="button"
+                        class="timer-preset aspect-square rounded-xl bg-white text-kawaii-text font-bold shadow-sm hover:border-kawaii-primary/50 border-2 border-transparent transition-all flex items-center justify-center"
+                        data-mode='focus' data-value='10' aria-label="集中時間10分">10</button>
+                    <button type="button"
+                        class="timer-preset aspect-square rounded-xl bg-white text-kawaii-text font-bold shadow-sm hover:border-kawaii-primary/50 border-2 border-transparent transition-all flex items-center justify-center"
+                        data-mode='focus' data-value='15' aria-label="集中時間15分">15</button>
+                    <button type="button"
+                        class="timer-preset aspect-square rounded-xl bg-white text-kawaii-text font-bold shadow-sm hover:border-kawaii-primary/50 border-2 border-transparent transition-all flex items-center justify-center"
+                        data-mode='focus' data-value='25' aria-label="集中時間25分">25</button>
+                    <button type="button"
+                        class="timer-preset aspect-square rounded-xl bg-white text-kawaii-text font-bold shadow-sm hover:border-kawaii-primary/50 border-2 border-transparent transition-all flex items-center justify-center"
+                        data-mode='focus' data-value='30' aria-label="集中時間30分">30</button>
+                    <button type="button"
+                        class="timer-preset aspect-square rounded-xl bg-white text-kawaii-text font-bold shadow-sm hover:border-kawaii-primary/50 border-2 border-transparent transition-all flex items-center justify-center"
+                        data-mode='focus' data-value='45' aria-label="集中時間45分">45</button>
+                    <button type="button"
+                        class="timer-preset aspect-square rounded-xl bg-white text-kawaii-text font-bold shadow-sm hover:border-kawaii-primary/50 border-2 border-transparent transition-all flex items-center justify-center"
+                        data-mode='focus' data-value='50' aria-label="集中時間50分">50</button>
+                    <button type="button"
+                        class="timer-preset aspect-square rounded-xl bg-white text-kawaii-text font-bold shadow-sm hover:border-kawaii-primary/50 border-2 border-transparent transition-all flex items-center justify-center"
+                        data-mode='focus' data-value='60' aria-label="集中時間60分">60</button>
+                </div>
+            </div>
+            
+            <div class="mb-4">
+                <div class="flex items-center gap-2 mb-1.5 text-kawaii-dark font-bold text-sm">
+                    <span class="material-symbols-rounded text-base text-teal-500" aria-hidden="true">coffee</span>
+                    <span>休憩 (分)</span>
+                </div>
+                <div class="grid grid-cols-3 gap-2">
+                    <button type="button"
+                        class="timer-preset py-3 rounded-xl bg-kawaii-accent/40 text-teal-800 font-bold hover:bg-kawaii-accent transition-all border border-transparent text-sm break-btn-active"
+                        data-mode='break' data-value='5' aria-label="休憩時間5分">5分</button>
+                    <button type="button"
+                        class="timer-preset py-3 rounded-xl bg-kawaii-accent/40 text-teal-800 font-bold hover:bg-kawaii-accent transition-all border border-transparent text-sm"
+                        data-mode='break' data-value='10' aria-label="休憩時間10分">10分</button>
+                    <button type="button"
+                        class="timer-preset py-3 rounded-xl bg-kawaii-accent/40 text-teal-800 font-bold hover:bg-kawaii-accent transition-all border border-transparent text-sm"
+                        data-mode='break' data-value='15' aria-label="休憩時間15分">15分</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="flex-grow flex flex-col items-center justify-center order-1 md:order-2 md:min-h-0">
+            <div
+                class="relative w-72 h-72 md:w-[340px] md:h-[340px] lg:w-[400px] lg:h-[400px] xl:w-[470px] xl:h-[470px] animate-float">
+                <svg class="w-full h-full drop-shadow-2xl" viewBox="0 0 120 120" role="progressbar"
+                    aria-labelledby="timer-label-description" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100">
+                    <title id="timer-label-description">集中タイマーの進捗</title>
+                    <circle class="text-white" cx="60" cy="60" fill="white" r="54"></circle>
+                    <circle class="text-kawaii-secondary opacity-30" cx="60" cy="60" fill="transparent" r="54"
+                        stroke="currentColor" stroke-width="4"></circle>
+                    <circle class="progress-ring__circle text-kawaii-primary" cx="60" cy="60" fill="transparent"
+                        id="progress-ring" r="54" stroke="currentColor" stroke-linecap="round" stroke-width="4"
+                        style="stroke-dasharray: 339.292, 339.292; stroke-dashoffset: 0;"></circle>
+                </svg>
+                <div class="absolute inset-0 flex flex-col items-center justify-center">
+                    <div class="text-kawaii-primary font-bold text-xl md:text-2xl lg:text-3xl mb-1 tracking-widest uppercase opacity-80"
+                        id="timer-label">しゅうちゅう！</div>
+                    <div class="text-teal-600 font-bold text-lg animate-pulse mb-1 hidden" id="chime-status">
+                        <span class="material-symbols-rounded align-middle mr-1"
+                            aria-hidden="true">notifications_active</span> 休憩の準備中...
+                    </div>
+                    <div class="text-6xl md:text-7xl lg:text-8xl xl:text-9xl font-black text-kawaii-dark tracking-tighter tabular-nums leading-none mb-4"
+                        id="timer-display">25:00</div>
+                    <div class="flex items-center justify-center gap-4">
+                        <button type="button"
+                            class="w-14 h-14 bg-slate-100 text-kawaii-text rounded-full flex items-center justify-center shadow-md hover:bg-white hover:text-kawaii-primary transition-all group"
+                            id="restart-btn" title="リセット" aria-label="タイマーをリセット">
+                            <span
+                                class="material-symbols-rounded text-2xl group-hover:rotate-180 transition-transform duration-500"
+                                aria-hidden="true">refresh</span>
+                        </button>
+                        <button type="button"
+                            class="w-14 h-14 bg-gradient-to-br from-kawaii-primary to-kawaii-primaryDark text-white rounded-full flex items-center justify-center shadow-lg hover:scale-105 hover:shadow-xl transition-all"
+                            id="btn-main-action" aria-label="タイマーを開始/一時停止">
+                            <span class="material-symbols-rounded text-3xl" id="icon-timer"
+                                aria-hidden="true">play_arrow</span>
+                        </button>
+                    </div>
+                    <div class="absolute bottom-10 lg:bottom-14 opacity-60 text-xs lg:text-sm font-bold text-teal-600 bg-teal-50 px-3 py-1 rounded-full border border-teal-100"
+                        id="next-break-display" aria-live="polite">次回の休憩: 5分</div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <div class="fixed inset-y-0 right-0 w-80 sm:w-96 bg-white/95 backdrop-blur-xl shadow-2xl transform transition-transform duration-300 z-50 border-l border-white overflow-y-auto translate-x-full"
+        id="sound-drawer" role="dialog" aria-labelledby="sound-mixer-title" aria-modal="false" aria-hidden="true" inert
+        tabindex="-1">
+        <div class="p-6">
+            <div class="flex justify-between items-center mb-6">
+                <h2 id="sound-mixer-title" class="text-xl font-extrabold text-kawaii-dark flex items-center gap-2">
+                    <span class="material-symbols-rounded text-kawaii-primary" aria-hidden="true">headphones</span>
+                    おとのミキサー
+                </h2>
+                <button type="button"
+                    class="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center hover:bg-slate-200 text-slate-500 transition-colors"
+                    id="sound-drawer-close-btn" aria-label="サウンドミキサーを閉じる">
+                    <span class="material-symbols-rounded" aria-hidden="true">close</span>
+                </button>
+            </div>
+            <div class="bg-amber-50 p-4 rounded-2xl mb-6 border border-amber-100">
+                <div class="flex justify-between items-center mb-2">
+                    <div class="flex items-center gap-3">
+                        <div class="p-2 bg-amber-200 text-amber-700 rounded-xl"><span class="material-symbols-rounded"
+                                aria-hidden="true">school</span></div>
+                        <div>
+                            <div class="font-bold text-sm text-slate-700">学校のチャイム</div>
+                            <div class="text-[10px] text-slate-400">休憩開始の合図</div>
+                        </div>
+                    </div>
+                </div>
+                <input class="w-full h-1 bg-amber-200 rounded-lg appearance-none cursor-pointer accent-amber-500"
+                    id="chime-volume-slider" max="0" min="-40" type="range" value="-15" aria-label="チャイムの音量">
+            </div>
+            <button type="button"
+                class="w-full mb-4 py-3 rounded-2xl border-2 border-red-100 text-red-500 hover:bg-red-50 font-bold transition-all flex items-center justify-center gap-2 group"
+                id="stop-all-sounds-btn" aria-label="すべてのサウンドを停止">
+                <span class="material-symbols-rounded group-hover:scale-110 transition-transform"
+                    aria-hidden="true">stop_circle</span> 全サウンド停止
+            </button>
+
+            <!-- ポモドーロ解説アコーディオン -->
+            <div class="mb-6 bg-slate-50 dark:bg-slate-800/50 rounded-2xl border border-slate-100 dark:border-slate-800/80 overflow-hidden">
+                <details class="group p-4">
+                    <summary class="flex justify-between items-center font-bold text-sm text-slate-700 dark:text-slate-200 cursor-pointer list-none">
+                        <span class="flex items-center gap-2 select-none">
+                            <span class="material-symbols-rounded text-orange-400 text-lg">help</span>
+                            ポモドーロ・タイマーってなに？
+                        </span>
+                        <span class="material-symbols-rounded text-xs transition-transform group-open:rotate-180 select-none">expand_more</span>
+                    </summary>
+                    <div class="mt-3 text-xs text-slate-600 dark:text-slate-300 space-y-2.5 leading-relaxed">
+                        <p><strong>🕒 魔法のしゅうちゅうリズム！</strong><br>
+                        「25分がんばる ➡ 5分やすむ」をくりかえすことで、あたまがスッキリして、勉強や作業がどんどん進む魔法の時間管理法（ポモドーロ・テクニック）だよ！</p>
+                        <p><strong>💡 おうちの方へ（保護者様へ）</strong><br>
+                        人間の脳、特に子どもの集中力維持には限界があります。短い時間（15〜25分）に区切って適度に脳を休ませることで、疲れをためずに高い集中状態を維持することができます。お子様の学習ペースづくりや、宿題のダラダラ防止にぜひご活用ください。<br>
+                        👉 詳しくはこちらのコラムもご覧ください：<a href="../articles/can-concentration-be-grown.html" target="_blank" class="text-kawaii-primary hover:underline font-bold">集中力は生まれつき？家庭でできる学習環境と休憩のコツ</a></p>
+                    </div>
+                </details>
+            </div>
+
+            <div class="space-y-5" id="sound-container"></div>
+            
+            <!-- 回遊用リンク -->
+            <div class="border-t border-slate-100 dark:border-slate-800 pt-6 mt-6 pb-2">
+                <a href="../" class="w-full py-3.5 rounded-2xl bg-slate-100 dark:bg-slate-800 hover:bg-kawaii-primary hover:text-white dark:hover:bg-kawaii-primary dark:hover:text-white text-slate-700 dark:text-slate-200 font-bold transition-all flex items-center justify-center gap-2 group shadow-sm text-sm">
+                    <span class="material-symbols-rounded group-hover:-translate-x-1 transition-transform text-lg" aria-hidden="true">arrow_back</span>
+                    PikaLabトップへもどる
+                </a>
+            </div>
+        </div>
+    </div>
+    <div class="fixed inset-0 bg-black/20 backdrop-blur-sm z-40 transition-opacity opacity-0 hidden"
+        id="drawer-overlay"></div>
+
+    <footer class="fixed bottom-1 right-2 text-[10px] text-kawaii-text/40 font-mono z-50 pointer-events-none">
+        v1.9.0
+    </footer>
+
+    <script src="script.js"></script>
+
+
+    <!-- Parents Modal -->
+<dialog id="parents-modal"
+    class="p-0 rounded-3xl shadow-2xl open:animate-fade-in w-full max-w-lg m-auto overflow-hidden border-0"
+    aria-labelledby="parents-modal-title" style="display:none;">
+    <div class="bg-white p-6 md:p-8 max-h-[90vh] overflow-y-auto relative text-left">
+        <button type="button" data-action="parents-modal-close" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600 focus:outline-none" aria-label="閉じる">
+            <span class="material-symbols-rounded">close</span>
+        </button>
+        <div class="mb-6 border-b-2 border-indigo-100 pb-4">
+            <h2 id="parents-modal-title"
+                class="text-lg md:text-xl font-black text-slate-800 flex items-center gap-2">
+                <span class="material-symbols-rounded text-indigo-500">family_restroom</span> 保護者の方へ
+            </h2>
+            <p class="text-xs text-slate-400 font-bold mt-1">For Parents &amp; Guardians</p>
+        </div>
+
+        <div class="space-y-6 text-sm text-slate-600 leading-relaxed font-bold">
+            <div class="bg-gradient-to-r from-indigo-50 to-purple-50 p-5 rounded-2xl border border-indigo-100 text-center">
+                <p class="mb-2 text-indigo-800 text-base">
+                    <span class="material-symbols-rounded text-xl align-bottom mr-1 text-pink-400">favorite</span>
+                    当サイト「PikaLab」に<br>ご訪問いただき、誠にありがとうございます。
+                </p>
+                <p class="text-xs text-indigo-600">
+                            大切なお子様と一緒にPikaLabを訪れていただけたこと、<br>制作者のかたかたより、心から感謝申し上げます。
+                </p>
+            </div>
+            <div>
+                <h3 class="text-indigo-600 font-black mb-2 flex items-center gap-2">
+                    <span class="material-symbols-rounded text-base">school</span> このアプリのねらい
+                </h3>
+                <p>「フォーカス・スタジオ」は、集中時間と休憩時間を区切るタイマーに、環境音と達成回数の記録を組み合わせた作業補助ツールです。<span class="bg-indigo-100 text-indigo-700 px-1 rounded">取り組む時間と休む時間を見える形にする</span>ことで、勉強や作業を始めるときの区切りづくりに使えます。</p>
+            </div>
+            <div>
+                <h3 class="text-pink-500 font-black mb-2 flex items-center gap-2">
+                    <span class="material-symbols-rounded text-base">favorite</span> 保護者様へのおねがい
+                </h3>
+                <p>お子様が取り組めた時間は、長さだけで評価せず<span class="bg-pink-100 text-pink-700 px-1 rounded">「今日はここまで取り組めたね」</span>と一緒に振り返ってみてください。タイマーは集中力そのものを測るものではなく、時間の区切りを作るための補助としてご利用ください。</p>
+            </div>
+            <div>
+                <h3 class="text-green-600 font-black mb-2 flex items-center gap-2">
+                    <span class="material-symbols-rounded text-base">emoji_objects</span> おうちでの活用方法
+                </h3>
+                <p>宿題や読書などを始める前に、無理のない時間を一緒に決めてタイマーを使ってみてください。終わった後に「長すぎなかった？」「次は何分ならやりやすい？」と調整する使い方もできます。</p>
+            </div>
+            <div>
+                <h3 class="text-orange-500 font-black mb-2 flex items-center gap-2">
+                    <span class="material-symbols-rounded text-base">timer</span> 健康への配慮（休憩の推奨）
+                </h3>
+                <p>大切なお子様の健康のために、<span class="bg-orange-100 text-orange-700 px-1 rounded">30分に1回程度の休憩</span>を推奨しています。集中モードが解除されたら目を休め、軽くストレッチを促してあげてください。各ツールへ入力した内容や端末内の記録はブラウザ内で処理・保存し、運営者のサーバー、広告サービス、アクセス解析サービスへ送信しません。ページ表示時にはWebフォント等の外部配信サービスへの通常の通信が発生する場合があります。</p>
+            </div>
+        </div>
+        <div class="mt-8 text-center">
+            <button type="button" data-action="parents-modal-close"
+                class="w-full bg-indigo-500 text-white px-8 py-3 rounded-xl font-black hover:bg-indigo-600 transition shadow-lg shadow-indigo-200">閉じる</button>
+        </div>
+    </div>
+</dialog>
+
+    <style>
+#parents-modal::backdrop {
+    background: rgba(15, 23, 42, 0.6);
+    backdrop-filter: blur(4px);
+}
+#parents-modal[open] {
+    display: block !important;
+    animation: parentsModalFadeIn 0.3s ease-out forwards;
+}
+@keyframes parentsModalFadeIn {
+    from { opacity: 0; transform: scale(0.95); }
+    to { opacity: 1; transform: scale(1); }
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const openBtns = document.querySelectorAll('[data-action="parents-modal-open"]');
+    const closeBtns = document.querySelectorAll('[data-action="parents-modal-close"]');
+    const dialog = document.getElementById('parents-modal');
+
+    if (dialog) {
+        // Escape・背景・閉じるボタンのどれでも状態とフォーカスをそろえる。
+        dialog.addEventListener('close', () => {
+            openBtns.forEach(btn => btn.setAttribute('aria-expanded', 'false'));
+            openBtns[0]?.focus();
+        });
+        openBtns.forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.preventDefault();
+                if (typeof dialog.showModal === 'function') { dialog.showModal(); }
+                else { dialog.setAttribute('open', ''); }
+                btn.setAttribute('aria-expanded', 'true');
+            });
+        });
+        closeBtns.forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.preventDefault();
+                if (typeof dialog.close === 'function') { dialog.close(); }
+                else { dialog.removeAttribute('open'); }
+                const openBtn = document.querySelector('[data-action="parents-modal-open"]');
+                if (openBtn) { openBtn.setAttribute('aria-expanded', 'false'); openBtn.focus(); }
+            });
+        });
+        dialog.addEventListener('click', (e) => {
+            if (e.target === dialog) {
+                if (typeof dialog.close === 'function') { dialog.close(); }
+                else { dialog.removeAttribute('open'); }
+                const openBtn = document.querySelector('[data-action="parents-modal-open"]');
+                if (openBtn) openBtn.setAttribute('aria-expanded', 'false');
+            }
+        });
+    }
+});
+</script>
+
+
+</body>
+
+</html>
+
+

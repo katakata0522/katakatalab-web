@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="robots" content="noindex, follow">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>おかいもの・かずあそび</title>
+    <meta name="description" content="お買い物ごっこをしながら、数を数えることや量の感覚を楽しく学べる子ども向け知育ゲームです。">
+    <link rel="canonical" href="https://katakatalab.com/pikalab/eduplay/shopping.html">
+    <meta property="og:title" content="おかいもの・かずあそび">
+    <meta property="og:description" content="お買い物ごっこをしながら、数を数えることや量の感覚を楽しく学べる子ども向け知育ゲームです。">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://katakatalab.com/pikalab/eduplay/shopping.html">
+    <meta property="og:image" content="https://katakatalab.com/pikalab/pikalab_ogp_compressed.jpg">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="おかいもの・かずあそび">
+    <meta name="twitter:description" content="お買い物ごっこをしながら、数を数えることや量の感覚を楽しく学べる子ども向け知育ゲームです。">
+    <meta name="twitter:image" content="https://katakatalab.com/pikalab/pikalab_ogp_compressed.jpg">
+    <link rel="stylesheet" href="../style.css">
+    <link rel="stylesheet" href="common.css">
+    <script src="common.js"></script>
+    <style>
+        /* かごが揺れるアニメーション */
+        @keyframes shake { 0%, 100% { transform: translateX(0) rotate(0deg); } 25% { transform: translateX(-5px) rotate(-5deg); } 75% { transform: translateX(5px) rotate(5deg); } }
+        .anim-shake { animation: shake 0.3s ease; }
+
+        /* アイテムがぷるんと出現するアニメーション */
+        @keyframes popIn { 0% { transform: scale(0); } 70% { transform: scale(1.2); } 100% { transform: scale(1); } }
+        .item-pop { animation: popIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) backwards; }
+
+        /* かごに飛んでいくアニメーション */
+        @keyframes flyToBasket {
+            0% { transform: translate(0, 0) scale(1) rotate(0deg); opacity: 1; }
+            100% { transform: translate(var(--tx), var(--ty)) scale(0.2) rotate(360deg); opacity: 0; }
+        }
+        .flying {
+            animation: flyToBasket 0.5s ease-in forwards;
+            position: fixed;
+            z-index: 100;
+            pointer-events: none;
+        }
+    </style>
+    <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"おかいもの・かずあそび","url":"https://katakatalab.com/pikalab/eduplay/shopping.html","description":"お買い物ごっこをしながら、数を数えることや量の感覚を楽しく学べる子ども向け知育ゲームです。","applicationCategory":"EducationalApplication","operatingSystem":"Any","isAccessibleForFree":true,"offers":{"@type":"Offer","price":"0","priceCurrency":"JPY"}}</script>
+</head>
+<body class="bg-orange-50 h-screen w-screen overflow-auto font-sans select-none text-gray-800">
+    <main id="app" class="max-w-2xl mx-auto h-full flex flex-col p-3 sm:p-5 relative">
+        <!-- ヘッダー -->
+        <header class="flex justify-between items-center py-2 sm:py-4 shrink-0 gap-2">
+            <a id="game-back-btn" href="./" class="bg-white border-b-4 border-gray-300 px-4 py-2 sm:px-6 sm:py-3 rounded-full font-bold text-base sm:text-lg shadow-md game-card text-gray-700">⬅️ もどる</a>
+            <h1 class="text-3xl sm:text-4xl md:text-5xl font-black text-orange-500 drop-shadow-sm tracking-wide hidden sm:block">🛒 おかいもの 🛒</h1>
+            <div class="flex gap-2">
+                <button type="button" data-action="parents-modal-open" class="bg-white border-b-4 border-gray-300 p-3 sm:p-4 rounded-full shadow-md text-lg sm:text-xl game-card flex items-center justify-center active:scale-95 transition" aria-label="保護者の方へ - 開く" aria-haspopup="dialog" aria-expanded="false" title="保護者の方へ">👨‍👩‍👦</button>
+                <button type="button" id="sound-toggle" onclick="EduSound.toggle(this)" aria-label="音を消す" aria-pressed="true" class="bg-white border-b-4 border-gray-300 p-3 sm:p-4 rounded-full shadow-md text-xl sm:text-2xl game-card">🔊</button>
+            </div>
+        </header>
+
+        <div id="message" class="text-center font-bold text-xl sm:text-2xl text-orange-600 my-2 sm:my-4 bg-white py-3 sm:py-4 rounded-full shadow-sm border-4 border-orange-100 shrink-0"></div>
+
+        <div class="flex-1 flex flex-col pt-2 pb-4 gap-2 sm:gap-4 overflow-hidden">
+            <div class="flex justify-center items-end bg-white p-2 sm:p-6 rounded-3xl shadow-sm border-4 border-orange-200 shrink-0 h-28 sm:h-36 relative">
+                <div class="absolute top-2 left-3 sm:top-5 sm:left-6 bg-orange-100 px-3 py-1 sm:px-6 sm:py-3 rounded-2xl font-bold text-lg sm:text-3xl text-orange-600 shadow-inner flex items-center gap-2">
+                    <span id="target-emoji">🍎</span> 
+                    <span id="counter" class="text-2xl sm:text-4xl">0</span> / <span id="target-number">3</span>
+                </div>
+                <div id="basket" class="text-6xl sm:text-[80px] transform origin-bottom transition-transform">
+                    🧺
+                </div>
+            </div>
+
+            <!-- スマホでは3列、タブレット(sm)ではゆとりを持った3列。はみ出た場合はスクロール可能にする -->
+            <div class="flex-1 overflow-y-auto no-scrollbar rounded-3xl shadow-inner border-4 border-yellow-200 bg-yellow-100">
+                <div id="shelf-container" class="grid grid-cols-3 gap-2 sm:gap-6 p-4 sm:p-6 place-items-center h-full content-start"></div>
+            </div>
+        </div>
+    </main>
+
+    <div id="clear-overlay" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-40">
+        <div class="bg-white rounded-3xl p-8 max-w-sm w-full text-center shadow-2xl scale-up flex flex-col items-center justify-center">
+            <div class="text-8xl mb-4 inline-block">🌟</div>
+            <h2 class="text-4xl font-black text-orange-500 mb-2">おつかい<br>せいこう！</h2>
+            <p class="text-xl text-gray-700 font-bold mb-6 mt-2">ありがとう！<br>たすかったよ！</p>
+            
+            <div class="flex flex-col gap-3 w-full">
+                <button onclick="initGame()" class="w-full bg-orange-500 text-white text-xl font-bold py-4 rounded-2xl shadow-md transition-transform active:scale-95">つぎへ！ ➡️</button>
+                <button onclick="location.href='./'" class="w-full bg-gray-200 text-gray-700 text-lg font-bold py-3 rounded-2xl shadow-sm transition-transform active:scale-95">🏠 ひろばへもどる</button>
+            </div>
+            <!-- 保護者向けバナーを追加 -->
+            <div class="mt-6 pt-4 border-t border-gray-100 w-full text-left">
+                <p class="text-xs text-gray-500 font-bold mb-2 text-center">💡 おうちの方へ おすすめツール</p>
+                <div class="grid grid-cols-2 gap-2">
+                    <a href="../quest_board/" class="bg-amber-50 hover:bg-amber-100 text-amber-800 font-bold p-2.5 rounded-xl text-xs flex items-center justify-center gap-1 active:scale-95 transition text-center no-underline">
+                        <span>🎯 クエストボード</span>
+                    </a>
+                    <a href="../paper_gen/" class="bg-stone-50 hover:bg-stone-100 text-stone-800 font-bold p-2.5 rounded-xl text-xs flex items-center justify-center gap-1 active:scale-95 transition text-center no-underline">
+                        <span>📄 用紙メーカー</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // お買い物用のお題リスト（EduDataから抽出）
+        const shoppingItems = EduData.getItemsByIDs(['apple', 'banana', 'strawberry', 'donut', 'onigiri', 'cake', 'car']);
+
+        const countMap = {
+            1: "い〜ち", 2: "に〜", 3: "さ〜ん", 4: "よ〜ん", 5: "ご〜", 
+            6: "ろ〜く", 7: "な〜な", 8: "は〜ち", 9: "きゅ〜う", 10: "じゅう！"
+        };
+
+        let currentTarget = null;
+        let targetAmount = 0;
+        let currentAmount = 0;
+        let pendingAmount = 0;
+
+        function initGame() {
+            document.getElementById('clear-overlay').classList.add('hidden');
+            currentAmount = 0;
+            pendingAmount = 0;
+            
+            currentTarget = shoppingItems[Math.floor(Math.random() * shoppingItems.length)];
+            targetAmount = Math.floor(Math.random() * 4) + 2; 
+
+            document.getElementById('target-emoji').innerText = currentTarget.emoji;
+            document.getElementById('target-number').innerText = targetAmount;
+            document.getElementById('counter').innerText = currentAmount;
+            document.getElementById('counter').className = "text-3xl font-black text-orange-600";
+
+            const msgText = `「${currentTarget.name}」を ${targetAmount}こ いれてね！`;
+            document.getElementById('message').innerText = msgText;
+
+            const shelf = document.getElementById('shelf-container');
+            shelf.innerHTML = '';
+            
+            for (let i = 0; i < 6; i++) {
+                const itemBox = document.createElement('button');
+                itemBox.type = 'button';
+                itemBox.className = "w-16 h-16 sm:w-20 sm:h-20 bg-white rounded-2xl shadow-sm border-b-4 border-gray-200 flex items-center justify-center cursor-pointer game-card item-pop";
+                itemBox.setAttribute('aria-label', `${currentTarget.name}をかごに入れる`);
+                itemBox.style.animationDelay = `${i * 0.05}s`;
+                
+                const emojiEl = document.createElement('span');
+                emojiEl.className = "text-4xl sm:text-5xl select-none";
+                emojiEl.innerText = currentTarget.emoji;
+                
+                itemBox.appendChild(emojiEl);
+                itemBox.onclick = (e) => handleTap(e, itemBox, emojiEl);
+                
+                shelf.appendChild(itemBox);
+            }
+            
+            // EduSound.speakは非同期なので、DOM構築後少し待ってから発話
+            setTimeout(() => EduSound.speak(msgText), 600);
+        }
+
+        function handleTap(e, itemBox, emojiEl) {
+            if (currentAmount + pendingAmount >= targetAmount || emojiEl.style.opacity === "0") return;
+            // 飛行中の品物も予約数に含め、連打で指定数を超えないようにする。
+            pendingAmount++;
+
+            emojiEl.style.opacity = "0";
+            itemBox.style.pointerEvents = "none";
+            itemBox.disabled = true;
+            itemBox.classList.remove('border-b-4', 'shadow-sm'); 
+
+            const startRect = emojiEl.getBoundingClientRect();
+            const basketRect = document.getElementById('basket').getBoundingClientRect();
+
+            const clone = document.createElement('div');
+            clone.className = 'text-5xl sm:text-6xl flying';
+            clone.innerText = currentTarget.emoji;
+            clone.style.left = startRect.left + 'px';
+            clone.style.top = startRect.top + 'px';
+            
+            const tx = basketRect.left - startRect.left + (basketRect.width / 2) - (startRect.width / 2);
+            const ty = basketRect.top - startRect.top + (basketRect.height / 2) - (startRect.height / 2);
+            
+            clone.style.setProperty('--tx', tx + 'px');
+            clone.style.setProperty('--ty', ty + 'px');
+            
+            document.body.appendChild(clone);
+
+            setTimeout(() => {
+                clone.remove(); // 改善点: 飛んだ後のDOM要素を確実に削除
+                pendingAmount--;
+                currentAmount++;
+                document.getElementById('counter').innerText = currentAmount;
+                
+                const basket = document.getElementById('basket');
+                basket.classList.remove('anim-shake');
+                void basket.offsetWidth; 
+                basket.classList.add('anim-shake');
+
+                EduSound.speak(countMap[currentAmount], 0.85, 1.3);
+
+                const counterEl = document.getElementById('counter');
+                counterEl.classList.remove('scale-up');
+                void counterEl.offsetWidth;
+                counterEl.classList.add('scale-up');
+
+                if (currentAmount === targetAmount) {
+                    document.getElementById('counter').classList.replace('text-orange-600', 'text-green-500');
+                    setTimeout(() => {
+                        EduUtils.completeGameClear("ありがとう！おつかい、せいこう！");
+                    }, 800);
+                }
+
+            }, 500); 
+        }
+
+        window.onload = () => {
+            initGame();
+        };
+    </script>
+    
+<!-- Parents Modal -->
+    
+
+    
+
+    
+<!-- Parents Modal -->
+    <dialog id="parents-modal"
+        class="p-0 rounded-3xl shadow-2xl  open:animate-fade-in w-full max-w-lg m-auto overflow-hidden border-0"
+        aria-labelledby="parents-modal-title" style="display:none;">
+        <div class="bg-white p-6 md:p-8 max-h-[90vh] overflow-y-auto relative text-left">
+            <button type="button" data-action="parents-modal-close" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600 focus:outline-none" aria-label="閉じる">
+                <span class="material-symbols-rounded">close</span>
+            </button>
+            <div class="mb-6 border-b-2 border-indigo-100 pb-4">
+                <h2 id="parents-modal-title"
+                    class="text-lg md:text-xl font-black text-slate-800 flex items-center gap-2">
+                    <span class="material-symbols-rounded text-indigo-500">family_restroom</span> 保護者の方へ
+                </h2>
+                <p class="text-xs text-slate-400 font-bold mt-1">For Parents & Guardians</p>
+            </div>
+
+            <div class="space-y-6 text-sm text-slate-600 leading-relaxed font-bold">
+                <!-- ウェルカムメッセージカード -->
+                <div class="bg-gradient-to-r from-indigo-50 to-purple-50 p-5 rounded-2xl border border-indigo-100 text-center">
+                    <p class="mb-2 text-indigo-800 text-base">
+                        <span class="material-symbols-rounded text-xl align-bottom mr-1 text-pink-400">favorite</span>
+                        当サイト「PikaLab」に<br>ご訪問いただき、誠にありがとうございます。
+                    </p>
+                    <p class="text-xs text-indigo-600">
+                            大切なお子様と一緒にPikaLabを訪れていただけたこと、<br>制作者のかたかたより、心から感謝申し上げます。
+                    </p>
+                </div>
+
+                <!-- 1. ねらい -->
+                <div>
+                    <h3 class="text-indigo-600 font-black mb-2 flex items-center gap-2">
+                        <span class="material-symbols-rounded text-base">school</span> このアプリのねらい
+                    </h3>
+                    <p>
+                        「おかいもの・かずあそび」は、指定された数（2〜5個）の食べ物や乗り物をタップしてカゴに入れ、おつかいを完成させる算数知育ゲームです。品物をタップするたびに「い〜ち」「に〜」と音声でカウントアップし、数字が連動して変化することで、物の個数と数字の一致（基数性の理解）を直感的に学び、「数える力（算数の基礎）」を育みます。
+                    </p>
+                </div>
+
+                <!-- 2. おねがい -->
+                <div>
+                    <h3 class="text-pink-500 font-black mb-2 flex items-center gap-2">
+                        <span class="material-symbols-rounded text-base">favorite</span> 保護者様へのおねがい
+                    </h3>
+                    <p>
+                        カゴに品物が飛んでいくアニメーションに合わせて、お子様が口ずさんで数えられるよう、ゆっくりとしたカウント音声にしています。数え間違いを心配せず、途中でタップの手を止めたり、もう一回遊びたくなったりするのを<span class="bg-pink-100 text-pink-700 px-1 rounded">「カゴが揺れて面白いね」「次はケーキかな？」</span>と温かく見守ってあげてください。
+                    </p>
+                </div>
+
+                <!-- 3. 活用方法 -->
+                <div>
+                    <h3 class="text-green-600 font-black mb-2 flex items-center gap-2">
+                        <span class="material-symbols-rounded text-base">emoji_objects</span> おうちでの活用方法
+                    </h3>
+                    <p>
+                        本アプリで「りんごを3こ」集めたあとは、ぜひ実際のスーパーやおうちのキッチンで「りんごを3こ、冷蔵庫から取ってくれる？」「ドーナツを2こお皿に並べよう」と、日常の具体的なおつかいとお片付けと結びつけて活用してみてください。数の概念が現実と繋がってスッと身につきます。
+                    </p>
+                </div>
+
+                <!-- 4. 健康への配慮 -->
+                <div>
+                    <h3 class="text-orange-500 font-black mb-2 flex items-center gap-2">
+                        <span class="material-symbols-rounded text-base">timer</span> 健康への配慮（休憩の推奨）
+                    </h3>
+                    <p>
+                        カゴに入るたびにカウントする楽しさがあり、幼児のお子様は夢中になりがちです。<span class="bg-orange-100 text-orange-700 px-1 rounded">15〜20分程度</span>を目安に「今日のカゴはいっぱいだね！お買い物おしまい」とお声がけください。本ゲームはお使いの端末内で完全にローカル処理されます。
+                    </p>
+                </div>
+            </div>
+            <div class="mt-8 text-center">
+                <button type="button" data-action="parents-modal-close"
+                    class="w-full bg-indigo-500 text-white px-8 py-3 rounded-xl font-black hover:bg-indigo-600 transition shadow-lg shadow-indigo-200">閉じる</button>
+            </div>
+        </div>
+    </dialog>
+
+    <style>
+    #parents-modal::backdrop {
+        background: rgba(15, 23, 42, 0.6);
+        backdrop-filter: blur(4px);
+    }
+    #parents-modal[open] {
+        display: block !important;
+        animation: parentsModalFadeIn 0.3s ease-out forwards;
+    }
+    @keyframes parentsModalFadeIn {
+        from { opacity: 0; transform: scale(0.95); }
+        to { opacity: 1; transform: scale(1); }
+    }
+    </style>
+
+
+</body>
+</html>

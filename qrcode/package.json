@@ -1,0 +1,17 @@
+{
+  "name": "qrcode",
+  "private": true,
+  "version": "1.0.0",
+  "description": "QR Maker Lab quality checks and E2E tests",
+  "scripts": {
+    "test": "node --test tests/site-integrity.test.js tests/license-api-core.test.mjs",
+    "test:e2e": "playwright test",
+    "test:e2e:headed": "playwright test --headed",
+    "test:e2e:install": "playwright install chromium",
+    "check:prod": "node production/scripts/smoke-production.mjs",
+    "license:admin": "node production/scripts/license-admin.mjs"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.50.0"
+  }
+}

@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-FYFPS7L9X9"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag() { dataLayer.push(arguments); }
+        gtag('js', new Date());
+        gtag('config', 'G-FYFPS7L9X9', { 'anonymize_ip': true });
+    </script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>アスペクト比の使い方ガイド | 16:9・4:3・1:1・9:16の選び方</title>
+    <meta name="description" content="16:9・4:3・1:1・9:16 の違いを、YouTube・SNS・資料作成の具体例で整理したガイドです。よくあるミスと計算例、アスペクト比計算機の使いどころもまとめています。">
+    <link rel="canonical" href="https://katakatalab.com/guides/aspect-ratio-guide.html">
+    <meta property="og:title" content="アスペクト比の使い方ガイド | 16:9・4:3・1:1・9:16の選び方">
+    <meta property="og:description" content="媒体別の比率選び、サイズ計算例、よくあるミスをまとめたKatakataLab内のガイドです。">
+    <meta property="og:type" content="article">
+    <meta property="og:url" content="https://katakatalab.com/guides/aspect-ratio-guide.html">
+    <meta property="og:image" content="https://katakatalab.com/ogp.png">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="アスペクト比の使い方ガイド | 16:9・4:3・1:1・9:16の選び方">
+    <meta name="twitter:description" content="媒体別の比率選び、サイズ計算例、よくあるミスをまとめたKatakataLab内のガイドです。">
+    <meta name="twitter:image" content="https://katakatalab.com/ogp.png">
+    <meta name="twitter:site" content="@Katakata_toybox">
+    <link rel="stylesheet" href="../style.css?v=20260824-responsive">
+    <link rel="icon" href="../icon.svg" type="image/svg+xml">
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Article",
+      "headline": "アスペクト比の使い方ガイド",
+      "description": "16:9・4:3・1:1・9:16の違いと、媒体別の使い分けを整理したガイド。",
+      "datePublished": "2026-05-25",
+      "dateModified": "2026-10-01",
+      "author": {
+        "@type": "Person",
+        "name": "かたかた"
+      },
+      "publisher": {
+        "@type": "Organization",
+        "name": "KatakataLab",
+        "logo": {
+          "@type": "ImageObject",
+          "url": "https://katakatalab.com/ogp.png"
+        }
+      },
+      "mainEntityOfPage": "https://katakatalab.com/guides/aspect-ratio-guide.html"
+    }
+    </script>
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3845885843809455"
+     crossorigin="anonymous"></script>
+</head>
+<body>
+    <script>try{if(localStorage.getItem('theme')==='dark')document.body.classList.add('dark-mode');}catch(e){}</script>
+    <header class="header">
+        <div class="container header-container">
+            <a href="../#home" class="logo">
+                <span class="logo-icon">🧪</span>
+                <span class="logo-text">KatakataLab</span>
+            </a>
+            <nav class="nav">
+                <ul class="nav-list">
+                    <li><a href="../#projects" class="nav-link">ツール</a></li>
+                    <li><a href="../who-is-katakata.html" class="nav-link">運営者</a></li>
+                    <li><a href="../contact.html" class="nav-link">お問い合わせ</a></li>
+                </ul>
+            </nav>
+            <div class="header-actions">
+                <button type="button" id="theme-toggle" class="theme-btn" aria-label="テーマ切り替え">
+    <svg viewBox="0 0 24 24" class="svg-icon svg-moon" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/>
+    </svg>
+    <svg viewBox="0 0 24 24" class="svg-icon svg-sun" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="display: none;">
+        <circle cx="12" cy="12" r="4"/>
+        <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/>
+    </svg>
+</button>
+                <button type="button" class="menu-toggle" aria-label="メニューを開く">
+                    <span class="bar"></span><span class="bar"></span><span class="bar"></span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main class="guide-page">
+
+        <section class="section">
+            <div class="guide-hero-card">
+                <span class="guide-kicker">Aspect Ratio Guide</span>
+                <h1>アスペクト比、結局どれを選ぶ？──使用先から決める比率の選び方</h1>
+                <p class="guide-intro">アスペクト比は、先に「どこで使うか」を決めると選びやすくなります。YouTubeの通常動画、Shorts、SNS投稿、会議資料では、同じ素材でも適したアスペクト比が異なります。このページでは、使用先ごとの代表的な比率、作り直しを減らす配置の考え方、計算方法をまとめます。</p>
+                <div class="guide-summary">
+                    <span class="guide-chip">YouTube 16:9</span>
+                    <span class="guide-chip">資料 4:3 / 16:9</span>
+                    <span class="guide-chip">SNS 1:1 / 9:16</span>
+                </div>
+                <p class="guide-note" style="margin-top: 1rem;">作成者: かたかた / 更新日: 2026年10月1日</p>
+                <div class="guide-actions">
+                    <a href="../aspect-ratio-calc/" class="btn btn-primary">計算機を開く</a>
+                    <a href="../#projects" class="btn btn-secondary">他のツールも見る</a>
+                </div>
+            </div>
+        </section>
+
+        <section class="section">
+            <div class="guide-section-card">
+                <h2>最初に決めるのは「比率」じゃない</h2>
+                <p>「どこに置くか」。これが先。</p>
+                <p>YouTubeなのか、Instagramなのか、会議や発表スライドなのか。ここが決まらないまま作り始めると、あとからサイズや配置の調整が増えます。私も公開直前に作り直したことがあり、それ以来、使用先を先に確認しています。</p>
+                <p>次に基準サイズを決めます。FHDの1920×1080なのか、スマートフォン前提の1080×1920なのか、ほかの用途にも使い回すのか。複数の比率で使う素材は、主役や重要な文字を中央寄りに置くと、縦横変換で切れる可能性を抑えられます。</p>
+                <div class="guide-callout">
+                    <strong>実際にあったこと:</strong> YouTubeサムネイル用の16:9素材でテキストを左端に置いたままShortsへ転用しようとしたところ、縦長の切り抜きで文字が見切れました。中央寄せに直すだけでは余白のバランスも変わったため、背景を含めて調整し直しました。それ以降は、複数の比率で使う素材ほど主役と文字を中央寄りに置いています。
+                </div>
+            </div>
+
+            <div class="guide-section-card">
+                <h2>よく使う比率と具体例</h2>
+                <div class="responsive-table-container"><table class="guide-table">
+                    <thead>
+                        <tr>
+                            <th>比率</th>
+                            <th>よくある用途</th>
+                            <th>実際のサイズ例</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>16:9</td>
+                            <td>YouTube 動画、配信サムネ、ワイド資料</td>
+                            <td>1920×1080、1280×720</td>
+                        </tr>
+                        <tr>
+                            <td>4:3</td>
+                            <td>旧資料、タブレット向け画像、学習用スライド</td>
+                            <td>1600×1200、1024×768</td>
+                        </tr>
+                        <tr>
+                            <td>1:1</td>
+                            <td>プロフィール画像、一覧で見せる投稿、商品画像</td>
+                            <td>1080×1080、1200×1200</td>
+                        </tr>
+                        <tr>
+                            <td>9:16</td>
+                            <td>Shorts、Reels、縦長広告、スマホ前提の動画</td>
+                            <td>1080×1920</td>
+                        </tr>
+                    </tbody>
+                </table></div>
+            </div>
+
+            <div class="guide-section-card">
+                <h2>よくあるやらかし</h2>
+                <h3>YouTube用なのに1:1で作っちゃった</h3>
+                <p>SNS用の1:1素材をYouTubeの通常動画用サムネイルへそのまま使うと、表示面によって余白やトリミングが発生する場合があります。通常動画のサムネイルでは16:9が一般的です。</p>
+                <h3>9:16にしたら文字が見えない</h3>
+                <p>ShortsやReelsでは、画面上のUIが映像に重なる場合があります。タイトルやボタンは端へ寄せすぎず、公開前に実際の投稿画面で確認してください。</p>
+                <h3>スライド資料の16:9か4:3か問題</h3>
+                <p>これは映す場所によります。新しめの会議室やオンライン共有なら16:9でまず問題ない。古い教室や会議室だと4:3のこともある。こっちでいくら悩んでも、現地のプロジェクターが何なのかで決まっちゃうので、まずは会場の設備を確認するのが一番確実です。</p>
+            </div>
+
+            <div class="guide-section-card">
+                <h2>KatakataLabのアスペクト比計算機でできること</h2>
+                <p>自分でツールを使っていて「もっと手軽に比率が計算できたらいいのに！」と思って作ったのが、このKatakataLabの計算機です。</p>
+                <div class="guide-callout" style="background-color: var(--card-bg); border-left-color: var(--accent-color); padding: 1.5rem; border-left: 4px solid var(--primary-color); margin: 1rem 0; border-radius: 8px;">
+                    <h3 style="margin-top: 0; color: var(--text-color);">💡 主な機能</h3>
+                    <ul style="list-style-type: disc; padding-left: 1.5rem; margin-top: 0.5rem; line-height: 1.6;">
+                        <li><strong>高さを自動計算：</strong>横幅と比率を入力すると、比率を保つために必要な高さを計算します。</li>
+                        <li><strong>基準サイズから派生サイズを出し直せる：</strong>16:9から1:1など、プリセットを切り替えて必要なピクセルを出し直します。画像の切り抜きそのものはしません。</li>
+                        <li><strong>手元の画像から比率を逆算：</strong>縦横のピクセル数を入力すると、比率と近い定番比率を表示します。</li>
+                    </ul>
+                </div>
+                <h3 style="margin-top: 1.5rem;">🙌 こんな場面に向いています</h3>
+                <p>ブログのアイキャッチ、YouTubeのサムネイル、資料作成などで、比率を保ったまま画像サイズを調整したいときに使えます。手計算の回数を減らし、複数サイズを比較しやすくなります。</p>
+                <div class="guide-actions" style="margin-top: 1.5rem;">
+                    <a href="../aspect-ratio-calc/" class="btn btn-primary">アスペクト比計算機を使ってみる</a>
+                </div>
+            </div>
+
+            <div class="guide-section-card">
+                <h2>用途別の出発点（よく使う組み合わせ）</h2>
+                <div class="responsive-table-container"><table class="guide-table">
+                    <thead><tr><th>用途</th><th>出発比率</th><th>例（幅を先に決める）</th><th>注意</th></tr></thead>
+                    <tbody>
+                        <tr><td>通常の動画・横長サムネ</td><td>16:9</td><td>幅 1280 → 高さ 720</td><td>顔や文字を端に寄せすぎない</td></tr>
+                        <tr><td>正方形の投稿枠</td><td>1:1</td><td>幅 1080 → 高さ 1080</td><td>重要な要素を中央寄りに</td></tr>
+                        <tr><td>縦型ショート系</td><td>9:16</td><td>幅 1080 → 高さ 1920</td><td>上下のUIで隠れる領域を意識</td></tr>
+                        <tr><td>資料・投影（古い環境）</td><td>4:3</td><td>幅 1024 → 高さ 768</td><td>会場指定があればそれに従う</td></tr>
+                    </tbody>
+                </table></div>
+                <p>数値は出発点です。各サービスの推奨ピクセルは更新されることがあるため、公開前に公式の画像サイズ案内も確認してください。</p>
+            </div>
+
+            <div class="guide-section-card" id="ichiran-de-kireru">
+                <h2>一覧で切れる場所</h2>
+                <p>同じ画像でも、一覧、プロフィール、横長の動画、縦長のショートでは、残る範囲が違います。比率が合っていても、端の文字は切れます。</p>
+                <div class="responsive-table-container"><table class="guide-table">
+                    <thead><tr><th>置き場</th><th>出発サイズ</th><th>切れやすいもの</th></tr></thead>
+                    <tbody>
+                        <tr><td>正方形の一覧、プロフィール</td><td>1080×1080</td><td>横長の動画をそのまま流用した余白</td></tr>
+                        <tr><td>横長の動画やブログ</td><td>1280×720</td><td>端に寄せたタイトル</td></tr>
+                        <tr><td>縦長のショート</td><td>1080×1920</td><td>上下の操作ボタンに隠れる文字</td></tr>
+                    </tbody>
+                </table></div>
+                <p>各サービスの推奨ピクセルは変わるので、この表は出発点です。公開前の合格は、投稿先の下書きで見てください。短い案内は、<a href="sns-image-size-guide.html">SNS画像サイズの考え方</a>からこの節へ戻すだけにしています。</p>
+            </div>
+
+            <div class="guide-section-card">
+                <h2>切り抜き事故を減らす手順</h2>
+                <ol>
+                    <li>掲載先の比率を決める（16:9 / 1:1 / 9:16 など）。</li>
+                    <li><a href="../aspect-ratio-calc/">アスペクト比計算機</a>で幅または高さから不足側を出す。</li>
+                    <li>重要な文字・顔・ロゴが端に来ない構図にする。</li>
+                    <li>可能ならスマートフォン幅でプレビューし、端の切れを見る。</li>
+                    <li>複数サイズが必要な場合は「マスターを広く作り、用途ごとに切り出す」方が再作業が少ない。</li>
+                </ol>
+                <p>「高解像度だから大丈夫」は、比率ミスマッチの解決にはなりません。解像度と比率は別問題として扱います。</p>
+            </div>
+
+            <div class="guide-section-card">
+                <h2>よくある質問</h2>
+                <h3>Q. 16:9と4:3、迷ったら？</h3>
+                <p>A. YouTubeの通常動画や現在のPC向け資料では16:9が一般的ですが、Shortsなどの縦長動画は9:16、古い投影設備では4:3が必要な場合があります。公開先や会場の推奨仕様を確認するのが確実です。<a href="https://support.google.com/youtube/answer/72431" target="_blank" rel="noopener noreferrer">YouTube公式ヘルプ</a>は、通常のカスタムサムネイルでは16:9が多く使われると案内し、縦長動画では一部画面で4:5の自動生成サムネイルに置き換わると注記しています。</p>
+                <h3>Q. サイズを大きくすれば比率の問題は解決する？</h3>
+                <p>A. 解決しません。解像度と比率は別の要素です。4Kで作っても比率が合わなければ、表示先によってトリミングや余白が発生する場合があります。</p>
+                <h3>Q. 手元の画像の比率が分からないときは？</h3>
+                <p>A. 計算機に縦横ピクセルを入れて逆算できます。近い定番比率が出たら、その比率で切り出すか、余白を足して合わせるかを決めます。</p>
+                <h3>Q. 複数SNSに同じ画像を使うとどうなる？</h3>
+                <p>A. 比率が違う枠では端が切れたり余白がついたりします。マスターを広めに作り、用途ごとに切り出すか、主要プラットフォームごとに別サイズを用意する方が安全です。実例の流れは<a href="case-studies.html">実例集</a>も参照してください。</p>
+                <p class="guide-note">更新日: 2026年10月1日 / 作成者: <a href="../who-is-katakata.html">かたかた</a></p>
+            </div>
+
+            <div class="guide-section-card">
+                <h2>計算機の結果をどう使うか</h2>
+                <p>ツールが出す高さや幅は、入力した比率と基準辺から求めた計算値です。次の点だけは人間が決めます。</p>
+                <ul>
+                    <li>どの掲載先の比率を採用するか（公式の推奨が更新されていないか）</li>
+                    <li>重要な被写体が中央の安全域に入っているか</li>
+                    <li>文字アウトラインが端のUIに被らないか</li>
+                    <li>書き出し後のファイルが、実際の投稿画面でどう見えるか</li>
+                </ul>
+                <p>KatakataLabは「比率の出発点」を速く出すための道具です。最終的な見た目の合格は、投稿先のプレビューで判断してください。</p>
+            </div>
+
+            <div class="guide-section-card">
+                <h2>1枚のマスター画像から複数比率を作る流れ</h2>
+                <p>同じ告知を YouTube・正方形投稿・縦型ショートに使うとき、最初から用途別ファイルを3枚描くとコストが上がります。KatakataLabでは次の順で作ることが多いです。</p>
+                <ol>
+                    <li>いちばん広い比率（多くは16:9）で主役と文字を中央寄りに配置したマスターを作る。</li>
+                    <li><a href="../aspect-ratio-calc/">アスペクト比計算機</a>で 1:1 と 9:16 のピクセルを出し、切り出し枠を仮決めする。</li>
+                    <li>各枠で「顔・ロゴ・日付」が欠けないかだけを先に確認する。</li>
+                    <li>欠けそうなら、マスター側で要素を中央へ寄せてから、もう一度切り出す。</li>
+                    <li>書き出し後は、投稿先の下書きプレビューで端のUI重なりを見る。</li>
+                </ol>
+                <p>ポイントは「計算が合っているか」より「切り出しても主役が残るか」です。比率表は出発点で、構図の合格判定はプレビュー側にあります。</p>
+            </div>
+
+            <div class="guide-section-card">
+                <h2>公開前の5分チェック</h2>
+                <div class="responsive-table-container"><table class="guide-table">
+                    <thead><tr><th>見る場所</th><th>OKの目安</th><th>NGになりやすい例</th></tr></thead>
+                    <tbody>
+                        <tr><td>比率</td><td>掲載先の指定と一致</td><td>Shorts用なのに16:9のまま</td></tr>
+                        <tr><td>中央の安全域</td><td>顔・文字が端に寄っていない</td><td>タイトルが左端で縦切りに負ける</td></tr>
+                        <tr><td>余白</td><td>枠いっぱいに詰め込みすぎない</td><td>四辺ギリギリで圧縮時に欠ける</td></tr>
+                        <tr><td>実機プレビュー</td><td>スマホ幅で読める</td><td>PCでは綺麗、スマホでは切れる</td></tr>
+                        <tr><td>ファイル名と用途</td><td>用途が分かる名前</td><td>final2.png がどれか分からない</td></tr>
+                    </tbody>
+                </table></div>
+                <p>この5つを通してから公開すると、作り直し回数が減ります。<a href="case-studies.html">実例集</a>のアスペクト比の例と同じ入力で一度通すと、手順の感覚も掴みやすいです。</p>
+            </div>
+
+            <div class="guide-section-card">
+                <h2>このガイドの限界</h2>
+                <p>SNSや動画サービスの推奨サイズは更新されることがあります。ここで示した数値は、作業の出発点として使う前提です。最終判断は、各サービスの公式ヘルプと、投稿直前のプレビューを優先してください。計算ツールはブラウザ内でピクセルを求めるだけで、掲載先の審査や圧縮結果までは保証しません。</p>
+                <p>一覧・プロフィール・縦長で端が切れる目安は、<a href="#ichiran-de-kireru">一覧で切れる場所</a>にまとめています。</p>
+            </div>
+        </section>
+    </main>
+
+    <div class="menu-overlay" id="menu-overlay" aria-hidden="true"></div>
+    <div class="mobile-menu drawer-menu" aria-hidden="true">
+        <div class="mobile-menu-inner">
+            <nav class="mobile-nav" aria-label="モバイルナビゲーション">
+                <ul class="mobile-nav-list">
+                    <li><a href="../who-is-katakata.html" class="mobile-nav-link">🧑‍💻 かたかたって誰？</a></li>
+                    <li><a href="../about-katakatalab.html" class="mobile-nav-link">🧪 KatakataLabについて</a></li>
+                    <li><a href="../note-selection.html" class="mobile-nav-link">📝 かたかたのnote</a></li>
+                    <li><a href="../contact.html" class="mobile-nav-link">✉️ お問い合わせ</a></li>
+                    <li class="mobile-nav-sep"></li>
+                    <li><a href="../terms.html" class="mobile-nav-link">📄 利用規約</a></li>
+                    <li><a href="../privacy.html" class="mobile-nav-link">🔒 プライバシーポリシー</a></li>
+                </ul>
+            </nav>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-links">
+                <a href="../contact.html">お問い合わせ</a>
+                <a href="../who-is-katakata.html">運営者情報</a>
+                <a href="../terms.html" target="_blank" rel="noopener noreferrer">利用規約</a>
+                <a href="../privacy.html" target="_blank" rel="noopener noreferrer">プライバシーポリシー</a>
+                <a href="../sitemap.html">サイトマップ</a>
+            </div>
+            <p>&copy; 2024-2026 KatakataLab. All Rights Reserved.</p>
+        </div>
+    </footer>
+    <script src="../script.js"></script>
+</body>
+</html>

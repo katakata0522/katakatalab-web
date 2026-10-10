@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <base href="/ogp-simulator/">
+  <meta name="format-detection" content="telephone=no">
+  
+  <title>OG Image and Social Share Preview Simulator | KatakataLab</title>
+  
+  <meta name="description" content="Preview a title, description, site name, and image in X, Facebook, and LINE-style cards, check the image ratio, and catch likely cropping before publishing.">
+  
+  <link rel="canonical" href="https://katakatalab.com/ogp-simulator/en/">
+  <link rel="alternate" hreflang="ja" href="https://katakatalab.com/ogp-simulator/">
+  <link rel="alternate" hreflang="en" href="https://katakatalab.com/ogp-simulator/en/">
+  <link rel="alternate" hreflang="x-default" href="https://katakatalab.com/ogp-simulator/">
+
+  <meta property="og:title" content="OG Image and Social Share Preview Simulator | KatakataLab">
+  <meta property="og:description" content="Preview a title, description, site name, and image in X, Facebook, and LINE-style cards, check the image ratio, and catch likely cropping before publishing.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://katakatalab.com/ogp-simulator/en/">
+  <meta property="og:site_name" content="KatakataLab">
+  <meta property="og:image" content="https://katakatalab.com/ogp-simulator/ogp.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:image" content="https://katakatalab.com/ogp-simulator/ogp.png">
+
+  <link rel="icon" href="/favicon.ico">
+  <link rel="stylesheet" href="style.css?v=20260824-responsive">
+  <link rel="stylesheet" href="/international/english-shell.css?v=20260805-lab">
+    <link rel="stylesheet" href="../../tool-chrome.css?v=source">
+</head>
+<body class="english-tool-page english-tool--ogp-simulator">
+  <nav class="english-tool-bar" aria-label="Language and English tools">
+  <a class="english-tool-bar__home" href="https://katakatalab.com/en/">🧪 English tool index</a>
+  <a href="https://katakatalab.com/ogp-simulator/" hreflang="ja" lang="ja">Japanese version</a>
+</nav>
+    <script>try{if(localStorage.getItem('theme')==='dark')document.body.classList.add('dark-mode');}catch(e){}</script>
+
+<main class="tool-wrapper">
+
+    <!-- Auto-Injected Breadcrumbs -->
+    <nav class="breadcrumbs-tool breadcrumbs-tool--trail" aria-label="Breadcrumb">
+        <a href="../" class="breadcrumbs-tool__home">🏠 Home</a>
+        <span class="breadcrumbs-tool__sep">/</span>
+        <span class="breadcrumbs-tool__current" aria-current="page">Social Share Preview</span>
+    </nav>
+
+    <!-- Auto-Injected noscript fallback -->
+    <noscript>
+        <div class="tool-noscript">
+            <p class="tool-noscript__title">⚠️ JavaScript is disabled</p>
+            <p class="tool-noscript__text">This tool needs JavaScript to calculate and preview results in your browser. Enable JavaScript and reload the page.</p>
+        </div>
+    </noscript>
+
+
+
+  
+  <header class="tool-header">
+    <div class="header-inner">
+      <h1 class="app-title">Check a <span class="accent">share card</span></h1>
+      <p class="app-desc">A mock of title, description, and image in SNS-style frames. It is not an official preview and does not read og: tags from a URL.</p>
+    </div>
+    <span class="badge-security" title="Images are not uploaded">
+      <span class="icon-lock">🔒</span> Client-Side Preview
+    </span>
+  </header>
+
+  <div class="two-column-layout">
+    
+    <section class="config-panel" aria-label="Share metadata inputs">
+      <div class="input-group">
+        <label class="group-label" for="imageInput">OG Image <small>(share image)</small></label>
+        <div class="file-upload-area" id="dropZone" tabindex="0" role="button" aria-label="Upload image">
+          <input type="file" id="imageInput" accept="image/*" class="file-input" tabindex="-1">
+          <div class="upload-placeholder">
+            <span class="icon-upload">📁</span>
+            <p>Click to choose an image<br><small>or drop it here</small></p>
+          </div>
+          <div id="imagePreviewContainer" class="image-preview-container" style="display:none;">
+            <img id="imagePreviewThumb" src="" alt="Selected">
+            <button type="button" id="removeImageBtn" class="btn-icon-remove" title="Remove" aria-label="Remove image">×</button>
+          </div>
+        </div>
+        <div id="ratioWarning" class="warning-msg" role="alert" style="display:none;"></div>
+      </div>
+
+      <div class="input-group">
+        <div class="label-row">
+          <label for="ogTitle" class="group-label">OG Title</label>
+          <span id="countTitle" class="char-count">0 / 40</span>
+        </div>
+        <input type="text" id="ogTitle" class="input-text" placeholder="Enter the page title">
+      </div>
+
+      <div class="input-group">
+        <div class="label-row">
+          <label for="ogDesc" class="group-label">OG Description</label>
+          <span id="countDesc" class="char-count">0 / 80</span>
+        </div>
+        <textarea id="ogDesc" class="input-text" rows="3" placeholder="Enter the page description"></textarea>
+      </div>
+
+      <div class="input-group">
+        <label for="siteName" class="group-label">Site Name / Domain</label>
+        <input type="text" id="siteName" class="input-text" placeholder="katakatalab.com">
+      </div>
+
+      <div class="actions">
+        <button type="button" id="resetBtn" class="btn-text">Reset All</button>
+      </div>
+    </section>
+
+    <section class="preview-panel sticky-container" aria-label="Preview">
+      <div class="preview-controls">
+        <div class="preview-tabs-scroll">
+          <div class="preview-tabs">
+            <button type="button" class="tab-btn active" data-target="twitter-large">X (Large)</button>
+            <button type="button" class="tab-btn" data-target="twitter-summary">X (Small)</button>
+            <button type="button" class="tab-btn" data-target="facebook">Facebook</button>
+            <button type="button" class="tab-btn" data-target="line">LINE</button>
+          </div>
+        </div>
+        <div class="theme-toggle-wrapper" title="Toggle dark mode">
+          <label class="toggle-switch-theme">
+            <input type="checkbox" id="previewThemeToggle">
+            <span class="slider round"></span>
+            <span class="theme-icon icon-sun">☀️</span>
+            <span class="theme-icon icon-moon">🌙</span>
+          </label>
+        </div>
+      </div>
+
+      <div id="previewCanvas" class="preview-canvas theme-light">
+        
+        <!-- X (Large) Feed Mock -->
+        <div id="view-twitter-large" class="card-view twitter-large active">
+          <div class="sns-user-row">
+            <div class="sns-avatar">🪄</div>
+            <div class="sns-user-info">
+              <span class="sns-display-name">KatakataLab</span>
+              <span class="sns-username">@katakata_toybox · 1 min</span>
+            </div>
+          </div>
+          <div class="sns-post-text">Preview how a new web tool may look when shared. Check the image crop and copy before publishing.</div>
+          
+          <div class="sns-card-container">
+            <div class="card-image-wrapper aspect-191-100">
+              <img class="preview-img" src="" alt="OG Image">
+              <!-- 見切れマスクレイヤー -->
+              <div class="trim-mask mask-top"></div>
+              <div class="trim-mask mask-bottom"></div>
+              <div class="trim-mask mask-left"></div>
+              <div class="trim-mask mask-right"></div>
+            </div>
+            <div class="card-meta">
+              <span class="meta-domain">katakatalab.com</span>
+              <div class="meta-title">No Title</div>
+              <div class="meta-desc">No description provided.</div>
+            </div>
+          </div>
+          <div class="sns-actions-row">
+            <span class="sns-action-icon">💬 12</span>
+            <span class="sns-action-icon">🔁 45</span>
+            <span class="sns-action-icon">❤️ 128</span>
+            <span class="sns-action-icon">📊 2.4k</span>
+          </div>
+        </div>
+        
+        <!-- X (Small) Feed Mock -->
+        <div id="view-twitter-summary" class="card-view twitter-summary">
+          <div class="sns-user-row">
+            <div class="sns-avatar">🪄</div>
+            <div class="sns-user-info">
+              <span class="sns-display-name">KatakataLab</span>
+              <span class="sns-username">@katakata_toybox · 1 min</span>
+            </div>
+          </div>
+          <div class="sns-post-text">This compact summary-card view helps you check whether the title remains clear without a large image.</div>
+          
+          <div class="sns-card-container card-content-row">
+            <div class="card-image-wrapper aspect-1-1">
+              <img class="preview-img" src="" alt="OG Image">
+              <!-- 見切れマスクレイヤー（正方形用） -->
+              <div class="trim-mask mask-top"></div>
+              <div class="trim-mask mask-bottom"></div>
+              <div class="trim-mask mask-left"></div>
+              <div class="trim-mask mask-right"></div>
+            </div>
+            <div class="card-meta">
+              <span class="meta-domain">katakatalab.com</span>
+              <div class="meta-title">No Title</div>
+              <div class="meta-desc">No description provided.</div>
+            </div>
+          </div>
+          <div class="sns-actions-row">
+            <span class="sns-action-icon">💬 3</span>
+            <span class="sns-action-icon">🔁 12</span>
+            <span class="sns-action-icon">❤️ 41</span>
+            <span class="sns-action-icon">📊 982</span>
+          </div>
+        </div>
+        
+        <!-- Facebook Feed Mock -->
+        <div id="view-facebook" class="card-view facebook">
+          <div class="fb-user-row">
+            <div class="fb-avatar">🪄</div>
+            <div class="fb-user-info">
+              <span class="fb-display-name">KatakataLab</span>
+              <span class="fb-time">1 minute ago · 🌐</span>
+            </div>
+          </div>
+          <div class="fb-post-text">Preview the hierarchy of an article link in a Facebook-style feed before publishing.</div>
+          
+          <div class="fb-card-container">
+            <div class="card-image-wrapper aspect-191-100">
+              <img class="preview-img" src="" alt="OG Image">
+              <!-- 見切れマスクレイヤー -->
+              <div class="trim-mask mask-top"></div>
+              <div class="trim-mask mask-bottom"></div>
+              <div class="trim-mask mask-left"></div>
+              <div class="trim-mask mask-right"></div>
+            </div>
+            <div class="card-meta">
+              <span class="meta-domain">KATAKATALAB.COM</span>
+              <div class="meta-title">No Title</div>
+              <div class="meta-desc">No description provided.</div>
+            </div>
+          </div>
+          <div class="fb-actions-row">
+            <span>👍 Like</span>
+            <span>💬 Comment</span>
+            <span>↩️ Share</span>
+          </div>
+        </div>
+        
+        <!-- LINE Feed Mock -->
+        <div id="view-line" class="card-view line">
+          <div class="line-chat-row">
+            <div class="line-avatar">🪄</div>
+            <div class="line-bubble-wrapper">
+              <span class="line-user-name">KatakataLab</span>
+              <div class="line-bubble">
+                <div class="card-image-wrapper aspect-191-100">
+                  <img class="preview-img" src="" alt="OG Image">
+                  <!-- 見切れマスクレイヤー -->
+                  <div class="trim-mask mask-top"></div>
+                  <div class="trim-mask mask-bottom"></div>
+                  <div class="trim-mask mask-left"></div>
+                  <div class="trim-mask mask-right"></div>
+                </div>
+                <div class="card-meta">
+                  <div class="meta-title">No Title</div>
+                  <div class="meta-desc">No description provided.</div>
+                  <span class="meta-domain">katakatalab.com</span>
+                </div>
+              </div>
+            </div>
+            <span class="line-time">0:26</span>
+          </div>
+        </div>
+      </div>
+      <div class="preview-note">
+        Actual layouts can differ after app and platform updates.
+      </div>
+    </section>
+  </div>
+
+  <section class="article-content english-content" aria-labelledby="english-guide-title">
+    <header>
+      <p><strong>Created by Katakata</strong> · Last reviewed <time datetime="2026-07-16">July 16, 2026</time></p>
+      <h2 id="english-guide-title">How to use Social Share Preview Simulator</h2>
+      <p>A social preview can crop a carefully designed image or truncate copy after a platform update. This simulator gives one comparison workspace for common large-card and compact-card layouts so you can inspect hierarchy and safe areas before publishing metadata.</p>
+    </header>
+    <section>
+      <h3>Practical workflow</h3>
+      <ol><li>Choose the exact image you plan to expose through og:image and enter realistic title, description, and site-name text.</li>
+<li>Compare large and compact cards. Keep critical text and faces away from the outer edge because clients can crop differently.</li>
+<li>Publish the metadata, then use each platform’s official debugger or a private test post to confirm the fetched result and cache.</li></ol>
+    </section>
+    <section>
+      <h3>Accuracy and limitations</h3>
+      <p>The previews are approximations, not screenshots from each platform. Clients can change layout, crop rules, typography, caching, and whether a description appears. A successful local preview does not confirm that a crawler can access the public image URL.</p>
+    </section>
+    <section>
+      <h3>Privacy and data handling</h3>
+      <p>Selected images are previewed locally and are not uploaded to KatakataLab. The page reads the local file only to display its dimensions and preview.</p>
+    </section>
+    <section>
+      <h3>Why this page exists</h3>
+      <p>KatakataLab publishes small browser tools built from recurring design and development tasks. This English page is maintained as a complete entry point, not as an automatic translation or a doorway page. If a control, explanation, or result is unclear, use the <a href="https://katakatalab.com/contact.html">contact page</a> and include the tool name, browser, and expected result without sending confidential input.</p>
+      <p>For another workflow, browse the <a href="https://katakatalab.com/en/">English tool index</a> or switch to the <a href="https://katakatalab.com/ogp-simulator/" hreflang="ja" lang="ja">Japanese version</a>.</p>
+    </section>
+  </section>
+</main>
+  <!-- Auto-Injected Unified Footer -->
+<footer class="tool-footer" aria-label="Site information">
+  <a href="https://katakatalab.com/en/">🧪 KatakataLab English</a><span class="tool-footer__separator" aria-hidden="true">|</span>
+  <a href="https://katakatalab.com/en/site-information.html">Site information</a><span class="tool-footer__separator" aria-hidden="true">|</span>
+  <a href="https://katakatalab.com/contact.html">Contact</a><span class="tool-footer__separator" aria-hidden="true">|</span>
+  <a href="https://katakatalab.com/privacy.html">Privacy (Japanese)</a><span class="tool-footer__separator" aria-hidden="true">|</span>
+  <a href="https://katakatalab.com/terms.html">Terms (Japanese)</a>
+</footer>
+
+</main>
+
+<script type="application/ld+json">
+  {
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "Social Share Preview Simulator",
+  "url": "https://katakatalab.com/ogp-simulator/en/",
+  "description": "Preview a title, description, site name, and image in X, Facebook, and LINE-style cards, check the image ratio, and catch likely cropping before publishing.",
+  "applicationCategory": "DeveloperApplication",
+  "operatingSystem": "Any",
+  "inLanguage": "en",
+  "isAccessibleForFree": true,
+  "offers": {
+    "@type": "Offer",
+    "price": "0",
+    "priceCurrency": "USD"
+  },
+  "author": {
+    "@type": "Person",
+    "name": "Katakata"
+  },
+  "dateModified": "2026-07-16"
+}
+  </script>
+
+<script src="script.js" defer></script>
+  <script src="/international/english-runtime.js" defer></script>
+</body>
+</html>

@@ -1,0 +1,770 @@
+/* ===================================
+   Quest Board - Styles
+   おうちクエストボード
+   =================================== */
+
+/* --- CSS Variables (Design System) --- */
+:root {
+    /* Base Colors */
+    --color-bg: #F5F5F0;
+    --color-text: #57534E;
+    --color-white: #FFFFFF;
+
+    /* Card Colors */
+    --color-border-card: #FCD34D;
+    --color-border-header: #FDE68A;
+
+    /* Stamp Colors */
+    --color-stamp-border: #E5E7EB;
+    --color-stamp-bg: #F9FAFB;
+    --color-stamp-hover: #FCA5A5;
+    --color-stamp-active: #F87171;
+    --color-stamp-active-bg: #FEF2F2;
+    --color-stamp-icon: #EF4444;
+    --color-stamp-focus: #F97316;
+
+    /* 印刷用設定 */
+    --print-stamp-border-width: 3px;
+    --print-stamp-font-size: clamp(14pt, 4vw, 24pt);
+    --print-goal-font-size: 9pt;
+
+    /* Goal Colors */
+    --color-goal-border: #FCD34D;
+    --color-goal-bg: #FFFBEB;
+    --color-goal-text: #F59E0B;
+
+    /* Reward Colors */
+    --color-reward-bg: #FFF7ED;
+    --color-reward-border: #FED7AA;
+
+    /* Toast Colors */
+    --color-toast-success: #047857;
+    --color-toast-info: #1D4ED8;
+
+    /* Typography */
+    --font-family: 'Zen Maru Gothic', sans-serif;
+
+
+    /* Spacing */
+    --card-padding: 40px;
+    --card-border-width: 8px;
+    --card-border-radius: 20px;
+
+    /* Animation */
+    --transition-fast: 0.2s ease;
+    --transition-normal: 0.3s ease;
+}
+
+.theme-night {
+    --color-bg: #1C1917;
+    --color-text: #E7E5E4;
+    --color-white: #292524;
+    --color-border-card: #D97706;
+    --color-border-header: #78350F;
+
+    --color-stamp-border: #44403C;
+    --color-stamp-bg: #1C1917;
+    --color-stamp-hover: #7F1D1D;
+    --color-stamp-active: #EF4444;
+    --color-stamp-active-bg: #450A0A;
+
+    --color-goal-border: #D97706;
+    --color-goal-bg: #451A03;
+    --color-goal-text: #FBBF24;
+
+    --color-reward-bg: #292524;
+    --color-reward-border: #78350F;
+}
+
+/* --- Base & Print Settings --- */
+body {
+    font-family: var(--font-family);
+    background-color: var(--color-bg);
+    background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23E6E6DC' fill-opacity='0.4'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+    color: var(--color-text);
+    height: 100vh;
+    height: 100dvh;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+/* 明るいテーマの補助文字と選択色だけをAA相当まで濃くする */
+body:not(.theme-night) .text-stone-400 {
+    color: #57534E;
+}
+
+body:not(.theme-night) #count-val,
+body:not(.theme-night) .text-orange-400 {
+    color: #C2410C;
+}
+
+body:not(.theme-night) #share-btn {
+    background-color: #C2410C;
+}
+
+body:not(.theme-night) .bg-orange-100.text-orange-600 {
+    color: #9A3412;
+}
+
+body:not(.theme-night) .goal .stamp-number {
+    color: #6B7280;
+}
+
+#quest-count {
+    height: 44px;
+    background: transparent;
+}
+
+#quest-count::-webkit-slider-runnable-track {
+    height: 8px;
+    border-radius: 999px;
+    background: #E7E5E4;
+}
+
+#quest-count::-moz-range-track {
+    height: 8px;
+    border-radius: 999px;
+    background: #E7E5E4;
+}
+
+#share-with-progress,
+#print-with-stamps {
+    appearance: none;
+    -webkit-appearance: none;
+    width: 44px !important;
+    height: 44px !important;
+    flex: 0 0 44px;
+    display: grid;
+    place-content: center;
+    margin: -14px -8px -14px -14px;
+    border: 0;
+    background: transparent;
+    cursor: pointer;
+}
+
+#share-with-progress::before,
+#print-with-stamps::before {
+    content: "";
+    width: 16px;
+    height: 16px;
+    border: 2px solid #FB923C;
+    border-radius: 4px;
+    background: #FFFFFF;
+    transition: background-color var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+#share-with-progress:checked::before,
+#print-with-stamps:checked::before {
+    background: #F97316;
+    box-shadow: inset 0 0 0 3px #FFFFFF;
+}
+
+#share-with-progress:focus-visible,
+#print-with-stamps:focus-visible {
+    outline: 3px solid #FDBA74;
+    outline-offset: -8px;
+}
+
+/* --- クエストボード本体 --- */
+.quest-card {
+    width: 100%;
+    max-width: 700px;
+    aspect-ratio: 1.414 / 1;
+    background: var(--color-white);
+    border: var(--card-border-width) solid var(--color-border-card);
+    border-radius: var(--card-border-radius);
+    padding: var(--card-padding);
+    margin: 0 auto;
+    position: relative;
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+    display: flex;
+    flex-direction: column;
+    transition: transform var(--transition-normal);
+}
+
+@media screen { .quest-card { flex-shrink: 0; } }
+
+@media (max-width: 767px) {
+    input, textarea, select {
+        font-size: 16px !important; /* iOSオートズームバグ防止 */
+    }
+
+    .quest-container {
+        min-height: min(92dvh, 720px);
+        overflow: auto;
+    }
+
+    .quest-card {
+        --card-padding: 20px;
+        --card-border-width: 5px;
+        transform-origin: center top;
+    }
+
+    .quest-header {
+        padding-bottom: 10px;
+        margin-bottom: 12px;
+    }
+
+    .stamp-grid {
+        gap: 8px;
+    }
+
+    .reward-area {
+        margin-top: 14px;
+        padding: 10px 12px;
+    }
+}
+
+.quest-header {
+    text-align: center;
+    border-bottom: 3px dashed var(--color-border-header);
+    padding-bottom: 15px;
+    margin-bottom: 20px;
+    flex-shrink: 0;
+}
+
+.stamp-grid-container {
+    flex-grow: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.stamp-grid {
+    display: grid;
+    gap: 15px;
+    width: 100%;
+}
+
+/* --- スタンプスポット --- */
+.stamp-spot {
+    appearance: none;
+    -webkit-appearance: none;
+    aspect-ratio: 1;
+    border: 3px dashed var(--color-stamp-border);
+    border-radius: 50%;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 900;
+    color: var(--color-stamp-border);
+    font-size: 1.2rem;
+    cursor: pointer;
+    transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+    position: relative;
+    line-height: 1;
+    background-color: var(--color-stamp-bg);
+    user-select: none;
+    outline: none;
+}
+
+.stamp-number {
+    position: relative;
+    z-index: 10;
+}
+
+/* ホバー状態 */
+.stamp-spot:hover {
+    border-color: var(--color-stamp-hover);
+    color: var(--color-stamp-hover);
+    transform: scale(1.05);
+}
+
+/* フォーカス状態（キーボードアクセシビリティ） */
+.stamp-spot:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 3px var(--color-stamp-focus);
+    border-color: var(--color-stamp-focus);
+}
+
+.stamp-spot:active {
+    transform: scale(0.95);
+}
+
+/* スタンプ済み状態 */
+.stamp-spot.stamped {
+    border: 3px solid var(--color-stamp-active);
+    background-color: var(--color-stamp-active-bg);
+    color: transparent;
+    animation: stamp-jelly 0.6s cubic-bezier(0.25, 0.8, 0.25, 1.25);
+}
+
+.stamp-mark {
+    position: absolute;
+    inset: 0;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    color: var(--color-stamp-icon);
+    z-index: 20;
+}
+
+/* 花丸アイコン */
+.hanamaru-icon {
+    width: 70%;
+    height: 70%;
+}
+
+.stamp-spot.stamped .stamp-mark {
+    display: flex;
+}
+
+@keyframes stamp-jelly {
+    0% {
+        transform: scale(0.3);
+        opacity: 0;
+    }
+    40% {
+        transform: scale(1.25, 0.75);
+        opacity: 1;
+    }
+    55% {
+        transform: scale(0.85, 1.15);
+    }
+    70% {
+        transform: scale(1.1, 0.9);
+    }
+    85% {
+        transform: scale(0.95, 1.05);
+    }
+    100% {
+        transform: scale(1, 1);
+    }
+}
+
+/* ゴール特別装飾 */
+.stamp-spot.goal {
+    border-color: var(--color-goal-border);
+    background-color: var(--color-goal-bg);
+}
+
+.stamp-spot.goal::after {
+    content: 'GOAL';
+    position: absolute;
+    bottom: -22px;
+    font-size: 12px;
+    font-weight: 900;
+    color: var(--color-goal-text);
+    letter-spacing: 0.05em;
+}
+
+/* --- 報酬エリア --- */
+.reward-area {
+    margin-top: 20px;
+    background-color: var(--color-reward-bg);
+    border: 2px solid var(--color-reward-border);
+    border-radius: 15px;
+    padding: 15px 20px;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    flex-shrink: 0;
+}
+
+/* --- スキップリンク --- */
+.skip-link {
+    position: absolute;
+    top: -40px;
+    left: 0;
+    background: #000;
+    color: #fff;
+    padding: 8px 16px;
+    z-index: 100;
+    text-decoration: none;
+    font-weight: bold;
+    border-radius: 0 0 4px 0;
+    transition: top var(--transition-fast);
+}
+
+.skip-link:focus {
+    top: 0;
+}
+
+/* --- Toast通知 --- */
+#toast-container {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    z-index: 9999;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.toast {
+    padding: 12px 20px;
+    border-radius: 12px;
+    font-weight: bold;
+    font-size: 14px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    animation: toast-in 0.3s ease-out;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #FFFFFF;
+    transition: opacity var(--transition-normal), transform var(--transition-normal);
+}
+
+.toast.success {
+    background-color: var(--color-toast-success);
+}
+
+.toast.info {
+    background-color: var(--color-toast-info);
+}
+
+/* トースト退出アニメーション */
+.toast.toast-exit {
+    opacity: 0;
+    transform: translateX(100%);
+}
+
+@keyframes toast-in {
+    from {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+/* --- アニメーション軽減設定 (prefers-reduced-motion) --- */
+@media (prefers-reduced-motion: reduce) {
+
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+}
+
+/* --- 印刷用スタイル（全サイズ・縦横完全対応） --- */
+@media print {
+    @page {
+        margin: 5mm;
+        size: auto;
+    }
+
+    html,
+    body {
+        margin: 0;
+        padding: 0;
+        width: 100%;
+        height: 100%;
+        min-height: 100%;
+        background: white;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+        overflow: visible;
+    }
+
+    .no-print {
+        display: none !important;
+    }
+
+    main {
+        width: 100%;
+        height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0 !important;
+        box-sizing: border-box;
+        overflow: visible !important;
+    }
+
+    .quest-container {
+        width: 100%;
+        height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: transparent !important;
+        padding: 0 !important;
+        /* 用紙端からの安全領域 */
+        overflow: visible !important;
+    }
+
+    /* カード本体：用紙サイズに合わせて最大化しつつ収める */
+    .quest-card {
+        border-width: 3px;
+        border-radius: 8px;
+        box-shadow: none;
+        margin: 0;
+        padding: 15px;
+
+        width: min(100%, 141.4vh);
+        height: auto;
+        max-width: 100%;
+        max-height: 100%;
+        aspect-ratio: 1.414 / 1;
+
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        /* 中身を中央寄せ */
+
+        /* ページ分割禁止 */
+        break-inside: avoid;
+        page-break-inside: avoid;
+        page-break-after: avoid;
+        transform: none !important;
+    }
+
+    /* ヘッダー */
+    .quest-header {
+        flex: 0 0 auto;
+        margin-bottom: 1vh;
+        border-bottom-width: 2px;
+        padding-bottom: 0.5vh;
+        text-align: center;
+    }
+
+    /* スタンプグリッドエリア */
+    .stamp-grid-container {
+        flex: 0 0 auto;
+        /* 無理に伸ばさない */
+        position: relative;
+        width: 100%;
+        min-height: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow: visible;
+        padding: 1vh 0 2.5vh;
+    }
+
+    .stamp-grid {
+        display: grid;
+        width: 100%;
+        height: auto;
+        /* グリッドの高さもなりゆき */
+        align-content: center;
+        justify-content: center;
+        gap: 1.5vmin;
+        max-height: 100%;
+    }
+
+    /* スタンプ一つ一つ */
+    .stamp-spot {
+        aspect-ratio: 1 / 1;
+        width: auto;
+        height: auto;
+        max-height: 100%;
+        /* コンテナからはみ出さない */
+
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        border-width: var(--print-stamp-border-width);
+        border-style: dashed;
+        border-color: var(--color-stamp-border);
+        font-size: var(--print-stamp-font-size);
+        font-weight: 700;
+        position: relative;
+    }
+
+    .stamp-spot.goal::after {
+        font-size: var(--print-goal-font-size);
+        bottom: -18px;
+        font-weight: 800;
+    }
+
+    /* ご褒美エリア */
+    .reward-area {
+        flex: 0 0 auto;
+        /* 縮小しない */
+        margin-top: 1vh;
+        padding: 8px;
+        border-width: 1px;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        min-height: 10%;
+        /* 最低限の高さを確保 */
+    }
+
+    .reward-area .material-symbols-rounded {
+        font-size: 16pt;
+    }
+
+    .reward-area .flex-1 {
+        min-width: 0;
+        /* テキスト切り詰め用 */
+    }
+
+    .reward-area .text-\[10px\] {
+        font-size: 7pt;
+    }
+
+    .reward-area .truncate {
+        font-size: clamp(10pt, 3vw, 14pt);
+    }
+
+    /* 印刷時のスタンプスタイル */
+    /* デフォルト：スタンプなしで印刷 */
+    body:not(.print-stamps) .stamp-spot.stamped {
+        border: 2px dashed var(--color-stamp-border) !important;
+        background-color: var(--color-stamp-bg) !important;
+        color: var(--color-stamp-border) !important;
+        -webkit-print-color-adjust: exact;
+    }
+
+    body:not(.print-stamps) .stamp-spot.stamped .stamp-mark {
+        display: none !important;
+    }
+
+    /* スタンプを押した状態で印刷 */
+    body.print-stamps .stamp-spot.stamped {
+        border: 2px solid var(--color-stamp-active) !important;
+        background-color: var(--color-stamp-active-bg) !important;
+        color: transparent !important;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+    }
+
+    body.print-stamps .stamp-spot.stamped .stamp-mark {
+        display: flex !important;
+    }
+}
+
+/* 35スタンプでも画面幅に合わせて列数を減らし、タップ領域を保つ。 */
+@media screen and (max-width: 767px) {
+    .stamp-grid { grid-template-columns: repeat(auto-fit, minmax(44px, 1fr)) !important; gap: 8px; }
+    .stamp-spot { min-width: 44px; min-height: 44px; }
+}
+
+
+/* 縮小できない最小タップ領域は、ボードを上端からスクロールして操作する。 */
+.quest-container { min-width: 0; overflow: auto; }
+.quest-container.quest-scroll-board { align-items: flex-start; }
+.quest-scroll-board .quest-card { transform-origin: center top; }
+.stamp-spot { min-width: 44px; min-height: 44px; }
+
+/* 未達成の番号は薄い枠線の色を継承させず、読めるコントラストを保つ。 */
+.stamp-spot:not(.stamped) .stamp-number { color: #6B7280; }
+.theme-night .stamp-spot:not(.stamped) .stamp-number { color: #A8A29E; }
+.theme-night #disp-title, .theme-night #disp-reward { color: #E7E5E4; }
+body.reduce-motion *, body.reduce-motion *::before, body.reduce-motion *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+}
+
+@media print {
+    /* 開いたnative dialogの詳細度にも勝ち、本文だけを印刷する。 */
+    body #help-modal, body #help-modal[open], body #help-modal::backdrop, #toast-container { display: none !important; }
+    body, body.theme-night {
+        --color-white: #FFFFFF;
+        --color-text: #57534E;
+        --color-border-card: #FCD34D;
+        --color-border-header: #FDE68A;
+        --color-stamp-border: #E5E7EB;
+        --color-stamp-bg: #F9FAFB;
+        --color-stamp-active: #F87171;
+        --color-stamp-active-bg: #FEF2F2;
+        --color-goal-border: #FCD34D;
+        --color-goal-bg: #FFFBEB;
+        --color-goal-text: #F59E0B;
+        --color-reward-bg: #FFF7ED;
+        --color-reward-border: #FED7AA;
+        color: #57534E;
+    }
+    .theme-night #disp-title, .theme-night #disp-reward { color: #44403C; }
+    .theme-night .stamp-spot:not(.stamped) .stamp-number { color: #6B7280; }
+    .quest-container, .quest-container.quest-scroll-board { min-height: 0; align-items: center; }
+    .stamp-grid { grid-template-columns: repeat(var(--print-columns, 4), 1fr) !important; }
+    .stamp-spot { min-width: 0; min-height: 0; animation: none !important; }
+}
+
+@media print {
+    body:not(.print-stamps) .stamp-spot .stamp-number { color: #6B7280; }
+}
+
+/* 小さい横画面でも共有の閉じる・コピー・取り込みをスクロールで到達可能にする。 */
+#share-modal > div, #share-import-modal > div {
+    max-height: calc(100dvh - 2rem);
+    overflow-y: auto;
+    margin-block: auto;
+}
+#help-close-btn {
+    min-width: 44px;
+    min-height: 44px;
+    margin: -10px;
+    display: grid;
+    place-items: center;
+}
+#help-close-btn:focus-visible { outline: 3px solid #F97316; outline-offset: 2px; border-radius: 8px; }
+
+/* 320pxの共有欄では入力の既定20文字幅より小さく縮め、コピーボタンを見切らせない。 */
+#share-link-input { min-width: 0; }
+
+@media print {
+    body, body.theme-night { background: #FFFFFF !important; }
+    .stamp-spot { transform: none !important; box-shadow: none !important; }
+    .stamp-spot:not(.stamped):not(.goal):hover { border-color: var(--color-stamp-border); }
+}
+
+/* 横向き印刷は紙面の残り高さから円の大きさを決める。固定幅の円を次の紙へ押し出さない。 */
+@media print and (orientation: landscape) {
+    html, body { height: auto !important; min-height: 0 !important; display: block !important; }
+    #main-content { display: block; height: auto; min-height: 0; }
+    .quest-container, .quest-container.quest-scroll-board { display: block; height: auto; min-height: 0; }
+    #quest-card {
+        width: 100%;
+        height: calc(100vh - 12mm);
+        min-height: 0;
+        max-height: none;
+        aspect-ratio: auto;
+        display: grid;
+        grid-template-columns: minmax(0, 1fr);
+        grid-template-rows: auto minmax(0, 1fr) auto;
+        justify-content: stretch;
+        justify-items: stretch;
+    }
+    .stamp-grid-container {
+        container-type: size;
+        display: block;
+        width: 100%;
+        height: 100%;
+        min-height: 0;
+        padding: 0;
+    }
+    .stamp-grid {
+        --print-spot-size: min(80px, calc((100vw - 30mm) / var(--print-columns)));
+        width: 100%;
+        height: 100%;
+        gap: 8px;
+        grid-template-columns: repeat(var(--print-columns), var(--print-spot-size)) !important;
+        grid-template-rows: repeat(var(--print-rows), var(--print-spot-size));
+        align-content: center;
+        justify-content: center;
+    }
+    .stamp-spot { width: var(--print-spot-size); height: var(--print-spot-size); max-height: none; }
+    .stamp-spot.goal::after { bottom: -18px; }
+}
+
+@supports (width: 1cqw) {
+    @media print and (orientation: landscape) {
+        .stamp-grid {
+            --print-spot-size: min(
+                calc((100cqw - (var(--print-columns) - 1) * 8px) / var(--print-columns)),
+                calc((100cqh - 44px - (var(--print-rows) - 1) * 8px) / var(--print-rows))
+            );
+        }
+    }
+}
+
+@media print {
+    /* 印刷メディアへ切り替えた瞬間の背景色・縮尺の補間値を紙へ残さない。 */
+    body, .quest-card, .stamp-spot { transition: none !important; animation: none !important; }
+}

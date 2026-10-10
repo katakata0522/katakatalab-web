@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <base href="/text-diff/">
+  <meta name="format-detection" content="telephone=no">
+  
+  <title>Text Diff Checker for Lines and Characters | KatakataLab</title>
+  <meta name="description" content="Compare two text or code versions in your browser, inspect additions and deletions by line or character, switch split and unified views, and copy the result.">
+  <link rel="canonical" href="https://katakatalab.com/text-diff/en/">
+  <link rel="alternate" hreflang="ja" href="https://katakatalab.com/text-diff/">
+  <link rel="alternate" hreflang="en" href="https://katakatalab.com/text-diff/en/">
+  <link rel="alternate" hreflang="x-default" href="https://katakatalab.com/text-diff/">
+  
+  <meta property="og:title" content="Text Diff Checker for Lines and Characters | KatakataLab">
+  <meta property="og:description" content="Compare two text or code versions in your browser, inspect additions and deletions by line or character, switch split and unified views, and copy the result.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://katakatalab.com/text-diff/en/">
+  <meta property="og:image" content="https://katakatalab.com/ogp.png">
+  <meta property="og:site_name" content="KatakataLab">
+  <meta name="twitter:card" content="summary_large_image">
+
+  <link rel="icon" href="/favicon.ico">
+  <link rel="stylesheet" href="style.css?v=20260824-responsive">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jsdiff/5.1.0/diff.min.js"></script>
+  <link rel="stylesheet" href="/international/english-shell.css?v=20260805-lab">
+    <link rel="stylesheet" href="../../tool-chrome.css?v=source">
+</head>
+<body class="english-tool-page english-tool--text-diff">
+  <nav class="english-tool-bar" aria-label="Language and English tools">
+  <a class="english-tool-bar__home" href="https://katakatalab.com/en/">🧪 English tool index</a>
+  <a href="https://katakatalab.com/text-diff/" hreflang="ja" lang="ja">Japanese version</a>
+</nav>
+    <script>try{if(localStorage.getItem('theme')==='dark')document.body.classList.add('dark-mode');}catch(e){}</script>
+
+<main class="tool-wrapper">
+
+    <!-- Auto-Injected Breadcrumbs -->
+    <nav class="breadcrumbs-tool breadcrumbs-tool--trail" aria-label="Breadcrumb">
+        <a href="../" class="breadcrumbs-tool__home">🏠 Home</a>
+        <span class="breadcrumbs-tool__sep">/</span>
+        <span class="breadcrumbs-tool__current" aria-current="page">Text Diff Checker</span>
+    </nav>
+
+    <!-- Auto-Injected noscript fallback -->
+    <noscript>
+        <div class="tool-noscript">
+            <p class="tool-noscript__title">⚠️ JavaScript is disabled</p>
+            <p class="tool-noscript__text">This tool needs JavaScript to calculate and preview results in your browser. Enable JavaScript and reload the page.</p>
+        </div>
+    </noscript>
+
+
+
+  
+  <header class="tool-header">
+    <div class="header-inner">
+      <h1 class="app-title">Text Diff <span class="accent">Tool</span></h1>
+      <p class="app-desc">Secure Text & Code Comparator</p>
+    </div>
+    <span class="badge-security" title="Input text is not sent out for comparison">
+      <span class="icon-lock">🔒</span> Client-Side Only
+    </span>
+  </header>
+
+  <nav class="control-bar" aria-label="Tool actions">
+    <div class="control-group">
+      <span class="control-label">Method:</span>
+      <div class="toggle-switch">
+        <label class="radio-label">
+          <input type="radio" name="diffMode" value="chars" checked aria-label="Compare by character">
+          <span class="radio-btn">Character</span>
+        </label>
+        <label class="radio-label">
+          <input type="radio" name="diffMode" value="lines" aria-label="Compare by line">
+          <span class="radio-btn">Line</span>
+        </label>
+      </div>
+    </div>
+
+    <div class="control-group" id="viewToggle" style="display:none;">
+      <span class="control-label">View:</span>
+      <div class="toggle-switch">
+        <label class="radio-label">
+          <input type="radio" name="viewMode" value="split" checked aria-label="Show split view">
+          <span class="radio-btn">Split</span>
+        </label>
+        <label class="radio-label">
+          <input type="radio" name="viewMode" value="unified" aria-label="Show unified view">
+          <span class="radio-btn">Unified</span>
+        </label>
+      </div>
+    </div>
+    
+    <div class="actions">
+      <button type="button" id="swapBtn" class="btn-secondary" aria-label="Swap the two inputs" title="Swap Texts">
+        <span class="icon-swap">⇄</span> Swap
+      </button>
+      <button type="button" id="clearBtn" class="btn-text" aria-label="Clear both inputs">🗑 Clear all</button>
+      <button type="button" id="compareBtn" class="btn-primary" aria-label="Compare (Ctrl+Enter)">
+        <span class="icon-search">🔍</span> Compare
+      </button>
+    </div>
+  </nav>
+
+  <div id="alertBox" class="alert-box" role="alert" style="display:none;"></div>
+
+  <div id="undoToast" class="undo-toast" role="status" aria-live="polite" style="display:none;">
+    <div class="undo-toast-inner">
+      <span class="undo-msg">📥 Inputs cleared</span>
+      <button type="button" id="undoBtn" class="btn-undo">Undo</button>
+    </div>
+    <div class="undo-progress"></div>
+  </div>
+
+  <section id="inputSection" class="editor-container two-pane">
+    <div class="pane">
+      <div class="pane-header">
+        <label for="textOriginal" class="pane-label">Original</label>
+        <div class="pane-actions">
+          <span id="fileInfoOriginal" class="file-info-badge" style="display:none;"></span>
+          <span id="charCountOriginal" class="char-count">0 chars</span>
+          <button type="button" class="btn-paste" data-target="original" aria-label="Paste into Original">Paste</button>
+          <label class="btn-file-label" title="Load from file" aria-label="Load from file">
+            <input type="file" class="file-input" data-target="original" accept=".txt,.md,.js,.css,.html,.json,.xml" style="display:none;" aria-label="Upload the Original file">
+            📁 File
+          </label>
+        </div>
+      </div>
+      <textarea id="textOriginal" class="input-area" placeholder="Enter the original text or drop a text file" spellcheck="false"></textarea>
+    </div>
+    
+    <div class="pane">
+      <div class="pane-header">
+        <label for="textNew" class="pane-label">New</label>
+        <div class="pane-actions">
+          <span id="fileInfoNew" class="file-info-badge" style="display:none;"></span>
+          <span id="charCountNew" class="char-count">0 chars</span>
+          <button type="button" class="btn-paste" data-target="new" aria-label="Paste into New">Paste</button>
+          <label class="btn-file-label" title="Load from file" aria-label="Load from file">
+            <input type="file" class="file-input" data-target="new" accept=".txt,.md,.js,.css,.html,.json,.xml" style="display:none;" aria-label="Upload the New file">
+            📁 File
+          </label>
+        </div>
+      </div>
+      <textarea id="textNew" class="input-area" placeholder="Enter the revised text or drop a text file" spellcheck="false"></textarea>
+    </div>
+  </section>
+
+  <section id="resultSection" class="result-container" style="display:none;">
+    <div class="result-header">
+      <h2>Diff Result</h2>
+      <div class="result-actions">
+        <!-- 差分統計バッジ & スマートジャンプナビ -->
+        <div id="diffNav" class="diff-nav" style="display:none;">
+          <span id="diffStat" class="diff-stat"></span>
+          <div class="jump-group">
+            <button type="button" id="btnPrevDiff" class="btn-jump" aria-label="Previous difference" title="Previous Diff">▲</button>
+            <button type="button" id="btnNextDiff" class="btn-jump" aria-label="Next difference" title="Next Diff">▼</button>
+          </div>
+        </div>
+
+        <!-- 統合ビュー用コピーボタン -->
+        <button type="button" id="btnCopyDiff" class="btn-secondary btn-copy-diff" aria-label="Copy differences" title="Copy Diff Text" style="display:none;">
+          <span class="icon-copy">📋</span> Copy Diff
+        </button>
+
+        <span id="statusMessage" class="status-msg" style="display:none;">
+          <span class="icon-check">✅</span> Identical
+        </span>
+        <button type="button" id="editBtn" class="btn-secondary" aria-label="Back to editing">
+          <span class="icon-edit">✏️</span> Edit
+        </button>
+      </div>
+    </div>
+    
+    <div id="diffViewSplit" class="diff-viewer split-view">
+      <div class="pane diff-pane">
+        <div class="pane-sticky-header">Original</div>
+        <div id="diffOriginal" class="diff-content" tabindex="0"></div>
+      </div>
+      <div class="pane diff-pane">
+        <div class="pane-sticky-header">New</div>
+        <div id="diffNew" class="diff-content" tabindex="0"></div>
+      </div>
+    </div>
+
+    <div id="diffViewUnified" class="diff-viewer unified-view" style="display:none;">
+      <div class="pane diff-pane full-width">
+        <div class="pane-sticky-header">Combined Result</div>
+        <div id="diffUnified" class="diff-content" tabindex="0"></div>
+      </div>
+    </div>
+    
+    <div class="legend" aria-hidden="true">
+      <span class="legend-item del"><span class="swatch"></span>Deleted</span>
+      <span class="legend-item add"><span class="swatch"></span>Added</span>
+      <span class="legend-item note"><small>↵ indicates a line-break change.</small></span>
+    </div>
+  </section>
+
+  <div id="loadingOverlay" class="loading-overlay" style="display:none;" aria-live="assertive">
+    <div class="spinner"></div>
+    <p>Comparing...</p>
+  </div>
+
+  <section class="article-content english-content" aria-labelledby="english-guide-title">
+    <header>
+      <p><strong>Created by Katakata</strong> · Last reviewed <time datetime="2026-07-16">July 16, 2026</time></p>
+      <h2 id="english-guide-title">How to use Browser Text Diff Checker</h2>
+      <p>Compare drafts, configuration files, source snippets, or copied records without creating an account. Line mode is best for structural edits, while character mode helps locate punctuation, spacing, and small wording changes.</p>
+    </header>
+    <section>
+      <h3>Practical workflow</h3>
+      <ol><li>Paste the earlier version into Original and the revised version into New. Avoid adding secrets even though comparison is local.</li>
+<li>Choose Line or Character granularity and Split or Unified presentation, then run Compare.</li>
+<li>Move through each highlighted change and copy only the result you actually need. Use a source-control diff for repository history and review.</li></ol>
+    </section>
+    <section>
+      <h3>Accuracy and limitations</h3>
+      <p>Very large inputs can use substantial browser memory. Line-ending differences, invisible Unicode characters, and normalization can appear as changes even when text looks similar. This tool is for visual comparison; it does not merge files or prove semantic equivalence.</p>
+    </section>
+    <section>
+      <h3>Privacy and data handling</h3>
+      <p>Comparison runs in your browser and input text is not sent to KatakataLab for the diff operation. External libraries are loaded as page assets, so do not use any browser tool as a substitute for an approved confidential-data workflow.</p>
+    </section>
+    <section>
+      <h3>Why this page exists</h3>
+      <p>KatakataLab publishes small browser tools built from recurring design and development tasks. This English page is maintained as a complete entry point, not as an automatic translation or a doorway page. If a control, explanation, or result is unclear, use the <a href="https://katakatalab.com/contact.html">contact page</a> and include the tool name, browser, and expected result without sending confidential input.</p>
+      <p>For another workflow, browse the <a href="https://katakatalab.com/en/">English tool index</a> or switch to the <a href="https://katakatalab.com/text-diff/" hreflang="ja" lang="ja">Japanese version</a>.</p>
+    </section>
+  </section>
+</main>
+  <!-- Auto-Injected Unified Footer -->
+<footer class="tool-footer" aria-label="Site information">
+  <a href="https://katakatalab.com/en/">🧪 KatakataLab English</a><span class="tool-footer__separator" aria-hidden="true">|</span>
+  <a href="https://katakatalab.com/en/site-information.html">Site information</a><span class="tool-footer__separator" aria-hidden="true">|</span>
+  <a href="https://katakatalab.com/contact.html">Contact</a><span class="tool-footer__separator" aria-hidden="true">|</span>
+  <a href="https://katakatalab.com/privacy.html">Privacy (Japanese)</a><span class="tool-footer__separator" aria-hidden="true">|</span>
+  <a href="https://katakatalab.com/terms.html">Terms (Japanese)</a>
+</footer>
+
+</main>
+
+<script type="application/ld+json">
+  {
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "Browser Text Diff Checker",
+  "url": "https://katakatalab.com/text-diff/en/",
+  "description": "Compare two text or code versions in your browser, inspect additions and deletions by line or character, switch split and unified views, and copy the result.",
+  "applicationCategory": "DeveloperApplication",
+  "operatingSystem": "Any",
+  "inLanguage": "en",
+  "isAccessibleForFree": true,
+  "offers": {
+    "@type": "Offer",
+    "price": "0",
+    "priceCurrency": "USD"
+  },
+  "author": {
+    "@type": "Person",
+    "name": "Katakata"
+  },
+  "dateModified": "2026-07-16"
+}
+  </script>
+
+<script src="script.js" defer></script>
+  <script src="/international/english-runtime.js" defer></script>
+</body>
+</html>

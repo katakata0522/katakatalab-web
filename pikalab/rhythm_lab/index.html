@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="robots" content="noindex, follow">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="音のブロックを並べて簡単にリズムを作れるドラムマシン。8ビート、ハウス、ヒップホップ、ラテンなどのお手本リズムを参考にオリジナルビートを作ろう！">
+    <meta name="theme-color" content="#EC4899">
+
+    <!-- Security (Tone.js requires blob: for Web Workers) -->
+    <meta http-equiv="Content-Security-Policy"
+        content="default-src 'self'; script-src 'self' blob: https: https://cdnjs.cloudflare.com 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: https:; worker-src 'self' blob: https:; connect-src 'self' blob: https:; frame-src https:; object-src 'none'; base-uri 'self';">
+
+    <!-- OGP -->
+    <meta property="og:title" content="リズム・プログラミング Lab">
+    <meta property="og:description" content="音のブロックを並べて簡単にリズムを作れるドラムマシン。8ビート、ハウス、ヒップホップ、ラテンなどのお手本リズムを参考にオリジナルビートを作ろう！">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://katakatalab.com/pikalab/rhythm_lab/">
+    <meta property="og:image" content="https://katakatalab.com/pikalab/pikalab_ogp_compressed.jpg">
+    <meta property="og:site_name" content="Katakata Lab">
+    <meta property="og:locale" content="ja_JP">
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="リズム・プログラミング Lab">
+    <meta name="twitter:description" content="音のブロックを並べて簡単にリズムを作れるドラムマシン。8ビート、ハウス、ヒップホップ、ラテンなどのお手本リズムを参考にオリジナルビートを作ろう！">
+    <meta name="twitter:image" content="https://katakatalab.com/pikalab/pikalab_ogp_compressed.jpg">
+
+    <title>リズム・プログラミング Lab</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@400;700;900&display=swap"
+        rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@40,700,1,0"
+        rel="stylesheet">
+    <script src="../js/tone-loader.js"></script>
+    <link rel="stylesheet" href="../tailwind.generated.css?v=20260310c">
+    <link rel="stylesheet" href="style.css?v=20261003a">
+
+  <link rel="canonical" href="https://katakatalab.com/pikalab/rhythm_lab/">
+  <meta name="twitter:site" content="@katakata0522">
+
+    <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"リズム・プログラミング Lab","url":"https://katakatalab.com/pikalab/rhythm_lab/","description":"音のブロックを並べて簡単にリズムを作れるドラムマシン。8ビート、ハウス、ヒップホップ、ラテンなどのお手本リズムを参考にオリジナルビートを作ろう！","applicationCategory":"EducationalApplication","operatingSystem":"Any","isAccessibleForFree":true,"offers":{"@type":"Offer","price":"0","priceCurrency":"JPY"}}</script>
+</head>
+
+<body
+    class="text-slate-700 dark:text-slate-200 min-h-screen flex flex-col selection:bg-pink-200 dark:selection:bg-pink-700 transition-colors">
+    <script>try{var p=localStorage.getItem('wonder_school_profile_v2');if(p&&JSON.parse(p).darkMode)document.body.classList.add('theme-night');}catch(e){}</script>
+
+
+    <!-- エラートースト -->
+    <div id="error-toast" class="fixed top-4 left-1/2 -translate-x-1/2 z-50 hidden">
+        <div class="bg-red-500 text-white px-6 py-3 rounded-2xl shadow-lg flex items-center gap-3">
+            <span class="material-symbols-rounded">error</span>
+            <span class="error-message font-bold">エラーが発生しました</span>
+        </div>
+    </div>
+
+    <!-- JavaScript無効時のフォールバック -->
+    <noscript>
+        <div style="background: #fecdd3; color: #be123c; padding: 2rem; text-align: center; font-family: sans-serif;">
+            <h2 style="font-size: 1.5rem; font-weight: bold; margin-bottom: 0.5rem;">⚠️ JavaScriptを有効にしてください</h2>
+            <p>このアプリケーションを使用するには、ブラウザのJavaScriptを有効にする必要があります。</p>
+        </div>
+    </noscript>
+
+    <header
+        class="bg-white dark:bg-slate-800 border-b-4 border-pink-200 dark:border-pink-700 px-6 py-4 flex justify-between items-center z-20 shadow-sm sticky top-0 transition-colors">
+        <div class="flex items-center gap-3">
+            <div class="bg-pink-500 text-white p-2 rounded-2xl shadow-[0_4px_0_#be185d] transform -rotate-3"
+                aria-hidden="true">
+                <span class="material-symbols-rounded text-3xl block">piano</span>
+            </div>
+            <div>
+                <h1 class="text-xl md:text-2xl font-black tracking-wider text-slate-800 dark:text-slate-100">リズム・プログラミング
+                    Lab</h1>
+                <p class="text-xs text-pink-500 dark:text-pink-400 font-bold">音のブロックを並べて音楽を作ろう！</p>
+            </div>
+        </div>
+        <div class="flex gap-2 md:gap-3">
+            <button type="button" id="dark-mode-toggle"
+                class="bg-slate-200 dark:bg-slate-600 hover:bg-slate-300 dark:hover:bg-slate-500 text-slate-600 dark:text-slate-200 px-3 py-2 rounded-2xl font-bold flex items-center gap-2 shadow-sm transition-all"
+                aria-label="ダークモード切替">
+                <span class="material-symbols-rounded dark-icon" aria-hidden="true">dark_mode</span>
+                <span class="material-symbols-rounded light-icon hidden" aria-hidden="true">light_mode</span>
+            </button>
+            <button type="button" id="help-btn"
+                class="bg-yellow-400 hover:bg-yellow-500 text-white px-3 py-2 md:px-4 md:py-2 rounded-2xl font-bold flex items-center gap-2 shadow-[0_4px_0_#ca8a04] active:shadow-none active:translate-y-1 transition-all"
+                aria-label="あそびかたを表示" aria-haspopup="dialog" aria-controls="help-modal" aria-expanded="false">
+                <span class="material-symbols-rounded" aria-hidden="true">help</span>
+                <span class="hidden md:inline">あそびかた</span>
+            </button>
+            <button type="button" data-action="parents-modal-open"
+                class="bg-white dark:bg-slate-700 hover:bg-slate-50 dark:hover:bg-slate-600 text-slate-600 dark:text-slate-200 px-3 py-2 rounded-2xl font-bold shadow-sm transition-all flex items-center gap-1 border border-slate-200 dark:border-slate-600 active:scale-95"
+                aria-label="保護者の方へ - 開く" aria-haspopup="dialog" aria-controls="parents-modal" aria-expanded="false">
+                <span class="material-symbols-rounded text-lg text-pink-500">family_restroom</span>
+                <span class="hidden sm:inline">保護者の方へ</span>
+            </button>
+        </div>
+    </header>
+
+    <main class="flex-1 w-full max-w-6xl mx-auto p-4 md:p-8 flex flex-col gap-6">
+
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+            <!-- 再生コントロール -->
+            <div class="glass-panel p-6 rounded-3xl flex items-center gap-6 justify-center md:justify-start">
+                <button type="button" id="play-btn"
+                    class="bg-pink-500 hover:bg-pink-600 text-white w-20 h-20 rounded-full shadow-[0_6px_0_#be185d] flex items-center justify-center transition-transform hover:scale-105 active:scale-95 active:shadow-none active:translate-y-1.5 flex-shrink-0"
+                    aria-label="再生/停止">
+                    <span class="material-symbols-rounded text-5xl ml-1" id="play-icon"
+                        aria-hidden="true">play_arrow</span>
+                </button>
+                <div class="flex-1">
+                    <div
+                        class="bg-white dark:bg-slate-700 px-4 py-2 rounded-2xl border-2 border-slate-100 dark:border-slate-600 flex flex-col justify-center shadow-sm mb-2 transition-colors">
+                        <label
+                            class="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest mb-1"
+                            for="tempo-slider">はやさ (Tempo)</label>
+                        <div class="flex items-center gap-3">
+                            <span class="material-symbols-rounded text-slate-400 dark:text-slate-500"
+                                aria-hidden="true">speed</span>
+                            <input id="tempo-slider" class="w-full accent-pink-500 cursor-pointer" max="240" min="60"
+                                type="range" value="120" aria-describedby="tempo-input">
+                            <input type="number" id="tempo-input"
+                                class="font-mono font-bold text-xl text-pink-600 dark:text-pink-400 w-16 text-center bg-transparent border-b-2 border-transparent hover:border-pink-300 focus:border-pink-500 focus:outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                                max="240" min="60" value="120" aria-label="テンポ入力">
+                        </div>
+                    </div>
+                    <div
+                        class="bg-white dark:bg-slate-700 px-4 py-2 rounded-2xl border-2 border-slate-100 dark:border-slate-600 flex flex-col justify-center shadow-sm mb-3 transition-colors">
+                        <label
+                            class="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest mb-1"
+                            for="volume-slider">おんりょう (Volume)</label>
+                        <div class="flex items-center gap-3">
+                            <span class="material-symbols-rounded text-slate-400 dark:text-slate-500"
+                                aria-hidden="true">volume_up</span>
+                            <input id="volume-slider" class="w-full accent-pink-500 cursor-pointer" max="100" min="0"
+                                type="range" value="80" aria-describedby="volume-display">
+                            <span class="font-mono font-bold text-xl text-pink-600 dark:text-pink-400 w-12 text-center"
+                                id="volume-display" aria-live="polite">80</span>
+                        </div>
+                    </div>
+                    <div class="flex justify-between items-center">
+                        <button type="button" id="share-btn"
+                            class="text-xs font-bold text-pink-500 dark:text-pink-400 hover:text-pink-600 dark:hover:text-pink-300 flex items-center gap-1 transition px-2 py-1 rounded hover:bg-pink-50 dark:hover:bg-pink-900/30"
+                            aria-label="作ったリズムを共有する" aria-haspopup="dialog" aria-controls="share-modal" aria-expanded="false">
+                            <span class="material-symbols-rounded text-sm" aria-hidden="true">share</span> 共有する
+                        </button>
+                        <button type="button" id="clear-beats-btn"
+                            class="text-xs font-bold text-slate-400 dark:text-slate-500 hover:text-red-500 dark:hover:text-red-400 flex items-center gap-1 transition px-2 py-1 rounded hover:bg-slate-100 dark:hover:bg-slate-700"
+                            aria-label="すべてのビートを削除">
+                            <span class="material-symbols-rounded text-sm" aria-hidden="true">delete</span> 全部けす
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- プリセット＆保存 -->
+            <div class="glass-panel p-6 rounded-3xl flex flex-col gap-4">
+                <div>
+                    <span
+                        class="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest block mb-2">お手本リズム</span>
+                    <div class="flex flex-wrap gap-2" role="group" aria-label="プリセットリズム">
+                        <button type="button" id="preset-rock"
+                            class="preset-button px-3 py-2 rounded-xl bg-blue-100 dark:bg-blue-900 text-blue-600 dark:text-blue-300 font-bold hover:bg-blue-200 dark:hover:bg-blue-800 transition text-sm flex items-center gap-1 whitespace-nowrap" aria-pressed="false">⚡️
+                            8ビート</button>
+                        <button type="button" id="preset-house"
+                            class="preset-button px-3 py-2 rounded-xl bg-purple-100 dark:bg-purple-900 text-purple-600 dark:text-purple-300 font-bold hover:bg-purple-200 dark:hover:bg-purple-800 transition text-sm flex items-center gap-1 whitespace-nowrap" aria-pressed="false">💃
+                            ハウス</button>
+                        <button type="button" id="preset-hiphop"
+                            class="preset-button px-3 py-2 rounded-xl bg-orange-100 dark:bg-orange-900 text-orange-600 dark:text-orange-300 font-bold hover:bg-orange-200 dark:hover:bg-orange-800 transition text-sm flex items-center gap-1 whitespace-nowrap" aria-pressed="false">😎
+                            ヒップホップ</button>
+                        <button type="button" id="preset-latin"
+                            class="preset-button px-3 py-2 rounded-xl bg-green-100 dark:bg-green-900 text-green-600 dark:text-green-300 font-bold hover:bg-green-200 dark:hover:bg-green-800 transition text-sm flex items-center gap-1 whitespace-nowrap" aria-pressed="false">🏝
+                            ラテン</button>
+                        <button type="button" id="preset-funk"
+                            class="preset-button px-3 py-2 rounded-xl bg-amber-100 dark:bg-amber-900 text-amber-700 dark:text-amber-300 font-bold hover:bg-amber-200 dark:hover:bg-amber-800 transition text-sm flex items-center gap-1 whitespace-nowrap" aria-pressed="false">🕺
+                            ファンク</button>
+                        <button type="button" id="preset-tomgroove"
+                            class="preset-button px-3 py-2 rounded-xl bg-rose-200 dark:bg-rose-800 text-rose-800 dark:text-rose-100 font-bold hover:bg-rose-300 dark:hover:bg-rose-700 transition text-sm flex items-center gap-1 whitespace-nowrap" aria-pressed="false">🥁
+                            トムグルーヴ</button>
+                    </div>
+                    <p id="preset-current-status"
+                        class="mt-3 text-xs font-bold text-slate-500 dark:text-slate-300 tracking-wide"
+                        aria-live="polite">いまのお手本: まだえらんでいません</p>
+                </div>
+                <div class="border-t-2 border-slate-100 dark:border-slate-600 pt-3">
+                    <span
+                        class="text-xs font-bold text-pink-400 dark:text-pink-500 uppercase tracking-widest block mb-2">マイルーム
+                        (自動保存)</span>
+                    <div class="flex gap-2 mb-3">
+                        <label for="preset-name" class="sr-only">リズムの名前</label>
+                        <input id="preset-name"
+                            class="min-w-0 flex-1 bg-white dark:bg-slate-700 border-2 border-slate-200 dark:border-slate-600 rounded-xl px-3 py-2 text-sm font-bold focus:outline-none focus:border-pink-400 dark:focus:border-pink-500 dark:text-slate-200 transition-colors"
+                            placeholder="リズムのなまえ" type="text">
+                        <button type="button" id="save-preset-btn"
+                            class="bg-slate-700 dark:bg-slate-600 hover:bg-slate-600 dark:hover:bg-slate-500 text-white px-4 py-2 rounded-xl font-bold text-sm shadow-md active:scale-95 transition">
+                            保存
+                        </button>
+                    </div>
+                    <div class="flex flex-wrap gap-2 max-h-24 overflow-y-auto" id="user-preset-list"
+                        aria-label="保存したリズム">
+                        <span class="text-xs text-slate-400 dark:text-slate-500 italic py-1">まだ保存されていません</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ドラムグリッド -->
+        <section
+            class="bg-slate-800 dark:bg-slate-900 rounded-3xl shadow-2xl p-6 overflow-hidden relative flex-1 flex flex-col justify-center min-h-[400px] transition-colors"
+            aria-label="ドラムパッド">
+            <div class="w-full overflow-x-auto">
+                <div class="min-w-[900px] mx-auto">
+                    <div class="flex gap-2 mb-3 pl-[100px]" id="step-indicators" aria-hidden="true"></div>
+
+                    <div class="space-y-3" aria-label="リズムグリッド">
+                        <!-- ハイハット -->
+                        <div class="flex items-center gap-3 bg-slate-700/30 p-2 rounded-xl border border-slate-700 hover:border-slate-600 transition group relative pr-12"
+                            >
+                            <button type="button" id="instrument-hihat"
+                                class="w-[80px] flex flex-col items-center justify-center text-yellow-400 transition transform group-hover:scale-105 bg-transparent border-none cursor-pointer"
+                                aria-label="ハイハットを試聴">
+                                <span class="material-symbols-rounded text-3xl" aria-hidden="true">album</span>
+                                <span class="text-[10px] font-bold mt-1">ハイハット</span>
+                            </button>
+                            <div class="flex gap-2 flex-1" id="row-hihat"></div>
+                            <button type="button" id="clear-hihat"
+                                class="absolute right-2 top-1/2 -translate-y-1/2 text-slate-500 hover:text-red-400 p-1.5 rounded hover:bg-slate-700 transition opacity-50 group-hover:opacity-100"
+                                aria-label="ハイハットの列をクリア">
+                                <span class="material-symbols-rounded" aria-hidden="true">backspace</span>
+                            </button>
+                        </div>
+
+                        <!-- クラップ -->
+                        <div class="flex items-center gap-3 bg-slate-700/30 p-2 rounded-xl border border-slate-700 hover:border-slate-600 transition group relative pr-12"
+                            >
+                            <button type="button" id="instrument-clap"
+                                class="w-[80px] flex flex-col items-center justify-center text-green-400 transition transform group-hover:scale-105 bg-transparent border-none cursor-pointer"
+                                aria-label="クラップを試聴">
+                                <span class="material-symbols-rounded text-3xl"
+                                    aria-hidden="true">radio_button_unchecked</span>
+                                <span class="text-[10px] font-bold mt-1">クラップ</span>
+                            </button>
+                            <div class="flex gap-2 flex-1" id="row-clap"></div>
+                            <button type="button" id="clear-clap"
+                                class="absolute right-2 top-1/2 -translate-y-1/2 text-slate-500 hover:text-red-400 p-1.5 rounded hover:bg-slate-700 transition opacity-50 group-hover:opacity-100"
+                                aria-label="クラップの列をクリア">
+                                <span class="material-symbols-rounded" aria-hidden="true">backspace</span>
+                            </button>
+                        </div>
+
+                        <!-- スネア -->
+                        <div class="flex items-center gap-3 bg-slate-700/30 p-2 rounded-xl border border-slate-700 hover:border-slate-600 transition group relative pr-12"
+                            >
+                            <button type="button" id="instrument-snare"
+                                class="w-[80px] flex flex-col items-center justify-center text-cyan-400 transition transform group-hover:scale-105 bg-transparent border-none cursor-pointer"
+                                aria-label="スネアを試聴">
+                                <span class="material-symbols-rounded text-3xl" aria-hidden="true">adjust</span>
+                                <span class="text-[10px] font-bold mt-1">スネア</span>
+                            </button>
+                            <div class="flex gap-2 flex-1" id="row-snare"></div>
+                            <button type="button" id="clear-snare"
+                                class="absolute right-2 top-1/2 -translate-y-1/2 text-slate-500 hover:text-red-400 p-1.5 rounded hover:bg-slate-700 transition opacity-50 group-hover:opacity-100"
+                                aria-label="スネアの列をクリア">
+                                <span class="material-symbols-rounded" aria-hidden="true">backspace</span>
+                            </button>
+                        </div>
+
+                        <!-- タム -->
+                        <div class="flex items-center gap-3 bg-slate-700/30 p-2 rounded-xl border border-slate-700 hover:border-slate-600 transition group relative pr-12"
+                            >
+                            <button type="button" id="instrument-tom"
+                                class="w-[80px] flex flex-col items-center justify-center text-purple-400 transition transform group-hover:scale-105 bg-transparent border-none cursor-pointer"
+                                aria-label="タムを試聴">
+                                <span class="material-symbols-rounded text-3xl" aria-hidden="true">trip_origin</span>
+                                <span class="text-[10px] font-bold mt-1">タム</span>
+                            </button>
+                            <div class="flex gap-2 flex-1" id="row-tom"></div>
+                            <button type="button" id="clear-tom"
+                                class="absolute right-2 top-1/2 -translate-y-1/2 text-slate-500 hover:text-red-400 p-1.5 rounded hover:bg-slate-700 transition opacity-50 group-hover:opacity-100"
+                                aria-label="タムの列をクリア">
+                                <span class="material-symbols-rounded" aria-hidden="true">backspace</span>
+                            </button>
+                        </div>
+
+                        <!-- バスドラム -->
+                        <div class="flex items-center gap-3 bg-slate-700/30 p-2 rounded-xl border border-slate-700 hover:border-slate-600 transition group relative pr-12"
+                            >
+                            <button type="button" id="instrument-kick"
+                                class="w-[80px] flex flex-col items-center justify-center text-pink-400 transition transform group-hover:scale-105 bg-transparent border-none cursor-pointer"
+                                aria-label="バスドラムを試聴">
+                                <span class="material-symbols-rounded text-3xl" aria-hidden="true">circle</span>
+                                <span class="text-[10px] font-bold mt-1">バスドラム</span>
+                            </button>
+                            <div class="flex gap-2 flex-1" id="row-kick"></div>
+                            <button type="button" id="clear-kick"
+                                class="absolute right-2 top-1/2 -translate-y-1/2 text-slate-500 hover:text-red-400 p-1.5 rounded hover:bg-slate-700 transition opacity-50 group-hover:opacity-100"
+                                aria-label="バスドラムの列をクリア">
+                                <span class="material-symbols-rounded" aria-hidden="true">backspace</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mt-4 text-center">
+                <p class="text-slate-400 text-sm font-bold flex items-center justify-center gap-2">
+                    <span class="material-symbols-rounded text-yellow-400 text-base animate-bounce-sm"
+                        aria-hidden="true">lightbulb</span>
+                    アイコンをクリックで試聴、右の<span class="material-symbols-rounded text-sm bg-slate-600 px-1 rounded"
+                        aria-hidden="true">backspace</span>で列をクリア
+                </p>
+            </div>
+        </section>
+    </main>
+
+    <!-- ヘルプモーダル -->
+    <dialog id="help-modal" class="p-0 rounded-3xl shadow-2xl w-full max-w-md m-auto overflow-hidden border-0 open:animate-fade-in" aria-labelledby="help-title" aria-modal="true">
+        <div class="bg-pink-500 p-4 flex justify-between items-center">
+            <h2 id="help-title" class="text-xl font-black text-white flex items-center gap-2">
+                <span class="material-symbols-rounded" aria-hidden="true">help</span>
+                あそびかた
+            </h2>
+            <button type="button" id="help-close-btn" class="bg-white/20 hover:bg-white/40 text-white rounded-full p-1 transition" aria-label="閉じる">
+                <span class="material-symbols-rounded" aria-hidden="true">close</span>
+            </button>
+        </div>
+        <div class="p-6 space-y-6 overflow-y-auto max-h-[70vh]">
+                <div class="flex gap-4 items-start">
+                    <div class="bg-pink-100 dark:bg-pink-900 text-pink-600 dark:text-pink-300 w-8 h-8 rounded-full flex items-center justify-center font-black text-lg flex-shrink-0"
+                        aria-hidden="true">1</div>
+                    <div>
+                        <h3 class="text-lg font-bold text-slate-800 dark:text-slate-100 mb-1">音のブロックを置く</h3>
+                        <p class="text-sm text-slate-600 dark:text-slate-300">
+                            暗いマスをクリック（またはEnter/Spaceキー）すると音が鳴ります。右側の <span
+                                class="material-symbols-rounded text-sm align-middle bg-slate-200 dark:bg-slate-600 p-0.5 rounded text-slate-500 dark:text-slate-300"
+                                aria-hidden="true">backspace</span> でその列だけ消せます。
+                        </p>
+                    </div>
+                </div>
+                <div class="flex gap-4 items-start">
+                    <div class="bg-blue-100 dark:bg-blue-900 text-blue-600 dark:text-blue-300 w-8 h-8 rounded-full flex items-center justify-center font-black text-lg flex-shrink-0"
+                        aria-hidden="true">2</div>
+                    <div>
+                        <h3 class="text-lg font-bold text-slate-800 dark:text-slate-100 mb-1">マイルーム機能</h3>
+                        <p class="text-sm text-slate-600 dark:text-slate-300">
+                            気に入ったリズムができたら名前をつけて「保存」！<br>
+                            <span class="text-xs text-slate-400 dark:text-slate-500">✨
+                                保存したリズムはブラウザに記録されます。×ボタンで削除できます。</span>
+                        </p>
+                    </div>
+                </div>
+                <div class="flex gap-4 items-start">
+                    <div class="bg-green-100 dark:bg-green-900 text-green-600 dark:text-green-300 w-8 h-8 rounded-full flex items-center justify-center font-black text-lg flex-shrink-0"
+                        aria-hidden="true">3</div>
+                    <div>
+                        <h3 class="text-lg font-bold text-slate-800 dark:text-slate-100 mb-1">キーボードショートカット</h3>
+                        <div class="text-sm text-slate-600 dark:text-slate-300 space-y-1">
+                            <p><kbd
+                                    class="px-2 py-0.5 bg-slate-200 dark:bg-slate-600 rounded text-xs font-mono">Space</kbd>
+                                再生/停止</p>
+                            <p><kbd
+                                    class="px-2 py-0.5 bg-slate-200 dark:bg-slate-600 rounded text-xs font-mono">1</kbd>～<kbd
+                                    class="px-2 py-0.5 bg-slate-200 dark:bg-slate-600 rounded text-xs font-mono">6</kbd>
+                                お手本リズムを読み込み</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-slate-50 dark:bg-slate-700 p-4 flex justify-center transition-colors">
+                    <button type="button" id="help-ok-btn"
+                        class="bg-pink-500 hover:bg-pink-600 text-white px-6 py-2 rounded-xl font-bold shadow-sm active:translate-y-0.5 transition w-full">
+                        わかった！
+                    </button>
+                </div>
+        </div>
+    </dialog>
+
+    <!-- 共有モーダル -->
+    <div class="fixed inset-0 bg-slate-900/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 transition-opacity duration-300 hidden opacity-0"
+        id="share-modal" role="dialog" aria-modal="true" aria-labelledby="share-title" aria-hidden="true">
+        <div class="bg-white dark:bg-slate-800 w-full max-w-md rounded-3xl shadow-2xl overflow-hidden transform transition-all scale-95"
+            id="share-content">
+            <div class="bg-pink-500 p-4 flex justify-between items-center">
+                <h2 id="share-title" class="text-xl font-black text-white flex items-center gap-2">
+                    <span class="material-symbols-rounded" aria-hidden="true">share</span>
+                    リズムを共有する
+                </h2>
+                <button type="button" id="share-close-btn" class="bg-white/20 hover:bg-white/40 text-white rounded-full p-1 transition"
+                    aria-label="閉じる">
+                    <span class="material-symbols-rounded" aria-hidden="true">close</span>
+                </button>
+            </div>
+            <div class="p-6 space-y-6 text-center">
+                <p class="text-xs text-slate-600 dark:text-slate-300 font-bold">
+                    スマートフォンや別のパソコンで読み取ると、<br>作ったリズムを読み込めます！
+                </p>
+                
+                <!-- QRコード表示 -->
+                <div class="flex justify-center bg-slate-50 dark:bg-slate-700/50 p-4 rounded-2xl w-48 h-48 mx-auto border-2 border-slate-100 dark:border-slate-700">
+                    <div id="share-qrcode" class="w-full h-full flex items-center justify-center"></div>
+                </div>
+
+                <!-- リンクコピー -->
+                <div class="space-y-2">
+                    <label for="share-link-input" class="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest block text-left">共有用URL</label>
+                    <div class="flex gap-2">
+                        <input id="share-link-input"
+                            class="flex-1 bg-slate-50 dark:bg-slate-700 border-2 border-slate-200 dark:border-slate-600 rounded-xl px-3 py-2 text-xs font-mono focus:outline-none dark:text-slate-200"
+                            type="text" readonly>
+                        <button type="button" id="share-copy-btn"
+                            class="bg-pink-500 hover:bg-pink-600 text-white px-4 py-2 rounded-xl font-bold text-xs shadow-md active:scale-95 transition whitespace-nowrap">
+                            コピー
+                        </button>
+                    </div>
+                </div>
+
+                <div class="pt-4 border-t border-slate-100 dark:border-slate-700">
+                    <button type="button" id="share-ok-btn"
+                        class="bg-slate-700 hover:bg-slate-600 text-white px-6 py-2 rounded-xl font-bold shadow-sm active:translate-y-0.5 transition w-full">
+                        とじる
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    
+
+    
+
+    
+
+    <script src="../js/qrcode.min.js?v=20261003a"></script>
+    <script src="script.js?v=20261003a"></script>
+
+<!-- Parents Modal -->
+<dialog id="parents-modal"
+    class="p-0 rounded-3xl shadow-2xl open:animate-fade-in w-full max-w-lg m-auto overflow-hidden border-0"
+    aria-labelledby="parents-modal-title">
+    <div class="bg-white p-6 md:p-8 max-h-[90vh] overflow-y-auto relative text-left">
+        <button type="button" data-action="parents-modal-close" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600 focus:outline-none" aria-label="閉じる">
+            <span class="material-symbols-rounded">close</span>
+        </button>
+        <div class="mb-6 border-b-2 border-indigo-100 pb-4">
+            <h2 id="parents-modal-title"
+                class="text-lg md:text-xl font-black text-slate-800 flex items-center gap-2">
+                <span class="material-symbols-rounded text-indigo-500">family_restroom</span> 保護者の方へ
+            </h2>
+            <p class="text-xs text-slate-400 font-bold mt-1">For Parents &amp; Guardians</p>
+        </div>
+
+        <div class="space-y-6 text-sm text-slate-600 leading-relaxed font-bold">
+            <!-- ウェルカムメッセージカード -->
+            <div class="bg-gradient-to-r from-indigo-50 to-purple-50 p-5 rounded-2xl border border-indigo-100 text-center">
+                <p class="mb-2 text-indigo-800 text-base">
+                    <span class="material-symbols-rounded text-xl align-bottom mr-1 text-pink-400">favorite</span>
+                    当サイト「PikaLab」に<br>ご訪問いただき、誠にありがとうございます。
+                </p>
+                <p class="text-xs text-indigo-600">
+                            大切なお子様と一緒にPikaLabを訪れていただけたこと、<br>制作者のかたかたより、心から感謝申し上げます。
+                </p>
+            </div>
+
+            <!-- 1. ねらい -->
+            <div>
+                <h3 class="text-indigo-600 font-black mb-2 flex items-center gap-2">
+                    <span class="material-symbols-rounded text-base">school</span> このアプリのねらい
+                </h3>
+                <p>「リズム・プログラミング Lab」は、ハイハット、クラップ、スネア、タム、バスドラムのブロックを16ステップに並べ、テンポを変えながらドラムパターンを作って試せるツールです。お手本と自分のパターンを聴き比べ、<span class="bg-indigo-100 text-indigo-700 px-1 rounded">音の並び・繰り返し・テンポの違い</span>に気づくきっかけとして使えます。</p>
+            </div>
+
+            <!-- 2. おねがい -->
+            <div>
+                <h3 class="text-pink-500 font-black mb-2 flex items-center gap-2">
+                    <span class="material-symbols-rounded text-base">favorite</span> 保護者様へのおねがい
+                </h3>
+                <p>音楽やリズムに「間違い」はありません。お子様が不規則なタイミングでブロックを並べても、まずは<span class="bg-pink-100 text-pink-700 px-1 rounded">「どんな音が鳴るか聴かせて！」</span>と声をかけ、一緒に再生を楽しんでください。時折、お手本リズムを聴いてみて、「これに似たリズムはどうやって作るんだろう？」と一緒に並べ方を比べてみるのも一つの遊び方です。</p>
+            </div>
+
+            <!-- 3. 活用方法 -->
+            <div>
+                <h3 class="text-green-600 font-black mb-2 flex items-center gap-2">
+                    <span class="material-symbols-rounded text-base">emoji_objects</span> おうちでの活用方法
+                </h3>
+                <p>アプリで作ったリズムを再生しながら、それに合わせて一緒に手拍子（クラップ）をしたり、太ももを叩いたりして、体でリズムを感じてみてください。また、おうちの人が「はやさ（テンポ）」を変えながら、「早くなったらどんな感じがする？」と問いかけることもおすすめです。</p>
+            </div>
+
+            <!-- 4. 健康への配慮 -->
+            <div>
+                <h3 class="text-orange-500 font-black mb-2 flex items-center gap-2">
+                    <span class="material-symbols-rounded text-base">timer</span> 健康への配慮（休憩の推奨）
+                </h3>
+                <p>音が鳴るアプリのため、<span class="bg-orange-100 text-orange-700 px-1 rounded">スピーカーやヘッドホンの音量にはご注意ください</span>（最初は低めの音量からお試しください）。また、お子様の目の健康を守るため、30分に1回程度の休憩を推奨しております。通常の作品保存と自動保存はブラウザ内で行います。「共有する」を選ぶと、BPMと音のパターンが共有URLに含まれ、リンクを受け取った相手がそのリズムを読み込めます。保存した作品名は共有URLには含めません。</p>
+            </div>
+        </div>
+        <div class="mt-8 text-center">
+            <button type="button" data-action="parents-modal-close"
+                class="w-full bg-indigo-500 text-white px-8 py-3 rounded-xl font-black hover:bg-indigo-600 transition shadow-lg shadow-indigo-200">閉じる</button>
+        </div>
+    </div>
+</dialog>
+
+    <style>
+#parents-modal::backdrop {
+    background: rgba(15, 23, 42, 0.6);
+    backdrop-filter: blur(4px);
+}
+#parents-modal[open] {
+    display: block !important;
+    animation: parentsModalFadeIn 0.3s ease-out forwards;
+}
+@keyframes parentsModalFadeIn {
+    from { opacity: 0; transform: scale(0.95); }
+    to { opacity: 1; transform: scale(1); }
+}
+</style>
+
+
+</body>
+
+</html>
+

@@ -1,0 +1,23 @@
+{
+    "name": "強調線メーカー",
+    "short_name": "集中線",
+    "description": "YouTubeサムネイルや漫画に使える集中線・放射線をブラウザだけで簡単作成。無料で商用利用OK。",
+    "start_url": "./index.html",
+    "display": "standalone",
+    "background_color": "#111827",
+    "theme_color": "#2563eb",
+    "orientation": "any",
+    "categories": [
+        "graphics",
+        "design",
+        "utilities"
+    ],
+    "icons": [
+        {
+            "src": "icons/icon.svg",
+            "sizes": "192x192 512x512",
+            "type": "image/svg+xml",
+            "purpose": "any maskable"
+        }
+    ]
+}

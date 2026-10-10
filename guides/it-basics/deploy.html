@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>【IT用語】「デプロイ」とは？作ったものを利用できる場所へ届けること | KatakataLab</title>
+  <meta name="description" content="デプロイとは何かを、開発・検証・本番環境の違い、ビルドとテスト、CI/CD、キャッシュを含む公開後確認まで初心者向けに解説します。">
+  <link rel="canonical" href="https://katakatalab.com/guides/it-basics/deploy.html">
+  <meta property="og:type" content="article">
+  <meta property="og:site_name" content="KatakataLab">
+  <meta property="og:title" content="【IT用語】「デプロイ」とは？作ったものを利用できる場所へ届けること">
+  <meta property="og:description" content="デプロイとは何かを、開発・検証・本番環境の違い、ビルドとテスト、CI/CD、キャッシュを含む公開後確認まで初心者向けに解説します。">
+  <meta property="og:url" content="https://katakatalab.com/guides/it-basics/deploy.html">
+  <meta property="og:image" content="https://katakatalab.com/ogp.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="icon" href="../../favicon.ico">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&family=Zen+Kurenaido&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css?v=20260824-responsive">
+  <script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": "【IT用語】「デプロイ」とは？作ったものを利用できる場所へ届けること",
+  "description": "デプロイとは何かを、開発・検証・本番環境の違い、ビルドとテスト、CI/CD、キャッシュを含む公開後確認まで初心者向けに解説します。",
+  "datePublished": "2026-07-13",
+  "dateModified": "2026-08-04",
+  "mainEntityOfPage": "https://katakatalab.com/guides/it-basics/deploy.html",
+  "inLanguage": "ja",
+  "author": {
+    "@type": "Person",
+    "name": "かたかた",
+    "url": "https://katakatalab.com/who-is-katakata.html"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "KatakataLab",
+    "url": "https://katakatalab.com/"
+  }
+}</script>
+  <script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position": 1,
+      "name": "ホーム",
+      "item": "https://katakatalab.com/"
+    },
+    {
+      "@type": "ListItem",
+      "position": 2,
+      "name": "かたかたの制作ノート",
+      "item": "https://katakatalab.com/guides/it-basics/"
+    },
+    {
+      "@type": "ListItem",
+      "position": 3,
+      "name": "【IT用語】「デプロイ」とは？作ったものを利用できる場所へ届けること",
+      "item": "https://katakatalab.com/guides/it-basics/deploy.html"
+    }
+  ]
+}</script>
+</head>
+<body>
+    <script>try{if(localStorage.getItem('theme')==='dark')document.body.classList.add('dark-mode');}catch(e){}</script>
+  <a class="skip-link" href="#main-content">本文へ移動</a>
+  <header class="site-header">
+    <div class="header-inner">
+      <a class="brand" href="../../" aria-label="KatakataLab ホーム">
+        <span class="brand-mark" aria-hidden="true">K</span>
+        <span><strong>KatakataLab</strong><small>かたかたの制作ノート</small></span>
+      </a>
+      <nav class="site-nav" aria-label="主要ナビゲーション">
+        <a href="./">記事一覧</a>
+        <a href="../../#projects">作品・ツール</a>
+        <a href="../../who-is-katakata.html">運営者</a>
+      </nav>
+    </div>
+  </header>
+  <main id="main-content">
+    <nav class="breadcrumbs" aria-label="パンくずリスト">
+      <a href="../../">ホーム</a><span aria-hidden="true">/</span><a href="./">かたかたの制作ノート</a><span aria-hidden="true">/</span><span aria-current="page">「デプロイ」とは？作ったものを利用できる場所へ届けること</span>
+    </nav>
+    <article class="article-shell">
+      <header class="article-hero">
+        <div class="chapter-stamp"><span>CHAPTER 02</span><strong>DEPLOY</strong></div>
+        <p class="chapter-name">第2章｜開発の流れ</p>
+        <h1>【IT用語】「デプロイ」とは？作ったものを利用できる場所へ届けること</h1>
+        <p class="article-lead">デプロイとは何かを、開発・検証・本番環境の違い、ビルドとテスト、CI/CD、キャッシュを含む公開後確認まで初心者向けに解説します。</p>
+        <div class="article-meta" aria-label="記事情報">
+          <span>作成者：かたかた</span><span>公開日：2026年7月13日</span><span>更新日：2026年8月4日</span>
+        </div>
+      </header>
+      <div class="article-layout">
+        <aside class="article-toc" aria-label="目次"><p>このページの目次</p><ol><li><a href="#section-1">結論：「デプロイ」＝「作ったものを、利用できる環境へ配置・反映すること」</a></li>
+<li><a href="#section-2">デプロイでは何をするの？</a></li>
+<li><a href="#section-3">アプリの「インストール」とは違う</a></li>
+<li><a href="#section-4">ローカルでは動いたのに、本番では動かない理由</a></li>
+<li><a href="#section-5">デプロイを助けるCI/CD</a></li>
+<li><a href="#section-6">公開後の確認もデプロイの一部</a></li>
+<li><a href="#section-7">KatakataLabで実際に確認したこと</a></li>
+<li><a href="#section-talk">この言葉が会話に出てくるとき</a></li>
+<li><a href="#section-misread">勘違いしやすい点</a></li>
+<li><a href="#section-8">まとめ</a></li></ol></aside>
+        <div class="article-content">
+          <p>「デプロイは終わった？」</p>
+<p>「本番へのデプロイに失敗した」</p>
+<p>開発現場でよく聞く「デプロイ(Deploy)」。難しそうですが、意味はそれほど複雑ではありません。</p>
+<p>今回は、デプロイを<strong>「料理を厨房から客席へ届けること」</strong>に例えて解説します。</p>
+<section class="article-section" aria-labelledby="section-1"><h2 id="section-1">結論：「デプロイ」＝「作ったものを、利用できる環境へ配置・反映すること」</h2>
+<p>デプロイとは、<strong>「開発したアプリやWebサイトを、ユーザーが使える環境へ配置し、動かせる状態にすること」</strong>です。</p>
+<ul>
+<li><strong>開発環境：</strong> 開発者が作業や確認をする場所。</li>
+<li><strong>検証環境：</strong> 本番に近い条件でテストする場所。</li>
+<li><strong>本番環境：</strong> 実際のユーザーが使う場所。</li>
+</ul>
+<p>厨房で作った料理を、確認してから客席へ届ける。その流れがデプロイのイメージです。</p>
+</section>
+<section class="article-section" aria-labelledby="section-2"><h2 id="section-2">デプロイでは何をするの？</h2>
+<p>システムによって内容は異なりますが、次のような作業があります。</p>
+<ol>
+<li>ソースコードから公開用ファイルを作る。</li>
+<li>必要なテストを実行する。</li>
+<li>サーバーや配信サービスへファイルを配置する。</li>
+<li>設定やデータベースを更新する。</li>
+<li>公開後に正常に動くか確認する。</li>
+</ol>
+<p>単にファイルをコピーするだけのサイトもあれば、複数の手順を順番に実行する大規模なサービスもあります。</p>
+</section>
+<section class="article-section" aria-labelledby="section-3"><h2 id="section-3">アプリの「インストール」とは違う</h2>
+<p>スマホへアプリを入れる操作は、ユーザー側の<strong>インストール</strong>です。</p>
+<p>開発者がアプリを配信環境へ反映する作業や、ストア公開のために提出・リリースする流れは、広い意味でデプロイやリリースに関わります。ただし「デプロイ＝ユーザーのスマホへ直接インストールすること」ではありません。</p>
+</section>
+<section class="article-section" aria-labelledby="section-4"><h2 id="section-4">ローカルでは動いたのに、本番では動かない理由</h2>
+<p>自分のPCでは正常でも、本番環境では次の違いが影響します。</p>
+<ul>
+<li>ファイルを置く場所やURL</li>
+<li>OSやソフトウェアのバージョン</li>
+<li>環境変数やアクセス権限</li>
+<li>データベースや外部サービスの設定</li>
+<li>キャッシュ</li>
+</ul>
+<p>例えば、公開先のフォルダを1段間違えると、ファイルは存在していてもURLから見つけられず、404になることがあります。</p>
+<p>だから、<strong>「作った」「届いた」「本番で動いた」</strong>は、それぞれ分けて確認します。</p>
+</section>
+<section class="article-section" aria-labelledby="section-5"><h2 id="section-5">デプロイを助けるCI/CD</h2>
+<h3>CI：変更を継続的に確認する</h3>
+<p>コードを共有リポジトリへ送った時に、自動でビルドやテストを行い、問題を早く見つけます。</p>
+<h3>CD：届ける流れを整える</h3>
+<p>テストを通った成果物を、検証環境や本番環境へ届けやすくします。</p>
+<p>「継続的デリバリー」では本番公開前に人の承認を挟むことがあり、「継続的デプロイ」では条件を満たした変更を自動で本番まで反映します。</p>
+<p>CI/CDを導入しても、失敗がなくなるわけではありません。手順を繰り返し実行できる形にし、人のうっかりを減らすための仕組みです。</p>
+</section>
+<section class="article-section" aria-labelledby="section-6"><h2 id="section-6">公開後の確認もデプロイの一部</h2>
+<p>デプロイ処理が成功しても、ユーザーから見えるページが正しいとは限りません。</p>
+<ul>
+<li>URLへアクセスできるか</li>
+<li>主要な機能が動くか</li>
+<li>エラーログが増えていないか</li>
+<li>古いファイルがキャッシュされていないか</li>
+</ul>
+<p>公開後の確認と、問題があった時に元へ戻す手順まで準備しておくと安心です。</p>
+</section>
+<section class="article-section" aria-labelledby="section-7"><h2 id="section-7">KatakataLabで実際に確認したこと</h2>
+<p>KatakataLabでは、mainブランチへ送った変更をGitHub Actionsが検査し、公開してよいファイルだけを成果物へまとめてからXserverへ同期します。リポジトリにはテストや制作メモもありますが、それらを本番へ置かないため、公開対象は許可リストで管理しています。</p>
+<p>Actionsが成功しても確認は終わりません。公開URLが200を返すかに加えて、トップページに新しい見出しがあるか、PikaLabで広告スクリプトが読み込まれていないか、主要ツールをブラウザで操作できるかまで見ます。「処理成功」と「ユーザーに正しく届いた」を分けて確認する実例です。</p>
+</section>
+<section class="article-section" aria-labelledby="section-talk"><h2 id="section-talk">この言葉が会話に出てくるとき</h2>
+<p>例えば、「手元では動くのに、公開URLでは古い」となったときです。届ける作業と、届いた中身の確認は別です。</p>
+<p>例えば、公開してよいファイルだけを選ぶ会話です。テストや下書きを混ぜない、という判断がここで出ます。</p>
+</section>
+<section class="article-section" aria-labelledby="section-misread"><h2 id="section-misread">勘違いしやすい点</h2>
+<ul>
+<li><strong>インストールと同じ：</strong> ユーザーが自分の端末へ入れる操作とは違います。</li>
+<li><strong>成功表示で完了：</strong> 処理が通っても、見えるページが新しいとは限りません。</li>
+<li><strong>コピーすれば同じ動き：</strong> 置き場所、設定、キャッシュの違いで結果が変わります。</li>
+</ul>
+<p>「作った」「置いた」「本番で正しい」を分けて確認すると、原因の範囲が狭まります。</p>
+</section>
+<section class="article-section" aria-labelledby="section-8"><h2 id="section-8">まとめ</h2>
+<ul>
+<li><strong>デプロイ</strong> ＝ <strong>「作ったものを、利用できる環境へ配置・反映すること」</strong></li>
+<li><strong>本番環境</strong> ＝ <strong>「実際のユーザーが使う場所」</strong></li>
+<li><strong>CI/CD</strong> ＝ <strong>「ビルド、テスト、配信の流れを自動化・標準化する仕組み」</strong></li>
+<li><strong>大切なこと</strong> ＝ <strong>「処理成功だけでなく、公開後の動作も確認する」</strong></li>
+</ul>
+<p>次の記事では、期待した動きとのずれである「バグ」について解説します。</p>
+<p>ここまでお読みいただきありがとうございました！</p>
+</section>
+          <aside class="lab-example" aria-labelledby="lab-example-title">
+            <p class="eyebrow">FROM THE LAB</p>
+            <h2 id="lab-example-title">KatakataLabでの実例</h2>
+            <p>KatakataLabでは、mainブランチの公開対象が変わるとGitHub Actionsが動き、テスト後にXserverへファイルを同期します。処理が成功したかだけでなく、公開URLで新しい本文が読めるかまで確認して、反映完了と判断します。</p>
+            <p class="related-heading">この実例につながるページ</p>
+            <ul class="related-links"><li><a href="status-code.html">関連用語：ステータスコード</a></li>
+<li><a href="../../updates.html">公開後の更新記録</a></li>
+<li><a href="git.html">関連用語：Git</a></li></ul>
+          </aside>
+          <section class="article-section" aria-labelledby="section-deploy-fail">
+            <h2 id="section-deploy-fail">「緑になった＝公開完了」ではない</h2>
+            <p>CIが成功しても、ブラウザに古いHTMLが残っていることがあります。キャッシュ、デプロイ対象外のファイル、別ディレクトリへのアップロード、公開URLとcanonicalの食い違い——個人開発ではこのあたりで何度も時間を溶かしました。</p>
+            <p>いまの公開完了チェックは、だいたい次の順です。</p>
+            <ol>
+              <li>Actions（またはデプロイログ）が成功している</li>
+              <li>公開URLを開き、今回直した文言が<strong>実際に表示</strong>されている</li>
+              <li>主要導線（トップ→ツール→ガイド→問い合わせ）が切れていない</li>
+              <li>意図しないページに広告コードや noindex が付いていない</li>
+              <li>必要なら Search Console や更新履歴に、何を変えたかを残す</li>
+            </ol>
+            <p>デプロイは「ファイルを置いた瞬間」ではなく、<strong>訪問者が新しい状態を使えるところまで</strong>を指す、と捉えると事故が減ります。</p>
+          </section>
+          <section class="article-section faq" aria-labelledby="faq-title">
+            <p class="eyebrow">QUICK CHECK</p>
+            <h2 id="faq-title">よくある質問</h2>
+            <h3>アップロードできたらデプロイ完了ですか？</h3>
+            <p>配置だけで終わりとは限りません。公開URL、主要機能、リンク、キャッシュ、エラーログなどを確認し、ユーザーが新しい状態を使えるところまで確かめます。</p>
+            <h3>次に読むなら？</h3><p><a href="bug.html">BUGの記事</a>へ進むと、次の用語を順番に読めます。</p>
+          </section>
+          <section class="article-section references" aria-labelledby="references-title">
+            <h2 id="references-title">参考資料</h2>
+            <p>用語の定義や仕様を確認するため、公式文書・標準文書を参照しています。リンク先の内容は更新される場合があります。</p>
+            <ul><li><a href="https://docs.github.com/ja/actions/about-github-actions/understanding-github-actions" target="_blank" rel="noopener noreferrer">GitHub Docs「GitHub Actionsを理解する」</a></li></ul>
+          </section>
+          <nav class="chapter-nav" aria-label="前後の記事">
+            <a class="chapter-link previous" href="pull-request.html"><small>前の記事</small><span>← PULL REQUEST</span></a>
+            <a class="chapter-link next" href="bug.html"><small>次の記事</small><span>BUG →</span></a>
+          </nav>
+        </div>
+      </div>
+    </article>
+  </main>
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <p><strong>KatakataLab</strong><br><span>作って、つまずいて、分かったことを残す小さな研究室。</span></p>
+      <nav aria-label="フッターナビゲーション">
+        <a href="../../contact.html">お問い合わせ</a>
+        <a href="../../who-is-katakata.html">運営者情報</a>
+        <a href="../../privacy.html">プライバシーポリシー</a>
+        <a href="../../sitemap.html">サイトマップ</a>
+      </nav>
+    </div>
+    <p class="copyright">&copy; 2024-2026 KatakataLab</p>
+  </footer>
+</body>
+</html>

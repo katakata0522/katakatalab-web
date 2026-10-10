@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="robots" content="noindex, follow">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>えあわせカード</title>
+    <meta name="description" content="同じ絵のカードを探しながら、記憶力と集中力を楽しく使う子ども向け絵合わせゲームです。">
+    <link rel="canonical" href="https://katakatalab.com/pikalab/eduplay/matching.html">
+    <meta property="og:title" content="えあわせカード">
+    <meta property="og:description" content="同じ絵のカードを探しながら、記憶力と集中力を楽しく使う子ども向け絵合わせゲームです。">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://katakatalab.com/pikalab/eduplay/matching.html">
+    <meta property="og:image" content="https://katakatalab.com/pikalab/pikalab_ogp_compressed.jpg">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="えあわせカード">
+    <meta name="twitter:description" content="同じ絵のカードを探しながら、記憶力と集中力を楽しく使う子ども向け絵合わせゲームです。">
+    <meta name="twitter:image" content="https://katakatalab.com/pikalab/pikalab_ogp_compressed.jpg">
+    <link rel="stylesheet" href="../style.css">
+    <link rel="stylesheet" href="common.css">
+    <script src="common.js"></script>
+    <style>
+        /* CSS 3D トランスフォームを使ったカードの裏返しアニメーション */
+        .card-container {
+            perspective: 1000px; /* 3D空間の奥行き */
+            cursor: pointer;
+            touch-action: manipulation;
+        }
+        
+        .card-inner {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            text-align: center;
+            transition: transform 0.6s cubic-bezier(0.4, 0.0, 0.2, 1); /* なめらかな回転 */
+            transform-style: preserve-3d;
+        }
+        
+        /* .flipped クラスがついたら180度回転 */
+        .card-container.flipped .card-inner {
+            transform: rotateY(180deg);
+        }
+        
+        .card-front, .card-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            -webkit-backface-visibility: hidden; /* 裏面を隠す（Safari対応） */
+            backface-visibility: hidden;
+            border-radius: 1.5rem;
+        }
+        
+        /* カードの裏面（ゲーム開始時に見えている「？」の面） */
+        .card-front {
+            background-color: #a5b4fc; /* indigo-300 */
+            border-bottom: 6px solid #6366f1; /* indigo-500 */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+            color: white;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        
+        /* カードの表面（めくった時に見える絵柄の面） */
+        .card-back {
+            background-color: white;
+            border-bottom: 6px solid #e2e8f0; /* slate-200 */
+            transform: rotateY(180deg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        
+        /* 正解したときのポヨン！というアニメーション */
+        .matched {
+            animation: popIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+            pointer-events: none;
+        }
+        @keyframes popIn {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.15); }
+            100% { transform: scale(1); opacity: 0.7; } /* クリアしたペアは少し薄くする */
+        }
+    </style>
+    <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"えあわせカード","url":"https://katakatalab.com/pikalab/eduplay/matching.html","description":"同じ絵のカードを探しながら、記憶力と集中力を楽しく使う子ども向け絵合わせゲームです。","applicationCategory":"EducationalApplication","operatingSystem":"Any","isAccessibleForFree":true,"offers":{"@type":"Offer","price":"0","priceCurrency":"JPY"}}</script>
+</head>
+<body class="bg-indigo-50 h-screen w-screen overflow-auto font-sans select-none text-gray-800">
+    <main id="app" class="max-w-2xl mx-auto h-full flex flex-col p-3 sm:p-5 relative">
+        
+        <!-- ヘッダー -->
+        <header class="flex justify-between items-center py-2 sm:py-4 shrink-0 gap-2">
+            <a id="game-back-btn" href="./" class="bg-white border-b-4 border-gray-300 px-4 py-2 sm:px-6 sm:py-3 rounded-full font-bold text-base sm:text-lg shadow-md game-card text-gray-700">⬅️ もどる</a>
+            <h1 class="text-3xl sm:text-4xl md:text-5xl font-black text-indigo-500 drop-shadow-sm tracking-wide hidden sm:block">🃏 えあわせ 🃏</h1>
+            <div class="flex gap-2">
+                <button type="button" data-action="parents-modal-open" class="bg-white border-b-4 border-gray-300 p-3 sm:p-4 rounded-full shadow-md text-lg sm:text-xl game-card flex items-center justify-center active:scale-95 transition" aria-label="保護者の方へ - 開く" aria-haspopup="dialog" aria-expanded="false" title="保護者の方へ">👨‍👩‍👦</button>
+                <button type="button" id="sound-toggle" onclick="EduSound.toggle(this)" aria-label="音を消す" aria-pressed="true" class="bg-white border-b-4 border-gray-300 p-3 sm:p-4 rounded-full shadow-md text-xl sm:text-2xl game-card">🔊</button>
+            </div>
+        </header>
+
+        <!-- メッセージ -->
+        <div id="message" class="text-center font-bold text-xl sm:text-2xl text-indigo-600 my-2 sm:my-4 bg-white py-3 sm:py-4 rounded-full shadow-sm border-4 border-indigo-100 shrink-0">
+            おなじ えを さがしてね！
+        </div>
+
+        <!-- カードを並べるグリッドエリア -->
+        <div class="flex-1 flex flex-col justify-center py-2 pb-6 overflow-hidden">
+            <!-- スマホでは3列×4段、タブレットでは4列×3段 の12枚構成 -->
+            <div id="card-grid" class="grid grid-cols-3 sm:grid-cols-4 gap-3 sm:gap-5 w-full h-full max-h-[600px] p-2 mx-auto">
+                <!-- JavaScriptでカードが生成されます -->
+            </div>
+        </div>
+    </main>
+
+    <!-- クリア画面ポップアップ -->
+    <div id="clear-overlay" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-40">
+        <div class="bg-white rounded-3xl p-8 max-w-sm w-full text-center shadow-2xl scale-up flex flex-col items-center justify-center">
+            <div class="text-8xl mb-4 inline-block">🌟</div>
+            <h2 class="text-4xl font-black text-indigo-500 mb-2">クリア！</h2>
+            <p class="text-xl text-gray-700 font-bold mb-6 mt-2">すごい！<br>きおくが いいね！</p>
+            
+            <div class="flex flex-col gap-3 w-full">
+                <button onclick="initGame()" class="w-full bg-indigo-500 text-white text-xl font-bold py-4 rounded-2xl shadow-md transition-transform active:scale-95">もういっかい！ ➡️</button>
+                <button onclick="location.href='./'" class="w-full bg-gray-200 text-gray-700 text-lg font-bold py-3 rounded-2xl shadow-sm transition-transform active:scale-95">🏠 ひろばへもどる</button>
+            </div>
+            <!-- 保護者向けバナーを追加 -->
+            <div class="mt-6 pt-4 border-t border-gray-100 w-full text-left">
+                <p class="text-xs text-gray-500 font-bold mb-2 text-center">💡 おうちの方へ おすすめツール</p>
+                <div class="grid grid-cols-2 gap-2">
+                    <a href="../quest_board/" class="bg-amber-50 hover:bg-amber-100 text-amber-800 font-bold p-2.5 rounded-xl text-xs flex items-center justify-center gap-1 active:scale-95 transition text-center no-underline">
+                        <span>🎯 クエストボード</span>
+                    </a>
+                    <a href="../paper_gen/" class="bg-stone-50 hover:bg-stone-100 text-stone-800 font-bold p-2.5 rounded-xl text-xs flex items-center justify-center gap-1 active:scale-95 transition text-center no-underline">
+                        <span>📄 用紙メーカー</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const PAIRS_COUNT = 6; // 6ペア = 12枚のカード
+        let firstCard = null;
+        let secondCard = null;
+        let matchedPairs = 0;
+        let isAnimating = false; // アニメーション中の連続タップ防止用フラグ
+
+        function initGame() {
+            document.getElementById('clear-overlay').classList.add('hidden');
+            matchedPairs = 0;
+            firstCard = null;
+            secondCard = null;
+            isAnimating = false;
+
+            const grid = document.getElementById('card-grid');
+            grid.innerHTML = '';
+
+            // EduDataのアイテムからランダムに6種類（ペア数）を選ぶ
+            const selectedItems = EduUtils.shuffleArray(EduData.items).slice(0, PAIRS_COUNT);
+            
+            // 各アイテムを2つずつ（ペアで）配列に入れる
+            let deck = [];
+            selectedItems.forEach(item => {
+                deck.push({ ...item, uid: item.id + '-1' });
+                deck.push({ ...item, uid: item.id + '-2' });
+            });
+
+            // 12枚のカードをシャッフル
+            deck = EduUtils.shuffleArray(deck);
+
+            // DOMにカード要素を生成
+            deck.forEach((item, index) => {
+                const cardContainer = document.createElement('button');
+                cardContainer.type = 'button';
+                cardContainer.className = 'card-container game-card';
+                cardContainer.setAttribute('aria-label', `${index + 1}枚目のカード、うら向き`);
+                cardContainer.setAttribute('aria-pressed', 'false');
+                // 画面を開いた時に1枚ずつ順番にポンッと現れる演出
+                cardContainer.style.animation = `scaleUp 0.3s ease-out ${index * 0.05}s backwards`;
+                
+                cardContainer.innerHTML = `
+                    <div class="card-inner">
+                        <div class="card-front">❓</div>
+                        <div class="card-back text-5xl sm:text-6xl">${item.emoji}</div>
+                    </div>
+                `;
+
+                // カードをタップした時の処理
+                cardContainer.onclick = () => handleCardClick(cardContainer, item);
+                grid.appendChild(cardContainer);
+            });
+
+            // 起動時に音声でガイド
+            setTimeout(() => {
+                EduSound.speak("おなじ えを さがしてね！", 0.9, 1.2);
+            }, 500);
+        }
+
+        function handleCardClick(cardContainer, item) {
+            // アニメーション中、または既にめくられている（または正解済みの）カードは無視
+            if (isAnimating || cardContainer.classList.contains('flipped')) return;
+
+            // カードをめくる（CSSクラスを追加して180度回転させる）
+            cardContainer.classList.add('flipped');
+            cardContainer.setAttribute('aria-pressed', 'true');
+            cardContainer.setAttribute('aria-label', `${item.name}のカード、おもて向き`);
+            
+            // めくったカードの名前をサッと喋る（リズム良くテンポアップ）
+            EduSound.speak(item.name, 1.2, 1.4); 
+
+            if (!firstCard) {
+                // 1枚目をめくった状態
+                firstCard = { el: cardContainer, data: item };
+            } else {
+                // 2枚目をめくった状態
+                secondCard = { el: cardContainer, data: item };
+                checkMatch();
+            }
+        }
+
+        function checkMatch() {
+            // 判定処理中は他のカードをめくれないようにロック
+            isAnimating = true;
+
+            // ペアが一致したかどうかを判定
+            if (firstCard.data.id === secondCard.data.id) {
+                // 正解！
+                setTimeout(() => {
+                    // ポヨンと跳ねるアニメーションを追加
+                    firstCard.el.classList.add('matched');
+                    secondCard.el.classList.add('matched');
+                    firstCard.el.disabled = true;
+                    secondCard.el.disabled = true;
+                    firstCard.el.setAttribute('aria-label', `${firstCard.data.name}のカード、ペア完成`);
+                    secondCard.el.setAttribute('aria-label', `${secondCard.data.name}のカード、ペア完成`);
+                    
+                    EduSound.speak("あたり！", 1.0, 1.3);
+                    
+                    // キラキラ演出（星を出す）
+                    spawnStar(firstCard.el);
+                    spawnStar(secondCard.el);
+
+                    matchedPairs++;
+                    
+                    // 全部見つけたらクリア！
+                    if (matchedPairs === PAIRS_COUNT) {
+                        setTimeout(() => {
+                            EduUtils.completeGameClear("すごい！ぜんぶ あたったね！");
+                        }, 1000);
+                    }
+
+                    resetSelection();
+                }, 500); // めくって絵が見えた後、少し待ってから判定演出
+                
+            } else {
+                // 不正解
+                setTimeout(() => {
+                    EduSound.speak("ちがうよ", 1.2, 1.1);
+                    // 裏返し（「？」の面）に戻す
+                    firstCard.el.classList.remove('flipped');
+                    secondCard.el.classList.remove('flipped');
+                    firstCard.el.setAttribute('aria-pressed', 'false');
+                    secondCard.el.setAttribute('aria-pressed', 'false');
+                    firstCard.el.setAttribute('aria-label', 'カード、うら向き');
+                    secondCard.el.setAttribute('aria-label', 'カード、うら向き');
+                    resetSelection();
+                }, 1000); // 1秒間だけ絵柄を見せてから裏返す
+            }
+        }
+
+        // 次のカードをめくれるように状態をリセット
+        function resetSelection() {
+            firstCard = null;
+            secondCard = null;
+            isAnimating = false;
+        }
+
+        // 正解したときにカードの上に星がキラッと光る演出
+        function spawnStar(cardElement) {
+            const rect = cardElement.getBoundingClientRect();
+            const star = document.createElement('div');
+            star.innerText = "✨";
+            star.className = "absolute text-4xl scale-up pointer-events-none z-50";
+            star.style.left = `${rect.left + (rect.width / 2) - 20}px`;
+            star.style.top = `${rect.top + (rect.height / 2) - 20}px`;
+            document.body.appendChild(star);
+            
+            setTimeout(() => {
+                if (star.parentNode) star.remove();
+            }, 1000);
+        }
+
+        window.onload = () => {
+            initGame();
+        };
+    </script>
+    
+<!-- Parents Modal -->
+    
+
+    
+
+    
+<!-- Parents Modal -->
+    <dialog id="parents-modal"
+        class="p-0 rounded-3xl shadow-2xl  open:animate-fade-in w-full max-w-lg m-auto overflow-hidden border-0"
+        aria-labelledby="parents-modal-title" style="display:none;">
+        <div class="bg-white p-6 md:p-8 max-h-[90vh] overflow-y-auto relative text-left">
+            <button type="button" data-action="parents-modal-close" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600 focus:outline-none" aria-label="閉じる">
+                <span class="material-symbols-rounded">close</span>
+            </button>
+            <div class="mb-6 border-b-2 border-indigo-100 pb-4">
+                <h2 id="parents-modal-title"
+                    class="text-lg md:text-xl font-black text-slate-800 flex items-center gap-2">
+                    <span class="material-symbols-rounded text-indigo-500">family_restroom</span> 保護者の方へ
+                </h2>
+                <p class="text-xs text-slate-400 font-bold mt-1">For Parents & Guardians</p>
+            </div>
+
+            <div class="space-y-6 text-sm text-slate-600 leading-relaxed font-bold">
+                <!-- ウェルカムメッセージカード -->
+                <div class="bg-gradient-to-r from-indigo-50 to-purple-50 p-5 rounded-2xl border border-indigo-100 text-center">
+                    <p class="mb-2 text-indigo-800 text-base">
+                        <span class="material-symbols-rounded text-xl align-bottom mr-1 text-pink-400">favorite</span>
+                        当サイト「PikaLab」に<br>ご訪問いただき、誠にありがとうございます。
+                    </p>
+                    <p class="text-xs text-indigo-600">
+                            大切なお子様と一緒にPikaLabを訪れていただけたこと、<br>制作者のかたかたより、心から感謝申し上げます。
+                    </p>
+                </div>
+
+                <!-- 1. ねらい -->
+                <div>
+                    <h3 class="text-indigo-600 font-black mb-2 flex items-center gap-2">
+                        <span class="material-symbols-rounded text-base">school</span> このアプリのねらい
+                    </h3>
+                    <p>
+                        「えあわせカード」は、裏返されたカードをめくって同じ絵柄のペアを見つける記憶ゲーム（神経衰弱）です。かわいい絵柄と音が連動することで、一時的に情報を脳にとどめて整理する「ワーキングメモリ（短期記憶力）」と、物事の位置やパターンを認識する「空間認知能力」をゲーム感覚で育みます。
+                    </p>
+                </div>
+
+                <!-- 2. おねがい -->
+                <div>
+                    <h3 class="text-pink-500 font-black mb-2 flex items-center gap-2">
+                        <span class="material-symbols-rounded text-base">favorite</span> 保護者様へのおねがい
+                    </h3>
+                    <p>
+                        カードの枚数は幼児のお子様が退屈せず、かつ達成感が得られる「12枚（6ペア）」に調整しています。最初からすべてを当てるのは難しいため、間違えてカードが裏に戻っても<span class="bg-pink-100 text-pink-700 px-1 rounded">「次はあそこだったかな？」</span>と前向きに励まし、お子様がストレスなく何度も挑戦できるように優しく寄り添ってください。
+                    </p>
+                </div>
+
+                <!-- 3. 活用方法 -->
+                <div>
+                    <h3 class="text-green-600 font-black mb-2 flex items-center gap-2">
+                        <span class="material-symbols-rounded text-base">emoji_objects</span> おうちでの活用方法
+                    </h3>
+                    <p>
+                        カードをめくって「ライオン！」「バナナ！」などと声が出たときに、「ライオンさんはどんな鳴き声かな？」「バナナは黄色いね」と、絵柄のモノについて会話を広げてみてください。実際の知育トランプやカード遊びへ移行するための導入としても非常に効果的です。
+                    </p>
+                </div>
+
+                <!-- 4. 健康への配慮 -->
+                <div>
+                    <h3 class="text-orange-500 font-black mb-2 flex items-center gap-2">
+                        <span class="material-symbols-rounded text-base">timer</span> 健康への配慮（休憩の推奨）
+                    </h3>
+                    <p>
+                        記憶を巡らせるために脳と目をたくさん使うゲームです。<span class="bg-orange-100 text-orange-700 px-1 rounded">15〜20分程度</span>を目安に少し目を休ませ、遠くを見るなどの休憩を入れてあげてください。また、プライバシーに関わるデータの取得や送信は一切行っておりません。
+                    </p>
+                </div>
+            </div>
+            <div class="mt-8 text-center">
+                <button type="button" data-action="parents-modal-close"
+                    class="w-full bg-indigo-500 text-white px-8 py-3 rounded-xl font-black hover:bg-indigo-600 transition shadow-lg shadow-indigo-200">閉じる</button>
+            </div>
+        </div>
+    </dialog>
+
+    <style>
+    #parents-modal::backdrop {
+        background: rgba(15, 23, 42, 0.6);
+        backdrop-filter: blur(4px);
+    }
+    #parents-modal[open] {
+        display: block !important;
+        animation: parentsModalFadeIn 0.3s ease-out forwards;
+    }
+    @keyframes parentsModalFadeIn {
+        from { opacity: 0; transform: scale(0.95); }
+        to { opacity: 1; transform: scale(1); }
+    }
+    </style>
+
+
+</body>
+</html>

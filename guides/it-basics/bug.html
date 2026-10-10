@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>【IT用語】「バグ」とは？期待した動きとの「ずれ」 | KatakataLab</title>
+  <meta name="description" content="バグとは何かを、仕様とのずれ、実装・要件・使いやすさの問題、発生する原因、見つけた後に再発を防ぐ考え方まで解説します。">
+  <link rel="canonical" href="https://katakatalab.com/guides/it-basics/bug.html">
+  <meta property="og:type" content="article">
+  <meta property="og:site_name" content="KatakataLab">
+  <meta property="og:title" content="【IT用語】「バグ」とは？期待した動きとの「ずれ」">
+  <meta property="og:description" content="バグとは何かを、仕様とのずれ、実装・要件・使いやすさの問題、発生する原因、見つけた後に再発を防ぐ考え方まで解説します。">
+  <meta property="og:url" content="https://katakatalab.com/guides/it-basics/bug.html">
+  <meta property="og:image" content="https://katakatalab.com/ogp.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="icon" href="../../favicon.ico">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&family=Zen+Kurenaido&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css?v=20260824-responsive">
+  <script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": "【IT用語】「バグ」とは？期待した動きとの「ずれ」",
+  "description": "バグとは何かを、仕様とのずれ、実装・要件・使いやすさの問題、発生する原因、見つけた後に再発を防ぐ考え方まで解説します。",
+  "datePublished": "2026-07-13",
+  "dateModified": "2026-08-04",
+  "mainEntityOfPage": "https://katakatalab.com/guides/it-basics/bug.html",
+  "inLanguage": "ja",
+  "author": {
+    "@type": "Person",
+    "name": "かたかた",
+    "url": "https://katakatalab.com/who-is-katakata.html"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "KatakataLab",
+    "url": "https://katakatalab.com/"
+  }
+}</script>
+  <script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position": 1,
+      "name": "ホーム",
+      "item": "https://katakatalab.com/"
+    },
+    {
+      "@type": "ListItem",
+      "position": 2,
+      "name": "かたかたの制作ノート",
+      "item": "https://katakatalab.com/guides/it-basics/"
+    },
+    {
+      "@type": "ListItem",
+      "position": 3,
+      "name": "【IT用語】「バグ」とは？期待した動きとの「ずれ」",
+      "item": "https://katakatalab.com/guides/it-basics/bug.html"
+    }
+  ]
+}</script>
+</head>
+<body>
+    <script>try{if(localStorage.getItem('theme')==='dark')document.body.classList.add('dark-mode');}catch(e){}</script>
+  <a class="skip-link" href="#main-content">本文へ移動</a>
+  <header class="site-header">
+    <div class="header-inner">
+      <a class="brand" href="../../" aria-label="KatakataLab ホーム">
+        <span class="brand-mark" aria-hidden="true">K</span>
+        <span><strong>KatakataLab</strong><small>かたかたの制作ノート</small></span>
+      </a>
+      <nav class="site-nav" aria-label="主要ナビゲーション">
+        <a href="./">記事一覧</a>
+        <a href="../../#projects">作品・ツール</a>
+        <a href="../../who-is-katakata.html">運営者</a>
+      </nav>
+    </div>
+  </header>
+  <main id="main-content">
+    <nav class="breadcrumbs" aria-label="パンくずリスト">
+      <a href="../../">ホーム</a><span aria-hidden="true">/</span><a href="./">かたかたの制作ノート</a><span aria-hidden="true">/</span><span aria-current="page">「バグ」とは？期待した動きとの「ずれ」</span>
+    </nav>
+    <article class="article-shell">
+      <header class="article-hero">
+        <div class="chapter-stamp"><span>CHAPTER 03</span><strong>BUG</strong></div>
+        <p class="chapter-name">第3章｜トラブルへの備え</p>
+        <h1>【IT用語】「バグ」とは？期待した動きとの「ずれ」</h1>
+        <p class="article-lead">バグとは何かを、仕様とのずれ、実装・要件・使いやすさの問題、発生する原因、見つけた後に再発を防ぐ考え方まで解説します。</p>
+        <div class="article-meta" aria-label="記事情報">
+          <span>作成者：かたかた</span><span>公開日：2026年7月13日</span><span>更新日：2026年8月4日</span>
+        </div>
+      </header>
+      <div class="article-layout">
+        <aside class="article-toc" aria-label="目次"><p>このページの目次</p><ol><li><a href="#section-1">結論：「バグ」＝「期待・仕様と、実際の動きがずれている状態」</a></li>
+<li><a href="#section-2">「本物の虫」が語源なの？</a></li>
+<li><a href="#section-3">バグにもいろいろある</a></li>
+<li><a href="#section-4">なぜバグは生まれるの？</a></li>
+<li><a href="#section-5">「バグは出るもの」の本当の意味</a></li>
+<li><a href="#section-6">KatakataLabで実際に確認したこと</a></li>
+<li><a href="#section-talk">この言葉が会話に出てくるとき</a></li>
+<li><a href="#section-misread">勘違いしやすい点</a></li>
+<li><a href="#section-7">まとめ</a></li></ol></aside>
+        <div class="article-content">
+          <p>「ボタンを押したら画面が止まった」</p>
+<p>「計算結果が合わない」</p>
+<p>こうした不具合は、よく「バグ(Bug)」と呼ばれます。では、エラーが表示されなければバグではないのでしょうか？</p>
+<p>今回は、バグを<strong>「設計図と完成品のずれ」</strong>に例えて解説します。</p>
+<section class="article-section" aria-labelledby="section-1"><h2 id="section-1">結論：「バグ」＝「期待・仕様と、実際の動きがずれている状態」</h2>
+<p>バグとは、一般に<strong>「ソフトウェアが、求められた動きや意図した結果と異なる状態」</strong>を指します。</p>
+<p>画面が止まるような分かりやすい不具合だけではありません。</p>
+<ul>
+<li>計算結果が間違っている</li>
+<li>保存したはずのデータが消える</li>
+<li>特定の端末だけでボタンが押せない</li>
+<li>権限のない人が情報を見られる</li>
+</ul>
+<p>見た目は動いていても、仕様や安全性を満たしていなければ問題です。</p>
+</section>
+<section class="article-section" aria-labelledby="section-2"><h2 id="section-2">「本物の虫」が語源なの？</h2>
+<p>1947年、コンピュータのリレーに蛾が挟まり、記録帳へ貼られた有名な出来事があります。</p>
+<p>ただし、「bug」という言葉は、それ以前から機械や電気回路の不具合を表す言葉として使われていました。蛾の事件は言葉の始まりではなく、コンピュータの世界で「バグ」という表現が広まる象徴的な出来事です。</p>
+</section>
+<section class="article-section" aria-labelledby="section-3"><h2 id="section-3">バグにもいろいろある</h2>
+<h3>1. 実装のバグ</h3>
+<p>プログラムの条件や計算を間違え、意図と異なる動きをする状態です。</p>
+<p>例：合計金額へ送料を足すはずが、同じ送料を2回足してしまう。</p>
+<h3>2. 仕様・要件の問題</h3>
+<p>プログラムは設計書通りに動いていても、設計そのものが利用目的と合っていない場合があります。</p>
+<p>これは「仕様バグ」と呼ばれることもありますが、チームによっては「要件漏れ」「仕様不備」と分けて扱います。</p>
+<h3>3. 使いやすさの問題</h3>
+<p>ボタンが小さすぎる、文字のコントラストが低い、操作の流れが分かりにくい。こうした問題は、UX上の課題やアクセシビリティ不具合です。</p>
+<p>チームによってはバグとして管理し、別のチームでは改善課題として扱います。大切なのは呼び名より、ユーザーが困っている事実を見落とさないことです。</p>
+</section>
+<section class="article-section" aria-labelledby="section-4"><h2 id="section-4">なぜバグは生まれるの？</h2>
+<p>ソフトウェアは、多くの条件が組み合わさって動きます。</p>
+<ul>
+<li>要件の認識がずれていた</li>
+<li>条件分岐や計算を間違えた</li>
+<li>想定していない入力が届いた</li>
+<li>OSやブラウザの違いが影響した</li>
+<li>別の変更と組み合わさって問題が起きた</li>
+</ul>
+<p>原因は単純な書き間違いだけではありません。だから開発では、レビューやテスト、監視を組み合わせます。</p>
+</section>
+<section class="article-section" aria-labelledby="section-5"><h2 id="section-5">「バグは出るもの」の本当の意味</h2>
+<p>この言葉は、ミスを放置するための言い訳ではありません。</p>
+<p>すべての条件を最初から完全に予測するのは難しい。だからこそ、問題を早く見つけ、影響を小さくし、同じ問題を繰り返さない仕組みを用意する、という考え方です。</p>
+<p>バグが見つかった時は、誰かを責めるよりも、再現条件と原因を確かめることが解決への近道になります。</p>
+</section>
+<section class="article-section" aria-labelledby="section-6"><h2 id="section-6">KatakataLabで実際に確認したこと</h2>
+<p>トップページの作品一覧は、JavaScriptが <code>projects.json</code> を取得した後には表示されていました。しかし初期HTMLには読み込み中の骨組みしかなく、通信やJavaScriptに失敗すると主要ツールの説明が消える状態でした。普段のブラウザでは動くため見落としやすい、表示設計上のバグです。</p>
+<p>修正では、主要カードを初期HTMLにも生成し、JSON取得に失敗した時はその内容を残すようにしました。さらに「初期HTMLだけでもQRコードやパスワードのツールを確認できる」というテストを追加し、同じ状態へ戻った時に検出できるようにしています。</p>
+</section>
+<section class="article-section" aria-labelledby="section-talk"><h2 id="section-talk">この言葉が会話に出てくるとき</h2>
+<p>例えば、「期待した計算結果と、画面の数字が違う」と報告するときです。感想ではなく、ずれた点を共有します。</p>
+<p>例えば、直したあとに「同じ操作で再発しないか」を見るときです。出たこと自体より、再現と範囲が話題になります。</p>
+</section>
+<section class="article-section" aria-labelledby="section-misread"><h2 id="section-misread">勘違いしやすい点</h2>
+<ul>
+<li><strong>下手だから起きる：</strong> 条件の漏れ、前提の違い、環境の差でも起きます。</li>
+<li><strong>見た目の崩れだけ：</strong> 仕様とのずれ、使いにくさ、データの不整合も対象になります。</li>
+<li><strong>直したら終わり：</strong> なぜ起きたかと、戻らない確認が残ります。</li>
+</ul>
+<p>伝えるときは、何をしたか、何を期待したか、何が起きたか、の3点があると調べやすくなります。</p>
+</section>
+<section class="article-section" aria-labelledby="section-7"><h2 id="section-7">まとめ</h2>
+<ul>
+<li><strong>バグ</strong> ＝ <strong>「期待・仕様と、実際の動きのずれ」</strong></li>
+<li><strong>原因</strong> ＝ <strong>「実装、要件、環境、変更の組み合わせなどさまざま」</strong></li>
+<li><strong>大切なこと</strong> ＝ <strong>「早く見つけ、原因を確かめ、再発を防ぐ」</strong></li>
+</ul>
+<p>「使いにくい」と感じた時も、ユーザーのせいとは限りません。その違和感は、製品を良くする大切な手がかりです。</p>
+<p>次の記事では、バグの原因を調べて直す「デバッグ」について解説します。</p>
+<p>ここまでお読みいただきありがとうございました！</p>
+</section>
+          <aside class="lab-example" aria-labelledby="lab-example-title">
+            <p class="eyebrow">FROM THE LAB</p>
+            <h2 id="lab-example-title">KatakataLabでの実例</h2>
+            <p>KatakataLabでは、リンク切れやスマートフォン表示、公開ページの必須情報など、過去に壊したくない条件をテストとして残しています。問題を直すだけでなく、同じずれを再び見つけられる形にするのが再発防止です。</p>
+            <p class="related-heading">この実例につながるページ</p>
+            <ul class="related-links"><li><a href="debug.html">関連用語：デバッグ</a></li>
+<li><a href="../../contact.html">不具合を伝えるお問い合わせ窓口</a></li></ul>
+          </aside>
+          <section class="article-section" aria-labelledby="section-ops-bug">
+            <h2 id="section-ops-bug">不具合報告で助かる情報の型</h2>
+            <p>「動きません」だけでは再現が難しく、修正判断が遅れます。問い合わせでは、OS・ブラウザ・URL・操作手順・期待と実際の差、があると一気に早くなります。</p>
+<ul>
+<li>いつから・どのページで起きるか</li>
+<li>毎回か、時々か</li>
+<li>スクショやエラー文言があれば添付</li>
+</ul>
+<p>不具合は恥ずかしいものではなく、公開して使う以上つきものの差分です。再現手順が揃うほど、直す側の仮説が減ります。</p>
+          </section>
+          <section class="article-section faq" aria-labelledby="faq-title">
+            <p class="eyebrow">QUICK CHECK</p>
+            <h2 id="faq-title">よくある質問</h2>
+            <h3>使いにくさもバグですか？</h3>
+            <p>仕様どおり動いていても、目的を達成できないほど分かりにくければ重要な問題です。ただし実装ミス、仕様不足、改善要望は分けて記録すると、対応方法を決めやすくなります。</p>
+            <h3>次に読むなら？</h3><p><a href="debug.html">DEBUGの記事</a>へ進むと、次の用語を順番に読めます。</p>
+          </section>
+          <section class="article-section references" aria-labelledby="references-title">
+            <h2 id="references-title">参考資料</h2>
+            <p>用語の定義や仕様を確認するため、公式文書・標準文書を参照しています。リンク先の内容は更新される場合があります。</p>
+            <ul><li><a href="https://americanhistory.si.edu/explore/stories/grace-under-pressure" target="_blank" rel="noopener noreferrer">Smithsonian「Grace Hopperと1947年のmoth」</a></li></ul>
+          </section>
+          <nav class="chapter-nav" aria-label="前後の記事">
+            <a class="chapter-link previous" href="deploy.html"><small>前の記事</small><span>← DEPLOY</span></a>
+            <a class="chapter-link next" href="debug.html"><small>次の記事</small><span>DEBUG →</span></a>
+          </nav>
+        </div>
+      </div>
+    </article>
+  </main>
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <p><strong>KatakataLab</strong><br><span>作って、つまずいて、分かったことを残す小さな研究室。</span></p>
+      <nav aria-label="フッターナビゲーション">
+        <a href="../../contact.html">お問い合わせ</a>
+        <a href="../../who-is-katakata.html">運営者情報</a>
+        <a href="../../privacy.html">プライバシーポリシー</a>
+        <a href="../../sitemap.html">サイトマップ</a>
+      </nav>
+    </div>
+    <p class="copyright">&copy; 2024-2026 KatakataLab</p>
+  </footer>
+</body>
+</html>

@@ -1,0 +1,52 @@
+name: Public Web Root Quality Check
+on:
+  push:
+    branches: [main]
+    paths-ignore: ["pikalab/**", "**.md"]
+  pull_request:
+    types: [opened, reopened, synchronize, ready_for_review]
+    paths-ignore: ["pikalab/**", "**.md"]
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: public-root-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  quality:
+    if: ${{ github.event_name != 'pull_request' || !github.event.pull_request.draft }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38
+        with:
+          node-version: '22'
+      - name: Prepare published media as ephemeral CI dependencies
+        run: python3 scripts/public-qa/prepare.py
+      - name: Product contracts and isolated Node tests
+        run: |
+          node scripts/public-qa/test-root.cjs
+          node scripts/run-public-node-tests.cjs
+      - name: Build reviewed public root
+        run: |
+          node scripts/build-project-cards.cjs
+          git diff --exit-code -- index.html
+          node .github/scripts/build-public-root.cjs
+      - name: Install locked browser tools
+        run: |
+          npm ci --ignore-scripts --no-audit --no-fund
+          npx playwright install --with-deps chromium --only-shell
+      - name: Existing public tools and education privacy browser checks
+        env:
+          NODE_PATH: ${{ github.workspace }}/node_modules
+        run: |
+          node .github/scripts/local-tools-e2e.mjs
+          node .github/scripts/education-privacy-e2e.cjs --root-build
+      - name: Publication contracts
+        run: |
+          node scripts/education-no-tracking.cjs --root-build
+          node scripts/audit-publisher-quality.cjs
+          node scripts/audit-seo-metadata.cjs

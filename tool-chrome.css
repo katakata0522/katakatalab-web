@@ -1,0 +1,217 @@
+/* 各ツールへ同じ文面で貼られていた枠だけ。
+   ツール本体の色・余白・入力欄は各ディレクトリの style.css に残す。 */
+
+.breadcrumbs-tool--bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  max-width: 1000px;
+  margin: 0.75rem auto 1rem;
+  padding: 0.5rem 1rem;
+  background: var(--c-surface, #ffffff);
+  border: 1px solid var(--c-glass-border, rgba(0, 0, 0, 0.08));
+  border-radius: 12px;
+  font-size: 0.88rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02);
+}
+
+.breadcrumbs-tool--bar .breadcrumbs-tool__trail {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.breadcrumbs-tool--bar .breadcrumbs-tool__brand {
+  color: var(--c-primary, #ff7675);
+  font-weight: 700;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.breadcrumbs-tool--bar .breadcrumbs-tool__mark {
+  font-size: 1.1rem;
+}
+
+.breadcrumbs-tool--bar .breadcrumbs-tool__sep {
+  opacity: 0.4;
+}
+
+.breadcrumbs-tool--bar .breadcrumbs-tool__current {
+  color: var(--c-text, #2d3436);
+  font-weight: 700;
+}
+
+.breadcrumbs-tool--bar .breadcrumbs-tool__index {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--c-text-light, #636e72);
+  text-decoration: none;
+  padding: 0.35rem 0.75rem;
+  border-radius: 20px;
+  background: rgba(0, 0, 0, 0.04);
+  transition: all 0.2s;
+}
+
+.breadcrumbs-tool--trail {
+  font-size: 0.75rem;
+  color: var(--c-text-light, #636e72);
+  margin: 0.8rem auto;
+  padding: 0 1rem;
+  max-width: 1000px;
+  text-align: left;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  opacity: 0.85;
+}
+
+.breadcrumbs-tool--trail .breadcrumbs-tool__home {
+  color: inherit;
+  text-decoration: none;
+  transition: opacity 0.2s;
+}
+
+.breadcrumbs-tool--trail .breadcrumbs-tool__sep {
+  opacity: 0.5;
+}
+
+.breadcrumbs-tool--trail .breadcrumbs-tool__current {
+  color: var(--c-text, #2d3436);
+  font-weight: 700;
+}
+
+.breadcrumbs-tool--bar a:hover,
+.breadcrumbs-tool--trail a:hover {
+  text-decoration: underline !important;
+  opacity: 1 !important;
+}
+
+.tool-noscript {
+  background: rgba(255, 118, 117, 0.08);
+  border: 1px dashed var(--c-primary, #ff7675);
+  border-radius: 12px;
+  padding: 1rem;
+  margin: 1rem auto;
+  max-width: 1000px;
+  text-align: center;
+  font-family: sans-serif;
+}
+
+.tool-noscript__title {
+  color: var(--c-primary-dark, #d63031);
+  font-weight: 700;
+  margin: 0;
+  font-size: 0.95rem;
+}
+
+.tool-noscript__text {
+  color: var(--c-text-light, #636e72);
+  font-size: 0.82rem;
+  margin: 0.3rem 0 0;
+}
+
+.tool-footer.tool-footer--bar {
+  text-align: center;
+  padding: 2.5rem 1rem;
+  font-size: 0.84rem;
+  color: var(--c-text-light, #636e72);
+  border-top: 1px solid rgba(0, 0, 0, 0.05);
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 1rem;
+  margin-top: 3rem;
+  font-family: sans-serif;
+}
+
+.tool-footer.tool-footer--bar a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.tool-footer.tool-footer--bar .tool-footer__brand {
+  font-weight: 700;
+}
+
+.tool-footer.tool-footer--bar .tool-footer__sep {
+  opacity: 0.3;
+}
+
+/* ==========================================================================
+   Tool Modern Accordion (SEO & Accessibility friendly)
+   ========================================================================== */
+.tool-accordion {
+  margin: 1.25rem auto;
+  max-width: 1000px;
+  background: var(--c-surface, #ffffff);
+  border: 1px solid var(--c-glass-border, rgba(0, 0, 0, 0.08));
+  border-radius: 12px;
+  overflow: hidden;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02);
+}
+
+.tool-accordion[open] {
+  border-color: var(--c-primary, #6c5ce7);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+}
+
+.tool-accordion__summary {
+  padding: 1rem 1.25rem;
+  font-weight: 700;
+  font-size: 1.02rem;
+  color: var(--c-text, #2d3436);
+  cursor: pointer;
+  user-select: none;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  list-style: none;
+  background: rgba(0, 0, 0, 0.015);
+  transition: background 0.2s ease;
+}
+
+.tool-accordion__summary::-webkit-details-marker {
+  display: none;
+}
+
+.tool-accordion__summary:hover {
+  background: rgba(0, 0, 0, 0.04);
+}
+
+.tool-accordion__icon {
+  font-size: 0.85rem;
+  color: var(--c-primary, #6c5ce7);
+  transition: transform 0.25s ease;
+  flex-shrink: 0;
+}
+
+.tool-accordion[open] .tool-accordion__icon {
+  transform: rotate(180deg);
+}
+
+.tool-accordion__body {
+  padding: 1.25rem;
+  border-top: 1px solid var(--c-glass-border, rgba(0, 0, 0, 0.06));
+  font-size: 0.92rem;
+  line-height: 1.8;
+  color: var(--c-text, #4a5568);
+}
+
+.tool-accordion__body h4 {
+  margin: 1.25rem 0 0.5rem;
+  font-size: 0.98rem;
+  font-weight: 700;
+  color: var(--c-text, #2d3436);
+}
+
+.tool-accordion__body h4:first-child {
+  margin-top: 0;
+}

@@ -1,0 +1,536 @@
+:root {
+    --paper-w: 210mm;
+    --paper-h: 297mm;
+    --line-color: #94A3B8;
+    /* スレート400 */
+    --sub-line-color: #CBD5E1;
+    /* スレート300 */
+    --accent-line-color: #F87171;
+    /* レッド400 */
+}
+
+body {
+    font-family: 'Zen Maru Gothic', sans-serif;
+    background-color: #F5F5F0;
+    background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23E6E6DC' fill-opacity='0.4'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+    color: #57534E;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+/* 明るいテーマの補助文字だけをAA相当まで濃くする */
+body:not(.theme-night) .text-stone-400,
+body:not(.theme-night) .text-stone-500,
+body:not(.theme-night) .paper-btn__desc {
+    color: #57534E;
+}
+
+/* --- 用紙プレビューエリア --- */
+
+/* --- 用紙選択ボタン --- */
+.paper-btn {
+    width: 100%;
+    text-align: left;
+    padding: 0.75rem 1rem;
+    border-radius: 0.75rem;
+    background-color: #FAFAF9;
+    /* stone-50 */
+    color: #57534E;
+    /* stone-600 */
+    font-weight: 700;
+    border: 1px solid #E7E5E4;
+    /* stone-200 */
+    transition: all 0.15s ease;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    cursor: pointer;
+}
+
+.paper-btn:focus-visible {
+    outline: 3px solid #14B8A6;
+    outline-offset: 2px;
+}
+
+.paper-btn:hover {
+    background-color: #F0FDFA;
+    /* teal-50 */
+    border-color: #99F6E4;
+    /* teal-200 */
+}
+
+.paper-btn:hover .paper-btn__icon {
+    color: #14B8A6;
+    /* teal-500 */
+}
+
+/* アクティブ状態（選択中） */
+.paper-btn--active {
+    background-color: #F0FDFA;
+    /* teal-50 */
+    border-color: #99F6E4;
+    /* teal-200 */
+    box-shadow: 0 0 0 2px #CCFBF1;
+    /* ring-2 ring-teal-100 */
+}
+
+.paper-btn--active .paper-btn__icon {
+    color: #14B8A6;
+    /* teal-500 */
+}
+
+/* 子要素 */
+.paper-btn__icon {
+    color: #A8A29E;
+    /* stone-400 */
+    transition: color 0.15s ease;
+}
+
+.paper-btn__title {
+    font-size: 0.875rem;
+    /* text-sm */
+}
+
+.paper-btn__desc {
+    font-size: 10px;
+    /* text-[10px] */
+    color: #A8A29E;
+    /* stone-400 */
+    font-weight: 400;
+    /* font-normal */
+}
+
+#zoom-in-btn:disabled,
+#zoom-out-btn:disabled {
+    opacity: 0.35;
+    cursor: not-allowed;
+}
+
+#load-draft-btn {
+    min-height: 44px;
+}
+
+#zoom-in-btn,
+#zoom-out-btn {
+    width: 44px;
+    height: 44px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.paper-preview-container {
+    min-width: 0;
+    background-color: #E7E5E4;
+    padding: 2rem;
+    overflow: auto;
+    display: flex;
+    align-items: flex-start;
+    flex: 1;
+}
+
+#paper-preview-sizer {
+    flex: 0 0 auto;
+    margin-inline: auto;
+    overflow: clip;
+    overflow-clip-margin: 24px;
+}
+
+#print-target {
+    width: var(--paper-w);
+    transform-origin: top left;
+}
+
+#paper-layout,
+#paper-workspace {
+    min-width: 0;
+    min-height: 0;
+}
+
+.kanji-style-btn:has(input:focus-visible) {
+    outline: 3px solid #14B8A6;
+    outline-offset: 2px;
+}
+
+@media screen and (max-width: 767px) {
+    /* 縦並びでは本文全体をスクロールし、選択欄の下のプレビューへ到達させる。 */
+    #main-content {
+        overflow-y: auto;
+        min-height: 0;
+    }
+    #paper-layout {
+        display: block;
+        height: auto;
+    }
+    #paper-layout > aside {
+        overflow: visible;
+    }
+    #paper-workspace {
+        min-height: 70vh;
+    }
+    .paper-preview-container {
+        flex: none;
+        min-height: 60vh;
+    }
+}
+
+.paper-sheet {
+    width: var(--paper-w);
+    height: var(--paper-h);
+    background-color: #ffffff;
+    margin: 0 auto;
+    padding: 0;
+    box-sizing: border-box;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    border-radius: 4px;
+}
+
+/* --- 罫線パターン (SVGで直接生成するためCSS定義は廃止) --- */
+
+
+/* --- 文字流し込み連携パネル & テキストエリアのスタイル --- */
+#draft-flow-panel {
+    transition: all 0.2s ease;
+}
+
+#paper-draft-textarea:disabled {
+    background-color: #f5f5f4;
+    color: #a8a29e;
+    cursor: not-allowed;
+    border-color: #e7e5e4;
+}
+
+#load-draft-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    background-color: #fafaf9;
+    border-color: #e7e5e4;
+    color: #a8a29e;
+}
+
+/* SVG内文字のスタイル（丸ゴシック） */
+.genko-text {
+    font-family: 'Zen Maru Gothic', sans-serif;
+    font-weight: 700;
+    fill: #292524; /* stone-800 */
+}
+
+/* 句読点や小さい文字の位置微調整（SVG dx, dy 属性を併用） */
+.genko-text.punc {
+    font-weight: 500;
+}
+
+
+/* --- 漢字練習帳設定パネルのスタイル --- */
+#kanji-settings-panel {
+    transition: all 0.2s ease;
+}
+
+.kanji-style-btn {
+    border-color: #E7E5E4;
+}
+
+.kanji-style-btn:has(input:checked) {
+    border-color: #0D9488; /* teal-600 */
+    background-color: #F0FDFA; /* teal-50 */
+    color: #0F766E; /* teal-700 */
+    box-shadow: 0 0 0 1px #0D9488;
+}
+
+/* --- 印刷設定 --- */
+@media print {
+    @page {
+        margin: 0;
+        size: A4 portrait;
+    }
+
+    body {
+        background: none !important;
+        display: block !important;
+        height: auto !important;
+        overflow: visible !important;
+    }
+
+    header,
+    aside,
+    body #parents-modal[open],
+    #parents-modal,
+    #parents-modal::backdrop,
+    .no-print {
+        display: none !important;
+    }
+
+    main {
+        padding: 0 !important;
+        margin: 0 !important;
+        height: auto !important;
+        overflow: visible !important;
+        display: block !important;
+    }
+
+    #paper-layout,
+    #paper-workspace,
+    #paper-preview-sizer {
+        display: block !important;
+        width: auto !important;
+        height: auto !important;
+        min-height: 0 !important;
+        overflow: visible !important;
+        background: none !important;
+    }
+
+    .paper-preview-container {
+        padding: 0 !important;
+        margin: 0 !important;
+        overflow: visible !important;
+        display: block !important;
+        background: none !important;
+    }
+
+    #print-target {
+        transition: none !important;
+        transform: none !important;
+        display: block !important;
+        gap: 0 !important;
+    }
+
+    .paper-sheet {
+        box-shadow: none !important;
+        border-radius: 0 !important;
+        margin: 0 !important;
+        transform: none !important;
+        width: 210mm !important;
+        height: 297mm !important;
+        padding: 0 !important;
+        page-break-after: always !important;
+        page-break-inside: avoid !important;
+    }
+
+    .paper-sheet:last-child {
+        page-break-after: avoid !important;
+    }
+
+    /* Force printing of background colors/images */
+    * {
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+    }
+}
+
+/* --- Dark Theme Options --- */
+.theme-night {
+    --line-color: #475569;
+    --sub-line-color: #334155;
+    color: #E7E5E4 !important;
+}
+
+body.theme-night {
+    background-color: #1C1917 !important;
+    background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23292524' fill-opacity='0.5'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E") !important;
+    color: #E7E5E4 !important;
+}
+
+.theme-night header {
+    background-color: rgba(28, 25, 23, 0.9) !important;
+    border-color: #44403C !important;
+}
+.theme-night header h1 {
+    color: #E7E5E4 !important;
+}
+
+.theme-night aside {
+    background-color: #292524 !important;
+    border-color: #44403C !important;
+}
+
+.theme-night .paper-btn {
+    background-color: #3C3633 !important;
+    color: #E7E5E4 !important;
+    border-color: #44403C !important;
+}
+
+.theme-night .paper-btn:hover {
+    background-color: #115E59 !important;
+    border-color: #0D9488 !important;
+}
+
+.theme-night .paper-btn--active {
+    background-color: #115E59 !important;
+    border-color: #0D9488 !important;
+    box-shadow: 0 0 0 2px #115E59 !important;
+}
+
+.theme-night .paper-btn__icon,
+.theme-night .paper-btn__desc {
+    color: #A8A29E !important;
+}
+
+.theme-night .paper-btn--active .paper-btn__icon,
+.theme-night .paper-btn:hover .paper-btn__icon {
+    color: #2DD4BF !important;
+}
+
+.theme-night .paper-preview-container {
+    min-width: 0;
+    background-color: #1C1917 !important;
+}
+
+/* 用紙の白さは常に維持 */
+.theme-night .paper-sheet {
+    background-color: #ffffff !important;
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.4), 0 8px 10px -6px rgba(0, 0, 0, 0.3) !important;
+}
+
+.theme-night #kanji-settings-panel {
+    background-color: rgba(13, 148, 136, 0.1) !important;
+}
+
+.theme-night .kanji-style-btn {
+    border-color: #44403C !important;
+    color: #A8A29E !important;
+}
+
+.theme-night .kanji-style-btn:has(input:checked) {
+    border-color: #0D9488 !important;
+    background-color: #115E59 !important;
+    color: #2DD4BF !important;
+}
+
+.theme-night #draft-flow-panel {
+    background-color: rgba(41, 37, 36, 0.5) !important;
+    border-color: #44403C !important;
+}
+
+.theme-night #load-draft-btn {
+    background-color: #3C3633 !important;
+    border-color: #0D9488 !important;
+    color: #2DD4BF !important;
+}
+
+.theme-night #load-draft-btn:hover {
+    background-color: #115E59 !important;
+}
+
+.theme-night #paper-draft-textarea {
+    background-color: #1C1917 !important;
+    color: #E7E5E4 !important;
+    border-color: #44403C !important;
+}
+
+.theme-night #paper-draft-textarea:disabled {
+    background-color: #292524 !important;
+    color: #78716C !important;
+    border-color: #3C3633 !important;
+}
+
+.theme-night #zoom-in-btn,
+.theme-night #zoom-out-btn {
+    color: #A8A29E !important;
+}
+.theme-night #zoom-in-btn:hover,
+.theme-night #zoom-out-btn:hover {
+    background-color: #3C3633 !important;
+    color: #E7E5E4 !important;
+}
+
+.theme-night .flex-1.bg-stone-200.relative.overflow-hidden.flex.flex-col > .bg-white\/50 {
+    background-color: rgba(41, 37, 36, 0.8) !important;
+    border-color: #44403C !important;
+    color: #A8A29E !important;
+}
+
+.theme-night #print-paper-btn {
+    background-color: #0D9488 !important;
+    color: white !important;
+    border-color: #0D9488;
+    box-shadow: 0 0 0 1px #0D9488;
+}
+.theme-night #print-paper-btn:hover {
+    background-color: #0F766E !important;
+}
+
+@media (max-width: 768px) {
+    input, textarea, select {
+        font-size: 16px !important; /* iOSオートズームバグ防止 */
+    }
+}
+
+/* ポータル設定との同期（文字サイズ・動きを減らす） */
+body.reduce-motion *,
+body.reduce-motion *::before,
+body.reduce-motion *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+}
+
+body.text-large {
+    font-size: 1.15rem;
+}
+
+body.text-large .paper-btn {
+    font-size: 1.15rem;
+}
+
+body.text-large #paper-draft-textarea {
+    font-size: 1.25rem;
+}
+.kanji-style-btn .text-xs.font-black {
+    color: #57534e;
+}
+
+.paper-btn__icon,
+.text-teal-600.material-symbols-rounded {
+    color: #0f766e !important;
+}
+
+.material-symbols-rounded {
+    max-width: 1em;
+    overflow: hidden;
+}
+
+
+@media print {
+    body.theme-night,
+    .theme-night .paper-preview-container {
+        background: none !important;
+    }
+    .theme-night .paper-sheet {
+        box-shadow: none !important;
+    }
+}
+
+/* 暗色時にも選択中の補助文字とマス数を背景に埋もれさせない。 */
+.theme-night .paper-btn--active .paper-btn__desc,
+.theme-night .paper-btn:hover .paper-btn__desc {
+    color: #CCFBF1 !important;
+}
+.theme-night .kanji-style-btn:has(input:checked) {
+    color: #99F6E4 !important;
+}
+.theme-night .kanji-style-btn span,
+.theme-night .kanji-style-btn .text-xs.font-black {
+    color: inherit;
+}
+.theme-night #paper-actions {
+    background-color: #292524;
+    border-color: #44403C;
+}
+.theme-night [data-action="parents-modal-open"] {
+    background-color: #292524 !important;
+    border-color: #44403C !important;
+    color: #E7E5E4 !important;
+}
+.theme-night [data-action="parents-modal-open"] .material-symbols-rounded {
+    color: #2DD4BF !important;
+}
+body.theme-night #paper-workspace > .no-print {
+    background-color: #292524 !important;
+    border-color: #44403C !important;
+    color: #D6D3D1 !important;
+}

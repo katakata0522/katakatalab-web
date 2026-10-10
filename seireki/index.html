@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex, follow">
+    <meta name="format-detection" content="telephone=no">
+    
+    <title>年齢・和暦・西暦 早見表＆計算機【2026年・令和8年最新対応】 - KatakataLab</title>
+    <meta name="description" content="【登録不要・無料】西暦または和暦を入れて、今年迎える年齢と干支を出します。履歴書用の入学・卒業年はハローワーク式の仮置きです。2026年（令和8年）最新版。">
+    <meta name="keywords" content="年齢計算,西暦和暦,早見表,令和8年,2026年,履歴書計算,厄年計算,KatakataLab">
+    <link rel="canonical" href="https://katakatalab.com/seireki/">
+    
+    <meta property="og:site_name" content="KatakataLab Tools">
+    <meta property="og:title" content="年齢・和暦・西暦 早見表＆計算機【2026年最新対応】 - KatakataLab">
+    <meta property="og:description" content="西暦または和暦から、今年迎える年齢・干支・履歴書用の標準学歴年度の仮置きを出します。">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://katakatalab.com/seireki/">
+    <meta property="og:image" content="https://katakatalab.com/ogp.png">
+    <meta property="og:locale" content="ja_JP">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@400;500;700;800&family=Outfit:wght@400;600;700&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="../style.css?v=40684c3">
+    <link rel="stylesheet" href="style.css?v=20260824-responsive">
+    <link rel="icon" href="../icon.svg" type="image/svg+xml">
+    
+    <script type="application/ld+json">
+    [
+        {
+            "@context": "https://schema.org",
+            "@type": "BreadcrumbList",
+            "itemListElement": [{
+                "@type": "ListItem",
+                "position": 1,
+                "name": "KatakataLab",
+                "item": "https://katakatalab.com/"
+            },{
+                "@type": "ListItem",
+                "position": 2,
+                "name": "年齢・和暦・西暦 早見表＆計算機",
+                "item": "https://katakatalab.com/seireki/"
+            }]
+        },
+        {
+            "@context": "https://schema.org",
+            "@type": "WebApplication",
+            "name": "年齢・和暦・西暦 早見表＆計算機",
+            "url": "https://katakatalab.com/seireki/",
+            "applicationCategory": "UtilitiesApplication",
+            "operatingSystem": "All",
+            "description": "西暦または和暦から今年迎える年齢と和暦を出し、履歴書用の標準学歴年度は仮置きとして表示する早見表。",
+            "offers": { "@type": "Offer", "price": "0", "priceCurrency": "JPY" }
+        }
+    ]
+    </script>
+    <link rel="stylesheet" href="../tool-chrome.css?v=source">
+</head>
+<body>
+    <script>try{if(localStorage.getItem('theme')==='dark')document.body.classList.add('dark-mode');}catch(e){}</script>
+
+    <!-- Unified Mini Header / Breadcrumbs -->
+    <nav class="breadcrumbs-tool breadcrumbs-tool--bar" aria-label="パンくずリスト">
+        <div class="breadcrumbs-tool__trail">
+            <a href="../" class="breadcrumbs-tool__brand">
+                <span class="breadcrumbs-tool__mark">🧪</span> KatakataLab
+            </a>
+            <span class="breadcrumbs-tool__sep">/</span>
+            <span class="breadcrumbs-tool__current" aria-current="page">年齢・和暦・西暦早見表</span>
+        </div>
+        <div class="breadcrumbs-tool__actions" style="display: flex; align-items: center; gap: 0.5rem;">
+            <a href="../#projects" class="breadcrumbs-tool__index">
+                <span>🧰</span> ツール一覧へ
+            </a>
+            <button type="button" id="theme-toggle" class="theme-btn" aria-label="テーマ切り替え" style="display: inline-flex; align-items: center; justify-content: center; width: 34px; height: 34px; border-radius: 50%; border: 1px solid rgba(0,0,0,0.1); background: var(--c-card, #fff); color: inherit; cursor: pointer;">
+                <svg viewBox="0 0 24 24" class="svg-icon svg-moon" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="width: 18px; height: 18px;">
+                    <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/>
+                </svg>
+                <svg viewBox="0 0 24 24" class="svg-icon svg-sun" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="display: none; width: 18px; height: 18px;">
+                    <circle cx="12" cy="12" r="4"/>
+                    <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/>
+                </svg>
+            </button>
+        </div>
+    </nav>
+
+    <!-- Auto-Injected noscript fallback -->
+    <noscript>
+        <div class="tool-noscript">
+            <p class="tool-noscript__title">⚠️ JavaScriptが無効になっています</p>
+            <p class="tool-noscript__text">このツールはブラウザ上での計算のためにJavaScriptを使用します。有効にしてからご利用ください。</p>
+        </div>
+    </noscript>
+
+    <!-- メインコンテンツ -->
+    <main class="seireki-main-area">
+
+        <div class="seireki-wrapper">
+            
+            <header class="seireki-header">
+                <h1>📅 年齢・和暦・西暦 早見表</h1>
+                <p>
+                    <span id="currentYearText"></span>年（令和<span id="reiwaYearText"></span>年）最新対応版
+                </p>
+            </header>
+
+            <section class="seireki-card seireki-shared-input" aria-labelledby="seireki-input-title">
+                <h2 id="seireki-input-title">生まれた年を入れる</h2>
+                <div class="seireki-input-wrapper">
+                    <label for="inputYear">西暦（4桁）</label>
+                    <div class="seireki-input-group">
+                        <input type="number" id="inputYear" class="seireki-input" placeholder="例：2000" inputmode="numeric" autocomplete="off">
+                        <button type="button" id="clearBtn" class="seireki-clear-btn" aria-label="入力をクリア">✕</button>
+                    </div>
+                </div>
+                <div class="seireki-wareki-row">
+                    <label for="eraName">和暦でも入れられます</label>
+                    <div class="seireki-wareki-fields">
+                        <select id="eraName" class="seireki-select" aria-label="元号">
+                            <option value="令和">令和</option>
+                            <option value="平成">平成</option>
+                            <option value="昭和">昭和</option>
+                            <option value="大正">大正</option>
+                            <option value="明治">明治</option>
+                        </select>
+                        <input type="number" id="eraYear" class="seireki-input seireki-input--short" placeholder="12" inputmode="numeric" min="1" max="99" aria-label="和暦の年">
+                        <span class="seireki-wareki-suffix">年</span>
+                    </div>
+                </div>
+                <div class="seireki-date-row">
+                    <label for="birthMonth">月日（任意。満年齢と早生まれ判定に使う）</label>
+                    <div class="seireki-date-fields">
+                        <select id="birthMonth" class="seireki-select" aria-label="生まれ月">
+                            <option value="">月</option>
+                        </select>
+                        <select id="birthDay" class="seireki-select" aria-label="生まれ日">
+                            <option value="">日</option>
+                        </select>
+                    </div>
+                </div>
+            </section>
+
+            <!-- プレミアムタブナビゲーション -->
+            <div class="seireki-tab-nav-wrapper">
+                <div class="seireki-tab-nav" role="tablist">
+                    <button type="button" id="tab-age" class="seireki-tab-btn active" data-tab="age" role="tab" aria-selected="true" aria-controls="panel-age">
+                        📅 年齢・和暦 早見表
+                    </button>
+                    <button type="button" id="tab-resume" class="seireki-tab-btn" data-tab="resume" role="tab" aria-selected="false" aria-controls="panel-resume">
+                        📝 履歴書用 学歴計算
+                    </button>
+                    <button type="button" id="tab-life" class="seireki-tab-btn" data-tab="life" role="tab" aria-selected="false" aria-controls="panel-life">
+                        🔮 厄年・長寿お祝い
+                    </button>
+                </div>
+            </div>
+
+            <!-- 2カラム構成のメイン配置エリア -->
+            <div class="seireki-main-layout">
+                
+                <!-- 左側：入力 ＆ 計算結果エリア -->
+                <div class="seireki-left-column">
+                    <!-- ===== タブ1: 年齢・和暦 早見表 ===== -->
+                    <div id="panel-age" class="seireki-tab-panel active" role="tabpanel" aria-labelledby="tab-age">
+                        <section class="seireki-card">
+                            <h2>🛠️ 今年迎える年齢</h2>
+                            <div class="seireki-result-card" id="resultArea" aria-live="polite">
+                                <!-- JSで動的に変更されます -->
+                            </div>
+                            <div class="seireki-btn-container">
+                                <button type="button" id="copyBtn" class="seireki-copy-btn">📋 結果をコピー</button>
+                            </div>
+                        </section>
+                    </div>
+
+                    <!-- ===== タブ2: 履歴書用 学歴計算 ===== -->
+                    <div id="panel-resume" class="seireki-tab-panel" role="tabpanel" aria-labelledby="tab-resume">
+                        <section class="seireki-card">
+                            <h2>📝 履歴書用 入学・卒業年度計算機</h2>
+                            <p style="font-size: 0.85rem; color: var(--c-text-light); margin-bottom: 1rem; line-height: 1.5;">
+                                ハローワークの応募書類パンフと同じく、<strong>生年＋7年</strong>（1月1日〜4月1日生まれは生年を1年戻してから同じ式）で、標準の6-3-3-4・現役進学の年月を仮置きします。実際の進学と違う場合は書き換えてください。
+                            </p>
+                            <p id="resumeNote" class="seireki-resume-note"></p>
+                            <!-- 早生まれトグル -->
+                            <div class="seireki-switch-wrapper">
+                                <input type="checkbox" id="earlyBirth" class="seireki-checkbox">
+                                <label for="earlyBirth" class="seireki-switch-label">早生まれ（1月1日〜4月1日生まれ）の場合はチェック</label>
+                            </div>
+                            <div id="resumeGrid" class="seireki-resume-grid">
+                                <!-- JSで動的に計算カードが挿入されます -->
+                            </div>
+                            <div class="seireki-btn-container">
+                                <button type="button" id="copyAllResumeBtn" class="seireki-copy-btn">📋 学歴を一括コピー</button>
+                            </div>
+                        </section>
+                    </div>
+
+                    <!-- ===== タブ3: 厄年・長寿お祝い ===== -->
+                    <div id="panel-life" class="seireki-tab-panel" role="tabpanel" aria-labelledby="tab-life">
+                        <section class="seireki-card" style="margin-bottom: 1rem;">
+                            <h2>🔮 厄年判定（数え年基準）</h2>
+                            <div class="seireki-life-split">
+                                <div id="yakuniAlertMale" class="seireki-alert-card info">
+                                    <!-- JSで更新 -->
+                                </div>
+                                <div id="yakuniAlertFemale" class="seireki-alert-card info">
+                                    <!-- JSで更新 -->
+                                </div>
+                            </div>
+                        </section>
+                        <section class="seireki-card">
+                            <h2>🎁 ライフステージ・長寿お祝い一覧</h2>
+                            <div id="longevityList" class="seireki-badge-list">
+                                <!-- JSで更新 -->
+                            </div>
+                        </section>
+                    </div>
+                </div>
+
+                <!-- 右側：早見表テーブル固定エリア -->
+                <div class="seireki-right-column">
+                    <section class="seireki-card">
+                        <h2>📅 今年迎える年齢早見表</h2>
+                        <p style="font-size: 0.8rem; color: var(--c-text-light); margin-bottom: 1rem; line-height: 1.5; text-align: left;">
+                            ※ 誕生日前の方は、表示年齢から<strong>1歳引いた年齢</strong>が現在の満年齢です。<br>
+                            ※ <span style="color: var(--c-success); font-weight: bold;">緑色ハイライトの行</span>は、今年（<span id="tableCurrentYearText"></span>年）生まれの方です。
+                        </p>
+                        <div class="seireki-table-container">
+                            <table id="hayamiTable" class="seireki-table">
+                                <thead>
+                                    <tr>
+                                        <th scope="col">西暦</th>
+                                        <th scope="col">和暦</th>
+                                        <th scope="col">今年迎える年齢</th>
+                                        <th scope="col">干支</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <!-- JSで超高速描画されます -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </section>
+                </div>
+
+            </div>
+
+            <!-- アコーディオン式極上コラムセクション (detailsタグでスマート収納！) -->
+            <details class="seireki-column-details">
+                <summary class="seireki-column-summary">
+                    📖 開発ストーリーと「早生まれ・厄年」の寄り添いコラムを読む (クリックで展開)
+                </summary>
+                <div class="seireki-column-content card seireki-column-card">
+                    <h3 style="color: var(--c-primary); margin-top: 0; font-weight: 800; display: flex; align-items: center; gap: 0.5rem;">🧪 人生の「節目」で迷わないために──履歴書と厄年に込めた魂の開発話</h3>
+                    <p>
+                        「ええっと、私が小学校を卒業したのは……西暦何年だっけ？ 平成だと何年……！？」<br>
+                        「今年って、そういえば厄年なんだっけ？ 前厄？ 後厄？ 数え年ってどうやって計算するの……！？」
+                    </p>
+                    <p>
+                        こんにちは！かたかたの語り場へようこそ！<br>
+                        就職活動や転職活動で履歴書を書くとき、あるいは年が明けてふと神社やお寺の「厄年一覧表」を目にしたとき、電卓を片手に頭を抱えた経験はありませんか？<br>
+                        私（わたくし）は、かつて履歴書の学歴を「2年」間違えて書いて提出し、面接の直前で気づいて背中に氷水を流されたような絶望的なトラウマを経験したことがあります。笑
+                    </p>
+                    <p>
+                        そんな数え間違いを減らすために、この<strong>「年齢・和暦・西暦 早見表＆計算機」</strong>を直しています。<br>
+                        年齢早見に加えて、ハローワーク式の履歴書用学歴の仮置きと、数え年の厄年・長寿の目安も出せます。
+                    </p>
+
+                    <div style="background: var(--c-bg); border-left: 4px solid var(--c-primary); border-radius: 0 var(--radius-md) var(--radius-md) 0; padding: 1.25rem; margin: 1.5rem 0;">
+                        <h4 style="color: var(--c-primary); margin-top: 0; font-weight: 800; font-size: 1.05rem; margin-bottom: 0.5rem;">⚠️ 履歴書作成で9割の人が忘れる「早生まれ」の罠</h4>
+                        <p style="margin: 0; font-size: 0.92rem; line-height: 1.7;">
+                            日本の学校制度は「4月2日〜翌年4月1日」生まれが同学年になります。そのため、<strong>1月1日〜4月1日生まれ（早生まれ）</strong>の人は、同じ年に生まれた人よりも学年が「1年早く」進むのです。<br>
+                            ネットの早見表には「生まれた年＋6」と書いてあるものが多く、公式の足し算と1年ズレます。<br>
+                            このツールはハローワークの式（生年＋7。早生まれは生年を−1してから同じ）で仮置きします。月日を入れると早生まれ判定も自動です。浪人や高専などは自分で直してください。
+                        </p>
+                    </div>
+
+                    <div style="background: var(--c-bg); border-left: 4px solid var(--c-primary); border-radius: 0 var(--radius-md) var(--radius-md) 0; padding: 1.25rem; margin: 1.5rem 0;">
+                        <h4 style="color: var(--c-primary); margin-top: 0; font-weight: 800; font-size: 1.05rem; margin-bottom: 0.5rem;">🛡️ 厄年は怖くない！「役年（やくどし）」として輝く人生の節目</h4>
+                        <p style="margin: 0; font-size: 0.92rem; line-height: 1.7;">
+                            「厄年」と聞くと、なんだか恐ろしいことが起きる不吉な時期というイメージがありますよね。でも、古来の考え方では、厄年は神社の「お役目」を務めるような<strong>「人の役に立つ立場（役年）」</strong>になる節目、という意味も持っていたそうです。<br>
+                            また、厄年とされる年齢（男性42歳、女性33歳など）は人生の変化が大きい時期と重なりやすい、という見方もあります。表示は目安です。祈祷や健康の判断は各機関の案内を見てください。
+                        </p>
+                    </div>
+
+                    <p style="margin-bottom: 0;">
+                        私と同じようにログイン画面の前や履歴書の前でフリーズした経験のあるあなたへ、このツールが届きますように！<br>
+                        ここまでご覧いただきありがとうございます！<br><br>
+                        駄菓子菓子！<br>
+                        まだ遊び足りないので、次のnoteや別の企画であなたとお会いできるのを楽しみにお待ちしています！<br><br>
+                        本当にここまでお付き合いありがとうございました！またね👐
+                    </p>
+                </div>
+            </details>
+
+            <section class="seireki-card" aria-labelledby="seireki-info-title">
+                <h2 id="seireki-info-title">🧭 この早見表の見方と注意点</h2>
+                <p style="font-size: 0.85rem; color: var(--c-text-light); margin: 0 0 1rem; line-height: 1.6;">作成者: かたかた / 更新日: 2026年8月18日</p>
+                <ul style="margin: 0; padding-left: 1.25rem; color: var(--c-text-light); line-height: 1.8;">
+                    <li><strong>満年齢:</strong> 表に表示される「今年迎える年齢」は誕生日を迎えた後の年齢です。誕生日当日までは1歳引いて確認してください。月日を入れると満年齢を出します。</li>
+                    <li><strong>履歴書の学歴:</strong> 生年＋7（1月1日から4月1日生まれは生年−1してから同じ）の標準年限です。早見表120歳分は今年から遡ります。明治元年までの計算は入力欄側です。</li>
+                    <li><strong>和暦:</strong> 明治元年以降を対象に、西暦と元号の対応を表示します。元号の切り替わり年は平成31年／令和元年のように併記します。月日まで必要な書類では別途確認してください。</li>
+                    <li><strong>厄年:</strong> 厄年は地域や神社、性別の数え方によって案内が異なる場合があります。表示結果は目安として使い、祈祷や健康に関する判断は各機関の案内を確認してください。</li>
+                </ul>
+                <p style="font-size: 0.85rem; color: var(--c-text-light); margin: 1rem 0 0; line-height: 1.6;">入力した年はブラウザ内で計算され、当サイトのサーバーへ送信する処理はありません。結果を提出する前には、対象の書類や提出先の記載ルールも確認してください。</p>
+            </section>
+
+        </div>
+    
+  <!-- Auto-Injected Unified Footer -->
+  <footer class="tool-footer tool-footer--bar" aria-label="サイト情報">
+      <a href="../" class="tool-footer__brand">🧪 KatakataLab</a>
+      <span class="tool-footer__sep" aria-hidden="true">|</span>
+      <a href="../who-is-katakata.html">運営者情報</a>
+      <span class="tool-footer__sep" aria-hidden="true">|</span>
+      <a href="../terms.html">利用規約</a>
+      <span class="tool-footer__sep" aria-hidden="true">|</span>
+      <a href="../privacy.html">プライバシーポリシー</a>
+      <span class="tool-footer__sep" aria-hidden="true">|</span>
+      <a href="../contact.html">お問い合わせ</a>
+  </footer>
+
+</main>
+
+    <!-- ツール専用スリムフッター -->
+
+
+    <!-- スクロールトップボタン -->
+    <button type="button" id="scroll-top" class="scroll-top-btn" aria-label="ページ最上部へスクロール">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="18 15 12 9 6 15"></polyline>
+        </svg>
+    </button>
+
+    <!-- スクリプト読込 -->
+    <script src="../script.js?v=40684c3"></script>
+    <script src="seireki-logic.js"></script>
+    <script src="script.js"></script>
+    <script>
+        // フッターのコピーライト年の同期
+        const footerCopyrightYear = document.getElementById('footerCopyrightYear');
+        if (footerCopyrightYear) {
+            footerCopyrightYear.textContent = new Date().getFullYear();
+        }
+    </script>
+</body>
+</html>

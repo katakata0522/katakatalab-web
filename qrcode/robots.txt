@@ -1,0 +1,8 @@
+# QR Code Lab robots.txt
+# https://katakatalab.com/qrcode/
+
+User-agent: *
+Allow: /
+
+# サイト全体の正規 sitemap はルートを使う（薄い用途ガイドを載せない）
+Sitemap: https://katakatalab.com/sitemap.xml

@@ -1,0 +1,767 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PikaLab 読みもの広場 | かたかた研究室</title>
+    <meta name="description" content="PikaLabの保護者向け読みもの一覧です。家庭学習、声かけ、読書習慣、自己調整など、子どもの学びを支える記事をまとめています。">
+    <meta property="og:url" content="https://katakatalab.com/pikalab/articles/">
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="PikaLab 読みもの広場 | かたかた研究室">
+    <meta property="og:description" content="PikaLabの保護者向け読みもの一覧です。家庭学習、声かけ、読書習慣、自己調整など、子どもの学びを支える記事をまとめています。">
+    <meta property="og:site_name" content="PikaLab 読みもの広場 | かたかた研究室">
+    <meta property="og:image" content="https://katakatalab.com/pikalab/pikalab_ogp_compressed.jpg">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:site" content="@katakata0522">
+    <meta name="twitter:title" content="PikaLab 読みもの広場 | かたかた研究室">
+    <meta name="twitter:description" content="PikaLabの保護者向け読みもの一覧です。家庭学習、声かけ、読書習慣、自己調整など、子どもの学びを支える記事をまとめています。">
+    <meta name="twitter:image" content="https://katakatalab.com/pikalab/pikalab_ogp_compressed.jpg">
+    <link rel="canonical" href="https://katakatalab.com/pikalab/articles/">
+    <script type="application/ld+json">{"@context":"https://schema.org","@type":"CollectionPage","name":"PikaLab 読みもの広場 | かたかた研究室","description":"PikaLabの保護者向け読みもの一覧です。家庭学習、声かけ、読書習慣、自己調整など、子どもの学びを支える記事をまとめています。","url":"https://katakatalab.com/pikalab/articles/"}</script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@500;700;900&family=Zen+Maru+Gothic:wght@400;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@40,700,1,0&display=block" rel="stylesheet">
+    <link rel="stylesheet" href="../style.css">
+    <link rel="stylesheet" href="./tailwind.generated.css">
+    <link rel="stylesheet" href="./style.css">
+</head>
+<body class="min-h-screen text-slate-900 antialiased font-sans text-palt">
+    <script>try{var p=localStorage.getItem('wonder_school_profile_v2');if(p&&JSON.parse(p).darkMode)document.body.classList.add('theme-night');}catch(e){}</script>
+    
+    <!-- Header -->
+    <header class="premium-header sticky top-0 z-50 px-4 py-2.5 md:px-8 flex items-center justify-between transition-all">
+        <a href="../" class="inline-flex items-center gap-1.5 text-xs font-bold text-slate-700 hover:text-sky-600 transition-colors py-1 px-2 -ml-2 rounded">
+            <span class="material-symbols-rounded text-sm">arrow_back</span>
+            PikaLabにもどる
+        </a>
+        <div class="flex items-center gap-2">
+            <button type="button" id="font-size-toggle" class="w-8 h-8 rounded border border-slate-200 bg-white flex items-center justify-center text-slate-600 hover:bg-slate-50 transition-colors text-xs font-bold" aria-label="文字サイズ変更" title="文字サイズ変更">
+                <span>あ</span>
+            </button>
+            <button type="button" id="dark-mode-toggle" class="w-8 h-8 rounded border border-slate-200 bg-white flex items-center justify-center text-slate-600 hover:bg-slate-50 transition-colors" aria-label="ダークモード切替" title="ダークモード切替">
+                <span class="material-symbols-rounded text-sm dark-icon">dark_mode</span>
+            </button>
+        </div>
+    </header>
+
+    <div class="mx-auto max-w-6xl px-4 py-5 md:px-8 md:py-7 relative z-10">
+        
+        <!-- Breadcrumbs -->
+        <nav class="text-[11px] font-medium text-slate-400 mb-4 flex items-center gap-1.5 breadcrumb-nav">
+            <a href="../../" class="hover:text-slate-600 transition-colors">ホーム</a>
+            <span class="material-symbols-rounded text-[13px]">chevron_right</span>
+            <a href="../" class="hover:text-slate-600 transition-colors">PikaLab</a>
+            <span class="material-symbols-rounded text-[13px]">chevron_right</span>
+            <span class="breadcrumb-current">読みもの広場</span>
+        </nav>
+
+        <!-- Compact Editorial Hero & Search Bar -->
+        <div class="mb-5 pb-4 border-b border-slate-200">
+            <div class="flex flex-col md:flex-row md:items-end justify-between gap-4">
+                <div>
+                    <span class="text-[11px] font-bold text-sky-700 tracking-wider uppercase block mb-1">PikaLab Editorial</span>
+                    <h1 class="text-xl md:text-2xl font-black text-slate-900 tracking-tight">保護者向け 読みもの広場</h1>
+                    <p class="text-xs md:text-sm text-slate-600 mt-1 max-w-xl leading-relaxed">
+                        子どもの学び、習慣、家庭での関わりを、認知科学と暮らしの視点から紐解く保護者のための知見アーカイブ。
+                    </p>
+                </div>
+                <!-- Search Box (Integrated in Hero) -->
+                <div class="w-full md:w-72 relative flex-shrink-0">
+                    <label for="main-search-input" class="sr-only">記事をキーワードで検索</label>
+                    <input type="text" id="main-search-input" aria-label="記事をキーワードで検索" placeholder="キーワードで探す（宿題、算数...）" class="article-search-input w-full bg-white border border-slate-300 rounded-lg py-2 pl-9 pr-3 text-xs focus:outline-none focus:border-sky-500 focus:ring-1 focus:ring-sky-500 font-medium text-slate-800 shadow-sm transition-all">
+                    <span class="absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-400 material-symbols-rounded text-[18px]">search</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- 2-Column Layout -->
+        <div class="flex flex-col lg:flex-row gap-8 xl:gap-10">
+            
+            <!-- Main Content Area -->
+            <main class="lg:w-[70%] w-full">
+
+                <section class="dynamic-bg mb-6 p-3 border border-slate-200">
+                    <h2 class="flex items-center text-xs font-bold text-slate-700 mb-2 px-0.5">
+                        <span class="material-symbols-rounded flex items-center justify-center w-5 h-5 rounded bg-slate-100 text-slate-600 text-[14px] mr-1.5">psychology_alt</span>
+                        <span>テーマで絞り込む</span>
+                        <span id="search-result-count" class="ml-auto hidden items-center px-2 py-0.5 rounded text-[10px] font-bold bg-sky-100 text-sky-800 border border-sky-200" aria-live="polite"></span>
+                    </h2>
+                    <div class="flex flex-wrap gap-1.5" id="filter-container">
+                        <button type="button" class="worry-pill active-pill" data-filter="all">すべて</button>
+                        <button type="button" class="worry-pill" data-filter="考え方">考え方</button>
+                        <button type="button" class="worry-pill" data-filter="遊びと学び">遊びと学び</button>
+                        <button type="button" class="worry-pill" data-filter="読書">読書</button>
+                        <button type="button" class="worry-pill" data-filter="算数">算数</button>
+                        <button type="button" class="worry-pill" data-filter="やる気">やる気</button>
+                        <button type="button" class="worry-pill" data-filter="親子関係">親子関係</button>
+                        <button type="button" class="worry-pill" data-filter="集中">集中</button>
+                        <button type="button" class="worry-pill" data-filter="心の力">心の力</button>
+                        <button type="button" class="worry-pill" data-filter="学校との関係">学校との関係</button>
+                        <button type="button" class="worry-pill" data-filter="生活リズム">生活リズム</button>
+                        <button type="button" class="worry-pill" data-filter="デジタル">デジタル</button>
+                        <button type="button" class="worry-pill" data-filter="声かけ">声かけ</button>
+                        <button type="button" class="worry-pill" data-filter="学ぶ意味">学ぶ意味</button>
+                        <button type="button" class="worry-pill" data-filter="学習習慣">学習習慣</button>
+                        <button type="button" class="worry-pill" data-filter="好奇心">好奇心</button>
+                        <button type="button" class="worry-pill" data-filter="親子の対話">親子の対話</button>
+                        <button type="button" class="worry-pill" data-filter="探究">探究</button>
+                        <button type="button" class="worry-pill" data-filter="未来の学び">未来の学び</button>
+                    </div>
+                </section>
+
+                <!-- Articles List -->
+                <section>
+                    <div class="flex items-center justify-between mb-4">
+                        <h2 class="text-sm font-black text-slate-800 tracking-wide uppercase">記事一覧</h2>
+                    </div>
+
+                    <div class="space-y-3.5" id="article-list">
+                        <!-- Articles -->
+                        <article id="smart-child" class="premium-article-card group" data-category="考え方">
+                            <div class="card-cover bg-gradient-indigo">
+                                <span class="material-symbols-rounded">psychology</span>
+                                <span class="cover-badge" aria-hidden="true"><span class="material-symbols-rounded text-indigo-600">lightbulb</span></span>
+                            </div>
+                            <div class="card-content">
+                                <div>
+                                    <div class="flex items-center gap-3 mb-4">
+                                        <span class="tag bg-indigo-light !mb-0">考え方</span>
+                                        <span class="text-xs font-bold text-slate-400 flex items-center gap-1"><span class="material-symbols-rounded text-[14px]">schedule</span> 読了 約4分</span>
+                                    </div>
+                                    <h3 class="title group-hover:text-indigo">賢い子って、点数が高い子のことですか？</h3>
+                                    <p class="body">テストの点は分かりやすい指標ですが、子どもの学びを支えるのは自己調整、好奇心、ことばの力のような、すぐには数えにくいものでもあります。賢さを「速く正解すること」だけに寄せず、長く育っていく力として捉え直すための入口記事です。</p>
+                                </div>
+                                <div class="mt-4 flex justify-end">
+                                    <a href="smart-child.html" class="read-more text-indigo">
+                                        記事を読む <span class="material-symbols-rounded text-base">arrow_forward</span>
+                                    </a>
+                                </div>
+                            </div>
+                        </article>
+
+<article id="play-is-learning" class="premium-article-card group" data-category="遊びと学び">
+                            <div class="card-cover bg-gradient-emerald">
+                                <span class="material-symbols-rounded">toys</span>
+                                <span class="cover-badge" aria-hidden="true"><span class="material-symbols-rounded text-emerald-600">palette</span></span>
+                            </div>
+                            <div class="card-content">
+                                <div>
+                                    <div class="flex items-center gap-3 mb-4">
+                                        <span class="tag bg-emerald-light !mb-0">遊びと学び</span>
+                                        <span class="text-xs font-bold text-slate-400 flex items-center gap-1"><span class="material-symbols-rounded text-[14px]">schedule</span> 読了 約4分</span>
+                                    </div>
+                                    <h3 class="title group-hover:text-emerald">遊びはどこまで学びになるのでしょうか</h3>
+                                    <p class="body">自由遊びは「勉強していない時間」に見えがちです。遊びと学びのつながりを、研究用に設計されたゲームと自由遊びを混同せずに整理します。幼児から低学年の学びを、机の上だけで見ないための記事です。</p>
+                                </div>
+                                <div class="mt-4 flex justify-end">
+                                    <a href="play-is-learning.html" class="read-more text-emerald">
+                                        記事を読む <span class="material-symbols-rounded text-base">arrow_forward</span>
+                                    </a>
+                                </div>
+                            </div>
+                        </article>
+
+<article id="reading-habits" class="premium-article-card group" data-category="読書">
+                            <div class="card-cover bg-gradient-cyan">
+                                <span class="material-symbols-rounded">menu_book</span>
+                                <span class="cover-badge" aria-hidden="true"><span class="material-symbols-rounded text-cyan-600">bookmark_added</span></span>
+                            </div>
+                            <div class="card-content">
+                                <div>
+                                    <div class="flex items-center gap-3 mb-4">
+                                        <span class="tag bg-cyan-light !mb-0">読書</span>
+                                        <span class="text-xs font-bold text-slate-400 flex items-center gap-1"><span class="material-symbols-rounded text-[14px]">schedule</span> 読了 約5分</span>
+                                    </div>
+                                    <h3 class="title group-hover:text-cyan">読書好きな子は、どうやって育っていくのか</h3>
+                                    <p class="body">本を読ませようとするほど、子どもが遠ざかることがあります。読む量の勝負にせず、読みたい空気をどう作るか。本棚の置き方、親子の会話、読み聞かせ後の言葉の交わし方まで含めて、家庭の読書環境を見直します。</p>
+                                </div>
+                                <div class="mt-4 flex justify-end">
+                                    <a href="how-reading-habits-grow.html" class="read-more text-cyan">
+                                        記事を読む <span class="material-symbols-rounded text-base">arrow_forward</span>
+                                    </a>
+                                </div>
+                            </div>
+                        </article>
+
+<article id="math-support" class="premium-article-card group" data-category="算数">
+                            <div class="card-cover bg-gradient-sky">
+                                <span class="material-symbols-rounded">calculate</span>
+                                <span class="cover-badge" aria-hidden="true"><span class="material-symbols-rounded text-sky-600">shapes</span></span>
+                            </div>
+                            <div class="card-content">
+                                <div>
+                                    <div class="flex items-center gap-3 mb-4">
+                                        <span class="tag bg-sky-light !mb-0">算数</span>
+                                        <span class="text-xs font-bold text-slate-400 flex items-center gap-1"><span class="material-symbols-rounded text-[14px]">schedule</span> 読了 約5分</span>
+                                    </div>
+                                    <h3 class="title group-hover:text-sky">算数が苦手な子に、親はどう関わればいいですか</h3>
+                                    <p class="body">親が説明するほど、子どもが固まってしまうことがあります。算数のつまずきは、理解の穴だけでなく、焦りや恥ずかしさでも広がります。先に答えを教える前に、どこで止まっているのかを見つける視点を整理した記事です。</p>
+                                </div>
+                                <div class="mt-4 flex justify-end">
+                                    <a href="math-difficulty-support.html" class="read-more text-sky">
+                                        記事を読む <span class="material-symbols-rounded text-base">arrow_forward</span>
+                                    </a>
+                                </div>
+                            </div>
+                        </article>
+
+<article id="rewards" class="premium-article-card group" data-category="やる気">
+                            <div class="card-cover bg-gradient-amber">
+                                <span class="material-symbols-rounded">star</span>
+                                <span class="cover-badge" aria-hidden="true"><span class="material-symbols-rounded text-amber-600">flare</span></span>
+                            </div>
+                            <div class="card-content">
+                                <div>
+                                    <div class="flex items-center gap-3 mb-4">
+                                        <span class="tag bg-amber-light !mb-0">やる気</span>
+                                        <span class="text-xs font-bold text-slate-400 flex items-center gap-1"><span class="material-symbols-rounded text-[14px]">schedule</span> 読了 約4分</span>
+                                    </div>
+                                    <h3 class="title group-hover:text-amber">ごほうびで勉強させるのは、ありですか</h3>
+                                    <p class="body">ごほうびは便利です。でも、便利だからこそ頼りすぎると苦しくなります。短い背中押しとして使うのか、それとも毎回の燃料にしてしまうのか。その違いを、外発的動機づけの研究と日常の感覚の両方から見ていきます。</p>
+                                </div>
+                                <div class="mt-4 flex justify-end">
+                                    <a href="rewards-for-learning.html" class="read-more text-amber">
+                                        記事を読む <span class="material-symbols-rounded text-base">arrow_forward</span>
+                                    </a>
+                                </div>
+                            </div>
+                        </article>
+
+<article id="sibling-comparison" class="premium-article-card group" data-category="親子関係">
+                            <div class="card-cover bg-gradient-rose">
+                                <span class="material-symbols-rounded">diversity_1</span>
+                                <span class="cover-badge" aria-hidden="true"><span class="material-symbols-rounded text-rose-600">favorite</span></span>
+                            </div>
+                            <div class="card-content">
+                                <div>
+                                    <div class="flex items-center gap-3 mb-4">
+                                        <span class="tag bg-rose-light !mb-0">親子関係</span>
+                                        <span class="text-xs font-bold text-slate-400 flex items-center gap-1"><span class="material-symbols-rounded text-[14px]">schedule</span> 読了 約4分</span>
+                                    </div>
+                                    <h3 class="title group-hover:text-rose">きょうだいを比べてしまうとき、どうしたらいいですか</h3>
+                                    <p class="body">比べてはいけないと分かっていても、親の心は簡単には追いつきません。比べることを責めるだけではなく、親の不安の正体に目を向けて、子どもごとの見方を取り戻していくための読みものです。</p>
+                                </div>
+                                <div class="mt-4 flex justify-end">
+                                    <a href="sibling-comparison-hurts.html" class="read-more text-rose">
+                                        記事を読む <span class="material-symbols-rounded text-base">arrow_forward</span>
+                                    </a>
+                                </div>
+                            </div>
+                        </article>
+
+<article id="concentration" class="premium-article-card group" data-category="集中">
+                            <div class="card-cover bg-gradient-violet">
+                                <span class="material-symbols-rounded">center_focus_strong</span>
+                                <span class="cover-badge" aria-hidden="true"><span class="material-symbols-rounded text-violet-600">hourglass_bottom</span></span>
+                            </div>
+                            <div class="card-content">
+                                <div>
+                                    <div class="flex items-center gap-3 mb-4">
+                                        <span class="tag bg-violet-light !mb-0">集中</span>
+                                        <span class="text-xs font-bold text-slate-400 flex items-center gap-1"><span class="material-symbols-rounded text-[14px]">schedule</span> 読了 約5分</span>
+                                    </div>
+                                    <h3 class="title group-hover:text-violet">集中力は、生まれつきで決まるのでしょうか</h3>
+                                    <p class="body">集中できる子を見ると、つい才能の差に見えてしまいます。けれど、集中は気合いだけで生まれるものではなく、見通し、環境、休憩、自己調整の支えによってかなり変わります。「座っていられるか」より広い視点で考える記事です。</p>
+                                </div>
+                                <div class="mt-4 flex justify-end">
+                                    <a href="can-concentration-be-grown.html" class="read-more text-violet">
+                                        記事を読む <span class="material-symbols-rounded text-base">arrow_forward</span>
+                                    </a>
+                                </div>
+                            </div>
+                        </article>
+
+<article id="failure-resilience" class="premium-article-card group" data-category="心の力">
+                            <div class="card-cover bg-gradient-fuchsia">
+                                <span class="material-symbols-rounded">favorite</span>
+                                <span class="cover-badge" aria-hidden="true"><span class="material-symbols-rounded text-fuchsia-600">restart_alt</span></span>
+                            </div>
+                            <div class="card-content">
+                                <div>
+                                    <div class="flex items-center gap-3 mb-4">
+                                        <span class="tag bg-fuchsia-light !mb-0">心の力</span>
+                                        <span class="text-xs font-bold text-slate-400 flex items-center gap-1"><span class="material-symbols-rounded text-[14px]">schedule</span> 読了 約4分</span>
+                                    </div>
+                                    <h3 class="title group-hover:text-fuchsia">失敗に強い子は、どう育っていくのでしょうか</h3>
+                                    <p class="body">失敗しても平気な子ではなく、落ち込んでも戻ってこられる子へ。失敗に触れないように守るより、失敗後の立て直し方を一緒に育てていく方が、長い目では強い土台になります。家庭でできる小さな支えをまとめました。</p>
+                                </div>
+                                <div class="mt-4 flex justify-end">
+                                    <a href="failure-resilience.html" class="read-more text-fuchsia">
+                                        記事を読む <span class="material-symbols-rounded text-base">arrow_forward</span>
+                                    </a>
+                                </div>
+                            </div>
+                        </article>
+
+<article id="teacher-fit" class="premium-article-card group" data-category="学校との関係">
+                            <div class="card-cover bg-gradient-teal">
+                                <span class="material-symbols-rounded">school</span>
+                                <span class="cover-badge" aria-hidden="true"><span class="material-symbols-rounded text-teal-600">handshake</span></span>
+                            </div>
+                            <div class="card-content">
+                                <div>
+                                    <div class="flex items-center gap-3 mb-4">
+                                        <span class="tag bg-teal-light !mb-0">学校との関係</span>
+                                        <span class="text-xs font-bold text-slate-400 flex items-center gap-1"><span class="material-symbols-rounded text-[14px]">schedule</span> 読了 約3分</span>
+                                    </div>
+                                    <h3 class="title group-hover:text-teal">先生との関係性で、学びやすさは変わるのでしょうか</h3>
+                                    <p class="body">「好きな先生だから頑張れる」は、わがままではありません。子どもが安心して試せるかどうかは、学びに大きく関わります。先生との関係を、単なる好みではなく、学びやすさの条件として見直す記事です。</p>
+                                </div>
+                                <div class="mt-4 flex justify-end">
+                                    <a href="teacher-fit-matters.html" class="read-more text-teal">
+                                        記事を読む <span class="material-symbols-rounded text-base">arrow_forward</span>
+                                    </a>
+                                </div>
+                            </div>
+                        </article>
+
+<article id="low-grade-routines" class="premium-article-card group" data-category="生活リズム">
+                            <div class="card-cover bg-gradient-orange">
+                                <span class="material-symbols-rounded">routine</span>
+                                <span class="cover-badge" aria-hidden="true"><span class="material-symbols-rounded text-orange-600">wb_sunny</span></span>
+                            </div>
+                            <div class="card-content">
+                                <div>
+                                    <div class="flex items-center gap-3 mb-4">
+                                        <span class="tag bg-orange-light !mb-0">生活リズム</span>
+                                        <span class="text-xs font-bold text-slate-400 flex items-center gap-1"><span class="material-symbols-rounded text-[14px]">schedule</span> 読了 約4分</span>
+                                    </div>
+                                    <h3 class="title group-hover:text-orange">低学年の生活を整えるとき、研究から分かること</h3>
+                                    <p class="body">就寝ルーティンや睡眠の研究で確認されたことと、片づけ、朝の準備、見通しづくりなど家庭で試せる工夫を分けて考えます。</p>
+                                </div>
+                                <div class="mt-4 flex justify-end">
+                                    <a href="low-grade-routines-matter.html" class="read-more text-orange">
+                                        記事を読む <span class="material-symbols-rounded text-base">arrow_forward</span>
+                                    </a>
+                                </div>
+                            </div>
+                        </article>
+
+<article id="screen-time-learning" class="premium-article-card group" data-category="デジタル">
+                            <div class="card-cover bg-gradient-sky">
+                                <span class="material-symbols-rounded">devices</span>
+                                <span class="cover-badge" aria-hidden="true"><span class="material-symbols-rounded text-sky-600">smart_toy</span></span>
+                            </div>
+                            <div class="card-content">
+                                <div>
+                                    <div class="flex items-center gap-3 mb-4">
+                                        <span class="tag bg-sky-light text-sky-700 !mb-0">デジタル</span>
+                                        <span class="text-xs font-bold text-slate-400 flex items-center gap-1"><span class="material-symbols-rounded text-[14px]">schedule</span> 読了 約4分</span>
+                                    </div>
+                                    <h3 class="title group-hover:text-sky">タブレットやゲームばかりしていると、勉強に悪影響ですか？</h3>
+                                    <p class="body">画面を見つめる子どもの姿に不安を覚える保護者は多いです。単なる禁止や時間の制限だけでなく、受動的な消費と能動的な探究の違い、睡眠や親子の対話との関係を研究知見から整理します。</p>
+                                </div>
+                                <div class="mt-4 flex justify-end">
+                                    <a href="screen-time-and-learning.html" class="read-more text-sky">
+                                        記事を読む <span class="material-symbols-rounded text-base">arrow_forward</span>
+                                    </a>
+                                </div>
+                            </div>
+                        </article>
+
+<article id="how-to-praise" class="premium-article-card group" data-category="声かけ">
+                            <div class="card-cover bg-gradient-amber">
+                                <span class="material-symbols-rounded">sentiment_satisfied</span>
+                                <span class="cover-badge" aria-hidden="true"><span class="material-symbols-rounded text-rose-600">thumb_up</span></span>
+                            </div>
+                            <div class="card-content">
+                                <div>
+                                    <div class="flex items-center gap-3 mb-4">
+                                        <span class="tag bg-amber-light text-amber-700 !mb-0">声かけ</span>
+                                        <span class="text-xs font-bold text-slate-400 flex items-center gap-1"><span class="material-symbols-rounded text-[14px]">schedule</span> 読了 約4分</span>
+                                    </div>
+                                    <h3 class="title group-hover:text-amber">褒めて伸ばすって、どこまで本当ですか？</h3>
+                                    <p class="body">「褒めて育てる」が裏目に出て、失敗を怖がったり褒められ依存になることがあります。能力や結果を評価する褒め方と、工夫や挑戦のプロセスを共有する関わり方の違いを心理学の研究から紐解きます。</p>
+                                </div>
+                                <div class="mt-4 flex justify-end">
+                                    <a href="how-to-praise-children.html" class="read-more text-amber">
+                                        記事を読む <span class="material-symbols-rounded text-base">arrow_forward</span>
+                                    </a>
+                                </div>
+                            </div>
+                        </article>
+
+<article id="why-do-we-study" class="premium-article-card group" data-category="学ぶ意味">
+                            <div class="card-cover bg-gradient-emerald">
+                                <span class="material-symbols-rounded">lightbulb</span>
+                                <span class="cover-badge" aria-hidden="true"><span class="material-symbols-rounded text-indigo-600">explore</span></span>
+                            </div>
+                            <div class="card-content">
+                                <div>
+                                    <div class="flex items-center gap-3 mb-4">
+                                        <span class="tag bg-emerald-light text-emerald-700 !mb-0">学ぶ意味</span>
+                                        <span class="text-xs font-bold text-slate-400 flex items-center gap-1"><span class="material-symbols-rounded text-[14px]">schedule</span> 読了 約5分</span>
+                                    </div>
+                                    <h3 class="title group-hover:text-emerald">「なんで勉強するの？」と聞かれたとき、親はどう答えたらいいですか</h3>
+                                    <p class="body">「将来困るから」「いい学校に行くため」という大人の理由は、子どもには届きにくいものです。勉強を「将来の保険」ではなく「世界の解像度を上げるメガネ」として捉え直し、暮らしの関心とつなぐ視点を整理します。</p>
+                                </div>
+                                <div class="mt-4 flex justify-end">
+                                    <a href="why-do-we-study.html" class="read-more text-emerald">
+                                        記事を読む <span class="material-symbols-rounded text-base">arrow_forward</span>
+                                    </a>
+                                </div>
+                            </div>
+                        </article>
+
+<article id="starting-homework" class="premium-article-card group" data-category="学習習慣">
+                            <div class="card-cover bg-gradient-indigo">
+                                <span class="material-symbols-rounded">schedule</span>
+                                <span class="cover-badge" aria-hidden="true"><span class="material-symbols-rounded text-emerald-600">check_circle</span></span>
+                            </div>
+                            <div class="card-content">
+                                <div>
+                                    <div class="flex items-center gap-3 mb-4">
+                                        <span class="tag bg-indigo-light text-indigo-700 !mb-0">学習習慣</span>
+                                        <span class="text-xs font-bold text-slate-400 flex items-center gap-1"><span class="material-symbols-rounded text-[14px]">schedule</span> 読了 約4分</span>
+                                    </div>
+                                    <h3 class="title group-hover:text-indigo">宿題を始めるまでに時間がかかるのは、やる気がないからですか？</h3>
+                                    <p class="body">机に向かうまでに何十分もダラダラしてしまうのは、意志の弱さではなく「タスク開始」の認知的負荷の重さが原因です。作業興奮の仕組みと、最初の一歩を極限まで小さくする環境設計を考えます。</p>
+                                </div>
+                                <div class="mt-4 flex justify-end">
+                                    <a href="starting-homework-routine.html" class="read-more text-indigo">
+                                        記事を読む <span class="material-symbols-rounded text-base">arrow_forward</span>
+                                    </a>
+                                </div>
+                            </div>
+                        </article>
+
+<article id="curiosity-questions" class="premium-article-card group" data-category="好奇心">
+                            <div class="card-cover bg-gradient-rose">
+                                <span class="material-symbols-rounded">help_center</span>
+                                <span class="cover-badge" aria-hidden="true"><span class="material-symbols-rounded text-amber-600">search</span></span>
+                            </div>
+                            <div class="card-content">
+                                <div>
+                                    <div class="flex items-center gap-3 mb-4">
+                                        <span class="tag bg-rose-light text-rose-700 !mb-0">好奇心</span>
+                                        <span class="text-xs font-bold text-slate-400 flex items-center gap-1"><span class="material-symbols-rounded text-[14px]">schedule</span> 読了 約4分</span>
+                                    </div>
+                                    <h3 class="title group-hover:text-rose">子どもの「なんで？」が止まらないとき、どう付き合えばいいですか</h3>
+                                    <p class="body">果てしない質問攻めに疲れてしまう日常。大人が百科事典のように正解を即答しすぎると、かえって子どもの探究が止まることがあります。正解を急がず、探究の相棒として問いを深める関わり方を研究から整理します。</p>
+                                </div>
+                                <div class="mt-4 flex justify-end">
+                                    <a href="curiosity-and-questions.html" class="read-more text-rose">
+                                        記事を読む <span class="material-symbols-rounded text-base">arrow_forward</span>
+                                    </a>
+                                </div>
+                            </div>
+                        </article>
+
+<article id="teaching-children" class="premium-article-card group" data-category="親子の対話">
+                            <div class="card-cover bg-gradient-amber">
+                                <span class="material-symbols-rounded">forum</span>
+                                <span class="cover-badge" aria-hidden="true"><span class="material-symbols-rounded text-rose-600">chat</span></span>
+                            </div>
+                            <div class="card-content">
+                                <div>
+                                    <div class="flex items-center gap-3 mb-4">
+                                        <span class="tag bg-amber-light text-amber-700 !mb-0">親子の対話</span>
+                                        <span class="text-xs font-bold text-slate-400 flex items-center gap-1"><span class="material-symbols-rounded text-[14px]">schedule</span> 読了 約4分</span>
+                                    </div>
+                                    <h3 class="title group-hover:text-amber">親が勉強を教えると、なぜ必ずケンカになるのでしょうか</h3>
+                                    <p class="body">親が勉強を教えるとつい怒ってケンカになってしまう理由を心理学の知見から整理。「先生役」を降りて第三者や道具を間に挟む工夫を考えます。</p>
+                                </div>
+                                <div class="mt-4 flex justify-end">
+                                    <a href="teaching-children-at-home.html" class="read-more text-amber">
+                                        記事を読む <span class="material-symbols-rounded text-base">arrow_forward</span>
+                                    </a>
+                                </div>
+                            </div>
+                        </article>
+
+<article id="careless-mistakes" class="premium-article-card group" data-category="学習習慣">
+                            <div class="card-cover bg-gradient-indigo">
+                                <span class="material-symbols-rounded">rule</span>
+                                <span class="cover-badge" aria-hidden="true"><span class="material-symbols-rounded text-sky-600">visibility</span></span>
+                            </div>
+                            <div class="card-content">
+                                <div>
+                                    <div class="flex items-center gap-3 mb-4">
+                                        <span class="tag bg-indigo-light text-indigo-700 !mb-0">学習習慣</span>
+                                        <span class="text-xs font-bold text-slate-400 flex items-center gap-1"><span class="material-symbols-rounded text-[14px]">schedule</span> 読了 約4分</span>
+                                    </div>
+                                    <h3 class="title group-hover:text-indigo">ケアレスミスが多いのは、落ち着きがないからですか？</h3>
+                                    <p class="body">計算ミスや読み飛ばしが直らないのは注意力の不足ではなくワーキングメモリの限界です。気合いで見直しを迫るのではなく、脳の負担を減らす仕組みを研究から考えます。</p>
+                                </div>
+                                <div class="mt-4 flex justify-end">
+                                    <a href="careless-mistakes-support.html" class="read-more text-indigo">
+                                        記事を読む <span class="material-symbols-rounded text-base">arrow_forward</span>
+                                    </a>
+                                </div>
+                            </div>
+                        </article>
+
+<article id="kanji-struggle" class="premium-article-card group" data-category="学習習慣">
+                            <div class="card-cover bg-gradient-indigo">
+                                <span class="material-symbols-rounded">history_edu</span>
+                                <span class="cover-badge" aria-hidden="true"><span class="material-symbols-rounded text-indigo-600">draw</span></span>
+                            </div>
+                            <div class="card-content">
+                                <div>
+                                    <div class="flex items-center gap-3 mb-4">
+                                        <span class="tag bg-indigo-light text-indigo-700 !mb-0">学習習慣</span>
+                                        <span class="text-xs font-bold text-slate-400 flex items-center gap-1"><span class="material-symbols-rounded text-[14px]">schedule</span> 読了 約4分</span>
+                                    </div>
+                                    <h3 class="title group-hover:text-indigo">漢字の書き取りドリルで泣いてしまうとき、親はどう関わればいいですか？</h3>
+                                    <p class="body">漢字の宿題が苦痛で涙が出るのは単なる怠けではありません。丸暗記の負荷、視覚と手の連動の難しさを理解し、パーツや意味の面白さから支える工夫を整理します。</p>
+                                </div>
+                                <div class="mt-4 flex justify-end">
+                                    <a href="kanji-learning-struggle.html" class="read-more text-indigo">
+                                        記事を読む <span class="material-symbols-rounded text-base">arrow_forward</span>
+                                    </a>
+                                </div>
+                            </div>
+                        </article>
+
+<article id="handling-losing" class="premium-article-card group" data-category="心の力">
+                            <div class="card-cover bg-gradient-fuchsia">
+                                <span class="material-symbols-rounded">sentiment_dissatisfied</span>
+                                <span class="cover-badge" aria-hidden="true"><span class="material-symbols-rounded text-fuchsia-600">sports_esports</span></span>
+                            </div>
+                            <div class="card-content">
+                                <div>
+                                    <div class="flex items-center gap-3 mb-4">
+                                        <span class="tag bg-fuchsia-light text-fuchsia-700 !mb-0">心の力</span>
+                                        <span class="text-xs font-bold text-slate-400 flex items-center gap-1"><span class="material-symbols-rounded text-[14px]">schedule</span> 読了 約4分</span>
+                                    </div>
+                                    <h3 class="title group-hover:text-fuchsia">ゲームや勝負で負けると激しく怒る子に、親はどう声をかければいいですか？</h3>
+                                    <p class="body">トランプやゲームで負けると癇癪を起こすのは向上心の裏返しです。情動調整の発達段階を理解し、悔しさを安全に受け止めて立て直す関わり方を研究から整理します。</p>
+                                </div>
+                                <div class="mt-4 flex justify-end">
+                                    <a href="handling-losing-games.html" class="read-more text-fuchsia">
+                                        記事を読む <span class="material-symbols-rounded text-base">arrow_forward</span>
+                                    </a>
+                                </div>
+                            </div>
+                        </article>
+
+<article id="overcoming-doubt" class="premium-article-card group" data-category="心の力">
+                            <div class="card-cover bg-gradient-fuchsia">
+                                <span class="material-symbols-rounded">favorite</span>
+                                <span class="cover-badge" aria-hidden="true"><span class="material-symbols-rounded text-fuchsia-600">trending_up</span></span>
+                            </div>
+                            <div class="card-content">
+                                <div>
+                                    <div class="flex items-center gap-3 mb-4">
+                                        <span class="tag bg-fuchsia-light text-fuchsia-700 !mb-0">心の力</span>
+                                        <span class="text-xs font-bold text-slate-400 flex items-center gap-1"><span class="material-symbols-rounded text-[14px]">schedule</span> 読了 約5分</span>
+                                    </div>
+                                    <h3 class="title group-hover:text-fuchsia">「どうせ僕なんて…」とすぐ諦めてしまう子への関わり方</h3>
+                                    <p class="body">「どうせ無理」「できない」とすぐ諦めるのは自信の欠如ではなく学習性無力感のサインです。自己効力感の研究から、成功体験の解像度を上げて小さな自信を取り戻す方法を考えます。</p>
+                                </div>
+                                <div class="mt-4 flex justify-end">
+                                    <a href="overcoming-self-doubt.html" class="read-more text-fuchsia">
+                                        記事を読む <span class="material-symbols-rounded text-base">arrow_forward</span>
+                                    </a>
+                                </div>
+                            </div>
+                        </article>
+
+<article id="perfectionism-mistakes" class="premium-article-card group" data-category="考え方">
+                            <div class="card-cover bg-gradient-indigo">
+                                <span class="material-symbols-rounded">psychology</span>
+                                <span class="cover-badge" aria-hidden="true"><span class="material-symbols-rounded text-indigo-600">healing</span></span>
+                            </div>
+                            <div class="card-content">
+                                <div>
+                                    <div class="flex items-center gap-3 mb-4">
+                                        <span class="tag bg-indigo-light text-indigo-700 !mb-0">考え方</span>
+                                        <span class="text-xs font-bold text-slate-400 flex items-center gap-1"><span class="material-symbols-rounded text-[14px]">schedule</span> 読了 約4分</span>
+                                    </div>
+                                    <h3 class="title group-hover:text-indigo">間違えたノートを破けるまで消してしまうとき、親は何ができますか？</h3>
+                                    <p class="body">間違いを許せずノートを何度も消してパニックになる「完璧主義」。適応的・不適応的完璧主義の違いを整理し、失敗を恐れず試せる「下書きの文化」を家庭で作る工夫を考えます。</p>
+                                </div>
+                                <div class="mt-4 flex justify-end">
+                                    <a href="perfectionism-and-mistakes.html" class="read-more text-indigo">
+                                        記事を読む <span class="material-symbols-rounded text-base">arrow_forward</span>
+                                    </a>
+                                </div>
+                            </div>
+                        </article>
+
+<article id="parent-anger" class="premium-article-card group" data-category="親子の対話">
+                            <div class="card-cover bg-gradient-rose">
+                                <span class="material-symbols-rounded">favorite</span>
+                                <span class="cover-badge" aria-hidden="true"><span class="material-symbols-rounded text-rose-600">spa</span></span>
+                            </div>
+                            <div class="card-content">
+                                <div>
+                                    <div class="flex items-center gap-3 mb-4">
+                                        <span class="tag bg-rose-light text-rose-700 !mb-0">親子の対話</span>
+                                        <span class="text-xs font-bold text-slate-400 flex items-center gap-1"><span class="material-symbols-rounded text-[14px]">schedule</span> 読了 約5分</span>
+                                    </div>
+                                    <h3 class="title group-hover:text-rose">つい怒鳴って自己嫌悪……親のイライラはどう扱えばいいですか？</h3>
+                                    <p class="body">子どもに感情的に怒鳴ってしまい自己嫌悪に陥る親の悩み。意志の弱さではなく「認知リソースの枯渇」を理解し、怒りを鎮める環境設計と「関係修復（リペア）」の作法を研究から整理します。</p>
+                                </div>
+                                <div class="mt-4 flex justify-end">
+                                    <a href="parent-anger-management.html" class="read-more text-rose">
+                                        記事を読む <span class="material-symbols-rounded text-base">arrow_forward</span>
+                                    </a>
+                                </div>
+                            </div>
+                        </article>
+
+<article id="morning-reluctance" class="premium-article-card group" data-category="学校との関係">
+                            <div class="card-cover bg-gradient-teal">
+                                <span class="material-symbols-rounded">school</span>
+                                <span class="cover-badge" aria-hidden="true"><span class="material-symbols-rounded text-teal-600">wb_twilight</span></span>
+                            </div>
+                            <div class="card-content">
+                                <div>
+                                    <div class="flex items-center gap-3 mb-4">
+                                        <span class="tag bg-teal-light text-teal-700 !mb-0">学校との関係</span>
+                                        <span class="text-xs font-bold text-slate-400 flex items-center gap-1"><span class="material-symbols-rounded text-[14px]">schedule</span> 読了 約4分</span>
+                                    </div>
+                                    <h3 class="title group-hover:text-teal">朝「学校に行きたくない」と言われたとき、最初のひと声はどうする？</h3>
+                                    <p class="body">朝の玄関で「行きたくない」と座り込む子ども。理由を問い詰めたり無理に励ましたりせず、心と体のSOSを安全に受け止める初期対応のステップを研究から整理します。</p>
+                                </div>
+                                <div class="mt-4 flex justify-end">
+                                    <a href="morning-school-reluctance.html" class="read-more text-teal">
+                                        記事を読む <span class="material-symbols-rounded text-base">arrow_forward</span>
+                                    </a>
+                                </div>
+                            </div>
+                        </article>
+
+<article id="independent-science" class="premium-article-card group" data-category="探究">
+                            <div class="card-cover bg-gradient-emerald">
+                                <span class="material-symbols-rounded">biotech</span>
+                                <span class="cover-badge" aria-hidden="true"><span class="material-symbols-rounded text-emerald-600">science</span></span>
+                            </div>
+                            <div class="card-content">
+                                <div>
+                                    <div class="flex items-center gap-3 mb-4">
+                                        <span class="tag bg-emerald-light text-emerald-700 !mb-0">探究</span>
+                                        <span class="text-xs font-bold text-slate-400 flex items-center gap-1"><span class="material-symbols-rounded text-[14px]">schedule</span> 読了 約4分</span>
+                                    </div>
+                                    <h3 class="title group-hover:text-emerald">自由研究や工作を、親の手伝いゼロで見守るにはどうすればいいですか？</h3>
+                                    <p class="body">自由研究で親が手を出してしまい大人の作品になってしまう葛藤。探究学習（Inquiry-based learning）の研究から、「ショボくても自分で確かめた」経験の尊さと親の伴走の境界線を整理します。</p>
+                                </div>
+                                <div class="mt-4 flex justify-end">
+                                    <a href="independent-science-projects.html" class="read-more text-emerald">
+                                        記事を読む <span class="material-symbols-rounded text-base">arrow_forward</span>
+                                    </a>
+                                </div>
+                            </div>
+                        </article>
+
+<article id="skills-ai-era" class="premium-article-card group" data-category="未来の学び">
+                            <div class="card-cover bg-gradient-violet">
+                                <span class="material-symbols-rounded">neurology</span>
+                                <span class="cover-badge" aria-hidden="true"><span class="material-symbols-rounded text-violet-600">auto_awesome</span></span>
+                            </div>
+                            <div class="card-content">
+                                <div>
+                                    <div class="flex items-center gap-3 mb-4">
+                                        <span class="tag bg-violet-light text-violet-700 !mb-0">未来の学び</span>
+                                        <span class="text-xs font-bold text-slate-400 flex items-center gap-1"><span class="material-symbols-rounded text-[14px]">schedule</span> 読了 約5分</span>
+                                    </div>
+                                    <h3 class="title group-hover:text-violet">AIの時代に、小学生のうちに育てておきたい力って何ですか？</h3>
+                                    <p class="body">AIが瞬時に答えを出す時代、これまでの暗記や正解探しだけで大丈夫か。OECD教育2030の枠組みや認知心理学から、AI時代に人間を支える「問いを立てる力」と「五感の一次体験」の価値を整理します。</p>
+                                </div>
+                                <div class="mt-4 flex justify-end">
+                                    <a href="skills-for-ai-era.html" class="read-more text-violet">
+                                        記事を読む <span class="material-symbols-rounded text-base">arrow_forward</span>
+                                    </a>
+                                </div>
+                            </div>
+                        </article>
+                    </div>
+
+                    <!-- No Results State -->
+                    <div id="no-results-state" class="hidden py-16 px-6 text-center bg-white/60 rounded-3xl border border-slate-200/60 dynamic-bg mt-6">
+                        <div class="w-16 h-16 mx-auto mb-4 rounded-full bg-slate-100 flex items-center justify-center text-slate-400">
+                            <span class="material-symbols-rounded text-3xl">search_off</span>
+                        </div>
+                        <h3 class="font-pop text-lg font-black text-slate-700 mb-2">該当する読みものが見つかりませんでした</h3>
+                        <p class="text-xs text-slate-500 mb-6">別のキーワードで検索するか、カテゴリーを変更してみてください。</p>
+                        <button type="button" id="reset-filters-btn" class="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-sky-500 hover:bg-sky-600 text-white font-black text-xs shadow-md transition-all">
+                            <span class="material-symbols-rounded text-base">restart_alt</span>
+                            すべての記事を表示する
+                        </button>
+                    </div>
+
+                    <!-- Load More Button -->
+                    <div id="load-more-container" class="text-center mt-10">
+                        <button id="load-more-btn" type="button" class="inline-flex items-center gap-2 px-8 py-3.5 rounded-full bg-white border-2 border-sky-200 text-sky-600 font-black text-sm shadow-sm hover:bg-sky-50 hover:border-sky-300 hover:shadow-md transition-all active:scale-95 dynamic-bg">
+                            <span>もっと記事を見る</span>
+                            <span class="material-symbols-rounded text-base">expand_more</span>
+                        </button>
+                    </div>
+                </section>
+            </main>
+
+            <!-- Sidebar (Right) -->
+            <aside class="lg:w-[32%] w-full space-y-8 mt-12 lg:mt-0">
+                
+                <!-- 検索ウィジェット -->
+                <div class="sidebar-widget">
+                    <h3 class="widget-title">サイト内検索</h3>
+                    <div class="relative">
+                        <input type="text" id="sidebar-search-input" aria-label="サイト内検索" placeholder="キーワードを入力..." class="article-search-input w-full bg-slate-50 border border-slate-200 rounded-full py-3 pl-4 pr-10 text-sm focus:outline-none focus:border-sky-300 focus:ring-2 focus:ring-sky-100 transition-all font-medium text-slate-600 dynamic-input">
+                        <button type="button" aria-label="検索を実行" class="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 flex items-center justify-center text-slate-400 hover:text-sky-500 transition-colors">
+                            <span class="material-symbols-rounded text-[20px]">search</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- プロフィールウィジェット -->
+                <div class="sidebar-widget text-center">
+                    <h3 class="widget-title justify-center">この記事を書いている人</h3>
+                    <div class="w-24 h-24 mx-auto bg-slate-100 border border-slate-200 rounded-full mb-4 flex items-center justify-center text-slate-400 shadow-inner">
+                        <span class="material-symbols-rounded text-4xl">face</span>
+                    </div>
+                    <strong class="block text-slate-800 font-black text-lg mb-2">かたかた</strong>
+                    <p class="text-[13px] text-slate-600 font-medium leading-[1.8]">
+                        個人で教育とテクノロジーを調べながら、親子で一緒に使えるツール（PikaLab）を制作しています。
+                    </p>
+                </div>
+
+                <!-- ツールウィジェット (元はGuideセクションにあったもの) -->
+                <div class="sidebar-widget">
+                    <h3 class="widget-title">一緒に使えるツール</h3>
+                    <div class="space-y-3">
+                        <a href="../book_report/" class="sidebar-tool-link group">
+                            <div class="sidebar-tool-icon bg-emerald-50 text-emerald-600 group-hover:scale-110 transition-transform">
+                                <span class="material-symbols-rounded text-[20px]">edit_note</span>
+                            </div>
+                            <div class="text-left">
+                                <span class="block text-[10px] font-black text-slate-400 tracking-wider">書く前の補助</span>
+                                <strong class="text-slate-700 font-black text-sm group-hover:text-emerald-600 transition-colors">読書感想文メーカー</strong>
+                            </div>
+                        </a>
+                        <a href="../focus_studio/" class="sidebar-tool-link group">
+                            <div class="sidebar-tool-icon bg-orange-50 text-orange-600 group-hover:scale-110 transition-transform">
+                                <span class="material-symbols-rounded text-[20px]">timer</span>
+                            </div>
+                            <div class="text-left">
+                                <span class="block text-[10px] font-black text-slate-400 tracking-wider">時間の区切り</span>
+                                <strong class="text-slate-700 font-black text-sm group-hover:text-orange-600 transition-colors">ポモドーロスタジオ</strong>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+
+            </aside>
+        </div>
+        
+        <footer class="mt-24 pb-8 pt-8 text-center border-t border-slate-200/60">
+            <p class="text-[13px] font-black text-slate-400 tracking-wider">© KatakataLab</p>
+            <nav class="mt-3 flex flex-wrap justify-center gap-x-4 gap-y-2 text-[12px] font-bold text-slate-400" aria-label="サイト情報">
+                <a class="hover:text-sky-500" href="../../contact.html">お問い合わせ</a>
+                <a class="hover:text-sky-500" href="../../sitemap.html">サイトマップ</a>
+            </nav>
+        </footer>
+
+        <!-- Scroll To Top Button -->
+        <button type="button" id="scroll-top-btn" class="scroll-top-btn" aria-label="ページの一番上へ戻る">
+            <span class="material-symbols-rounded">arrow_upward</span>
+        </button>
+    </div>
+
+    <script src="./preferences.js"></script>
+    <script src="./article-common.js" defer></script>
+    <script src="./hub.js" defer></script>
+</body>
+</html>

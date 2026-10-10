@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <base href="/px-rem-converter/">
+  <title>PX to REM Converter with CSS Scale Table | KatakataLab</title>
+  <meta name="description" content="Convert pixels and rem units in both directions, change the root font size, preview readable text, and copy CSS variables, SCSS variables, or utility-class output.">
+  
+  <link rel="stylesheet" href="style.css?v=20260824-responsive">
+
+  <link rel="icon" href="../icon.svg" type="image/svg+xml">
+  <link rel="canonical" href="https://katakatalab.com/px-rem-converter/en/">
+  <link rel="alternate" hreflang="ja" href="https://katakatalab.com/px-rem-converter/">
+  <link rel="alternate" hreflang="en" href="https://katakatalab.com/px-rem-converter/en/">
+  <link rel="alternate" hreflang="x-default" href="https://katakatalab.com/px-rem-converter/">
+  <meta property="og:title" content="PX to REM Converter with CSS Scale Table | KatakataLab">
+  <meta property="og:description" content="Convert pixels and rem units in both directions, change the root font size, preview readable text, and copy CSS variables, SCSS variables, or utility-class output.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://katakatalab.com/px-rem-converter/en/">
+  <meta property="og:image" content="https://katakatalab.com/ogp.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="PX to REM Converter with CSS Scale Table | KatakataLab">
+  <meta name="twitter:description" content="Convert pixels and rem units in both directions, change the root font size, preview readable text, and copy CSS variables, SCSS variables, or utility-class output.">
+  <meta name="twitter:image" content="https://katakatalab.com/ogp.png">
+  <meta name="twitter:site" content="@Katakata_toybox">
+  <link rel="stylesheet" href="/international/english-shell.css?v=20260805-lab">
+</head>
+<body class="english-tool-page english-tool--px-rem-converter">
+  <nav class="english-tool-bar" aria-label="Language and English tools">
+  <a class="english-tool-bar__home" href="https://katakatalab.com/en/">🧪 English tool index</a>
+  <a href="https://katakatalab.com/px-rem-converter/" hreflang="ja" lang="ja">Japanese version</a>
+</nav>
+    <script>try{if(localStorage.getItem('theme')==='dark')document.body.classList.add('dark-mode');}catch(e){}</script>
+
+    <nav class="breadcrumbs-tool" aria-label="Breadcrumb" style="max-width: 1100px; margin: 0 auto; padding: 1rem 1.25rem 0; font-size: 0.85rem; color: var(--c-text-light, #636e72);">
+      <a href="../" style="color: var(--c-primary, #FF7675); text-decoration: none; font-weight: 700;">🏠 Home</a>
+      <span aria-hidden="true" style="margin: 0 0.5rem; opacity: 0.5;">/</span>
+      <span aria-current="page">PX to REM Converter</span>
+    </nav>
+
+<main class="tool-wrapper">
+  
+  <header class="tool-header">
+    <div class="header-inner">
+      <h1 class="app-title">PX / REM <span class="accent">Converter</span></h1>
+      <p class="app-desc">Unit converter for designers and developers</p>
+    </div>
+    <div class="root-setting">
+      <label for="rootBase">Root font size:</label>
+      <div class="root-input-group">
+        <input type="number" id="rootBase" value="16" min="1" max="100" inputmode="decimal" aria-label="Root font size">
+        <span class="unit">px</span>
+        <div class="root-presets" role="group" aria-label="Common root sizes">
+          <button type="button" class="btn-root-preset is-active" data-root="16" aria-label="Set root to 16 px" aria-pressed="true">16</button>
+          <button type="button" class="btn-root-preset" data-root="10" aria-label="Set root to 10 px" aria-pressed="false">10</button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <div class="root-explain">
+    <p>Browsers commonly default to <strong>16px = 1rem</strong>. If the root is 10, <strong>14px = 1.4rem</strong>.</p>
+    <p><code>font-size: 62.5%</code> is 62.5% of the user’s default. At 16px that is about 10px; at 20px it is 12.5px. That is not the same as <code>font-size: 10px</code>.</p>
+    <p>Put your project’s actual root in this page’s base-size field.</p>
+  </div>
+
+  <section class="converter-panel">
+    <div class="input-card" id="pxCard">
+      <label for="pxInput">PX <small>(absolute pixel value)</small></label>
+      <div class="input-row">
+        <input type="number" id="pxInput" value="16" placeholder="16" step="1" inputmode="decimal" aria-label="Pixel value to convert">
+        <span class="unit-label">px</span>
+      </div>
+    </div>
+
+    <div class="exchange-icon">⇄</div>
+
+    <div class="input-card" id="remCard">
+      <label for="remInput">REM <small>(root-relative rem value)</small></label>
+      <div class="input-row">
+        <input type="number" id="remInput" placeholder="1" step="0.0625" inputmode="decimal" aria-label="REM value to convert">
+        <span class="unit-label">rem</span>
+      </div>
+    </div>
+  </section>
+
+  <section class="preview-area">
+    <h2 class="sub-title">Size preview</h2>
+    <div class="preview-box">
+      <div id="previewRoot" class="preview-root">
+        <p id="previewText" class="preview-content" contenteditable="true" title="Click to edit the preview text">Preview text: edit this sentence to test the selected size and readability.</p>
+      </div>
+      <div class="preview-info">
+        Current size: <span id="infoPx">16px</span> / <span id="infoRem">1rem</span>
+      </div>
+    </div>
+    <p class="preview-note">The preview box uses this page’s root size. The sample text uses em against that box, as a rem-like demo. Real rem looks at the document html. This shows size at this page’s root value. It is not the same as changing the OS text size.</p>
+  </section>
+
+  <section class="cheatsheet-area">
+    <div class="list-header">
+      <h2 class="sub-title">Quick List & Code Generator</h2>
+      <div class="copy-controls">
+        <select id="codeFormatSelect" class="select-format" aria-label="Output code format">
+          <option value="css">CSS variable (--fs-16)</option>
+          <option value="scss">SCSS variable ($fs-16)</option>
+          <option value="tailwind">Tailwind CSS (fontSize)</option>
+          <option value="classes">CSS class (.text-16)</option>
+        </select>
+        <button type="button" id="copyCssBtn" class="btn-secondary">
+          <span class="icon">📋</span> Copy code
+        </button>
+      </div>
+    </div>
+    <p class="copy-hint">Copy includes common sizes only, not every row in the table.</p>
+    
+    <div class="custom-add-container">
+
+      <label for="customPxInput">Add a size to the reference table:</label>
+      <div class="add-input-group">
+        <input type="number" id="customPxInput" placeholder="24" min="1" max="500" inputmode="numeric" aria-label="Pixel value to add">
+        <span class="unit">px</span>
+        <button type="button" id="addSizeBtn" class="btn-primary-sm">Add to table</button>
+        <button type="button" id="resetSizesBtn" class="btn-secondary-sm" title="Reset the reference table" aria-label="Restore default reference sizes">↩ Reset</button>
+      </div>
+      <p id="listMessage" class="list-message" role="status" hidden></p>
+    </div>
+
+    <div class="table-container">
+      <table class="conversion-table">
+        <thead>
+          <tr>
+            <th>PX</th>
+            <th>REM</th>
+            <th>Preview</th>
+          </tr>
+        </thead>
+        <tbody id="tableBody">
+          </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="article-content english-content" aria-labelledby="english-guide-title">
+    <header>
+      <p><strong>Created by Katakata</strong> · Last reviewed <time datetime="2026-07-16">July 16, 2026</time></p>
+      <h2 id="english-guide-title">How to use PX to REM Converter</h2>
+      <p>REM units scale from the document root and are useful for type and spacing systems that respect user settings. This converter handles both directions, makes the root size explicit, and turns selected values into reusable CSS, SCSS, or class snippets.</p>
+    </header>
+    <section>
+      <h3>Practical workflow</h3>
+      <ol><li>Confirm the root size used by your project. The browser default is commonly 16 px, but your stylesheet may override it.</li>
+<li>Enter a pixel or rem value; the other field updates from value ÷ root or value × root.</li>
+<li>Add recurring sizes to the reference table, choose an output format, and copy the generated tokens into your project.</li></ol>
+    </section>
+    <section>
+      <h3>Accuracy and limitations</h3>
+      <p>Changing the root to 10 px for easier arithmetic can reduce expected browser scaling if implemented carelessly. Do not treat px as physically identical across screens. Test zoom, user font-size preferences, and long translated copy before adopting a scale.</p>
+    </section>
+    <section>
+      <h3>Privacy and data handling</h3>
+      <p>Conversions and custom scale values stay in the browser. The page does not upload your CSS or input values.</p>
+    </section>
+    <section>
+      <h3>Why this page exists</h3>
+      <p>KatakataLab publishes small browser tools built from recurring design and development tasks. This English page is maintained as a complete entry point, not as an automatic translation or a doorway page. If a control, explanation, or result is unclear, use the <a href="https://katakatalab.com/contact.html">contact page</a> and include the tool name, browser, and expected result without sending confidential input.</p>
+      <p>For another workflow, browse the <a href="https://katakatalab.com/en/">English tool index</a> or switch to the <a href="https://katakatalab.com/px-rem-converter/" hreflang="ja" lang="ja">Japanese version</a>.</p>
+    </section>
+  </section>
+</article>
+  <!-- Auto-Injected Unified Footer -->
+<footer class="tool-footer" aria-label="Site information">
+  <a href="https://katakatalab.com/en/">🧪 KatakataLab English</a><span class="tool-footer__separator" aria-hidden="true">|</span>
+  <a href="https://katakatalab.com/en/site-information.html">Site information</a><span class="tool-footer__separator" aria-hidden="true">|</span>
+  <a href="https://katakatalab.com/contact.html">Contact</a><span class="tool-footer__separator" aria-hidden="true">|</span>
+  <a href="https://katakatalab.com/privacy.html">Privacy (Japanese)</a><span class="tool-footer__separator" aria-hidden="true">|</span>
+  <a href="https://katakatalab.com/terms.html">Terms (Japanese)</a>
+</footer>
+
+<script type="application/ld+json">
+  {
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "PX to REM Converter",
+  "url": "https://katakatalab.com/px-rem-converter/en/",
+  "description": "Convert pixels and rem units in both directions, change the root font size, preview readable text, and copy CSS variables, SCSS variables, or utility-class output.",
+  "applicationCategory": "DeveloperApplication",
+  "operatingSystem": "Any",
+  "inLanguage": "en",
+  "isAccessibleForFree": true,
+  "offers": {
+    "@type": "Offer",
+    "price": "0",
+    "priceCurrency": "USD"
+  },
+  "author": {
+    "@type": "Person",
+    "name": "Katakata"
+  },
+  "dateModified": "2026-07-16"
+}
+  </script>
+
+<script src="script.js?v=20260817-2" defer></script>
+
+  <script src="/international/english-runtime.js" defer></script>
+</body>
+</html>

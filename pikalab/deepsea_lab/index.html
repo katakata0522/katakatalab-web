@@ -1,0 +1,692 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>深海ゲーム｜深海生物を探検して学べる無料ブラウザ体験 | PikaLab</title>
+    <meta name="description" content="水深1万m級まで潜り、深度ごとの環境や深海生物を探検できる子ども向け無料ブラウザゲームです。ソナーやライトを使いながら深海の世界を体験できます。">
+    <link rel="canonical" href="https://katakatalab.com/pikalab/deepsea_lab/">
+    <meta property="og:title" content="深海ゲーム｜深海生物を探検して学べる無料ブラウザ体験 | PikaLab">
+    <meta property="og:description" content="水深1万m級まで潜り、深度ごとの環境や深海生物を探検できる子ども向け無料ブラウザゲームです。ソナーやライトを使いながら深海の世界を体験できます。">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://katakatalab.com/pikalab/deepsea_lab/">
+    <meta property="og:image" content="https://katakatalab.com/pikalab/pikalab_ogp_compressed.jpg">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="深海ゲーム｜深海生物を探検して学べる無料ブラウザ体験 | PikaLab">
+    <meta name="twitter:description" content="水深1万m級まで潜り、深度ごとの環境や深海生物を探検できる子ども向け無料ブラウザゲームです。ソナーやライトを使いながら深海の世界を体験できます。">
+    <meta name="twitter:image" content="https://katakatalab.com/pikalab/pikalab_ogp_compressed.jpg">
+    
+    <!-- PikaLab Common Styles -->
+    <link rel="stylesheet" href="../style.css">
+    
+    <!-- Custom Deep Sea Styles -->
+    <link rel="stylesheet" href="css/style.css">
+    
+    <!-- Google Fonts & Material Symbols -->
+    <link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@400;700;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@40,700,1,0" rel="stylesheet">
+    <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"深海ゲーム｜深海生物を探検して学べる無料ブラウザ体験 | PikaLab","url":"https://katakatalab.com/pikalab/deepsea_lab/","description":"水深1万m級まで潜り、深度ごとの環境や深海生物を探検できる子ども向け無料ブラウザゲームです。ソナーやライトを使いながら深海の世界を体験できます。","applicationCategory":"EducationalApplication","operatingSystem":"Any","isAccessibleForFree":true,"offers":{"@type":"Offer","price":"0","priceCurrency":"JPY"},"audience":{"@type":"EducationalAudience","educationalRole":"student"}}</script>
+</head>
+<body class="h-screen flex flex-col font-sans bg-black text-slate-200 overflow-hidden font-pop select-none">
+    <!-- Header -->
+    <nav class="flex-none h-16 bg-slate-900 border-b border-slate-700 flex items-center justify-between px-3 sm:px-6 modal-layer shadow-lg relative">
+        <div class="flex items-center gap-2 sm:gap-3">
+            <a href="../" class="mr-1 sm:mr-2 pointer-events-auto bg-black/60 hover:bg-black border border-ocean-surf/30 text-ocean-surf rounded-full p-2 flex items-center justify-center transition-colors backdrop-blur w-10 h-10 shadow-[0_0_15px_rgba(79,195,247,0.3)]">
+                <span class="material-symbols-outlined">arrow_back</span>
+            </a>
+            <span class="material-symbols-outlined text-yellow-400 text-4xl mobile-hide">scuba_diving</span>
+            <div class="hidden sm:block">
+                <h1 class="font-rounded font-bold text-xl tracking-wider text-white">PIKALAB <span class="text-ocean-surf">DEEP SEA</span></h1>
+                <p class="text-[10px] text-slate-400 tracking-widest">MISSION: 10,000m DIVE</p>
+            </div>
+        </div>
+        <div class="flex items-center gap-1 sm:gap-2 md:gap-3">
+            <!-- ☀️昼夜切り替え🌙 -->
+            <button id="btn-time" class="flex items-center justify-center gap-0.5 sm:gap-1 bg-slate-800 hover:bg-slate-700 px-2 py-1.5 sm:px-2.5 sm:py-2 rounded-full text-xs text-slate-300 transition-colors border border-slate-600 shadow-[0_0_10px_rgba(251,191,36,0.1)] pointer-events-auto">
+                <span id="time-icon" class="material-symbols-rounded text-yellow-400 text-sm">light_mode</span>
+                <span id="time-label" class="font-rounded font-bold button-text">☀️ ひる</span>
+            </button>
+            <!-- 🔦ライト切り替え🔮 -->
+            <button id="btn-light-type" class="flex items-center justify-center gap-0.5 sm:gap-1 bg-slate-800 hover:bg-slate-700 px-2 py-1.5 sm:px-2.5 sm:py-2 rounded-full text-xs text-slate-300 transition-colors border border-slate-600 shadow-[0_0_10px_rgba(96,165,250,0.1)] pointer-events-auto">
+                <span id="light-type-icon" class="material-symbols-rounded text-blue-400 text-sm">flashlight_on</span>
+                <span id="light-type-label" class="font-rounded font-bold button-text">ふつうライト</span>
+            </button>
+            <button id="btn-album" class="flex items-center justify-center gap-0.5 sm:gap-1 bg-indigo-900/80 hover:bg-indigo-800 px-2 py-1.5 sm:px-2.5 sm:py-2 rounded-full text-xs text-indigo-100 transition-colors border border-indigo-400/50 shadow-[0_0_10px_rgba(99,102,241,0.3)] pointer-events-auto">
+                <span class="material-symbols-rounded text-sm text-indigo-300">menu_book</span>
+                <span class="button-text">図鑑 </span>
+                <span class="album-badge text-[9px] font-mono bg-indigo-950/60 px-1 py-0.2 rounded-full border border-indigo-700/30 text-indigo-200 ml-0.5"><span id="album-count">0</span>/26</span>
+            </button>
+            <button id="btn-audio" class="flex items-center justify-center gap-0.5 sm:gap-1 bg-slate-800 hover:bg-slate-700 px-2 py-1.5 sm:px-2.5 sm:py-2 rounded-full text-xs text-slate-300 transition-colors border border-slate-600 pointer-events-auto">
+                <span id="sound-icon" class="material-symbols-rounded text-green-500 text-sm">volume_up</span>
+                <span class="button-text">AUDIO</span>
+            </button>
+            <button type="button" data-action="parents-modal-open" class="flex items-center justify-center gap-0.5 sm:gap-1 bg-slate-800 hover:bg-slate-700 px-2 py-1.5 sm:px-2.5 sm:py-2 rounded-full text-xs text-slate-300 transition-colors border border-slate-600 pointer-events-auto active:scale-95 shadow-[0_0_10px_rgba(234,179,8,0.1)]" aria-label="保護者の方へ - 開く" aria-haspopup="dialog" aria-expanded="false">
+                <span class="material-symbols-rounded text-sm text-yellow-500">family_restroom</span>
+                <span class="button-text">保護者の方へ</span>
+            </button>
+        </div>
+    </nav>
+
+    <!-- Main View -->
+    <main class="flex-grow relative w-full h-full overflow-hidden bg-black">
+        <!-- マリンスノー背景 -->
+        <canvas id="particle-canvas" class="absolute top-0 left-0 w-full h-full pointer-events-none"></canvas>
+
+        <!-- サーチライト（オーバーレイ） z-index: 30 -->
+        <div class="searchlight" id="searchlight" style="--darkness: 0; --x: 660px; --y: 17px;"></div>
+
+        <!-- ゾーンマーカー専用前面オーバーレイ (z-index: 35相当) -->
+        <div id="depth-markers-overlay" class="fixed inset-0 pointer-events-none modal-layer overflow-hidden"></div>
+
+        <!-- 深層海流・吹雪時のホワイトアウト用モヤ (z-index: 35相当) -->
+        <div id="fog-overlay" class="fixed inset-0 pointer-events-none modal-layer bg-white opacity-0 transition-opacity duration-1000"></div>
+
+        <!-- ⚠️高水圧警告用の赤いパルスオーバーレイ（Hadolゾーン以深で活性化） ⚠️ -->
+        <div id="pressure-alert-overlay" class="fixed inset-0 pointer-events-none z-45 bg-red-600/20 opacity-0 transition-opacity duration-1000"></div>
+
+        <!-- HUD (Head Up Display) -->
+        <div id="hud-container" class="fixed top-20 right-4 md:top-24 md:right-6 hud-layer pointer-events-none select-none transition-all duration-300">
+            <div id="hud-panel" class="bg-black/85 backdrop-blur-md rounded-2xl p-4 md:p-5 border border-white/10 text-right shadow-2xl pointer-events-auto relative w-48 transition-all duration-300">
+                <!-- 最小化時に表示されるミニ水深メーター -->
+                <div id="hud-mini-depth" class="hidden text-sm font-mono font-bold text-white items-center gap-1 justify-end pr-8">
+                    <span id="depth-val-mini">0</span>m
+                </div>
+
+                <!-- HUDの開閉トグルボタン -->
+                <button id="btn-hud-toggle" class="absolute top-3 left-3 w-6 h-6 rounded-full bg-slate-800/80 hover:bg-slate-700/80 border border-slate-600 flex items-center justify-center text-white transition-all shadow-md select-none" aria-label="メーターの開閉">
+                    <span id="hud-toggle-icon" class="material-symbols-rounded text-sm">expand_less</span>
+                </button>
+
+                <!-- HUDメインコンテンツ -->
+                <div id="hud-content" class="transition-all duration-300">
+                    <div class="text-[9px] md:text-[10px] text-ocean-surf tracking-widest mb-0.5 font-bold">CURRENT DEPTH</div>
+                    <div class="text-3xl md:text-5xl font-mono font-bold text-white flex justify-end items-baseline gap-0.5 filter drop-shadow-[0_0_10px_rgba(0,240,255,0.5)]">
+                        <span id="depth-val">0</span><span class="text-sm md:text-xl">m</span>
+                    </div>
+                    
+                    <div class="mt-3 md:mt-4 text-[9px] md:text-[10px] text-ocean-surf tracking-widest font-bold">WATER PRESSURE</div>
+                    <div class="w-full h-1.5 md:h-2 bg-slate-800 rounded-full mt-1 overflow-hidden">
+                        <div class="h-full bg-gradient-to-r from-green-400 via-yellow-400 to-red-600 transition-all duration-100" id="pressure-bar" style="width: 0%;"></div>
+                    </div>
+
+                    <div class="mt-3 md:mt-4 text-[9px] md:text-[10px] text-slate-400 tracking-widest">LIGHT STATUS</div>
+                    <div class="flex items-center justify-end gap-1.5 mt-0.5">
+                        <div class="w-2 h-2 rounded-full bg-gray-600 transition-colors" id="light-status-dot"></div>
+                        <span class="text-[10px] md:text-xs font-mono text-gray-500" id="light-status-text">OFF</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 画面外生物探知ソナーレーダー（スマホ専用） -->
+        <div id="radar-left-overlay" class="fixed top-16 left-0 bottom-0 w-8 pointer-events-none z-40 overflow-hidden sm:hidden"></div>
+        <div id="radar-right-overlay" class="fixed top-16 right-0 bottom-0 w-8 pointer-events-none z-40 overflow-hidden sm:hidden"></div>
+
+        <!-- Scrollable Container -->
+        <div class="overflow-y-auto overflow-x-hidden h-full scroll-smooth" id="scroll-container" tabindex="0" aria-label="深海探検エリア。上下にスクロールできます">
+            <div class="deep-sea-container" id="deep-sea-content">
+                
+                <!-- 0m: Surface Zone -->
+                <div class="absolute top-0 left-0 w-full pt-20 text-center field-layer" id="title-section">
+                    <h2 class="text-6xl font-rounded font-black text-white drop-shadow-lg tracking-wider">DEEP SEA<br><span class="text-4xl text-ocean-mid">EXPLORATION</span></h2>
+                    <div class="mt-8 inline-flex items-center gap-2 bg-white/20 backdrop-blur-md px-6 py-2 rounded-full border border-white/30 text-white font-bold animate-bounce shadow-[0_0_20px_rgba(255,255,255,0.3)]">
+                        <span class="material-symbols-outlined">arrow_downward</span>
+                        スクロールして潜行開始
+                        <span class="material-symbols-outlined">arrow_downward</span>
+                    </div>
+                <p class="ecology-guide">世界の海の生き物を、すむ深さの中の展示点へ。絵の大きさは縮尺ではありません。<br>昼夜に動くのは資料で確認できた例。縁の光といろライトは演出です。</p>
+                </div>
+
+                <!-- タイトルと水深0mの間のスクロール用スペーサー -->
+                <div class="h-[450px] w-full pointer-events-none" id="title-spacer"></div>
+
+                <!-- 動的生成コンテナ -->
+                <div id="creatures-container"></div>
+
+            </div>
+        </div>
+
+        <!-- Detail Modal -->
+        <div class="fixed inset-0 bg-black/90 modal-layer hidden flex items-start justify-center p-4 pt-8 backdrop-blur-md overflow-y-auto" id="sea-modal" role="dialog" aria-modal="true" aria-labelledby="sea-title">
+            <div class="deepsea-modal w-full max-w-2xl mb-8" id="sea-modal-content">
+                <div class="bg-gradient-to-r from-ocean-midnight to-ocean-abyss p-6 flex justify-between items-start relative overflow-hidden">
+                    <div class="absolute top-0 right-0 w-32 h-32 bg-white/5 rounded-full blur-2xl -mr-10 -mt-10"></div>
+                    <div class="field-layer">
+                        <h3 class="text-2xl md:text-4xl font-bold font-rounded text-white mb-1" id="sea-title">Title</h3>
+                        <p class="text-ocean-surf font-mono text-base tracking-wider" id="sea-eng">English Name</p>
+                    </div>
+                    <button class="text-white/70 hover:text-white hover:bg-white/10 rounded-full p-2 transition-colors field-layer shrink-0" id="btn-close-modal" aria-label="詳細を閉じる">
+                        <span class="material-symbols-outlined text-3xl">close</span>
+                    </button>
+                </div>
+                <div class="p-5 md:p-8 space-y-5">
+                    <!-- 📸 生物のしゃしん＆レンズきりかえ 📸 -->
+                    <div id="modal-creature-visual-container" class="relative bg-black/60 rounded-2xl border border-white/10 overflow-hidden flex flex-col items-center justify-center p-4 h-64 md:h-72 shadow-inner">
+                        <!-- イラスト画像 -->
+                        <div class="w-full h-full flex items-center justify-center overflow-hidden" id="modal-image-wrapper">
+                            <img id="modal-creature-img" class="max-h-full max-w-full object-contain transition-all duration-500 origin-center" alt="">
+                        </div>
+                        
+                        <!-- レンズ操作ボタン（クイズ正解数でアンロック） -->
+                        <div class="absolute bottom-3 right-3 flex items-center gap-2" id="lens-control-panel">
+                            <button id="btn-lens-normal" class="bg-blue-600 hover:bg-blue-500 text-white rounded-full px-3 py-1.5 text-xs flex items-center gap-1 font-bold shadow-lg transition-colors border border-blue-400/30">
+                                <span class="material-symbols-rounded text-sm">filter_center_focus</span> ふつう
+                            </button>
+                            <button id="btn-lens-macro" class="bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-full px-3 py-1.5 text-xs flex items-center gap-1 font-bold shadow-lg transition-all border border-slate-600/50">
+                                <span class="material-symbols-rounded text-sm">zoom_in</span> ズーム🔍
+                            </button>
+                        </div>
+                        
+                        <!-- ロック中表示 -->
+                        <div id="lens-locked-msg" class="absolute bottom-3 right-3 bg-black/80 backdrop-blur-sm border border-slate-700 rounded-full px-3 py-1.5 text-[10px] font-bold text-slate-400 flex items-center gap-1">
+                            <span class="material-symbols-rounded text-xs text-slate-500">lock</span> クイズに2もん こたえてズームアンロック
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-4">
+                        <div class="stat-badge">
+                            <span class="material-symbols-outlined text-ocean-surf mb-2">vertical_align_bottom</span>
+                            <span class="text-xs text-slate-400 font-bold tracking-wider mb-1 uppercase">Habitat Depth</span>
+                            <span class="text-xl md:text-2xl font-mono font-bold text-white" id="sea-depth">0m</span>
+                        </div>
+                        <div class="stat-badge">
+                            <span class="material-symbols-outlined text-ocean-surf mb-2">straighten</span>
+                            <span class="text-xs text-slate-400 font-bold tracking-wider mb-1 uppercase">Size</span>
+                            <span class="text-xl md:text-2xl font-mono font-bold text-white" id="sea-size">0m</span>
+                        </div>
+                    </div>
+
+                    <!-- ❓ クイズコーナー ❓ -->
+                    <div id="quiz-container" class="bg-indigo-950/40 border-2 border-indigo-500/30 rounded-2xl p-5 space-y-3 hidden shadow-lg">
+                        <h4 class="text-indigo-300 font-bold flex items-center gap-2 border-b border-indigo-500/20 pb-2 text-sm tracking-wider">
+                            <span class="material-symbols-rounded text-indigo-400 text-base">help</span> クイズにちょうせん！ (ちゅうさポイントをゲットしよう)
+                        </h4>
+                        <p class="text-base text-white font-bold leading-relaxed" id="quiz-question">問題文</p>
+                        
+                        <!-- 3択のボタン -->
+                        <div class="grid grid-cols-1 gap-2.5 mt-2" id="quiz-options">
+                            <button class="quiz-opt-btn w-full text-left bg-slate-800/80 hover:bg-slate-700/80 text-slate-200 border border-slate-700 rounded-xl px-4 py-2.5 text-sm transition-all flex items-center gap-2" data-index="0">
+                                <span class="w-5 h-5 rounded-full bg-slate-700 text-xs font-bold flex items-center justify-center text-slate-300">1</span>
+                                <span class="option-text">選択肢1</span>
+                            </button>
+                            <button class="quiz-opt-btn w-full text-left bg-slate-800/80 hover:bg-slate-700/80 text-slate-200 border border-slate-700 rounded-xl px-4 py-2.5 text-sm transition-all flex items-center gap-2" data-index="1">
+                                <span class="w-5 h-5 rounded-full bg-slate-700 text-xs font-bold flex items-center justify-center text-slate-300">2</span>
+                                <span class="option-text">選択肢2</span>
+                            </button>
+                            <button class="quiz-opt-btn w-full text-left bg-slate-800/80 hover:bg-slate-700/80 text-slate-200 border border-slate-700 rounded-xl px-4 py-2.5 text-sm transition-all flex items-center gap-2" data-index="2">
+                                <span class="w-5 h-5 rounded-full bg-slate-700 text-xs font-bold flex items-center justify-center text-slate-300">3</span>
+                                <span class="option-text">選択肢3</span>
+                            </button>
+                        </div>
+                        
+                        <!-- 正誤判定と解説 -->
+                        <div id="quiz-feedback" class="hidden p-4 rounded-xl text-sm font-bold border transition-all duration-300">
+                            フィードバックテキスト
+                        </div>
+                    </div>
+
+                    <div class="space-y-3" id="sea-desc-container">
+                        <h4 class="text-ocean-surf font-bold flex items-center gap-2 border-b border-white/10 pb-2">
+                            <span class="material-symbols-outlined">description</span> 生態データ
+                        </h4>
+                        <p class="text-base text-slate-300 leading-relaxed font-medium" id="sea-desc">Description text goes here.</p>
+                    </div>
+
+                    <!-- 🔍 ミクロな豆知識（マクロ表示の時だけ表示） 🔍 -->
+                    <div class="space-y-3 hidden" id="sea-macro-container">
+                        <h4 class="text-emerald-400 font-bold flex items-center gap-2 border-b border-emerald-500/20 pb-2">
+                            <span class="material-symbols-rounded text-emerald-400">biotech</span> ミクロなまめちしき
+                        </h4>
+                        <p class="text-base text-emerald-100 leading-relaxed font-medium" id="sea-macro-desc">Microscopic description goes here.</p>
+                    </div>
+
+                    <div class="note-panel">
+                        <div class="bg-yellow-500/20 p-2 rounded-full shrink-0">
+                            <span class="material-symbols-outlined text-yellow-400 text-2xl">lightbulb</span>
+                        </div>
+                        <div>
+                            <h4 class="text-yellow-400 font-bold text-sm mb-1 uppercase tracking-wide">PikaLab Note</h4>
+                            <p class="text-slate-200 text-sm leading-relaxed" id="sea-fact">Fun fact text goes here.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Album Modal -->
+        <div class="fixed inset-0 bg-black/90 modal-layer hidden flex items-center justify-center p-4 backdrop-blur-md" id="album-modal" role="dialog" aria-modal="true" aria-label="調査アルバム">
+            <div class="album-modal-container">
+                <div class="flex justify-between items-center mb-6">
+                    <h3 class="text-2xl font-bold font-rounded text-white flex items-center gap-2">
+                        <span class="material-symbols-rounded text-indigo-400">photo_library</span> 調査アルバム
+                        <span class="text-sm font-mono text-indigo-300 ml-2" id="album-progress">0/16 完了</span>
+                    </h3>
+                    <div class="flex-grow max-w-md ml-4 mr-8 hidden md:block">
+                        <div class="w-full h-2 bg-indigo-950 rounded-full overflow-hidden border border-indigo-900">
+                            <div id="album-progress-bar" class="h-full bg-gradient-to-r from-indigo-500 to-blue-400 transition-all duration-500" style="width: 0%"></div>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-4">
+                        <button class="text-xs text-red-400 hover:text-red-300 hover:bg-red-500/10 px-3 py-1 rounded-full transition-colors border border-red-500/30" id="btn-reset-album" aria-label="データ初期化">
+                            データ初期化
+                        </button>
+                        <button class="text-white/70 hover:text-white bg-white/10 hover:bg-white/20 rounded-full p-2 transition-colors" id="btn-close-album" aria-label="アルバムを閉じる">
+                            <span class="material-symbols-outlined text-xl">close</span>
+                        </button>
+                    </div>
+                </div>
+                <!-- グリッドコンテナ -->
+                <div class="overflow-y-auto pr-2 grid grid-cols-2 md:grid-cols-4 lg:grid-cols-4 gap-4" id="album-grid">
+                    <!-- JSで動的にアイテムが生成される -->
+                </div>
+            </div>
+        </div>
+        <!-- Surface Button -->
+        <button id="btn-surface" class="fixed bottom-6 right-6 bg-blue-600/80 hover:bg-blue-500 text-white p-4 rounded-full shadow-[0_0_20px_rgba(37,99,235,0.5)] backdrop-blur-md transition-all duration-300 translate-y-24 opacity-0 flex flex-col items-center justify-center border border-blue-400/50 group z-50">
+            <span class="material-symbols-outlined text-3xl group-hover:-translate-y-1 transition-transform">keyboard_double_arrow_up</span>
+            <span class="text-[10px] font-bold tracking-widest mt-1">SURFACE</span>
+        </button>
+
+    <!-- 紙吹雪用キャンバス -->
+    <canvas id="confetti-canvas" class="fixed inset-0 pointer-events-none z-[100]"></canvas>
+
+    <!-- コンプリート認定証モーダル -->
+    <div id="completion-modal" role="dialog" aria-modal="true" aria-label="深海探査マスター認定証" class="fixed inset-0 bg-black/80 backdrop-blur-sm modal-layer hidden flex items-center justify-center p-4">
+        <div id="completion-modal-content" class="bg-gradient-to-br from-yellow-100 to-yellow-300 rounded-3xl p-6 md:p-10 w-full max-w-lg border-4 border-yellow-500 shadow-[0_0_50px_rgba(255,215,0,0.5)] transform scale-95 transition-all text-center relative overflow-hidden">
+            <div class="absolute -top-10 -right-10 w-32 h-32 bg-yellow-400 opacity-20 rounded-full blur-xl"></div>
+            <div class="absolute -bottom-10 -left-10 w-40 h-40 bg-orange-400 opacity-20 rounded-full blur-xl"></div>
+            
+            <div class="text-4xl md:text-5xl mb-4 text-yellow-600 drop-shadow-sm">👑</div>
+            <h2 class="text-2xl md:text-3xl font-black text-yellow-800 mb-2 font-pop tracking-widest border-b-2 border-yellow-600/30 pb-2 inline-block">認定証</h2>
+            <h3 class="text-xl md:text-2xl font-bold text-yellow-700 mb-6">深海探査マスター</h3>
+            
+            <p class="text-sm md:text-base text-yellow-900 mb-6 font-bold leading-relaxed">
+                すべての深海生物を発見し、<br>
+                見事に図鑑を完成させたことを<br>
+                ここに証明します！
+            </p>
+            
+            <div class="text-5xl font-black text-yellow-600 mb-8 filter drop-shadow-md">
+                100% CLEAR!
+            </div>
+            
+            <button id="btn-close-completion" class="px-8 py-3 bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-400 hover:to-orange-400 text-white font-bold rounded-full shadow-lg hover:shadow-xl transition-all active:scale-95 text-lg border-2 border-yellow-200">
+                やったー！
+            </button>
+        </div>
+    </div>
+
+    <!-- トースト通知コンテナ -->
+    <div id="toast-container" class="fixed top-24 left-1/2 -translate-x-1/2 z-[9999] flex flex-col gap-2 pointer-events-none w-full max-w-xs px-4"></div>
+
+    <!-- Scripts -->
+    <script type="module" src="js/app.ts"></script>
+    <script>
+        // レースコンディションを防ぐため、htmlへのクラス付与とCSS注入は即時実行
+        const urlParams = new URLSearchParams(window.location.search);
+        const forceMobile = urlParams.get('force_mobile');
+        if (forceMobile === 'true') {
+            document.documentElement.classList.add('force-mobile');
+            
+            // 自動検証用のモックスタイルシートを動的に作成・注入
+            const styleEl = document.createElement('style');
+            styleEl.textContent = `
+                .force-mobile #scroll-container {
+                        width: 360px !important;
+                        max-width: 360px !important;
+                        margin: 0;
+                        overflow-x: auto !important;
+                        scroll-behavior: auto !important;
+                        -webkit-overflow-scrolling: touch;
+                    }
+                    .force-mobile #scroll-container::-webkit-scrollbar {
+                        display: none !important;
+                    }
+                    .force-mobile .deep-sea-container {
+                        width: 800px !important;
+                    }
+                    .force-mobile #title-section {
+                        width: 800px !important;
+                        left: 0 !important;
+                    }
+                    .force-mobile .creature-circle-inner,
+                    .force-mobile .creature-circle-inner img {
+                        width: 68px !important;
+                        height: 68px !important;
+                        max-width: 68px !important;
+                        max-height: 68px !important;
+                    }
+                    .force-mobile .creature-circle-inner img {
+                        border-width: 3px !important;
+                    }
+                    .force-mobile .creature-label {
+                        font-size: 10px !important;
+                        white-space: nowrap !important;
+                        max-width: 90px !important;
+                        overflow: hidden !important;
+                        text-overflow: ellipsis !important;
+                        opacity: 1 !important;
+                    }
+                    .force-mobile .battle-container {
+                        max-width: 800px !important;
+                        width: 800px !important;
+                        height: 240px !important;
+                        left: 0 !important;
+                        transform: none !important;
+                    }
+                    .force-mobile .battle-whale .creature-circle-inner,
+                    .force-mobile .battle-squid .creature-circle-inner,
+                    .force-mobile .battle-whale img,
+                    .force-mobile .battle-squid img {
+                        width: 110px !important;
+                        height: 110px !important;
+                        max-width: 110px !important;
+                        max-height: 110px !important;
+                    }
+                    .force-mobile .battle-whale {
+                        left: 10% !important;
+                        top: 10px !important;
+                    }
+                    .force-mobile .battle-squid {
+                        right: 10% !important;
+                        bottom: 10px !important;
+                    }
+                    .force-mobile .battle-versus {
+                        display: none !important;
+                    }
+                    .force-mobile .vent-container {
+                        width: 800px !important;
+                    }
+                    .force-mobile .vent-inner img.vent-image {
+                        width: 260px !important;
+                        height: 260px !important;
+                    }
+                    .force-mobile .vent-glow-red {
+                        width: 400px !important;
+                        height: 400px !important;
+                    }
+                    .force-mobile .vent-glow-yellow {
+                        width: 200px !important;
+                        height: 280px !important;
+                    }
+                    .force-mobile .radar-indicator {
+                        position: absolute;
+                        width: 32px;
+                        height: 32px;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        z-index: 50;
+                        animation: radar-float 1.5s ease-in-out infinite alternate;
+                        transition: top 0.2s ease-out, opacity 0.2s ease;
+                        opacity: 0;
+                    }
+                    .force-mobile .radar-indicator.active {
+                        opacity: 1;
+                    }
+                    .force-mobile .radar-left-indicator {
+                        left: 4px;
+                    }
+                    .force-mobile .radar-right-indicator {
+                        right: 4px;
+                    }
+                    .force-mobile .radar-arrow {
+                        color: #00f0ff;
+                        font-size: 18px;
+                        font-weight: bold;
+                        text-shadow: 0 0 10px rgba(0, 240, 255, 0.9);
+                    }
+                    .force-mobile .radar-wave {
+                        position: absolute;
+                        width: 24px;
+                        height: 24px;
+                        border: 2px solid rgba(0, 240, 255, 0.7);
+                        border-radius: 9999px;
+                        animation: radar-ping 1.5s cubic-bezier(0, 0, 0.2, 1) infinite;
+                        box-shadow: 0 0 10px rgba(0, 240, 255, 0.5);
+                    }
+                    .force-mobile main {
+                        width: 360px !important;
+                        max-width: 360px !important;
+                        margin: 0;
+                        position: relative;
+                    }
+                    .force-mobile #radar-left-overlay,
+                    .force-mobile #radar-right-overlay {
+                        display: block !important;
+                        position: absolute !important;
+                        top: 4rem !important;
+                        bottom: 0 !important;
+                    }
+                    .force-mobile nav {
+                        padding-left: 0.4rem !important;
+                        padding-right: 0.4rem !important;
+                        width: 360px !important;
+                        max-width: 360px !important;
+                        margin: 0;
+                    }
+                    .force-mobile nav button {
+                        padding-left: 0.4rem !important;
+                        padding-right: 0.4rem !important;
+                        font-size: 0.7rem !important;
+                    }
+                    .force-mobile .album-badge {
+                        font-size: 8px !important;
+                        padding: 1px 3px !important;
+                        margin-left: 2px !important;
+                    }
+                    .force-mobile .mobile-hide {
+                        display: none !important;
+                    }
+                    .force-mobile .button-text {
+                        display: none !important;
+                    }
+                    .force-mobile h2.text-6xl {
+                        font-size: 2.00rem !important;
+                    }
+                    .force-mobile h2.text-6xl span.text-4xl {
+                        font-size: 1.35rem !important;
+                    }
+                    .force-mobile .deepsea-modal {
+                        max-width: 95vw !important;
+                        margin-left: auto;
+                        margin-right: auto;
+                    }
+                    .force-mobile #modal-creature-visual-container {
+                        height: 12.5rem !important;
+                        isolation: isolate !important;
+                        transform: translateZ(0) !important;
+                        backface-visibility: hidden !important;
+                    }
+                    .force-mobile .deepsea-modal .p-5 {
+                        padding: 1rem !important;
+                    }
+                    .force-mobile #sea-scale-container {
+                        height: 6rem !important;
+                    }
+                    .force-mobile .album-modal-container {
+                        max-width: 95vw !important;
+                        max-height: 85vh !important;
+                        padding: 1rem !important;
+                        display: flex !important;
+                        flex-direction: column !important;
+                    }
+                    .force-mobile #album-grid {
+                        gap: 0.5rem !important;
+                        flex-grow: 1 !important;
+                        overflow-y: auto !important;
+                        max-height: calc(85vh - 120px) !important;
+                    }
+                    .force-mobile #album-grid > div {
+                        padding: 0.5rem !important;
+                    }
+                    .force-mobile .quiz-opt-btn {
+                        padding: 12px 16px !important;
+                        min-height: 48px !important;
+                    }
+                    .force-mobile .creature-glow-point,
+                    .force-mobile .vent-glow-red,
+                    .force-mobile .vent-glow-yellow {
+                        z-index: 31 !important;
+                    }
+                    .force-mobile .z-45 {
+                        z-index: 45 !important;
+                    }
+                    .force-mobile .pressure-danger-active {
+                        opacity: 1 !important;
+                        animation: alert-flash 1.5s infinite alternate ease-in-out !important;
+                    }
+            `;
+            document.head.appendChild(styleEl);
+        }
+
+        window.addEventListener('load', () => {
+            if (forceMobile === 'true') {
+                document.body.classList.add('force-mobile');
+            }
+
+            const scrollY = urlParams.get('scroll');
+            if (scrollY) {
+                setTimeout(() => {
+                    const container = document.getElementById('scroll-container');
+                    if (container) {
+                        // スムーズスクロールを一時的に無効化して即時反映させる
+                        container.style.scrollBehavior = 'auto';
+                        container.scrollTop = parseInt(scrollY, 10);
+                        container.scrollTo({ top: parseInt(scrollY, 10), behavior: 'instant' });
+                        container.dispatchEvent(new Event('scroll'));
+                        
+                        // 各種サイズを出力
+                        const rect = container.getBoundingClientRect();
+                        const scrollDbg = document.createElement('div');
+                        scrollDbg.id = 'scroll-debug-box';
+                        scrollDbg.style.display = 'none';
+                        scrollDbg.textContent = `ACTUAL_SCROLL_TOP: ${container.scrollTop}, TARGET: ${scrollY}, scrollHeight: ${container.scrollHeight}, clientHeight: ${container.clientHeight}, rectWidth: ${rect.width}, rectHeight: ${rect.height}`;
+                        document.body.appendChild(scrollDbg);
+                    }
+                }, 3000);
+            }
+        });
+    </script>
+
+    <!-- Parents Modal -->
+<dialog id="parents-modal"
+    class="p-0 rounded-3xl shadow-2xl open:animate-fade-in w-full max-w-lg m-auto overflow-hidden border-0"
+    aria-labelledby="parents-modal-title" style="display:none;">
+    <div class="bg-white p-6 md:p-8 max-h-[90vh] overflow-y-auto relative text-left">
+        <button type="button" data-action="parents-modal-close" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600 focus:outline-none" aria-label="閉じる">
+            <span class="material-symbols-rounded">close</span>
+        </button>
+        <div class="mb-6 border-b-2 border-indigo-100 pb-4">
+            <h2 id="parents-modal-title"
+                class="text-lg md:text-xl font-black text-slate-800 flex items-center gap-2">
+                <span class="material-symbols-rounded text-indigo-500">family_restroom</span> 保護者の方へ
+            </h2>
+            <p class="text-xs text-slate-400 font-bold mt-1">For Parents &amp; Guardians</p>
+        </div>
+
+        <div class="space-y-6 text-sm text-slate-600 leading-relaxed font-bold">
+            <!-- ウェルカムメッセージカード -->
+            <div class="bg-gradient-to-r from-indigo-50 to-purple-50 p-5 rounded-2xl border border-indigo-100 text-center">
+                <p class="mb-2 text-indigo-800 text-base">
+                    <span class="material-symbols-rounded text-xl align-bottom mr-1 text-pink-400">favorite</span>
+                    当サイト「PikaLab」に<br>ご訪問いただき、誠にありがとうございます。
+                </p>
+                <p class="text-xs text-indigo-600">
+                            大切なお子様と一緒にPikaLabを訪れていただけたこと、<br>制作者のかたかたより、心から感謝申し上げます。
+                </p>
+            </div>
+
+            <!-- 1. ねらい -->
+            <div>
+                <h3 class="text-indigo-600 font-black mb-2 flex items-center gap-2">
+                    <span class="material-symbols-rounded text-base">school</span> このアプリのねらい
+                </h3>
+                <p>「深海ラボ」は、水深を下げながら深度ごとの環境や生き物を見つけ、図鑑で特徴を確かめられる体験型コンテンツです。ソナー・ライト・レーダーなどを操作しながら、<span class="bg-indigo-100 text-indigo-700 px-1 rounded">深さによる環境と生物の違い</span>を見比べられます。</p>
+            </div>
+
+            <!-- 2. おねがい -->
+            <div>
+                <h3 class="text-pink-500 font-black mb-2 flex items-center gap-2">
+                    <span class="material-symbols-rounded text-base">favorite</span> 保護者様へのおねがい
+                </h3>
+                <p>深海生物の見た目に驚いたり怖がったりしたときは、<span class="bg-pink-100 text-pink-700 px-1 rounded">「どうしてこの形なんだろう？」</span>と、形や暮らす深さを一緒に見比べてみてください。</p>
+            </div>
+
+            <!-- 3. 活用方法 -->
+            <div>
+                <h3 class="text-green-600 font-black mb-2 flex items-center gap-2">
+                    <span class="material-symbols-rounded text-base">emoji_objects</span> おうちでの活用方法
+                </h3>
+                <p>図鑑や水族館の深海展示と見比べて、「アプリで見た生き物と何が同じ？」「どの深さにいる？」と確かめる使い方もできます。</p>
+            </div>
+
+            <!-- 4. 健康への配慮 -->
+            <div>
+                <h3 class="text-orange-500 font-black mb-2 flex items-center gap-2">
+                    <span class="material-symbols-rounded text-base">timer</span> 健康への配慮（休憩の推奨）
+                </h3>
+                <p>大切なお子様の健康のために、<span class="bg-orange-100 text-orange-700 px-1 rounded">30分に1回程度の休憩</span>を推奨しています。暗いビジュアルの画面は目が疲れやすいため、適度に休憩を挟むようお声がけください。各ツールへ入力した内容や端末内の記録はブラウザ内で処理・保存し、運営者のサーバー、広告サービス、アクセス解析サービスへ送信しません。ページ表示時にはWebフォント等の外部配信サービスへの通常の通信が発生する場合があります。</p>
+            </div>
+        </div>
+        <div class="mt-8 text-center">
+            <button type="button" data-action="parents-modal-close"
+                class="w-full bg-indigo-500 text-white px-8 py-3 rounded-xl font-black hover:bg-indigo-600 transition shadow-lg shadow-indigo-200">閉じる</button>
+        </div>
+    </div>
+</dialog>
+
+    <style>
+#parents-modal::backdrop {
+    background: rgba(15, 23, 42, 0.6);
+    backdrop-filter: blur(4px);
+}
+#parents-modal[open] {
+    display: block !important;
+    animation: parentsModalFadeIn 0.3s ease-out forwards;
+}
+@keyframes parentsModalFadeIn {
+    from { opacity: 0; transform: scale(0.95); }
+    to { opacity: 1; transform: scale(1); }
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const openBtns = document.querySelectorAll('[data-action="parents-modal-open"]');
+    const closeBtns = document.querySelectorAll('[data-action="parents-modal-close"]');
+    const dialog = document.getElementById('parents-modal');
+
+    if (dialog) {
+        openBtns.forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.preventDefault();
+                if (typeof dialog.showModal === 'function') { dialog.showModal(); }
+                else { dialog.setAttribute('open', ''); }
+                btn.setAttribute('aria-expanded', 'true');
+            });
+        });
+        closeBtns.forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.preventDefault();
+                if (typeof dialog.close === 'function') { dialog.close(); }
+                else { dialog.removeAttribute('open'); }
+                const openBtn = document.querySelector('[data-action="parents-modal-open"]');
+                if (openBtn) { openBtn.setAttribute('aria-expanded', 'false'); openBtn.focus(); }
+            });
+        });
+        dialog.addEventListener('click', (e) => {
+            if (e.target === dialog) {
+                if (typeof dialog.close === 'function') { dialog.close(); }
+                else { dialog.removeAttribute('open'); }
+                const openBtn = document.querySelector('[data-action="parents-modal-open"]');
+                if (openBtn) openBtn.setAttribute('aria-expanded', 'false');
+            }
+        });
+    }
+});
+</script>
+</body>
+</html>
+

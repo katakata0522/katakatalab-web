@@ -1,0 +1,155 @@
+{
+  "version": 1,
+  "measurement_id": "G-FYFPS7L9X9",
+  "privacy": {
+    "google_signals": false,
+    "ad_personalization": false,
+    "raw_user_input": false,
+    "page_location_query_allowlist": [
+      "utm_*",
+      "gclid",
+      "dclid",
+      "wbraid",
+      "gbraid",
+      "shelf",
+      "type",
+      "lang"
+    ],
+    "forbidden_parameters": [
+      "search_term",
+      "query_text",
+      "input_value",
+      "email",
+      "phone",
+      "user_id"
+    ],
+    "page_referrer_policy": "internal: origin+path only; external: origin only; query and hash removed"
+  },
+  "events": {
+    "tool_start": {
+      "kind": "custom",
+      "params": [
+        "tool_id",
+        "interaction_type",
+        "content_group"
+      ],
+      "purpose": "ツールの実利用開始"
+    },
+    "tool_action": {
+      "kind": "custom",
+      "params": [
+        "tool_id",
+        "action_id",
+        "content_group"
+      ],
+      "purpose": "主要操作"
+    },
+    "select_content": {
+      "kind": "recommended",
+      "params": [
+        "content_type",
+        "content_id",
+        "selection_source",
+        "content_group"
+      ],
+      "purpose": "内部回遊"
+    },
+    "share": {
+      "kind": "recommended",
+      "params": [
+        "method",
+        "content_type",
+        "item_id",
+        "content_group"
+      ],
+      "purpose": "共有成功"
+    },
+    "site_search": {
+      "kind": "custom",
+      "params": [
+        "search_length",
+        "result_count",
+        "filter_id",
+        "content_group"
+      ],
+      "purpose": "検索本文を送らないサイト内検索品質"
+    },
+    "filter_select": {
+      "kind": "custom",
+      "params": [
+        "filter_id",
+        "content_group"
+      ],
+      "purpose": "棚選択"
+    },
+    "content_progress": {
+      "kind": "custom",
+      "params": [
+        "progress_percent",
+        "content_group"
+      ],
+      "purpose": "記事50%到達"
+    }
+  },
+  "custom_definitions_recommended": [
+    {
+      "parameter": "tool_id",
+      "scope": "event",
+      "type": "dimension",
+      "cardinality": "low"
+    },
+    {
+      "parameter": "interaction_type",
+      "scope": "event",
+      "type": "dimension",
+      "cardinality": "low"
+    },
+    {
+      "parameter": "action_id",
+      "scope": "event",
+      "type": "dimension",
+      "cardinality": "low"
+    },
+    {
+      "parameter": "selection_source",
+      "scope": "event",
+      "type": "dimension",
+      "cardinality": "low"
+    },
+    {
+      "parameter": "filter_id",
+      "scope": "event",
+      "type": "dimension",
+      "cardinality": "low"
+    },
+    {
+      "parameter": "search_length",
+      "scope": "event",
+      "type": "metric",
+      "cardinality": "numeric"
+    },
+    {
+      "parameter": "result_count",
+      "scope": "event",
+      "type": "metric",
+      "cardinality": "numeric"
+    },
+    {
+      "parameter": "progress_percent",
+      "scope": "event",
+      "type": "metric",
+      "cardinality": "fixed"
+    }
+  ],
+  "do_not_register_as_custom_dimension": [
+    "page_location",
+    "page_path",
+    "page_title",
+    "content_group",
+    "search text",
+    "raw URL",
+    "raw user input",
+    "content_id",
+    "item_id"
+  ]
+}

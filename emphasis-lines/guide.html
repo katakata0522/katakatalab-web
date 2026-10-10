@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex, follow">
+    <title>使い方とQ&A | 強調線メーカー</title>
+    <meta name="description" content="強調線メーカーの使い方ガイド・特徴・よくある質問(FAQ)。YouTubeサムネイルや漫画に使える集中線・放射線を無料で作成できるツールです。">
+
+    <meta property="og:title" content="使い方とQ&A | 強調線メーカー">
+    <meta property="og:description" content="強調線メーカーの使い方・特徴・よくある質問をまとめたガイドページです。">
+    <meta property="og:type" content="article">
+    <meta property="og:url" content="https://katakatalab.com/emphasis-lines/guide.html">
+    <meta property="og:image" content="https://katakatalab.com/emphasis-lines/og-image.png">
+    <link rel="canonical" href="https://katakatalab.com/emphasis-lines/guide.html">
+    <link rel="icon"
+        href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💥</text></svg>">
+
+    <!-- Google Analytics (GA4) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-FYFPS7L9X9"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag() { dataLayer.push(arguments); }
+        gtag('js', new Date());
+        gtag('config', 'G-FYFPS7L9X9', { 'anonymize_ip': true });
+    </script>
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+JP:wght@400;500;700&display=swap"
+        rel="stylesheet">
+
+    <link href="css/tailwind.built.css?v=20260613-2" rel="stylesheet">
+    <link href="css/style.css?v=20260824-responsive" rel="stylesheet">
+    <link href="css/phosphor/regular/style.css?v=2.1.1" rel="stylesheet">
+    <link href="css/phosphor/bold/style.css?v=2.1.1" rel="stylesheet">
+    <link href="css/phosphor/fill/style.css?v=2.1.1" rel="stylesheet">
+
+    <!-- FAQ JSON-LD 構造化データ -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "FAQPage",
+        "mainEntity": [
+            {
+                "@type": "Question",
+                "name": "スマホでも使えますか？",
+                "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "はい、スマホ・タブレット・PCすべてに対応しています。PWA（ホーム画面に追加）にも対応しているので、アプリのように使えます。"
+                }
+            },
+            {
+                "@type": "Question",
+                "name": "商用利用・二次配布は可能ですか？",
+                "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "書き出した画像はYouTube・SNS・印刷などに使えます。ツール本体の再配布と、生成画像を素材集として再販売することはできません。"
+                }
+            },
+            {
+                "@type": "Question",
+                "name": "どんな画像形式で出力できますか？",
+                "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "PNGまたはSVG形式で出力できます。背景画像との合成モードと、透過背景の線素材のみモードの2種類から選べます。"
+                }
+            },
+            {
+                "@type": "Question",
+                "name": "集中線と放射線の違いは何ですか？",
+                "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "汎用・手書き・放射は、中心から外へ伸びる線の見た目の差です。斜線は一定方向の速度線です。中心へ向かう専用モードと外へ広がる専用モードの二系統ではありません。"
+                }
+            },
+            {
+                "@type": "Question",
+                "name": "SVGでも保存できますか？",
+                "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "はい、PNG保存に加えてSVG保存にも対応しています。SVG内には現在の線キャンバスが画像として埋め込まれるため、見た目を保ったまま保存できます。"
+                }
+            }
+        ]
+    }
+    </script>
+</head>
+
+<body class="bg-gray-900 text-gray-100 font-body">
+    <script>try{if(localStorage.getItem('theme')==='dark')document.body.classList.add('dark-mode');}catch(e){}</script>
+
+    <main id="landing">
+        <!-- パンくずリスト -->
+        <nav aria-label="breadcrumb" class="landing-breadcrumb">
+            <a href="https://katakatalab.com/">🏠 KatakataLab</a>
+            <span class="sep">/</span>
+            <a href="./">強調線メーカー</a>
+            <span class="sep">/</span>
+            <span class="current">使い方とQ&A</span>
+        </nav>
+
+        <!-- ヒーロー -->
+        <div class="landing-hero">
+            <div class="landing-hero-inner">
+                <span class="hero-emoji" role="img" aria-label="効果線">💥</span>
+                <h1>
+                    集中線・放射線を<br><span class="highlight">ブラウザだけ</span>で簡単作成
+                </h1>
+                <p class="hero-desc">
+                    YouTubeサムネイル、漫画、プレゼンに使える強調線を<br>
+                    ダウンロード不要・完全無料・商用利用OKで作れるツールです。
+                </p>
+                <p style="color: #9ca3af; font-size: 0.9rem; margin-top: 1rem;">作成者: かたかた / 更新日: 2026年6月13日</p>
+                <a href="./" class="landing-cta">
+                    <i class="ph-bold ph-pencil-slash"></i>
+                    ツールを開く →
+                </a>
+            </div>
+        </div>
+
+        <!-- 特徴リスト -->
+        <div class="landing-features">
+            <div class="landing-features-inner">
+                <h2>✨ 3つの特徴</h2>
+                <div class="landing-features-grid">
+                    <div class="landing-feature-card">
+                        <div class="feature-icon">🖌️</div>
+                        <h3>4タイプの線スタイル</h3>
+                        <p>汎用・手書き・放射・斜線の4種類。太さ・色・入り抜き・描画範囲まで細かく調整可能。</p>
+                    </div>
+                    <div class="landing-feature-card">
+                        <div class="feature-icon">🆓</div>
+                        <h3>完全無料＆商用OK</h3>
+                        <p>アカウント登録不要。生成した画像はYouTube・SNS・印刷物など商用利用も自由です。</p>
+                    </div>
+                    <div class="landing-feature-card">
+                        <div class="feature-icon">🔒</div>
+                        <h3>安心のブラウザ処理</h3>
+                        <p>画像はサーバーに送信されず、すべてブラウザ内で処理。プライバシーも安心です。</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- FAQ -->
+        <div class="landing-faq">
+            <div class="landing-faq-inner">
+                <h2>❓ よくある質問</h2>
+                <div>
+                    <details>
+                        <summary>
+                            スマホでも使えますか？
+                            <i class="ph ph-caret-down"></i>
+                        </summary>
+                        <p>はい、スマホ・タブレット・PCすべてに対応しています。PWA（ホーム画面に追加）にも対応しているので、アプリのように使えます。</p>
+                    </details>
+                    <details>
+                        <summary>
+                            商用利用・二次配布は可能ですか？
+                            <i class="ph ph-caret-down"></i>
+                        </summary>
+                        <p>書き出した画像はYouTube・SNS・印刷などに使えます。ツール本体の再配布と、生成画像を素材集として再販売することはできません。</p>
+                    </details>
+                    <details>
+                        <summary>
+                            どんな画像形式で出力できますか？
+                            <i class="ph ph-caret-down"></i>
+                        </summary>
+                        <p>PNGまたはSVG形式で出力できます。背景画像との合成モードと、透過背景の線素材のみモードの2種類から選べます。</p>
+                    </details>
+                    <details>
+                        <summary>
+                            集中線と放射線の違いは何ですか？
+                            <i class="ph ph-caret-down"></i>
+                        </summary>
+                        <p>汎用・手書き・放射は、中心から外へ伸びる線の見た目の差です。斜線は一定方向の速度線です。中心へ向かう専用モードと外へ広がる専用モードの二系統ではありません。キャンバスをクリックすると中心を動かせます。</p>
+                    </details>
+                    <details>
+                        <summary>
+                            SVGでも保存できますか？
+                            <i class="ph ph-caret-down"></i>
+                        </summary>
+                        <p>はい、PNG保存に加えてSVG保存にも対応しています。SVG内には現在の線キャンバスが画像として埋め込まれるため、見た目を保ったまま保存できます。</p>
+                    </details>
+                </div>
+
+                <div class="cta-wrap">
+                    <a href="./" class="landing-cta">
+                        <i class="ph-bold ph-pencil-slash"></i>
+                        ツールを開く →
+                    </a>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- 使い方チュートリアル -->
+    <section id="tutorial">
+        <div class="landing-features">
+            <div class="landing-features-inner">
+                <h2>📖 かんたん使い方ガイド</h2>
+                <div class="landing-features-grid" style="grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));">
+                    <div class="landing-feature-card">
+                        <div class="feature-icon" style="font-size: 2rem;">①</div>
+                        <h3>線タイプを選ぶ</h3>
+                        <p>「汎用」「手書き」「放射」「斜線」の4種類から選択。ワンクリックで切り替えできます。</p>
+                    </div>
+                    <div class="landing-feature-card">
+                        <div class="feature-icon" style="font-size: 2rem;">②</div>
+                        <h3>色と太さを調整</h3>
+                        <p>プリセットカラーからワンタップで変更。スライダーで太さ・本数・入り抜きなども微調整できます。</p>
+                    </div>
+                    <div class="landing-feature-card">
+                        <div class="feature-icon" style="font-size: 2rem;">③</div>
+                        <h3>画像を読み込む</h3>
+                        <p>JPEGやPNG画像をドラッグ＆ドロップ、またはクリックで選択。画像なしでも線素材だけ作れます。</p>
+                    </div>
+                    <div class="landing-feature-card">
+                        <div class="feature-icon" style="font-size: 2rem;">④</div>
+                        <h3>画像を保存</h3>
+                        <p>青い「PNG保存」ボタンまたは「SVG」ボタンで保存できます。Ctrl+SではPNG形式でダウンロードされます。</p>
+                    </div>
+                </div>
+
+                <div style="margin-top: 2rem;">
+                    <h3
+                        style="color: #e5e7eb; font-weight: bold; margin-bottom: 0.75rem; padding-left: 0.5rem; border-left: 4px solid #a855f7;">
+                        💡 上級テクニック</h3>
+                    <div style="display: grid; gap: 0.75rem; max-width: 700px; margin: 0 auto;">
+                        <div style="background: rgba(55, 65, 81, 0.5); border-radius: 0.5rem; padding: 1rem;">
+                            <strong style="color: #60a5fa;">中心点をドラッグ</strong>
+                            <p style="color: #9ca3af; font-size: 0.875rem; margin-top: 0.25rem;">
+                                キャンバス上でクリック＆ドラッグすると、集中線の中心を移動できます。被写体の顔や商品に集中線を合わせましょう。</p>
+                        </div>
+                        <div style="background: rgba(55, 65, 81, 0.5); border-radius: 0.5rem; padding: 1rem;">
+                            <strong style="color: #60a5fa;">描画範囲を制限</strong>
+                            <p style="color: #9ca3af; font-size: 0.875rem; margin-top: 0.25rem;">
+                                「詳細設定」の「描画範囲」スライダーで、線を360度全周ではなく一部だけに制限できます。方向と組み合わせて効果的な演出が可能。</p>
+                        </div>
+                        <div style="background: rgba(55, 65, 81, 0.5); border-radius: 0.5rem; padding: 1rem;">
+                            <strong style="color: #60a5fa;">線素材のみモード</strong>
+                            <p style="color: #9ca3af; font-size: 0.875rem; margin-top: 0.25rem;">
+                                「出力モード」を「線素材のみ」に切り替えると、背景が透明なPNGとして出力。必要に応じてSVG保存も使えます。</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="cta-wrap">
+                    <a href="./" class="landing-cta">
+                        <i class="ph-bold ph-pencil-slash"></i>
+                        さっそく使ってみる →
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 関連ツール紹介 -->
+    <section id="related-tools">
+        <div class="landing-features">
+            <div class="landing-features-inner">
+                <h2>🔗 合わせて使うと便利なツール</h2>
+                <p style="color: #9ca3af; text-align: center; margin-bottom: 1.5rem;">
+                    強調線メーカーで作った素材をさらに活かせる画像編集ツールを紹介します。</p>
+                <div class="landing-features-grid">
+                    <div class="landing-feature-card">
+                        <h3>🎨 Canva</h3>
+                        <p>テンプレートと組み合わせてプロ品質のサムネイルが作れます。無料でも十分使えます。</p>
+                        <a href="https://www.canva.com/" target="_blank" rel="noopener noreferrer"
+                            style="display: inline-block; margin-top: 0.5rem; color: #60a5fa; font-size: 0.875rem;">
+                            Canva を見る →
+                        </a>
+                    </div>
+                    <div class="landing-feature-card">
+                        <h3>🖼️ Photopea</h3>
+                        <p>PhotoshopライクなWeb版画像エディタ。透過PNGのレイヤー合成に利用できます。</p>
+                        <a href="https://www.photopea.com/" target="_blank" rel="noopener noreferrer"
+                            style="display: inline-block; margin-top: 0.5rem; color: #60a5fa; font-size: 0.875rem;">
+                            Photopea を見る →
+                        </a>
+                    </div>
+                    <div class="landing-feature-card">
+                        <h3>✂️ remove.bg</h3>
+                        <p>人物・商品の背景をAIで自動除去。切り抜いた画像に集中線を重ねるとインパクト大！</p>
+                        <a href="https://www.remove.bg/ja" target="_blank" rel="noopener noreferrer"
+                            style="display: inline-block; margin-top: 0.5rem; color: #60a5fa; font-size: 0.875rem;">
+                            remove.bg を見る →
+                        </a>
+                    </div>
+                </div>
+                <p style="color: #9ca3af; text-align: center; margin-top: 1.25rem; font-size: 0.85rem;">
+                    外部ツールの提供内容や料金、利用規約は変更される場合があります。利用時に各サービスの案内をご確認ください。
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer style="padding: 1.5rem 1rem; text-align: center; border-top: 1px solid #374151; background: #1f2937;">
+        <div
+            style="display: flex; align-items: center; justify-content: center; gap: 0.75rem; font-size: 0.85rem; color: #9ca3af;">
+            <span>© 2026 かたかた</span>
+            <span style="color: #4b5563;">|</span>
+            <a href="https://katakatalab.com/" target="_blank" rel="noopener"
+                style="color: #9ca3af; text-decoration: none;">KatakataLab</a>
+            <span style="color: #4b5563;">|</span>
+            <a href="https://katakatalab.com/terms.html" target="_blank" rel="noopener"
+                style="color: #9ca3af; text-decoration: none;">利用規約</a>
+            <span style="color: #4b5563;">|</span>
+            <a href="https://katakatalab.com/privacy.html" target="_blank" rel="noopener"
+                style="color: #9ca3af; text-decoration: none;">プライバシーポリシー</a>
+            <a href="https://katakatalab.com/contact.html" target="_blank" rel="noopener"
+                style="color: #9ca3af; text-decoration: none;">お問い合わせ</a>
+            <span style="color: #4b5563;">|</span>
+            <a href="https://note.com/cozy_snipe6552" target="_blank" rel="noopener"
+                style="color: #9ca3af; text-decoration: none;">note</a>
+        </div>
+    </footer>
+
+</body>
+
+</html>

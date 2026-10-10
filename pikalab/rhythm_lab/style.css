@@ -1,0 +1,413 @@
+@import "../style.css";
+
+/* ========================================
+   リズム・プログラミング Lab - Stylesheet
+   CSS変数によるデザイントークン管理
+   ======================================== */
+
+/* ========================================
+   CSS変数（デザイントークン）
+   ======================================== */
+:root {
+    /* カラーパレット */
+    --color-primary: #EC4899;
+    --color-primary-dark: #BE185D;
+    --color-primary-light: #FBCFE8;
+    
+    /* 背景色 */
+    --color-bg-base: #FDF2F8;
+    --color-bg-dots: #FBCFE8;
+    --color-bg-panel: rgba(255, 255, 255, 0.9);
+    --color-bg-panel-border: white;
+    
+    /* テキスト */
+    --color-text-primary: #1e293b;
+    --color-text-secondary: #64748b;
+    --color-text-muted: #94a3b8;
+    
+    /* スクロールバー */
+    --color-scrollbar-track: rgba(0, 0, 0, 0.05);
+    --color-scrollbar-thumb: #DB2777;
+    --color-scrollbar-thumb-hover: #BE185D;
+    
+    /* スペーシング */
+    --spacing-xs: 4px;
+    --spacing-sm: 8px;
+    --spacing-md: 16px;
+    --spacing-lg: 24px;
+    --spacing-xl: 32px;
+    
+    /* ボーダー半径 */
+    --radius-sm: 6px;
+    --radius-md: 12px;
+    --radius-lg: 24px;
+    --radius-full: 9999px;
+    
+    /* シャドウ */
+    --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    --shadow-lg: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+    
+    /* トランジション */
+    --transition-fast: 100ms;
+    --transition-normal: 200ms;
+    --transition-slow: 300ms;
+}
+
+/* ダークモード用変数 */
+.theme-night {
+    --color-bg-base: #0f172a;
+    --color-bg-dots: #1e293b;
+    --color-bg-panel: rgba(30, 41, 59, 0.9);
+    --color-bg-panel-border: #334155;
+    
+    --color-text-primary: #f1f5f9;
+    --color-text-secondary: #94a3b8;
+    --color-text-muted: #64748b;
+    
+    --color-scrollbar-track: rgba(255, 255, 255, 0.05);
+    --color-scrollbar-thumb: #EC4899;
+    --color-scrollbar-thumb-hover: #F472B6;
+}
+
+/* ========================================
+   ベーススタイル
+   ======================================== */
+body {
+    font-family: 'M PLUS Rounded 1c', sans-serif;
+    background-color: var(--color-bg-base);
+    background-image: radial-gradient(var(--color-bg-dots) 2px, transparent 2px);
+    background-size: var(--spacing-lg) var(--spacing-lg);
+    transition: background-color var(--transition-normal), color var(--transition-normal);
+}
+
+/* ========================================
+   プリセット表示
+   ======================================== */
+.preset-button {
+    position: relative;
+    min-height: 44px;
+}
+
+.preset-button[data-selected="true"] {
+    transform: translateY(-1px) scale(1.03);
+    box-shadow: 0 0 0 2px rgba(244, 114, 182, 0.35), 0 10px 20px rgba(15, 23, 42, 0.18);
+}
+
+.preset-button[data-selected="true"]::after {
+    content: "選択中";
+    position: absolute;
+    right: 8px;
+    top: -8px;
+    padding: 2px 6px;
+    border-radius: 9999px;
+    font-size: 10px;
+    line-height: 1;
+    font-weight: 900;
+    color: white;
+    background: linear-gradient(135deg, #ec4899, #db2777);
+    box-shadow: 0 4px 10px rgba(219, 39, 119, 0.35);
+}
+
+/* ========================================
+   ガラス風パネル
+   ======================================== */
+.glass-panel {
+    background: var(--color-bg-panel);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border: 2px solid var(--color-bg-panel-border);
+    box-shadow: var(--shadow-lg);
+    transition: background var(--transition-normal), border-color var(--transition-normal);
+}
+
+/* 横向きや低い画面でも共有URLと閉じるボタンへ到達できるようにする。 */
+#share-content {
+    max-height: calc(100vh - 2rem);
+    max-height: calc(100dvh - 2rem);
+    overflow-y: auto;
+    overscroll-behavior: contain;
+}
+
+/* ========================================
+   アニメーション
+   ======================================== */
+@keyframes bounce-sm {
+    0%,
+    100% {
+        transform: translateY(0);
+    }
+    50% {
+        transform: translateY(-5px);
+    }
+}
+
+@keyframes slide-in {
+    0% {
+        transform: translate(-50%, -20px);
+        opacity: 0;
+    }
+    100% {
+        transform: translate(-50%, 0);
+        opacity: 1;
+    }
+}
+
+.animate-bounce-sm {
+    animation: bounce-sm 2s infinite;
+}
+
+.animate-slide-in {
+    animation: slide-in var(--transition-slow) ease-out forwards;
+}
+
+/* prefers-reduced-motion 対応 */
+@media (prefers-reduced-motion: reduce) {
+    .animate-bounce-sm,
+    .animate-slide-in {
+        animation: none;
+    }
+
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+    }
+}
+
+/* ========================================
+   カスタムスクロールバー
+   ======================================== */
+
+/* Webkit系ブラウザ (Chrome, Safari, Edge) */
+::-webkit-scrollbar {
+    height: 12px;
+    width: 12px;
+}
+
+::-webkit-scrollbar-track {
+    background: var(--color-scrollbar-track);
+    border-radius: var(--radius-sm);
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--color-scrollbar-thumb);
+    border-radius: var(--radius-sm);
+    border: 2px solid transparent;
+    background-clip: content-box;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--color-scrollbar-thumb-hover);
+    background-clip: content-box;
+}
+
+/* Firefox対応 */
+html,
+body {
+    scrollbar-width: thin;
+    scrollbar-color: var(--color-scrollbar-thumb) var(--color-scrollbar-track);
+}
+
+/* ========================================
+   フォーカス表示の強化
+   ======================================== */
+
+/* グリッドセルのフォーカス表示 */
+button[data-type][data-index]:focus {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 2px;
+}
+
+button[data-type][data-index]:focus:not(:focus-visible) {
+    outline: none;
+}
+
+button[data-type][data-index]:focus-visible {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 2px;
+}
+
+#tempo-slider,
+#volume-slider {
+    min-height: 44px;
+}
+
+#tempo-input,
+#share-btn,
+#clear-beats-btn,
+#dark-mode-toggle,
+#help-btn,
+#preset-name,
+#save-preset-btn {
+    min-height: 44px;
+}
+
+[id^="instrument-"] {
+    min-height: 44px;
+    min-width: 44px;
+}
+
+[id^="clear-"] {
+    min-height: 44px;
+    min-width: 44px;
+}
+
+/* 拍ごとの視覚アクセントを加えて、4拍のまとまりを掴みやすくする */
+[data-beat-accent="primary"] {
+    position: relative;
+}
+
+button[data-type][data-index][data-beat-accent="primary"][aria-pressed="false"] {
+    background-color: rgba(51, 65, 85, 0.92);
+    border-color: rgba(148, 163, 184, 0.7);
+}
+
+button[data-type][data-index][data-beat-accent="secondary"][aria-pressed="false"] {
+    background-color: rgba(30, 41, 59, 0.92);
+    border-color: rgba(100, 116, 139, 0.72);
+}
+
+#step-indicators > [data-beat-accent="primary"] {
+    height: 0.75rem;
+    background-color: rgba(248, 250, 252, 0.28);
+}
+
+#step-indicators > [data-beat-accent="secondary"] {
+    height: 0.625rem;
+    background-color: rgba(148, 163, 184, 0.34);
+}
+
+/* 拍の背景色よりも、再生中ステップの白い表示を優先する。 */
+#step-indicators > .bg-white {
+    background-color: white;
+}
+
+/* アクティブセルの色をCSSで明示し、生成CSSの漏れに依存しない */
+button[data-type][data-index][aria-pressed="true"] {
+    border-width: 1px;
+}
+
+button[data-type][data-index][data-type="hihat"][aria-pressed="true"] {
+    background-color: #facc15;
+    border-color: #fde047;
+    box-shadow: 0 0 10px rgba(234, 179, 8, 0.75);
+}
+
+button[data-type][data-index][data-type="clap"][aria-pressed="true"] {
+    background-color: #22c55e;
+    border-color: #4ade80;
+    box-shadow: 0 0 10px rgba(34, 197, 94, 0.7);
+}
+
+button[data-type][data-index][data-type="snare"][aria-pressed="true"] {
+    background-color: #06b6d4;
+    border-color: #22d3ee;
+    box-shadow: 0 0 10px rgba(6, 182, 212, 0.75);
+}
+
+button[data-type][data-index][data-type="tom"][aria-pressed="true"] {
+    background-color: #a855f7;
+    border-color: #c084fc;
+    box-shadow: 0 0 10px rgba(168, 85, 247, 0.75);
+}
+
+button[data-type][data-index][data-type="kick"][aria-pressed="true"] {
+    background-color: #ec4899;
+    border-color: #f472b6;
+    box-shadow: 0 0 10px rgba(236, 72, 153, 0.75);
+}
+
+/* ========================================
+   ユーティリティクラス
+   ======================================== */
+
+/* スクリーンリーダー専用 */
+.sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border-width: 0;
+}
+
+/* WCAG AA: 淡色背景上の小さい補助文字とプリセット名を濃くする */
+header p.text-pink-500 {
+    color: #be185d !important;
+}
+
+#preset-rock {
+    color: #1d4ed8 !important;
+}
+
+#preset-hiphop {
+    color: #9a3412 !important;
+}
+
+#preset-latin {
+    color: #166534 !important;
+}
+
+.mt-4 > .text-slate-400 {
+    color: #cbd5e1 !important;
+}
+
+header .text-pink-500.material-symbols-rounded {
+    color: #be185d !important;
+}
+
+/* Material Symbolsの代替表示時もスマホヘッダーを押し広げない */
+header .material-symbols-rounded {
+    display: inline-block;
+    width: 1em;
+    max-width: 1em;
+    overflow: hidden;
+    line-height: 1;
+    flex: 0 0 auto;
+}
+
+/* アイコンの幅指定が非表示utilityを打ち消さないようにする。 */
+header .material-symbols-rounded.hidden {
+    display: none;
+}
+
+@media (max-width: 520px) {
+    header {
+        padding: 0.75rem !important;
+        gap: 0.5rem;
+    }
+
+    header > div {
+        min-width: 0;
+    }
+
+    header > div:first-child {
+        gap: 0.5rem !important;
+    }
+
+    header > div:last-child {
+        gap: 0.25rem !important;
+        flex-shrink: 0;
+    }
+
+    header h1 {
+        font-size: 1rem !important;
+        line-height: 1.2 !important;
+    }
+
+    header p {
+        display: none;
+    }
+
+    header button {
+        padding-left: 0.625rem !important;
+        padding-right: 0.625rem !important;
+    }
+}

@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex, follow">
+    <title>主要ページ一覧 | KatakataLab</title>
+    <meta name="description" content="KatakataLabの公開中の主要ツール、ガイド、運営情報をまとめたサイトマップです。">
+    <link rel="canonical" href="https://katakatalab.com/sitemap.html">
+
+    <!-- OGP -->
+    <meta property="og:title" content="サイトマップ | KatakataLab">
+    <meta property="og:description" content="KatakataLabの全ツール・ガイド・コンテンツ一覧。ご利用のツールをそこから探せます。">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://katakatalab.com/sitemap.html">
+    <meta property="og:image" content="https://katakatalab.com/ogp.png">
+    <meta property="og:site_name" content="KatakataLab">
+    <meta name="twitter:card" content="summary_large_image">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@400;500;700;800&family=Outfit:wght@400;600;700&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="style.css?v=20260824-responsive">
+    <link rel="icon" href="icon.svg" type="image/svg+xml">
+
+    <style>
+        .sitemap-page-main {
+            padding-top: 120px;
+            padding-bottom: 4rem;
+        }
+
+        .sitemap-container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 0 1.5rem;
+        }
+
+        .sitemap-intro,
+        .sitemap-policy {
+            background: var(--c-glass-bg);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid var(--c-glass-border);
+            box-shadow: var(--glass-shadow);
+            border-radius: var(--radius-lg);
+            padding: 2.2rem;
+            margin-bottom: 2.5rem;
+            line-height: 1.85;
+            color: var(--c-text-light);
+            text-align: left;
+        }
+
+        .sitemap-intro h2,
+        .sitemap-policy h2 {
+            margin-top: 0;
+            margin-bottom: 1rem;
+            font-size: 1.35rem;
+            color: var(--c-primary);
+            font-weight: 800;
+        }
+
+        .sitemap-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        .sitemap-section {
+            background: var(--c-glass-bg);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid var(--c-glass-border);
+            box-shadow: var(--glass-shadow);
+            border-radius: var(--radius-lg);
+            padding: 2rem;
+            display: flex;
+            flex-direction: column;
+            align-items: stretch;
+            transition: border-color 0.3s, box-shadow 0.3s;
+        }
+
+        .sitemap-section:hover {
+            border-color: var(--c-primary);
+            box-shadow: 0 8px 30px rgba(255, 118, 117, 0.12);
+        }
+
+        .sitemap-section h2 {
+            font-size: 1.25rem;
+            font-weight: 800;
+            border-left: 4px solid var(--c-primary);
+            padding-left: 0.75rem;
+            margin-bottom: 1.25rem;
+            color: var(--c-text);
+        }
+
+        .sitemap-links {
+            list-style: none;
+            padding-left: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 0.65rem;
+        }
+
+        .sitemap-links a {
+            text-decoration: none;
+            color: var(--c-text-light);
+            display: flex;
+            align-items: center;
+            padding: 0.65rem 0.85rem;
+            background: rgba(45, 52, 54, 0.03);
+            border-radius: var(--radius-md);
+            border: 1px solid rgba(45, 52, 54, 0.05);
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+            font-weight: 700;
+            font-size: 0.92rem;
+            line-height: 1.4;
+        }
+
+        body.dark-mode .sitemap-links a {
+            background: rgba(255, 255, 255, 0.03);
+            border-color: rgba(255, 255, 255, 0.05);
+        }
+
+        .sitemap-links a:hover {
+            color: var(--c-primary);
+            background: rgba(255, 118, 117, 0.08);
+            border-color: var(--c-primary);
+            transform: translateX(4px);
+        }
+
+        .sitemap-policy ul {
+            margin: 0;
+            padding-left: 1.2rem;
+            list-style: none;
+        }
+
+        .sitemap-policy li {
+            position: relative;
+            padding-left: 1.2rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .sitemap-policy li::before {
+            content: "•";
+            position: absolute;
+            left: 0;
+            color: var(--c-primary);
+            font-weight: 900;
+        }
+    </style>
+</head>
+
+<body>
+    <script>try{if(localStorage.getItem('theme')==='dark')document.body.classList.add('dark-mode');}catch(e){}</script>
+    <header class="header">
+        <div class="container header-container">
+            <a href="./" class="logo">
+                <span class="logo-icon">🧪</span>
+                <span class="logo-text">KatakataLab</span>
+            </a>
+
+            <nav class="nav">
+                <ul class="nav-list">
+                    <li><a href="./#home" class="nav-link">ホーム</a></li>
+                    <li><a href="./#projects" class="nav-link">作ったもの</a></li>
+                    <li><a href="./#about" class="nav-link">ラボについて</a></li>
+                    <li><a href="contact.html" class="nav-link">お問い合わせ</a></li>
+                </ul>
+            </nav>
+
+            <div class="header-actions">
+                <button type="button" id="theme-toggle" class="theme-btn" aria-label="テーマ切り替え">
+    <svg viewBox="0 0 24 24" class="svg-icon svg-moon" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/>
+    </svg>
+    <svg viewBox="0 0 24 24" class="svg-icon svg-sun" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="display: none;">
+        <circle cx="12" cy="12" r="4"/>
+        <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/>
+    </svg>
+</button>
+                <button type="button" class="menu-toggle" aria-label="メニューを開く">
+                    <span class="bar"></span><span class="bar"></span><span class="bar"></span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <div class="menu-overlay" id="menu-overlay" aria-hidden="true"></div>
+    <div class="mobile-menu drawer-menu" aria-hidden="true">
+        <button type="button" class="menu-close-btn" aria-label="メニューを閉じる">✕</button>
+        <div class="mobile-menu-inner">
+            <nav class="mobile-nav">
+                <ul class="mobile-nav-list">
+                    <li><a href="who-is-katakata.html" class="mobile-nav-link">🧑‍💻 かたかたって誰？</a></li>
+                    <li><a href="about-katakatalab.html" class="mobile-nav-link">🧪 KatakataLabについて</a></li>
+                    <li><a href="note-selection.html" class="mobile-nav-link">📝 かたかたのnote</a></li>
+                    <li><a href="contact.html" class="mobile-nav-link">✉️ お問い合わせ</a></li>
+                    <li class="mobile-nav-sep"></li>
+                </ul>
+            </nav>
+        </div>
+    </div>
+
+    <main class="sitemap-page-main">
+
+        <div class="sitemap-container">
+            <h1 class="hero-title" style="margin-bottom: 2.5rem; text-align: center; font-size: 2.8rem; font-family: var(--font-en); color: var(--c-primary);">Site Map</h1>
+
+            <section class="sitemap-intro" aria-labelledby="sitemap-intro-title">
+                <h2 id="sitemap-intro-title">このサイトマップの目的</h2>
+                <p>
+                    このページは、KatakataLab内の主要ページをカテゴリごとに整理し、必要な情報へ最短でアクセスできるようにした案内板です。公開中のWebツール、使い方ガイド、運営情報、ポリシー類を中心にまとめています。
+                </p>
+                <p style="margin-top: 0.8rem;">
+                    実験中のページや外部発信は前面に出しすぎず、まず使う人が迷わないことを優先しています。
+                </p>
+            </section>
+
+            <div class="sitemap-list">
+                
+                <div class="sitemap-section">
+                    <h2>Tools (主力ツール)</h2>
+                    <ul class="sitemap-links">
+                        <li><a href="https://katakatalab.com/qrcode/">🧾 QR Maker Lab</a></li>
+                        <li><a href="password-generator/">🔑 強力パスワード生成</a></li>
+                        <li><a href="aspect-ratio-calc/">📐 アスペクト比計算機</a></li>
+                        <li><a href="screenshot-crop/">✂️ スクショ端カット</a></li>
+                        <li><a href="px-rem-converter/">🔄 px / rem 変換</a></li>
+                        <li><a href="emphasis-lines/">💥 強調線メーカー</a></li>
+                        <li><a href="text-diff/">📝 テキスト差分チェック</a></li>
+                        <li><a href="ogp-simulator/">🖼️ OGPシミュレーター</a></li>
+                        <li><a href="discount-calc/">🏷️ 割引計算ツール</a></li>
+                        <li><a href="seireki/">📅 年齢・和暦・西暦 早見表</a></li>
+                        <li><a href="moyamoya-sorter/">🌿 モヤモヤ仕分け機</a></li>
+<li><a href="chiritsumo-calc/">☕ チリツモ逆算シミュレーター</a></li>
+<li><a href="font-lab/">🎨 Katakata Font-Lab (フォント研究室)</a></li>
+                        <li><a href="pikalab/code-studio/">⚡ KatakataLab CodeStudio</a></li>
+                    </ul>
+                    <p style="font-size:0.85rem;opacity:0.8;margin-top:0.75rem;">実験中のツール（Gravity TODO / キッズ・スマイル・ランド）は作品棚から利用できます。審査・検索の主対象からは外しています。</p>
+                </div>
+
+                <div class="sitemap-section">
+                    <h2>Guides (使い方ガイド)</h2>
+                    <ul class="sitemap-links">
+                        <li><a href="guides/it-basics/">📓 かたかたの制作ノート（IT用語16語）</a></li>
+                        <li><a href="guides/tool-selection-guide.html">🧭 用途から選ぶ実用ツール案内</a></li>
+                        <li><a href="guides/case-studies.html">🧪 ツール入力・出力の実例集</a></li>
+                        <li><a href="guides/aspect-ratio-guide.html">🎬 アスペクト比の使い方ガイド</a></li>
+                        <li><a href="guides/qr-guide.html">🧾 QRを配る前のガイド</a></li>
+                        <li><a href="guides/discount-guide.html">🏷️ 割引の読み方ガイド</a></li>
+                        <li><a href="guides/px-rem-guide.html">🧮 px / rem の使い方ガイド</a></li>
+                        <li><a href="guides/password-guide.html">🔐 強いパスワードの考え方ガイド</a></li>
+                        <li><a href="guides/sns-image-size-guide.html">🖼️ SNS画像サイズの考え方</a></li>
+                        <li><a href="guides/playpoint-guide.html">🎮 Playポイント計算機の使い方ガイド</a></li>
+                        <li><a href="font-lab/#section-articles">📖 日本語Webフォント超軽量化の教科書</a></li>
+                        <li><a href="guides/codestudio-guide.html">📖 CodeStudio 使い方ガイド</a></li>
+                    </ul>
+                </div>
+
+                <div class="sitemap-section">
+                    <h2>English</h2>
+                    <ul class="sitemap-links">
+                        <li><a href="en/">🌐 English tools</a></li>
+                        <li><a href="emphasis-lines/en/">💥 Emphasis Lines Studio</a></li>
+                        <li><a href="font-lab/en/">🔤 Japanese Web Font Lab</a></li>
+                        <li><a href="aspect-ratio-calc/en/">📐 Aspect Ratio Calculator</a></li>
+                        <li><a href="px-rem-converter/en/">🔄 PX to REM Converter</a></li>
+                        <li><a href="text-diff/en/">📝 Text Diff Checker</a></li>
+                        <li><a href="qrcode/en/">🧾 QR Code Generator</a></li>
+                        <li><a href="ogp-simulator/en/">🖼️ Social Share Preview</a></li>
+                        <li><a href="guides/en/social-image-sizes.html">📖 Social Image Size Guide</a></li>
+                        <li><a href="guides/en/password-security.html">🔐 Password Security Guide</a></li>
+                    </ul>
+                </div>
+
+                <div class="sitemap-section">
+                    <h2>QR Maker Lab</h2>
+                    <ul class="sitemap-links">
+                        <li><a href="https://katakatalab.com/qrcode/">🧾 QR作成ツール トップ</a></li>
+                        <li><a href="guides/case-studies.html">🧪 入力・確認の実例（QRを含む）</a></li>
+                        <li><a href="guides/qr-guide.html">🧾 QRを配る前のガイド</a></li>
+                        <li><a href="guides/tool-selection-guide.html">🧭 用途から選ぶ案内</a></li>
+                    </ul>
+                </div>
+
+                <div class="sitemap-section">
+                    <h2>Information (情報)</h2>
+                    <ul class="sitemap-links">
+                        <li><a href="./">🏠 ホーム</a></li>
+                        <li><a href="updates.html">📅 アップデート情報</a></li>
+                        <li><a href="who-is-katakata.html">👤 かたかたって誰？ (運営者)</a></li>
+                        <li><a href="about-katakatalab.html">🧪 KatakataLabについて</a></li>
+                        <li><a href="contact.html">📩 お問い合わせ</a></li>
+
+                    </ul>
+                </div>
+
+                <div class="sitemap-section">
+                    <h2>PikaLab (デジタル研究室)</h2>
+                    <ul class="sitemap-links">
+                        <li><a href="pikalab/" target="_blank" rel="noopener noreferrer">🏫 PikaLab トップ</a></li>
+                        <li><a href="pikalab/book_report/">📝 読書感想文かんたんメーカー</a></li>
+                        <li><a href="pikalab/color_lab/">🎨 カラーラボ (色と光の実験)</a></li>
+                        <li><a href="pikalab/focus_studio/">⏱️ 集中スタジオ (ポモドーロ)</a></li>
+                        <li><a href="pikalab/fraction_lab/">🍕 分数ビジュアル学習</a></li>
+                        <li><a href="pikalab/kotowaza_quiz/">💬 ことわざ・四字熟語クイズ</a></li>
+                        <li><a href="pikalab/manabi_land/">📋 まなびランド (ToDoリスト)</a></li>
+                        <li><a href="pikalab/paper_gen/">📄 プリント素材ジェネレーター</a></li>
+                        <li><a href="pikalab/quest_board/">⚔️ クエストボード (ごほうび冒険)</a></li>
+                        <li><a href="pikalab/rhythm_lab/">🎵 リズム・ラボ (かんたんシーケンサー)</a></li>
+                        <li><a href="pikalab/science_maker/">🧪 かがくメーカー (元素・結晶)</a></li>
+                        <li><a href="pikalab/speed_reader/">👁️ 速読トレーニング</a></li>
+                        <li><a href="pikalab/typing_dojo/">⌨️ タイピング道場</a></li>
+                        <li><a href="pikalab/kanji_lab/">✍️ かんじガッタイ・ラボ</a></li>
+
+                    </ul>
+                </div>
+            </div>
+
+            <section class="sitemap-policy" aria-labelledby="sitemap-policy-title">
+                <h2 id="sitemap-policy-title">運用ポリシーと更新基準</h2>
+                <ul>
+                    <li>重要ページ（ホーム、利用規約、プライバシーポリシー、お問い合わせ）は常時アクセス可能な状態を維持します。</li>
+                    <li>ツール関連ページは、使い方や注意点の説明不足が出ないよう本文を継続的に追加・修正します。</li>
+                    <li>外部リンク先の変更があった場合は、誘導ミスを避けるため本ページを優先更新します。</li>
+                    <li>検索エンジン向けのXMLサイトマップ(sitemap.xml)とも整合を取り、クロール性の低下を防ぎます。</li>
+                </ul>
+            </section>
+        </div>
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-links">
+                <a href="contact.html">お問い合わせ</a>
+                <a href="who-is-katakata.html">運営者情報</a>
+                <a href="terms.html" target="_blank" rel="noopener noreferrer">利用規約</a>
+                <a href="privacy.html" target="_blank" rel="noopener noreferrer">プライバシーポリシー</a>
+                <a href="sitemap.html">サイトマップ</a>
+            </div>
+            <p>&copy; 2024-2026 KatakataLab. All Rights Reserved.</p>
+        </div>
+    </footer>
+
+    <script src="script.js?v=20260610"></script>
+</body>
+</html>

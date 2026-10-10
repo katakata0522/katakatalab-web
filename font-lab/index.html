@@ -1,0 +1,678 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-FYFPS7L9X9"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag() { dataLayer.push(arguments); }
+        gtag('js', new Date());
+        gtag('config', 'G-FYFPS7L9X9', { 'anonymize_ip': true });
+    </script>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Katakata Font-Lab | 日本語Webフォントの比較シミュレータ＆超軽量化の教科書</title>
+    <meta name="description" content="Katakata Font-Lab (フォント研究室) は、日本語Webフォント（M PLUS Rounded 1c, Zen Maru Gothicなど）の見た目をブラウザ上で比較・調整できる開発者向けツールです。プリロード、セグメント分割配信、サブセット化の注意点も解説します。">
+    
+    <!-- OGP Tags -->
+    <meta property="og:url" content="https://katakatalab.com/font-lab/">
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="Katakata Font-Lab | 日本語Webフォントの比較シミュレータ＆超軽量化の教科書">
+    <meta property="og:description" content="日本語Webフォントをブラウザ上で打ち替えながらCSSを比較できるシミュレータです。プリロード、セグメント分割配信、サブセット化で表示負荷を抑える考え方と注意点もまとめています。">
+    <meta property="og:site_name" content="KatakataLab">
+    <meta property="og:image" content="https://katakatalab.com/ogp.png">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:site" content="@katakata0522">
+    <meta name="twitter:title" content="Katakata Font-Lab | 日本語Webフォントの比較シミュレータ＆超軽量化の教科書">
+    <meta name="twitter:description" content="日本語Webフォントをブラウザ上で打ち替えながらCSSを比較できます。プリロード、セグメント分割配信、サブセット化の考え方と注意点もまとめています。">
+    <meta name="twitter:image" content="https://katakatalab.com/ogp.png">
+    
+    <link rel="canonical" href="https://katakatalab.com/font-lab/">
+    <link rel="alternate" hreflang="ja" href="https://katakatalab.com/font-lab/">
+    <link rel="alternate" hreflang="en" href="https://katakatalab.com/font-lab/en/">
+    <link rel="alternate" hreflang="x-default" href="https://katakatalab.com/font-lab/">
+    <link rel="icon" href="https://katakatalab.com/icon.svg" type="image/svg+xml">
+
+    <!-- Preconnect & Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    
+    <!-- Main base font loaded synchronously. Other custom preview fonts are loaded asynchronously on-demand for maximum initial speed! -->
+    <link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@40,700,1,0&display=block" rel="stylesheet">
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="./style.css?v=20260824-responsive">
+
+    <!-- Schema.org Web Application Structured Data -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "WebApplication",
+        "name": "Katakata Font-Lab",
+        "url": "https://katakatalab.com/font-lab/",
+        "applicationCategory": "DeveloperApplication",
+        "operatingSystem": "All",
+        "offers": {
+            "@type": "Offer",
+            "price": "0",
+            "priceCurrency": "JPY"
+        },
+        "browserRequirements": "Requires JavaScript. Requires HTML5.",
+        "description": "Katakata Font-Lab is an interactive Japanese Web-Font typography simulator and visual showcase combined with performance optimization guides.",
+        "creator": {
+            "@type": "Person",
+            "name": "かたかた",
+            "url": "https://katakatalab.com/who-is-katakata.html"
+        }
+    }
+    </script>
+    
+    <link rel="stylesheet" href="../tool-chrome.css?v=source">
+</head>
+<body>
+    <script>try{if(localStorage.getItem('theme')==='dark')document.body.classList.add('dark-mode');}catch(e){}</script>
+
+    <!-- Unified Mini Header / Breadcrumbs -->
+    <nav class="breadcrumbs-tool breadcrumbs-tool--bar" aria-label="パンくずリスト">
+        <div class="breadcrumbs-tool__trail">
+            <a href="../" class="breadcrumbs-tool__brand">
+                <span class="breadcrumbs-tool__mark">🧪</span> KatakataLab
+            </a>
+            <span class="breadcrumbs-tool__sep">/</span>
+            <span class="breadcrumbs-tool__current" aria-current="page">Katakata Font-Lab</span>
+        </div>
+        <a href="../#projects" class="breadcrumbs-tool__index">
+            <span>🧰</span> ツール一覧へ
+        </a>
+    </nav>
+
+    <!-- Auto-Injected noscript fallback -->
+    <noscript>
+        <div class="tool-noscript">
+            <p class="tool-noscript__title">⚠️ JavaScriptが無効になっています</p>
+            <p class="tool-noscript__text">このページは書体の比較表示とCSSの生成にJavaScriptを使います。有効にしてからご利用ください。</p>
+        </div>
+    </noscript>
+
+    <!-- Skip Link for Accessibility -->
+    <a href="#main-content" class="sr-only" style="position: absolute; width: 1px; height: 1px; padding: 0; overflow: hidden; clip: rect(0,0,0,0); border: 0;" onfocus="this.style='position:fixed;top:1rem;left:1rem;background:#6366f1;color:white;padding:1rem;z-index:999;font-weight:bold;border-radius:12px;box-shadow:0 4px 20px rgba(0,0,0,0.15);text-decoration:none;'">本文へスキップ</a>
+
+    <!-- Universal Header -->
+    <header class="fontlab-header">
+        <div class="header-container">
+            <a href="../" class="logo-link" aria-label="KatakataLab ホームへ">
+                <div class="logo-icon" aria-hidden="true">K</div>
+                <span class="logo-text">KatakataLab</span>
+            </a>
+            
+            <nav class="header-nav" aria-label="メインナビゲーション">
+                <a href="#section-tool" class="header-nav-link">比較ツール</a>
+                <a href="#section-showcase" class="header-nav-link">フォント見本市</a>
+                <a href="#section-articles" class="header-nav-link">技術コラム</a>
+            </nav>
+
+            <div class="header-actions">
+                <button type="button" id="dark-mode-toggle" class="header-btn" aria-label="ダークモードに切り替える" title="ダークモード切替">
+                    <span class="material-symbols-rounded" aria-hidden="true">dark_mode</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content Area -->
+    <main id="main-content" class="container" tabindex="-1">
+
+        
+        <!-- Hero Title Section -->
+        <section class="hero">
+            <div class="hero-tag">
+                <span class="material-symbols-rounded" style="font-size: 14px;">science</span>
+                開発者のためのフォント研究室
+            </div>
+            <h1 class="hero-title">フォントが変われば、<br>作品の「ぬくもり」が変わる。</h1>
+            <p class="hero-desc">
+                「M PLUS Rounded 1c」や「Zen Maru Gothic」など、日本語Webフォントをブラウザ上で打ち替えながらCSSを比較できるシミュレータです。プリロード、セグメント分割配信、サブセット化で表示負荷を抑える考え方と注意点もまとめています。
+            </p>
+        </section>
+
+        <!-- COLUMN 1: INTERACTIVE TYPOGRAPHY SIMULATOR -->
+        <section id="section-tool" style="margin-top: 2rem; scroll-margin-top: 100px;">
+            <h2 class="section-title">
+                <span class="section-title-icon"><span class="material-symbols-rounded">tune</span></span>
+                1. 比較シミュレータ & CSSジェネレータ
+            </h2>
+            
+            <div class="simulator-layout">
+                <!-- Canvas Display Panel (Left) -->
+                <div class="glass-card canvas-card">
+                    <div class="canvas-header">
+                        <span class="text-slate-400 font-bold flex items-center gap-1.5 text-xs">
+                            <span class="material-symbols-rounded" style="font-size: 16px;">border_color</span>
+                            枠内のテキストは自由に編集可能です！
+                        </span>
+                        
+                        <div class="device-toggles" role="group" aria-label="画面幅表示の切り替え">
+                            <button type="button" id="btn-desktop" class="device-btn active" aria-label="デスクトップ表示" title="PC表示">
+                                <span class="material-symbols-rounded" aria-hidden="true">desktop_windows</span>
+                            </button>
+                            <button type="button" id="btn-mobile" class="device-btn" aria-label="モバイル表示" title="スマホ表示">
+                                <span class="material-symbols-rounded" aria-hidden="true">smartphone</span>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="preview-container-wrapper">
+                        <!-- Typography Load Status Overlay -->
+                        <div id="font-load-status" class="font-load-status" aria-live="polite">
+                            <div class="spinner-icon"></div>
+                            <span class="status-text">フォント適用中...</span>
+                        </div>
+
+                        <div id="preview-container" class="preview-container" style="font-family: 'Zen Maru Gothic', sans-serif;">
+                            <h3 id="preview-title" class="preview-title" contenteditable="true" spellcheck="false">
+                                ここに見出しのタイトルを入力してね！
+                            </h3>
+                            <p id="preview-paragraph" class="preview-paragraph" contenteditable="true" spellcheck="false">
+                                ここは本文のテキストエリアです。日本語のWebフォントは、文字の形や太さ、丸みによって読者に与える『ぬくもり』や『読みやすさ』が劇的に変化します。好きな文字を打ち替えて、スマホでの見え方やCSSの行間設定などを心地よく調整してみてください。
+                            </p>
+                            <div class="preview-button-wrapper">
+                                <button type="button" id="preview-button" class="preview-button">
+                                    ボタンの文字
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Parameters Controls Panel (Right) -->
+                <div class="glass-card control-card">
+                    <h3 class="control-title">
+                        <span class="material-symbols-rounded" style="color: var(--primary);">settings_sliders</span>
+                        タイポグラフィ調整
+                    </h3>
+
+                    <!-- Font Family -->
+                    <div class="control-group">
+                        <label for="select-font" class="control-label">
+                            フォントの種類
+                        </label>
+                        <select id="select-font" class="control-select">
+                            <option value="'Zen Maru Gothic', sans-serif">Zen Maru Gothic (ふんわり標準丸文字)</option>
+                            <option value="'M PLUS Rounded 1c', sans-serif">M PLUS Rounded 1c (可愛さMAX丸文字)</option>
+                            <option value="'Noto Sans JP', sans-serif">Noto Sans JP (シャープで知的)</option>
+                            <option value="'Kiwi Maru', serif">Kiwi Maru (レトロで優しい明朝体)</option>
+                            <option value="'Yomogi', cursive">Yomogi (味のある個性派手書き)</option>
+                            <option value="'Dela Gothic One', sans-serif">Dela Gothic One (極太・強烈見出し)</option>
+                            <option value="'Hachi Maru Pop', cursive">Hachi Maru Pop (ポップな手書き風)</option>
+                        </select>
+                    </div>
+
+                    <!-- Font Size -->
+                    <div class="control-group">
+                        <label for="slider-size" class="control-label">
+                            文字サイズ (本文)
+                            <span id="val-size" class="control-value">16px</span>
+                        </label>
+                        <input type="range" id="slider-size" class="control-slider" min="12" max="28" value="16" aria-valuemin="12" aria-valuemax="28" aria-valuenow="16">
+                    </div>
+
+                    <!-- Font Weight -->
+                    <div class="control-group">
+                        <label for="select-weight" class="control-label">
+                            フォントの太さ (Weight)
+                        </label>
+                        <select id="select-weight" class="control-select">
+                            <!-- Populated dynamically via JS based on font compatibility -->
+                        </select>
+                    </div>
+
+                    <!-- Letter Spacing -->
+                    <div class="control-group">
+                        <label for="slider-spacing" class="control-label">
+                            文字の間隔 (letter-spacing)
+                            <span id="val-spacing" class="control-value">0.03em</span>
+                        </label>
+                        <input type="range" id="slider-spacing" class="control-slider" min="-0.05" max="0.3" value="0.03" step="0.01" aria-valuemin="-0.05" aria-valuemax="0.3" aria-valuenow="0.03">
+                    </div>
+
+                    <!-- Line Height -->
+                    <div class="control-group">
+                        <label for="slider-height" class="control-label">
+                            行の高さ (line-height)
+                            <span id="val-height" class="control-value">1.8</span>
+                        </label>
+                        <input type="range" id="slider-height" class="control-slider" min="1.2" max="2.4" value="1.8" step="0.1" aria-valuemin="1.2" aria-valuemax="2.4" aria-valuenow="1.8">
+                    </div>
+
+                    <!-- CSS & HTML Copier Tabs -->
+                    <div class="control-group" style="margin-top: 1rem;">
+                        <span class="control-label">出力コード (HTML & CSS)</span>
+                        <div class="code-tabs">
+                            <div class="code-tabs-header" role="tablist">
+                                <button type="button" class="code-tab-btn active" data-tab="css" role="tab" aria-selected="true" aria-controls="panel-css">
+                                    <span class="material-symbols-rounded" style="font-size: 15px;">css</span> CSSコード
+                                </button>
+                                <button type="button" class="code-tab-btn" data-tab="html" role="tab" aria-selected="false" aria-controls="panel-html">
+                                    <span class="material-symbols-rounded" style="font-size: 15px;">code</span> HTMLインポート
+                                </button>
+                            </div>
+                            <div id="panel-css" class="code-tab-panel active" role="tabpanel">
+                                <pre class="article-code-block" style="margin: 0; padding: 1rem; font-size: 0.75rem;"><span class="code-block-header">css</span><code id="output-css"></code></pre>
+                            </div>
+                            <div id="panel-html" class="code-tab-panel" role="tabpanel">
+                                <pre class="article-code-block" style="margin: 0; padding: 1rem; font-size: 0.75rem;"><span class="code-block-header">html</span><code id="output-html"></code></pre>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 3D Copy Button -->
+                    <button type="button" id="copy-css-btn" class="btn-primary-3d">
+                        <span class="material-symbols-rounded">content_copy</span>
+                        <span class="btn-text">CSSコードをコピー</span>
+                    </button>
+                </div>
+            </div>
+
+            <div class="compare-howto">
+                <h3 class="compare-howto-title">比較の使い方</h3>
+                <ol class="compare-howto-list">
+                    <li><strong>実テキストで試す。</strong>見出し・本文・ボタンを、公開する文言に近づけてから書体を切り替えます。</li>
+                    <li><strong>太さを先に決める。</strong>字間や行間より先にウェイトを見ると、密度の差が分かりやすいです。</li>
+                    <li><strong>開発者ツールでコールドロードを見る。</strong>キャッシュを無効にした再読み込みで、実際に落ちるフォントファイルとレイアウトのずれを確認します。</li>
+                </ol>
+            </div>
+        </section>
+
+        <!-- COLUMN 2: PREMIUM FONT SHOWCASE -->
+        <section id="section-showcase" style="scroll-margin-top: 100px;">
+            <h2 class="section-title">
+                <span class="section-title-icon"><span class="material-symbols-rounded">view_cozy</span></span>
+                2. 個性溢れる「日本語フォント見本市」
+            </h2>
+            
+            <div class="font-grid">
+                
+                <!-- Card 1: Zen Maru Gothic -->
+                <article class="glass-card font-card zen-maru">
+                    <div>
+                        <div class="font-card-header">
+                            <div>
+                                <h3 class="font-name" style="font-family: 'Zen Maru Gothic', sans-serif; font-weight: 900;">Zen Maru Gothic</h3>
+                                <span class="font-meta-tag tag-zen">丸ゴシック</span>
+                            </div>
+                            <span class="font-type-badge">Google Fonts</span>
+                        </div>
+                        <div class="font-preview-box" style="font-family: 'Zen Maru Gothic', sans-serif;">
+                            <div class="font-preview-title">やさしく、読みやすく</div>
+                            <div class="font-preview-para">やさしさと読みやすさを美しく両立した、これからのスタンダード丸ゴシックです。</div>
+                        </div>
+                        <p class="text-sm font-bold text-slate-500" style="margin-bottom: 1.5rem; line-height: 1.6;">
+                            非常に滑らかな曲線を持っており、本文に長く使っても目が疲れにくいのが最大の特徴。KatakataLabのPikaLabの基本本文フォントとしても大活躍しています。
+                        </p>
+                        <p class="font-license">配布: <a href="https://fonts.google.com/specimen/Zen+Maru+Gothic" target="_blank" rel="noopener noreferrer">Google Fonts</a>／作者: Yoshimichi Ohira／多くは SIL OFL／改変再配布は Reserved Font Name に注意。条文は各公式ページで確認。</p>
+                    </div>
+                    <div class="font-meter-section">
+                        <div class="meter-row">
+                            <span class="meter-label">デザインの丸み・ぬくもり</span>
+                            <span class="meter-value">85%</span>
+                        </div>
+                        <div class="meter-bar-container"><div class="meter-bar green" style="width: 85%;"></div></div>
+                        <div class="meter-row">
+                            <span class="meter-label">収録の広さ・向き</span>
+                            <span class="meter-value">本文向き・分割配信向き</span>
+                        </div>
+                    </div>
+                </article>
+
+                <!-- Card 2: M PLUS Rounded 1c -->
+                <article class="glass-card font-card rounded-gothic">
+                    <div>
+                        <div class="font-card-header">
+                            <div>
+                                <h3 class="font-name" style="font-family: 'M PLUS Rounded 1c', sans-serif; font-weight: 900;">M PLUS Rounded 1c</h3>
+                                <span class="font-meta-tag tag-mplus">ぷっくり丸ゴ</span>
+                            </div>
+                            <span class="font-type-badge">Google Fonts</span>
+                        </div>
+                        <div class="font-preview-box" style="font-family: 'M PLUS Rounded 1c', sans-serif;">
+                            <div class="font-preview-title">ぷっくりかわいい見出し</div>
+                            <div class="font-preview-para">圧倒的な「かわいさ」と温厚さ。一目で見る人を笑顔にする極上フォント！</div>
+                        </div>
+                        <p class="text-sm font-bold text-slate-500" style="margin-bottom: 1.5rem; line-height: 1.6;">
+                            「あ」や「お」の懐が広く、ぷっくりとした絶妙な太さの丸ゴシック。こども向けアプリや、親しみやすさを優先したタイトルデザインで、力強くやわらかな印象をつくれます。
+                        </p>
+                        <p class="font-license">配布: <a href="https://fonts.google.com/specimen/M+PLUS+Rounded+1c" target="_blank" rel="noopener noreferrer">Google Fonts</a>／作者: Coji Morishita / M+ Fonts Project／多くは SIL OFL／改変再配布は Reserved Font Name に注意。条文は各公式ページで確認。</p>
+                    </div>
+                    <div class="font-meter-section">
+                        <div class="meter-row">
+                            <span class="meter-label">デザインの丸み・ぬくもり</span>
+                            <span class="meter-value">100%</span>
+                        </div>
+                        <div class="meter-bar-container"><div class="meter-bar blue" style="width: 100%;"></div></div>
+                        <div class="meter-row">
+                            <span class="meter-label">収録の広さ・向き</span>
+                            <span class="meter-value">収録が広い（ウェイトも多い）</span>
+                        </div>
+                    </div>
+                </article>
+
+                <!-- Card 3: Noto Sans JP -->
+                <article class="glass-card font-card">
+                    <div>
+                        <div class="font-card-header">
+                            <div>
+                                <h3 class="font-name" style="font-family: 'Noto Sans JP', sans-serif; font-weight: 700;">Noto Sans JP</h3>
+                                <span class="font-meta-tag tag-noto">角ゴシック</span>
+                            </div>
+                            <span class="font-type-badge">Google Fonts</span>
+                        </div>
+                        <div class="font-preview-box" style="font-family: 'Noto Sans JP', sans-serif;">
+                            <div class="font-preview-title">知的で引き締まる</div>
+                            <div class="font-preview-para">知的でクール。どのようなデバイスでも美しく引き締まる洗練された美学。</div>
+                        </div>
+                        <p class="text-sm font-bold text-slate-500" style="margin-bottom: 1.5rem; line-height: 1.6;">
+                            GoogleとAdobeが共同開発した、現代のWebデザインで広く使われている定番の選択肢。シャープで整理された文字形状は、ツールページの操作パネルや、誠実さを伝えたいビジネスシーンにも合わせやすい書体です。
+                        </p>
+                        <p class="font-license">配布: <a href="https://fonts.google.com/specimen/Noto+Sans+JP" target="_blank" rel="noopener noreferrer">Google Fonts</a>／作者: Google / Adobe／多くは SIL OFL／改変再配布は Reserved Font Name に注意。条文は各公式ページで確認。</p>
+                    </div>
+                    <div class="font-meter-section">
+                        <div class="meter-row">
+                            <span class="meter-label">デザインの丸み・ぬくもり</span>
+                            <span class="meter-value">10%</span>
+                        </div>
+                        <div class="meter-bar-container"><div class="meter-bar" style="width: 10%;"></div></div>
+                        <div class="meter-row">
+                            <span class="meter-label">収録の広さ・向き</span>
+                            <span class="meter-value">収録が広い（漢字カバー重視）</span>
+                        </div>
+                    </div>
+                </article>
+
+                <!-- Card 4: Kiwi Maru -->
+                <article class="glass-card font-card hand-writing">
+                    <div>
+                        <div class="font-card-header">
+                            <div>
+                                <h3 class="font-name" style="font-family: 'Kiwi Maru', serif; font-weight: 500;">Kiwi Maru (キウイ丸)</h3>
+                                <span class="font-meta-tag tag-kiwi">丸み明朝</span>
+                            </div>
+                            <span class="font-type-badge">Google Fonts</span>
+                        </div>
+                        <div class="font-preview-box" style="font-family: 'Kiwi Maru', serif;">
+                            <div class="font-preview-title">物語のはじまり</div>
+                            <div class="font-preview-para">レトロで文学的な温もり。小説や物語の中にいるような心地よさを。</div>
+                        </div>
+                        <p class="text-sm font-bold text-slate-500" style="margin-bottom: 1.5rem; line-height: 1.6;">
+                            明朝体のようなエレガントな「ハネ・ハライ」を持ちながら、先端がすべて丸みを帯びている非常に珍しいフォント。ノスタルジックなゲームの会話劇や、丁寧な語りかけコラムに最適です。
+                        </p>
+                        <p class="font-license">配布: <a href="https://fonts.google.com/specimen/Kiwi+Maru" target="_blank" rel="noopener noreferrer">Google Fonts</a>／作者: Hiroki-Chan／多くは SIL OFL／改変再配布は Reserved Font Name に注意。条文は各公式ページで確認。</p>
+                    </div>
+                    <div class="font-meter-section">
+                        <div class="meter-row">
+                            <span class="meter-label">デザインの丸み・ぬくもり</span>
+                            <span class="meter-value">75%</span>
+                        </div>
+                        <div class="meter-bar-container"><div class="meter-bar amber" style="width: 75%;"></div></div>
+                        <div class="meter-row">
+                            <span class="meter-label">収録の広さ・向き</span>
+                            <span class="meter-value">本文〜会話向き</span>
+                        </div>
+                    </div>
+                </article>
+
+                <!-- Card 5: Yomogi -->
+                <article class="glass-card font-card hand-writing">
+                    <div>
+                        <div class="font-card-header">
+                            <div>
+                                <h3 class="font-name" style="font-family: 'Yomogi', cursive;">よもぎフォント (Yomogi)</h3>
+                                <span class="font-meta-tag tag-yomogi">リアル手書き</span>
+                            </div>
+                            <span class="font-type-badge">Google Fonts</span>
+                        </div>
+                        <div class="font-preview-box" style="font-family: 'Yomogi', cursive;">
+                            <div class="font-preview-title">きょうのメモ</div>
+                            <div class="font-preview-para">「本当にノートに手書きした」ような、唯一無二の生きた人間味を演出。</div>
+                        </div>
+                        <p class="text-sm font-bold text-slate-500" style="margin-bottom: 1.5rem; line-height: 1.6;">
+                            整いすぎない手書きの揺らぎが魅力のフォント。サイトの『あとがき（制作ノート）』や、親しみやすいキャラクターのセリフ、手書きメッセージカードの再現などに強烈な個性を放ちます。
+                        </p>
+                        <p class="font-license">配布: <a href="https://fonts.google.com/specimen/Yomogi" target="_blank" rel="noopener noreferrer">Google Fonts</a>／作者: Satsuyako／多くは SIL OFL／改変再配布は Reserved Font Name に注意。条文は各公式ページで確認。</p>
+                    </div>
+                    <div class="font-meter-section">
+                        <div class="meter-row">
+                            <span class="meter-label">デザインの丸み・ぬくもり</span>
+                            <span class="meter-value">95%</span>
+                        </div>
+                        <div class="meter-bar-container"><div class="meter-bar amber" style="width: 95%;"></div></div>
+                        <div class="meter-row">
+                            <span class="meter-label">収録の広さ・向き</span>
+                            <span class="meter-value">短い文言・手書き向き</span>
+                        </div>
+                    </div>
+                </article>
+
+                <!-- Card 6: Dela Gothic One -->
+                <article class="glass-card font-card dela-gothic">
+                    <div>
+                        <div class="font-card-header">
+                            <div>
+                                <h3 class="font-name" style="font-family: 'Dela Gothic One', sans-serif;">Dela Gothic One</h3>
+                                <span class="font-meta-tag tag-dela">ウルトラ超極太</span>
+                            </div>
+                            <span class="font-type-badge">Google Fonts</span>
+                        </div>
+                        <div class="font-preview-box" style="font-family: 'Dela Gothic One', sans-serif;">
+                            <div class="font-preview-title">画面をジャックする見出し</div>
+                            <div class="font-preview-para">圧倒的質量！ポスターやロゴのように画面をジャックする超弩級見出し。</div>
+                        </div>
+                        <p class="text-sm font-bold text-slate-500" style="margin-bottom: 1.5rem; line-height: 1.6;">
+                            すき間がほぼ潰れるほどに太く力強い、平面的なレトロモダンフォント。ゲームのタイトルロゴや、YouTubeのサムネイル、しっかり目を引かせたい大きな見出しと相性のよい書体です。
+                        </p>
+                        <p class="font-license">配布: <a href="https://fonts.google.com/specimen/Dela+Gothic+One" target="_blank" rel="noopener noreferrer">Google Fonts</a>／作者: artakana／多くは SIL OFL／改変再配布は Reserved Font Name に注意。条文は各公式ページで確認。</p>
+                    </div>
+                    <div class="font-meter-section">
+                        <div class="meter-row">
+                            <span class="meter-label">デザインの丸み・ぬくもり</span>
+                            <span class="meter-value">40%</span>
+                        </div>
+                        <div class="meter-bar-container"><div class="meter-bar rose" style="width: 40%;"></div></div>
+                        <div class="meter-row">
+                            <span class="meter-label">収録の広さ・向き</span>
+                            <span class="meter-value">見出し・ディスプレイ向き</span>
+                        </div>
+                    </div>
+                </article>
+
+                <!-- Card 7: Hachi Maru Pop -->
+                <article class="glass-card font-card hand-writing">
+                    <div>
+                        <div class="font-card-header">
+                            <div>
+                                <h3 class="font-name" style="font-family: 'Hachi Maru Pop', cursive;">Hachi Maru Pop</h3>
+                                <span class="font-meta-tag tag-hachi">ポップ手書き</span>
+                            </div>
+                            <span class="font-type-badge">Google Fonts</span>
+                        </div>
+                        <div class="font-preview-box" style="font-family: 'Hachi Maru Pop', cursive;">
+                            <div class="font-preview-title">まるくてポップ</div>
+                            <div class="font-preview-para">1970〜80年代の少女雑誌を思わせる、まるくてやわらかな手書き文字。</div>
+                        </div>
+                        <p class="text-sm font-bold text-slate-500" style="margin-bottom: 1.5rem; line-height: 1.6;">
+                            丸みの強い手書き風で、カードの一言や遊びのある見出しに向きます。長文の本文より、短いフレーズで個性を出す用途に合いやすい書体です。
+                        </p>
+                        <p class="font-license">配布: <a href="https://fonts.google.com/specimen/Hachi+Maru+Pop" target="_blank" rel="noopener noreferrer">Google Fonts</a>／作者: Nonty／多くは SIL OFL／改変再配布は Reserved Font Name に注意。条文は各公式ページで確認。</p>
+                    </div>
+                    <div class="font-meter-section">
+                        <div class="meter-row">
+                            <span class="meter-label">デザインの丸み・ぬくもり</span>
+                            <span class="meter-value">90%</span>
+                        </div>
+                        <div class="meter-bar-container"><div class="meter-bar amber" style="width: 90%;"></div></div>
+                        <div class="meter-row">
+                            <span class="meter-label">収録の広さ・向き</span>
+                            <span class="meter-value">見出し・短い文言向き</span>
+                        </div>
+                    </div>
+                </article>
+
+            </div>
+        </section>
+
+        <!-- COLUMN 3: TECHNICAL ARTICLES -->
+        <section id="section-articles" style="scroll-margin-top: 100px;">
+            <h2 class="section-title">
+                <span class="section-title-icon"><span class="material-symbols-rounded">menu_book</span></span>
+                3. 日本語Webフォントの「超軽量化」の教科書
+            </h2>
+            
+            <div class="article-section">
+                
+                <!-- Article 1: Google Fonts Multi-segmentation -->
+                <article class="article-card">
+                    <header class="article-header">
+                        <div class="article-meta">
+                            <span class="article-badge">最速化技術</span>
+                            <time datetime="2026-05-31">2026年5月31日</time>
+                            <span>著者：かたかた</span>
+                        </div>
+                        <h3 class="article-title">日本語Webフォントが重いのは昔の話？Google Fontsが裏でやっている『マルチセグメント分割配信』の仕組み</h3>
+                    </header>
+                    <div class="article-body">
+                        <p>
+                            Webデザインに「ぬくもり」をプラスしてくれる丸ゴシックなどの日本語Webフォント。しかし、多くの開発者は<strong>「日本語フォントは重すぎて表示が遅くなるから、使うべきではない」</strong>と思い込んでいます。確かに、英語のアルファベットが記号を含めても数百字しかないのに対し、日本語にはひらがな、カタカナに加え、数千から数万もの「漢字」が存在します。フォントファイル全体の容量は、数メガバイト（数MB）に達することもあります。これは普通のWebサイトのHTMLやJSの数十倍の重さです。
+                        </p>
+                        <p>
+                            しかし、現代のGoogle Fontsは、この問題を「全部まとめて軽くした」のではなく、必要な文字だけを取りに行きやすくしています。それが<strong>「unicode-rangeによるマルチセグメント（細分化）配信」</strong>です。
+                        </p>
+                        <h3>常用度に応じて、ファイルを多数のスライスに分ける</h3>
+                        <p>
+                            Google Fontsで日本語フォントを呼び出すと、裏側ではフォントを1つ丸ごとロードしているわけではありません。Googleは日本語のフォントデータを、<strong>常用漢字・ひらがな・カタカナ・めったに使わない難しい漢字などの「文字グループ」ごとに、多数の小さなフォントファイル（woff2形式）に分解してサーバーに保管</strong>しています。<a href="https://developers.googleblog.com/en/google-fonts-launches-japanese-support/" target="_blank" rel="noopener noreferrer">2018年のGoogleの解説</a>では、よく使う約3,000字を20スライスに分けると、フォント全体を送る場合よりバイト数を約80%減らせたとされています。
+                        </p>
+                        <p>
+                            ブラウザは、<strong>CSSの <code>@font-face</code> に書かれた <code>unicode-range</code> と、そのフォントが当たっている要素で実際に使われている文字の交差</strong>を見て、交差があるスライスだけを取得します。「HTMLを読んでこの漢字がある」と独自解析しているわけではなく、適用中のフォントと使用文字、<code>unicode-range</code> の組み合わせです。
+                        </p>
+                        <p>
+                            2026年8月17日に google/fonts のソースを確認すると、Zen Maru Gothic Regular の TTF は約3.7MB、Noto Sans JP の可変フォントは約9.1MB ありました。短いUI文言だけならスライス数個（数十KB台になることもあります）。本文に漢字が多く、太さを複数使うと、数百KB以上になることもあります。<strong>「常に数十KBで瞬時」ではありません。</strong> Networkパネルでコールドロードを測って判断してください。
+                        </p>
+                    </div>
+                </article>
+
+                <!-- Article 2: Link Preload -->
+                <article class="article-card">
+                    <header class="article-header">
+                        <div class="article-meta">
+                            <span class="article-badge">HTML最適化</span>
+                            <time datetime="2026-07-16">2026年7月16日</time>
+                            <span>著者：かたかた</span>
+                        </div>
+                        <h3 class="article-title">一瞬のガタつき(FOUT)を減らす『link rel="preload"』の使い方</h3>
+                    </header>
+                    <div class="article-body">
+                        <p>
+                            Webフォントを導入した際、ページを開いた瞬間に「一瞬だけOS標準の文字が表示され、直後にふわっと指定フォントに切り替わる」現象を目にしたことはありませんか？これは<strong>FOUT (Flash of Unstyled Text)</strong> と呼ばれる現象です。フォールバック書体から指定フォントへ、見た目が切り替わります。字幅や行の高さが違うとレイアウトが動くこともありますが、<strong>FOUTそのものはCLSではありません</strong>。<strong>CLS（Cumulative Layout Shift）</strong>は、予期しないレイアウトの移動量を測る別の指標です。
+                        </p>
+                        <p>
+                            FOUTを減らす方法のひとつが、HTMLの <code>head</code> 内に記述する <strong><code>link rel="preload"</code>（プリロード設定）</strong>です。必要なフォントをCSSの解析前に見つけやすくしますが、表示環境やCSSの設定によって効果は変わります。
+                        </p>
+                        <h3>ブラウザの読み込み順序に割り込みをかける</h3>
+                        <p>
+                            通常、ブラウザはHTMLを上から解析し、CSSを読み込み、さらにDOMツリーが完成して「どの場所にどのフォントを当てるか」が決まるまで、フォントファイルをダウンロードしません。そのため、フォントのロードが一歩遅れてカクつきが発生します。
+                        </p>
+                        <p>
+                            そこで、`head` タグの非常に早い段階で以下のように記述します：
+                        </p>
+                        <pre class="article-code-block"><span class="code-block-header">html</span><code>&lt;link rel="preload" href="./fonts/my-round-font.woff2" as="font" type="font/woff2" crossorigin&gt;</code></pre>
+                        <p>
+                            この記述により、ブラウザはCSSの解析完了を待たずに対象フォントの取得を開始できます。
+                        </p>
+                        <p>
+                            フォントの取得開始を早められるため、表示切り替えを減らせる可能性があります。ただし、回線状況やキャッシュ、<code>font-display</code>の設定によってはFOUTが残るため、実測して判断します。
+                        </p>
+                        <blockquote>
+                            <p><strong>💡 注意：</strong>使わないフォントまでプリロードすると、HTMLやCSSなど他の重要な通信を圧迫する場合があります。ファーストビューで実際に使うフォントだけを候補にし、変更前後を計測してください。</p>
+                            <p><strong>🚨 <code>crossorigin</code>について：</strong>フォントはCORSモードで取得されるため、自己ホストの場合もフォントのプリロードには <code>crossorigin</code> を指定します。詳しくは<a href="https://web.dev/learn/performance/optimize-web-fonts" target="_blank" rel="noopener noreferrer">web.devのWebフォント最適化解説</a>を確認してください。</p>
+                        </blockquote>
+                    </div>
+                </article>
+
+                <!-- Article 3: WOFF2 Subset -->
+                <article class="article-card">
+                    <header class="article-header">
+                        <div class="article-meta">
+                            <span class="article-badge">自社サーバー配信</span>
+                            <time datetime="2026-07-16">2026年7月16日</time>
+                            <span>著者：かたかた</span>
+                        </div>
+                        <h3 class="article-title">『サブセット化』と『WOFF2圧縮』で配信量を抑える手順</h3>
+                    </header>
+                    <div class="article-body">
+                        <p>
+                            「Google Fontsは便利だけれど、サードパーティ（外部ドメイン）との通信が発生するため、ネットワーク遅延やセキュリティポリシー(CSP)の観点から自前のサーバー（Xserverなど）からフォントを配信したい！」という場面は多々あります。しかし、フォントファイルをそのまま自分のサーバーに置くと、数MBのファイルをユーザーに丸ごと配ることになり、サーバーの転送帯域が圧迫され、表示速度も最悪になってしまいます。
+                        </p>
+                        <p>
+                            この問題を解決するプロの技が、<strong>「サブセット化」</strong>と<strong>「WOFF2超圧縮」</strong>の掛け算です。
+                        </p>
+                        <h3>ステップ1：使わない文字をハサミで切り落とす（サブセット化）</h3>
+                        <p>
+                            日本語フォントには多数の漢字や記号が含まれています。実際に使う文字集合へ絞り込む作業がサブセット化です。必要な文字はサイトごとに異なるため、固定の文字数だけで判断せず、固有名詞や記号の欠落も確認します。
+                        </p>
+                        <p>
+                            「サブセットフォントメーカー」などの無料ツールを使うと、フォントファイルをドラッグ＆ドロップするだけで、数メガバイトのファイルを一撃で <strong>数百キロバイト程度</strong> まで小さく削減できます。
+                        </p>
+                        <h3>ステップ2：Web向けのWOFF2形式へ変換する</h3>
+                        <p>
+                            絞り込んだフォントデータを、Web配信用の<strong>WOFF2(Web Open Font Format 2.0)</strong>形式へ変換します。削減量は元フォント、含める字形、変換方法によって変わるため、変換後の容量と表示を確認します。
+                        </p>
+                        <p>
+                            サブセット化とWOFF2変換を組み合わせると、元ファイルより配信量を抑えられる場合があります。変換後は、必要な文字が欠けていないか、太さや字形が意図どおりか、実際のページで表示速度が改善したかを確認してから公開します。
+                        </p>
+                        <h3>完成形の @font-face 例</h3>
+                        <p>
+                            サブセットした1ファイルを自己ホストする場合の最小例です。複数スライスに分けるなら、同じ <code>font-family</code> で <code>unicode-range</code> だけ変えた <code>@font-face</code> を並べます。
+                        </p>
+                        <pre class="article-code-block"><span class="code-block-header">css</span><code>@font-face {
+  font-family: "My Round JP";
+  src: url("./fonts/my-round-jp.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+  unicode-range: U+3040-30FF, U+FF66-FF9F; /* ひらがな・カタカナ */
+}</code></pre>
+                    </div>
+                </article>
+
+            </div>
+        </section>
+
+    
+  <!-- Auto-Injected Unified Footer -->
+  <footer class="tool-footer tool-footer--bar" aria-label="サイト情報">
+      <a href="../" class="tool-footer__brand">🧪 KatakataLab</a>
+      <span class="tool-footer__sep" aria-hidden="true">|</span>
+      <a href="../who-is-katakata.html" target="_blank" rel="noopener noreferrer">運営者情報</a>
+      <span class="tool-footer__sep" aria-hidden="true">|</span>
+      <a href="../terms.html" target="_blank" rel="noopener noreferrer">利用規約</a>
+      <span class="tool-footer__sep" aria-hidden="true">|</span>
+      <a href="../privacy.html" target="_blank" rel="noopener noreferrer">プライバシーポリシー</a>
+      <span class="tool-footer__sep" aria-hidden="true">|</span>
+      <a href="../contact.html" target="_blank" rel="noopener noreferrer">お問い合わせ</a>
+      <span class="tool-footer__sep" aria-hidden="true">|</span>
+      <a href="../sitemap.html" target="_blank" rel="noopener noreferrer">サイトマップ</a>
+  </footer>
+
+</main>
+
+    <!-- Universal Footer -->
+
+
+    <!-- Scroll to Top Button -->
+    <button type="button" id="scroll-top-btn" class="scroll-btn" aria-label="ページの一番上へ戻る">
+        <span class="material-symbols-rounded" aria-hidden="true">arrow_upward</span>
+    </button>
+
+    <!-- Core Logic Script -->
+    <script src="./script.js?v=20260817-2"></script>
+</body>
+</html>

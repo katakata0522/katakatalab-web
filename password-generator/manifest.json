@@ -1,0 +1,26 @@
+{
+  "id": "/password-generator/",
+  "name": "パスワード一括生成くん",
+  "short_name": "PassGen",
+  "start_url": "/password-generator/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#4a90e2",
+  "scope": "/password-generator/",
+  "lang": "ja",
+  "orientation": "any",
+  "description": "安全なパスワードを一括生成するツール",
+  "icons": [
+    {
+      "src": "./icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "./icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}

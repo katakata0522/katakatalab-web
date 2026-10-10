@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="robots" content="noindex, follow">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Speed Reader - 瞬読トレーニング</title>
+
+    <!-- SEO Meta Tags -->
+    <meta name="description" content="Speed Readerは、文章を1〜3語ずつフラッシュ表示し、設定した表示速度に慣れるための瞬読トレーニングツールです。">
+    <meta name="keywords" content="瞬読, 速読, トレーニング, 読書, 学習">
+    <meta name="author" content="かたかたの遊び場">
+
+    <!-- Open Graph / SNS -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://katakatalab.com/pikalab/speed_reader/">
+    <meta property="og:title" content="Speed Reader - 瞬読トレーニング">
+    <meta property="og:description" content="Speed Readerは、文章を1〜3語ずつフラッシュ表示し、設定した表示速度に慣れるための瞬読トレーニングツールです。">
+    <meta property="og:site_name" content="かたかたの遊び場">
+    <meta property="og:image" content="https://katakatalab.com/pikalab/pikalab_ogp_compressed.jpg">
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Speed Reader - 瞬読トレーニング">
+    <meta name="twitter:description" content="Speed Readerは、文章を1〜3語ずつフラッシュ表示し、設定した表示速度に慣れるための瞬読トレーニングツールです。">
+    <meta name="twitter:image" content="https://katakatalab.com/pikalab/pikalab_ogp_compressed.jpg">
+
+    <!-- Canonical URL -->
+    <link rel="canonical" href="https://katakatalab.com/pikalab/speed_reader/">
+
+    <!-- Favicon & Touch Icon -->
+    <link rel="icon" type="image/svg+xml" href="icon.svg">
+    <link rel="apple-touch-icon" href="icon.svg">
+
+    <!-- Google Fonts -->
+    <link
+        href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@400;500;700;800&family=Zen+Maru+Gothic:wght@500;700&family=Shippori+Mincho:wght@500;700&family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,1,0"
+        rel="stylesheet">
+
+    <link rel="stylesheet" href="../style.css">
+
+    <!-- Custom Styles -->
+    <link rel="stylesheet" href="style.css">
+
+    <!-- JSON-LD Structured Data -->
+    <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"Speed Reader - 瞬読トレーニング","description":"Speed Readerは、文章を1〜3語ずつフラッシュ表示し、設定した表示速度に慣れるための瞬読トレーニングツールです。","applicationCategory":"EducationalApplication","operatingSystem":"Web Browser","offers":{"@type":"Offer","price":"0","priceCurrency":"JPY"},"url":"https://katakatalab.com/pikalab/speed_reader/"}</script>
+
+  <meta name="twitter:site" content="@katakata0522">
+
+</head>
+
+<body class="min-h-screen flex flex-col items-center py-4 px-3 md:py-8 md:px-6">
+    <script>try{var p=localStorage.getItem('wonder_school_profile_v2');if(p&&JSON.parse(p).darkMode)document.body.classList.add('theme-night');}catch(e){}</script>
+
+    <header class="w-full max-w-4xl flex justify-between items-center mb-6">
+        <div class="flex items-center gap-3">
+            <div
+                class="w-12 h-12 bg-white rounded-2xl flex items-center justify-center text-reader-primary shadow-soft rotate-3 transition-transform hover:rotate-6">
+                <span class="material-symbols-rounded text-3xl">menu_book</span>
+            </div>
+            <div>
+                <h1 class="text-xl md:text-2xl font-extrabold tracking-tight text-teal-900 leading-tight">Speed Reader
+                </h1>
+                <p class="text-[10px] md:text-xs text-teal-600 font-bold opacity-70">瞬読トレーニング</p>
+            </div>
+        </div>
+        <div class="flex gap-2">
+            <button type="button" id="parents-modal-open-btn" data-action="open-modal" data-target="parents-modal"
+                class="bg-white hover:bg-teal-50 text-slate-600 hover:text-teal-700 px-3 py-2 rounded-xl text-xs font-bold shadow-sm transition-all flex items-center gap-1 border border-transparent hover:border-teal-100"
+                aria-label="保護者の方へ - 説明を開く" aria-haspopup="dialog" aria-controls="parents-modal"
+                aria-expanded="false">
+                <span class="material-symbols-rounded text-lg text-teal-500">sentiment_satisfied</span>
+                <span class="hidden sm:inline">保護者の方へ</span>
+            </button>
+        </div>
+    </header>
+
+    <main class="w-full max-w-4xl space-y-5">
+
+
+        <!-- Reader Display -->
+        <div class="relative w-full aspect-[16/9] md:aspect-[21/9] bg-slate-900 rounded-[2rem] shadow-2xl flex flex-col items-center justify-center overflow-hidden ring-8 ring-teal-100/50 group"
+            role="region" aria-label="瞬読表示エリア">
+
+            <!-- Guide Lines -->
+            <div class="absolute inset-0 opacity-20 pointer-events-none group-hover:opacity-10 transition-opacity"
+                aria-hidden="true">
+                <div class="absolute top-0 bottom-0 left-1/2 w-px bg-teal-500 transform -translate-x-1/2"></div>
+                <div class="absolute left-0 right-0 top-1/2 h-px bg-teal-500 transform -translate-y-1/2"></div>
+            </div>
+
+            <!-- Word Display -->
+            <div id="reader-display"
+                class="relative z-10 text-4xl md:text-6xl lg:text-7xl font-serif font-bold text-slate-100 px-8 text-center leading-normal transition-opacity duration-100 select-none"
+                aria-live="polite" aria-atomic="true">Ready?</div>
+
+            <!-- Status Badges -->
+            <div class="absolute top-4 left-4 md:top-6 md:left-6 flex gap-2">
+                <span id="wpm-badge"
+                    class="px-3 py-1.5 rounded-lg bg-slate-800 text-teal-300 text-sm md:text-lg font-bold border border-slate-700 font-mono shadow-lg">WPM:
+                    250</span>
+                <span id="chunk-badge"
+                    class="px-3 py-1.5 rounded-lg bg-slate-800 text-slate-300 text-sm md:text-lg font-bold border border-slate-700 font-mono shadow-lg">1単語</span>
+            </div>
+
+            <!-- Source Title Badge -->
+            <div id="source-badge"
+                class="absolute top-4 right-4 md:top-6 md:right-6 px-4 py-1.5 rounded-lg bg-slate-800/90 text-white text-sm md:text-base font-bold border border-slate-700 font-serif transition-opacity duration-500 shadow-lg opacity-0">
+                タイトル</div>
+
+            <!-- Progress Bar -->
+            <div class="absolute bottom-0 left-0 w-full h-3 bg-slate-800" role="progressbar" aria-label="読書の進み具合"
+                aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+                <div id="progress-bar" class="h-full bg-teal-500 shadow-[0_0_15px_#14b8a6] transition-all duration-100"
+                    style="width: 0%;"></div>
+            </div>
+        </div>
+
+        <!-- Control Buttons -->
+        <div class="grid grid-cols-4 gap-2 md:gap-3 px-1">
+            <button type="button" data-action="reset"
+                class="bg-white text-slate-500 hover:text-teal-600 hover:bg-teal-50 border-2 border-white hover:border-teal-100 rounded-2xl py-3 md:py-5 font-bold shadow-sm flex items-center justify-center gap-1 md:gap-2 transition-all group"
+                title="最初に戻る (R)" aria-label="最初に戻る">
+                <span
+                    class="material-symbols-rounded text-xl md:text-2xl group-hover:-rotate-180 transition-transform duration-500">restart_alt</span>
+                <span class="hidden md:inline text-base">リセット</span>
+            </button>
+            <button type="button" data-action="step-back"
+                class="bg-white text-slate-500 hover:text-teal-600 hover:bg-teal-50 border-2 border-white hover:border-teal-100 rounded-2xl py-3 md:py-5 font-bold shadow-sm flex items-center justify-center gap-1 md:gap-2 transition-all"
+                title="少し戻る (←)" aria-label="10単語戻る">
+                <span class="material-symbols-rounded text-xl md:text-2xl">replay_10</span>
+                <span class="hidden md:inline text-base">戻る</span>
+            </button>
+            <button type="button" id="main-play-btn" data-action="toggle"
+                class="text-white rounded-2xl py-3 md:py-5 font-black shadow-lg shadow-teal-200/50 flex items-center justify-center gap-1 md:gap-2 transform active:scale-95 transition-all text-lg md:text-xl border-4 hover:border-teal-400 bg-teal-600 hover:bg-teal-500 border-teal-500/50"
+                title="再生/一時停止 (Space)" aria-label="再生/一時停止">
+                <span class="material-symbols-rounded text-3xl md:text-4xl">play_arrow</span> START
+            </button>
+            <button type="button" data-action="step-forward"
+                class="bg-white text-slate-500 hover:text-teal-600 hover:bg-teal-50 border-2 border-white hover:border-teal-100 rounded-2xl py-3 md:py-5 font-bold shadow-sm flex items-center justify-center gap-1 md:gap-2 transition-all"
+                title="少し進む (→)" aria-label="10単語進む">
+                <span class="material-symbols-rounded text-xl md:text-2xl">forward_10</span>
+                <span class="hidden md:inline text-base">進む</span>
+            </button>
+        </div>
+
+        <!-- Keyboard Hint (desktop only) -->
+        <p class="hidden sm:block text-center text-xs text-slate-400 font-bold mt-1">
+            キーボード操作: [Space] 再生/停止 | [←] 戻る | [→] 進む | [R] リセット
+        </p>
+
+        <!-- Tab Panel -->
+        <div class="glass-panel p-4 md:p-6 rounded-3xl w-full">
+
+            <!-- Tab Buttons -->
+            <div class="flex gap-2 mb-6 overflow-x-auto pb-2 no-scrollbar border-b border-slate-100" role="tablist"
+                aria-label="コンテンツ切り替え">
+                <button type="button" data-action="switch-tab" data-param="library" id="tab-library" role="tab"
+                    aria-selected="true" aria-controls="content-library" tabindex="0"
+                    class="tab-btn px-6 py-3 rounded-xl text-base font-bold transition-all whitespace-nowrap flex items-center gap-2 shrink-0 tab-active">
+                    <span class="material-symbols-rounded text-xl">local_library</span> ライブラリ
+                </button>
+                <button type="button" data-action="switch-tab" data-param="input" id="tab-input" role="tab"
+                    aria-selected="false" aria-controls="content-input" tabindex="-1"
+                    class="tab-btn hover:bg-teal-50 px-6 py-3 rounded-xl text-base font-bold transition-all whitespace-nowrap flex items-center gap-2 shrink-0 bg-white text-slate-600">
+                    <span class="material-symbols-rounded text-xl">edit_note</span> 自由入力
+                </button>
+                <button type="button" data-action="switch-tab" data-param="settings" id="tab-settings" role="tab"
+                    aria-selected="false" aria-controls="content-settings" tabindex="-1"
+                    class="tab-btn hover:bg-teal-50 px-6 py-3 rounded-xl text-base font-bold transition-all whitespace-nowrap flex items-center gap-2 shrink-0 bg-white text-slate-600">
+                    <span class="material-symbols-rounded text-xl">insights</span> レポート・設定
+                </button>
+            </div>
+
+            <!-- Library Tab Content -->
+            <div id="content-library" role="tabpanel" aria-labelledby="tab-library"
+                class="tab-content animate-fade-in block">
+                <div class="flex gap-2 mb-6 overflow-x-auto pb-2 no-scrollbar" role="tablist" aria-label="学年カテゴリ">
+                    <button type="button" data-action="switch-category" data-param="low-elem" id="cat-btn-low-elem"
+                        role="tab" aria-selected="false" aria-controls="lib-cat-low-elem" tabindex="-1"
+                        class="cat-btn px-4 py-3 rounded-full border font-bold text-sm whitespace-nowrap shadow-sm hover:bg-slate-50 border-slate-200 text-slate-500 bg-white">🐣
+                        小学校 低学年</button>
+                    <button type="button" data-action="switch-category" data-param="high-elem" id="cat-btn-high-elem"
+                        role="tab" aria-selected="false" aria-controls="lib-cat-high-elem" tabindex="-1"
+                        class="cat-btn px-4 py-3 rounded-full border font-bold text-sm whitespace-nowrap hover:bg-slate-50 border-slate-200 text-slate-500 bg-white">🎒
+                        小学校 高学年</button>
+                    <button type="button" data-action="switch-category" data-param="junior" id="cat-btn-junior"
+                        role="tab" aria-selected="true" aria-controls="lib-cat-junior" tabindex="0"
+                        class="cat-btn px-4 py-3 rounded-full border font-bold text-sm whitespace-nowrap hover:bg-slate-50 ring-2 ring-offset-1 border-teal-200 bg-teal-50 text-teal-700 ring-teal-300">🏫
+                        中学生</button>
+                    <button type="button" data-action="switch-category" data-param="high" id="cat-btn-high"
+                        role="tab" aria-selected="false" aria-controls="lib-cat-high" tabindex="-1"
+                        class="cat-btn px-4 py-3 rounded-full border font-bold text-sm whitespace-nowrap hover:bg-slate-50 border-slate-200 text-slate-500 bg-white">🎓
+                        高校・一般</button>
+                </div>
+
+                <div id="lib-cat-low-elem" role="tabpanel" aria-labelledby="cat-btn-low-elem" aria-hidden="true"
+                    hidden
+                    class="lib-cat-content animate-slide-up hidden"></div>
+                <div id="lib-cat-high-elem" role="tabpanel" aria-labelledby="cat-btn-high-elem" aria-hidden="true"
+                    hidden
+                    class="lib-cat-content animate-slide-up hidden"></div>
+                <div id="lib-cat-junior" role="tabpanel" aria-labelledby="cat-btn-junior"
+                    class="lib-cat-content animate-slide-up block"></div>
+                <div id="lib-cat-high" role="tabpanel" aria-labelledby="cat-btn-high" aria-hidden="true" hidden
+                    class="lib-cat-content animate-slide-up hidden"></div>
+            </div>
+
+            <!-- Input Tab Content -->
+            <div id="content-input" role="tabpanel" aria-labelledby="tab-input" aria-hidden="true" hidden
+                class="tab-content animate-fade-in hidden">
+                <!-- File Drop Zone -->
+                <div id="drop-zone" class="border-2 border-dashed border-slate-200 rounded-2xl p-6 text-center bg-slate-50/50 hover:bg-teal-50/30 hover:border-teal-400 transition-all cursor-pointer mb-4 flex flex-col items-center justify-center gap-2 group" role="region" aria-label="テキストファイルドロップエリア">
+                    <span class="material-symbols-rounded text-3xl text-slate-400 group-hover:text-teal-500 transition-colors">upload_file</span>
+                    <span class="text-xs font-bold text-slate-500 group-hover:text-teal-700 transition-colors">ここにテキストファイル（.txt）をドラッグ＆ドロップするか</span>
+                    <input type="file" id="custom-file-input" accept=".txt" class="hidden">
+                    <button type="button" id="file-select-btn" class="bg-white text-slate-600 border border-slate-200 hover:bg-teal-50 hover:text-teal-600 hover:border-teal-200 px-4 py-1.5 rounded-xl text-xs font-extrabold shadow-sm transition-all">ファイルを選択</button>
+                </div>
+                <textarea id="custom-text"
+                    class="w-full h-48 p-4 rounded-xl bg-white border-2 border-slate-100 focus:border-teal-400 outline-none text-slate-700 resize-none font-medium mb-4 shadow-inner-soft font-serif text-lg leading-relaxed"
+                    placeholder="ここに読みたい文章を貼り付けてください..." aria-label="カスタムテキスト入力"></textarea>
+                <div class="flex justify-between items-center">
+                    <button type="button" data-action="clear-custom"
+                        class="text-sm text-slate-400 hover:text-red-400 font-bold px-2 flex items-center gap-1">
+                        <span class="material-symbols-rounded text-lg">delete</span> クリア
+                    </button>
+                    <button type="button" data-action="prepare-custom"
+                        class="bg-teal-600 hover:bg-teal-500 text-white px-8 py-3 rounded-xl font-bold shadow-md hover:shadow-lg transition-all flex items-center gap-2 text-lg">
+                        <span class="material-symbols-rounded text-2xl">check</span> 読み込み
+                    </button>
+                </div>
+            </div>
+
+            <!-- Settings Tab Content -->
+            <div id="content-settings" role="tabpanel" aria-labelledby="tab-settings" aria-hidden="true" hidden
+                class="tab-content animate-fade-in hidden">
+                <div class="space-y-8 py-2">
+
+                    <!-- Parent Report Section -->
+                    <div class="grid md:grid-cols-2 gap-6">
+                        <!-- Stats & Chart -->
+                        <div class="bg-slate-50 p-6 rounded-2xl border border-slate-100 flex flex-col justify-between">
+                            <div>
+                                <h3 class="text-lg font-bold text-slate-700 flex items-center gap-2 mb-4">
+                                    <span class="material-symbols-rounded text-teal-500 text-2xl">monitoring</span> がんばりレポート
+                                </h3>
+                                <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
+                                    <div class="bg-white p-3 rounded-xl border border-slate-100 text-center shadow-sm">
+                                        <span class="text-[10px] text-slate-400 font-bold block mb-1">よんだ本</span>
+                                        <span id="report-read-count" class="text-xl font-black text-slate-700 font-mono">0冊</span>
+                                    </div>
+                                    <div class="bg-white p-3 rounded-xl border border-slate-100 text-center shadow-sm">
+                                        <span class="text-[10px] text-slate-400 font-bold block mb-1">さいこうWPM</span>
+                                        <span id="report-max-wpm" class="text-xl font-black text-teal-600 font-mono">0</span>
+                                    </div>
+                                    <div class="bg-white p-3 rounded-xl border border-slate-100 text-center shadow-sm">
+                                        <span class="text-[10px] text-slate-400 font-bold block mb-1">よんだ言葉数</span>
+                                        <span id="report-total-words" class="text-xl font-black text-slate-700 font-mono">0</span>
+                                    </div>
+                                    <div class="bg-white p-3 rounded-xl border border-slate-100 text-center shadow-sm">
+                                        <span class="text-[10px] text-slate-400 font-bold block mb-1">よんだ時間</span>
+                                        <span id="report-total-duration" class="text-xl font-black text-teal-600 font-mono">0秒</span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div>
+                                <h4 class="text-xs text-slate-400 font-bold mb-3 flex items-center gap-1">
+                                    <span class="material-symbols-rounded text-sm">calendar_month</span> さいきんの7日間のトレーニング
+                                </h4>
+                                <div class="flex justify-between items-end h-28 bg-white p-4 rounded-xl border border-slate-100" id="report-chart-container">
+                                    <div class="w-full text-center text-xs text-slate-300 font-bold py-8">まだデータがありません</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Badge Collection Grid -->
+                        <div class="bg-slate-50 p-6 rounded-2xl border border-slate-100 flex flex-col">
+                            <h3 class="text-lg font-bold text-slate-700 flex items-center gap-2 mb-4">
+                                <span class="material-symbols-rounded text-teal-500 text-2xl">workspace_premium</span> あつめたバッジ
+                            </h3>
+                            <div class="grid grid-cols-4 gap-3 max-h-72 overflow-y-auto no-scrollbar pr-1" id="report-badge-grid">
+                                <!-- JSで動的に生成 -->
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- WPM Setting -->
+                    <div class="bg-slate-50 p-6 rounded-2xl border border-slate-100">
+                        <div class="flex justify-between items-end mb-4">
+                            <label for="wpm-slider" class="text-lg font-bold text-slate-700 flex items-center gap-2">
+                                <span class="material-symbols-rounded text-teal-500 text-2xl">speed</span> 表示速度 (WPM)
+                            </label>
+                            <span class="text-3xl font-black text-teal-600 tabular-nums" id="wpm-display">250</span>
+                        </div>
+
+                        <div class="relative w-full pb-6">
+                            <input type="range" id="wpm-slider" min="50" max="1000" step="10" value="250"
+                                class="w-full mb-1 z-10 relative" aria-describedby="wpm-hint">
+                            <div id="wpm-hint" class="w-full text-xs text-slate-400 font-bold h-4 relative">
+                                <span class="absolute left-0">50 (ゆっくり)</span>
+                                <span class="wpm-label-center">400 (平均)</span>
+                                <span class="absolute right-0">1000 (超速)</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Chunk Size Setting -->
+                    <div class="bg-slate-50 p-6 rounded-2xl border border-slate-100">
+                        <label class="text-lg font-bold text-slate-700 flex items-center gap-2 mb-4">
+                            <span class="material-symbols-rounded text-teal-500 text-2xl">short_text</span> いちどに表示する量
+                        </label>
+                        <div class="grid grid-cols-3 gap-3" role="radiogroup" aria-label="チャンクサイズ選択">
+                            <button type="button" data-action="set-chunk" data-param="1"
+                                class="chunk-btn bg-teal-600 text-white border-2 border-teal-600 py-3 rounded-xl font-bold transition-all text-lg shadow-md"
+                                role="radio" aria-checked="true">1単語</button>
+                            <button type="button" data-action="set-chunk" data-param="2"
+                                class="chunk-btn bg-white text-slate-600 border-2 border-slate-200 py-3 rounded-xl font-bold hover:border-teal-300 transition-all text-lg"
+                                role="radio" aria-checked="false">2単語</button>
+                            <button type="button" data-action="set-chunk" data-param="3"
+                                class="chunk-btn bg-white text-slate-600 border-2 border-slate-200 py-3 rounded-xl font-bold hover:border-teal-300 transition-all text-lg"
+                                role="radio" aria-checked="false">3単語</button>
+                        </div>
+                    </div>
+
+                    <!-- Font Size Setting -->
+                    <div class="bg-slate-50 p-6 rounded-2xl border border-slate-100">
+                        <label class="text-lg font-bold text-slate-700 flex items-center gap-2 mb-4">
+                            <span class="material-symbols-rounded text-teal-500 text-2xl">format_size</span> 文字の大きさ
+                        </label>
+                        <div class="grid grid-cols-3 gap-3" role="radiogroup" aria-label="文字サイズ選択">
+                            <button type="button" data-action="set-fontsize" data-param="normal"
+                                class="fontsize-btn bg-teal-600 text-white border-2 border-teal-600 py-3 rounded-xl font-bold transition-all text-lg shadow-md"
+                                role="radio" aria-checked="true">ふつう</button>
+                            <button type="button" data-action="set-fontsize" data-param="large"
+                                class="fontsize-btn bg-white text-slate-600 border-2 border-slate-200 py-3 rounded-xl font-bold hover:border-teal-300 transition-all text-lg"
+                                role="radio" aria-checked="false">おおきめ</button>
+                            <button type="button" data-action="set-fontsize" data-param="xlarge"
+                                class="fontsize-btn bg-white text-slate-600 border-2 border-slate-200 py-3 rounded-xl font-bold hover:border-teal-300 transition-all text-lg"
+                                role="radio" aria-checked="false">特大</button>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <!-- Parents Modal -->
+<dialog id="parents-modal"
+    class="p-0 rounded-3xl shadow-2xl open:animate-fade-in w-full max-w-lg m-auto overflow-hidden border-0"
+    aria-labelledby="parents-modal-title" style="display:none;">
+    <div class="bg-white p-6 md:p-8 max-h-[90vh] overflow-y-auto relative text-left">
+        <button type="button" data-action="close-modal" data-target="parents-modal" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600 focus:outline-none" aria-label="閉じる">
+            <span class="material-symbols-rounded">close</span>
+        </button>
+        <div class="mb-6 border-b-2 border-indigo-100 pb-4">
+            <h2 id="parents-modal-title"
+                class="text-lg md:text-xl font-black text-slate-800 flex items-center gap-2">
+                <span class="material-symbols-rounded text-indigo-500">family_restroom</span> 保護者の方へ
+            </h2>
+            <p class="text-xs text-slate-400 font-bold mt-1">For Parents &amp; Guardians</p>
+        </div>
+
+        <div class="space-y-6 text-sm text-slate-600 leading-relaxed font-bold">
+            <!-- ウェルカムメッセージカード -->
+            <div class="bg-gradient-to-r from-indigo-50 to-purple-50 p-5 rounded-2xl border border-indigo-100 text-center">
+                <p class="mb-2 text-indigo-800 text-base">
+                    <span class="material-symbols-rounded text-xl align-bottom mr-1 text-pink-400">favorite</span>
+                    当サイト「PikaLab」に<br>ご訪問いただき、誠にありがとうございます。
+                </p>
+                <p class="text-xs text-indigo-600">
+                            大切なお子様と一緒にPikaLabを訪れていただけたこと、<br>制作者のかたかたより、心から感謝申し上げます。
+                </p>
+            </div>
+
+            <!-- 1. ねらい -->
+            <div>
+                <h3 class="text-indigo-600 font-black mb-2 flex items-center gap-2">
+                    <span class="material-symbols-rounded text-base">school</span> このアプリのねらい
+                </h3>
+                <p>「スピードリーダー」は、文章を1〜3語ずつ表示し、設定した表示速度に慣れるためのトレーニングツールです。<span class="bg-indigo-100 text-indigo-700 px-1 rounded">フラッシュ表示や速読チャレンジ</span>を、自分に無理のない速度で試せます。</p>
+            </div>
+
+            <!-- 2. おねがい -->
+            <div>
+                <h3 class="text-pink-500 font-black mb-2 flex items-center gap-2">
+                    <span class="material-symbols-rounded text-base">favorite</span> 保護者様へのおねがい
+                </h3>
+                <p>スコアだけでなく、<span class="bg-pink-100 text-pink-700 px-1 rounded">前回の自分と比べてどうだったか</span>を一緒に見てみてください。表示速度を上げることだけを目標にせず、内容まで追えたかも確認しながら無理のないペースを探してください。</p>
+            </div>
+
+            <!-- 3. 活用方法 -->
+            <div>
+                <h3 class="text-green-600 font-black mb-2 flex items-center gap-2">
+                    <span class="material-symbols-rounded text-base">emoji_objects</span> おうちでの活用方法
+                </h3>
+                <p>読書とは別の練習として組み合わせられます。「今日は本を5分読んでから、スピードリーダーに挑戦してみよう」のように、無理のない範囲で表示速度に慣れるために活用してください。読解力や認知能力の向上を保証するものではありません。</p>
+            </div>
+
+            <!-- 4. 健康への配慮 -->
+            <div>
+                <h3 class="text-orange-500 font-black mb-2 flex items-center gap-2">
+                    <span class="material-symbols-rounded text-base">timer</span> 健康への配慮（休憩の推奨）
+                </h3>
+                <p>大切なお子様の健康のために、<span class="bg-orange-100 text-orange-700 px-1 rounded">30分に1回程度の休憩</span>を推奨しています。フラッシュ表示は目への刺激が強いため、特に意識して休憩を取るようお声がけください。各ツールへ入力した内容や端末内の記録はブラウザ内で処理・保存し、運営者のサーバー、広告サービス、アクセス解析サービスへ送信しません。ページ表示時にはWebフォント等の外部配信サービスへの通常の通信が発生する場合があります。</p>
+            </div>
+        </div>
+        <div class="mt-8 text-center">
+            <button type="button" data-action="close-modal" data-target="parents-modal"
+                class="w-full bg-indigo-500 text-white px-8 py-3 rounded-xl font-black hover:bg-indigo-600 transition shadow-lg shadow-indigo-200">閉じる</button>
+        </div>
+    </div>
+</dialog>
+
+    <style>
+    #parents-modal::backdrop {
+        background: rgba(15, 23, 42, 0.6);
+        backdrop-filter: blur(4px);
+    }
+    #parents-modal[open] {
+        display: block !important;
+        animation: parentsModalFadeIn 0.3s ease-out forwards;
+    }
+    @keyframes parentsModalFadeIn {
+        from { opacity: 0; transform: scale(0.95); }
+        to { opacity: 1; transform: scale(1); }
+    }
+    </style>
+
+</body>
+
+</html>

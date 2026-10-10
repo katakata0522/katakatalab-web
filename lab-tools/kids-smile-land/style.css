@@ -1,0 +1,173 @@
+@font-face {
+  font-family: 'Kiwi Maru';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('./kiwimaru-400.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Kiwi Maru';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url('./kiwimaru-500.woff2') format('woff2');
+}
+
+.sticker-peel-btn {
+    position: absolute;
+    right: -0.25rem;
+    bottom: -0.35rem;
+    min-width: 2.75rem;
+    min-height: 1.75rem;
+    padding: 0.15rem 0.4rem;
+    border-radius: 999px;
+    border: 2px solid #fdba74;
+    background: #fff7ed;
+    color: #c2410c;
+    font-size: 0.65rem;
+    font-weight: 800;
+    z-index: 2;
+}
+
+body {
+    font-family: 'Kiwi Maru', system-ui, -apple-system, sans-serif;
+    background-color: #FFFDF4; /* 優しい温かみのあるクリーム背景 */
+    user-select: none;
+    -webkit-user-select: none;
+    touch-action: manipulation;
+}
+
+/* ぷにぷに3Dボタンのアニメーション */
+.btn-puni {
+    transition: all 0.15s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    box-shadow: 0 8px 0px var(--tw-shadow-color);
+}
+.btn-puni:active {
+    transform: translateY(6px);
+    box-shadow: 0 2px 0px var(--tw-shadow-color);
+}
+
+/* ふわふわ浮かぶアニメーション */
+@keyframes float {
+    0%, 100% { transform: translateY(0px) rotate(0deg); }
+    50% { transform: translateY(-8px) rotate(2deg); }
+}
+.animate-float {
+    animation: float 4s ease-in-out infinite;
+}
+
+/* もっきん鍵盤の光るエフェクト */
+@keyframes pulse-light {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.6; transform: scale(0.95); }
+}
+.guide-active {
+    animation: pulse-light 1s infinite;
+    border: 5px solid #ffffff !important;
+    box-shadow: 0 0 25px #fffa85 !important;
+}
+
+/* スクロールバー非表示 */
+.no-scrollbar::-webkit-scrollbar {
+    display: none;
+}
+.no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
+
+/* iPhone SE（極狭モバイル端末）適応スタイル：文字潰れを完全に防止 */
+@media (max-width: 375px) {
+    nav button span.text-2xl {
+        font-size: 1.25rem !important;
+    }
+    nav button span:not(.text-2xl) {
+        font-size: 8px !important;
+        letter-spacing: -0.05em;
+    }
+    nav {
+        padding-left: 4px !important;
+        padding-right: 4px !important;
+    }
+}
+
+/* アトラクションカードのポップホバー効果 */
+.card-attraction {
+    transition: all 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    border-bottom-width: 8px !important;
+}
+.card-attraction:hover {
+    transform: scale(1.04) translateY(-6px);
+}
+.card-attraction:active {
+    transform: scale(0.96) translateY(4px);
+    border-bottom-width: 4px !important;
+}
+
+/* キャラクターおしゃべり吹き出しの三角デザイン */
+.bubble-bottom-tip::after {
+    content: '';
+    position: absolute;
+    bottom: -12px;
+    left: 24px;
+    border-width: 12px 8px 0;
+    border-style: solid;
+    border-color: #ffffff transparent;
+    display: block;
+    width: 0;
+}
+
+.bubble-bottom-tip-center::after {
+    content: '';
+    position: absolute;
+    bottom: -12px;
+    left: 50%;
+    transform: translateX(-50%);
+    border-width: 12px 8px 0;
+    border-style: solid;
+    border-color: #ffffff transparent;
+    display: block;
+    width: 0;
+}
+
+.bubble-bottom-tip-right::after {
+    content: '';
+    position: absolute;
+    bottom: -12px;
+    right: 24px;
+    border-width: 12px 8px 0;
+    border-style: solid;
+    border-color: #ffffff transparent;
+    display: block;
+    width: 0;
+}
+
+/* 小画面でもサイト名を単語の途中で折り返さない */
+.kids-header-main,
+.kids-title-block {
+    min-width: 0;
+}
+
+.kids-site-title {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    column-gap: 0.25rem;
+    line-height: 1.25;
+}
+
+.kids-site-title__name {
+    white-space: nowrap;
+}
+
+.kids-site-title__badge {
+    flex: 0 0 auto;
+}
+
+@media (max-width: 480px) {
+    .kids-site-title {
+        font-size: 0.875rem;
+        letter-spacing: 0.01em;
+    }
+}
+

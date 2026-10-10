@@ -1,0 +1,393 @@
+/* ============================================================
+   ほしぞら・アドベンチャー - style.css
+   Canvas ベース版
+   ============================================================ */
+
+body {
+    font-family: 'M PLUS Rounded 1c', sans-serif !important;
+    background-image: none !important;
+    background-color: #0f172a !important;
+}
+
+/* ---- Scrollbar ---- */
+/* iOSのスクロール慣性を有効化 */
+.custom-scrollbar,
+.overflow-y-auto {
+    -webkit-overflow-scrolling: touch;
+}
+
+.custom-scrollbar::-webkit-scrollbar { height: 8px; width: 8px; }
+.custom-scrollbar::-webkit-scrollbar-track { background: rgba(15,23,42,0.5); border-radius: 10px; }
+.custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(59,130,246,0.5); border-radius: 10px; }
+.custom-scrollbar::-webkit-scrollbar-thumb:hover { background: rgba(59,130,246,0.8); }
+
+/* 5:7のカラム比率を保ち、カラム間の余白もモーダル幅に収める。 */
+@media (min-width: 640px) {
+    #modal-body > div {
+        min-width: 0;
+        flex-shrink: 1;
+    }
+}
+
+.hide-scrollbar::-webkit-scrollbar { height: 8px; }
+.hide-scrollbar::-webkit-scrollbar-track { background: transparent; }
+.hide-scrollbar::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 10px; }
+
+/* ---- Canvas ---- */
+#space-canvas {
+    display: block;
+    width: 100%;
+    height: 100%;
+}
+
+/* ---- Animations ---- */
+.animate-float-slow {
+    animation: float-safe 10s ease-in-out infinite;
+}
+@keyframes float-safe {
+    0%, 100% { margin-top: 0px; }
+    50%       { margin-top: -14px; }
+}
+
+.animate-bounce-x {
+    animation: bounce-x 1.5s infinite;
+}
+.animate-bounce-x-reverse {
+    animation: bounce-x-reverse 1.5s infinite;
+}
+@keyframes bounce-x {
+    0%, 100% { transform: translateX(0); }
+    50%       { transform: translateX(5px); }
+}
+@keyframes bounce-x-reverse {
+    0%, 100% { transform: translateX(0); }
+    50%       { transform: translateX(-5px); }
+}
+
+/* ---- Warp Speed ---- */
+.warp-lines {
+    background:
+        linear-gradient(90deg, rgba(59,130,246,0.3) 1px, transparent 1px) 0 0,
+        linear-gradient(rgba(59,130,246,0.3) 1px, transparent 1px) 0 0;
+    background-size: 40px 40px;
+    transform: perspective(500px) rotateX(60deg) scale(3);
+    animation: warpAnim 1s linear infinite;
+    opacity: 0.5;
+}
+@keyframes warpAnim {
+    from { transform: perspective(500px) rotateX(60deg) scale(3) translateY(0); }
+    to   { transform: perspective(500px) rotateX(60deg) scale(3) translateY(40px); }
+}
+
+.spaceship-warp {
+    animation: shake 0.3s ease-in-out infinite alternate;
+}
+@keyframes shake {
+    from { transform: translateY(-2px) rotate(-1deg); }
+    to   { transform: translateY(2px) rotate(1deg); }
+}
+
+/* ---- Stamp ---- */
+.stamp-animation {
+    animation: stampIn 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+}
+@keyframes stampIn {
+    0%   { transform: scale(3) rotate(-30deg); opacity: 0; }
+    50%  { transform: scale(0.9) rotate(-10deg); opacity: 1; }
+    100% { transform: scale(1) rotate(-12deg); opacity: 1; }
+}
+
+/* ---- Starburst ---- */
+.starburst-particle {
+    position: absolute;
+    width: 6px; height: 6px;
+    background-color: #fbbf24;
+    border-radius: 50%;
+    box-shadow: 0 0 10px #fbbf24;
+    animation: burst 0.6s ease-out forwards;
+    pointer-events: none;
+    z-index: 75;
+}
+@keyframes burst {
+    0%   { transform: translate(0,0) scale(1); opacity: 1; }
+    100% { transform: translate(var(--tx), var(--ty)) scale(0); opacity: 0; }
+}
+
+/* ---- Modal detail image (black bg removed via canvas processor) ---- */
+#detail-image {
+    object-fit: contain;
+    display: block;
+}
+
+/* ---- Prefers Reduced Motion ---- */
+@media (prefers-reduced-motion: reduce) {
+    .warp-lines, .spaceship-warp,
+    .animate-float-slow, .animate-bounce-x, .animate-bounce-x-reverse,
+    #ufo-btn, #ufo-btn * {
+        animation: none !important;
+        transition: none !important;
+    }
+}
+
+#space-map-viewport {
+    position: fixed;
+    inset: 0;
+    width: 100%;
+    max-width: 100%;
+    overflow: hidden;
+    overscroll-behavior: contain;
+}
+
+/* ---- Header Badge Button & Dot Animations ---- */
+#header-badge-btn {
+    min-width: 44px;
+    min-height: 44px;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+#bgm-toggle-btn,
+[data-action="parents-modal-open"],
+#pwa-close-btn,
+#quiz-continue-btn,
+#quiz-retry-btn,
+#btn-secret-column,
+#close-modal-btn,
+#warp-next-btn,
+#close-modal-bottom-btn,
+#close-celebration-btn,
+#close-ufo-btn,
+#btn-close-secret {
+    min-width: 40px;
+    min-height: 40px;
+}
+
+#real-photo-btn {
+    min-height: 40px;
+}
+
+button[aria-label$="へワープ"] {
+    width: 40px !important;
+    height: 40px !important;
+    background: transparent !important;
+    border-color: transparent !important;
+    box-shadow: none !important;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+button[aria-label$="へワープ"]::after {
+    content: "";
+    width: 14px;
+    height: 14px;
+    border-radius: 999px;
+    border: 2px solid rgb(148 163 184);
+    background: rgb(51 65 85);
+    box-shadow: 0 4px 6px rgb(0 0 0 / 0.18);
+}
+
+button[class*="bg-emerald-500"][aria-label$="へワープ"]::after {
+    border-color: rgb(110 231 183);
+    background: rgb(16 185 129);
+}
+#header-badge-btn:hover {
+    background-color: rgba(255, 255, 255, 0.25);
+    box-shadow: 0 0 15px rgba(99, 102, 241, 0.6);
+    color: #fff;
+    transform: scale(1.08);
+}
+#header-badge-btn:active {
+    transform: scale(0.95);
+}
+
+/* 通知ドットのカスタム点滅（呼吸するように滑らかに明滅させる） */
+#header-badge-dot.animate-pulse {
+    animation: pulse-glow 2s infinite ease-in-out;
+}
+@keyframes pulse-glow {
+    0%, 100% {
+        transform: scale(1);
+        opacity: 0.6;
+        box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7);
+    }
+    50% {
+        transform: scale(1.2);
+        opacity: 1;
+        box-shadow: 0 0 8px 3px rgba(239, 68, 68, 0.3);
+    }
+}
+
+/* ============================================================
+   Futuristic SF HUD & Glassmorphism Power-up Styles
+   ============================================================ */
+
+/* グラスモルフィズム用プレミアム背景 */
+.glass-premium {
+    background: linear-gradient(135deg, rgba(15, 23, 42, 0.75) 0%, rgba(30, 41, 59, 0.7) 100%) !important;
+    border: 1px solid rgba(99, 102, 241, 0.25) !important;
+    box-shadow: 
+        0 8px 32px 0 rgba(0, 0, 0, 0.5),
+        inset 0 0 30px rgba(99, 102, 241, 0.05) !important;
+    backdrop-filter: blur(20px) !important;
+    -webkit-backdrop-filter: blur(20px) !important;
+}
+
+/* SF調のネオンエフェクト */
+.text-neon-cyan {
+    color: #67e8f9;
+    text-shadow: 0 0 10px rgba(6, 182, 212, 0.6), 0 0 20px rgba(6, 182, 212, 0.2);
+}
+.text-neon-pink {
+    color: #f472b6;
+    text-shadow: 0 0 10px rgba(236, 72, 153, 0.6), 0 0 20px rgba(236, 72, 153, 0.2);
+}
+.text-neon-amber {
+    color: #fcd34d;
+    text-shadow: 0 0 10px rgba(245, 158, 11, 0.6), 0 0 20px rgba(245, 158, 11, 0.2);
+}
+
+/* L字型コーナーブラケット (サイバーパンク/SF装飾) */
+.hud-corner-container {
+    position: relative;
+}
+.hud-corner-bracket::before,
+.hud-corner-bracket::after,
+.hud-corner-bracket-bottom::before,
+.hud-corner-bracket-bottom::after {
+    content: '';
+    position: absolute;
+    width: 14px;
+    height: 14px;
+    border-color: rgba(99, 102, 241, 0.75);
+    border-style: solid;
+    pointer-events: none;
+    z-index: 10;
+}
+/* 左上 */
+.hud-corner-bracket::before {
+    top: 6px;
+    left: 6px;
+    border-width: 2px 0 0 2px;
+}
+/* 右上 */
+.hud-corner-bracket::after {
+    top: 6px;
+    right: 6px;
+    border-width: 2px 2px 0 0;
+}
+/* 左下 */
+.hud-corner-bracket-bottom::before {
+    bottom: 6px;
+    left: 6px;
+    border-width: 0 0 2px 2px;
+}
+/* 右下 */
+.hud-corner-bracket-bottom::after {
+    bottom: 6px;
+    right: 6px;
+    border-width: 0 2px 2px 0;
+}
+
+/* スキャンライン / ホログラムスキャン背景 */
+.hud-scanlines {
+    position: relative;
+    overflow: hidden;
+}
+.hud-scanlines::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+        rgba(18, 16, 16, 0) 50%, 
+        rgba(0, 0, 0, 0.25) 50%
+    );
+    background-size: 100% 4px;
+    z-index: 1;
+    pointer-events: none;
+    opacity: 0.4;
+}
+
+/* デジタルグリフスライドアニメーション */
+.hologram-scan-line {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 3px;
+    background: linear-gradient(90deg, transparent, rgba(99, 102, 241, 0.6), transparent);
+    animation: scan-move 4s linear infinite;
+    pointer-events: none;
+    z-index: 2;
+}
+@keyframes scan-move {
+    0% { transform: translateY(-10px); }
+    100% { transform: translateY(220px); }
+}
+
+/* サイバーパンクグリッド背景 */
+.cyber-grid {
+    background-size: 20px 20px;
+    background-image: 
+        linear-gradient(to right, rgba(99, 102, 241, 0.04) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(99, 102, 241, 0.04) 1px, transparent 1px);
+}
+
+/* クイズボタンのサイバー装飾ホバー */
+.quiz-cyber-btn {
+    position: relative;
+    overflow: hidden;
+    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+.quiz-cyber-btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.08), transparent);
+    transition: 0.5s;
+}
+.quiz-cyber-btn:hover::before {
+    left: 100%;
+}
+.quiz-cyber-btn:hover {
+    border-color: rgba(99, 102, 241, 0.6) !important;
+    box-shadow: 0 0 15px rgba(99, 102, 241, 0.3);
+    text-shadow: 0 0 4px rgba(255, 255, 255, 0.5);
+}
+
+/* タブボタンのアクティブインジケーター */
+.secret-tab-neon-active {
+    border-color: #6366f1 !important;
+    box-shadow: 0 0 15px rgba(99, 102, 241, 0.4), inset 0 0 10px rgba(99, 102, 241, 0.2) !important;
+    background: rgba(30, 41, 59, 0.9) !important;
+}
+
+
+
+/* 画面外へ飛んだUFOの矩形を文書のスクロール幅へ含めない。 */
+#ufo-viewport {
+    position: fixed;
+    inset: 0;
+    overflow: hidden;
+    pointer-events: none;
+    z-index: 45;
+}
+#ufo-btn:not(.pointer-events-none) { pointer-events: auto; }
+#minimap-container { touch-action: none; }
+
+/* ヘッダーの透明な余白が直下のミニマップのクリックを奪わない。 */
+main > header { pointer-events: none; }
+main > header a,
+main > header button { pointer-events: auto; }
+@media (max-width: 374px) {
+    /* 実フォントで4行になりナビに重なる幅だけ、同じ見出しを2行へ収める。 */
+    #space-header h1 { font-size: 16px; line-height: 24px; letter-spacing: 0.04em; }
+}
+/* 長いロック説明を中央から溢れさせず、本文とタブを別々にスクロールできるようにする。 */
+#secret-content-area { min-width: 0; }
+#secret-content-area > div.h-full { height: auto; min-height: 100%; flex-shrink: 0; }
+@media (max-width: 767px) {
+    #secret-content-area { flex-shrink: 0; }
+}

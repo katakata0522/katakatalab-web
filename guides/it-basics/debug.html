@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>【IT用語】「デバッグ」とは？不具合の原因を一つずつ確かめる作業 | KatakataLab</title>
+  <meta name="description" content="デバッグとは何かを、症状の確認、再現、原因の切り分け、ログ・ブレークポイント・テスト・Git履歴の使い方から具体的に解説します。">
+  <link rel="canonical" href="https://katakatalab.com/guides/it-basics/debug.html">
+  <meta property="og:type" content="article">
+  <meta property="og:site_name" content="KatakataLab">
+  <meta property="og:title" content="【IT用語】「デバッグ」とは？不具合の原因を一つずつ確かめる作業">
+  <meta property="og:description" content="デバッグとは何かを、症状の確認、再現、原因の切り分け、ログ・ブレークポイント・テスト・Git履歴の使い方から具体的に解説します。">
+  <meta property="og:url" content="https://katakatalab.com/guides/it-basics/debug.html">
+  <meta property="og:image" content="https://katakatalab.com/ogp.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="icon" href="../../favicon.ico">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&family=Zen+Kurenaido&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css?v=20260824-responsive">
+  <script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": "【IT用語】「デバッグ」とは？不具合の原因を一つずつ確かめる作業",
+  "description": "デバッグとは何かを、症状の確認、再現、原因の切り分け、ログ・ブレークポイント・テスト・Git履歴の使い方から具体的に解説します。",
+  "datePublished": "2026-07-13",
+  "dateModified": "2026-08-04",
+  "mainEntityOfPage": "https://katakatalab.com/guides/it-basics/debug.html",
+  "inLanguage": "ja",
+  "author": {
+    "@type": "Person",
+    "name": "かたかた",
+    "url": "https://katakatalab.com/who-is-katakata.html"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "KatakataLab",
+    "url": "https://katakatalab.com/"
+  }
+}</script>
+  <script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position": 1,
+      "name": "ホーム",
+      "item": "https://katakatalab.com/"
+    },
+    {
+      "@type": "ListItem",
+      "position": 2,
+      "name": "かたかたの制作ノート",
+      "item": "https://katakatalab.com/guides/it-basics/"
+    },
+    {
+      "@type": "ListItem",
+      "position": 3,
+      "name": "【IT用語】「デバッグ」とは？不具合の原因を一つずつ確かめる作業",
+      "item": "https://katakatalab.com/guides/it-basics/debug.html"
+    }
+  ]
+}</script>
+</head>
+<body>
+    <script>try{if(localStorage.getItem('theme')==='dark')document.body.classList.add('dark-mode');}catch(e){}</script>
+  <a class="skip-link" href="#main-content">本文へ移動</a>
+  <header class="site-header">
+    <div class="header-inner">
+      <a class="brand" href="../../" aria-label="KatakataLab ホーム">
+        <span class="brand-mark" aria-hidden="true">K</span>
+        <span><strong>KatakataLab</strong><small>かたかたの制作ノート</small></span>
+      </a>
+      <nav class="site-nav" aria-label="主要ナビゲーション">
+        <a href="./">記事一覧</a>
+        <a href="../../#projects">作品・ツール</a>
+        <a href="../../who-is-katakata.html">運営者</a>
+      </nav>
+    </div>
+  </header>
+  <main id="main-content">
+    <nav class="breadcrumbs" aria-label="パンくずリスト">
+      <a href="../../">ホーム</a><span aria-hidden="true">/</span><a href="./">かたかたの制作ノート</a><span aria-hidden="true">/</span><span aria-current="page">「デバッグ」とは？不具合の原因を一つずつ確かめる作業</span>
+    </nav>
+    <article class="article-shell">
+      <header class="article-hero">
+        <div class="chapter-stamp"><span>CHAPTER 03</span><strong>DEBUG</strong></div>
+        <p class="chapter-name">第3章｜トラブルへの備え</p>
+        <h1>【IT用語】「デバッグ」とは？不具合の原因を一つずつ確かめる作業</h1>
+        <p class="article-lead">デバッグとは何かを、症状の確認、再現、原因の切り分け、ログ・ブレークポイント・テスト・Git履歴の使い方から具体的に解説します。</p>
+        <div class="article-meta" aria-label="記事情報">
+          <span>作成者：かたかた</span><span>公開日：2026年7月13日</span><span>更新日：2026年8月4日</span>
+        </div>
+      </header>
+      <div class="article-layout">
+        <aside class="article-toc" aria-label="目次"><p>このページの目次</p><ol><li><a href="#section-1">結論：「デバッグ」＝「不具合を再現し、原因を特定して、修正を確かめること」</a></li>
+<li><a href="#section-2">診察のように進める</a></li>
+<li><a href="#section-3">デバッグで使う道具</a></li>
+<li><a href="#section-4">デバッグで大切な考え方</a></li>
+<li><a href="#section-5">KatakataLabで実際に確認したこと</a></li>
+<li><a href="#section-talk">この言葉が会話に出てくるとき</a></li>
+<li><a href="#section-misread">勘違いしやすい点</a></li>
+<li><a href="#section-6">まとめ</a></li></ol></aside>
+        <div class="article-content">
+          <p>「さっきまで動いていたのに、急に動かなくなった」</p>
+<p>「同じ場所で何度もエラーが出る」</p>
+<p>そんな時に行うのが「デバッグ(Debug)」です。</p>
+<p>今回は、デバッグを<strong>「医師の診察」</strong>に例えて解説します。</p>
+<section class="article-section" aria-labelledby="section-1"><h2 id="section-1">結論：「デバッグ」＝「不具合を再現し、原因を特定して、修正を確かめること」</h2>
+<p>デバッグとは、<strong>「ソフトウェアが期待通りに動かない原因を調べ、修正する一連の作業」</strong>です。</p>
+<p>いきなり思いつきでコードを書き換えると、別の問題を増やすことがあります。まず症状を整理し、原因の候補を一つずつ確かめます。</p>
+</section>
+<section class="article-section" aria-labelledby="section-2"><h2 id="section-2">診察のように進める</h2>
+<h3>1. 症状を確認する</h3>
+<p>「何をした時に」「どの環境で」「何が起きたか」を整理します。</p>
+<p>「動かない」だけでは情報が足りません。「スマホで送信ボタンを押すと、読み込み表示のまま止まる」まで分かると、調査しやすくなります。</p>
+<h3>2. 同じ問題を再現する</h3>
+<p>同じ手順で問題が起きるかを試します。毎回起きるのか、特定の端末やデータだけなのかも確認します。</p>
+<p>再現できない問題は直せない、という意味ではありません。ただし、条件が分かるほど原因を絞りやすくなります。</p>
+<h3>3. 原因の範囲を狭める</h3>
+<p>入力、画面、通信、サーバー、データベースなど、どこまで正常に動いているかを確認します。</p>
+<h3>4. 修正し、もう一度確かめる</h3>
+<p>原因と考えられる部分を直し、元の問題が解消したかを確認します。同時に、別の機能を壊していないかもテストします。</p>
+</section>
+<section class="article-section" aria-labelledby="section-3"><h2 id="section-3">デバッグで使う道具</h2>
+<h3>ログ</h3>
+<p>プログラムの動作やエラーを記録したものです。「いつ、どこで、何が起きたか」を調べる手がかりになります。</p>
+<h3>ブレークポイント</h3>
+<p>プログラムを指定した場所で一時停止し、その時点の変数や処理の流れを確認します。</p>
+<h3>一時的な出力</h3>
+<p>値や通過した場所を表示し、想定した順番で動いているかを確かめます。本番へ不要な出力を残さないことも大切です。</p>
+<h3>テスト</h3>
+<p>期待する入力と結果をあらかじめ決め、自動または手動で確認します。修正したバグのテストを残せば、同じ問題の再発を見つけやすくなります。</p>
+<h3>Gitの履歴</h3>
+<p>実行時のログとは別物ですが、「どの変更から問題が始まったか」を調べる手がかりになります。変更を少しずつ比較し、原因となったコミットを絞り込む方法もあります。</p>
+</section>
+<section class="article-section" aria-labelledby="section-4"><h2 id="section-4">デバッグで大切な考え方</h2>
+<h3>事実と予想を分ける</h3>
+<p>「たぶん通信の問題」と決めつけず、ログや再現結果で確かめます。</p>
+<h3>一度に多くを変えない</h3>
+<p>複数箇所を同時に変更すると、どの修正が効いたのか分からなくなります。</p>
+<h3>分からない時は記録して相談する</h3>
+<p>再現手順、エラーメッセージ、試したことを残すと、ほかの人も調査に参加しやすくなります。</p>
+<p>すぐには原因が見つからないバグもあります。それでも、確認した事実を積み上げれば、少なくとも次に調べる範囲は狭くなります。</p>
+</section>
+<section class="article-section" aria-labelledby="section-5"><h2 id="section-5">KatakataLabで実際に確認したこと</h2>
+<p>PikaLabをブラウザで確認した際、開発者ツールには広告関連通信の403エラーが出ていました。一方で、学習アプリ本体の画面と操作は動いていました。この時点で「PikaLab全体が壊れた」とは決めず、失敗した通信先、アプリ本体の例外、画面の結果を分けて記録しました。</p>
+<p>調査の結果、広告通信の失敗とアプリ機能は別でした。子ども向け領域で広告を読み込む必要性も見直し、広告ローダーを外したうえで、自動テストと本番のネットワーク・画面を再確認する方針にしました。エラーの数ではなく、どの処理が何に影響したかを追うデバッグの実例です。</p>
+</section>
+<section class="article-section" aria-labelledby="section-talk"><h2 id="section-talk">この言葉が会話に出てくるとき</h2>
+<p>例えば、「たまに落ちる」を「いつ、どの操作で、何が返るか」へ落とし込む会話です。直す前に、再現条件を探します。</p>
+<p>例えば、ログと画面を並べて「サーバー側か、ブラウザ側か」を切るときです。</p>
+</section>
+<section class="article-section" aria-labelledby="section-misread"><h2 id="section-misread">勘違いしやすい点</h2>
+<ul>
+<li><strong>勘で直すこと：</strong> 先に再現できる形にしないと、直ったかどうかも分かりません。</li>
+<li><strong>ログを読めば即解決：</strong> ログは手がかりです。操作手順と時刻を合わせる必要があります。</li>
+<li><strong>一度直せば十分：</strong> 同じ条件でもう一度確かめるまで、完了ではありません。</li>
+</ul>
+<p>速さより、原因の範囲を狭める順番が大切です。</p>
+</section>
+<section class="article-section" aria-labelledby="section-6"><h2 id="section-6">まとめ</h2>
+<ul>
+<li><strong>デバッグ</strong> ＝ <strong>「再現、原因調査、修正、再確認の一連の作業」</strong></li>
+<li><strong>道具</strong> ＝ <strong>「ログ、ブレークポイント、テスト、Gitの履歴など」</strong></li>
+<li><strong>コツ</strong> ＝ <strong>「事実と予想を分け、一度に多くを変えない」</strong></li>
+</ul>
+<p>デバッグは、勘で犯人を当てる作業ではありません。証拠を集め、仮説を確かめる小さな実験の積み重ねです。</p>
+<p>次の記事では、直した問題が再び現れる「先祖返り」について解説します。</p>
+<p>ここまでお読みいただきありがとうございました！</p>
+</section>
+          <aside class="lab-example" aria-labelledby="lab-example-title">
+            <p class="eyebrow">FROM THE LAB</p>
+            <h2 id="lab-example-title">KatakataLabでの実例</h2>
+            <p>KatakataLabの公開確認では、HTTP 200だけでなく、公開ページの本文に今回の変更が含まれるかを調べます。「アクセスできる」と「正しい内容が反映された」を分けると、原因の範囲を狭めやすくなります。</p>
+            <p class="related-heading">この実例につながるページ</p>
+            <ul class="related-links"><li><a href="bug.html">関連用語：バグ</a></li>
+<li><a href="../../pikalab/code-studio/">コードを試せるKatakataLab CodeStudio</a></li></ul>
+          </aside>
+          <section class="article-section" aria-labelledby="section-ops-debug">
+            <h2 id="section-ops-debug">原因切り分けの順番（個人開発版）</h2>
+            <p>いきなりコードを大きく直す前に、表示・通信・データ・設定のどこが怪しいかを切ります。KatakataLabでは、ブラウザの開発者ツールでステータスコードとコンソールを見てから、サーバー側や生成スクリプトを疑う順にしています。</p>
+<ol>
+<li>再現できるか（別端末・別ブラウザ）</li>
+<li>ネットワーク（404/500/キャッシュ）</li>
+<li>コンソールのエラー</li>
+<li>直近の変更差分</li>
+</ol>
+<p>原因調査は勘より手順です。同じ順でメモを残すと、再発時に時間を短縮できます。</p>
+          </section>
+          <section class="article-section faq" aria-labelledby="faq-title">
+            <p class="eyebrow">QUICK CHECK</p>
+            <h2 id="faq-title">よくある質問</h2>
+            <h3>最初からコードを直してはいけませんか？</h3>
+            <p>症状を再現できないまま多くを変えると、何が効いたのか分からなくなります。まず事実を記録し、仮説を1つずつ確かめるほうが、遠回りに見えて原因へ近づきやすくなります。</p>
+            <h3>次に読むなら？</h3><p><a href="senzogaeri.html">REGRESSIONの記事</a>へ進むと、次の用語を順番に読めます。</p>
+          </section>
+          <section class="article-section references" aria-labelledby="references-title">
+            <h2 id="references-title">参考資料</h2>
+            <p>用語の定義や仕様を確認するため、公式文書・標準文書を参照しています。リンク先の内容は更新される場合があります。</p>
+            <ul><li><a href="https://developer.chrome.com/docs/devtools/javascript/" target="_blank" rel="noopener noreferrer">Chrome DevTools「JavaScriptのデバッグ」</a></li></ul>
+          </section>
+          <nav class="chapter-nav" aria-label="前後の記事">
+            <a class="chapter-link previous" href="bug.html"><small>前の記事</small><span>← BUG</span></a>
+            <a class="chapter-link next" href="senzogaeri.html"><small>次の記事</small><span>REGRESSION →</span></a>
+          </nav>
+        </div>
+      </div>
+    </article>
+  </main>
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <p><strong>KatakataLab</strong><br><span>作って、つまずいて、分かったことを残す小さな研究室。</span></p>
+      <nav aria-label="フッターナビゲーション">
+        <a href="../../contact.html">お問い合わせ</a>
+        <a href="../../who-is-katakata.html">運営者情報</a>
+        <a href="../../privacy.html">プライバシーポリシー</a>
+        <a href="../../sitemap.html">サイトマップ</a>
+      </nav>
+    </div>
+    <p class="copyright">&copy; 2024-2026 KatakataLab</p>
+  </footer>
+</body>
+</html>

@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UIKata プライバシーポリシー | KatakataLab</title>
+    <meta name="description" content="Chrome拡張機能UIKata v2.7.0が扱うWebサイト内容、端末内保存、Chrome権限、外部通信、削除方法について説明します。">
+    <link rel="canonical" href="https://katakatalab.com/privacy/uikata/">
+    <link rel="stylesheet" href="/style.css?v=20260830-uikata">
+    <link rel="icon" href="/icon.svg" type="image/svg+xml">
+    <meta name="theme-color" content="#FF7675">
+    <meta property="og:title" content="UIKata プライバシーポリシー | KatakataLab">
+    <meta property="og:description" content="UIKataが扱うデータ、Chrome権限、保存、外部通信を明確に説明します。">
+    <meta property="og:type" content="article">
+    <meta property="og:url" content="https://katakatalab.com/privacy/uikata/">
+    <meta property="og:image" content="https://katakatalab.com/ogp.png">
+    <meta name="twitter:card" content="summary_large_image">
+    <style>
+        .uikata-policy {
+            max-width: 960px;
+            margin: 0 auto;
+            padding: clamp(1rem, 3vw, 2rem);
+        }
+        .policy-hero,
+        .policy-section,
+        .policy-summary,
+        .policy-actions {
+            background: var(--c-surface);
+            border: 1px solid color-mix(in srgb, var(--c-primary) 18%, transparent);
+            border-radius: var(--radius-lg);
+        }
+        .policy-hero {
+            padding: clamp(1.5rem, 5vw, 3rem);
+            margin-bottom: 1rem;
+            box-shadow: 0 12px 36px rgba(15, 23, 42, 0.08);
+        }
+        .policy-eyebrow {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.45rem;
+            margin-bottom: 0.75rem;
+            color: var(--c-primary);
+            font-size: 0.9rem;
+            font-weight: 800;
+        }
+        .policy-hero h1 {
+            margin: 0;
+            line-height: 1.2;
+        }
+        .policy-lead {
+            max-width: 720px;
+            margin: 1rem 0 0;
+            line-height: 1.8;
+        }
+        .policy-meta {
+            color: var(--c-text-light);
+            margin: 1rem 0 0;
+            font-size: 0.9rem;
+        }
+        .policy-summary {
+            margin-bottom: 1rem;
+            padding: clamp(1.1rem, 3vw, 1.5rem);
+            border-left: 4px solid var(--c-primary);
+        }
+        .policy-summary h2 {
+            margin: 0 0 0.75rem;
+            font-size: 1.15rem;
+        }
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 0.75rem;
+        }
+        .summary-item {
+            padding: 0.9rem;
+            background: color-mix(in srgb, var(--c-primary) 6%, var(--c-surface));
+            border-radius: 0.8rem;
+        }
+        .summary-item strong {
+            display: block;
+            margin-bottom: 0.35rem;
+        }
+        .summary-item p {
+            margin: 0;
+            color: var(--c-text-light);
+            line-height: 1.65;
+            font-size: 0.92rem;
+        }
+        .policy-section {
+            padding: clamp(1.25rem, 4vw, 2rem);
+            margin-bottom: 1rem;
+        }
+        .policy-section h2 {
+            margin: 0 0 0.9rem;
+            color: var(--c-primary);
+            font-size: clamp(1.2rem, 3vw, 1.5rem);
+        }
+        .policy-section h3 {
+            margin: 1.25rem 0 0.45rem;
+            font-size: 1.05rem;
+        }
+        .policy-section p,
+        .policy-section li {
+            line-height: 1.85;
+        }
+        .policy-section ul {
+            margin: 0.6rem 0 0;
+            padding-left: 1.25rem;
+        }
+        .policy-section code {
+            padding: 0.1em 0.35em;
+            border-radius: 0.35rem;
+            background: color-mix(in srgb, var(--c-primary) 10%, transparent);
+            color: var(--c-text);
+        }
+        .data-table-wrap {
+            overflow-x: auto;
+            margin-top: 1rem;
+            border: 1px solid color-mix(in srgb, var(--c-primary) 14%, transparent);
+            border-radius: 0.8rem;
+        }
+        .data-table {
+            width: 100%;
+            min-width: 660px;
+            border-collapse: collapse;
+        }
+        .data-table th,
+        .data-table td {
+            padding: 0.85rem 0.9rem;
+            text-align: left;
+            vertical-align: top;
+            border-bottom: 1px solid color-mix(in srgb, var(--c-primary) 10%, transparent);
+            line-height: 1.6;
+        }
+        .data-table th {
+            background: color-mix(in srgb, var(--c-primary) 6%, var(--c-surface));
+            font-size: 0.9rem;
+        }
+        .data-table tr:last-child td {
+            border-bottom: 0;
+        }
+        .status-local,
+        .status-network,
+        .status-none {
+            display: inline-flex;
+            align-items: center;
+            border-radius: 999px;
+            padding: 0.18rem 0.55rem;
+            font-size: 0.8rem;
+            font-weight: 800;
+            white-space: nowrap;
+        }
+        .status-local {
+            background: #e8f7f0;
+            color: #146345;
+        }
+        .status-network {
+            background: #fff3dc;
+            color: #7a4e00;
+        }
+        .status-none {
+            background: #eef1f4;
+            color: #45525d;
+        }
+        .policy-actions {
+            display: grid;
+            grid-template-columns: 1.25fr 0.75fr;
+            gap: 1rem;
+            margin-bottom: 1rem;
+            padding: clamp(1.2rem, 4vw, 1.75rem);
+        }
+        .policy-actions h2 {
+            margin: 0 0 0.5rem;
+            font-size: 1.2rem;
+        }
+        .policy-actions p {
+            margin: 0;
+            line-height: 1.75;
+        }
+        .policy-link-list {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            justify-content: center;
+            gap: 0.45rem;
+        }
+        .policy-link-list a {
+            font-weight: 700;
+        }
+        @media (max-width: 720px) {
+            .summary-grid,
+            .policy-actions {
+                grid-template-columns: 1fr;
+            }
+        }
+        @media (max-width: 480px) {
+            .uikata-policy {
+                padding: 0.75rem;
+            }
+            .policy-hero h1 {
+                font-size: 1.65rem;
+            }
+            .policy-section ul {
+                padding-left: 1.05rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <script>try{if(localStorage.getItem('theme')==='dark')document.body.classList.add('dark-mode');}catch(e){}</script>
+    <header class="header">
+        <div class="container header-container">
+            <a href="/" class="logo" aria-label="KatakataLab ホーム">
+                <span class="logo-icon" aria-hidden="true">🧪</span>
+                <span class="logo-text">KatakataLab</span>
+            </a>
+            <nav class="nav" aria-label="主要ナビゲーション">
+                <ul class="nav-list">
+                    <li><a href="/" class="nav-link">ホーム</a></li>
+                    <li><a href="/#projects" class="nav-link">作ったもの</a></li>
+                    <li><a href="/contact.html" class="nav-link">お問い合わせ</a></li>
+                </ul>
+            </nav>
+            <div class="header-actions">
+                <button type="button" id="theme-toggle" class="theme-btn" aria-label="テーマ切り替え">
+                    <svg viewBox="0 0 24 24" class="svg-icon svg-moon" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg>
+                    <svg viewBox="0 0 24 24" class="svg-icon svg-sun" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="display: none;"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main class="uikata-policy">
+        <nav class="breadcrumbs" aria-label="パンくずリスト">
+            <a href="/">KatakataLab</a>
+            <span class="breadcrumbs-sep" aria-hidden="true">/</span>
+            <span class="breadcrumbs-current" aria-current="page">UIKata プライバシーポリシー</span>
+        </nav>
+
+        <section class="policy-hero">
+            <div class="policy-eyebrow"><span aria-hidden="true">🔒</span> Chrome拡張機能 UIKata v2.7.0</div>
+            <h1>UIKata プライバシーポリシー</h1>
+            <p class="policy-lead">UIKataがWebページ上で何を読み取り、どの情報を端末内に残し、どの操作で外部通信が発生し得るかを説明します。</p>
+            <p class="policy-meta">最終更新：2026年8月30日 ／ 旧称：TailSnap</p>
+        </section>
+
+        <section class="policy-summary" aria-labelledby="summary-title">
+            <h2 id="summary-title">最初に知っておいてほしいこと</h2>
+            <div class="summary-grid">
+                <div class="summary-item">
+                    <strong>調査はユーザー操作時だけ</strong>
+                    <p>常時すべてのサイトを読む権限は要求せず、調査開始後の現在タブを対象にします。</p>
+                </div>
+                <div class="summary-item">
+                    <strong>解析結果を開発者へ送信しない</strong>
+                    <p>ページ本文、調査結果、閲覧履歴、AI向け指示文を開発者サーバーや解析サービスへ送信しません。</p>
+                </div>
+                <div class="summary-item">
+                    <strong>素材取得時だけ配信元へ通信</strong>
+                    <p>画像等をプレビュー・保存する操作では、その素材の元配信先へブラウザ通信が発生する場合があります。</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="policy-section">
+            <h2>1. UIKataが扱う情報</h2>
+            <p>UIKataは、Web UIを観測し、見た目の根拠を整理して実装へ持ち帰るために、ユーザーが選択した要素と現在のページをブラウザ内で解析します。</p>
+            <div class="data-table-wrap">
+                <table class="data-table">
+                    <thead>
+                        <tr><th>情報</th><th>利用目的</th><th>保存・通信</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>選択要素のDOM構造・表示文字・計算済みスタイル</td><td>UIの説明、Tailwind近似、HTML・AI向け指示文の生成</td><td><span class="status-none">外部送信なし</span></td></tr>
+                        <tr><td>寸法・余白・配置・色・フォント・コントラスト情報</td><td>ボックスモデル、距離、配色、アクセシビリティ一次診断</td><td><span class="status-none">外部送信なし</span></td></tr>
+                        <tr><td>言語・辞典お気に入り・カスタム辞典・最近の調査履歴</td><td>ユーザー設定と再表示</td><td><span class="status-local">端末内保存</span></td></tr>
+                        <tr><td>画像・SVG・フォント等の素材URL</td><td>素材のプレビュー・コピー・保存</td><td><span class="status-network">操作時に元配信先へ通信する場合あり</span></td></tr>
+                    </tbody>
+                </table>
+            </div>
+            <p>UIKataは元サイトのTailwindクラス、ソースコード、React等の内部実装を復元する製品ではありません。ブラウザから観測できた値を基に、近い実装案を作ります。</p>
+        </section>
+
+        <section class="policy-section">
+            <h2>2. 端末内での処理と保存</h2>
+            <h3>ブラウザ内で処理する機能</h3>
+            <p>スタイル解析、色の照合、フォント解析、WCAGコントラストの一次確認、コード生成、AI向け指示文生成、Tailwind辞典検索はブラウザ内で処理します。</p>
+            <h3>端末内に保存する情報</h3>
+            <p>言語、辞典のお気に入り、カスタム辞典、最近の調査履歴を拡張機能の<code>localStorage</code>へ保存します。履歴は再表示に必要な最小限のスタイル情報に限定し、ページ本文、フォーム入力値、素材URL、生成済みコードは履歴へ保存しません。</p>
+            <p>v2.7の再ブランドでは、既存ユーザーのローカル設定や履歴を不要に失わないため、内部storage keyやmessage identifierに旧称TailSnap由来の識別子が残る場合があります。これは端末内互換性のための名称であり、旧サービスへの通信を意味しません。</p>
+            <h3>削除方法</h3>
+            <p>調査履歴はUIKata内の履歴削除操作で消去できます。ChromeからUIKataを削除すると、Chromeの仕組みにより拡張機能のローカル保存領域も削除されます。開発者側にサーバー保存された複製はありません。</p>
+        </section>
+
+        <section class="policy-section">
+            <h2>3. 外部通信</h2>
+            <ul>
+                <li>UIKataは調査結果、閲覧履歴、操作ログを開発者のサーバー、アクセス解析、広告サービスへ送信しません。</li>
+                <li>画像などをプレビューまたは書き出すときは、ユーザーの操作により元の素材配信先へ取得通信が発生する場合があります。UIKataは開発者サーバーを経由して素材をプロキシしません。</li>
+                <li>AI向け指示文は端末内で生成します。UIKataがAIサービスへ自動送信することはありません。コピー後にどこへ渡すかはユーザーが決めます。</li>
+                <li>外部ドキュメント等のリンクを押した場合は、そのリンク先が通常のブラウザタブとして開きます。</li>
+            </ul>
+        </section>
+
+        <section class="policy-section">
+            <h2>4. Chrome権限</h2>
+            <ul>
+                <li><code>activeTab</code>：ユーザーがUIKataを起動した現在のタブだけを調査するために使用します。</li>
+                <li><code>scripting</code>：明示的な起動後に、現在のタブへローカルの調査用スクリプトとスタイルを注入するために使用します。</li>
+                <li><code>sidePanel</code>：調査結果、コード、履歴、素材、辞典をサイドパネルへ表示するために使用します。</li>
+            </ul>
+            <p>UIKataは常時サイトアクセスを要求するhost permissionsや、全ページで常時動作するcontent scriptを宣言していません。</p>
+        </section>
+
+        <section class="policy-section">
+            <h2>5. Pro販売・ライセンスキー</h2>
+            <p>UIKata v2.7.0ではPro販売とオンライン購入確認を行っていません。購入ボタンとライセンスキー入力は無効で、ライセンスキーを外部へ送信しません。購入確認サービスを有効化する前に、本ページとChrome Web Store上の開示を更新します。</p>
+        </section>
+
+        <section class="policy-section">
+            <h2>6. Chrome Web Store Limited Use</h2>
+            <p>UIKataが権限を通じて扱う情報は、ユーザーが明示的に開始するWeb UI調査・説明・実装支援という単一目的の提供と改善にのみ使用します。</p>
+            <ul>
+                <li>パーソナライズ広告、リターゲティング広告、興味関心広告に使用しません。</li>
+                <li>データブローカー、広告事業者、目的と無関係な第三者へ提供しません。</li>
+                <li>開発者が調査対象のページ内容を人手で閲覧することはありません。</li>
+            </ul>
+        </section>
+
+        <section class="policy-section">
+            <h2>7. セキュリティと利用上の注意</h2>
+            <p>UIKataは権限と保存情報を最小化し、リモートで配信されるコードを拡張機能内で実行しません。ユーザーは、利用権限のないページ内容や機密情報を調査・コピーしないでください。</p>
+        </section>
+
+        <section class="policy-section">
+            <h2>8. ポリシーの変更</h2>
+            <p>データの扱い、外部通信、販売・認証機能に変更がある場合は、変更した機能を公開する前に本ページとChrome Web Store上の開示を更新します。</p>
+        </section>
+
+        <section class="policy-actions">
+            <div>
+                <h2>お問い合わせ・関連情報</h2>
+                <p>プライバシーに関する質問や、UIKataの動作について気になる点がある場合はKatakataLabのお問い合わせ窓口をご利用ください。</p>
+            </div>
+            <div class="policy-link-list">
+                <a href="/contact.html">お問い合わせ</a>
+                <a href="/privacy.html">KatakataLab共通プライバシーポリシー</a>
+                <a href="/terms.html">KatakataLab利用規約</a>
+            </div>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-links">
+                <a href="/contact.html">お問い合わせ</a>
+                <a href="/privacy.html">共通プライバシーポリシー</a>
+                <a href="/terms.html">利用規約</a>
+            </div>
+            <p>&copy; 2024-2026 KatakataLab. All Rights Reserved.</p>
+        </div>
+    </footer>
+    <script src="/script.js?v=20260830-uikata"></script>
+</body>
+</html>

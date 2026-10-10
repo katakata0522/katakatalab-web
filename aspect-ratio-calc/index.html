@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="format-detection" content="telephone=no">
+  
+  <title>アスペクト比計算ツール【無料】16:9 / 4:3 画像・動画サイズ自動計算｜KatakataLab</title>
+  <meta name="description" content="片方の幅または高さから、もう片方のピクセルを計算します。画像ファイルの読み込みや切り抜きはしません。ピクセル計算と枠プレビューの道具です。">
+  
+  <meta property="og:title" content="アスペクト比計算｜片方の辺からもう片方のピクセルを出す">
+  <meta property="og:description" content="片方の幅または高さから、もう片方のピクセルを計算します。画像ファイルの読み込みや切り抜きはしません。ピクセル計算と枠プレビューの道具です。">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://katakatalab.com/aspect-ratio-calc/">
+  <meta property="og:site_name" content="KatakataLab">
+  <meta property="og:image" content="https://katakatalab.com/ogp.png">
+
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:site" content="@Katakata_toybox">
+  <meta name="twitter:title" content="アスペクト比計算｜片方の辺からもう片方のピクセルを出す">
+  <meta name="twitter:description" content="片方の幅または高さから、もう片方のピクセルを計算します。画像ファイルの読み込みや切り抜きはしません。ピクセル計算と枠プレビューの道具です。">
+  <meta name="twitter:image" content="https://katakatalab.com/ogp.png">
+
+  <link rel="icon" href="/favicon.ico">
+  <link rel="stylesheet" href="style.css?v=20260824-responsive">
+  <link rel="canonical" href="https://katakatalab.com/aspect-ratio-calc/">
+  <link rel="alternate" hreflang="ja" href="https://katakatalab.com/aspect-ratio-calc/">
+  <link rel="alternate" hreflang="en" href="https://katakatalab.com/aspect-ratio-calc/en/">
+  <link rel="alternate" hreflang="x-default" href="https://katakatalab.com/aspect-ratio-calc/">
+    <link rel="stylesheet" href="../tool-chrome.css?v=source">
+</head>
+<body>
+    <script>try{if(localStorage.getItem('theme')==='dark')document.body.classList.add('dark-mode');}catch(e){}</script>
+
+<main class="tool-wrapper">
+
+    <!-- Unified Mini Header / Breadcrumbs -->
+    <nav class="breadcrumbs-tool breadcrumbs-tool--bar" aria-label="パンくずリスト">
+        <div class="breadcrumbs-tool__trail">
+            <a href="../" class="breadcrumbs-tool__brand">
+                <span class="breadcrumbs-tool__mark">🧪</span> KatakataLab
+            </a>
+            <span class="breadcrumbs-tool__sep">/</span>
+            <span class="breadcrumbs-tool__current" aria-current="page">アスペクト比計算</span>
+        </div>
+        <a href="../#projects" class="breadcrumbs-tool__index">
+            <span>🧰</span> ツール一覧へ
+        </a>
+    </nav>
+
+    <!-- Auto-Injected noscript fallback -->
+    <noscript>
+        <div class="tool-noscript">
+            <p class="tool-noscript__title">⚠️ JavaScriptが無効になっています</p>
+            <p class="tool-noscript__text">このツールはブラウザ上での計算のためにJavaScriptを使用します。有効にしてからご利用ください。</p>
+        </div>
+    </noscript>
+
+
+
+  
+  <header class="tool-header">
+    <div class="header-inner">
+      <h1 class="app-title">アスペクト比<span class="accent">計算</span></h1>
+      <p class="app-desc">片方の辺からもう片方のピクセルを出します。画像ファイルの読み込みや切り抜きはしません。ピクセル計算と枠プレビューの道具です。</p>
+    </div>
+  </header>
+
+  <section class="preset-area" aria-label="比率プリセット">
+    <div class="preset-grid">
+      <button type="button" class="btn-preset active" data-w="16" data-h="9">
+        <span class="ratio-text">16:9</span><span class="ratio-label">YouTube</span>
+      </button>
+      <button type="button" class="btn-preset" data-w="4" data-h="3">
+        <span class="ratio-text">4:3</span><span class="ratio-label">Standard</span>
+      </button>
+      <button type="button" class="btn-preset" data-w="1" data-h="1">
+        <span class="ratio-text">1:1</span><span class="ratio-label">Square</span>
+      </button>
+      <button type="button" class="btn-preset" data-w="9" data-h="16">
+        <span class="ratio-text">9:16</span><span class="ratio-label">Story</span>
+      </button>
+      <button type="button" class="btn-preset" data-w="4" data-h="5">
+        <span class="ratio-text">4:5</span><span class="ratio-label">縦長</span>
+      </button>
+      <button type="button" class="btn-preset special" data-w="1" data-h="1.618">
+        <span class="ratio-text">Golden</span><span class="ratio-label">1 : 1.618</span>
+      </button>
+    </div>
+  </section>
+
+  <section class="calc-panel">
+    
+    <div class="panel-section section-ratio">
+      <div class="section-header">
+        <label class="group-label">比率 <small>(Aspect Ratio)</small></label>
+        <button type="button" id="swapBtn" class="btn-icon" title="縦横を入れ替え" aria-label="縦横入れ替え">
+          <span class="icon-swap">⇄</span>
+        </button>
+      </div>
+      <div class="inputs-row">
+        <input type="number" id="ratioW" class="input-number" placeholder="16" inputmode="decimal" aria-label="比率の横幅">
+        <span class="separator">:</span>
+        <input type="number" id="ratioH" class="input-number" placeholder="9" inputmode="decimal" aria-label="比率の高さ">
+      </div>
+      <button type="button" id="detectBtn" class="btn-detect">
+        <span class="icon-magic">🪄</span> 比率を手動逆算
+      </button>
+    </div>
+
+    <div class="divider">
+      <span class="chain-icon">🔗</span>
+    </div>
+
+    <div class="panel-section section-size">
+      <label class="group-label">解像度 <small>(Resolution px)</small></label>
+      <div class="inputs-row">
+        <div class="input-col">
+          <label for="width" class="sub-label">幅 (Width)</label>
+          <input type="number" id="width" class="input-number" placeholder="1920" inputmode="numeric">
+        </div>
+        <span class="separator">×</span>
+        <div class="input-col">
+          <label for="height" class="sub-label">高さ (Height)</label>
+          <input type="number" id="height" class="input-number" placeholder="1080" inputmode="numeric">
+        </div>
+      </div>
+    </div>
+
+  </section>
+
+  <section class="preview-area">
+    <div class="preview-header">
+      <h2 class="section-title">枠プレビュー</h2>
+      <div class="controls-row">
+        <!-- デバイスフレームセレクター -->
+        <div class="device-selector" role="group" aria-label="表示フレーム切り替え">
+          <button type="button" class="btn-device active" data-device="monitor" title="PCモニター表示">🖥️ Monitor</button>
+          <button type="button" class="btn-device" data-device="phone" title="スマホ表示">📱 Phone</button>
+          <button type="button" class="btn-device" data-device="cinema" title="シネマスコープ表示">🎬 Cinema</button>
+        </div>
+        <div class="current-info">
+          <span id="infoRatio">16 : 9</span>
+        </div>
+      </div>
+    </div>
+    
+    <div class="preview-canvas">
+      <!-- デバイスモックアップを表現するラッパー -->
+      <div id="deviceWrapper" class="device-wrapper frame-monitor">
+        <div id="previewBox" class="preview-box">
+          <div class="box-content">
+            <span class="box-dims" id="boxDims">1920 × 1080</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- インテリジェント定番比率アドバイザー -->
+    <div id="advisorArea" class="advisor-area hidden">
+      <span class="advisor-icon">💡</span>
+      <span id="advisorText" class="advisor-text">ほぼ 16:9 (YouTube等) の比率です。定番比に近い目安です。</span>
+    </div>
+
+    <!-- CSSコードスニペットコピー (Web制作・開発用) -->
+    <div class="css-snippet-bar" role="region" aria-label="CSSコードスニペット">
+      <span class="snippet-label">💻 開発用スニペット:</span>
+      <div class="snippet-chips">
+        <button type="button" id="copyCssRatio" class="btn-snippet" title="CSS aspect-ratio プロパティをコピー">
+          <code>aspect-ratio: <span id="snippetRatioVal">16 / 9</span>;</code>
+          <span class="copy-badge" id="badgeCssRatio">📋 コピー</span>
+        </button>
+        <button type="button" id="copyDims" class="btn-snippet" title="幅×高さをコピー">
+          <code id="snippetDimsVal">1920 × 1080</code>
+          <span class="copy-badge" id="badgeDims">📋 コピー</span>
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <article class="article-content">
+    <h2>アスペクト比計算の使い方</h2>
+    <p>このページの用事は、片方の辺からもう片方のピクセルを出すことです。画像ファイルの読み込みや切り抜きはせず、入力した数値の計算と枠プレビューだけを行います。</p>
+
+    <div class="feature-box">
+      <h3>💡 クイック使い方とポイント</h3>
+      <p>比率と片方のサイズを入力すると、もう片方を自動計算します。初期状態は「比率固定 ON」です。Monitor / Phone / Cinema の装飾枠プレビューで仕上がりサイズ感も直感的に確認できます。</p>
+      <div style="display: flex; justify-content: space-between; align-items: center; gap: 1rem; flex-wrap: wrap; margin-top: 0.75rem;">
+        <div>
+          <strong style="color: var(--c-primary, #6c5ce7);">📘 あわせて読みたい実践ガイド:</strong>
+          <span style="font-size: 0.85rem; color: var(--c-text-light, #555);">YouTube・SNS・資料作成での比率の選び方を整理しています。</span>
+        </div>
+        <a href="../guides/aspect-ratio-guide.html" target="_blank" rel="noopener" class="btn btn-primary" style="padding: 0.4rem 0.85rem; font-size: 0.85rem; text-decoration: none; border-radius: 4px; font-weight: bold; background: linear-gradient(135deg, #6c5ce7, #a29bfe); color: white;">ガイドを読む →</a>
+      </div>
+    </div>
+
+    <section class="feature-box" data-verification-note aria-labelledby="aspect-verification-title">
+      <h3 id="aspect-verification-title">🧪 実際の入力で確認した結果</h3>
+      <p><strong>確認日: 2026年7月22日</strong>（Windows版Chrome）</p>
+      <ul>
+        <li><strong>入力:</strong> 比率16:9、横幅1,200px。</li>
+        <li><strong>結果:</strong> 高さ675px（1,200 ÷ 16 × 9）と表示され、プレビューも16:9へ更新されることを確認しました。</li>
+        <li><strong>確認範囲:</strong> 比率計算と画面プレビューまでです。SNS側の自動トリミングや媒体ごとの安全域は変わるため、公開先でも最終確認してください。</li>
+      </ul>
+      <p><a href="../about-katakatalab.html#verification-policy" class="guide-link" target="_blank" rel="noopener noreferrer">KatakataLabの検証方法を見る →</a> | <a href="../guides/case-studies.html" class="guide-link" target="_blank" rel="noopener noreferrer">入力・出力の実例集を見る →</a></p>
+    </section>
+
+    <!-- アコーディオン 1: 主要比率・解像度一覧 -->
+    <details class="tool-accordion">
+      <summary class="tool-accordion__summary">
+        <span>📐 よく使われるアスペクト比・解像度まとめ（16:9・4:3・1:1・9:16・4:5・黄金比）</span>
+        <span class="tool-accordion__icon">▼</span>
+      </summary>
+      <div class="tool-accordion__body">
+        <h4>16:9（ワイド）</h4>
+        <p>YouTubeの通常動画やワイド画面向けの映像などで、よく使われる比率です。</p>
+        <ul class="ratio-values-list">
+          <li><strong>FHD (Full HD):</strong> 1920 x 1080</li>
+          <li><strong>HD:</strong> 1280 x 720</li>
+          <li><strong>4K:</strong> 3840 x 2160</li>
+        </ul>
+
+        <h4>4:3（スタンダード）</h4>
+        <p>アナログテレビやiPadなどのタブレット端末で見られる比率です。スライド資料(PowerPoint)の旧標準サイズとしても使われます（例: 1600px幅の4:3資料を作る場合は1600 x 1200）。</p>
+        <ul class="ratio-values-list">
+          <li><strong>よくあるサイズ:</strong> 1600 x 1200, 1024 x 768</li>
+        </ul>
+
+        <h4>1:1（スクエア）</h4>
+        <p>Instagramのフィード投稿やアイコン画像などで使われる正方形の比率です。</p>
+        <ul class="ratio-values-list">
+          <li><strong>よくあるサイズ:</strong> 1080 x 1080</li>
+        </ul>
+
+        <h4>9:16（縦長動画）</h4>
+        <p>YouTubeショート、TikTok、Instagramリールなどのスマホ全画面動画に使われる比率です。</p>
+        <ul class="ratio-values-list">
+          <li><strong>FHD縦:</strong> 1080 x 1920</li>
+        </ul>
+
+        <h4>4:5（縦長）</h4>
+        <p>一部のSNS投稿や縦長コンテンツで使われる比率です（例: 1080 x 1350）。</p>
+
+        <h4>黄金比（約1:1.618）</h4>
+        <p>黄金比はデザインで参照される比率のひとつです。用途に合わせて判断してください。</p>
+
+        <h4>よくあるミスと注意点</h4>
+        <p>サイズだけ大きくしても、比率が違えば表示時にトリミングや余白が発生します。複数媒体へ転用する場合は、主役を中央寄せにして作成し、安全域を広めに取るのが基本です。</p>
+      </div>
+    </details>
+
+    <!-- アコーディオン 2: 操作説明とよくある質問 -->
+    <details class="tool-accordion">
+      <summary class="tool-accordion__summary">
+        <span>📖 操作説明とよくある質問 (FAQ)</span>
+        <span class="tool-accordion__icon">▼</span>
+      </summary>
+      <div class="tool-accordion__body">
+        <h4>幅を変えると高さが出る</h4>
+        <p>比率が入っている状態で幅（Width）を入れると、高さ（Height）を自動計算します。高さを先に入れると、幅がそれに合わせて出ます。プリセットを押すと比が入り、いまの幅を基準にもう片方のピクセルを出し直します。</p>
+
+        <h4>初期状態ではサイズを入れても比は固定</h4>
+        <p>「比率固定 ON」のあいだは、幅や高さを変えても比欄はいま選んでいる比率のままです。黄金比など小数の比も固定中は整数比に化けません。ピクセルは整数に丸めます。「比率固定 OFF」にすると、幅と高さから比を追従して出し直します。</p>
+
+        <h4>「入力サイズから比率を逆算」ボタンの意味</h4>
+        <p>いま入っている幅と高さから、最大公約数で比を出し直し、比率固定を OFF にします。サイズ入力のあと、比へ明示的に戻したいときに使います。画像ファイルを読み込んで比を検出する機能ではありません。</p>
+
+        <h4>Q. 画像ファイル自体のリサイズや切り抜きはできますか？</h4>
+        <p>A. いいえ。このツールは比率とピクセルの計算ツールです。画像ファイルをアップロードしたり外部サーバーへ送信することはありません。</p>
+
+        <h4>Q. Monitor / Phone / Cinema の装飾枠は何ですか？</h4>
+        <p>A. 計算した比率をモニター風・スマホ風・シネマ風の枠に入れて見た目のバランスを確認するためのプレビューです。</p>
+      </div>
+    </details>
+  </article>
+
+
+  <!-- Auto-Injected Unified Footer -->
+  <footer class="tool-footer tool-footer--bar" aria-label="サイト情報">
+      <a href="../" class="tool-footer__brand">🧪 KatakataLab</a>
+      <span class="tool-footer__sep" aria-hidden="true">|</span>
+      <a href="../who-is-katakata.html" target="_blank" rel="noopener noreferrer">運営者情報</a>
+      <span class="tool-footer__sep" aria-hidden="true">|</span>
+      <a href="../terms.html" target="_blank" rel="noopener noreferrer">利用規約</a>
+      <span class="tool-footer__sep" aria-hidden="true">|</span>
+      <a href="../privacy.html" target="_blank" rel="noopener noreferrer">プライバシーポリシー</a>
+      <span class="tool-footer__sep" aria-hidden="true">|</span>
+      <a href="../contact.html" target="_blank" rel="noopener noreferrer">お問い合わせ</a>
+  </footer>
+
+</main>
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "アスペクト比計算",
+  "url": "https://katakatalab.com/aspect-ratio-calc/",
+  "applicationCategory": "DesignApplication",
+  "operatingSystem": "Browser",
+  "offers": {
+    "@type": "Offer",
+    "price": "0",
+    "priceCurrency": "JPY"
+  },
+  "description": "片方の辺からもう片方のピクセルを出す計算ツール。画像ファイルの読み込みや切り抜きはせず、比率計算と枠プレビューを行います。"
+}
+</script>
+
+<script src="script.js?v=20260817-2" defer></script>
+</body>
+</html>

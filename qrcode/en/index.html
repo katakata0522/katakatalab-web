@@ -1,0 +1,603 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <base href="/qrcode/">
+  <meta name="format-detection" content="telephone=no">
+  <meta name="referrer" content="no-referrer">
+  <meta name="theme-color" content="#10b981">
+  <title>Free QR Code Generator with Templates and Checks | KatakataLab</title>
+  
+  <meta name="description" content="Create QR codes for URLs, Wi-Fi, email, phone, social profiles, and contacts, check contrast and quiet zone quality, then save the result from your browser.">
+  
+  <link rel="canonical" href="https://katakatalab.com/qrcode/en/">
+  <link rel="alternate" hreflang="ja" href="https://katakatalab.com/qrcode/">
+  <link rel="alternate" hreflang="en" href="https://katakatalab.com/qrcode/en/">
+  <link rel="alternate" hreflang="x-default" href="https://katakatalab.com/qrcode/">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="assets/icon-192.png" type="image/png">
+
+  <meta property="og:title" content="Free QR Code Generator with Templates and Checks | KatakataLab">
+  <meta property="og:description" content="Create QR codes for URLs, Wi-Fi, email, phone, social profiles, and contacts, check contrast and quiet zone quality, then save the result from your browser.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://katakatalab.com/qrcode/en/">
+  <meta property="og:site_name" content="KatakataLab">
+  <meta property="og:image" content="https://katakatalab.com/qrcode/ogp.png">
+  <meta property="og:locale" content="en_US">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Free QR Code Generator with Templates and Checks | KatakataLab">
+  <meta name="twitter:description" content="Create QR codes for URLs, Wi-Fi, email, phone, social profiles, and contacts, check contrast and quiet zone quality, then save the result from your browser.">
+  <meta name="twitter:image" content="https://katakatalab.com/qrcode/ogp.png">
+
+  <link rel="stylesheet" href="style.css?v=20260824-responsive">
+  <link rel="stylesheet" href="/international/english-shell.css?v=20260805-lab">
+    <link rel="stylesheet" href="../../tool-chrome.css?v=source">
+</head>
+<body class="english-tool-page english-tool--qrcode">
+  <nav class="english-tool-bar" aria-label="Language and English tools">
+  <a class="english-tool-bar__home" href="https://katakatalab.com/en/">🧪 KatakataLab English</a>
+</nav>
+    <script>try{if(localStorage.getItem('theme')==='dark')document.body.classList.add('dark-mode');}catch(e){}</script>
+<noscript>
+  <p style="margin:0 0 12px;padding:10px 12px;background:#fffbeb;color:#92400e;font-weight:700;border-radius:8px;">
+    Enable JavaScript to create a QR code.
+  </p>
+</noscript>
+
+<main class="tool-wrapper">
+
+    <!-- Auto-Injected Breadcrumbs -->
+    <nav class="breadcrumbs-tool breadcrumbs-tool--trail" aria-label="Breadcrumb">
+        <a href="../" class="breadcrumbs-tool__home">🏠 Home</a>
+        <span class="breadcrumbs-tool__sep">/</span>
+        <span class="breadcrumbs-tool__current" aria-current="page">QR Maker Lab</span>
+    </nav>
+
+    <!-- Auto-Injected noscript fallback -->
+    <noscript>
+        <div class="tool-noscript">
+            <p class="tool-noscript__title">⚠️ JavaScript is disabled</p>
+            <p class="tool-noscript__text">This tool needs JavaScript to calculate and preview results in your browser. Enable JavaScript and reload the page.</p>
+        </div>
+    </noscript>
+
+
+
+  
+  <header class="tool-header">
+    <div class="header-inner">
+      <h1 class="app-title">QR Maker <span class="accent">Lab.</span></h1>
+      <p class="app-desc" data-i18n="header.tagline">No signup · Core features are free · Create without a usage counter</p>
+    </div>
+    <div class="lang-tabs" role="tablist" aria-label="Language">
+      <button type="button" id="langJaBtn" class="lang-tab is-active" data-lang="ja" role="tab" aria-selected="true" data-i18n="lang.ja">Japanese</button>
+      <button type="button" id="langEnBtn" class="lang-tab" data-lang="en" role="tab" aria-selected="false" data-i18n="lang.en">English</button>
+    </div>
+    <button type="button" id="openSidebarBtn" class="btn-sidebar-toggle" aria-controls="settingsSidebar" aria-expanded="false" data-i18n-html="header.settingsButton">
+      ⚙ Advanced
+    </button>
+    <span class="badge-security" title="QR payload is processed only on your device" data-i18n-title="header.badgeTitle">
+      <span class="icon-lock">🔒</span> Client-Side Only
+    </span>
+  </header>
+
+  <div class="workspace-layout">
+    <section class="workspace-main" aria-label="QR code creation area">
+      <div class="generator-layout">
+        <section class="config-panel" aria-label="Basic settings">
+          <div class="input-group">
+            <div class="label-row">
+              <label for="qrText" class="group-label" data-i18n-html="main.inputLabel">Content to encode <small>(URL / Text)</small></label>
+              <span id="charCount" class="char-count" aria-live="polite">0 / 1000</span>
+            </div>
+            <textarea id="qrText" class="input-text" placeholder="https://katakatalab.com" rows="4" spellcheck="false"></textarea>
+            <p id="errorMsg" class="error-text" role="alert" style="display:none;" data-i18n="main.errorTooLong">⚠️ Too many characters (Max 1000)</p>
+          </div>
+
+          <div class="divider"></div>
+
+          <div class="settings-grid">
+            <div class="setting-item">
+              <label class="setting-label" for="qrSize"><span data-i18n="main.sizeLabel">Size</span>: <span id="sizeValue">250</span>px</label>
+              <div class="slider-wrapper">
+                <button type="button" id="btnDecrease" class="btn-adjust" aria-label="Decrease size" data-i18n-aria-label="main.decreaseAria">－</button>
+                <input type="range" id="qrSize" min="100" max="1000" step="10" value="250">
+                <button type="button" id="btnIncrease" class="btn-adjust" aria-label="Increase size" data-i18n-aria-label="main.increaseAria">＋</button>
+              </div>
+            </div>
+
+            <div class="setting-item">
+              <div class="label-row">
+                <label class="setting-label" data-i18n="main.colorLabel">Colors</label>
+                <button type="button" id="swapColorsBtn" class="btn-icon-small" title="Swap colors" aria-label="Swap colors" data-i18n-html="main.swapButton" data-i18n-title="main.swapAria" data-i18n-aria-label="main.swapAria">
+                  ⇄ Swap
+                </button>
+              </div>
+              <div class="color-pickers">
+                <label class="color-wrapper" for="qrForeground" title="QR code color" data-i18n-title="main.codeColorTitle">
+                  <input type="color" id="qrForeground" value="#111827">
+                  <span class="color-label" data-i18n="main.codeColor">Code</span>
+                </label>
+                <label class="color-wrapper" for="qrBackground" title="Background color" data-i18n-title="main.bgColorTitle">
+                  <input type="color" id="qrBackground" value="#ffffff">
+                  <span class="color-label" data-i18n="main.bgColor">Background</span>
+                </label>
+              </div>
+              <div class="color-swatches" role="group" aria-label="Quick code colors">
+                <button type="button" class="color-swatch is-dark" data-color-target="foreground" data-color-value="#000000" title="Black" aria-label="Black"></button>
+                <button type="button" class="color-swatch" style="--swatch-color:#d11a2a;" data-color-target="foreground" data-color-value="#d11a2a" title="Red" aria-label="Red"></button>
+                <button type="button" class="color-swatch" style="--swatch-color:#0f766e;" data-color-target="foreground" data-color-value="#0f766e" title="Green" aria-label="Green"></button>
+                <button type="button" class="color-swatch" style="--swatch-color:#2563eb;" data-color-target="foreground" data-color-value="#2563eb" title="Blue" aria-label="Blue"></button>
+                <button type="button" class="color-swatch" style="--swatch-color:#7c3aed;" data-color-target="foreground" data-color-value="#7c3aed" title="Purple" aria-label="Purple"></button>
+                <button type="button" class="color-swatch" style="--swatch-color:#c2410c;" data-color-target="foreground" data-color-value="#c2410c" title="Brown" aria-label="Brown"></button>
+              </div>
+              <div id="contrastWarning" class="warning-box" style="display:none;">
+                <span class="icon-warn">⚠️</span>
+                <span data-i18n="main.contrastWarning">Low contrast may reduce scan accuracy.</span>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="preview-panel" aria-label="Preview">
+          <div class="preview-card">
+            <div class="canvas-container">
+              <div id="loadingIndicator" class="loading-overlay" style="display:none;">
+                <div class="spinner"></div>
+                <span data-i18n="loading.generating">Generating...</span>
+              </div>
+              <div class="canvas-wrapper">
+                <canvas id="qrCanvas"></canvas>
+                <div id="placeholder" class="placeholder-msg">
+                  <span class="icon-qr">📱</span>
+                  <p data-i18n-html="main.placeholder">Enter text or URL<br>to preview instantly</p>
+                </div>
+              </div>
+            </div>
+            <div class="action-area">
+              <button type="button" id="downloadBtn" class="btn-download" disabled>
+                <span class="btn-icon">⬇</span> <span id="downloadBtnText" data-i18n="main.downloadDefault">Save as PNG</span>
+              </button>
+              <p class="file-name-preview" id="fileNamePreview"></p>
+            </div>
+          </div>
+        </section>
+      </div>
+    </section>
+
+    <aside id="settingsSidebar" class="settings-sidebar" aria-label="Advanced settings sidebar" data-i18n-aria-label="sidebar.aria" aria-hidden="true" inert>
+      <div class="sidebar-header">
+        <h2 class="sidebar-title" data-i18n="sidebar.title">Advanced Settings</h2>
+        <button type="button" id="closeSidebarBtn" class="btn-sidebar-close" aria-label="Close advanced settings" data-i18n-aria-label="sidebar.closeAria">×</button>
+      </div>
+
+      <details class="advanced-settings" data-details-id="plan" open>
+        <summary class="pro-feature-tag" data-i18n="pro.planTitle">Pro Plan</summary>
+        <div class="advanced-settings-body extension-form">
+          <p id="planHelp" class="helper-text" data-i18n="pro.planHelpLicenseOnly">Pro features are enabled only after license verification succeeds.</p>
+          <div id="planToggle" class="plan-toggle" role="radiogroup" aria-label="Plan" hidden>
+            <label class="plan-option"><input type="radio" id="planFree" name="planMode" value="free" checked> <span data-i18n="pro.free">Free</span></label>
+            <label class="plan-option"><input type="radio" id="planPro" name="planMode" value="pro"> <span data-i18n="pro.pro">Pro</span></label>
+          </div>
+          <label class="setting-label pro-feature-tag" for="licenseKeyInput" data-i18n="pro.licenseLabel">License key (Pro)</label>
+          <div class="license-row">
+            <input id="licenseKeyInput" class="text-input" type="text" autocomplete="off" placeholder="PRO-XXXX-XXXX" data-i18n-placeholder="pro.licensePlaceholder">
+            <button type="button" id="applyLicenseBtn" class="btn-secondary pro-feature-tag" data-i18n="pro.applyLicense">Apply License (Pro)</button>
+          </div>
+          <p class="pro-note" data-i18n="pro.licenseNotice">Only during license verification, the license key and current origin are sent to the verification API.</p>
+          <p id="planStatus" class="helper-text" data-i18n="pro.statusFree">Current: Free plan</p>
+        </div>
+      </details>
+
+      <details class="advanced-settings" data-details-id="generate-options" open>
+        <summary data-i18n="sidebar.generateOptions">Generation Options</summary>
+        <div class="advanced-settings-body">
+          <div class="setting-item quick-template-nav">
+            <p class="quick-template-title" data-i18n="sidebar.quickStartTitle">Quick Start Templates</p>
+            <div class="quick-template-buttons" role="group" aria-label="Quick templates" data-i18n-aria-label="sidebar.quickStartAria">
+              <button type="button" class="quick-template-btn is-active" data-quick-template="plain">
+                <span class="quick-template-icon" aria-hidden="true">🔗</span>
+                <span class="quick-template-copy">
+                  <span class="quick-template-main" data-i18n="sidebar.quickPlain">URL / Text</span>
+                  <span class="quick-template-sub" data-i18n="sidebar.quickPlainHint">Manual input</span>
+                </span>
+              </button>
+              <button type="button" class="quick-template-btn" data-quick-template="wifi">
+                <span class="quick-template-icon" aria-hidden="true">📶</span>
+                <span class="quick-template-copy">
+                  <span class="quick-template-main" data-i18n="sidebar.quickWifi">Wi-Fi</span>
+                  <span class="quick-template-sub" data-i18n="sidebar.quickWifiHint">Guest sharing</span>
+                </span>
+              </button>
+              <button type="button" class="quick-template-btn" data-quick-template="mailto">
+                <span class="quick-template-icon" aria-hidden="true">✉️</span>
+                <span class="quick-template-copy">
+                  <span class="quick-template-main" data-i18n="sidebar.quickMail">Email</span>
+                  <span class="quick-template-sub" data-i18n="sidebar.quickMailHint">Contact intake</span>
+                </span>
+              </button>
+              <button type="button" class="quick-template-btn" data-quick-template="social">
+                <span class="quick-template-icon" aria-hidden="true">🌐</span>
+                <span class="quick-template-copy">
+                  <span class="quick-template-main" data-i18n="sidebar.quickSocial">Social</span>
+                  <span class="quick-template-sub" data-i18n="sidebar.quickSocialHint">Profile shortcut</span>
+                </span>
+              </button>
+              <button type="button" class="quick-template-btn" data-quick-template="vcard">
+                <span class="quick-template-icon" aria-hidden="true">👤</span>
+                <span class="quick-template-copy">
+                  <span class="quick-template-main" data-i18n="sidebar.quickVcard">Contact</span>
+                  <span class="quick-template-sub" data-i18n="sidebar.quickVcardHint">Digital business card</span>
+                </span>
+              </button>
+              <button type="button" class="quick-template-btn" data-quick-template="line">
+                <span class="quick-template-icon" aria-hidden="true">💬</span>
+                <span class="quick-template-copy">
+                  <span class="quick-template-main" data-i18n="sidebar.quickLine">LINE</span>
+                  <span class="quick-template-sub" data-i18n="sidebar.quickLineHint">Add friend flow</span>
+                </span>
+              </button>
+            </div>
+          </div>
+
+          <div class="setting-item">
+            <label for="dataType" class="setting-label" data-i18n="sidebar.dataTemplate">Data templates</label>
+            <select id="dataType" class="select-input" aria-label="Data template selection" data-i18n-aria-label="sidebar.dataTemplateAria">
+              <option value="plain" data-i18n-option="sidebar.typePlain">URL / Text (manual input)</option>
+              <option value="wifi" data-i18n-option="sidebar.typeWifi">Wi-Fi Access</option>
+              <option value="mailto" data-i18n-option="sidebar.typeMailto">Email Link</option>
+              <option value="tel" data-i18n-option="sidebar.typeTel">Phone Number</option>
+              <option value="sms" data-i18n-option="sidebar.typeSms">SMS</option>
+              <option value="line" data-i18n-option="sidebar.typeLine">LINE Add</option>
+              <option value="social" data-i18n-option="sidebar.typeSocial">Social Profile</option>
+              <option value="vcard" data-i18n-option="sidebar.typeVcard">Contact(vCard)</option>
+            </select>
+            <p id="templateHint" class="template-hint" aria-live="polite" data-i18n="sidebar.templateHintPlain">
+              Enter URL/text directly. Choose a type to show only the fields you need.
+            </p>
+            <p id="templateErrorMsg" class="error-text template-error-text" role="alert" aria-live="polite" style="display:none;"></p>
+          </div>
+
+          <div id="templateFields" class="template-fields">
+            <div class="template-group" data-type="wifi" hidden>
+              <label class="setting-label" for="wifiSsid"><span data-i18n="sidebar.wifiSsid">SSID</span> <span class="field-badge field-badge-required" data-i18n="sidebar.required">Required</span></label>
+              <input id="wifiSsid" class="text-input" type="text" autocomplete="off">
+              <label class="setting-label" for="wifiAuth"><span data-i18n="sidebar.wifiAuth">Encryption</span> <span class="field-badge field-badge-required" data-i18n="sidebar.required">Required</span></label>
+              <select id="wifiAuth" class="select-input">
+                <option value="WPA" data-i18n-option="sidebar.wifiAuthWpa">WPA/WPA2</option>
+                <option value="WEP" data-i18n-option="sidebar.wifiAuthWep">WEP</option>
+                <option value="nopass" data-i18n-option="sidebar.wifiAuthNone">None</option>
+              </select>
+              <label class="setting-label" for="wifiPassword" data-i18n="sidebar.wifiPassword">Password</label>
+              <input id="wifiPassword" class="text-input" type="text" autocomplete="off">
+              <details class="template-optional-fields">
+                <summary data-i18n="sidebar.optionalFields">Optional fields</summary>
+                <div class="template-optional-body">
+                  <label class="check-input"><input id="wifiHidden" type="checkbox"> <span data-i18n="sidebar.wifiHidden">Hidden SSID</span></label>
+                </div>
+              </details>
+            </div>
+
+            <div class="template-group" data-type="mailto" hidden>
+              <label class="setting-label" for="mailTo"><span data-i18n="sidebar.mailTo">To</span> <span class="field-badge field-badge-required" data-i18n="sidebar.required">Required</span></label>
+              <input id="mailTo" class="text-input" type="email" autocomplete="off">
+              <details class="template-optional-fields">
+                <summary data-i18n="sidebar.optionalFields">Optional fields</summary>
+                <div class="template-optional-body">
+                  <label class="setting-label" for="mailSubject" data-i18n="sidebar.mailSubject">Subject</label>
+                  <input id="mailSubject" class="text-input" type="text" autocomplete="off">
+                  <label class="setting-label" for="mailBody" data-i18n="sidebar.mailBody">Body</label>
+                  <textarea id="mailBody" class="input-text compact" rows="3"></textarea>
+                </div>
+              </details>
+            </div>
+
+            <div class="template-group" data-type="tel" hidden>
+              <label class="setting-label" for="telNumber"><span data-i18n="sidebar.telNumber">Phone Number</span> <span class="field-badge field-badge-required" data-i18n="sidebar.required">Required</span></label>
+              <input id="telNumber" class="text-input" type="tel" autocomplete="off" inputmode="tel">
+            </div>
+
+            <div class="template-group" data-type="sms" hidden>
+              <label class="setting-label" for="smsNumber"><span data-i18n="sidebar.smsNumber">Phone Number</span> <span class="field-badge field-badge-required" data-i18n="sidebar.required">Required</span></label>
+              <input id="smsNumber" class="text-input" type="tel" autocomplete="off" inputmode="tel">
+              <details class="template-optional-fields">
+                <summary data-i18n="sidebar.optionalFields">Optional fields</summary>
+                <div class="template-optional-body">
+                  <label class="setting-label" for="smsBody" data-i18n="sidebar.smsBody">Message</label>
+                  <textarea id="smsBody" class="input-text compact" rows="3"></textarea>
+                </div>
+              </details>
+            </div>
+
+            <div class="template-group" data-type="line" hidden>
+              <label class="setting-label" for="lineId"><span data-i18n="sidebar.lineId">LINE ID or URL suffix</span> <span class="field-badge field-badge-required" data-i18n="sidebar.required">Required</span></label>
+              <input id="lineId" class="text-input" type="text" autocomplete="off">
+            </div>
+
+            <div class="template-group" data-type="social" hidden>
+              <label class="setting-label" for="socialPlatform"><span data-i18n="sidebar.socialPlatform">Social Platform</span> <span class="field-badge field-badge-required" data-i18n="sidebar.required">Required</span></label>
+              <select id="socialPlatform" class="select-input">
+                <option value="x" data-i18n-option="platform.x">X (Twitter)</option>
+                <option value="instagram" data-i18n-option="platform.instagram">Instagram</option>
+                <option value="youtube" data-i18n-option="platform.youtube">YouTube</option>
+                <option value="tiktok" data-i18n-option="platform.tiktok">TikTok</option>
+                <option value="note" data-i18n-option="platform.note">note</option>
+                <option value="website" data-i18n-option="platform.website">Website</option>
+              </select>
+              <label class="setting-label" for="socialHandle"><span data-i18n="sidebar.socialHandle">ID / URL / Handle</span> <span class="field-badge field-badge-required" data-i18n="sidebar.required">Required</span></label>
+              <input id="socialHandle" class="text-input" type="text" autocomplete="off">
+            </div>
+
+            <div class="template-group" data-type="vcard" hidden>
+              <p class="helper-text" data-i18n="sidebar.vcardMinimumNote">Enter at least one field to generate a contact QR.</p>
+              <label class="setting-label" for="vName"><span data-i18n="sidebar.vName">Display Name</span> <span class="field-badge field-badge-recommended" data-i18n="sidebar.recommended">Recommended</span></label>
+              <input id="vName" class="text-input" type="text" autocomplete="off">
+              <label class="setting-label" for="vPhone" data-i18n="sidebar.vPhone">Phone Number</label>
+              <input id="vPhone" class="text-input" type="tel" autocomplete="off" inputmode="tel">
+              <label class="setting-label" for="vMail" data-i18n="sidebar.vMail">Email</label>
+              <input id="vMail" class="text-input" type="email" autocomplete="off">
+              <details class="template-optional-fields">
+                <summary data-i18n="sidebar.optionalFields">Optional fields</summary>
+                <div class="template-optional-body">
+                  <label class="setting-label" for="vOrg" data-i18n="sidebar.vOrg">Company</label>
+                  <input id="vOrg" class="text-input" type="text" autocomplete="off">
+                  <label class="setting-label" for="vUrl" data-i18n="sidebar.vUrl">Website</label>
+                  <input id="vUrl" class="text-input" type="url" autocomplete="off">
+                </div>
+              </details>
+            </div>
+          </div>
+
+          <div class="setting-item">
+            <label class="setting-label" for="eccLevel" data-i18n="sidebar.eccLevel">Error Correction Level</label>
+            <select id="eccLevel" class="select-input">
+              <option value="auto" data-i18n-option="sidebar.eccAuto">Auto (Recommended)</option>
+              <option value="H" data-i18n-option="sidebar.eccH">H (High)</option>
+              <option value="Q" data-i18n-option="sidebar.eccQ">Q (Mid-High)</option>
+              <option value="M" data-i18n-option="sidebar.eccM">M (Medium)</option>
+              <option value="L" data-i18n-option="sidebar.eccL">L (Low)</option>
+            </select>
+            <p class="helper-text" data-i18n="sidebar.eccHelp">This controls scan error tolerance. If unsure, keep "Auto (Recommended)".</p>
+          </div>
+
+          <div class="setting-item">
+            <label class="setting-label"><span data-i18n="sidebar.paddingLabel">Scan Margin</span>: <span id="paddingValue">4</span>px</label>
+            <input type="range" id="qrPadding" min="0" max="20" step="1" value="4">
+          </div>
+
+          <div class="setting-item">
+            <label class="check-input"><input id="transparentBg" type="checkbox"> <span data-i18n="sidebar.transparentBg">Transparent Background</span></label>
+            <div id="transparencyWarning" class="warning-box" style="display:none;">
+              <span class="icon-warn">⚠️</span>
+              <span data-i18n="sidebar.transparencyWarning">Transparent backgrounds may reduce scan reliability on some surfaces.</span>
+            </div>
+          </div>
+
+          <div class="setting-item export-grid">
+            <div>
+              <label class="setting-label" for="exportFormat" data-i18n="sidebar.exportFormat">Export Format</label>
+              <select id="exportFormat" class="select-input">
+                <option value="png" data-i18n-option="sidebar.formatPng">PNG</option>
+                <option value="jpeg" data-i18n-option="sidebar.formatJpeg">JPEG</option>
+                <option value="webp" data-i18n-option="sidebar.formatWebp">WebP</option>
+                <option value="svg" data-i18n-option="sidebar.formatSvg">SVG (Pro)</option>
+                <option value="pdf" data-i18n-option="sidebar.formatPdf">PDF (Pro)</option>
+              </select>
+              <p class="helper-text pro-feature-tag" data-i18n="pro.exportProNotice">SVG and PDF export are available on Pro.</p>
+            </div>
+            <div>
+              <label class="setting-label" for="filePrefix" data-i18n="sidebar.filePrefix">Filename Prefix</label>
+              <input id="filePrefix" class="text-input" type="text" value="qr" maxlength="20" autocomplete="off">
+            </div>
+          </div>
+        </div>
+      </details>
+
+      <details class="advanced-settings" data-details-id="logo">
+        <summary class="pro-feature-tag" data-i18n="pro.logoTitle">Logo Insert (Pro)</summary>
+        <div class="advanced-settings-body extension-form">
+          <p class="helper-text" data-i18n="pro.logoHelp">Insert a center logo and automatically review likely scan safety.</p>
+          <label class="setting-label pro-feature-tag" for="logoFile" data-i18n="pro.logoFileLabel">Logo image (Pro)</label>
+          <input id="logoFile" class="text-input" type="file" accept="image/png,image/jpeg,image/webp,image/svg+xml">
+          <img id="logoPreview" class="logo-preview" alt="logo preview" hidden>
+          <div class="row-actions">
+            <button type="button" id="clearLogoBtn" class="btn-secondary pro-feature-tag" data-i18n="pro.logoClear">Remove Logo (Pro)</button>
+          </div>
+          <label class="setting-label pro-feature-tag"><span data-i18n="pro.logoSize">Logo Size (Pro)</span>: <span id="logoSizeValue">14</span>%</label>
+          <input type="range" id="logoSizePercent" min="8" max="28" step="1" value="14">
+          <label class="check-input"><input id="logoBackdrop" type="checkbox" checked> <span class="pro-feature-tag" data-i18n="pro.logoBackdrop">Draw white backdrop behind logo (Pro)</span></label>
+          <div id="logoWarning" class="warning-box" style="display:none;">
+            <span class="icon-warn">⚠️</span>
+            <span data-i18n="pro.logoWarning">Logo is too large and may reduce scan reliability.</span>
+          </div>
+        </div>
+      </details>
+
+      <details class="advanced-settings" data-details-id="quality" open>
+        <summary data-i18n="pro.qualityTitle">Quality Check</summary>
+        <div class="advanced-settings-body">
+          <div class="quality-grade-row">
+            <span class="quality-label" data-i18n="pro.qualityGrade">Grade</span>
+            <strong id="qualityGrade" class="quality-grade quality-a">A</strong>
+          </div>
+          <p id="qualitySummary" class="helper-text" data-i18n="pro.qualitySummaryDefault">Looks good. Suitable for common scanning situations.</p>
+          <ul id="qualityChecklist" class="policy-list">
+            <li data-i18n="pro.qualityItemContrast">Contrast: Good</li>
+            <li data-i18n="pro.qualityItemPadding">Quiet Zone: Good</li>
+            <li data-i18n="pro.qualityItemLogo">Logo Coverage: Good</li>
+            <li data-i18n="pro.qualityItemEcc">Error Correction: Good</li>
+          </ul>
+        </div>
+      </details>
+
+      <details class="advanced-settings" data-details-id="preset">
+        <summary class="pro-feature-tag" data-i18n="pro.presetTitle">Brand Presets (Pro)</summary>
+        <div class="advanced-settings-body extension-form">
+          <p class="helper-text" data-i18n="pro.presetHelp">Save and reuse color, size, margin, and logo settings.</p>
+          <label class="setting-label pro-feature-tag" for="presetName" data-i18n="pro.presetName">Preset name (Pro)</label>
+          <div class="inline-input-row">
+            <input id="presetName" class="text-input" type="text" maxlength="30" autocomplete="off" placeholder="my-brand" data-i18n-placeholder="pro.presetPlaceholder">
+            <button type="button" id="savePresetBtn" class="btn-secondary pro-feature-tag" data-i18n="pro.presetSave">Save (Pro)</button>
+          </div>
+          <details class="preset-manage" data-details-id="preset-manage">
+            <summary class="pro-feature-tag" data-i18n="pro.presetManage">Manage saved presets (Pro)</summary>
+            <div class="advanced-settings-body">
+              <label class="setting-label pro-feature-tag" for="presetSelect" data-i18n="pro.presetSavedList">Saved presets (Pro)</label>
+              <select id="presetSelect" class="select-input" aria-label="preset" data-i18n-aria-label="pro.presetSelectAria">
+                <option value="" data-i18n-option="pro.presetEmpty">No saved presets</option>
+              </select>
+              <div class="row-actions">
+                <button type="button" id="loadPresetBtn" class="btn-secondary pro-feature-tag" data-i18n="pro.presetLoad">Load (Pro)</button>
+                <button type="button" id="deletePresetBtn" class="btn-secondary pro-feature-tag" data-i18n="pro.presetDelete">Delete (Pro)</button>
+              </div>
+            </div>
+          </details>
+          <p id="presetStatus" class="helper-text"></p>
+        </div>
+      </details>
+
+      <details class="advanced-settings" data-details-id="social-hub">
+        <summary data-i18n="sidebar.socialHub">Social QR Quick Hub</summary>
+        <div class="advanced-settings-body extension-form">
+          <p class="helper-text" data-i18n="sidebar.socialHubHelp">Create a social-profile QR without switching away from this panel.</p>
+          <label class="setting-label" for="socialQuickPlatform" data-i18n="sidebar.platform">Platform</label>
+          <select id="socialQuickPlatform" class="select-input">
+            <option value="x" data-i18n-option="platform.x">X (Twitter)</option>
+            <option value="instagram" data-i18n-option="platform.instagram">Instagram</option>
+            <option value="youtube" data-i18n-option="platform.youtube">YouTube</option>
+            <option value="tiktok" data-i18n-option="platform.tiktok">TikTok</option>
+            <option value="note" data-i18n-option="platform.note">note</option>
+            <option value="website" data-i18n-option="platform.website">Website</option>
+          </select>
+          <label class="setting-label" for="socialQuickValue" data-i18n="sidebar.idOrUrl">ID / URL</label>
+          <input id="socialQuickValue" class="text-input" type="text" autocomplete="off">
+          <button type="button" id="applySocialQuickBtn" class="btn-secondary" data-i18n="sidebar.applySocialQuick">Generate QR with this value</button>
+        </div>
+      </details>
+
+      <details class="advanced-settings" data-details-id="bulk">
+        <summary data-i18n="sidebar.bulkTitle">Bulk CSV Generator</summary>
+        <div class="advanced-settings-body extension-form">
+          <p class="helper-text" data-i18n="sidebar.bulkHelp">Generate multiple QR codes from `value,name` CSV rows.</p>
+          <label class="setting-label" for="bulkCsvFile" data-i18n="sidebar.bulkFile">Load CSV file (Optional)</label>
+          <input id="bulkCsvFile" class="text-input" type="file" accept=".csv,text/csv">
+          <label class="setting-label" for="bulkCsvText" data-i18n="sidebar.bulkText">Paste CSV text</label>
+          <textarea id="bulkCsvText" class="input-text compact" rows="4" placeholder="value,name&#10;https://example.com,example" data-i18n-placeholder="sidebar.bulkPlaceholder"></textarea>
+          <div class="row-actions">
+            <button type="button" id="bulkPreviewBtn" class="btn-secondary" data-i18n="sidebar.bulkParse">Parse CSV</button>
+            <button type="button" id="bulkDownloadBtn" class="btn-secondary" disabled data-i18n="sidebar.bulkDownload">Download All</button>
+            <button type="button" id="bulkZipBtn" class="btn-secondary pro-feature-tag" disabled data-i18n="pro.bulkZip">Save as ZIP (Pro)</button>
+          </div>
+          <p id="bulkSummary" class="helper-text" data-i18n="sidebar.bulkUnparsed">Not parsed yet</p>
+          <ul id="bulkPreviewList" class="bulk-preview-list"></ul>
+          <p id="bulkStatus" class="helper-text"></p>
+        </div>
+      </details>
+
+      <details class="advanced-settings" data-details-id="scan">
+        <summary data-i18n="sidebar.scanTitle">Scan Check Mode</summary>
+        <div class="advanced-settings-body extension-form">
+          <p class="helper-text" data-i18n="sidebar.scanHelp">Use this device camera to test the generated result.</p>
+          <button type="button" id="scannerToggleBtn" class="btn-secondary" data-i18n="scanner.start">Start Scan</button>
+          <video id="scannerVideo" class="scanner-video" playsinline muted hidden></video>
+          <p id="scannerStatus" class="helper-text" data-i18n="scanner.idle">Idle</p>
+          <p id="scannerResult" class="scanner-result"></p>
+        </div>
+      </details>
+
+      <div class="sidebar-reset-section">
+        <button type="button" id="resetAllBtn" class="btn-reset-all" data-i18n="sidebar.resetAll">⟳ Reset All Settings</button>
+      </div>
+
+      <details class="advanced-settings" data-details-id="policy" open>
+        <summary data-i18n="sidebar.policyTitle">Security Policy</summary>
+        <div class="advanced-settings-body">
+          <ul class="policy-list">
+            <li data-i18n="sidebar.policy1">QR input data is not sent externally for advertising purposes.</li>
+            <li data-i18n="sidebar.policy2">Input content is not collected for analytics.</li>
+            <li data-i18n="sidebar.policy3">QR payload input is processed locally in your browser and is not sent externally.</li>
+          </ul>
+        </div>
+      </details>
+    </aside>
+  </div>
+
+  <button type="button" id="sidebarBackdrop" class="sidebar-backdrop" aria-hidden="true" tabindex="-1"></button>
+
+  <nav class="mobile-action-bar" aria-label="Mobile action bar" style="display:none;">
+    <button type="button" id="mobileTemplateBtn" class="mobile-action-btn" data-i18n="mobile.template">Template</button>
+    <button type="button" id="mobileSettingsBtn" class="mobile-action-btn" data-i18n="mobile.settings">Settings</button>
+    <button type="button" id="mobileDownloadBtn" class="mobile-action-btn is-primary" disabled data-i18n="mobile.save">Save</button>
+  </nav>
+
+  <section class="article-content english-content" aria-labelledby="english-guide-title">
+    <header>
+      <p><strong>Created by Katakata</strong> · Last reviewed <time datetime="2026-07-16">July 16, 2026</time></p>
+      <h2 id="english-guide-title">How to use QR Maker Lab</h2>
+      <p>Generate a QR code for plain text or a structured template, then check color contrast, margin, error correction, and optional logo coverage before saving. The page includes practical templates for Wi-Fi, email, phone, LINE, social profiles, and vCard contacts.</p>
+    </header>
+    <section>
+      <h3>Practical workflow</h3>
+      <ol><li>Choose the content type and enter only the fields that the recipient needs. Preview the encoded value before distribution.</li>
+<li>Keep foreground and background contrast high, retain a quiet zone, and use a stronger error-correction level when placing a modest logo.</li>
+<li>Test the exported code with more than one phone, at the real print or screen size, and under the lighting where it will be used.</li></ol>
+    </section>
+    <section>
+      <h3>Accuracy and limitations</h3>
+      <p>A QR code that renders successfully is not automatically safe or readable in every context. Dense content creates smaller modules, reflective materials can reduce contrast, and a logo can cover recoverable data. Never encode credentials in a public handout unless disclosure is intended.</p>
+    </section>
+    <section>
+      <h3>Privacy and data handling</h3>
+      <p>QR content is generated locally and is not collected for analytics or advertising. The license field is sent only when you explicitly request license verification; that request includes the license key and using domain as described beside the field.</p>
+    </section>
+    <section>
+      <h3>Why this page exists</h3>
+      <p>KatakataLab publishes small browser tools built from recurring design and development tasks. This English page is maintained as a complete entry point, not as an automatic translation or a doorway page. If a control, explanation, or result is unclear, use the <a href="https://katakatalab.com/contact.html">contact page</a> and include the tool name, browser, and expected result without sending confidential input.</p>
+      <p>For another workflow, browse the <a href="https://katakatalab.com/en/">English tool index</a> or switch to the <a href="https://katakatalab.com/qrcode/" hreflang="ja" lang="ja">Japanese version</a>.</p>
+    </section>
+  </section>
+</main>
+  <!-- Auto-Injected Unified Footer -->
+<footer class="tool-footer" aria-label="Site information">
+  <a href="https://katakatalab.com/en/">🧪 KatakataLab English</a><span class="tool-footer__separator" aria-hidden="true">|</span>
+  <a href="https://katakatalab.com/en/site-information.html">Site information</a><span class="tool-footer__separator" aria-hidden="true">|</span>
+  <a href="https://katakatalab.com/contact.html">Contact</a><span class="tool-footer__separator" aria-hidden="true">|</span>
+  <a href="https://katakatalab.com/privacy.html">Privacy (Japanese)</a><span class="tool-footer__separator" aria-hidden="true">|</span>
+  <a href="https://katakatalab.com/terms.html">Terms (Japanese)</a>
+</footer>
+
+</main>
+
+<script type="application/ld+json">
+  {
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "QR Maker Lab",
+  "url": "https://katakatalab.com/qrcode/en/",
+  "description": "Create QR codes for URLs, Wi-Fi, email, phone, social profiles, and contacts, check contrast and quiet zone quality, then save the result from your browser.",
+  "applicationCategory": "UtilitiesApplication",
+  "operatingSystem": "Any",
+  "inLanguage": "en",
+  "isAccessibleForFree": true,
+  "offers": {
+    "@type": "Offer",
+    "price": "0",
+    "priceCurrency": "USD"
+  },
+  "author": {
+    "@type": "Person",
+    "name": "Katakata"
+  },
+  "dateModified": "2026-07-16"
+}
+  </script>
+
+<script src="js/pwa.js" defer></script>
+<script src="js/pro-config.js" defer></script>
+<script src="vendor/qrious.min.js" defer></script>
+<script src="script.js?v=20260504a" defer></script>
+<script src="js/details-ui.js" defer></script>
+  <script src="/international/english-runtime.js" defer></script>
+</body>
+</html>

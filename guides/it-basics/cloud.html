@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>【IT用語】「クラウド」とは？空の上ではなく、必要な時に使えるIT資源 | KatakataLab</title>
+  <meta name="description" content="クラウドの意味を、IaaS・PaaS・SaaSの違い、オンプレミスとの比較、費用と安全性の注意点まで初心者向けに整理します。">
+  <link rel="canonical" href="https://katakatalab.com/guides/it-basics/cloud.html">
+  <meta property="og:type" content="article">
+  <meta property="og:site_name" content="KatakataLab">
+  <meta property="og:title" content="【IT用語】「クラウド」とは？空の上ではなく、必要な時に使えるIT資源">
+  <meta property="og:description" content="クラウドの意味を、IaaS・PaaS・SaaSの違い、オンプレミスとの比較、費用と安全性の注意点まで初心者向けに整理します。">
+  <meta property="og:url" content="https://katakatalab.com/guides/it-basics/cloud.html">
+  <meta property="og:image" content="https://katakatalab.com/ogp.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="icon" href="../../favicon.ico">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&family=Zen+Kurenaido&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css?v=20260824-responsive">
+  <script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": "【IT用語】「クラウド」とは？空の上ではなく、必要な時に使えるIT資源",
+  "description": "クラウドの意味を、IaaS・PaaS・SaaSの違い、オンプレミスとの比較、費用と安全性の注意点まで初心者向けに整理します。",
+  "datePublished": "2026-07-13",
+  "dateModified": "2026-08-04",
+  "mainEntityOfPage": "https://katakatalab.com/guides/it-basics/cloud.html",
+  "inLanguage": "ja",
+  "author": {
+    "@type": "Person",
+    "name": "かたかた",
+    "url": "https://katakatalab.com/who-is-katakata.html"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "KatakataLab",
+    "url": "https://katakatalab.com/"
+  }
+}</script>
+  <script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position": 1,
+      "name": "ホーム",
+      "item": "https://katakatalab.com/"
+    },
+    {
+      "@type": "ListItem",
+      "position": 2,
+      "name": "かたかたの制作ノート",
+      "item": "https://katakatalab.com/guides/it-basics/"
+    },
+    {
+      "@type": "ListItem",
+      "position": 3,
+      "name": "【IT用語】「クラウド」とは？空の上ではなく、必要な時に使えるIT資源",
+      "item": "https://katakatalab.com/guides/it-basics/cloud.html"
+    }
+  ]
+}</script>
+</head>
+<body>
+    <script>try{if(localStorage.getItem('theme')==='dark')document.body.classList.add('dark-mode');}catch(e){}</script>
+  <a class="skip-link" href="#main-content">本文へ移動</a>
+  <header class="site-header">
+    <div class="header-inner">
+      <a class="brand" href="../../" aria-label="KatakataLab ホーム">
+        <span class="brand-mark" aria-hidden="true">K</span>
+        <span><strong>KatakataLab</strong><small>かたかたの制作ノート</small></span>
+      </a>
+      <nav class="site-nav" aria-label="主要ナビゲーション">
+        <a href="./">記事一覧</a>
+        <a href="../../#projects">作品・ツール</a>
+        <a href="../../who-is-katakata.html">運営者</a>
+      </nav>
+    </div>
+  </header>
+  <main id="main-content">
+    <nav class="breadcrumbs" aria-label="パンくずリスト">
+      <a href="../../">ホーム</a><span aria-hidden="true">/</span><a href="./">かたかたの制作ノート</a><span aria-hidden="true">/</span><span aria-current="page">「クラウド」とは？空の上ではなく、必要な時に使えるIT資源</span>
+    </nav>
+    <article class="article-shell">
+      <header class="article-hero">
+        <div class="chapter-stamp"><span>CHAPTER 01</span><strong>CLOUD</strong></div>
+        <p class="chapter-name">第1章｜インフラの基礎</p>
+        <h1>【IT用語】「クラウド」とは？空の上ではなく、必要な時に使えるIT資源</h1>
+        <p class="article-lead">クラウドの意味を、IaaS・PaaS・SaaSの違い、オンプレミスとの比較、費用と安全性の注意点まで初心者向けに整理します。</p>
+        <div class="article-meta" aria-label="記事情報">
+          <span>作成者：かたかた</span><span>公開日：2026年7月13日</span><span>更新日：2026年8月4日</span>
+        </div>
+      </header>
+      <div class="article-layout">
+        <aside class="article-toc" aria-label="目次"><p>このページの目次</p><ol><li><a href="#section-1">結論：「クラウド」＝「IT資源を、ネット経由で必要に応じて使う仕組み」</a></li>
+<li><a href="#section-2">クラウドにも種類がある</a></li>
+<li><a href="#section-3">なぜクラウドを使うの？</a></li>
+<li><a href="#section-4">クラウドなら安全で安い？</a></li>
+<li><a href="#section-talk">この言葉が会話に出てくるとき</a></li>
+<li><a href="#section-misread">勘違いしやすい点</a></li>
+<li><a href="#section-5">まとめ</a></li></ol></aside>
+        <div class="article-content">
+          <p>「写真はクラウドに保存している」</p>
+<p>「会社のシステムをクラウドに移行する」</p>
+<p>日常でもよく聞く「クラウド(Cloud)」。直訳すると「雲」なので、データが空の上に浮かんでいるように感じるかもしれません。</p>
+<p>今回は、クラウドの考え方を<strong>「必要な時に使えるレンタカー」</strong>に例えて解説します。</p>
+<section class="article-section" aria-labelledby="section-1"><h2 id="section-1">結論：「クラウド」＝「IT資源を、ネット経由で必要に応じて使う仕組み」</h2>
+<p>クラウドとは、<strong>「サーバー、ストレージ、アプリなどのIT資源を、ネット経由で必要に応じて利用する仕組み」</strong>です。</p>
+<p>以前は、企業が自分でサーバーを購入し、社内に置いて管理する方法が中心でした。このように、自分たちで設備を持つ形を「オンプレミス」と呼びます。</p>
+<p>クラウドでは、AWS、Microsoft Azure、Google Cloudなどの事業者が用意した設備やサービスを利用します。</p>
+<h3>「車」で例えると？</h3>
+<ul>
+<li><strong>オンプレミス：</strong> 自分で車を購入し、点検や保管も自分で行う。</li>
+<li><strong>クラウド：</strong> 必要な時にレンタカーやカーシェアを利用する。</li>
+</ul>
+<p>自分で設備を所有するか、用意された資源を必要に応じて使うか。その違いをイメージすると分かりやすくなります。</p>
+</section>
+<section class="article-section" aria-labelledby="section-2"><h2 id="section-2">クラウドにも種類がある</h2>
+<p>「クラウド＝サーバーを借りること」だけではありません。</p>
+<h3>IaaS：機械に近い部分を借りる</h3>
+<p>仮想サーバーやストレージなどを利用します。OSやアプリの管理は、ユーザー側が担当する範囲が多くなります。</p>
+<h3>PaaS：アプリを動かす土台を借りる</h3>
+<p>サーバーの細かな管理を減らし、アプリの開発や実行に集中しやすくするサービスです。</p>
+<h3>SaaS：完成したアプリを使う</h3>
+<p>Gmailやオンライン会議、クラウド会計のように、完成したソフトウェアをネット経由で利用します。</p>
+</section>
+<section class="article-section" aria-labelledby="section-3"><h2 id="section-3">なぜクラウドを使うの？</h2>
+<h3>1. 始めやすい</h3>
+<p>物理サーバーの購入や設置を待たず、Web画面などから必要な環境を用意できます。</p>
+<h3>2. 規模を調整しやすい</h3>
+<p>アクセス量に合わせて、使う資源を増減できます。料金体系はサービスごとに異なりますが、使った量に応じて支払う方式もあります。</p>
+<h3>3. 管理を任せられる範囲がある</h3>
+<p>設備の保守などを事業者に任せられます。ただし、どこまで任せられるかはサービスによって違います。</p>
+</section>
+<section class="article-section" aria-labelledby="section-4"><h2 id="section-4">クラウドなら安全で安い？</h2>
+<p>クラウドは便利ですが、使えば自動的に安全・低価格になるわけではありません。</p>
+<p>パスワードやアクセス権限の設定、バックアップ、利用料金の監視は、ユーザー側にも責任があります。使っていない資源を放置すれば、想定以上の料金が発生することもあります。</p>
+<p>クラウドは「全部お任せ」ではなく、<strong>事業者とユーザーで管理を分担する仕組み</strong>と考えるのが大切です。</p>
+</section>
+<section class="article-section" aria-labelledby="section-talk"><h2 id="section-talk">この言葉が会話に出てくるとき</h2>
+<p>例えば、写真や原稿を「どこに置くか」を決める会話です。「自分のPCだけ」「レンタルサーバー」「外部の保存サービス」のどれを使うかで、止まると困る範囲が変わります。</p>
+<p>例えば、アクセスが増えたときです。「機械を買い足す」のではなく、「今借りている量を増やす」かどうかを検討する対象がクラウドです。</p>
+</section>
+<section class="article-section" aria-labelledby="section-misread"><h2 id="section-misread">勘違いしやすい点</h2>
+<ul>
+<li><strong>雲の中にデータがある：</strong> 実体は、事業者が管理する機械とサービスです。場所が見えないだけで、どこかの設備で動いています。</li>
+<li><strong>全部お任せで安全：</strong> 認証、公開範囲、バックアップ、料金の監視は、使う側にも残ります。</li>
+<li><strong>使わない月は必ず無料：</strong> 置きっぱなしの資源や転送量で、想定より請求が増えることがあります。</li>
+</ul>
+<p>借りる前に見るなら、何を外に出すか、止まったら何が困るか、やめ方があるか、の3点です。</p>
+</section>
+<section class="article-section" aria-labelledby="section-5"><h2 id="section-5">まとめ</h2>
+<ul>
+<li><strong>クラウド</strong> ＝ <strong>「IT資源やアプリを、ネット経由で必要に応じて利用する仕組み」</strong></li>
+<li><strong>オンプレミス</strong> ＝ <strong>「設備を自分たちで所有・管理する形」</strong></li>
+<li><strong>メリット</strong> ＝ <strong>「始めやすく、規模を調整しやすい」</strong></li>
+<li><strong>注意点</strong> ＝ <strong>「安全性や費用は、ユーザー側の設定と運用にも左右される」</strong></li>
+</ul>
+<p>「クラウドに保存する」とは、雲の中へ飛ばすことではありません。事業者が管理する設備やサービスを使い、ネット越しにデータを保存することです。</p>
+<p>次の記事では、そのデータを整理して扱う「データベース」について解説します。</p>
+<p>ここまでお読みいただきありがとうございました！</p>
+</section>
+          <aside class="lab-example" aria-labelledby="lab-example-title">
+            <p class="eyebrow">FROM THE LAB</p>
+            <h2 id="lab-example-title">KatakataLabでの実例</h2>
+            <p>KatakataLabでは、ソースコードの管理と自動処理にGitHub、公開ファイルの配信にXserverを使っています。ひとまとめに「クラウド」と呼ばれがちですが、サービスごとに担当する役割は異なります。</p>
+            <p class="related-heading">この実例につながるページ</p>
+            <ul class="related-links"><li><a href="server.html">関連用語：サーバー</a></li>
+<li><a href="../../updates.html">公開後の更新記録</a></li></ul>
+          </aside>
+          <section class="article-section" aria-labelledby="section-ops-cloud">
+            <h2 id="section-ops-cloud">外部サービスに寄せる範囲を決める</h2>
+            <p>便利な外部サービスに全部寄せると速い一方、鍵の管理・料金・仕様変更の影響を受けます。KatakataLabでは、パスワード生成や比率計算のように一時データを外に出す必要がない処理はブラウザ内に閉じ、解析や配信だけ外部に任せる、という切り分けにしています。</p>
+<ul>
+<li>外に出すデータは何か（入力文、画像、識別子）</li>
+<li>止まると何が困るサービスか</li>
+<li>無料枠・利用規約・削除手順を読んだか</li>
+</ul>
+<p>外部サービスは魔法ではなく、誰かのコンピュータを借りる契約です。借りる範囲を狭くすると、説明責任と障害時の影響も小さくなります。</p>
+          </section>
+          <section class="article-section faq" aria-labelledby="faq-title">
+            <p class="eyebrow">QUICK CHECK</p>
+            <h2 id="faq-title">よくある質問</h2>
+            <h3>クラウドなら何もしなくても安全ですか？</h3>
+            <p>いいえ。事業者が守る範囲と、ユーザーが設定・管理する範囲があります。認証、権限、公開範囲、バックアップなどは利用するサービスに合わせて確認が必要です。</p>
+            <h3>次に読むなら？</h3><p><a href="database.html">DATABASEの記事</a>へ進むと、次の用語を順番に読めます。</p>
+          </section>
+          <section class="article-section references" aria-labelledby="references-title">
+            <h2 id="references-title">参考資料</h2>
+            <p>用語の定義や仕様を確認するため、公式文書・標準文書を参照しています。リンク先の内容は更新される場合があります。</p>
+            <ul><li><a href="https://csrc.nist.gov/pubs/sp/800/145/final" target="_blank" rel="noopener noreferrer">NIST SP 800-145「The NIST Definition of Cloud Computing」</a></li></ul>
+          </section>
+          <nav class="chapter-nav" aria-label="前後の記事">
+            <a class="chapter-link previous" href="server.html"><small>前の記事</small><span>← SERVER</span></a>
+            <a class="chapter-link next" href="database.html"><small>次の記事</small><span>DATABASE →</span></a>
+          </nav>
+        </div>
+      </div>
+    </article>
+  </main>
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <p><strong>KatakataLab</strong><br><span>作って、つまずいて、分かったことを残す小さな研究室。</span></p>
+      <nav aria-label="フッターナビゲーション">
+        <a href="../../contact.html">お問い合わせ</a>
+        <a href="../../who-is-katakata.html">運営者情報</a>
+        <a href="../../privacy.html">プライバシーポリシー</a>
+        <a href="../../sitemap.html">サイトマップ</a>
+      </nav>
+    </div>
+    <p class="copyright">&copy; 2024-2026 KatakataLab</p>
+  </footer>
+</body>
+</html>

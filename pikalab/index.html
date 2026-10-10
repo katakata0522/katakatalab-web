@@ -1,0 +1,660 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <!-- Content Security Policy -->
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self' https:; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: https:; frame-src https:; object-src 'none'; base-uri 'self';">
+    <!-- Global Error Boundary -->
+    <script>
+        window.addEventListener('error', function(e) {
+            var errDiv = document.getElementById('global-error-boundary');
+            if(errDiv) errDiv.style.display = 'flex';
+        });
+        window.addEventListener('unhandledrejection', function(e) {
+            var errDiv = document.getElementById('global-error-boundary');
+            if(errDiv) errDiv.style.display = 'flex';
+        });
+    </script>
+
+    <meta name="theme-color" content="#F8FAFC">
+    <meta charset="utf-8">
+    <meta name="description"
+        content="PikaLab（ピカラボ）は、遊びながら学べる子ども向けのデジタル研究室です。プログラミングや音楽、漢字、瞬読、算数などのWebアプリと、読書感想文や自由研究を支えるツールを掲載しています。">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <title>PikaLab | 遊びながら学べる子ども向けデジタル研究室</title>
+    <meta property="og:url" content="https://katakatalab.com/pikalab/">
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="PikaLab | 遊びながら学べる子ども向けデジタル研究室">
+    <meta property="og:description" content="PikaLab（ピカラボ）は、遊びながら学べる子ども向けのデジタル研究室です。プログラミングや音楽、漢字、瞬読、算数などのWebアプリと、読書感想文や自由研究を支えるツールを掲載しています。">
+    <meta property="og:site_name" content="PikaLab">
+    <meta property="og:image" content="https://katakatalab.com/pikalab/pikalab_ogp_compressed.jpg">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:site" content="@katakata0522">
+    <link rel="canonical" href="https://katakatalab.com/pikalab/">
+    <link rel="manifest" href="./manifest.webmanifest">
+    <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebSite","name":"PikaLab | 遊びながら学べる子ども向けデジタル研究室","url":"https://katakatalab.com/pikalab/","description":"PikaLab（ピカラボ）は、遊びながら学べる子ども向けのデジタル研究室です。プログラミングや音楽、漢字、瞬読、算数などのWebアプリと、読書感想文や自由研究を支えるツールを掲載しています。"}</script>
+    <link rel="icon" href="https://katakatalab.com/icon.svg" type="image/svg+xml">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@700;900&display=optional"
+        rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@40,700,1,0&icon_names=apps,arrow_forward,article,auto_awesome,bolt,check_circle,chevron_right,child_care,close,delete_forever,description,edit,edit_note,emoji_events,extension,face,family_restroom,favorite,functions,gavel,handyman,headphones,history,history_edu,keyboard,mail,menu,menu_book,military_tech,music_note,open_in_new,palette,person_off,play_arrow,print,psychology,public,restart_alt,robot_2,rocket_launch,school,science,scuba_diving,search,security,sentiment_satisfied,settings,shelves,speed,star,stars,timer,toys,volume_off,volume_up&display=block"
+        rel="stylesheet">
+
+    <link rel="stylesheet" href="style.css?v=20260722a">
+
+  <meta name="twitter:title" content="PikaLab | 遊びながら学べる子ども向けデジタル研究室">
+  <meta name="twitter:description" content="PikaLab（ピカラボ）は、遊びながら学べる子ども向けのデジタル研究室です。プログラミングや音楽、漢字、瞬読、算数などのWebアプリと、読書感想文や自由研究を支えるツールを掲載しています。">
+  <meta name="twitter:image" content="https://katakatalab.com/pikalab/pikalab_ogp_compressed.jpg">
+
+    <!-- PWA登録はルートページだけで行い、各ラボへ誤った相対パスを挿入しない -->
+    <script id="pikalab-register-sw">
+        if ('serviceWorker' in navigator) {
+            const register = () => navigator.serviceWorker.register('./sw.js', { scope: './', updateViaCache: 'none' }).catch(error => console.warn('SW registration failed:', error));
+            if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', register, { once: true });
+            else register();
+        }
+    </script>
+</head>
+
+<body
+    class="min-h-screen flex flex-col overflow-x-hidden relative transition-colors duration-500">
+    <script>try{var _p=localStorage.getItem('pikalab_profile_v1')||localStorage.getItem('wonder_school_profile_v2');if(_p&&JSON.parse(_p).darkMode)document.body.classList.add('theme-night');}catch(e){}</script>
+
+    <!-- JavaScript無効時の警告 -->
+    <noscript>
+        <div
+            style="background:#FEF2F2;border:2px solid #EF4444;color:#991B1B;padding:1.5rem;text-align:center;font-weight:bold;font-family:sans-serif;">
+            ⚠ このサイトはJavaScriptが必要です。ブラウザの設定でJavaScriptを有効にしてください。
+        </div>
+    </noscript>
+
+    <!-- スキップリンク（アクセシビリティ） -->
+    <a href="#main-content"
+        class="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-[60] focus:bg-indigo-600 focus:text-white focus:px-4 focus:py-2 focus:rounded-lg focus:font-bold focus:shadow-lg">本文へスキップ</a>
+
+    <div class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/90 backdrop-blur-sm p-4 transition-opacity duration-500 opacity-0 pointer-events-none"
+        id="login-modal" role="dialog" aria-modal="true" aria-labelledby="login-modal-title" tabindex="-1" style="display: none; outline: none;">
+        <div
+            class="bg-white rounded-3xl p-8 max-w-md w-full shadow-2xl border-4 border-indigo-100 text-center relative overflow-hidden modal-content">
+            <div class="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400">
+            </div>
+
+            <div class="mb-6 inline-block bg-indigo-50 p-4 rounded-full">
+                <span class="material-symbols-rounded text-6xl text-indigo-500 animate-float">science</span>
+            </div>
+            <h2 id="login-modal-title" class="text-3xl font-black text-slate-800 mb-2 font-pop">PikaLab</h2>
+            <p id="login-greeting" class="text-slate-500 font-bold mb-8">こんにちは！ 研究日和だね！</p>
+
+            <div class="space-y-4">
+                <div class="text-left">
+                    <label class="block text-xs font-bold text-slate-600 mb-1 ml-1">おなまえ (ニックネーム)</label>
+                    <input type="text" id="user-name-input"
+                        class="w-full bg-slate-50 border-2 border-slate-200 rounded-xl px-4 py-3 font-bold text-slate-700 focus:outline-none focus:border-indigo-400 focus:bg-white transition"
+                        placeholder="例: はかせ" aria-label="おなまえを入力" maxlength="40">
+                </div>
+
+                <div class="text-left">
+                    <label class="block text-xs font-bold text-slate-600 mb-1 ml-1">アバターをえらんでね</label>
+                    <div class="flex justify-between gap-2" id="avatar-selector">
+                        <button type="button"
+                            class="avatar-option flex-1 bg-blue-50 hover:bg-blue-100 border-2 border-transparent hover:border-blue-300 rounded-xl p-2 transition group bg-indigo-100 border-indigo-400"
+                            data-avatar="face">
+                            <span
+                                class="material-symbols-rounded text-3xl text-blue-500 group-hover:scale-110 transition">face</span>
+                        </button>
+                        <button type="button"
+                            class="avatar-option flex-1 bg-pink-50 hover:bg-pink-100 border-2 border-transparent hover:border-pink-300 rounded-xl p-2 transition group"
+                            data-avatar="sentiment_satisfied">
+                            <span
+                                class="material-symbols-rounded text-3xl text-pink-500 group-hover:scale-110 transition">sentiment_satisfied</span>
+                        </button>
+                        <button type="button"
+                            class="avatar-option flex-1 bg-green-50 hover:bg-green-100 border-2 border-transparent hover:border-green-300 rounded-xl p-2 transition group"
+                            data-avatar="psychology">
+                            <span
+                                class="material-symbols-rounded text-3xl text-green-500 group-hover:scale-110 transition">psychology</span>
+                        </button>
+                        <button type="button"
+                            class="avatar-option flex-1 bg-yellow-50 hover:bg-yellow-100 border-2 border-transparent hover:border-yellow-300 rounded-xl p-2 transition group"
+                            data-avatar="robot_2">
+                            <span
+                                class="material-symbols-rounded text-3xl text-yellow-500 group-hover:scale-110 transition">robot_2</span>
+                        </button>
+                    </div>
+                </div>
+
+                <button type="button" id="enter-lab-btn"
+                    class="w-full bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 text-white font-black py-4 rounded-xl shadow-lg transform active:scale-95 transition-all mt-4 flex items-center justify-center gap-2">
+                    <span>研究をはじめる</span>
+                    <span class="material-symbols-rounded">arrow_forward</span>
+                </button>
+                <button type="button" id="guest-enter-btn"
+                    class="w-full text-slate-600 hover:text-slate-700 font-bold py-3 text-sm transition mt-1 flex items-center justify-center gap-1">
+                    <span class="material-symbols-rounded text-base">person_off</span>
+                    <span>今はゲストとして入る</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div id="main-interface" class="flex-1 flex flex-col transition-opacity duration-500 opacity-100">
+
+        <header
+            class="bg-white/90 backdrop-blur-md border-b-2 border-slate-200 sticky top-0 z-40 shadow-sm transition-colors duration-500">
+            <div class="max-w-6xl mx-auto px-4 py-3 flex justify-between items-center">
+                <div class="flex items-center gap-2">
+                    <div class="bg-gradient-to-br from-blue-500 to-indigo-600 text-white p-2 rounded-xl shadow-md">
+                        <span class="material-symbols-rounded text-2xl block">science</span>
+                    </div>
+                    <div>
+                        <h1 id="header-logo"
+                            class="font-black text-slate-700 text-lg md:text-xl font-pop tracking-tight cursor-pointer select-none transition-colors duration-300">
+                            PikaLab</h1>
+                        <p class="text-[10px] text-slate-400 font-bold leading-none">デジタル研究室</p>
+                    </div>
+                </div>
+
+                <div class="flex items-center gap-2 md:gap-4">
+
+                    <button type="button" data-action="open-parents"
+                        class="text-slate-400 hover:text-slate-600 text-xs font-bold hidden md:flex items-center gap-1 hover:bg-slate-50 px-3 py-2 rounded-lg transition min-h-[44px]">
+                        <span class="material-symbols-rounded text-lg">family_restroom</span>
+                        <span class="hidden lg:inline">保護者の方へ</span>
+                    </button>
+
+                    <button type="button" data-action="open-settings"
+                        class="text-slate-400 hover:text-slate-600 text-xs font-bold hidden md:flex items-center gap-1 hover:bg-slate-50 px-3 py-2 rounded-lg transition min-h-[44px]">
+                        <span class="material-symbols-rounded text-lg">settings</span>
+                        <span class="hidden lg:inline">設定</span>
+                    </button>
+
+                    <button type="button" id="main-sound-toggle"
+                        class="bg-slate-100 hover:bg-slate-200 text-slate-500 p-2 rounded-full transition-colors relative group min-w-[44px] min-h-[44px]"
+                        title="音のオン/オフ">
+                        <span id="sound-icon" class="material-symbols-rounded text-green-500">volume_up</span>
+                    </button>
+
+                    <div
+                        class="flex items-center gap-2 bg-slate-50 pr-3 pl-1 py-1 rounded-full border border-slate-200">
+                        <div class="bg-white p-1 rounded-full shadow-sm">
+                            <span id="header-avatar" class="material-symbols-rounded text-indigo-500">face</span>
+                        </div>
+                        <div class="flex flex-col">
+                            <span class="text-[9px] font-bold text-slate-400 leading-none">ID: <span
+                                    id="user-rank-display">マスター</span></span>
+                            <span id="header-username"
+                                class="text-xs font-black text-slate-700 leading-none truncate max-w-[60px]">ゲスト</span>
+                        </div>
+                    </div>
+
+                    <div class="relative">
+                        <button type="button" id="menu-toggle-btn"
+                            class="bg-indigo-500 hover:bg-indigo-600 text-white p-2 rounded-xl shadow-md transition-all active:scale-95 flex items-center justify-center min-w-[44px] min-h-[44px]">
+                            <span class="material-symbols-rounded">menu</span>
+                        </button>
+
+                        <div id="dropdown-menu"
+                            class="absolute right-0 top-full mt-2 w-56 bg-white rounded-2xl shadow-xl border-2 border-slate-100 transform origin-top-right transition-all z-50 overflow-hidden opacity-0 scale-95 hidden">
+                            <div class="bg-slate-50 p-3 border-b border-slate-100 space-y-2">
+                                <p class="text-[10px] font-bold text-slate-400 pl-1">さがす</p>
+                                <div class="relative">
+                                    <span
+                                        class="material-symbols-rounded text-slate-300 absolute left-3 top-1/2 -translate-y-1/2 text-sm">search</span>
+                                    <input id="app-search" type="text"
+                                        class="w-full pl-8 pr-8 py-2 rounded-xl border border-slate-200 text-sm font-bold text-slate-700 placeholder:text-slate-300 focus:outline-none focus:ring-2 focus:ring-indigo-200"
+                                        placeholder="タイトルで検索" aria-label="アプリを検索">
+                                    <button type="button" id="app-search-clear"
+                                        class="hidden absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 transition p-1"
+                                        title="検索ワードを消す" aria-label="検索ワードを消す">
+                                        <span class="material-symbols-rounded text-sm">close</span>
+                                    </button>
+                                </div>
+                            </div>
+
+
+                            <div class="p-3 border-b border-slate-100">
+                                <p class="text-[10px] font-bold text-slate-400 mb-2 pl-1 flex items-center gap-1">
+                                    <span class="material-symbols-rounded text-slate-300 text-sm">history</span>
+                                    最近あそんだラボ
+                                </p>
+                                <div id="recent-list" class="space-y-1"></div>
+                            </div>
+
+                            <div class="p-2 space-y-1">
+                                <button type="button" data-action="open-record"
+                                    class="w-full text-left px-3 py-2 rounded-xl hover:bg-amber-50 text-slate-600 font-bold flex items-center gap-2 transition">
+                                    <span class="material-symbols-rounded text-amber-500">menu_book</span>
+                                    けんきゅう手帳
+                                </button>
+                                <div class="border-t border-slate-100 my-1 md:hidden"></div>
+                                <button type="button" data-action="open-parents"
+                                    class="w-full text-left px-3 py-2 rounded-xl hover:bg-slate-50 text-slate-600 font-bold flex md:hidden items-center gap-2 transition">
+                                    <span class="material-symbols-rounded text-slate-400">family_restroom</span>
+                                    保護者の方へ
+                                </button>
+                                <button type="button" data-action="open-settings"
+                                    class="w-full text-left px-3 py-2 rounded-xl hover:bg-slate-50 text-slate-600 font-bold flex md:hidden items-center gap-2 transition">
+                                    <span class="material-symbols-rounded text-slate-400">settings</span>
+                                    設定
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </header>
+
+        <main id="main-content" class="flex-1 max-w-6xl mx-auto w-full p-4 md:p-6 pb-24" tabindex="-1">
+
+            <nav class="flex justify-center mb-8 relative z-10">
+                <div id="category-tabs"
+                    class="bg-slate-200/80 p-1.5 rounded-2xl flex flex-wrap justify-center gap-1 md:gap-2 shadow-inner overflow-hidden max-w-full">
+                    <button type="button" id="btn-low" aria-pressed="false"
+                        class="px-4 py-2 rounded-xl font-bold text-sm md:text-base hover:text-slate-700 transition-all flex items-center gap-1.5 whitespace-nowrap min-w-[100px] justify-center tab-active">
+                        <span class="material-symbols-rounded text-lg text-yellow-500">child_care</span>
+                        低学年
+                    </button>
+                    <button type="button" id="btn-high" aria-pressed="false"
+                        class="px-4 py-2 rounded-xl font-bold text-sm md:text-base hover:text-slate-700 transition-all flex items-center gap-1.5 whitespace-nowrap min-w-[100px] justify-center text-slate-500">
+                        <span class="material-symbols-rounded text-lg text-orange-500">school</span>
+                        高学年
+                    </button>
+                    <button type="button" id="btn-middle" aria-pressed="false"
+                        class="px-4 py-2 rounded-xl font-bold text-sm md:text-base hover:text-slate-700 transition-all flex items-center gap-1.5 whitespace-nowrap min-w-[100px] justify-center text-slate-500">
+                        <span class="material-symbols-rounded text-lg text-indigo-500">menu_book</span>
+                        中学生
+                    </button>
+                    <div class="w-px bg-slate-300 mx-1 h-6 self-center flex-shrink-0"></div>
+
+                    <button type="button" id="btn-parents" aria-pressed="false"
+                        class="px-4 py-2 rounded-xl font-bold text-sm md:text-base hover:text-slate-700 transition-all flex items-center gap-1.5 whitespace-nowrap min-w-[130px] justify-center text-slate-500">
+                        <span class="material-symbols-rounded text-lg text-teal-500">handyman</span>
+                        保護者・ツール
+                    </button>
+                    <a href="articles/"
+                        class="px-4 py-2 rounded-xl font-bold text-sm md:text-base hover:text-slate-700 transition-all flex items-center gap-1.5 whitespace-nowrap min-w-[104px] justify-center text-slate-500">
+                        <span class="material-symbols-rounded text-lg text-sky-500">article</span>
+                        コラム
+                    </a>
+                </div>
+            </nav>
+
+            <!-- 📱 モバイル専用：保護者の方へバナー (PCはヘッダーのボタンで対応) -->
+            <div class="md:hidden mb-4">
+                <button type="button" data-action="open-parents"
+                    class="w-full flex items-center gap-2 bg-indigo-50 hover:bg-indigo-100 border border-indigo-200 text-indigo-700 font-bold text-sm px-4 py-3 rounded-2xl transition-colors"
+                    aria-haspopup="dialog">
+                    <span class="material-symbols-rounded text-lg text-indigo-500 flex-shrink-0">family_restroom</span>
+                    <span>保護者の方へ — 安全性・使い方のご案内</span>
+                    <span class="material-symbols-rounded text-base text-indigo-400 ml-auto flex-shrink-0">chevron_right</span>
+                </button>
+            </div>
+
+            <section id="hero-section" class="mb-10 transition-all duration-300">
+                <div class="glass-panel rounded-3xl p-6 md:p-10 relative overflow-hidden group">
+                    <div class="absolute inset-0 z-0">
+                        <div id="hero-img"
+                            class="w-full h-full opacity-20 group-hover:scale-105 transition-transform duration-1000"
+                            style="background: radial-gradient(ellipse at 30% 50%, #818cf8 0%, transparent 60%), radial-gradient(ellipse at 70% 30%, #38bdf8 0%, transparent 50%), radial-gradient(ellipse at 60% 80%, #f472b6 0%, transparent 50%), linear-gradient(135deg, #e0e7ff 0%, #bfdbfe 50%, #ddd6fe 100%);"
+                            aria-hidden="true">
+                        </div>
+                    </div>
+
+                    <div class="relative z-10 flex flex-col md:flex-row items-center gap-6">
+                        <div class="flex-1 text-center md:text-left">
+                            <span id="hero-tag"
+                                class="inline-block px-3 py-1 rounded-full bg-yellow-100 text-yellow-600 text-xs font-black mb-3">1ねんせい
+                                〜 3ねんせい</span>
+                            <h2 id="hero-title"
+                                class="text-3xl md:text-5xl font-black text-slate-800 mb-4 font-pop leading-tight">いろ と
+                                おと で<br><span
+                                    class="text-transparent bg-clip-text bg-gradient-to-r from-yellow-500 to-green-500">あそぼう！</span>
+                            </h2>
+                            <p id="hero-desc" class="text-slate-600 font-bold text-lg mb-6">「まなびランド」や「リズム・スタジオ」が おすすめだよ。
+                            </p>
+                        </div>
+                        <div
+                            class="w-32 h-32 md:w-48 md:h-48 bg-white rounded-full shadow-2xl flex items-center justify-center animate-float border-4 border-indigo-100">
+                            <span id="hero-icon"
+                                class="material-symbols-rounded text-6xl md:text-8xl text-yellow-400">toys</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- デイリーミッションセクション -->
+            <div id="mission-section" class="mb-8"></div>
+
+            <section>
+                <div class="flex items-center justify-between mb-6 px-2">
+                    <div class="flex items-center gap-2">
+                        <span class="material-symbols-rounded text-slate-400">apps</span>
+                        <div>
+                            <h3 id="grid-title" class="text-xl font-black text-slate-700">おすすめのラボ</h3>
+                        </div>
+                    </div>
+                    <span id="filter-badge"
+                        class="hidden text-xs font-bold bg-slate-100 text-slate-500 px-2 py-1 rounded-full">文系のみ表示中</span>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="apps-grid">
+                    <!-- JavaScriptの読込前や無効時にも、各ラボへ移動できる静的な入口を残す -->
+                    <a href="deepsea_lab/" class="bg-white rounded-3xl border-2 border-slate-100 p-5 font-black text-slate-700 hover:border-blue-300 transition">PIKALAB DEEP SEA</a>
+                    <a href="color_lab/" class="bg-white rounded-3xl border-2 border-slate-100 p-5 font-black text-slate-700 hover:border-yellow-300 transition">いろのじっけんしつ DX</a>
+                    <a href="kanji_lab/" class="bg-white rounded-3xl border-2 border-slate-100 p-5 font-black text-slate-700 hover:border-orange-300 transition">かんじ・ガッタイ・ラボ</a>
+                    <a href="rhythm_lab/" class="bg-white rounded-3xl border-2 border-slate-100 p-5 font-black text-slate-700 hover:border-pink-300 transition">リズム・スタジオ</a>
+                    <a href="manabi_land/" class="bg-white rounded-3xl border-2 border-slate-100 p-5 font-black text-slate-700 hover:border-orange-300 transition">わくわく！まなびランド</a>
+                    <a href="speed_reader/" class="bg-white rounded-3xl border-2 border-slate-100 p-5 font-black text-slate-700 hover:border-teal-300 transition">瞬読・スピードリーダー</a>
+                    <a href="typing_dojo/" class="bg-white rounded-3xl border-2 border-slate-100 p-5 font-black text-slate-700 hover:border-emerald-300 transition">タイピング道場</a>
+                    <a href="kotowaza_quiz/" class="bg-white rounded-3xl border-2 border-slate-100 p-5 font-black text-slate-700 hover:border-amber-300 transition">ことわざクイズ</a>
+                    <a href="fraction_lab/" class="bg-white rounded-3xl border-2 border-slate-100 p-5 font-black text-slate-700 hover:border-indigo-300 transition">分数・パーフェクトラボ</a>
+                    <a href="space_lab/" class="bg-white rounded-3xl border-2 border-slate-100 p-5 font-black text-slate-700 hover:border-violet-300 transition">ほしぞら・アドベンチャー</a>
+                    <a href="focus_studio/" class="bg-white rounded-3xl border-2 border-slate-100 p-5 font-black text-slate-700 hover:border-orange-300 transition">集中・ポモドーロスタジオ</a>
+                    <a href="paper_gen/" class="bg-white rounded-3xl border-2 border-slate-100 p-5 font-black text-slate-700 hover:border-sky-300 transition">なんでも用紙メーカー</a>
+                    <a href="quest_board/" class="bg-white rounded-3xl border-2 border-slate-100 p-5 font-black text-slate-700 hover:border-amber-300 transition">おうちクエストボード</a>
+                    <a href="book_report/" class="bg-white rounded-3xl border-2 border-slate-100 p-5 font-black text-slate-700 hover:border-emerald-300 transition">読書感想文メーカー</a>
+                    <a href="science_maker/" class="bg-white rounded-3xl border-2 border-slate-100 p-5 font-black text-slate-700 hover:border-cyan-300 transition">自由研究・診断メーカー</a>
+                </div>
+
+                <!-- 検索結果が0件のときのエラー表示 -->
+                <div id="search-empty" class="hidden flex-col items-center justify-center py-12 px-4 text-center animate-pop">
+                    <div class="bg-indigo-50 text-indigo-400 p-6 rounded-full mb-4" data-surface="chip">
+                        <span class="material-symbols-rounded text-6xl" id="search-empty-icon">psychology</span>
+                    </div>
+                    <h4 class="text-xl font-black text-slate-700 mb-2">みつからなかったよ！</h4>
+                    <p class="text-sm text-slate-400 font-bold mb-4">ほかの なまえで さがしてみてね。</p>
+                    <button type="button" id="reset-search-btn" class="bg-indigo-500 hover:bg-indigo-600 text-white font-black px-6 py-3 rounded-2xl shadow-md transition-all active:scale-95 flex items-center gap-1.5 mx-auto">
+                        <span class="material-symbols-rounded text-lg">restart_alt</span>
+                        <span>検索をリセットする</span>
+                    </button>
+                </div>
+            </section>
+        </main>
+
+        <footer class="bg-white border-t border-slate-200 py-8 mt-auto">
+            <div class="max-w-6xl mx-auto px-4 flex flex-col md:flex-row justify-between items-center gap-4">
+                <div class="text-slate-400 text-sm font-bold">
+                    &copy; 2024-2026 KatakataLab (かたかた). All Rights Reserved.
+                </div>
+                <div class="flex gap-4 flex-wrap text-xs font-bold">
+                    <a href="terms.html"
+                        class="text-slate-500 hover:text-indigo-600 flex items-center gap-1 min-h-[44px]">
+                        <span class="material-symbols-rounded text-sm">description</span> 利用規約
+                    </a>
+                    <a href="privacy.html"
+                        class="text-slate-500 hover:text-indigo-600 flex items-center gap-1 min-h-[44px]">
+                        <span class="material-symbols-rounded text-sm">gavel</span> プライバシーポリシー
+                    </a>
+                    <a href="https://katakatalab.com" target="_blank" rel="noopener"
+                        class="text-slate-500 hover:text-indigo-600 flex items-center gap-1 min-h-[44px]">
+                        <span class="material-symbols-rounded text-sm">science</span> 運営元：KatakataLab
+                    </a>
+                    <a href="https://forms.gle/Q8fPxdeDs4QhtxLS8" target="_blank" rel="noopener"
+                        class="text-slate-500 hover:text-indigo-600 flex items-center gap-1 min-h-[44px]">
+                        <span class="material-symbols-rounded text-sm">mail</span> ご意見・ご感想
+                    </a>
+                </div>
+            </div>
+        </footer>
+    </div>
+
+    <div id="record-modal"
+        class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 backdrop-blur-sm p-4 hidden"
+        role="dialog" aria-modal="true" aria-labelledby="record-modal-title">
+        <div
+            class="bg-white rounded-3xl p-6 md:p-8 max-w-2xl w-full max-h-[90vh] overflow-y-auto shadow-2xl animate-pop relative border-4 border-amber-100">
+            <button type="button" data-close-modal="record-modal" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600">
+                <span class="material-symbols-rounded">close</span>
+            </button>
+
+            <div class="text-center mb-8">
+                <span class="material-symbols-rounded text-4xl text-amber-500 mb-2">military_tech</span>
+                <h2 id="record-modal-title" class="text-lg md:text-xl font-black text-slate-800">けんきゅう手帳 (My Record)
+                </h2>
+                <p class="text-slate-500 font-bold text-sm">あつめた スタンプと 研究の記録だよ！</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div class="bg-slate-50 rounded-2xl p-4 border border-slate-200">
+                    <h3 class="font-black text-slate-700 mb-4 flex items-center gap-2">
+                        <span class="material-symbols-rounded text-indigo-500">stars</span> ラボ・スタンプ
+                    </h3>
+                    <div class="grid grid-cols-4 gap-2" id="badge-grid">
+                        <!-- バッジはJavaScriptで動的に生成されます -->
+                    </div>
+                </div>
+
+                <div class="flex flex-col gap-4">
+                    <div class="bg-indigo-50 rounded-2xl p-4 border border-indigo-100 flex items-center gap-4">
+                        <div class="bg-white p-3 rounded-full shadow-sm text-3xl" id="modal-avatar-display">😄</div>
+                        <div class="flex-1">
+                            <div class="text-xs font-bold text-indigo-400">研究員ネーム</div>
+                            <div class="flex items-center gap-2">
+                                <span class="text-xl font-black text-indigo-900" id="modal-username-display">ゲスト</span>
+                                <button type="button" id="edit-name-btn" class="text-indigo-400 hover:text-indigo-600 transition"
+                                    title="名前を変更">
+                                    <span class="material-symbols-rounded text-lg">edit</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-white rounded-2xl p-4 border-2 border-slate-100 flex-1">
+                        <h4 class="font-bold text-slate-400 text-xs mb-2">現在のランク</h4>
+                        <div class="text-center py-4">
+                            <span class="text-4xl font-black text-slate-800 block mb-1" id="rank-title">マスター</span>
+                            <span class="text-xs font-bold text-slate-400" id="rank-desc">かなりのやりこみ！</span>
+                        </div>
+                        <div class="w-full bg-slate-100 rounded-full h-2 mt-2 overflow-hidden">
+                            <div class="bg-amber-400 h-full w-0 transition-all duration-1000" id="rank-progress"
+                                style="width: 75%;"></div>
+                        </div>
+                    </div>
+                    <div class="bg-white rounded-2xl p-4 border-2 border-slate-100 flex flex-col items-center justify-center min-h-[220px]">
+                        <h4 class="font-bold text-slate-400 text-xs mb-2 self-start">学習ダッシュボード</h4>
+                        <div id="radar-chart-container" class="w-full flex justify-center items-center">
+                            <!-- レーダーチャートがJavaScriptで描画されます -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mt-8 text-center">
+                <button type="button" data-close-modal="record-modal"
+                    class="bg-amber-500 text-white px-8 py-3 rounded-xl font-black hover:bg-amber-600 transition shadow-lg shadow-amber-200">とじる</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="settings-modal"
+        class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 backdrop-blur-sm p-4 hidden"
+        role="dialog" aria-modal="true" aria-labelledby="settings-modal-title">
+        <div
+            class="bg-white rounded-3xl p-6 max-w-sm w-full shadow-2xl animate-pop relative max-h-[90vh] overflow-y-auto">
+            <button type="button" data-close-modal="settings-modal"
+                class="absolute top-4 right-4 text-slate-400 hover:text-slate-600">
+                <span class="material-symbols-rounded">close</span>
+            </button>
+            <h2 id="settings-modal-title"
+                class="text-lg md:text-xl font-black text-slate-800 mb-6 flex items-center gap-2">
+                <span class="material-symbols-rounded text-slate-400">settings</span> 設定 (Settings)
+            </h2>
+            <div class="space-y-6">
+                <div>
+                    <label class="block text-sm font-bold text-slate-500 mb-2">音量 (Sound)</label>
+                    <div class="flex items-center gap-4">
+                        <button type="button" id="settings-sound-toggle"
+                            class="p-2 bg-slate-100 rounded-full text-slate-500 hover:bg-slate-200">
+                            <span id="settings-mute-icon"
+                                class="material-symbols-rounded text-green-500">volume_up</span>
+                        </button>
+                        <input type="range" id="volume-slider" min="-40" max="0" value="-20" step="1"
+                            class="w-full accent-indigo-500">
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-sm font-bold text-slate-500 mb-2">文字サイズ (Text Size)</label>
+                    <div class="flex bg-slate-100 rounded-xl p-1">
+                        <button type="button" id="text-normal"
+                            class="flex-1 py-1 rounded-lg text-sm font-bold bg-white shadow-sm text-indigo-600 transition-all">ふつう</button>
+                        <button type="button" id="text-large"
+                            class="flex-1 py-1 rounded-lg text-sm font-bold text-slate-400 hover:text-slate-600 transition-all">おおきく</button>
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-sm font-bold text-slate-500 mb-2">動きをへらす (Reduce Motion)</label>
+                    <div class="flex items-center justify-between bg-slate-50 p-3 rounded-xl border border-slate-100">
+                        <span class="text-xs text-slate-400 font-bold">アニメーションを停止</span>
+                        <button type="button" id="motion-toggle"
+                            class="w-12 h-6 bg-slate-300 rounded-full relative transition-colors duration-300">
+                            <div id="motion-knob"
+                                class="absolute left-1 top-1 w-4 h-4 bg-white rounded-full transition-transform duration-300">
+                            </div>
+                        </button>
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-sm font-bold text-slate-500 mb-2">ダークモード (Dark Mode)</label>
+                    <div class="flex items-center justify-between bg-slate-50 p-3 rounded-xl border border-slate-100">
+                        <span class="text-xs text-slate-400 font-bold">夜の画面にする</span>
+                        <button type="button" id="dark-mode-toggle"
+                            class="w-12 h-6 bg-slate-300 rounded-full relative transition-colors duration-300">
+                            <div id="dark-mode-knob"
+                                class="absolute left-1 top-1 w-4 h-4 bg-white rounded-full transition-transform duration-300">
+                            </div>
+                        </button>
+                    </div>
+                </div>
+                <div class="pt-4 border-t border-slate-100">
+                    <button type="button" id="reset-user-data-btn"
+                        class="text-xs font-bold text-red-400 hover:text-red-600 flex items-center gap-1 mx-auto">
+                        <span class="material-symbols-rounded text-sm">delete_forever</span> データをリセット (ログアウト)
+                    </button>
+                </div>
+            </div>
+            <div class="mt-8 text-center">
+                <button type="button" data-close-modal="settings-modal"
+                    class="bg-slate-800 text-white px-6 py-2 rounded-xl font-bold hover:bg-slate-700 transition">閉じる</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="parents-modal"
+        class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 backdrop-blur-sm p-4 hidden"
+        role="dialog" aria-modal="true" aria-labelledby="parents-modal-title">
+        <div
+            class="bg-white rounded-3xl p-6 md:p-8 max-w-lg w-full shadow-2xl animate-pop relative max-h-[90vh] overflow-y-auto">
+            <button type="button" data-close-modal="parents-modal" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600">
+                <span class="material-symbols-rounded">close</span>
+            </button>
+            <div class="mb-6 border-b-2 border-indigo-100 pb-4">
+                <h2 id="parents-modal-title"
+                    class="text-lg md:text-xl font-black text-slate-800 flex items-center gap-2">
+                    <span class="material-symbols-rounded text-indigo-500">family_restroom</span> 保護者の方へ
+                </h2>
+                <p class="text-xs text-slate-400 font-bold mt-1">For Parents & Guardians</p>
+            </div>
+
+            <div class="space-y-6 text-sm text-slate-600 leading-relaxed font-bold">
+                <div
+                    class="bg-gradient-to-r from-indigo-50 to-purple-50 p-5 rounded-2xl border border-indigo-100 text-center">
+                    <p class="mb-2 text-indigo-800 text-base">
+                        <span class="material-symbols-rounded text-xl align-bottom mr-1 text-pink-400">favorite</span>
+                        当サイト「PikaLab」に<br>ご訪問いただき、誠にありがとうございます。
+                    </p>
+                    <p class="text-xs text-indigo-600">
+                            大切なお子様と一緒にPikaLabを訪れていただけたこと、<br>制作者のかたかたより、心から感謝申し上げます。
+                    </p>
+                </div>
+
+                <div>
+                    <h3 class="text-orange-500 font-black mb-2 flex items-center gap-2">
+                        <span class="material-symbols-rounded text-base">timer</span> 健康への配慮（休憩の推奨）
+                    </h3>
+                    <p>
+                        大切なお子様の健康のために、<span
+                            class="bg-orange-100 text-orange-700 px-1 rounded">30分に1回程度の休憩</span>を推奨しています。<br>
+                        長時間集中しすぎないよう、時々画面から目を離し、遠くを見たりストレッチをするなど、目を休めてあげてください。
+                    </p>
+                </div>
+
+                <div>
+                    <h3 class="text-indigo-600 font-black mb-2 flex items-center gap-2">
+                        <span class="material-symbols-rounded text-base">school</span> このサイトのねらい
+                    </h3>
+                    <p>
+                        「PikaLab」は、STEAM教育（科学・技術・工学・芸術・数学）の要素を取り入れたデジタル教材への入り口です。<br>
+                        お子様が遊び感覚で「試行錯誤」を繰り返し、自ら発見する喜びを感じられるよう設計されています。
+                    </p>
+                </div>
+
+                <div>
+                    <h3 class="text-green-600 font-black mb-2 flex items-center gap-2">
+                        <span class="material-symbols-rounded text-base">security</span> 安全性について
+                    </h3>
+                    <p class="space-y-2">
+                        <span
+                            class="bg-green-100 text-green-700 px-1 rounded">PikaLabの全ページ</span>では広告タグやアクセス解析タグを読み込まず、入力内容と学習データはブラウザ内で処理します。
+                    </p>
+                    <p class="mt-1 text-slate-500">
+                        PikaLabでは広告を表示しません。ニックネームや入力フォームの内容を広告・アクセス解析サービスへ送信する実装も行っていません。
+                    </p>
+                </div>
+            </div>
+            <div class="mt-8 text-center">
+                <button type="button" data-close-modal="parents-modal"
+                    class="bg-indigo-500 text-white px-8 py-3 rounded-xl font-black hover:bg-indigo-600 transition shadow-lg shadow-indigo-200">閉じる</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="launcher-overlay"
+        class="fixed inset-0 z-50 flex items-center justify-center bg-white hidden launcher-overlay">
+        <div class="text-center animate-pop">
+            <div class="relative w-24 h-24 mx-auto mb-6">
+                <div class="absolute inset-0 border-4 border-slate-100 rounded-full"></div>
+                <div class="absolute inset-0 border-4 border-indigo-500 rounded-full border-t-transparent animate-spin">
+                </div>
+                <span
+                    class="material-symbols-rounded text-4xl text-indigo-500 absolute inset-0 flex items-center justify-center animate-pulse">rocket_launch</span>
+            </div>
+            <h2 class="text-2xl font-black text-slate-800 mb-2 launcher-title">ラボを開いています...</h2>
+            <p id="launcher-text" class="text-slate-500 font-bold">接続中...ラボを起動しています</p>
+        </div>
+    </div>
+
+    <script type="module" src="js/main.js?v=20260609"></script>
+
+    <!-- PWA Reload Prompt UI -->
+    <div id="pwa-toast" class="hidden fixed bottom-4 right-4 bg-white border-2 border-indigo-200 rounded-xl shadow-xl p-4 z-[99999] transform transition-all translate-y-full opacity-0">
+        <div class="flex flex-col gap-2">
+            <p class="text-slate-700 font-bold text-sm">✨ 新しい機能が追加されました！</p>
+            <div class="flex gap-2 mt-1">
+                <button id="pwa-refresh" class="bg-indigo-500 text-white px-3 py-1.5 rounded-lg text-sm font-bold shadow-sm hover:bg-indigo-600 transition-colors">更新する</button>
+                <button id="pwa-close" class="bg-slate-100 text-slate-600 px-3 py-1.5 rounded-lg text-sm font-bold hover:bg-slate-200 transition-colors">あとで</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ミッションクリアお祝いモーダル -->
+    <div id="mission-clear-modal" class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 backdrop-blur-sm p-4 hidden" role="dialog" aria-modal="true" aria-labelledby="mission-clear-title">
+        <div class="bg-white rounded-3xl p-6 md:p-8 max-w-sm w-full text-center shadow-2xl animate-pop relative border-4 border-emerald-200">
+            <div class="w-20 h-20 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-4 animate-bounce-slow">
+                <span class="material-symbols-rounded text-emerald-500 text-5xl">emoji_events</span>
+            </div>
+            <h2 id="mission-clear-title" class="text-xl font-black text-slate-800 mb-2">ミッションクリア！</h2>
+            <p class="text-slate-500 font-bold text-sm mb-4">
+                「<span id="mission-clear-app-title" class="text-emerald-600 font-black"></span>」をあそんだので、きょうのミッションをクリアしたよ！
+            </p>
+            <p class="text-xs text-amber-500 font-black mb-6">🏆 スタンプカードにスタンプがたまるよ！</p>
+            <button type="button" data-close-modal="mission-clear-modal" class="w-full bg-emerald-500 hover:bg-emerald-600 text-white py-3.5 rounded-2xl font-black shadow-lg shadow-emerald-200 transition active:scale-95">
+                やったー！
+            </button>
+        </div>
+    </div>
+</body>
+
+</html>

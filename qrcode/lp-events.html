@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">    <meta name="robots" content="noindex, nofollow">
+<meta name="referrer" content="no-referrer">
+  <meta name="theme-color" content="#10b981">
+  <title>イベント運営向けQR導入ガイド | QR Maker Lab</title>
+  <meta name="description" content="イベント運営向けQR導入ガイド。受付案内、配布資料、SNS拡散の導線を短時間で作るための手順をまとめています。">
+  <link rel="icon" href="assets/icon-192.png" type="image/png">
+    <link rel="canonical" href="https://katakatalab.com/qrcode/lp-events.html">
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="イベント運営向けQR導入ガイド | QR Maker Lab">
+  <meta property="og:description" content="受付から配布後フォローまでつなげるイベントQR活用の実装例。">
+  <meta property="og:url" content="https://katakatalab.com/qrcode/lp-events.html">
+  <meta property="og:image" content="https://katakatalab.com/qrcode/ogp.png">
+  <link rel="stylesheet" href="content.css">
+
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="イベント運営向けQR導入ガイド | QR Maker Lab">
+  <meta name="twitter:description" content="イベント運営向けQR導入ガイド。受付案内、配布資料、SNS拡散の導線を短時間で作るための手順をまとめています。">
+  <meta name="twitter:image" content="https://katakatalab.com/qrcode/ogp.png">
+  <meta name="twitter:site" content="@Katakata_toybox">
+</head>
+<body>
+    <script>try{if(localStorage.getItem('theme')==='dark')document.body.classList.add('dark-mode');}catch(e){}</script>
+<main class="page-shell">
+  <nav class="top-nav" aria-label="breadcrumb">
+    <a href="./">QR作成ツール</a>
+    <a href="guides.html">用途別ガイド</a>
+    <a href="pro-plan.html">Proプラン</a>
+  </nav>
+
+  <header class="hero">
+    <h1>イベント運営向けQR導入ガイド</h1>
+    <p>受付案内・配布資料・SNS拡散を分かりやすくつなぎ、当日の案内負荷を減らすための導入ガイドです。</p>
+    <div class="chip-list">
+      <span class="chip">受付案内</span>
+      <span class="chip">配布資料</span>
+      <span class="chip">SNS拡散</span>
+    </div>
+  </header>
+
+  <section class="section-panel">
+    <h2>よくある課題</h2>
+    <ul class="check-list">
+      <li><strong>受付で質問が集中する:</strong> 会場案内や資料URLの説明に時間がかかる。</li>
+      <li><strong>資料配布が分散する:</strong> 登壇資料・アンケート・SNS導線が分かれやすい。</li>
+      <li><strong>当日修正に弱い:</strong> 印刷物修正の手戻りが発生しやすい。</li>
+    </ul>
+  </section>
+
+  <section class="section-panel">
+    <h2>おすすめ構成</h2>
+    <div class="card-grid">
+      <article class="guide-card">
+        <h3>1. 受付案内QR</h3>
+        <p>会場マップや当日案内ページを1つのQRで案内します。</p>
+        <div class="action-row">
+          <a class="btn btn-primary" href="./?type=plain">案内QRを作る</a>
+        </div>
+      </article>
+      <article class="guide-card">
+        <h3>2. SNSプロフィールQR</h3>
+        <p>登壇者やイベント公式アカウントへの誘導を統一します。</p>
+        <div class="action-row">
+          <a class="btn btn-primary" href="./?type=social">SNS QRを作る</a>
+        </div>
+      </article>
+      <article class="guide-card guide-card-pro-spotlight">
+        <div class="guide-card-head">
+          <h3>3. 配布物をまとめて準備 (Pro)</h3>
+          <span class="pro-chip">PRO</span>
+        </div>
+        <p>CSV一括生成とZIP保存で、複数導線を短時間でまとめて準備できます。</p>
+        <div class="action-row">
+          <a class="btn btn-secondary" href="pro-plan.html">Proを確認する</a>
+        </div>
+      </article>
+    </div>
+  </section>
+
+  <section class="section-panel">
+    <h2>導入ステップ</h2>
+    <ol class="step-list">
+      <li><strong>当日の案内順に並べる:</strong> 受付→会場案内→資料配布の順でQRを設計します。</li>
+      <li><strong>掲示サイズを先に決める:</strong> 遠距離読み取りを想定してサイズを調整します。</li>
+      <li><strong>本番前にリハーサル:</strong> 実際の導線でスマホ読み取りを確認します。</li>
+    </ol>
+  </section>
+
+    <section class="section-panel">
+    <h2>当日運営を止めない設計</h2>
+    <p>イベント運営では、受付導線・資料配布・SNS拡散のQRを1枚に詰め込むより、役割別に分割した方が混雑を抑えられます。会場内の導線に合わせて掲示場所を決め、スタッフ向けに「どの場面でどのQRを案内するか」を共有してください。</p>
+    <p>当日は回線状況で挙動が変わるため、オフライン代替手段（短縮URL掲示、紙資料）も準備すると安全です。開催後は読み取りデータを見て、次回の配置改善に活かしてください。</p>
+    <h3>よくある質問</h3>
+    <ul class="check-list">
+      <li><strong>Q. 受付で長い説明が必要になりますか？</strong> A. QR横に用途ラベルを付けると説明時間を短縮できます。</li>
+      <li><strong>Q. 配布資料の更新はどう管理すべきですか？</strong> A. 更新頻度が高い情報はQR先を差し替え可能な構成で管理してください。</li>
+    </ul>
+  </section>
+
+  <section class="cta-band">
+    <h2>受付導線から先に整える</h2>
+    <p>最初に受付案内を整えると、当日の質問対応を減らしやすくなります。</p>
+    <div class="action-row">
+      <a class="btn btn-primary" href="./?type=plain">受付案内QRを作成</a>
+      <a class="btn btn-secondary" href="guides.html">他の活用ガイドを見る</a>
+    </div>
+  </section>
+
+  <footer class="site-footer">
+    <div>
+      <a href="./">QR作成トップ</a> /
+      <a href="guides.html">用途別ガイド</a> /
+      <a href="pro-plan.html">Proプラン</a> /
+      <a href="terms.html">利用規約</a> /
+      <a href="privacy.html">プライバシーポリシー</a>
+    </div>
+    <p class="footer-note">© 2026 QR Maker Lab</p>
+  </footer>
+</main>
+
+<script type="application/ld+json">
+[
+  {
+    "@context": "https://schema.org",
+    "@type": "WebPage",
+    "name": "イベント運営向けQR導入ガイド",
+    "url": "https://katakatalab.com/qrcode/lp-events.html"
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      { "@type": "ListItem", "position": 1, "name": "QR Maker Lab", "item": "https://katakatalab.com/qrcode/" },
+      { "@type": "ListItem", "position": 2, "name": "用途別QR活用ガイド", "item": "https://katakatalab.com/qrcode/guides.html" },
+      { "@type": "ListItem", "position": 3, "name": "イベント運営向けQR導入ガイド", "item": "https://katakatalab.com/qrcode/lp-events.html" }
+    ]
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {
+        "@type": "Question",
+        "name": "受付で長い説明が必要になりますか？",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "QR横に用途ラベルを付けると説明時間を短縮できます。"
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "配布資料の更新はどう管理すべきですか？",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "更新頻度が高い情報はQR先を差し替え可能な構成で管理してください。"
+        }
+      }
+    ]
+  }
+]
+</script>
+</body>
+</html>

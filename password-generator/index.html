@@ -1,0 +1,612 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="referrer" content="strict-origin-when-cross-origin">
+    <meta http-equiv="Permissions-Policy" content="interest-cohort=(), geolocation=(), microphone=(), camera=()">
+    
+    <!-- Security: CSP -->
+    <meta http-equiv="Content-Security-Policy"
+        content="default-src 'self'; base-uri 'self'; object-src 'none'; form-action 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data:; connect-src 'self'; frame-src 'self'; manifest-src 'self'; worker-src 'self'; font-src 'self' https://fonts.gstatic.com; upgrade-insecure-requests;">
+
+    <!-- SEO & OGP -->
+    <meta name="description" content="【登録不要・無料】ブラウザ内で動作するパスワード一括生成ツール。生成内容のサーバー送信なし。文字種の設定、推測時間の目安表示、AES-256-GCM暗号化保管庫を利用できます。">
+    <meta property="og:title" content="【登録不要】パスワード一括生成・暗号化保管ツール - KatakataLab">
+    <meta property="og:description" content="ブラウザ内で動作するパスワード一括生成ツール。文字種の設定、推測時間の目安表示、暗号化保管庫を利用できます。">
+    <meta property="og:type" content="website">
+    <meta property="og:locale" content="ja_JP">
+    <meta property="og:url" content="https://katakatalab.com/password-generator/">
+    <meta property="og:image" content="https://katakatalab.com/ogp.png">
+    <meta property="og:site_name" content="KatakataLab Tools">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="【登録不要】パスワード一括生成・暗号化保管ツール - KatakataLab">
+    <meta name="twitter:description" content="ブラウザ内で動作するパスワード一括生成ツール。文字種の設定、推測時間の目安表示、暗号化保管庫を利用できます。">
+    <meta name="twitter:image" content="https://katakatalab.com/ogp.png">
+    <link rel="canonical" href="https://katakatalab.com/password-generator/">
+    
+    <title>【登録不要】パスワード一括生成・暗号化保管ツール【ブラウザ完結】 - KatakataLab</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@400;500;700;800&family=Outfit:wght@400;600;700&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="../style.css?v=40684c3">
+    <link rel="stylesheet" href="style.css?v=20260824-responsive">
+    <link rel="manifest" href="manifest.json">
+    <link rel="icon" href="../icon.svg" type="image/svg+xml">
+    
+    <meta name="theme-color" content="#FF7675">
+    <link rel="apple-touch-icon" href="icon-192.png">
+    <meta name="robots" content="index, follow">
+
+    <script type="application/ld+json">
+    [{
+        "@context": "https://schema.org", "@type": "WebApplication",
+        "name": "パスワード一括生成・暗号化保管ツール",
+        "description": "用途別のパスワードを一括生成し、ブラウザ内でAES-256-GCM暗号化保存できるツールです。",
+        "url": "https://katakatalab.com/password-generator/",
+        "applicationCategory": "SecurityApplication", "operatingSystem": "All",
+        "offers": { "@type": "Offer", "price": "0", "priceCurrency": "JPY" },
+        "author": { "@type": "Person", "name": "かたかた", "url": "https://katakatalab.com/" }
+    },{
+        "@context": "https://schema.org", "@type": "BreadcrumbList",
+        "itemListElement": [
+            { "@type": "ListItem", "position": 1, "name": "ホーム", "item": "https://katakatalab.com/" },
+            { "@type": "ListItem", "position": 2, "name": "パスワード生成・暗号管理" }
+        ]
+    }]
+    </script>
+    <link rel="stylesheet" href="../tool-chrome.css?v=source">
+</head>
+<body>
+    <script>try{if(localStorage.getItem('theme')==='dark')document.body.classList.add('dark-mode');}catch(e){}</script>
+
+    <!-- Unified Mini Header / Breadcrumbs -->
+    <nav class="breadcrumbs-tool breadcrumbs-tool--bar" aria-label="パンくずリスト">
+        <div class="breadcrumbs-tool__trail">
+            <a href="../" class="breadcrumbs-tool__brand">
+                <span class="breadcrumbs-tool__mark">🧪</span> KatakataLab
+            </a>
+            <span class="breadcrumbs-tool__sep">/</span>
+            <span class="breadcrumbs-tool__current" aria-current="page">強力パスワード生成</span>
+        </div>
+        <div class="breadcrumbs-tool__actions" style="display: flex; align-items: center; gap: 0.5rem;">
+            <a href="../#projects" class="breadcrumbs-tool__index">
+                <span>🧰</span> ツール一覧へ
+            </a>
+            <button type="button" id="theme-toggle" class="theme-btn" aria-label="テーマ切り替え" style="display: inline-flex; align-items: center; justify-content: center; width: 34px; height: 34px; border-radius: 50%; border: 1px solid rgba(0,0,0,0.1); background: var(--c-card, #fff); color: inherit; cursor: pointer;">
+                <svg viewBox="0 0 24 24" class="svg-icon svg-moon" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="width: 18px; height: 18px;">
+                    <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/>
+                </svg>
+                <svg viewBox="0 0 24 24" class="svg-icon svg-sun" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="display: none; width: 18px; height: 18px;">
+                    <circle cx="12" cy="12" r="4"/>
+                    <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/>
+                </svg>
+            </button>
+        </div>
+    </nav>
+
+    <!-- Auto-Injected noscript fallback -->
+    <noscript>
+        <div class="tool-noscript">
+            <p class="tool-noscript__title">⚠️ JavaScriptが無効になっています</p>
+            <p class="tool-noscript__text">このツールはブラウザ上での計算のためにJavaScriptを使用します。有効にしてからご利用ください。</p>
+        </div>
+    </noscript>
+
+    <!-- メインコンテンツ -->
+    <main class="pwd-main-area">
+
+        <div class="pwd-wrapper">
+            
+            <header class="pwd-header">
+                <h1>🔐 パスワード一括生成くん</h1>
+                <p>用途に合わせた長さと文字種で、パスワードをブラウザ内に生成します</p>
+                <div class="pwd-header-shortcuts">
+                    💡 <kbd>Ctrl+G</kbd> 再生成 / <kbd>Ctrl+Shift+C</kbd> 全コピー（Mac: <kbd>⌘+G</kbd> / <kbd>⌘+Shift+C</kbd>）
+                </div>
+                <div>
+                    <span id="net-status" class="pwd-net-status pwd-net-status-online" aria-live="polite">● オンライン</span>
+                </div>
+                <p class="small text-muted mt-3 mb-0">長さや安全な保管の考え方は <a href="../guides/password-guide.html" style="color: var(--c-primary); font-weight: 700; text-decoration: underline;">強いパスワードの考え方ガイド</a> にまとめています。</p>
+            </header>
+
+            <!-- プレミアムタブナビゲーション -->
+            <div class="pwd-tab-nav-wrapper">
+                <div class="pwd-tab-nav" role="tablist">
+                    <button type="button" class="pwd-tab-btn active" data-tab="gen" role="tab" aria-selected="true" aria-controls="panel-gen">
+                        🔑 パスワード生成
+                    </button>
+                    <button type="button" class="pwd-tab-btn" data-tab="check" role="tab" aria-selected="false" aria-controls="panel-check">
+                        🔮 パスワード診断
+                    </button>
+                    <button type="button" class="pwd-tab-btn" data-tab="vault" role="tab" aria-selected="false" aria-controls="panel-vault">
+                        🔐 暗号化管理 (ボールト)
+                    </button>
+                </div>
+            </div>
+
+            <!-- ===== タブ1: パスワード生成 ===== -->
+            <div id="panel-gen" class="pwd-tab-panel active" role="tabpanel" aria-labelledby="tab-gen">
+                
+                <div class="pwd-card">
+                    <div class="pwd-two-col">
+                        <!-- 左列：設定 -->
+                        <div>
+                            <h2>⚙️ 生成設定</h2>
+                            <form id="settings-form" onsubmit="return false;">
+                                <div class="pwd-presets-label">クイックプリセット</div>
+                                <div class="pwd-presets-group">
+                                    <button type="button" class="pwd-preset-btn preset-btn" data-preset="standard">📋 標準</button>
+                                    <button type="button" class="pwd-preset-btn preset-btn" data-preset="strong">🛡️ 高強度</button>
+                                    <button type="button" class="pwd-preset-btn preset-btn" data-preset="pin">🔢 PIN</button>
+                                    <button type="button" class="pwd-preset-btn preset-btn" data-preset="wifi">📶 Wi-Fi</button>
+                                    <button type="button" class="pwd-preset-btn preset-btn" data-preset="bank">🏦 銀行PIN</button>
+                                </div>
+
+                                <div class="pwd-slider-wrapper">
+                                    <div class="pwd-slider-label">
+                                        <span>パスワードの長さ</span>
+                                    </div>
+                                    <div class="pwd-slider-container">
+                                        <input type="range" class="pwd-range" id="length" min="4" max="64" value="16" aria-label="パスワードの長さスライダー">
+                                        <input type="number" class="pwd-number-input" id="len-input" min="4" max="64" value="16" aria-label="パスワードの長さ数値入力" inputmode="numeric">
+                                    </div>
+                                </div>
+
+                                <div class="pwd-slider-wrapper">
+                                    <div class="pwd-slider-label">
+                                        <span>生成する個数</span>
+                                    </div>
+                                    <div class="pwd-slider-container">
+                                        <input type="range" class="pwd-range" id="count" min="1" max="10" value="5" aria-label="生成する個数スライダー">
+                                        <input type="number" class="pwd-number-input" id="count-input" min="1" max="10" value="5" aria-label="生成個数数値入力" inputmode="numeric">
+                                    </div>
+                                </div>
+
+                                <div class="pwd-checkbox-wrapper" onclick="document.getElementById('useLower').click();">
+                                    <input type="checkbox" id="useLower" class="pwd-checkbox" checked onclick="event.stopPropagation();" aria-label="英小文字を含める">
+                                    <span class="pwd-checkbox-label">英小文字 (abc...)</span>
+                                </div>
+                                <div class="pwd-checkbox-wrapper" onclick="document.getElementById('useUpper').click();">
+                                    <input type="checkbox" id="useUpper" class="pwd-checkbox" checked onclick="event.stopPropagation();" aria-label="英大文字を含める">
+                                    <span class="pwd-checkbox-label">英大文字 (ABC...)</span>
+                                </div>
+                                <div class="pwd-checkbox-wrapper" onclick="document.getElementById('useNumber').click();">
+                                    <input type="checkbox" id="useNumber" class="pwd-checkbox" checked onclick="event.stopPropagation();" aria-label="数字を含める">
+                                    <span class="pwd-checkbox-label">数字 (012...)</span>
+                                </div>
+                                <div class="pwd-checkbox-wrapper" onclick="document.getElementById('useSymbol').click();">
+                                    <input type="checkbox" id="useSymbol" class="pwd-checkbox" onclick="event.stopPropagation();" aria-label="記号を含める">
+                                    <span class="pwd-checkbox-label">記号</span>
+                                </div>
+                                
+                                <div class="pwd-custom-symbol-wrap" id="custom-symbol-wrap" hidden>
+                                    <input type="text" class="pwd-custom-symbol-input" id="customSymbols" maxlength="128" placeholder="使用する記号（例: !@#$）" aria-label="カスタム記号入力">
+                                    <div style="font-size: 0.72rem; color: var(--c-text-light); margin-top: 0.25rem;">※空欄ならデフォルト記号セットを使用します</div>
+                                </div>
+
+                                <hr style="border: none; border-top: 1px solid var(--c-glass-border); margin: 1.25rem 0;">
+
+                                <div class="pwd-checkbox-wrapper" onclick="document.getElementById('excludeAmbiguous').click();">
+                                    <input type="checkbox" id="excludeAmbiguous" class="pwd-checkbox" checked onclick="event.stopPropagation();" aria-label="紛らわしい文字を除外する">
+                                    <span class="pwd-checkbox-label" style="color: var(--c-primary);">紛らわしい文字を除外</span>
+                                </div>
+                                <div style="font-size: 0.72rem; color: var(--c-text-light); margin: -0.5rem 0 1rem 1.8rem;">i, l, 1, 0, O など手入力で間違えやすい文字を使いません</div>
+
+                                <div class="pwd-presets-label" style="margin-top: 1.25rem;">プライバシー設定</div>
+                                <div class="pwd-checkbox-wrapper" onclick="document.getElementById('saveHistory').click();">
+                                    <input type="checkbox" id="saveHistory" class="pwd-checkbox" onclick="event.stopPropagation();" aria-label="生成履歴をこのセッションに残す">
+                                    <span class="pwd-checkbox-label">生成履歴をこのセッションに残す</span>
+                                </div>
+                                <div class="pwd-checkbox-wrapper" onclick="document.getElementById('autoClearClipboard').click();">
+                                    <input type="checkbox" id="autoClearClipboard" class="pwd-checkbox" onclick="event.stopPropagation();" aria-label="コピー後にクリップボードを自動消去する">
+                                    <span class="pwd-checkbox-label">コピー後にクリップボードを自動消去</span>
+                                </div>
+                                
+                                <div class="pwd-inline-input-group">
+                                    <span style="font-size: 0.8rem; color: var(--c-text-light);">消去までの時間：</span>
+                                    <input type="number" class="pwd-sec-input" id="clipboardClearSeconds" min="5" max="120" value="30" aria-label="自動消去までの秒数" inputmode="numeric">
+                                    <span style="font-size: 0.8rem; color: var(--c-text-light);">秒</span>
+                                </div>
+
+                                <div style="display: flex; flex-direction: column; gap: 0.75rem; margin-top: 1.5rem;">
+                                    <button id="gen-btn" type="button" class="btn btn-primary" style="width: 100%; height: 50px;">🔄 再生成する</button>
+                                    <div style="display: flex; gap: 0.75rem;">
+                                        <button id="reset-btn" type="button" class="btn btn-secondary" style="flex: 1; min-height: 40px; padding: 0.5rem;">🗑️ リセット</button>
+                                        <button id="share-btn" type="button" class="btn btn-secondary" style="flex: 1; min-height: 40px; padding: 0.5rem;">🔗 設定を共有</button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+
+                        <!-- 右列：生成結果 -->
+                        <div style="display: flex; flex-direction: column; gap: 1rem;">
+                            <div class="pwd-result-header">
+                                <h2>📋 生成結果</h2>
+                                <div style="display: flex; gap: 1rem;">
+                                    <button type="button" id="history-btn" class="btn-link" style="background:none; border:none; color:var(--c-primary); font-weight:700; cursor:pointer;" aria-label="履歴を表示">📜 履歴</button>
+                                    <button type="button" id="copy-all-btn" class="btn-link" style="background:none; border:none; color:var(--c-primary); font-weight:700; cursor:pointer;" aria-label="すべてのパスワードをコピー">全部コピー</button>
+                                </div>
+                            </div>
+                            
+                            <div id="result-list" class="pwd-result-list" aria-live="polite" role="region">
+                                <!-- JSで動的に生成結果が出力されます -->
+                            </div>
+
+                            <!-- PWAインストール案内 -->
+                            <div id="pwa-card" class="card" style="border-style: dashed; padding: 1.25rem; margin-top: 1rem; background: rgba(255,118,117,0.03);">
+                                <div style="display: flex; justify-content: space-between; align-items: center; gap: 1rem; flex-wrap: wrap;">
+                                    <div>
+                                        <h3 style="font-size: 0.95rem; font-weight: 800; margin: 0 0 0.25rem 0;">📱 アプリ(PWA)として使う</h3>
+                                        <p style="font-size: 0.8rem; color: var(--c-text-light); margin: 0;">ホーム画面に追加すると、オフライン環境でもすぐに開けます。</p>
+                                    </div>
+                                    <button type="button" id="install-app-btn" class="btn btn-primary" style="padding: 0.5rem 1rem; font-size: 0.85rem;" hidden>インストール</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 履歴パネル -->
+                <div id="history-panel" class="pwd-card pwd-history-panel" hidden aria-label="生成履歴パネル">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                        <h3 style="font-size: 1.1rem; font-weight: 800; margin: 0;">📜 生成履歴（セッション限定）</h3>
+                        <button type="button" id="history-close" style="background: transparent; border: none; font-size: 1.25rem; cursor: pointer; color: var(--c-text-light);" aria-label="履歴パネルを閉じる">✕</button>
+                    </div>
+                    <div id="history-list" class="history-scroll">
+                        <p class="text-muted text-center" style="margin: 0;">まだ履歴はありません</p>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- ===== タブ2: パスワード診断 ===== -->
+            <div id="panel-check" class="pwd-tab-panel" role="tabpanel" aria-labelledby="tab-check">
+                
+                <section class="pwd-card">
+                    <h2>🔮 あなたのパスワード診断</h2>
+                    <p style="font-size: 0.9rem; color: var(--c-text-light); margin-bottom: 1.5rem; line-height: 1.6;">
+                        現在お使いのパスワードや、考えたパスワードの頑強性をリアルタイムで測定します。<br>
+                        <strong>※ 入力した内容はインターネット上に一切送信されず、完全にブラウザ内部でのみ解析されます。安心してテストしてください。</strong>
+                    </p>
+
+                    <div class="pwd-form-group">
+                        <label for="check-input">診断したいパスワードを入力</label>
+                        <div class="pwd-input-group">
+                            <input type="password" class="pwd-text-input" id="check-input" placeholder="パスワードを入力してください..." autocomplete="off">
+                            <button class="pwd-field-toggle" id="check-toggle" aria-label="診断パスワード表示を切り替え" type="button">👁️</button>
+                        </div>
+                    </div>
+
+                    <!-- 提案A: インテリジェント物理防壁メーター -->
+                    <div id="check-result" class="pwd-defense-chamber" hidden>
+                        <div id="check-emoji" class="pwd-defense-icon">🚪</div>
+                        <div id="check-label" class="pwd-defense-title">弱い防壁</div>
+                        <div id="check-score" style="font-size: 0.85rem; color: var(--c-text-light); margin-bottom: 0.5rem;">(0/100)</div>
+                        
+                        <progress id="check-bar" class="strength-progress strength-progress-md strength-low" max="100" value="0" style="width: 80%; max-width: 400px; height: 10px; margin-bottom: 1rem;"></progress>
+                        
+                        <div class="pwd-defense-desc">文字の種類と長さだけから見た、オフライン総当たりの参考値です。実際の安全性は保存方法やサービス側の対策でも変わります。</div>
+                        <div class="pwd-defense-time">🕐 推定時間（1秒10億回の試行を仮定）: <strong id="check-time">一瞬</strong></div>
+                    </div>
+                </section>
+
+            </div>
+
+            <!-- ===== タブ3: パスワード管理 (暗号化ボールト) ===== -->
+            <div id="panel-vault" class="pwd-tab-panel" role="tabpanel" aria-labelledby="tab-vault">
+                
+                <div class="pwd-card">
+                    
+                    <!-- 1. ロック画面 (セットアップ ＆ 解錠) -->
+                    <div id="vault-lock-screen" aria-live="polite">
+                        <section style="background: rgba(255,118,117,0.04); border: 1px solid rgba(255,118,117,0.2); border-radius: var(--radius-md); padding: 1.25rem; margin-bottom: 2rem;">
+                            <h3 style="font-size: 1rem; font-weight: 800; color: var(--c-primary); margin-top: 0; margin-bottom: 0.5rem;">🗝️ 暗号化ボールト（保管庫）の使い方</h3>
+                            <ol style="font-size: 0.85rem; color: var(--c-text-light); padding-left: 1.2rem; margin: 0 0 0.75rem 0; line-height: 1.7;">
+                                <li><strong>1. マスターパスワードの設定</strong>：16文字以上の固有なパスワードを決めます（これがすべての鍵になります）。</li>
+                                <li><strong>2. 暗号化保管</strong>：サイト名、ユーザー名、パスワードを強固に暗号化してブラウザ内に保存します。</li>
+                                <li><strong>3. サーバー送信一切なし</strong>：AES-256暗号を用いてすべてブラウザ内で処理。パスワードがネットに送信されることはありません。</li>
+                            </ol>
+                            <p style="font-size: 0.78rem; color: var(--c-danger); margin: 0; font-weight: 700;">※ 警告：このサイトはマスターパスワードを保存しないため、忘れた場合に運営者側で復元することはできません。必ず安全な場所に控えてください。</p>
+                        </section>
+
+                        <div style="text-align: center; padding: 2rem 0;">
+                            <div class="pwd-chest-icon" id="pwd-chest-icon">🔒</div>
+                            <h2 style="font-size: 1.4rem; font-weight: 800; color: var(--c-text); margin-bottom: 0.75rem;" id="vault-lock-title">マスターパスワードを設定</h2>
+                            <p style="font-size: 0.9rem; color: var(--c-text-light); margin-bottom: 1.5rem;" id="vault-lock-desc">
+                                ボールト内のデータはマスターパスワードで強力に暗号化されます。
+                            </p>
+
+                            <div class="pwd-vault-box">
+                                <div class="pwd-input-group mb-2" style="margin-bottom: 0.75rem;">
+                                    <input type="password" class="pwd-text-input" id="vault-master-pw" placeholder="マスターパスワード" autocomplete="new-password" aria-label="マスターパスワード">
+                                    <button class="pwd-field-toggle" id="vault-pw-toggle" aria-label="マスターパスワード表示を切り替え" type="button">👁️</button>
+                                </div>
+                                <div id="vault-confirm-wrap" style="margin-bottom: 0.75rem;">
+                                    <input type="password" class="pwd-text-input" id="vault-master-pw-confirm" placeholder="確認: もう一度入力" autocomplete="new-password" aria-label="確認用マスターパスワード">
+                                </div>
+
+                                <!-- マスターPW強度診断インジケーター -->
+                                <div id="vault-master-help" style="border: 1px solid var(--c-glass-border); border-radius: 8px; background: rgba(255,118,117,0.03); padding: 0.75rem; text-align: left; margin-bottom: 1rem;" hidden>
+                                    <div style="display: flex; justify-content: space-between; align-items: center; font-size: 0.8rem; font-weight: 700; margin-bottom: 0.25rem;">
+                                        <span id="vault-master-label" style="color: var(--c-text);">強度: 弱い</span>
+                                        <span id="vault-master-score" style="color: var(--c-text-light);">0/100</span>
+                                    </div>
+                                    <progress id="vault-master-bar" class="strength-progress strength-progress-sm strength-low" max="100" value="0" style="height: 6px; width: 100%;"></progress>
+                                    <div id="vault-master-tip" style="font-size: 0.7rem; color: var(--c-text-light); margin-top: 0.25rem;">16文字以上を推奨。ほかのサービスと使い回さないでください。</div>
+                                </div>
+
+                                <div id="vault-lock-error" style="color: var(--c-danger); font-size: 0.85rem; font-weight: 700; margin-bottom: 1rem;" hidden></div>
+                                
+                                <button id="vault-reset-corrupt-btn" class="btn btn-secondary" style="width: 100%; min-height: 38px; margin-bottom: 0.75rem; font-size: 0.85rem;" type="button" hidden>⚠️ 壊れたボールトデータを初期化</button>
+                                <button type="button" id="vault-unlock-btn" class="pwd-unlock-btn btn-primary">🔓 ロック解除</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 2. アンロック後のメイン管理画面 -->
+                    <div id="vault-main" hidden>
+                        <div class="pwd-vault-header">
+                            <h2>🗝️ パスワード保管庫</h2>
+                            <div class="pwd-vault-actions">
+                                <button type="button" id="vault-export-btn" class="btn btn-secondary" style="padding: 0.5rem 0.75rem; font-size: 0.85rem;" title="エクスポート(暗号化JSON)" aria-label="ボールトを暗号化JSONでエクスポート">📤 エクスポート</button>
+                                <label class="btn btn-secondary" style="padding: 0.5rem 0.75rem; font-size: 0.85rem; margin: 0; cursor: pointer;" title="インポート" aria-label="ボールトを暗号化JSONからインポート">
+                                    📥 インポート <input type="file" id="vault-import-input" accept=".json" class="d-none">
+                                </label>
+                                <button type="button" id="vault-lock-btn" class="btn btn-primary" style="padding: 0.5rem 1rem; font-size: 0.85rem; background: var(--c-warn); color:#2D3436; border-color:var(--c-warn);">🔒 ロック</button>
+                            </div>
+                        </div>
+
+                        <!-- 検索バー -->
+                        <div class="pwd-form-group" style="margin-bottom: 1rem;">
+                            <input type="text" class="pwd-text-input" id="vault-search" placeholder="🔍 サイト名やユーザー名で保管庫を検索...">
+                        </div>
+
+                        <!-- 提案B: カテゴリ別フィルタータブ -->
+                        <div class="pwd-category-filter" role="tablist">
+                            <button type="button" class="pwd-cat-btn active" data-category="all" role="tab" aria-selected="true">すべて</button>
+                            <button type="button" class="pwd-cat-btn" data-category="social" role="tab" aria-selected="false">🌐 SNS・メディア</button>
+                            <button type="button" class="pwd-cat-btn" data-category="shopping" role="tab" aria-selected="false">🛍️ ショッピング</button>
+                            <button type="button" class="pwd-cat-btn" data-category="finance" role="tab" aria-selected="false">🏦 銀行・金融</button>
+                            <button type="button" class="pwd-cat-btn" data-category="work" role="tab" aria-selected="false">💼 仕事・学校</button>
+                            <button type="button" class="pwd-cat-btn" data-category="other" role="tab" aria-selected="false">🗝️ その他</button>
+                        </div>
+
+                        <!-- エントリ一覧 -->
+                        <div id="vault-entries" style="display: flex; flex-direction: column; gap: 0.75rem; margin-bottom: 1.5rem;">
+                            <!-- JSで暗号化解除されたエントリカードが動的に出力されます -->
+                        </div>
+
+                        <!-- 追加ボタン -->
+                        <button type="button" id="vault-add-btn" class="btn btn-primary" style="width: 100%; height: 50px; font-weight: 800; font-size: 1rem;">＋ 新しいパスワードを追加</button>
+
+                        <!-- 全削除 -->
+                        <div style="text-align: center; margin-top: 1.5rem;">
+                            <button type="button" id="vault-destroy-btn" style="background: none; border: none; color: var(--c-danger); font-weight: 700; cursor: pointer; font-size: 0.85rem; text-decoration: underline;" aria-label="保管庫のデータをすべて削除">⚠️ ボールトを全削除</button>
+                        </div>
+                    </div>
+
+                    <!-- 3. 追加/編集フォーム (スライドイン的表示) -->
+                    <div id="vault-form" hidden>
+                        <h2 id="vault-form-title" style="margin-bottom: 1.5rem;">新規追加</h2>
+                        
+                        <div class="pwd-form-group">
+                            <label for="vault-site-name">サイト名 / サービス名 <span class="required">*</span></label>
+                            <input type="text" class="pwd-text-input" id="vault-site-name" placeholder="例: Twitter, Amazon, 社内システム" aria-required="true">
+                        </div>
+
+                        <!-- 提案B: カテゴリセレクトボックス -->
+                        <div class="pwd-form-group">
+                            <label for="vault-category">カテゴリー</label>
+                            <select class="pwd-select" id="vault-category" aria-label="カテゴリー選択">
+                                <option value="other" selected>🗝️ その他</option>
+                                <option value="social">🌐 SNS・メディア</option>
+                                <option value="shopping">🛍️ ショッピング</option>
+                                <option value="finance">🏦 銀行・金融</option>
+                                <option value="work">💼 仕事・学校</option>
+                            </select>
+                        </div>
+
+                        <div class="pwd-form-group">
+                            <label for="vault-password">パスワード <span class="required">*</span></label>
+                            <div class="pwd-input-group">
+                                <input type="password" class="pwd-text-input" id="vault-password" placeholder="パスワードを入力、または自動生成からコピペ" aria-required="true" autocomplete="new-password">
+                                <button class="pwd-field-toggle vault-field-toggle" aria-label="パスワード表示を切り替え" type="button">👁️</button>
+                            </div>
+                        </div>
+
+                        <!-- カスタムフィールド (ログインIDやメールアドレス等) -->
+                        <div class="pwd-form-group">
+                            <label style="margin-bottom: 0.25rem;">追加の項目 (ユーザー名やメールアドレスなど)</label>
+                            <div id="vault-custom-fields" style="margin-bottom: 0.75rem;">
+                                <!-- JSでカスタム項目入力行が追加されます -->
+                            </div>
+                            <button type="button" id="vault-add-field-btn" class="btn btn-secondary" style="font-size: 0.8rem; padding: 0.45rem 1rem; border-radius: var(--radius-btn);">
+                                ＋ 項目を追加
+                            </button>
+                        </div>
+
+                        <div style="display: flex; gap: 1rem; margin-top: 2rem;">
+                            <button type="button" id="vault-save-btn" class="btn btn-primary" style="flex: 2; height: 48px; font-weight: 800;">💾 保存する</button>
+                            <button type="button" id="vault-cancel-btn" class="btn btn-secondary" style="flex: 1; height: 48px; font-weight: 700;">キャンセル</button>
+                        </div>
+                        <input type="hidden" id="vault-edit-id">
+                    </div>
+
+                </div>
+
+            </div>
+
+            <!-- アコーディオン式極上コラムセクション (detailsタグでスマート収納！) -->
+            <details class="pwd-column-details">
+                <summary class="pwd-column-summary">
+                    📖 開発ストーリーと「パスワード難民」の寄り添いコラムを読む (クリックで展開)
+                </summary>
+                <div class="pwd-column-content card pwd-column-card">
+                    <h3 style="color: var(--c-primary); margin-top: 0; font-weight: 800; display: flex; align-items: center; gap: 0.5rem;">🧪 スマホ時代の「パスワード難民」だった私（わたくし）の開発話</h3>
+                    <p>
+                        「最近はスマホの指紋認証や顔認証でログインできるし、ブラウザが勝手に記憶してくれるから、パスワードなんて覚えなくていいよね！」<br>
+                        そう思って油断していた私（わたくし）は、かつて立て続けに絶望的なシチュエーションに襲われました……！
+                    </p>
+                    <p>
+                        それは、<strong>PCのブラウザで登録したサービスを、スマホの「アプリ」でログインしようとした瞬間</strong>。なんと、Googleの自動保存やキーチェーンがうまく連携してくれず、「手動でパスワードを入力してください」と冷たく突きつけられたのです。さらに追い打ちをかけるように、いつも指紋でスッと入っていたアプリが、アプデや再起動のタイミングで突然<strong>「登録時の生パスワード」</strong>を求めてきて、完全に頭が真っ白になりました。笑
+                    </p>
+                    <p>
+                        「パスワード、なんだっけ……？ ていうか、どこにも書いてないし思い出せない……！！」<br>
+                        そんな、スマホ社会が生んだ現代の「パスワード難民」から脱出するために、このツールを作りました。
+                    </p>
+                    <p>
+                        ブラウザでもスマホでも、いざという時に「手入力しやすく、使い回さないパスワード」を作り、この端末のブラウザ内で暗号化して保管（ボールト機能）できるようにしてあります。端末やブラウザの状態によるリスクは残るため、重要な情報には専用のパスワード管理サービスも検討してください。私と同じようにログイン画面の前でフリーズした経験のあるあなたへ、このツールが届きますように！
+                    </p>
+
+                    <div style="background: var(--c-bg); border-left: 4px solid var(--c-primary); border-radius: 0 var(--radius-md) var(--radius-md) 0; padding: 1.25rem; margin: 1.5rem 0;">
+                        <h4 style="color: var(--c-primary); margin-top: 0; font-weight: 800; font-size: 1.05rem; margin-bottom: 0.5rem;">🚪 物理の「鍵」でたとえるパスワードの使い回し</h4>
+                        <p style="margin: 0; font-size: 0.92rem; line-height: 1.7;">
+                            「パスワードなんて、めちゃくちゃ複雑なやつを1コ作って、全部で使い回せば安全でしょ！」<br>
+                            かつて、私（わたくし）もそう信じ込んでいた時期がありました。でも、それはITの世界では<strong>「自宅も、車も、オフィスのロッカーも、実家の金庫も、すべて同じ1本の鍵で開くようにしている状態」</strong>と同じなのです……！<br>
+                            もし、どこか1つのサービスからその1本が漏えいすると、同じ認証情報を使うほかのサービスも不正ログインを試される可能性があります。だからこそ、<strong>「鍵はサービスごとに変える」</strong>ことが重要です。
+                        </p>
+                    </div>
+
+                    <div style="background: var(--c-bg); border-left: 4px solid var(--c-primary); border-radius: 0 var(--radius-md) var(--radius-md) 0; padding: 1.25rem; margin: 1.5rem 0;">
+                        <h4 style="color: var(--c-primary); margin-top: 0; font-weight: 800; font-size: 1.05rem; margin-bottom: 0.5rem;">🔑 鍵の種類を使い分ける「3つの防衛レベル」</h4>
+                        <p style="margin: 0; font-size: 0.92rem; line-height: 1.7;">
+                            「でも、何十個も別々のパスワードなんて覚えられないよ！」というあなたへ。記憶だけに頼らず、信頼できるパスワードマネージャーも活用してください。サービスが許す範囲で、以下を目安にできます。<br>
+                            <strong>🔒 レベル1：重要アカウント（24文字以上）</strong><br>メール、銀行、主要SNSなど、ほかのアカウントの復旧にも関わる場所。多要素認証も併用します。<br>
+                            <strong>🔑 レベル2：通常アカウント（16文字以上）</strong><br>ショッピングサイトや有料サブスクなど。サービスごとに異なる文字列を使います。<br>
+                            <strong>🚪 レベル3：文字数制限があるサービス</strong><br>上限まで長くし、使い回さず、利用できる場合は多要素認証を有効にします。<br>
+                            この「パスワード一括生成くん」は、そうした用途別のパスワードを、ワンクリックで生成できるように設計しました。生成した文字列は、上の「パスワード管理（暗号化ボールト）」へ端末内保存できます。保存方法の制約と注意事項を確認したうえで利用してください。
+                        </p>
+                    </div>
+
+                    <div style="background: var(--c-bg); border-left: 4px solid var(--c-primary); border-radius: 0 var(--radius-md) var(--radius-md) 0; padding: 1.25rem; margin: 1.5rem 0;">
+                        <h4 style="color: var(--c-primary); margin-top: 0; font-weight: 800; font-size: 1.05rem; margin-bottom: 0.5rem;">💡 「i」と「l」と「1」が判別できなくて泣かないために</h4>
+                        <p style="margin: 0; font-size: 0.92rem; line-height: 1.7;">
+                            パスワードを紙にメモしたり、スマホの画面を目で追いながら手動でアプリに入力しているとき、<strong>「大文字のアイ(I)なのか、小文字のエル(l)なのか、数字のイチ(1)なのか見分けがつかない！！」</strong>と電卓や画面の前で絶望した経験はありませんか？<br>
+                            私（わたくし）は深夜のログイン画面で3回連続で間違えて、アカウントをロックされ、ガチで涙を流したことがあります。笑<br>
+                            そんな悲劇をこの世から抹殺するために、このツールには<strong>「紛らわしい文字を除外」</strong>という超親切なオプションをデフォルトで搭載しました！見た目がそっくりな文字をあらかじめ排除して生成するため、手入力が必要な場面でもノンストレスでログインできます。ぜひ、この快適さを体感してください！
+                        </p>
+                    </div>
+
+                    <p style="margin-bottom: 0; font-weight: bold; color: var(--c-primary);">
+                        強固なパスワードを賢く管理し、あなたの安全なデジタルライフにお役立てください。最後までお読みいただきありがとうございました！🧪
+                    </p>
+                </div>
+            </details>
+
+            <!-- FAQ セクション -->
+            <section class="pwd-card">
+                <h2>❓ よくある質問</h2>
+                <div class="pwd-faq-list" id="faq-accordion">
+                    
+                    <div class="pwd-faq-item">
+                        <button type="button" class="pwd-faq-question">パスワードは安全ですか？</button>
+                        <div class="pwd-faq-answer">
+                                生成にはブラウザの暗号学的乱数生成器（<code>crypto.getRandomValues</code>）を使用し、生成内容はサーバーへ送信しません。ただし、端末やクリップボードの管理、利用先サービスの安全性まで保証するものではありません。
+                        </div>
+                    </div>
+
+                    <div class="pwd-faq-item">
+                        <button type="button" class="pwd-faq-question">パスワード管理は安全ですか？</button>
+                        <div class="pwd-faq-answer">
+                                保存データはマスターパスワードから導出した鍵でAES-256-GCM暗号化し、ブラウザのLocalStorageに保存します。端末を共有する場合やマルウェアが動作する環境ではリスクが残るため、重要な認証情報には専用のパスワードマネージャーも検討してください。
+                        </div>
+                    </div>
+
+                    <div class="pwd-faq-item">
+                        <button type="button" class="pwd-faq-question">「紛らわしい文字を除外」とは？</button>
+                        <div class="pwd-faq-answer">
+                            <code>i</code>と<code>l</code>と<code>1</code>、<code>0</code>と<code>O</code>など見分けにくい文字を除外する機能です。紙に手書きメモを残す場合や、スマホで手動入力が必要な場面の入力ミスを減らせます。
+                        </div>
+                    </div>
+
+                    <div class="pwd-faq-item">
+                        <button type="button" class="pwd-faq-question">推奨されるパスワードの長さは？</button>
+                        <div class="pwd-faq-answer">
+                            サービスが許す範囲で16文字以上を基本にし、メールや金融など重要なアカウントでは24文字以上を目安にできます。長さだけでなく、サービスごとに異なる文字列と多要素認証を組み合わせてください。
+                        </div>
+                    </div>
+
+                    <div class="pwd-faq-item">
+                        <button type="button" class="pwd-faq-question">「パスワード管理」の使い方は？</button>
+                        <div class="pwd-faq-answer">
+                            <strong>初回セットアップ</strong><br>
+                            ① 上部の「🔐 暗号化管理 (ボールト)」タブをタップ<br>
+                            ② ほかで使っていないマスターパスワード（16文字以上）を入力<br>
+                            ③ 確認のためもう一度同じパスワードを入力<br>
+                            ④ 「🔐 ボールトを作成」を押して完了！<br><br>
+                            <strong>パスワードの登録</strong><br>
+                            ボールト作成後、「＋ 新しいパスワードを追加」ボタンからサイト名とパスワードを保存できます。メールアドレスなどの追加情報も「＋ 項目を追加」で登録可能です。また、新機能として「🌐 SNS」や「🏦 金融」などのカテゴリ分類もサポートされました！<br><br>
+                            <strong>⚠️ 重要な注意</strong><br>
+                            マスターパスワードはどこにも保存されません。忘れると保存したデータは<strong>一切復元できません</strong>ので、必ず覚えられるものにしてください。心配な方は📤エクスポート機能でバックアップを取っておくと安心です。
+                        </div>
+                    </div>
+
+                </div>
+            </section>
+
+            <section class="pwd-card" data-verification-note aria-labelledby="password-verification-title">
+                <h2 id="password-verification-title" style="font-size: 1.1rem;">🧪 実際の設定で確認した結果</h2>
+                <p><strong>確認日: 2026年7月22日</strong>（Windows版Chrome）</p>
+                <ul>
+                    <li><strong>入力:</strong> 20文字、小文字・大文字・数字・記号を使用、紛らわしい文字を除外、5個生成。</li>
+                    <li><strong>結果:</strong> 5個すべてが20文字で、指定した4種類を各1文字以上含み、除外対象の i / l / 1 / L / o / O / 0 を含まないことを確認しました。</li>
+                    <li><strong>確認範囲:</strong> 生成条件とブラウザ内処理の確認です。安全性は保存方法、使い回しの有無、利用先の漏えい対策にも左右されます。</li>
+                </ul>
+                <p><a href="../about-katakatalab.html#verification-policy" style="color: var(--c-primary); font-weight: 700;">KatakataLabの検証方法を見る →</a></p>
+            </section>
+
+            <!-- 関連ツール -->
+            <section class="pwd-card" style="padding: 1.5rem;">
+                <h2 style="font-size: 1.1rem; border-bottom: none; margin-bottom: 0.75rem; padding-bottom: 0;">🧰 関連ツール</h2>
+                <div class="pwd-sister-tools">
+                    <a href="../discount-calc/" class="btn btn-secondary" style="padding: 0.45rem 1rem; font-size: 0.85rem;" target="_blank" rel="noopener">💰 割引計算ツール</a>
+                        <a href="../qrcode/" class="btn btn-secondary" style="padding: 0.45rem 1rem; font-size: 0.85rem;" target="_blank" rel="noopener">📱 QRコード作成ツール</a>
+                        <a href="../seireki/" class="btn btn-secondary" style="padding: 0.45rem 1rem; font-size: 0.85rem;" target="_blank" rel="noopener">📅 年齢・和暦早見表</a>
+                        <a href="../guides/case-studies.html" class="btn btn-secondary" style="padding: 0.45rem 1rem; font-size: 0.85rem;">🧪 20文字で作る実例</a>
+                        <a href="../" class="btn btn-secondary" style="padding: 0.45rem 1rem; font-size: 0.85rem;">🏠 ツール一覧</a>
+                </div>
+            </section>
+
+        </div>
+    
+  <!-- Auto-Injected Unified Footer -->
+  <footer class="tool-footer tool-footer--bar" aria-label="サイト情報">
+      <a href="../" class="tool-footer__brand">🧪 KatakataLab</a>
+      <span class="tool-footer__sep" aria-hidden="true">|</span>
+      <a href="../who-is-katakata.html">運営者情報</a>
+      <span class="tool-footer__sep" aria-hidden="true">|</span>
+      <a href="../terms.html">利用規約</a>
+      <span class="tool-footer__sep" aria-hidden="true">|</span>
+      <a href="../privacy.html">プライバシーポリシー</a>
+      <span class="tool-footer__sep" aria-hidden="true">|</span>
+      <a href="../contact.html">お問い合わせ</a>
+  </footer>
+
+</main>
+
+    <!-- ツール専用スリムフッター -->
+
+
+    <!-- スクロールトップボタン -->
+    <button type="button" id="scroll-top" class="scroll-top-btn" aria-label="ページ最上部へスクロール">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="18 15 12 9 6 15"></polyline>
+        </svg>
+    </button>
+
+
+    <!-- スクリプト読込 -->
+    <script src="../script.js?v=40684c3"></script>
+    <script type="module" src="script.js"></script>
+    <script>
+        // フッターのコピーライト年の同期
+        const footerCopyrightYear = document.getElementById('footerCopyrightYear');
+        if (footerCopyrightYear) {
+            footerCopyrightYear.textContent = new Date().getFullYear();
+        }
+    </script>
+</body>
+</html>

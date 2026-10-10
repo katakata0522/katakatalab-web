@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="robots" content="noindex, follow">
+  <meta name="format-detection" content="telephone=no">
+  
+  <title>割引計算ツール【無料】何％オフ・何割引きを一発計算（税込・税抜・重ね割対応） - KatakataLab</title>
+  
+  <meta name="description" content="【登録不要】金額を入力するだけで、10%OFF(1割引き)から半額、90%OFFまでの「税込価格」を一括で計算・一覧表示するツール。消費税(10%/8%)、さらに割引(レジ落ち)にも対応。買い物やセールの計算に。">
+  
+  <link rel="canonical" href="https://katakatalab.com/discount-calc/">
+  <link rel="manifest" href="manifest.json">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="theme-color" content="#f59e0b">
+  <link rel="apple-touch-icon" href="/favicon.ico">
+
+  <meta property="og:title" content="割引計算ツール - Discount Calculator">
+  <meta property="og:description" content="セールの値段がすぐわかる。税抜・税込、3割引きなどの計算に対応。">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://katakatalab.com/discount-calc/">
+  <meta property="og:site_name" content="KatakataLab">
+  <meta property="og:image" content="https://katakatalab.com/discount-calc/ogp.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:image" content="https://katakatalab.com/discount-calc/ogp.png">
+
+  <link rel="icon" href="/favicon.ico">
+  <link rel="stylesheet" href="style.css?v=20260824-responsive">
+    <link rel="stylesheet" href="../tool-chrome.css?v=source">
+</head>
+<body>
+    <script>try{if(localStorage.getItem('theme')==='dark')document.body.classList.add('dark-mode');}catch(e){}</script>
+
+<main class="tool-wrapper">
+
+    <!-- Unified Mini Header / Breadcrumbs -->
+    <nav class="breadcrumbs-tool breadcrumbs-tool--bar" aria-label="パンくずリスト">
+        <div class="breadcrumbs-tool__trail">
+            <a href="../" class="breadcrumbs-tool__brand">
+                <span class="breadcrumbs-tool__mark">🧪</span> KatakataLab
+            </a>
+            <span class="breadcrumbs-tool__sep">/</span>
+            <span class="breadcrumbs-tool__current" aria-current="page">割引計算ツール</span>
+        </div>
+        <a href="../#projects" class="breadcrumbs-tool__index">
+            <span>🧰</span> ツール一覧へ
+        </a>
+    </nav>
+
+    <!-- Auto-Injected noscript fallback -->
+    <noscript>
+        <div class="tool-noscript">
+            <p class="tool-noscript__title">⚠️ JavaScriptが無効になっています</p>
+            <p class="tool-noscript__text">このツールはブラウザ上での計算のためにJavaScriptを使用します。有効にしてからご利用ください。</p>
+        </div>
+    </noscript>
+
+
+
+  
+  <header class="tool-header">
+    <div class="header-inner">
+      <h1 class="app-title">割引を<span class="accent">計算</span>する</h1>
+      <p class="app-desc">％オフと重ね割引の支払額を一覧で出します。店頭の目安です。</p>
+    </div>
+  </header>
+
+  <section id="stickyHeader" class="calc-controls sticky-header">
+    <div class="price-area">
+      <div class="price-input-wrapper">
+        <span class="currency-symbol">¥</span>
+        <input type="text" id="price" class="input-price" placeholder="0" inputmode="numeric" pattern="[0-9]*" aria-label="商品価格">
+        <button type="button" id="clearBtn" class="btn-clear" aria-label="金額をクリア">×</button>
+      </div>
+      <div class="quick-add-buttons">
+        <button type="button" data-add="10000" class="btn-haptic" aria-label="1万円追加">＋1万</button>
+        <button type="button" data-add="1000" class="btn-haptic" aria-label="千円追加">＋1000</button>
+        <button type="button" data-add="100" class="btn-haptic" aria-label="百円追加">＋100</button>
+        <button type="button" id="resetAllBtn" class="btn-haptic" aria-label="全設定をリセット" title="価格・税率・追加割引をすべてリセット" style="background:rgba(239,68,68,0.12);color:#f87171;border-color:rgba(239,68,68,0.3);">↩ 全リセット</button>
+      </div>
+    </div>
+    <div class="settings-grid">
+      <div class="segment-control" role="radiogroup" aria-label="元値の税区分">
+        <label><input type="radio" name="taxType" value="included" checked aria-label="税込価格から計算"><span>元は税込</span></label>
+        <label><input type="radio" name="taxType" value="excluded" aria-label="税抜価格から計算"><span>元は税抜</span></label>
+      </div>
+      <div class="segment-control" id="taxRateGroup" role="radiogroup" aria-label="税率（税抜のとき）">
+        <label><input type="radio" name="taxRate" value="1.10" checked aria-label="消費税率10%" disabled><span>10%</span></label>
+        <label><input type="radio" name="taxRate" value="1.08" aria-label="消費税率8%" disabled><span>8%</span></label>
+        <label><input type="radio" name="taxRate" value="1.00" aria-label="消費税率0%(税無)" disabled><span>税無</span></label>
+      </div>
+    </div>
+    <p id="taxHelp" class="tax-help">元が税込のときは、入力額をそのまま基準にします。税率は「元は税抜」のときだけ使います。</p>
+    <div class="extra-discount-area">
+      <label class="accordion-toggle btn-haptic">
+        <input type="checkbox" id="extraToggle">
+        <span class="toggle-text">＋ さらに割引 (レジ落ち等)</span>
+        <span class="icon-arrow">▼</span>
+      </label>
+      <div class="accordion-content">
+        <div class="extra-input-row">
+          <span>主割引のあと、さらに</span>
+          <div class="suffix-input">
+            <input type="number" id="extraDisc" placeholder="0" inputmode="numeric" min="0" max="99" aria-label="追加の値引きパーセンテージ">
+            <span class="suffix">% OFF</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="result-list-area">
+    <div class="table-header">
+      <span>割引率</span>
+      <span class="text-right">支払額<small id="payHeaderNote">(税込)</small></span>
+      <span class="text-right">お得額</span>
+    </div>
+    <div class="tap-hint">※ 行をタップしてコピー / 🛒ボタンでかご追加</div>
+    
+    <div class="quick-rate-buttons" role="group" aria-label="よく使う割引率のショートカット">
+      <span class="quick-rate-label">⚡ よく使う割引:</span>
+      <div class="quick-rate-chips">
+        <button type="button" class="btn-rate-chip btn-haptic" data-rate="10">10%引</button>
+        <button type="button" class="btn-rate-chip btn-haptic" data-rate="20">20%引</button>
+        <button type="button" class="btn-rate-chip btn-haptic" data-rate="30">30%引</button>
+        <button type="button" class="btn-rate-chip btn-haptic" data-rate="50">半額 (50%)</button>
+      </div>
+    </div>
+    
+    <ul id="resultList" class="discount-list" aria-live="polite">
+      <!-- 自由入力行 -->
+      <li class="discount-item custom-row btn-haptic">
+        <div class="col-rate-input">
+          <input type="number" id="customRate" placeholder="?" inputmode="numeric" min="0" max="100" aria-label="任意の割引率" onclick="event.stopPropagation()">
+          <span class="unit">%</span>
+        </div>
+        <button type="button" class="col-price btn-copy-custom" id="customPrice" aria-label="任意割引率の税込価格をコピー" disabled>-</button>
+        <div class="col-save-wrapper">
+          <div class="col-save" id="customSave">-</div>
+          <button type="button" class="btn-add-cart" id="btnCartCustom" aria-label="買い物かごに追加" disabled>🛒</button>
+        </div>
+      </li>
+    </ul>
+    
+    <div id="emptyState" class="empty-state">
+      <span class="icon-cart">🛒</span>
+      <p>金額を入力してください</p>
+    </div>
+  </section>
+
+  <!-- ショッピングカートドロワー (合算機能) -->
+  <section id="cartDrawer" class="cart-drawer hidden">
+    <div class="cart-drawer-inner">
+      <div class="cart-drawer-header">
+        <span class="cart-title">
+          <span class="cart-icon">🛒</span> 買い物かご 
+          <span id="cartCount" class="badge">0</span>
+        </span>
+        <button type="button" id="cartClearBtn" class="btn-cart-clear" aria-label="買い物かごを空にする">🧹 空にする</button>
+      </div>
+      <ul id="cartItems" class="cart-items"></ul>
+      
+      <!-- 合算結果 -->
+      <div class="cart-totals">
+        <div class="total-row">
+          <span class="total-label">元の合計</span>
+          <span id="cartOriginalTotal" class="total-value">¥0</span>
+        </div>
+        <div class="total-row main-total">
+          <span class="total-label">合計支払額</span>
+          <span id="cartFinalTotal" class="total-value">¥0 <small id="cartTaxNote">(税込)</small></span>
+        </div>
+        <div class="total-row save-total">
+          <span class="total-label">お得額の合計</span>
+          <span id="cartSaveTotal" class="total-value">🉐 -¥0</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div id="toast" class="toast" role="alert">COPIED!</div>
+
+  <article class="article-content">
+    <h2>「何％オフ？」を一発計算できるツール</h2>
+    <p>作成者: かたかた / 更新日: 2026年7月22日</p>
+    
+    <div class="feature-box">
+      <h3>💡 クイック使い方とポイント</h3>
+      <p>金額を入力するだけで割引後の価格を一括計算します。タイムセールなどの「レジにてさらに〇〇%OFF」の重ね割や、買い物かごでの合計額メモにも対応。計算はすべてブラウザ内で完結し、外部サーバーへ送信しません。</p>
+      <div style="display: flex; justify-content: space-between; align-items: center; gap: 1rem; flex-wrap: wrap; margin-top: 0.75rem;">
+        <div>
+          <strong style="color: var(--c-primary, #f59e0b);">📘 あわせて読みたい実践ガイド:</strong>
+          <span style="font-size: 0.85rem; color: var(--c-text-light, #555);">重なり割引の読み方や端数計算のポイントをまとめています。</span>
+        </div>
+        <a href="../guides/discount-guide.html" target="_blank" rel="noopener" class="btn btn-primary" style="padding: 0.4rem 0.85rem; font-size: 0.85rem; text-decoration: none; border-radius: 4px; font-weight: bold; background: linear-gradient(135deg, #f59e0b, #d97706); color: white;">ガイドを読む →</a>
+      </div>
+    </div>
+
+    <section class="feature-box" data-verification-note aria-labelledby="discount-verification-title">
+      <h3 id="discount-verification-title">🧪 実際の入力で確認した結果</h3>
+      <p><strong>確認日: 2026年7月22日</strong>（Windows版Chrome）</p>
+      <ul>
+        <li><strong>入力:</strong> 税込10,000円、20%OFF、その後さらに10%OFF。</li>
+        <li><strong>結果:</strong> 10,000 × 0.8 × 0.9 = 7,200円、お得額2,800円と表示されることを確認しました。</li>
+        <li><strong>端数の例:</strong> 税込1,234円を15%OFFのあと、さらに15%OFFすると 1,234 × 0.85 × 0.85 = 891.565 → 支払額891円です。途中で毎回切り捨てると890円になるため、レジと1円ずれることがあります。</li>
+        <li><strong>確認範囲:</strong> 本ツールの「最後だけ切り捨て」ルールでの計算結果です。店舗独自のクーポン順序、商品別計算、端数処理までは再現しません。</li>
+      </ul>
+      <p><a href="../about-katakatalab.html#verification-policy" class="guide-link">KatakataLabの検証方法を見る →</a> | <a href="../guides/case-studies.html" class="guide-link">重ね割引の入力・出力例を見る →</a></p>
+    </section>
+
+    <!-- アコーディオン 1: 計算結果を使うときの注意点 -->
+    <details class="tool-accordion">
+      <summary class="tool-accordion__summary">
+        <span>🧾 計算結果を使うときの注意点・店舗ごとの端数処理</span>
+        <span class="tool-accordion__icon">▼</span>
+      </summary>
+      <div class="tool-accordion__body">
+        <h4>割引率の計算</h4>
+        <p>元の価格に対して、指定した割合を差し引きます。「30%OFF」は元の価格の70%を支払う計算です。</p>
+
+        <h4>さらに割引（重ね割）</h4>
+        <p>最初の割引後の価格に対してもう一度計算します。割引率を足し算した単純な合計とは異なります（例: 50%OFFのあと10%OFFは60%OFFではなく55%OFF相当）。</p>
+
+        <h4>消費税の計算</h4>
+        <p>税込・税抜と税率10%・8%を設定できます。表示額は入力した設定に基づく目安です。</p>
+
+        <h4>店舗ごとの端数処理</h4>
+        <p>本ツールは最後の支払額だけ1円未満を切り捨てます。途中の掛け算は切り捨てません。実際のレジでは商品・クーポン・店舗ルールによって結果が異なる場合があります。最終確認は販売価格を優先してください。</p>
+      </div>
+    </details>
+
+    <!-- アコーディオン 2: 割引価格早見表 -->
+    <details class="tool-accordion">
+      <summary class="tool-accordion__summary">
+        <span>📊 割引価格早見表（例: 1,000円の場合・10%〜90% OFF）</span>
+        <span class="tool-accordion__icon">▼</span>
+      </summary>
+      <div class="tool-accordion__body">
+        <p>よくある割引率の計算結果一覧です。ツールを使えば、任意の金額で即座に計算できます。</p>
+        <div class="table-wrapper">
+          <table class="reference-table">
+            <thead>
+              <tr>
+                <th>割引率</th>
+                <th>言い換え</th>
+                <th>計算式</th>
+                <th>1,000円の場合</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td><strong>10% OFF</strong></td><td>1割引き</td><td>× 0.9</td><td>900円</td></tr>
+              <tr><td><strong>20% OFF</strong></td><td>2割引き</td><td>× 0.8</td><td>800円</td></tr>
+              <tr><td><strong>30% OFF</strong></td><td>3割引き</td><td>× 0.7</td><td>700円</td></tr>
+              <tr><td><strong>40% OFF</strong></td><td>4割引き</td><td>× 0.6</td><td>600円</td></tr>
+              <tr><td><strong>50% OFF</strong></td><td>半額</td><td>× 0.5</td><td>500円</td></tr>
+              <tr><td><strong>70% OFF</strong></td><td>7割引き</td><td>× 0.3</td><td>300円</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </details>
+
+    <!-- アコーディオン 3: よくある質問 -->
+    <details class="tool-accordion">
+      <summary class="tool-accordion__summary">
+        <span>❓ よくある質問 (FAQ)</span>
+        <span class="tool-accordion__icon">▼</span>
+      </summary>
+      <div class="tool-accordion__body">
+        <h4>Q. 「3割引き」は「30%オフ」と同じですか？</h4>
+        <p>A. はい、同じ意味です。「割」は10分の1なので、3割＝30%です。入力欄は％単位ですので、3割引きを見るときは 30 と入力してください。</p>
+
+        <h4>Q. 「さらに割引」とはどういう計算ですか？</h4>
+        <p>A. 割引後の価格からさらに指定のパーセントを引く計算です。例えば「50%OFFの商品が、レジでさらに10%OFF」の場合、単純な60%OFF（400円）ではなく、500円の10%引きで「450円」となります。</p>
+
+        <h4>Q. 入力した金額や買い物メモは外部に送信されますか？</h4>
+        <p>A. いいえ。すべての計算はブラウザ内だけで処理され、外部サーバーへ送信されることはありません。</p>
+      </div>
+    </details>
+  </article>
+
+
+
+  <!-- Auto-Injected Unified Footer -->
+  <footer class="tool-footer tool-footer--bar" aria-label="サイト情報">
+      <a href="../" class="tool-footer__brand">🧪 KatakataLab</a>
+      <span class="tool-footer__sep" aria-hidden="true">|</span>
+      <a href="../who-is-katakata.html">運営者情報</a>
+      <span class="tool-footer__sep" aria-hidden="true">|</span>
+      <a href="../terms.html">利用規約</a>
+      <span class="tool-footer__sep" aria-hidden="true">|</span>
+      <a href="../privacy.html">プライバシーポリシー</a>
+      <span class="tool-footer__sep" aria-hidden="true">|</span>
+      <a href="../contact.html">お問い合わせ</a>
+  </footer>
+
+</main>
+
+<script type="application/ld+json">
+[
+  {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "Discount Calculator",
+    "url": "https://katakatalab.com/discount-calc/",
+    "applicationCategory": "FinanceApplication",
+    "operatingSystem": "Browser",
+    "offers": {
+      "@type": "Offer",
+      "price": "0",
+      "priceCurrency": "JPY"
+    },
+    "description": "金額を入力するだけで割引後の価格を一括表示するツール。消費税計算、複数割引対応。"
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {
+        "@type": "Question",
+        "name": "「3割引き」は「30%オフ」と同じですか？",
+        "acceptedAnswer": { "@type": "Answer", "text": "はい、同じです。「割」は10分の1を表す単位なので、3割＝30%となります。" }
+      },
+      {
+        "@type": "Question",
+        "name": "消費税の計算方法は？",
+        "acceptedAnswer": { "@type": "Answer", "text": "最後の支払額だけ1円未満を切り捨てます。税抜を選んだときだけ税率を掛けます。" }
+      }
+    ]
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      { "@type": "ListItem", "position": 1, "name": "KatakataLab", "item": "https://katakatalab.com/" },
+      { "@type": "ListItem", "position": 2, "name": "割引計算ツール", "item": "https://katakatalab.com/discount-calc/" }
+    ]
+  }
+]
+</script>
+
+<script src="script.js" defer></script>
+
+<script>
+// 個別manifestの入口からも、親PWAの同じ配信版を利用する。
+if ('serviceWorker' in navigator && window.isSecureContext) {
+  const registerPwa = () => navigator.serviceWorker.register('../sw.js', { scope: '../', updateViaCache: 'none' }).catch(error => console.warn('PWA registration failed', error));
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', registerPwa, { once: true });
+  else registerPwa();
+}
+</script>
+</body>
+</html>

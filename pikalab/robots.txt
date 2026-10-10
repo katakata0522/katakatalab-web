@@ -1,0 +1,8 @@
+# PikaLab - robots.txt
+# 検索エンジンクローラーへの指示
+
+User-agent: *
+Allow: /
+
+# サイトマップの場所を通知
+Sitemap: https://katakatalab.com/pikalab/sitemap.xml

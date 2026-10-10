@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="robots" content="noindex, follow">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ひらがなタッチ</title>
+    <meta name="description" content="ひらがなをタッチして文字と音に親しめる、幼児・低学年向けのやさしい文字遊びです。">
+    <link rel="canonical" href="https://katakatalab.com/pikalab/eduplay/hiragana.html">
+    <meta property="og:title" content="ひらがなタッチ">
+    <meta property="og:description" content="ひらがなをタッチして文字と音に親しめる、幼児・低学年向けのやさしい文字遊びです。">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://katakatalab.com/pikalab/eduplay/hiragana.html">
+    <meta property="og:image" content="https://katakatalab.com/pikalab/pikalab_ogp_compressed.jpg">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="ひらがなタッチ">
+    <meta name="twitter:description" content="ひらがなをタッチして文字と音に親しめる、幼児・低学年向けのやさしい文字遊びです。">
+    <meta name="twitter:image" content="https://katakatalab.com/pikalab/pikalab_ogp_compressed.jpg">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,1,0&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../style.css">
+    <link rel="stylesheet" href="common.css">
+    <script src="common.js"></script>
+    <style>
+        /* 文字をタップしたときの弾むアニメーション */
+        @keyframes pop {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.4) translateY(-5px); color: #f97316; } /* はねてオレンジ色に */
+            100% { transform: scale(1); }
+        }
+        .pop-anim {
+            animation: pop 0.4s ease-out;
+        }
+
+        /* 隠し要素用のアニメーション */
+        @keyframes popIn { 0% { transform: scale(0); } 70% { transform: scale(1.2); } 100% { transform: scale(1); } }
+        .item-pop { animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) backwards; }
+        
+        /* ひらがなグリッドのスクロールバーを非表示にしつつスクロール可能に */
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+    <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"ひらがなタッチ","url":"https://katakatalab.com/pikalab/eduplay/hiragana.html","description":"ひらがなをタッチして文字と音に親しめる、幼児・低学年向けのやさしい文字遊びです。","applicationCategory":"EducationalApplication","operatingSystem":"Any","isAccessibleForFree":true,"offers":{"@type":"Offer","price":"0","priceCurrency":"JPY"}}</script>
+</head>
+<body class="bg-green-50 h-screen w-screen overflow-auto font-sans select-none text-gray-800">
+    <main id="app" class="max-w-2xl mx-auto h-full flex flex-col p-3 sm:p-5 relative">
+        
+        <!-- ヘッダー -->
+        <header class="flex justify-between items-center py-2 sm:py-4 shrink-0 gap-2">
+            <a id="game-back-btn" href="./" class="bg-white border-b-4 border-gray-300 px-4 py-2 sm:px-6 sm:py-3 rounded-full font-bold text-base sm:text-lg shadow-md game-card text-gray-700">⬅️ もどる</a>
+            <h1 class="text-3xl sm:text-4xl md:text-5xl font-black text-green-500 drop-shadow-sm tracking-wide hidden sm:block">🔤 ひらがな 🔤</h1>
+            <div class="flex gap-2">
+                <button type="button" data-action="parents-modal-open" class="bg-white border-b-4 border-gray-300 p-3 sm:p-4 rounded-full shadow-md text-lg sm:text-xl game-card flex items-center justify-center active:scale-95 transition" aria-label="保護者の方へ - 開く" aria-haspopup="dialog" aria-expanded="false" title="保護者の方へ">👨‍👩‍👦</button>
+                <button type="button" id="sound-toggle" onclick="EduSound.toggle(this)" aria-label="音を消す" aria-pressed="true" class="bg-white border-b-4 border-gray-300 p-3 sm:p-4 rounded-full shadow-md text-xl sm:text-2xl game-card">🔊</button>
+            </div>
+        </header>
+
+        <!-- コントローラー -->
+        <div class="flex justify-center mb-2 sm:mb-4 shrink-0">
+            <div id="mode-toggle" class="flex gap-1 sm:gap-2 bg-gray-200 p-1 sm:p-2 rounded-full shadow-inner">
+                <button id="btn-learn" onclick="setMode('learn')" class="px-5 py-2 sm:px-8 sm:py-3 bg-green-500 text-white rounded-full font-bold text-base sm:text-lg shadow-md transition-colors">おす</button>
+                <button id="btn-quiz" onclick="setMode('quiz')" class="px-5 py-2 sm:px-8 sm:py-3 text-gray-500 rounded-full font-bold text-base sm:text-lg transition-colors hover:bg-white">クイズ</button>
+            </div>
+        </div>
+
+        <!-- クイズのお題表示エリア -->
+        <div id="quiz-prompt" class="hidden mb-2 sm:mb-4 text-center text-xl sm:text-2xl font-black text-green-600 bg-white p-3 sm:p-5 rounded-2xl shadow-sm border-4 border-green-100 shrink-0"></div>
+
+        <!-- プレイエリア（五十音グリッド） -->
+        <div class="flex-1 bg-white p-4 sm:p-8 rounded-3xl shadow-sm border-4 border-green-200 overflow-y-auto no-scrollbar pb-10">
+            <!-- 5列のグリッド。隙間(gap)を少し広げて誤タップを防止 -->
+            <div id="hiragana-grid" class="grid grid-cols-5 gap-3 sm:gap-5 md:gap-6 place-items-center max-w-lg mx-auto">
+                <!-- JavaScriptで生成 -->
+            </div>
+        </div>
+    </main>
+
+    <!-- クリア画面ポップアップ -->
+    <div id="clear-overlay" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-40">
+        <div class="bg-white rounded-3xl p-8 max-w-sm w-full text-center shadow-2xl scale-up flex flex-col items-center justify-center">
+            <div class="text-8xl mb-4 inline-block">💮</div>
+            <h2 class="text-4xl font-black text-green-500 mb-2">はなまる！</h2>
+            <p class="text-xl text-gray-700 font-bold mb-6">ひらがな、すごいね！</p>
+            
+            <div class="flex flex-col gap-3 w-full">
+                <button onclick="startQuiz(true)" class="w-full bg-green-500 text-white text-xl font-bold py-4 rounded-2xl shadow-md transition-transform active:scale-95">もういっかい！ ➡️</button>
+                <button onclick="location.href='./'" class="w-full bg-gray-200 text-gray-700 text-lg font-bold py-3 rounded-2xl shadow-sm transition-transform active:scale-95">🏠 ひろばへもどる</button>
+            </div>
+            <!-- 保護者向けバナーを追加 -->
+            <div class="mt-6 pt-4 border-t border-gray-100 w-full text-left">
+                <p class="text-xs text-gray-500 font-bold mb-2 text-center">💡 おうちの方へ おすすめツール</p>
+                <div class="grid grid-cols-2 gap-2">
+                    <a href="../quest_board/" class="bg-amber-50 hover:bg-amber-100 text-amber-800 font-bold p-2.5 rounded-xl text-xs flex items-center justify-center gap-1 active:scale-95 transition text-center no-underline">
+                        <span>🎯 クエストボード</span>
+                    </a>
+                    <a href="../paper_gen/" class="bg-stone-50 hover:bg-stone-100 text-stone-800 font-bold p-2.5 rounded-xl text-xs flex items-center justify-center gap-1 active:scale-95 transition text-center no-underline">
+                        <span>📄 用紙メーカー</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- フィードバックポップアップ（共通） -->
+    <div id="feedback-overlay" class="hidden fixed inset-0 flex items-center justify-center z-50 pointer-events-none">
+        <div id="feedback-content" class="bg-white rounded-3xl py-6 px-8 shadow-2xl text-center transform transition-transform duration-200 scale-0 border-4 border-yellow-400 flex flex-col items-center">
+            <div id="feedback-icon" class="text-7xl mb-2"></div>
+            <div id="feedback-text" class="font-bold"></div>
+        </div>
+    </div>
+
+    <script>
+        // 五十音リスト（空白はスキップ用）
+        const hiraganaData = [
+            'あ','い','う','え','お',
+            'か','き','く','け','こ',
+            'さ','し','す','せ','そ',
+            'た','ち','つ','て','と',
+            'な','に','ぬ','ね','の',
+            'は','ひ','ふ','へ','ほ',
+            'ま','み','む','め','も',
+            'や','','ゆ','','よ',
+            'ら','り','る','れ','ろ',
+            'わ','','','','を',
+            'ん','','','',''
+        ];
+
+        const gameTimers = EduUtils.createTimerScope();
+        let currentMode = 'learn';
+        let quizTarget = '';
+        let quizCount = 0;
+        let isAnimating = false;
+
+        function initGrid() {
+            const grid = document.getElementById('hiragana-grid');
+            grid.innerHTML = '';
+
+            hiraganaData.forEach((char, index) => {
+                let box;
+                
+                if (char === '') {
+                    // 空白セル
+                    box = document.createElement('div');
+                    box.className = "w-full aspect-square"; 
+                    box.setAttribute('aria-hidden', 'true');
+                } else {
+                    // ひらがなボタン
+                    box = document.createElement('button');
+                    box.type = 'button';
+                    box.className = "w-full aspect-square bg-green-50 rounded-xl sm:rounded-2xl shadow-sm border-b-4 border-green-200 flex items-center justify-center cursor-pointer game-card transition-colors text-2xl sm:text-3xl font-black text-gray-700 item-pop";
+                    box.innerText = char;
+                    box.setAttribute('aria-label', `${char}を選ぶ`);
+                    box.style.animationDelay = `${(index % 5) * 0.05}s`; // 行ごとに少しズラして出現
+                    
+                    box.onclick = () => handleTap(box, char);
+                }
+                grid.appendChild(box);
+            });
+            
+            gameTimers.schedule(() => {
+                if (currentMode === 'learn') {
+                    EduSound.speak("すきな もじを おしてね！");
+                }
+            }, 500);
+        }
+
+        function resetPendingFeedback() {
+            gameTimers.clear();
+            isAnimating = false;
+            document.getElementById('feedback-overlay').classList.add('hidden');
+            document.getElementById('feedback-content').classList.replace('scale-100', 'scale-0');
+        }
+
+        function setMode(mode) {
+            resetPendingFeedback();
+            currentMode = mode;
+            if ('speechSynthesis' in window) window.speechSynthesis.cancel();
+            quizCount = 0;
+            
+            const learnBtn = document.getElementById('btn-learn');
+            const quizBtn = document.getElementById('btn-quiz');
+            const prompt = document.getElementById('quiz-prompt');
+            
+            if (mode === 'learn') {
+                learnBtn.className = "px-5 py-2 bg-green-500 text-white rounded-full font-bold text-sm shadow-md transition-colors";
+                quizBtn.className = "px-5 py-2 text-gray-500 rounded-full font-bold text-sm transition-colors hover:bg-white";
+                prompt.classList.add('hidden');
+                initGrid();
+            } else {
+                learnBtn.className = "px-5 py-2 text-gray-500 rounded-full font-bold text-sm transition-colors hover:bg-white";
+                quizBtn.className = "px-5 py-2 bg-blue-500 text-white rounded-full font-bold text-sm shadow-md transition-colors";
+                
+                // クイズモードは文字の場所をランダム（シャッフル）にするか迷いますが、
+                // まずは五十音表のまま探させることにします。
+                initGrid();
+                startQuiz();
+            }
+        }
+
+        function handleTap(box, char) {
+            if (isAnimating) return;
+
+            // タップアニメーション
+            box.classList.remove('pop-anim');
+            void box.offsetWidth;
+            box.classList.add('pop-anim');
+
+            if (currentMode === 'learn') {
+                EduSound.speak(char, 0.9, 1.2);
+            } else {
+                checkAnswer(char);
+            }
+        }
+
+        function startQuiz(resetProgress = false) {
+            if (resetProgress) {
+                resetPendingFeedback();
+                quizCount = 0;
+            }
+            document.getElementById('clear-overlay').classList.add('hidden');
+            
+            // 空白を除いたリストからランダムに選ぶ
+            const validChars = hiraganaData.filter(c => c !== '');
+            quizTarget = validChars[Math.floor(Math.random() * validChars.length)];
+            
+            const promptText = `「${quizTarget}」は どれかな？`;
+            const prompt = document.getElementById('quiz-prompt');
+            prompt.classList.remove('hidden');
+            prompt.innerText = promptText;
+            
+            // 新しい問題のたびにアニメーションで目立たせる
+            prompt.classList.remove('scale-up');
+            void prompt.offsetWidth;
+            prompt.classList.add('scale-up');
+
+            gameTimers.schedule(() => {
+                EduSound.speak(`「${quizTarget}」は、どれかな？`, 0.9, 1.3);
+            }, 300);
+        }
+
+        function checkAnswer(char) {
+            isAnimating = true;
+            const overlay = document.getElementById('feedback-overlay');
+            const content = document.getElementById('feedback-content');
+            const icon = document.getElementById('feedback-icon');
+            const text = document.getElementById('feedback-text');
+            
+            overlay.classList.remove('hidden');
+            gameTimers.schedule(() => content.classList.replace('scale-0', 'scale-100'), 10);
+
+            if (char === quizTarget) {
+                icon.innerText = "⭕️";
+                text.innerText = "だいせいかい！🎉";
+                text.className = "text-2xl sm:text-3xl text-green-500 font-black";
+                EduSound.speak("だいせいかい！");
+                EduUtils.shootConfetti();
+                
+                quizCount++;
+                gameTimers.schedule(() => {
+                    hideFeedback();
+                    // 5問正解でクリア
+                    if (quizCount >= 5) {
+                        gameTimers.schedule(() => {
+                            EduUtils.completeGameClear("はなまる！ひらがな、すごいね！");
+                        }, 500);
+                    } else {
+                        startQuiz();
+                    }
+                }, 2000);
+            } else {
+                icon.innerText = "❌";
+                text.innerText = "ちがうよ！\nもういっかい！";
+                text.className = "text-xl sm:text-2xl text-red-500 font-bold whitespace-pre-line";
+                EduSound.speak("ちがうよ。もういっかい！");
+                
+                gameTimers.schedule(() => {
+                    hideFeedback();
+                }, 1500);
+            }
+        }
+
+        function hideFeedback() {
+            const overlay = document.getElementById('feedback-overlay');
+            const content = document.getElementById('feedback-content');
+            content.classList.replace('scale-100', 'scale-0');
+            gameTimers.schedule(() => {
+                overlay.classList.add('hidden');
+                isAnimating = false;
+            }, 200);
+        }
+
+        window.onload = () => {
+            initGrid();
+        };
+    </script>
+    
+<!-- Parents Modal -->
+    
+
+    
+
+    
+<!-- Parents Modal -->
+    <dialog id="parents-modal"
+        class="p-0 rounded-3xl shadow-2xl  open:animate-fade-in w-full max-w-lg m-auto overflow-hidden border-0"
+        aria-labelledby="parents-modal-title" style="display:none;">
+        <div class="bg-white p-6 md:p-8 max-h-[90vh] overflow-y-auto relative text-left">
+            <button type="button" data-action="parents-modal-close" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600 focus:outline-none" aria-label="閉じる">
+                <span class="material-symbols-rounded">close</span>
+            </button>
+            <div class="mb-6 border-b-2 border-indigo-100 pb-4">
+                <h2 id="parents-modal-title"
+                    class="text-lg md:text-xl font-black text-slate-800 flex items-center gap-2">
+                    <span class="material-symbols-rounded text-indigo-500">family_restroom</span> 保護者の方へ
+                </h2>
+                <p class="text-xs text-slate-400 font-bold mt-1">For Parents & Guardians</p>
+            </div>
+
+            <div class="space-y-6 text-sm text-slate-600 leading-relaxed font-bold">
+                <!-- ウェルカムメッセージカード -->
+                <div class="bg-gradient-to-r from-indigo-50 to-purple-50 p-5 rounded-2xl border border-indigo-100 text-center">
+                    <p class="mb-2 text-indigo-800 text-base">
+                        <span class="material-symbols-rounded text-xl align-bottom mr-1 text-pink-400">favorite</span>
+                        当サイト「PikaLab」に<br>ご訪問いただき、誠にありがとうございます。
+                    </p>
+                    <p class="text-xs text-indigo-600">
+                            大切なお子様と一緒にPikaLabを訪れていただけたこと、<br>制作者のかたかたより、心から感謝申し上げます。
+                    </p>
+                </div>
+
+                <!-- 1. ねらい -->
+                <div>
+                    <h3 class="text-indigo-600 font-black mb-2 flex items-center gap-2">
+                        <span class="material-symbols-rounded text-base">school</span> このアプリのねらい
+                    </h3>
+                    <p>
+                        「ひらがなタッチ」は、五十音の文字をタップして音声を聞き、文字と音の結びつきを楽しく学ぶゲームです。また「クイズ」モードでは、音声の問いかけに応じて文字を探し出すことで、言葉の認知力や集中力を養うとともに、自分で正解を見つけ出す喜びを体験できます。
+                    </p>
+                </div>
+
+                <!-- 2. おねがい -->
+                <div>
+                    <h3 class="text-pink-500 font-black mb-2 flex items-center gap-2">
+                        <span class="material-symbols-rounded text-base">favorite</span> 保護者様へのおねがい
+                    </h3>
+                    <p>
+                        クイズで間違えても「ちがうよ！もういっかい！」という音声が流れるので、お子様自身が自分のペースで何度でも挑戦できます。おうちの方は「惜しかったね」「次はどれかな？」と優しく見守り、正解したときには<span class="bg-pink-100 text-pink-700 px-1 rounded">「すごいね！できたね！」</span>とたっぷり褒めてあげてください。
+                    </p>
+                </div>
+
+                <!-- 3. 活用方法 -->
+                <div>
+                    <h3 class="text-green-600 font-black mb-2 flex items-center gap-2">
+                        <span class="material-symbols-rounded text-base">emoji_objects</span> おうちでの活用方法
+                    </h3>
+                    <p>
+                        「あ」をタップしたあとに「『あ』のつくものは何があるかな？」と問いかけて、「あり！」「あさ！」など、身の回りの言葉探しに繋げてみてください。また、お子様の名前の文字を一緒に探してタップしてみるのも、文字への興味を深める素晴らしいアプローチです。
+                    </p>
+                </div>
+
+                <!-- 4. 健康への配慮 -->
+                <div>
+                    <h3 class="text-orange-500 font-black mb-2 flex items-center gap-2">
+                        <span class="material-symbols-rounded text-base">timer</span> 健康への配慮（休憩の推奨）
+                    </h3>
+                    <p>
+                        画面を集中して見つめながら文字を探すため、<span class="bg-orange-100 text-orange-700 px-1 rounded">15〜20分程度</span>を目安に適度に休憩を挟んでください。入力されたり操作されたデータはサーバーに送信されることはなく、ローカル環境で安全に動作します。
+                    </p>
+                </div>
+            </div>
+            <div class="mt-8 text-center">
+                <button type="button" data-action="parents-modal-close"
+                    class="w-full bg-indigo-500 text-white px-8 py-3 rounded-xl font-black hover:bg-indigo-600 transition shadow-lg shadow-indigo-200">閉じる</button>
+            </div>
+        </div>
+    </dialog>
+
+    <style>
+    #parents-modal::backdrop {
+        background: rgba(15, 23, 42, 0.6);
+        backdrop-filter: blur(4px);
+    }
+    #parents-modal[open] {
+        display: block !important;
+        animation: parentsModalFadeIn 0.3s ease-out forwards;
+    }
+    @keyframes parentsModalFadeIn {
+        from { opacity: 0; transform: scale(0.95); }
+        to { opacity: 1; transform: scale(1); }
+    }
+    </style>
+
+
+</body>
+</html>
