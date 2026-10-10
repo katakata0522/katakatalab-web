@@ -3,26 +3,26 @@
  * オフライン対応のキャッシュ戦略
  */
 
-const CACHE_NAME = 'emphasis-lines-v20260922-1';
+const CACHE_NAME = 'emphasis-lines-v20261010-1';
 const CACHE_PREFIX = 'emphasis-lines-';
 const ASSETS_TO_CACHE = [
     './',
     './index.html',
-    './css/tailwind.built.css?v=20260613-2',
-    './css/style.css?v=20260824-responsive',
-    './js/app.js?v=20260613-2',
-    './js/constants.js?v=20260613-2',
-    './js/state.js?v=20260613-2',
-    './js/ui.js?v=20260613-2',
-    './js/renderers/renderer.js?v=20260613-2',
-    './js/services/ExportService.js?v=20260613-2',
-    './js/services/ImageService.js?v=20260613-2',
-    './js/managers/BatchManager.js?v=20260613-2',
-    './js/managers/ToastManager.js?v=20260613-2',
-    './js/managers/index.js?v=20260613-2',
-    './js/utils/analytics.js?v=20260613-2',
-    './js/utils/random.js?v=20260613-2',
-    './js/utils/validation.js?v=20260613-2',
+    './css/tailwind.built.css?v=20261010-1',
+    './css/style.css?v=20261010-responsive',
+    './js/app.js?v=20261010-1',
+    './js/constants.js?v=20261010-1',
+    './js/state.js?v=20261010-1',
+    './js/ui.js?v=20261010-1',
+    './js/renderers/renderer.js?v=20261010-1',
+    './js/services/ExportService.js?v=20261010-1',
+    './js/services/ImageService.js?v=20261010-1',
+    './js/managers/BatchManager.js?v=20261010-1',
+    './js/managers/ToastManager.js?v=20261010-1',
+    './js/managers/index.js?v=20261010-1',
+    './js/utils/analytics.js?v=20261010-1',
+    './js/utils/random.js?v=20261010-1',
+    './js/utils/validation.js?v=20261010-1',
     './manifest.json',
     './icons/icon.svg'
 ];
