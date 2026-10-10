@@ -9,14 +9,38 @@ original assets and server settings and verify their original SHA-256 values.
 import argparse
 from concurrent.futures import ThreadPoolExecutor
 import hashlib
+import http.client
 import json
 from pathlib import Path, PurePosixPath
 import struct
 import time
-import urllib.error
-import urllib.request
+import threading
 import urllib.parse
 import zlib
+
+connections=threading.local()
+
+def published_bytes(entry):
+    url=entry['url']
+    for redirect in range(4):
+        parts=urllib.parse.urlsplit(url)
+        if parts.scheme!='https' or parts.netloc!='katakatalab.com' or parts.query or parts.fragment:
+            raise ValueError('Only anonymous published site dependencies are allowed')
+        if not getattr(connections,'https',None):
+            connections.https=http.client.HTTPSConnection('katakatalab.com',timeout=40)
+        connection=connections.https
+        connection.request('GET',parts.path or '/',headers={'User-Agent':'public-source-ci','Cache-Control':'no-cache'})
+        response=connection.getresponse()
+        if response.status in (301,302,303,307,308):
+            location=response.getheader('Location');response.read()
+            if not location:raise ValueError('Missing published dependency redirect')
+            url=urllib.parse.urljoin(url,location);continue
+        if response.status in (408,429,500,502,503,504):
+            response.read();raise OSError('Temporary published site HTTP '+str(response.status))
+        if response.status!=200:
+            response.read();raise ValueError('Published dependency HTTP '+str(response.status)+': '+entry['path'])
+        return response.read(entry['bytes']+1)
+    raise ValueError('Too many published dependency redirects')
 
 
 def safe_target(root, name):
@@ -46,18 +70,12 @@ def materialize(root,entry):
     elif target.exists() and hashlib.sha256(target.read_bytes()).hexdigest()==entry['sha256']:
         return
     else:
-        url=urllib.parse.urlsplit(entry['url'])
-        if url.scheme!='https' or url.netloc!='katakatalab.com' or url.query or url.fragment:
-            raise ValueError('Only anonymous published site dependencies are allowed')
-        request=urllib.request.Request(entry['url'],headers={'User-Agent':'public-source-ci','Cache-Control':'no-cache'})
         for attempt in range(3):
             try:
-                with urllib.request.urlopen(request,timeout=40) as response:
-                    if urllib.parse.urlsplit(response.url).netloc!='katakatalab.com':raise ValueError('Unexpected dependency redirect')
-                    data=response.read(entry['bytes']+1)
+                data=published_bytes(entry)
                 break
-            except (urllib.error.URLError, TimeoutError, ConnectionError) as error:
-                if isinstance(error,urllib.error.HTTPError) and error.code not in (408,429,500,502,503,504):raise
+            except (OSError,http.client.HTTPException) as error:
+                if getattr(connections,'https',None):connections.https.close();connections.https=None
                 if attempt==2:raise RuntimeError('Published dependency unavailable: '+entry['path']) from error
                 time.sleep(2*(attempt+1))
         if len(data)!=entry['bytes'] or hashlib.sha256(data).hexdigest()!=entry['sha256']:

@@ -3,7 +3,6 @@ name: Public PikaLab Quality Check
 on:
   push:
     branches: [main]
-    paths: ["pikalab/**", "qa/**", "scripts/**", ".github/**"]
   pull_request:
     types:
       - opened
@@ -339,6 +338,11 @@ jobs:
       - name: Prepare CI dependencies without publishing media
         if: "${{ !cancelled() && (success() || env.PIKALAB_COLLECT_ALL_FAILURES == 'true') && steps.verified_build.outcome == 'success' && steps.browser_setup.outcome == 'success' && needs.scope.result == 'success' && github.event_name == 'pull_request' && needs.scope.outputs.rhythm == 'true' }}"
         run: python3 scripts/public-qa/prepare.py --root .rhythm-baseline
+
+      - name: Install Rhythm Lab baseline dependencies
+        if: "${{ !cancelled() && (success() || env.PIKALAB_COLLECT_ALL_FAILURES == 'true') && steps.verified_build.outcome == 'success' && steps.browser_setup.outcome == 'success' && needs.scope.result == 'success' && github.event_name == 'pull_request' && needs.scope.outputs.rhythm == 'true' }}"
+        working-directory: .rhythm-baseline/pikalab
+        run: npm ci --prefer-offline --no-audit --no-fund
 
       - name: Run Rhythm Lab browser E2E
         if: "${{ !cancelled() && (success() || env.PIKALAB_COLLECT_ALL_FAILURES == 'true') && steps.verified_build.outcome == 'success' && steps.browser_setup.outcome == 'success' && needs.scope.result == 'success' && needs.scope.outputs.rhythm == 'true' }}"
