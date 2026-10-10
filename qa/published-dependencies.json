@@ -1159,7 +1159,7 @@
     },
     {
       "path": "lab-tools/kids-smile-land/.htaccess",
-      "content": "Header always set Content-Security-Policy \"default-src 'self' https: data: blob:; base-uri 'self'; object-src 'none'; frame-ancestors 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.tailwindcss.com https://cdnjs.cloudflare.com https://www.googletagmanager.com https://*.googlesyndication.com https://*.googleads.g.doubleclick.net https://*.adtrafficquality.google https://*.google.com https://*.google-analytics.com https://*.doubleclick.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' https: data: blob:; worker-src 'self' blob:; connect-src 'self' https:; frame-src https:; upgrade-insecure-requests\"\nHeader always set X-Frame-Options \"SAMEORIGIN\"\nHeader always set X-Content-Type-Options \"nosniff\"\n"
+      "content": "Header always set Content-Security-Policy \"default-src 'self' data: blob:; base-uri 'self'; object-src 'none'; frame-ancestors 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: blob:; media-src 'self' blob:; worker-src 'self' blob:; connect-src 'self'; frame-src 'self'; upgrade-insecure-requests\"\nHeader always set X-Frame-Options \"SAMEORIGIN\"\nHeader always set X-Content-Type-Options \"nosniff\"\n"
     },
     {
       "path": "pikalab/.htaccess",
