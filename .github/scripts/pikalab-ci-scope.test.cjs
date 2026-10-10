@@ -239,27 +239,8 @@ test('共通検証の失敗は全ラボE2Eの起動を止め、必須validateに
     }
 });
 
-test('通常成功は画像を保存せず、失敗・中断・明示的な診断と画面比較は3日保存する', () => {
-    const source = readWorkflow();
-    const uploads = [...source.matchAll(/      - name: (.*?)\n([\s\S]*?)(?=      - name:|^  [\w-]+:\n|$(?![\s\S]))/gm)]
-        .filter(([, , body]) => body.includes('uses: actions/upload-artifact@'));
-    assert.ok(uploads.length > 0);
-    for (const [, name, body] of uploads) {
-        const expression = body.match(/if: (.+)/)[1];
-        assert.match(expression, /always\(\)/, `${name}: 失敗・中断後も保存条件を評価する`);
-        assert.match(body, /retention-days: 3\n/, `${name}: 診断証跡は3日保存する`);
-        const preservation = /^          path: pikalab\/visual-guard-artifacts\/preservation\//m.test(body);
-        for (const status of ['success', 'failure', 'cancelled']) {
-            for (const diagnostic of [false, true]) {
-                for (const compare of [false, true]) {
-                    const context = { always: () => true, failure: () => status === 'failure', cancelled: () => status === 'cancelled',
-                        env: { PIKALAB_COLLECT_ALL_FAILURES: String(diagnostic || compare), PIKALAB_COMPARE_BASELINE: String(compare) } };
-                    assert.equal(evaluate(expression, context), preservation ? compare : status !== 'success' || diagnostic || compare, name);
-                }
-            }
-        }
-    }
-    assert.match(source, /VISUAL_GUARD_SCREENSHOTS: "1"/, '失敗診断と画面比較に必要な画像生成は継続する');
+test('権利確認中の画像をPublic成果物へアップロードしない', () => {
+    assert.doesNotMatch(readWorkflow(), /actions\/upload-artifact@/);
 });
 
 test('通常PRは先行ブラウザ失敗後に停止し、全件診断は続行し、中断・未検証build・ブラウザ準備失敗は起動しない', () => {
@@ -313,7 +294,7 @@ test('ビルドと成果物検証を先に済ませ、必要なブラウザとPD
         assert.ok(browserChecks.length > 0, name);
         for (const check of browserChecks) assert.ok(steps.indexOf(check) > install, `${name}: ${check[1]}`);
     }
-    const commonUnit = jobs.scope.match(/      - name: Run all PikaLab tests\n([\s\S]*?)(?=      - name:)/)[1];
+    const commonUnit = jobs.scope.match(/      - name: Run all PikaLab tests\n([\s\S]*?)(?=      - name:|$)/)[1];
     assert.doesNotMatch(commonUnit, /if:/, '共通準備・セキュリティ失敗後は既定のsuccess条件で単体テストを起動しない');
 });
 
@@ -396,15 +377,8 @@ test('baselineの教育監査モジュールはビルド前に必ず取得する
         const marker = '          path: .' + name + '-baseline\n';
         assert.equal(workflow.split(marker).length, 2, name + ' baseline checkout must exist exactly once');
         const checkout = workflow.split(marker)[1].split(/\n      - name:/)[0];
-        assert.match(checkout, /^\s*\/pikalab\/$/m, name + ': PikaLab source missing');
-        assert.match(checkout, /^\s*\/scripts\/education-no-tracking\.cjs$/m,
-            name + ': the privacy audit script must be checked out before baseline build');
-        for (const required of [
-            '/lab-tools/kids-smile-land/', '/pikalab-story.html', '/usagi-app/', '/kirarin-play-park/',
-        ]) {
-            assert.ok(checkout.split('\n').some(line => line.trim() === required),
-                name + ': required educational source omitted from baseline checkout: ' + required);
-        }
+        assert.doesNotMatch(checkout, /sparse-checkout:/, name + ': full checkout includes all public audit inputs');
+        assert.ok(workflow.includes('prepare.py --root .' + name + '-baseline'), name + ': baseline media must be prepared before build');
     }
-    assert.equal((workflow.match(/^\s*\/scripts\/education-no-tracking\.cjs$/gm) || []).length, baselines.length);
+    assert.doesNotMatch(workflow, /sparse-checkout:/);
 });

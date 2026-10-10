@@ -432,6 +432,14 @@ jobs:
           npm run test:focus-e2e
 
       # 通常成功時は保存せず、失敗・中断・明示的な診断と画面比較の証跡を3日保存する。
+
+  space-browser:
+    needs: scope
+    # 共有変更では必ず実行し、ラボ内だけの変更は該当E2Eを実行する。
+    if: "${{ (github.event_name != 'pull_request' || !github.event.pull_request.draft) && needs.scope.outputs.space == 'true' }}"
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
       - name: Checkout code
         uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
         with:
@@ -486,6 +494,14 @@ jobs:
           set -euo pipefail
           cd pikalab
           SPACE_LAB_BASELINE_ROOT=../.space-baseline/pikalab/dist npm run test:space-e2e
+
+  focus-browser:
+    needs: scope
+    # 共有変更では必ず実行し、ラボ内だけの変更は該当E2Eを実行する。
+    if: "${{ (github.event_name != 'pull_request' || !github.event.pull_request.draft) && needs.scope.outputs.focus == 'true' }}"
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
       - name: Checkout code
         uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
         with:
@@ -540,6 +556,14 @@ jobs:
           set -euo pipefail
           cd pikalab
           FOCUS_STUDIO_BASELINE_ROOT=../.focus-baseline/pikalab/dist npm run test:focus-deep-e2e
+
+  paper-browser:
+    needs: scope
+    # 共有変更では必ず実行し、ラボ内だけの変更は該当E2Eを実行する。
+    if: "${{ (github.event_name != 'pull_request' || !github.event.pull_request.draft) && needs.scope.outputs.paper == 'true' }}"
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
       - name: Checkout code
         uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
         with:
@@ -594,6 +618,14 @@ jobs:
           set -euo pipefail
           cd pikalab
           PAPER_GEN_BASELINE_ROOT=../.paper-baseline/pikalab/dist npm run test:paper-e2e
+
+  quest-browser:
+    needs: scope
+    # 共有変更では必ず実行し、ラボ内だけの変更は該当E2Eを実行する。
+    if: "${{ (github.event_name != 'pull_request' || !github.event.pull_request.draft) && needs.scope.outputs.quest == 'true' }}"
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
       - name: Checkout code
         uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
         with:
