@@ -503,6 +503,14 @@ async function printSuite() {
         await savePDF(page, `${type}-${viewport.width}-latest-input`, pages, record);
         await page.clock.runFor(250);
         assert.equal(await draftText(page), 'あ'.repeat(850)); assert.equal((await readSlot(page)).formData.draftText, 'あ'.repeat(850));
+        // 仮想clockの経過だけではCSS transitionの完了を保証しない。
+        // 印刷後に画面の実transformが戻ってから、従来と同じ可視範囲を検査する。
+        await eventually(() => page.evaluate(() => {
+            const node = document.querySelector('#print-target');
+            const target = /scale\(([^)]+)\)/.exec(node.style.transform);
+            return !matchMedia('print').matches && target
+                && Math.abs(new DOMMatrixReadOnly(getComputedStyle(node).transform).a - Number(target[1])) < .00001;
+        }), true, 'Native afterprint restores the screen preview transform before geometry measurement');
         await paperEdges(page, record, 'native-afterprint-restored-screen');
         await settlePrintMedia(page, current);
         record.printStyles = await page.evaluate(() => ({ transform: getComputedStyle(document.querySelector('#print-target')).transform,
