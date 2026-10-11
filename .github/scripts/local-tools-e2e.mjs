@@ -6,10 +6,32 @@ const root=path.resolve('public-build');const given=process.argv[2];let server;
 let base=given;if(!base){server=createServer((req,res)=>{const u=new URL(req.url,'http://localhost');let f=path.resolve(root,'.'+decodeURIComponent(u.pathname));if(f!==root&&!f.startsWith(root+path.sep)){res.writeHead(403).end();return;}if(fs.existsSync(f)&&fs.statSync(f).isDirectory())f=path.join(f,'index.html');if(!fs.existsSync(f)){res.writeHead(404).end();return;}const types={'.html':'text/html; charset=utf-8','.js':'text/javascript','.css':'text/css','.svg':'image/svg+xml','.json':'application/json','.webmanifest':'application/manifest+json'};res.setHeader('Content-Type',types[path.extname(f)]||'application/octet-stream');res.end(fs.readFileSync(f));});await new Promise(r=>server.listen(0,'127.0.0.1',r));base='http://127.0.0.1:'+server.address().port;}
 const artifactDir=path.resolve(process.env.KATAKATA_BROWSER_ARTIFACTS||path.join(os.tmpdir(),'katakata-local-tools-browser'));fs.mkdirSync(artifactDir,{recursive:true});
 const browser=await chromium.launch({headless:true});
+// 買物メモは通常の文書内に置き、旧ドロワーの移動指定による左切れも検出する。
+async function verifyDiscountMemo(page, width) {
+  await page.goto(base+'/discount-calc/', {waitUntil:'networkidle'});
+  assert.equal(await page.locator('#cartDrawer').isVisible(), false);
+  await page.locator('#price').fill('1000');
+  await page.locator('#customRate').fill('20');
+  await page.locator('#memoShop').fill('検証用の店');
+  await page.locator('#memoDate').fill('2026-10-11');
+  await page.locator('#btnCartCustom').click();
+  assert.match(await page.locator('#cartItems').textContent(), /検証用の店/);
+  assert.match(await page.locator('#cartFinalTotal').textContent(), /800/);
+  await page.reload({waitUntil:'networkidle'});
+  assert.match(await page.locator('#cartItems').textContent(), /2026-10-11/);
+  const geometry=await page.locator('#cartDrawer,#cartItems,#cartClearBtn').evaluateAll(nodes=>nodes.map(node=>{const rect=node.getBoundingClientRect();return {id:node.id,left:rect.left,right:rect.right,width:rect.width};}));
+  for(const rect of geometry){assert.ok(rect.width>0, rect.id+' has visible width');assert.ok(rect.left>=0&&rect.right<=width, rect.id+' stays inside viewport');}
+  await page.locator('#cartDrawer').screenshot({path:path.join(artifactDir,'discount-memo-'+width+'.png')});
+  page.once('dialog', dialog=>dialog.accept());
+  await page.locator('#cartClearBtn').click();
+  assert.equal(await page.locator('#cartDrawer').isVisible(), false);
+  console.log(JSON.stringify({discountMemo:'PASS',width,geometry,storageReload:'PASS',clear:'PASS'}));
+}
 try{if(!given){const {verifyRootUpdate}=await import('./pwa-update-e2e.mjs');await verifyRootUpdate(browser,root);}for(const width of [360,390,1366]){const page=await browser.newPage({viewport:{width,height:850}});const errors=[];const missing=[];page.on('pageerror',e=>errors.push(e.message));page.on('response',r=>{if(r.status()>=400&&r.url().startsWith(base))missing.push(r.url());});
 await page.goto(base+'/moyamoya-sorter/',{waitUntil:'networkidle'});await page.clock.install();await page.locator('#moyamoyaText').fill('メール返信 <img src=x onerror="window.__xss=true">');await page.locator('#sortBtn').click();await page.locator('#resultSection').waitFor({state:'visible'});if(width===360){const analyticsEvents=await page.evaluate(()=>window.dataLayer.map(entry=>Array.from(entry)).filter(entry=>entry[0]==='event'));assert.ok(analyticsEvents.some(entry=>entry[1]==='tool_start'&&entry[2]?.tool_id==='moyamoya-sorter'));assert.ok(analyticsEvents.some(entry=>entry[1]==='tool_action'&&entry[2]?.action_id==='sort'));const analyticsPayload=JSON.stringify(analyticsEvents);assert.equal(analyticsPayload.includes('メール返信'),false);assert.equal(analyticsPayload.includes('<img'),false);}assert.equal(await page.evaluate(()=>Boolean(window.__xss)),false);assert.equal(await page.locator('#resultSection img').count(),0);await page.locator('#startTimerBtn').click();await page.clock.fastForward(6100);assert.notEqual(await page.locator('#timerDigits').textContent(),'02:00');await page.locator('#startTimerBtn').click();const paused=await page.locator('#timerDigits').textContent();await page.clock.fastForward(8000);assert.equal(await page.locator('#timerDigits').textContent(),paused);await page.locator('#resetTimerBtn').click();assert.equal(await page.locator('#timerDigits').textContent(),'02:00');assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),true);await page.screenshot({path:path.join(artifactDir,'moyamoya-'+width+'.png'),fullPage:true});
 await page.goto(base+'/chiritsumo-calc/',{waitUntil:'networkidle'});while(await page.locator('.item-switch:checked').count())await page.locator('.item-switch:checked').first().locator('..').click();await page.locator('#toggleCustomBtn').click();await page.locator('#customName').fill('<img src=x onerror=alert(1)>');await page.locator('#customAmount').fill('1000');await page.locator('#customFreq').selectOption('monthly');await page.locator('#addCustomBtn').click();assert.equal(await page.locator('#expenseGrid img').count(),0);assert.equal(await page.locator('#monthlyStat').textContent(),'¥1,000');await page.locator('[data-period="1y"]').click();await page.waitForFunction(()=>document.querySelector('#summaryAmount').textContent==='12,000');await page.locator('#investToggle').locator('..').click();await page.waitForFunction(()=>document.querySelector('#summaryAmount').textContent==='12,279');assert.equal(await page.locator('#investResultBanner').isVisible(),true);assert.match(await page.locator('#summaryPeriodLabel').textContent(),/仮定/);assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),true);await page.screenshot({path:path.join(artifactDir,'chiritsumo-'+width+'.png'),fullPage:true});await page.reload({waitUntil:'networkidle'});assert.equal(await page.locator('#monthlyStat').textContent(),'¥1,000');await page.locator('#toggleCustomBtn').click();await page.locator('#customName').fill('Enter確認');await page.locator('#customAmount').fill('1000');await page.locator('#customName').press('Enter');assert.equal(await page.locator('#monthlyStat').textContent(),'¥2,000');assert.equal(await page.locator('.expense-del-btn').count(),2);
 
+await verifyDiscountMemo(page, width);
 await page.addInitScript(()=>{
   window.__copiedImageTypes=[];
   window.__lastClipboardBlob=null;
