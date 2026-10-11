@@ -489,13 +489,14 @@ async function performanceSuite() {
         const beforeNoop = await page.evaluate(() => window.__bookE2EBoundary.writes.length); await inputEvent(page, '#draft-textarea', '文'.repeat(60)); await settle(page, 900);
         return { events: 60, writes, totalWrites: writes.length, slotWrites: writes.filter(write => write.key === PREFIX + 1).length, noOpWrites: (await page.evaluate(() => window.__bookE2EBoundary.writes.length)) - beforeNoop };
     }
-    await runCase('measured-draft-burst-reduces-storage-writes', async (page, record, current) => {
+    await runCase('measured-draft-burst-bounds-storage-writes-without-regression', async (page, record, current) => {
         record.candidate = await measure(current);
         if (baselineUrl) { const baseline = await createCase(VIEWPORTS[1], { url: baselineUrl, observeStorage: true, storage: seeds() }); try { await ready(baseline); record.baseline = await measure(baseline); } finally { await baseline.context.close(); } }
         await writeJSON('storage-write-performance.json', record);
         assert.ok(record.candidate.slotWrites <= 2, `60 draft inputs need <=2 slot writes; observed ${record.candidate.slotWrites}`); assert.ok(record.candidate.totalWrites <= 3, 'Active-slot preference is not rewritten for every keystroke');
         assert.equal(record.candidate.noOpWrites, 0, 'Unchanged input creates no redundant persistence');
-        if (record.baseline) assert.ok(record.candidate.totalWrites < record.baseline.totalWrites, 'Measured candidate makes strictly fewer writes than immutable baseline');
+        // 最適化済みの基準にも同じ上限を守る。毎回の公開で追加の削減を要求しない。
+        if (record.baseline) assert.ok(record.candidate.totalWrites <= record.baseline.totalWrites, 'Measured candidate never increases writes over immutable baseline');
     }, { storage: seeds(), observeStorage: true });
 }
 
