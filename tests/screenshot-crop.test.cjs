@@ -10,6 +10,7 @@ const preview = require('../screenshot-crop/preview.js');
 const zip = require('../screenshot-crop/zip.js');
 const deviceProfiles = require('../screenshot-crop/device-profiles.js');
 const cropPresets = require('../screenshot-crop/crop-presets.js');
+const redaction = require('../screenshot-crop/redaction.js');
 
 test('デフォルトの処理辺は上だけ', () => {
   assert.deepEqual(logic.defaultEdges(), {
@@ -94,7 +95,7 @@ test('境界候補がある場合はスマホ自動判定へ反映する', () =>
   assert.ok(result.crop.bottom > 74);
 });
 
-test('通常画面は辺選択と保存に絞り、高度機能は詳細設定へ畳む', () => {
+test('通常画面は端カットを主役にし、任意の隠す操作は折りたたむ', () => {
   const html = fs.readFileSync(path.join(ROOT, 'screenshot-crop', 'index.html'), 'utf8');
 
   assert.match(html, /id="edgeTop"[^>]*checked/);
@@ -112,8 +113,10 @@ test('通常画面は辺選択と保存に絞り、高度機能は詳細設定�
   assert.doesNotMatch(html, /data-effect=/);
   assert.doesNotMatch(html, /rememberSettings/);
   assert.doesNotMatch(html, /おすすめ/);
-  assert.doesNotMatch(html, /ぼかす/);
-  assert.doesNotMatch(html, /黒で隠す/);
+  assert.match(html, /id="redactionPanel"/);
+  assert.match(html, /data-redaction-tool="black"/);
+  assert.match(html, /data-redaction-tool="blur"/);
+  assert.doesNotMatch(html, /id="redactionPanel"[^>]*open/);
 });
 
 test('通常UIは説明の重複を減らし、判定詳細を詳細設定へ退避する', () => {
@@ -160,7 +163,7 @@ test('高速アクションUIは通常画面を増やしすぎず、対応時だ
   assert.match(script, /navigator\.clipboard\?\.write/);
   assert.match(script, /new window\.ClipboardItem\(\{ 'image\/png': blobPromise \}\)/);
   assert.match(script, /document\.body\.classList\.toggle\('has-editor'/);
-  assert.match(script, /自動調整済み。このまま保存できます/);
+  assert.match(script, /切り取り位置を確認して保存/);
   assert.match(script, /枚を個別保存/);
   assert.match(script, /枚を1つにまとめる（ZIP）/);
   assert.match(imageSource, /options\.mime \|\| outputMime\(file\)/);
@@ -189,6 +192,31 @@ test('複数枚選択と一括ZIP保存のUIを持つ', () => {
   assert.match(zipSource, /crc32/);
   assert.doesNotMatch(html, /jszip/i);
   assert.doesNotMatch(script, /JSZip/);
+});
+
+test('隠す範囲は逆向きドラッグと画像外を安全に正規化する', () => {
+  assert.deepEqual(
+    redaction.normalizeRedaction({ x: 90, y: 80 }, { x: -10, y: 20 }, 100, 100, 'blur'),
+    { x: 0, y: 20, width: 90, height: 60, mode: 'blur' },
+  );
+  assert.equal(
+    redaction.normalizeRedaction({ x: 10, y: 10 }, { x: 12, y: 12 }, 100, 100, 'black'),
+    null,
+  );
+});
+
+test('隠す範囲はクロップ後の出力座標へクリップして投影する', () => {
+  assert.deepEqual(
+    redaction.projectRedaction(
+      { x: 0, y: 40, width: 100, height: 80, mode: 'black' },
+      { top: 50, right: 0, bottom: 0, left: 20 },
+      200,
+      200,
+      180,
+      150,
+    ),
+    { x: 0, y: 0, width: 80, height: 70, mode: 'black' },
+  );
 });
 
 test('CRC32は既知値を返す', () => {
@@ -302,13 +330,14 @@ test('PWA manifestはスクショ端カット専用scopeとstandalone起動を�
 test('PWA Service Workerはツール本体をプリキャッシュし、scope外を横取りしない', () => {
   const sw = fs.readFileSync(path.join(ROOT, 'screenshot-crop', 'sw.js'), 'utf8');
 
-  assert.match(sw, /screenshot-crop-static-20261003-v7-startup/);
+  assert.match(sw, /screenshot-crop-static-[^']+/);
   assert.match(sw, /APP_SCOPE_PATH = '\/screenshot-crop\/'/);
   assert.match(sw, /'\.\/index\.html'/);
   assert.match(sw, /'\.\/style\.css'/);
   assert.match(sw, /'\.\/core\.js'/);
   assert.match(sw, /'\.\/device-profiles\.js'/);
   assert.match(sw, /'\.\/crop-presets\.js'/);
+  assert.match(sw, /'\.\/redaction\.js'/);
   assert.match(sw, /'\.\/image\.js'/);
   assert.match(sw, /'\.\/preview\.js'/);
   assert.match(sw, /'\.\/zip\.js'/);
@@ -360,7 +389,7 @@ test('公開HTMLはプライバシー・SEO・アクセシビリティ契約を�
 });
 
 test('画像本体は通信・永続保存せず、切り取り位置だけ端末内に保存する', () => {
-  const processingFiles = ['core.js', 'image.js', 'preview.js', 'zip.js', 'script.js'].map((name) =>
+  const processingFiles = ['core.js', 'redaction.js', 'image.js', 'preview.js', 'zip.js', 'script.js'].map((name) =>
     fs.readFileSync(path.join(ROOT, 'screenshot-crop', name), 'utf8')
   );
   const source = processingFiles.join('\n');
@@ -375,6 +404,7 @@ test('画像本体は通信・永続保存せず、切り取り位置だけ端�
   assert.doesNotMatch(source, /sendBeacon/);
   assert.doesNotMatch(source, /WebSocket/);
   assert.match(source, /canvas\.toBlob/);
+  assert.match(source, /EXIF\/GPS\/camera metadata is not inherited/);
   assert.match(source, /pagehide/);
 
   assert.match(profileSource, /localStorage/);
@@ -391,19 +421,22 @@ test('ロジック・ZIP・UIを分離して読み込む', () => {
   assert.match(html, /\.\/core\.js/);
   assert.match(html, /\.\/device-profiles\.js/);
   assert.match(html, /\.\/crop-presets\.js/);
+  assert.match(html, /\.\/redaction\.js/);
   assert.match(html, /\.\/image\.js/);
   assert.match(html, /\.\/preview\.js/);
   assert.match(html, /\.\/zip\.js/);
   assert.match(html, /\.\/script\.js/);
   assert.ok(html.indexOf('./core.js') < html.indexOf('./device-profiles.js'));
   assert.ok(html.indexOf('./device-profiles.js') < html.indexOf('./crop-presets.js'));
-  assert.ok(html.indexOf('./crop-presets.js') < html.indexOf('./image.js'));
+  assert.ok(html.indexOf('./crop-presets.js') < html.indexOf('./redaction.js'));
+  assert.ok(html.indexOf('./redaction.js') < html.indexOf('./image.js'));
   assert.ok(html.indexOf('./image.js') < html.indexOf('./preview.js'));
   assert.ok(html.indexOf('./preview.js') < html.indexOf('./zip.js'));
   assert.ok(html.indexOf('./zip.js') < html.indexOf('./script.js'));
   assert.match(script, /window\.ScreenshotCropCore/);
   assert.match(script, /window\.ScreenshotCropDeviceProfiles/);
   assert.match(script, /window\.ScreenshotCropPresets/);
+  assert.match(script, /window\.ScreenshotCropRedaction/);
   assert.match(script, /window\.ScreenshotCropImage/);
   assert.match(script, /window\.ScreenshotCropPreview/);
   assert.match(script, /window\.ScreenshotCropZip/);
@@ -696,7 +729,6 @@ test('同一バッチでは直近の手動調整値を同系統の次画像へ�
   assert.match(script, /item\.manualTouched \|\| item\.saved/);
   assert.match(script, /recordManualBatchAdjustment\(state\.draggingEdge\)/);
   assert.match(script, /recordManualBatchAdjustment\(edge\)/);
-  assert.match(script, /前の画像で調整した位置に合わせました/);
 });
 
 test('複数画像はZIPと通常画像の個別保存を選べる', () => {
@@ -897,4 +929,243 @@ test('FAQは個別保存・ZIP保存とプリセット消失条件を現在仕�
   assert.match(html, /ブラウザのサイトデータやストレージを削除した場合/);
   assert.match(html, /ブラウザや端末を変更・初期化した場合/);
   assert.match(html, /バックアップ・復元・端末間同期には対応していません/);
+});
+
+
+function redactionCanvas(width, height, withFilter = true) {
+  const calls = [];
+  const context = {
+    save() {}, restore() {}, beginPath() {}, rect() {}, clip() {},
+    fillRect(...args) { calls.push(['fill', ...args]); },
+    drawImage(...args) { calls.push(['draw', this.filter, ...args]); },
+  };
+  if (withFilter) context.filter = 'none';
+  const ownerDocument = { createElement() {
+    return { getContext: () => ({ drawImage() {} }) };
+  } };
+  return { width, height, ownerDocument, getContext: () => context, calls };
+}
+
+test('ぼかしは表示倍率によらず元画像上の同じ半径になる', () => {
+  for (const size of [8, 60, 160, 400]) {
+    const mask = { x: 200, y: 300, width: 400, height: size, mode: 'blur' };
+    const expected = Math.max(12, Math.min(28, Math.round(size / 5)));
+    for (const scale of [0.1, 0.25, 0.5, 1, 2]) {
+      const canvas = redactionCanvas(1080 * scale, 2400 * scale);
+      redaction.applyRedactions(canvas, [mask], { sourceWidth: 1080, sourceHeight: 2400 });
+      assert.equal(canvas.calls[0][1], `blur(${expected * scale}px)`);
+    }
+  }
+});
+
+test('クロップ境界でマスクが細片になってもぼかし半径を弱めない', () => {
+  const canvas = redactionCanvas(1080, 1960);
+  redaction.applyRedactions(canvas, [
+    { x: 200, y: 300, width: 400, height: 160, mode: 'blur' },
+  ], { sourceWidth: 1080, sourceHeight: 2400, crop: { top: 440, bottom: 0, left: 0, right: 0 } });
+  assert.equal(canvas.calls[0][1], 'blur(28px)');
+});
+
+test('ぼかし非対応時のモザイクも表示倍率によらず同じ分割数を保つ', () => {
+  for (const scale of [0.1, 0.25, 0.5, 1, 2]) {
+    const canvas = redactionCanvas(1080 * scale, 2400 * scale, false);
+    redaction.applyRedactions(canvas, [
+      { x: 200, y: 300, width: 400, height: 160, mode: 'blur' },
+    ], { sourceWidth: 1080, sourceHeight: 2400 });
+    const draw = canvas.calls[0];
+    assert.equal(draw[5], 25);
+    assert.equal(draw[6], 10);
+  }
+});
+
+test('黒塗りはフィルターを使わず投影領域を不透明色で塗る', () => {
+  const canvas = redactionCanvas(270, 600);
+  redaction.applyRedactions(canvas, [{ x: 200, y: 300, width: 400, height: 160, mode: 'black' }],
+    { sourceWidth: 1080, sourceHeight: 2400 });
+  assert.deepEqual(canvas.calls, [['fill', 50, 75, 100, 40]]);
+  assert.equal(canvas.getContext().fillStyle, '#111827');
+});
+
+
+test('空または不正なキャンバス寸法では無限大のモザイクを作らない', () => {
+  for (const [width, height] of [[0, 100], [100, 0], [0, 0], [-1, 100], [NaN, 100], [100, Infinity]]) {
+    for (const mode of ['black', 'blur']) {
+      const canvas = redactionCanvas(width, height, false);
+      assert.equal(redaction.applyRedactions(canvas, [
+        { x: 0, y: 0, width: 100, height: 100, mode },
+      ]), canvas);
+      assert.deepEqual(canvas.calls, []);
+    }
+  }
+});
+
+test('元寸法・クロップが非有限でも描画引数を有限値に保つ', () => {
+  const canvas = redactionCanvas(270, 600);
+  redaction.applyRedactions(canvas, [{ x: 0, y: 0, width: 400, height: 160, mode: 'blur' }], {
+    sourceWidth: NaN, sourceHeight: Infinity,
+    crop: { top: NaN, right: Infinity, bottom: -Infinity, left: 0 },
+  });
+  assert.equal(canvas.calls[0][1], 'blur(28px)');
+  for (const value of canvas.calls[0].slice(3)) assert.ok(Number.isFinite(value));
+});
+
+// 実アプリの保存関数を実行し、画像処理とブラウザI/Oだけを差し替える。
+function saveFeedbackHarness(exporter, activationWait) {
+  const vm = require('node:vm');
+  const script = fs.readFileSync(path.join(ROOT, 'screenshot-crop/script.js'), 'utf8');
+  const window = {
+    activationWait,
+    ScreenshotCropCore: logic,
+    ScreenshotCropImage: { createDecodeCache: () => ({}), exportCroppedBlob: exporter },
+    ScreenshotCropPreview: {}, ScreenshotCropZip: {}, ScreenshotCropRedaction: {},
+    ScreenshotCropDeviceProfiles: { loadProfiles: () => [] },
+    ScreenshotCropPresets: { loadPresets: () => [] },
+  };
+  const context = vm.createContext({ window, document: { addEventListener() {} }, console: { error() {} } });
+  vm.runInContext(script.replace(/\}\)\(\);\s*$/, `
+    storeCurrentItemState = () => {};
+    rememberSuccessfulItems = () => {};
+    updateBatchUI = () => {};
+    triggerDownload = () => { window.downloads = (window.downloads || 0) + 1; };
+    activateItem = async (index) => { state.activationToken++; state.currentIndex = index; setMessage(els.exportMessage, ''); await window.activationWait?.(); };
+    window.testApi = { state, els, saveImage, updateEditState, setMessage };
+  })();`), context);
+  const api = window.testApi;
+  function element(text = '') {
+    return { textContent: text, dataset: {}, hidden: false, disabled: false, attributes: {},
+      setAttribute(name, value) { this.attributes[name] = value; },
+      removeAttribute(name) { delete this.attributes[name]; } };
+  }
+  Object.assign(api.els, {
+    saveButton: element('画像を保存'), quickSaveButton: element('保存'),
+    exportMessage: element(), quickSaveMessage: element(), readyHint: element(), editState: element(),
+  });
+  api.state.items = [{ file: {} }];
+  api.state.currentIndex = 0;
+  api.state.image = {};
+  return { ...api, window };
+}
+
+test('調整方法によらず保存前に切り取り位置の確認を促す', () => {
+  const h = saveFeedbackHarness();
+  for (const scenario of [
+    { manualTouched: true }, { detected: 'generic' }, { detected: 'phone-portrait' },
+    { profileMatch: { matchType: 'profile' } }, { inheritedBatchAdjustment: true },
+  ]) {
+    h.state.manualTouched = Boolean(scenario.manualTouched);
+    h.state.detected = scenario.detected || 'phone-portrait';
+    Object.assign(h.state.items[0], { profileMatch: null, inheritedBatchAdjustment: false }, scenario);
+    h.updateEditState();
+    assert.match(h.els.readyHint.textContent, /位置.*確認.*保存/);
+    assert.doesNotMatch(h.els.readyHint.textContent, /このまま|そのまま/);
+  }
+  h.state.image = null;
+  h.updateEditState();
+  assert.match(h.els.readyHint.textContent, /調整中/);
+});
+
+test('保存中は両ボタンを無効化し連打を防ぎ、完了をドックへ反映する', async () => {
+  let finish;
+  let calls = 0;
+  const h = saveFeedbackHarness(() => { calls++; return new Promise(resolve => { finish = resolve; }); });
+  const first = h.saveImage();
+  assert.equal(h.els.quickSaveMessage.dataset.tone, 'info');
+  assert.equal(h.els.quickSaveMessage.hidden, false);
+  for (const b of [h.els.saveButton, h.els.quickSaveButton]) {
+    assert.equal(b.disabled, true);
+    assert.equal(b.attributes['aria-busy'], 'true');
+  }
+  await h.saveImage();
+  assert.equal(calls, 1);
+  finish({ blob: {}, name: 'crop.png' });
+  await first;
+  assert.equal(h.window.downloads, 1);
+  assert.equal(h.els.quickSaveMessage.dataset.tone, 'success');
+  assert.equal(h.els.quickSaveButton.textContent, '保存');
+  assert.equal(h.els.saveButton.textContent, '画像を保存');
+  assert.equal(h.els.quickSaveButton.disabled, false);
+  assert.equal(h.els.quickSaveButton.attributes['aria-busy'], undefined);
+  h.setMessage(h.els.exportMessage, '');
+  assert.equal(h.els.quickSaveMessage.hidden, true);
+  assert.equal(h.els.quickSaveMessage.textContent, '');
+});
+
+test('保存失敗を表示し再試行でき、別操作で古い保存結果を消す', async () => {
+  let fail = true;
+  const h = saveFeedbackHarness(async () => { if (fail) throw new Error('export'); return { blob: {}, name: 'crop.png' }; });
+  await h.saveImage();
+  assert.equal(h.els.quickSaveMessage.dataset.tone, 'error');
+  assert.match(h.els.quickSaveMessage.textContent, /失敗/);
+  assert.equal(h.els.quickSaveButton.disabled, false);
+  fail = false;
+  await h.saveImage();
+  assert.equal(h.els.quickSaveMessage.dataset.tone, 'success');
+  h.setMessage(h.els.exportMessage, 'コピー中', 'info');
+  assert.equal(h.els.quickSaveMessage.hidden, true);
+});
+
+test('次画像へ進んだ後も直前の保存結果を表示する', async () => {
+  const h = saveFeedbackHarness(async () => ({ blob: {}, name: 'crop.png' }));
+  h.state.items.push({ file: {} });
+  await h.saveImage();
+  assert.equal(h.state.currentIndex, 1);
+  assert.equal(h.els.quickSaveMessage.dataset.tone, 'success');
+  assert.match(h.els.quickSaveMessage.textContent, /1枚目.*次の画像/);
+});
+
+test('ドックの保存表示は読み上げを重複させず高さを抑える', () => {
+  const html = fs.readFileSync(path.join(ROOT, 'screenshot-crop/index.html'), 'utf8');
+  const css = fs.readFileSync(path.join(ROOT, 'screenshot-crop/style.css'), 'utf8');
+  const tag = html.match(/<p[^>]*id="quickSaveMessage"[^>]*>/)[0];
+  assert.match(tag, /aria-hidden="true"/);
+  assert.doesNotMatch(tag, /role=|aria-live=/);
+  assert.match(html, /id="exportMessage"[^>]*role="status"/);
+  const rule = css.match(/\.quick-save-message\s*\{([^}]+)\}/)[1];
+  assert.match(rule, /white-space: nowrap/);
+  assert.match(rule, /text-overflow: ellipsis/);
+  assert.match(css, /padding-bottom: calc\(120px \+ env\(safe-area-inset-bottom\)\)/);
+  assert.match(css, /padding-bottom: 112px/);
+});
+
+test('保存途中の画像切替・編集後に古い成功や失敗を表示しない', async () => {
+  for (const switchImage of [false, true]) {
+    for (const fail of [false, true]) {
+      let finish, reject;
+      const h = saveFeedbackHarness(() => new Promise((resolve, rejectPromise) => { finish = resolve; reject = rejectPromise; }));
+      h.state.items.push({ file: {} });
+      const pending = h.saveImage();
+      if (switchImage) {
+        h.state.currentIndex = 1;
+        h.state.activationToken++;
+      }
+      h.setMessage(h.els.exportMessage, '');
+      if (fail) reject(new Error('export'));
+      else finish({ blob: {}, name: 'crop.png' });
+      await pending;
+      assert.equal(h.els.quickSaveMessage.hidden, true);
+      assert.equal(h.els.exportMessage.textContent, '');
+      assert.equal(h.els.quickSaveButton.disabled, false);
+      assert.equal(h.state.currentIndex, switchImage ? 1 : 0);
+      assert.equal(h.state.items[0].saved, undefined);
+    }
+  }
+});
+
+test('次画像の読み込み待ち中も新しい案内を保存完了で上書きしない', async () => {
+  let finishActivation, started;
+  const activationStarted = new Promise(resolve => { started = resolve; });
+  const h = saveFeedbackHarness(
+    async () => ({ blob: {}, name: 'crop.png' }),
+    () => new Promise(resolve => { finishActivation = resolve; started(); }),
+  );
+  h.state.items.push({ file: {} });
+  const pending = h.saveImage();
+  await activationStarted;
+  assert.equal(h.state.currentIndex, 1);
+  h.setMessage(h.els.exportMessage, 'コピー中', 'info');
+  finishActivation();
+  await pending;
+  assert.equal(h.els.exportMessage.textContent, 'コピー中');
+  assert.equal(h.els.quickSaveMessage.hidden, true);
+  assert.equal(h.els.quickSaveButton.disabled, false);
 });

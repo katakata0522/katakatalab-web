@@ -448,6 +448,7 @@ input:focus-visible {
 }
 
 .quick-action-dock {
+  flex-wrap: wrap;
   position: fixed;
   z-index: 90;
   display: none;
@@ -459,6 +460,18 @@ input:focus-visible {
   background: rgba(255, 255, 255, .96);
   box-shadow: 0 12px 32px rgba(15, 23, 42, .18);
   backdrop-filter: blur(14px);
+}
+
+.quick-save-message {
+  flex: 0 0 100%;
+  min-width: 0;
+  min-height: 0;
+  margin: 0;
+  font-size: .75rem;
+  line-height: 1.4;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .quick-action-dock[hidden] {
@@ -1464,7 +1477,7 @@ body.has-editor .page-shell {
   }
 
   body.has-editor .page-shell {
-    padding-bottom: calc(96px + env(safe-area-inset-bottom));
+    padding-bottom: calc(120px + env(safe-area-inset-bottom));
   }
 
   body.has-editor .editor-section {
@@ -1798,7 +1811,7 @@ body.has-editor .page-shell {
   }
 
   body.has-editor .page-shell {
-    padding-bottom: 88px;
+    padding-bottom: 112px;
   }
 
   body.has-editor .quick-action-dock:not([hidden]) {
@@ -1845,7 +1858,7 @@ body.has-editor .page-shell {
 .profile-toast {
   position: fixed;
   left: 50%;
-  bottom: calc(88px + env(safe-area-inset-bottom, 0px));
+  bottom: calc(112px + env(safe-area-inset-bottom, 0px));
   z-index: 1200;
   width: min(560px, calc(100vw - 28px));
   padding: 14px 16px;
@@ -1879,4 +1892,56 @@ body.has-editor .page-shell {
   .profile-toast {
     transition: none;
   }
+}
+
+
+/* Optional privacy masking: collapsed so edge cropping remains the primary workflow. */
+.redaction-panel { border-color: var(--line); }
+.redaction-panel summary { align-items: center; }
+
+.redaction-panel-body { padding: 0 18px 18px; }
+
+.redaction-help,
+.redaction-safety {
+  margin: 0;
+  color: var(--muted);
+  font-size: .76rem;
+  line-height: 1.6;
+}
+
+.redaction-tools {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.redaction-tool.is-active {
+  border-color: var(--action);
+  background: #eef4ff;
+  color: var(--action);
+}
+
+.redaction-actions {
+  display: flex;
+  gap: 14px;
+  align-items: center;
+  margin-top: 10px;
+}
+
+.redaction-count {
+  margin-left: auto;
+  padding: 3px 8px;
+  border-radius: 999px;
+  background: #eef4ff;
+  color: var(--action);
+  font-size: .7rem;
+  font-weight: 800;
+}
+
+.redaction-safety { margin-top: 8px; }
+
+@media (max-width: 520px) {
+  .redaction-panel-body { padding: 0 14px 14px; }
+  .redaction-actions { justify-content: space-between; }
 }
