@@ -243,7 +243,9 @@ test('掲載済み小型ツールの既知不備を防ぐ', () => {
   assert.match(discountCss, /\.discount-item/);
   assert.doesNotMatch(discountCss, /これまでのCSSはそのまま維持|Variables等省略/);
   assert.match(discountJs, /!navigator\.clipboard \|\| !navigator\.clipboard\.writeText/);
-  assert.match(discountJs, /li\.tabIndex = 0;/);
+  // Approved flow uses explicit native rate buttons; rows no longer copy on tap.
+  assert.match(discountJs, /class="col-rate btn-select-rate"/);
+  assert.doesNotMatch(discountJs, /li\.tabIndex = 0;/);
   assert.match(textDiffJs, /typeof Diff === 'undefined'/);
   assert.match(ogpJs, /MAX_IMAGE_BYTES:\s*10 \* 1024 \* 1024/);
   assert.match(ogpJs, /file\.size > CONFIG\.MAX_IMAGE_BYTES/);

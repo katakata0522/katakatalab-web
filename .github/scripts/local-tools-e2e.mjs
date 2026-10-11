@@ -535,6 +535,24 @@ if (!given) {
       assert.equal(await page.title(), first, app+': 同じ入口をオフライン表示');
       assert.equal(await page.evaluate(() => localStorage.getItem('pwa-audit-sentinel')), 'keep');
       assert.ok((await page.locator('body').textContent()).trim().length > 20);
+      if (app === '/lab-tools/gravity-todo/') {
+        // Canvasより上の常設ボタンを実クリックし、pointer-events継承の回帰を検出する。
+        await page.waitForFunction(() => document.querySelector('#task-count').textContent === '3');
+        await page.locator('#task-input').fill('履歴ボタン検証');
+        await page.locator('#task-input').press('Enter');
+        const task = page.locator('.task-list-item').filter({hasText:'履歴ボタン検証'});
+        await task.locator('[data-action="destroy"]').click();
+        await page.locator('#undo-btn').click();
+        await task.waitFor({state:'visible'});
+        await page.locator('#redo-btn').click();
+        await task.waitFor({state:'detached'});
+        await page.locator('#undo-btn').click();
+        await task.waitFor({state:'visible'});
+          await page.locator('#save-status').waitFor({state:'hidden'});
+        await page.reload({waitUntil:'domcontentloaded'});
+        await task.waitFor({state:'visible'});
+        assert.equal(await page.locator('#task-count').textContent(), '1', 'デモを保存せず実タスクだけ復元');
+      }
       console.log(JSON.stringify({app,offlineLaunch:'PASS',stalledAnalytics:'PASS',storagePreserved:'PASS'}));
     } finally { await context.close(); }
   }

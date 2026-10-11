@@ -29,7 +29,24 @@
         try {
             const item = localStorage.getItem(key);
             if (!item) return defaultValue;
-            return JSON.parse(item);
+            const parsed = JSON.parse(item);
+            const normalize = (value, fallback) => {
+                if (Array.isArray(fallback)) {
+                    if (!Array.isArray(value)) return [];
+                    if (key === 'smile_placed_stickers') return value.filter(sticker =>
+                        sticker && typeof sticker.id === 'string' && typeof sticker.emoji === 'string' &&
+                        Number.isFinite(sticker.x) && Number.isFinite(sticker.y));
+                    return value.filter(sticker => typeof sticker === 'string' && sticker.length > 0);
+                }
+                if (fallback && typeof fallback === 'object') {
+                    const object = value && typeof value === 'object' && !Array.isArray(value) ? value : {};
+                    return Object.fromEntries(Object.entries(fallback).map(([name, initial]) => [name, normalize(object[name], initial)]));
+                }
+                if (typeof fallback === 'number') return Number.isSafeInteger(value) && value >= 0 ? value : fallback;
+                if (typeof fallback === 'boolean') return typeof value === 'boolean' ? value : fallback;
+                return typeof value === typeof fallback ? value : fallback;
+            };
+            return normalize(parsed, defaultValue);
         } catch (e) {
             console.error(`LocalStorage parse error for key "${key}":`, e);
             // 破損しているデータを検知した場合はデフォルト値で上書き自己修復
@@ -117,15 +134,105 @@
     });
 
     // Web Audio API 初期化
+    let soundEnabled = false;
+    let soundEpoch = 0;
+    let audioOutput = null;
+    const activeSoundNodes = new Set();
+    let soundHoldTimer = null;
+    let suppressSoundClick = false;
     let audioCtx;
+    function createSoundOscillator() {
+        const node = audioCtx.createOscillator();
+        activeSoundNodes.add(node);
+        node.onended = () => activeSoundNodes.delete(node);
+        return node;
+    }
+    function syncSoundControl() {
+        const button = document.getElementById('btn-sound');
+        if (button) { button.textContent = soundEnabled ? '音をとめる' : '音をオン（長押し）'; button.setAttribute('aria-pressed', String(soundEnabled)); }
+    }
+    function enableSound() {
+        soundEnabled = true;
+        initAudio();
+        if (audioOutput) audioOutput.gain.value = 1;
+        syncSoundControl();
+        const options = document.getElementById('sound-options');
+        if (options) options.open = false;
+    }
+    function stopSound() {
+        soundEnabled = false;
+        soundEpoch++;
+        if (audioOutput) audioOutput.gain.value = 0;
+        activeSoundNodes.forEach(node => { try { node.stop(); node.disconnect(); } catch (_) {} });
+        activeSoundNodes.clear();
+        if (window.speechSynthesis) window.speechSynthesis.cancel();
+        clearTimeout(soundHoldTimer);
+        // Invalidate any already-armed next click, while leaving the achievement readable.
+        rewardPointerToken = null;
+        if (pendingNextActivity) pendingNextActivity = { ...pendingNextActivity };
+        syncSoundControl();
+    }
+    function bindSoundControls() {
+        const button = document.getElementById('btn-sound');
+        if (!button) return;
+        let pointer = null, start = null, ready = false;
+        const cancel = (clearClick = true) => {
+            clearTimeout(soundHoldTimer); soundHoldTimer = null;
+            pointer = null; start = null; ready = false;
+            if (clearClick) suppressSoundClick = false;
+        };
+        button.addEventListener('pointerdown', event => {
+            // Each genuinely new press may always stop sound with one click.
+            suppressSoundClick = false;
+            if (pointer !== null) { cancel(); return; }
+            if (soundEnabled || (event.button !== undefined && event.button !== 0) || event.isPrimary === false) return;
+            pointer = event.pointerId ?? 'mouse';
+            start = { x: event.clientX, y: event.clientY };
+            ready = false;
+            button.setPointerCapture?.(event.pointerId);
+            soundHoldTimer = setTimeout(() => { ready = true; }, 700);
+        });
+        button.addEventListener('pointermove', event => {
+            if (pointer === null) return;
+            if ((event.pointerId ?? 'mouse') !== pointer || Math.hypot(event.clientX - start.x, event.clientY - start.y) > 8) cancel();
+        });
+        button.addEventListener('pointerup', event => {
+            if (pointer === null || (event.pointerId ?? 'mouse') !== pointer) { cancel(); return; }
+            const rect = button.getBoundingClientRect();
+            const inside = !Number.isFinite(rect.left) || (event.clientX >= rect.left && event.clientX <= rect.right && event.clientY >= rect.top && event.clientY <= rect.bottom);
+            const activate = ready && inside && Math.hypot(event.clientX - start.x, event.clientY - start.y) <= 8;
+            cancel();
+            if (activate) { enableSound(); suppressSoundClick = true; }
+        });
+        ['pointercancel','pointerleave'].forEach(name => button.addEventListener(name, () => cancel()));
+        button.addEventListener('lostpointercapture', () => { if (pointer !== null) cancel(); });
+        window.addEventListener?.('pointerdown', event => { if (pointer !== null && (event.pointerId ?? 'mouse') !== pointer) cancel(); });
+        window.addEventListener?.('blur', () => cancel());
+        window.addEventListener?.('pagehide', () => { cancel(); stopSound(); });
+        document.addEventListener?.('visibilitychange', () => { if (document.hidden) { cancel(); stopSound(); } });
+        button.addEventListener('click', event => {
+            if (suppressSoundClick && event.detail > 0) { suppressSoundClick = false; return; }
+            suppressSoundClick = false;
+            if (soundEnabled) { stopSound(); return; }
+            const options = document.getElementById('sound-options');
+            if (options) options.open = true;
+            document.getElementById('btn-enable-sound')?.focus();
+        });
+        document.getElementById('btn-enable-sound')?.addEventListener('click', enableSound);
+        syncSoundControl();
+    }
+
     let audioNotSupported = false;
     function initAudio() {
-        if (audioNotSupported) return;
+        if (!soundEnabled || audioNotSupported) return;
         // ブラウザの自動再生制限に従い、最初のタップ・クリックまでは生成も再開もしない
         if (navigator.userActivation && !navigator.userActivation.hasBeenActive) return;
         if (!audioCtx) {
             try {
                 audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                audioOutput = audioCtx.createGain();
+                audioOutput.gain.value = 1;
+                audioOutput.connect(audioCtx.destination);
             } catch (e) {
                 audioNotSupported = true;
                 console.error("Web Audio API is not supported on this device/browser.", e);
@@ -232,7 +339,7 @@
     }
 
     function speakText(text, pitchOffset = 1.0, rateOffset = 1.0) {
-        if (!window.speechSynthesis) return;
+        if (!soundEnabled || !window.speechSynthesis || smileVoiceVolume <= 0) return;
 
         // デバウンスガード（③ 幼児の超高速連打を防ぎ、キュー詰まりを防止）
         const now = Date.now();
@@ -268,6 +375,7 @@
 
     // --- 音響合成シンセシステム (Web Audio APIによる完全無料・安全なおもちゃ音) ---
     function synthSound(type) {
+        if (!soundEnabled) return;
         initAudio();
         if (!audioCtx) return;
         const now = audioCtx.currentTime;
@@ -278,7 +386,7 @@
                     const freqs = [350, 440, 523, 659, 880];
                     freqs.forEach((freq, idx) => {
                         const t = now + idx * 0.08;
-                        const osc = audioCtx.createOscillator();
+                        const osc = createSoundOscillator();
                         const gain = audioCtx.createGain();
                         osc.type = 'sine';
                         osc.frequency.setValueAtTime(freq, t);
@@ -287,7 +395,7 @@
                         gain.gain.exponentialRampToValueAtTime(0.001, t + 0.25);
                         
                         osc.connect(gain);
-                        gain.connect(audioCtx.destination);
+                        gain.connect(audioOutput);
                         osc.start(t);
                         osc.stop(t + 0.3);
                     });
@@ -295,7 +403,7 @@
 
                 case 'incorrect': // あれれ？ブブー不協和音
                     [150, 155].forEach(freq => {
-                        const osc = audioCtx.createOscillator();
+                        const osc = createSoundOscillator();
                         const gain = audioCtx.createGain();
                         osc.type = 'sawtooth';
                         osc.frequency.setValueAtTime(freq, now);
@@ -304,14 +412,14 @@
                         gain.gain.exponentialRampToValueAtTime(0.001, now + 0.45);
                         
                         osc.connect(gain);
-                        gain.connect(audioCtx.destination);
+                        gain.connect(audioOutput);
                         osc.start(now);
                         osc.stop(now + 0.5);
                     });
                     break;
 
                 case 'stamp': // シールペタ
-                    const oscS = audioCtx.createOscillator();
+                    const oscS = createSoundOscillator();
                     const gainS = audioCtx.createGain();
                     oscS.type = 'sine';
                     oscS.frequency.setValueAtTime(800, now);
@@ -319,7 +427,7 @@
                     gainS.gain.setValueAtTime(0.15 * smileSynthVolume, now);
                     gainS.gain.exponentialRampToValueAtTime(0.001, now + 0.12);
                     oscS.connect(gainS);
-                    gainS.connect(audioCtx.destination);
+                    gainS.connect(audioOutput);
                     oscS.start(now);
                     oscS.stop(now + 0.15);
                     break;
@@ -331,6 +439,7 @@
 
     // どうぶつなきごえシンセ
     function playAnimalSynth(animal) {
+        if (!soundEnabled) return;
         initAudio();
         if (!audioCtx) return;
         const now = audioCtx.currentTime;
@@ -340,7 +449,7 @@
                 case 'dog': // キャンキャン！
                     for (let i = 0; i < 2; i++) {
                         const t = now + i * 0.22;
-                        const osc = audioCtx.createOscillator();
+                        const osc = createSoundOscillator();
                         const gain = audioCtx.createGain();
                         osc.type = 'triangle';
                         osc.frequency.setValueAtTime(320, t);
@@ -352,15 +461,15 @@
                         gain.gain.exponentialRampToValueAtTime(0.001, t + 0.18);
                         
                         osc.connect(gain);
-                        gain.connect(audioCtx.destination);
+                        gain.connect(audioOutput);
                         osc.start(t);
                         osc.stop(t + 0.2);
                     }
                     break;
 
                 case 'cat': // ニャーオ
-                    const oscC = audioCtx.createOscillator();
-                    const oscC2 = audioCtx.createOscillator();
+                    const oscC = createSoundOscillator();
+                    const oscC2 = createSoundOscillator();
                     const gainC = audioCtx.createGain();
                     
                     oscC.type = 'triangle';
@@ -379,7 +488,7 @@
                     
                     oscC.connect(gainC);
                     oscC2.connect(gainC);
-                    gainC.connect(audioCtx.destination);
+                    gainC.connect(audioOutput);
                     oscC.start(now);
                     oscC2.start(now);
                     oscC.stop(now + 0.7);
@@ -387,7 +496,7 @@
                     break;
 
                 case 'lion': // ガオーン！
-                    const oscL = audioCtx.createOscillator();
+                    const oscL = createSoundOscillator();
                     const filterL = audioCtx.createBiquadFilter();
                     const gainL = audioCtx.createGain();
                     
@@ -396,7 +505,7 @@
                     oscL.frequency.linearRampToValueAtTime(140, now + 0.2);
                     oscL.frequency.exponentialRampToValueAtTime(55, now + 0.85);
                     
-                    const lfo = audioCtx.createOscillator();
+                    const lfo = createSoundOscillator();
                     const lfoGain = audioCtx.createGain();
                     lfo.frequency.value = 28;
                     lfoGain.gain.value = 16;
@@ -414,7 +523,7 @@
                     
                     oscL.connect(filterL);
                     filterL.connect(gainL);
-                    gainL.connect(audioCtx.destination);
+                    gainL.connect(audioOutput);
                     
                     lfo.start(now);
                     oscL.start(now);
@@ -423,8 +532,8 @@
                     break;
 
                 case 'elephant': // パオーン！
-                    const oscE1 = audioCtx.createOscillator();
-                    const oscE2 = audioCtx.createOscillator();
+                    const oscE1 = createSoundOscillator();
+                    const oscE2 = createSoundOscillator();
                     const filterE = audioCtx.createBiquadFilter();
                     const gainE = audioCtx.createGain();
                     
@@ -438,7 +547,7 @@
                     oscE2.frequency.linearRampToValueAtTime(494, now + 0.12);
                     oscE2.frequency.exponentialRampToValueAtTime(324, now + 0.6);
                     
-                    const vib = audioCtx.createOscillator();
+                    const vib = createSoundOscillator();
                     const vibGain = audioCtx.createGain();
                     vib.frequency.value = 38;
                     vibGain.gain.value = 28;
@@ -459,7 +568,7 @@
                     oscE1.connect(filterE);
                     oscE2.connect(filterE);
                     filterE.connect(gainE);
-                    gainE.connect(audioCtx.destination);
+                    gainE.connect(audioOutput);
                     
                     vib.start(now);
                     oscE1.start(now);
@@ -472,7 +581,7 @@
                 case 'frog': // ケロケロケロ
                     for (let i = 0; i < 4; i++) {
                         const t = now + i * 0.11;
-                        const oscF = audioCtx.createOscillator();
+                        const oscF = createSoundOscillator();
                         const gainF = audioCtx.createGain();
                         oscF.type = 'sawtooth';
                         oscF.frequency.setValueAtTime(140, t);
@@ -484,7 +593,7 @@
                         gainF.gain.exponentialRampToValueAtTime(0.001, t + 0.075);
                         
                         oscF.connect(gainF);
-                        gainF.connect(audioCtx.destination);
+                        gainF.connect(audioOutput);
                         oscF.start(t);
                         oscF.stop(t + 0.08);
                     }
@@ -514,7 +623,31 @@
     // --- タブ切り替えシステム ---
     let currentTab = 'home';
 
+    let pendingNextActivity = null;
+    let rewardPointerToken = null;
+    let activityGeneration = 0;
+    const activityTimers = new Set();
+    function cancelActivityTimers() {
+        activityGeneration++;
+        activityTimers.forEach(clearTimeout);
+        activityTimers.clear();
+        pendingNextActivity = null;
+        rewardPointerToken = null;
+        const modal = document.getElementById('modal-sticker');
+        if (modal) modal.classList.add('hidden');
+    }
+    function scheduleActivity(callback, delay) {
+        const generation = activityGeneration;
+        const tab = currentTab;
+        const timer = setTimeout(() => {
+            activityTimers.delete(timer);
+            if (generation === activityGeneration && tab === currentTab) callback();
+        }, delay);
+        activityTimers.add(timer);
+    }
+
     function switchTab(tabId, options = {}) {
+        cancelActivityTimers();
         const silent = options.silent === true;
         if (!silent) initAudio();
         document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
@@ -586,6 +719,7 @@
             localStorage.setItem('smile_selected_bg', selectedBg);
         } catch (e) {
             console.error("Failed to save stickers to LocalStorage:", e);
+            showToast("この端末へ保存できていません。画面を閉じると今回のシールが失われる場合があります。");
         }
         updateStickerUI();
     }
@@ -602,6 +736,7 @@
             localStorage.setItem('smile_missions', JSON.stringify(smileMissions));
         } catch (e) {
             console.error("Failed to save settings to LocalStorage:", e);
+            showToast("この端末へ設定や記録を保存できていません。保護者の方と保存設定をご確認ください。");
         }
     }
 
@@ -646,6 +781,10 @@
 
     // シール獲得処理
     let pendingSticker = '🐶';
+    function setManualNext(callback) {
+        pendingNextActivity = { callback, tab: currentTab, generation: activityGeneration };
+        rewardPointerToken = null;
+    }
     function grantRewardSticker() {
         pendingSticker = ALL_SEALS[Math.floor(Math.random() * ALL_SEALS.length)];
         myStickers.push(pendingSticker);
@@ -662,7 +801,14 @@
 
         // モーダルオープン
         const modalEmoji = document.getElementById('get-sticker-emoji');
-        if (modalEmoji) modalEmoji.textContent = pendingSticker;
+        if (modalEmoji) {
+            modalEmoji.textContent = pendingSticker;
+            modalEmoji.classList.remove('reward-celebrate');
+            void modalEmoji.offsetWidth;
+            modalEmoji.classList.add('reward-celebrate');
+        }
+        const nextButton = document.getElementById('btn-close-sticker-modal');
+        if (nextButton) nextButton.textContent = pendingNextActivity ? 'つぎへ' : 'ありがとう！';
         const modal = document.getElementById('modal-sticker');
         if (modal) modal.classList.remove('hidden');
         
@@ -670,10 +816,17 @@
         synthSound('correct');
     }
 
-    function closeStickerModal() {
+    function closeStickerModal(event) {
+        if (pendingNextActivity && event?.detail !== 0 && rewardPointerToken !== pendingNextActivity) return;
+        const next = pendingNextActivity;
+        pendingNextActivity = null;
+        rewardPointerToken = null;
         const modal = document.getElementById('modal-sticker');
         if (modal) modal.classList.add('hidden');
-        updateNavigator('momo', "新しいシール、おめでとう！シールデコだいしに はれるよ！");
+        if (next && next.generation === activityGeneration && next.tab === currentTab) {
+            lastActionTime = Date.now();
+            next.callback();
+        } else if (!next) updateNavigator('momo', "新しいシール、おめでとう！シールデコだいしに はれるよ！");
     }
 
 
@@ -759,9 +912,13 @@
 
     // --- TAB 2: かずかぞえクイズ ---
     let currentCountAnswer = 0;
+    let countAnswered = false;
+    let countRoundGeneration = 0;
     const countEmojis = ['🍎', '🍌', '🍓', '🍊', '🎈', '🚗', '🐈', '🐶', '🍦', '🐧', '🐼', '🌻', '🥕', '🦖', '🍭'];
 
     function startCountQuiz() {
+        const round = ++countRoundGeneration;
+        countAnswered = false;
         const list = document.getElementById('count-items');
         const options = document.getElementById('count-options');
         if (!list || !options) return;
@@ -808,22 +965,25 @@
             const btn = document.createElement('button');
             btn.className = "btn-puni shadow-blue-200 bg-blue-500 hover:bg-blue-600 text-white font-black text-3xl py-4 rounded-3xl flex-1 border-2 border-white select-none";
             btn.textContent = val;
-            btn.onclick = () => handleCountAnswer(val);
+            btn.onclick = () => handleCountAnswer(val, round);
             options.appendChild(btn);
         });
     }
 
-    function handleCountAnswer(choice) {
+    function handleCountAnswer(choice, round = countRoundGeneration) {
+        if (currentTab !== 'count' || round !== countRoundGeneration) return;
+        if (countAnswered) return;
         // ③ デバウンスガード（ボタン連続高速タップの重複実行防止）
         const now = Date.now();
         if (now - lastActionTime < 400) return;
         lastActionTime = now;
 
         if (choice === currentCountAnswer) {
+            countAnswered = true;
             updateNavigator('pan', "大せいかい！ 素晴らしいね！");
             recordCorrect('count');
+            setManualNext(startCountQuiz);
             grantRewardSticker();
-            setTimeout(startCountQuiz, 2500);
         } else {
             updateNavigator('pan', "あれれ？ もう一かい かぞえてみよう！");
             synthSound('incorrect');
@@ -1082,8 +1242,12 @@
         { id: 'frog', name: 'かえる 🐸', emoji: '🐸' }
     ];
     let currentQuizAnswer = '';
+    let quizAnswered = false;
+    let quizRoundGeneration = 0;
 
     function startQuizGame() {
+        const round = ++quizRoundGeneration;
+        quizAnswered = false;
         const target = quizAnimals[Math.floor(Math.random() * quizAnimals.length)];
         currentQuizAnswer = target.id;
 
@@ -1104,7 +1268,7 @@
         choices.forEach(item => {
             const btn = document.createElement('button');
             btn.className = "btn-puni shadow-blue-100 bg-blue-50/55 hover:bg-blue-100 text-slate-800 p-4 rounded-3xl border-2 border-blue-200 flex flex-col items-center justify-center aspect-square gap-2 select-none";
-            btn.onclick = () => handleQuizAnswer(item.id);
+            btn.onclick = () => handleQuizAnswer(item.id, round);
             
             const emojiSpan = document.createElement('span');
             emojiSpan.className = "text-4xl md:text-5xl";
@@ -1120,24 +1284,29 @@
         });
 
         // 最初の鳴き声再生
-        setTimeout(playQuizVoice, 600);
+        const epoch = soundEpoch;
+        scheduleActivity(() => { if (epoch === soundEpoch) playQuizVoice(); }, 600);
     }
 
     function playQuizVoice() {
+        if (currentTab !== 'quiz') return;
         playAnimalSynth(currentQuizAnswer);
     }
 
-    function handleQuizAnswer(choice) {
+    function handleQuizAnswer(choice, round = quizRoundGeneration) {
+        if (currentTab !== 'quiz' || round !== quizRoundGeneration) return;
+        if (quizAnswered) return;
         // ③ デバウンスガード（ボタン連続高速タップの重複実行防止）
         const now = Date.now();
         if (now - lastActionTime < 400) return;
         lastActionTime = now;
 
         if (choice === currentQuizAnswer) {
+            quizAnswered = true;
             updateNavigator('leo', "すごいっ！おみごと大せいかい！");
             recordCorrect();
+            setManualNext(startQuizGame);
             grantRewardSticker();
-            setTimeout(startQuizGame, 2500);
         } else {
             updateNavigator('leo', "あれ？もう一度 おとを きいてみてね！");
             synthSound('incorrect');
@@ -1309,22 +1478,23 @@
     let currentOtoateTargetNote = 0;
 
     function playMokkinNote(freq) {
+        if (!soundEnabled) return;
         initAudio();
         if (!audioCtx) return;
         const now = audioCtx.currentTime;
         
         try {
             // 主波形
-            const osc1 = audioCtx.createOscillator();
+            const osc1 = createSoundOscillator();
             osc1.type = 'triangle';
             osc1.frequency.value = freq;
             
-            const osc2 = audioCtx.createOscillator();
+            const osc2 = createSoundOscillator();
             osc2.type = 'sine';
             osc2.frequency.value = freq * 2; // 倍音
             
             // コツッというアタック音
-            const oscClick = audioCtx.createOscillator();
+            const oscClick = createSoundOscillator();
             oscClick.type = 'sine';
             oscClick.frequency.setValueAtTime(freq * 6, now);
             oscClick.frequency.exponentialRampToValueAtTime(freq, now + 0.02);
@@ -1342,8 +1512,8 @@
             osc2.connect(gain);
             oscClick.connect(gainClick);
             
-            gain.connect(audioCtx.destination);
-            gainClick.connect(audioCtx.destination);
+            gain.connect(audioOutput);
+            gainClick.connect(audioOutput);
             
             osc1.start(now);
             osc2.start(now);
@@ -1882,6 +2052,9 @@
     };
 
     function triggerSleepMode() {
+        cancelActivityTimers();
+        countRoundGeneration++;
+        quizRoundGeneration++;
         const config = sleepReasonsTexts[smileSleepReason] || sleepReasonsTexts.eye;
         const titleEl = document.getElementById('sleep-title');
         const bodyEl = document.getElementById('sleep-body');
@@ -1940,12 +2113,16 @@
         const val = parseInt(normalized, 10);
 
         if (!isNaN(val) && val === parentAuthAnswer) {
+            const unlockSleep = isSleepUnlockFlow;
             closeParentModal();
-            if (isSleepUnlockFlow) {
+            if (unlockSleep) {
                 const sleepModal = document.getElementById('modal-sleep');
                 if (sleepModal) sleepModal.classList.add('hidden');
                 isSleepUnlockFlow = false;
                 initAppTimer(); // タイマー再起動
+                // Sleep cancels pending next-question jobs; start one fresh round.
+                if (currentTab === 'count') startCountQuiz();
+                else if (currentTab === 'quiz') startQuizGame();
                 updateNavigator('momo', "おかえりなさい！また いっしょに あそおうね！");
             } else {
                 const settingsModal = document.getElementById('modal-parent-settings');
@@ -1987,8 +2164,16 @@
         const voiceVolInput = document.getElementById('voice-volume-range');
         const synthVolInput = document.getElementById('synth-volume-range');
         
+        const previousVoiceVolume = smileVoiceVolume;
         if (voiceVolInput) smileVoiceVolume = parseFloat(voiceVolInput.value);
         if (synthVolInput) smileSynthVolume = parseFloat(synthVolInput.value);
+        if (previousVoiceVolume > 0 && smileVoiceVolume === 0 && window.speechSynthesis) {
+            try {
+                window.speechSynthesis.cancel();
+            } catch (error) {
+                console.warn('Speech cancellation failed:', error);
+            }
+        }
         saveSettings();
     }
 
@@ -2150,6 +2335,7 @@
 
     // --- 🌐 動的イベントリスナー紐付けシステム ---
     function bindUIEvents() {
+        bindSoundControls();
         // おうちにもどるボタン
         const btnBackHome = document.getElementById('btn-back-home');
         if (btnBackHome) {
@@ -2292,6 +2478,8 @@
         // 16. モーダル操作：新しいシール獲得ありがとうボタン
         const btnCloseStickerModal = document.getElementById('btn-close-sticker-modal');
         if (btnCloseStickerModal) {
+            btnCloseStickerModal.addEventListener('pointerdown', () => { rewardPointerToken = pendingNextActivity; });
+            btnCloseStickerModal.addEventListener('pointercancel', () => { rewardPointerToken = null; });
             btnCloseStickerModal.addEventListener('click', closeStickerModal);
         }
 

@@ -31,11 +31,26 @@ document.addEventListener('DOMContentLoaded', () => {
   const MIN_PX = 1;     // 表示崩れ防止のための最小サイズ
   const MAX_PX = 300;   // 表示崩れ防止のための最大サイズ（プレビューの自由度拡大）
   const DEFAULT_SIZES = [8, 10, 11, 12, 13, 14, 15, 16, 18, 20, 24, 28, 32, 36, 40, 48, 56, 64, 72, 80, 96];
-  // コピー対象は早見表より少ない主要サイズのみ
-  const COPY_SIZES = [10, 12, 14, 16, 18, 20, 24, 28, 32, 40, 48, 64];
+
   
   // 早見表サイズリスト（localStorageから復元）
-  let customSizes = [];
+  let customSizes = [...DEFAULT_SIZES];
+  let lastEdited = 'px';
+  let resetTimer = null;
+  let copyTimer = null;
+  let copyGeneration = 0;
+  const storageBlocked = new Set();
+  function disarmReset() {
+    clearTimeout(resetTimer);
+    if (els.resetSizesBtn) {
+      els.resetSizesBtn.dataset.armed = '';
+      els.resetSizesBtn.textContent = pageLang === 'en' ? '↩ Reset' : '↩ リセット';
+    }
+  }
+  function updateCopyLabel() {
+    els.copyBtn.textContent = pageLang === 'en' ? `Copy this list as code (${customSizes.length})` : `この一覧をコードでコピー（${customSizes.length}件）`;
+    els.copyBtn.disabled = !customSizes.length || !Number.isFinite(getRoot());
+  }
 
   // 初期化
   function init() {
@@ -47,7 +62,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // 3. 入力イベントの監視
     els.rootBase.addEventListener('input', () => {
-      syncFromPx();
+      disarmReset();
+      (lastEdited === 'rem' ? syncFromRem : syncFromPx)();
       generateTable();
       updatePresetState();
     });
@@ -60,11 +76,13 @@ document.addEventListener('DOMContentLoaded', () => {
     });
     updatePresetState();
 
-    els.pxInput.addEventListener('input', syncFromPx);
-    els.remInput.addEventListener('input', syncFromRem);
+    els.pxInput.addEventListener('input', () => { lastEdited = 'px'; disarmReset(); syncFromPx(); });
+    els.remInput.addEventListener('input', () => { lastEdited = 'rem'; disarmReset(); syncFromRem(); });
     els.copyBtn.addEventListener('click', copyCodeFormat);
 
     // 4. カスタムサイズ追加アクション
+    els.customPxInput.addEventListener('input', disarmReset);
+    els.codeFormatSelect.addEventListener('change', disarmReset);
     els.addSizeBtn.addEventListener('click', addCustomSize);
     els.customPxInput.addEventListener('keydown', (e) => {
       if (e.key === 'Enter') {
@@ -78,22 +96,25 @@ document.addEventListener('DOMContentLoaded', () => {
       els.resetSizesBtn.addEventListener('click', () => {
         if (els.resetSizesBtn.dataset.armed !== '1') {
           els.resetSizesBtn.dataset.armed = '1';
+          resetTimer = setTimeout(disarmReset, 5000);
           els.resetSizesBtn.textContent = pageLang === 'en' ? 'Click again to reset' : 'もう一度押すと戻します';
           showListMessage(pageLang === 'en' ? 'Click reset once more to restore the default list.' : 'リセットをもう一度押すと、早見表を初期状態に戻します。');
           return;
         }
+        disarmReset();
         customSizes = [...DEFAULT_SIZES];
-        safeSetStorage('pxRemCustomSizes', JSON.stringify(customSizes));
+        const saved = safeSetStorage('pxRemCustomSizes', JSON.stringify(customSizes));
         generateTable();
         els.resetSizesBtn.dataset.armed = '';
         els.resetSizesBtn.textContent = pageLang === 'en' ? '↩ Reset' : '↩ リセット';
-        showListMessage(pageLang === 'en' ? 'The reference table was reset.' : '早見表を初期状態に戻しました。');
+        if (saved) showListMessage(pageLang === 'en' ? 'The reference table was reset.' : '早見表を初期状態に戻しました。');
       });
     }
 
     // 6. プレビューはプレーンテキストだけ保存する（HTMLを復元しない）
     if (els.previewText) {
       els.previewText.addEventListener('input', () => {
+        disarmReset();
         safeSetStorage('pxRemPreviewText', els.previewText.textContent);
       });
     }
@@ -111,9 +132,9 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!Array.isArray(value)) return [...DEFAULT_SIZES];
     const cleaned = [...new Set(value
       .map((item) => Number(item))
-      .filter((item) => Number.isInteger(item) && item >= 1 && item <= 500))];
+      .filter((item) => Number.isFinite(item) && item >= 1 && item <= 500))];
     cleaned.sort((a, b) => a - b);
-    return cleaned.length > 0 ? cleaned.slice(0, 80) : [...DEFAULT_SIZES];
+    return cleaned.slice(0, 80);
   }
 
   function showListMessage(text) {
@@ -122,17 +143,35 @@ document.addEventListener('DOMContentLoaded', () => {
     els.listMessage.textContent = text || '';
   }
 
+  function safeGetStorage(key) {
+    try { return localStorage.getItem(key); } catch (_) { storageBlocked.add(key); return null; }
+  }
+
+  function safeSetStorage(key, value) {
+    try {
+      if (storageBlocked.has(key)) throw new Error('Unreadable previous data');
+      localStorage.setItem(key, value); return true;
+    } catch (_) {
+      showListMessage(pageLang === 'en' ? 'Updated on this screen, but could not save for next time. Previous saved data was kept.' : 'この画面には反映しましたが、次回用に保存できませんでした。元の保存データは保持しています。');
+      return false;
+    }
+  }
+
   function loadSavedData() {
     const savedText = safeGetStorage('pxRemPreviewText');
     if (savedText && els.previewText) {
       els.previewText.textContent = savedText;
     }
 
-    const savedSizes = localStorage.getItem('pxRemCustomSizes');
+    const savedSizes = safeGetStorage('pxRemCustomSizes');
     if (savedSizes) {
       try {
-        customSizes = sanitizeSizes(JSON.parse(savedSizes));
+        const parsed = JSON.parse(savedSizes);
+        if (!Array.isArray(parsed) || parsed.length > 80 || parsed.some(v => !['number','string'].includes(typeof v) || !String(v).trim() || !Number.isFinite(Number(v)) || Number(v) < 1 || Number(v) > 500)) throw new Error('Invalid saved list');
+        customSizes = sanitizeSizes(parsed);
       } catch (e) {
+        storageBlocked.add('pxRemCustomSizes');
+        showListMessage(pageLang === 'en' ? 'Saved list could not be read. It has not been overwritten.' : '保存済み一覧を読み込めませんでした。元のデータは上書きしていません。');
         customSizes = [...DEFAULT_SIZES];
       }
     } else {
@@ -156,16 +195,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // PX / ROOT 計算・丸め共通ヘルパー
   function pxToRem(px, root) {
-    if (isNaN(px) || isNaN(root) || root <= 0) return 0;
+    if (!Number.isFinite(px) || !Number.isFinite(root) || root <= 0) return 0;
     const rem = px / root;
-    return Math.round(rem * 10000) / 10000; // 少数第4位まで
+    return Number.isFinite(rem * 10000) ? Math.round(rem * 10000) / 10000 : 0; // 少数第4位まで
   }
 
   // REM / ROOT 計算・丸め共通ヘルパー
   function remToPx(rem, root) {
-    if (isNaN(rem) || isNaN(root) || root <= 0) return 0;
+    if (!Number.isFinite(rem) || !Number.isFinite(root) || root <= 0) return 0;
     const px = rem * root;
-    return Math.round(px * 100) / 100; // PXは少数第2位まで
+    return Number.isFinite(px * 100) ? Math.round(px * 100) / 100 : 0; // PXは少数第2位まで
   }
 
   /* =========================================
@@ -177,7 +216,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const root = getRoot();
     const px = parseFloat(els.pxInput.value);
 
-    if (isNaN(px)) {
+    if (!Number.isFinite(root) || !Number.isFinite(px) || !Number.isFinite(px / root * 10000)) {
       els.remInput.value = '';
       updatePreview(NaN, 0);
       return;
@@ -198,7 +237,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const root = getRoot();
     const rem = parseFloat(els.remInput.value);
 
-    if (isNaN(rem)) {
+    if (!Number.isFinite(root) || !Number.isFinite(rem) || !Number.isFinite(rem * root * 100)) {
       els.pxInput.value = '';
       updatePreview(NaN, 0);
       return;
@@ -248,9 +287,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // 基準値の取得（バリデーション付き）
   function getRoot() {
-    let val = parseFloat(els.rootBase.value);
-    if (isNaN(val) || val <= 0) val = 16;
-    return val;
+    const val = Number(els.rootBase.value);
+    const valid = String(els.rootBase.value).trim() !== '' && Number.isFinite(val) && val > 0 && Number.isFinite(500 / val * 10000);
+    els.rootBase.setAttribute('aria-invalid', String(!valid));
+    const message = document.getElementById('rootError');
+    if (message) message.hidden = valid;
+    return valid ? val : NaN;
   }
 
   /* =========================================
@@ -259,9 +301,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // リリストへのサイズ追加
   function addCustomSize() {
-    const pxValue = parseInt(els.customPxInput.value, 10);
-    if (isNaN(pxValue) || pxValue < 1 || pxValue > 500) {
-      showListMessage(pageLang === 'en' ? 'Enter a whole number from 1 to 500.' : '1pxから500pxの整数を入力してください。');
+    disarmReset();
+    const pxValue = Number(els.customPxInput.value);
+    if (!Number.isFinite(pxValue) || pxValue < 1 || pxValue > 500) {
+      showListMessage(pageLang === 'en' ? 'Enter a number from 1 to 500 (decimals allowed).' : '1pxから500pxの数値を入力してください（小数も可）。');
       return;
     }
 
@@ -279,15 +322,16 @@ document.addEventListener('DOMContentLoaded', () => {
     customSizes.sort((a, b) => a - b); // 昇順ソート
 
     // 保存 ＆ 再描画
-    safeSetStorage('pxRemCustomSizes', JSON.stringify(customSizes));
+    const saved = safeSetStorage('pxRemCustomSizes', JSON.stringify(customSizes));
     generateTable();
-    showListMessage('');
+    if (saved) showListMessage('');
     els.customPxInput.value = '';
     els.customPxInput.focus();
   }
 
   // リストからのサイズ削除
   function deleteSize(px) {
+    disarmReset();
     customSizes = customSizes.filter(s => s !== px);
     safeSetStorage('pxRemCustomSizes', JSON.stringify(customSizes));
     generateTable();
@@ -297,6 +341,10 @@ document.addEventListener('DOMContentLoaded', () => {
   function generateTable() {
     const root = getRoot();
     els.tableBody.replaceChildren();
+    copyGeneration += 1;
+    clearTimeout(copyTimer);
+    els.copyBtn.classList.remove('is-copied');
+    updateCopyLabel();
 
     customSizes.forEach((px) => {
       const rem = pxToRem(px, root);
@@ -311,13 +359,15 @@ document.addEventListener('DOMContentLoaded', () => {
       pxButton.textContent = `${px}px`;
       pxButton.addEventListener('click', () => {
         els.pxInput.value = String(px);
+        lastEdited = 'px';
+        disarmReset();
         syncFromPx();
         els.pxInput.focus();
       });
       pxCell.appendChild(pxButton);
 
       const remCell = document.createElement('td');
-      remCell.textContent = `${rem}rem`;
+      remCell.textContent = Number.isFinite(root) ? `${rem}rem` : '—';
 
       const sampleCell = document.createElement('td');
       const sample = document.createElement('span');
@@ -349,7 +399,10 @@ document.addEventListener('DOMContentLoaded', () => {
     const root = getRoot();
     const format = els.codeFormatSelect.value;
     
-    const sizes = COPY_SIZES;
+    if (!Number.isFinite(root) || !customSizes.length) return;
+    const generation = ++copyGeneration;
+    clearTimeout(copyTimer);
+    const sizes = [...customSizes];
     const isWindows = navigator.userAgent.toLowerCase().includes('win');
     const newline = isWindows ? '\r\n' : '\n';
     
@@ -360,7 +413,7 @@ document.addEventListener('DOMContentLoaded', () => {
       generatedText = `/* Root Base: ${root}px */${newline}:root {${newline}`;
       sizes.forEach(px => {
         const rem = pxToRem(px, root);
-        generatedText += `  --fs-${px}: ${rem}rem; /* ${px}px */${newline}`;
+        generatedText += `  --fs-${String(px).replace('.', 'p')}: ${rem}rem; /* ${px}px */${newline}`;
       });
       generatedText += `}`;
     } else if (format === 'scss') {
@@ -368,7 +421,7 @@ document.addEventListener('DOMContentLoaded', () => {
       generatedText = `// Root Base: ${root}px${newline}`;
       sizes.forEach(px => {
         const rem = pxToRem(px, root);
-        generatedText += `$fs-${px}: ${rem}rem; // ${px}px${newline}`;
+        generatedText += `$fs-${String(px).replace('.', 'p')}: ${rem}rem; // ${px}px${newline}`;
       });
     } else if (format === 'tailwind') {
       // Tailwind CSS 設定ファイル形式
@@ -383,21 +436,31 @@ document.addEventListener('DOMContentLoaded', () => {
       generatedText = `/* Root Base: ${root}px */${newline}`;
       sizes.forEach(px => {
         const rem = pxToRem(px, root);
-        generatedText += `.text-${px} { font-size: ${rem}rem; } /* ${px}px */${newline}`;
+        generatedText += `.text-${String(px).replace('.', 'p')} { font-size: ${rem}rem; } /* ${px}px */${newline}`;
       });
     }
 
+    const manualCopy = document.getElementById('manualCopyCode');
+    if (manualCopy) { manualCopy.hidden = true; manualCopy.value = ''; }
     copyText(generatedText)
       .then(() => {
-        const originalLabel = els.copyBtn.textContent;
+        if (generation !== copyGeneration) return;
+        showListMessage('');
         els.copyBtn.textContent = pageLang === 'en' ? 'Copied!' : 'コピーしました';
         els.copyBtn.classList.add('is-copied');
-        window.setTimeout(() => {
-          els.copyBtn.textContent = originalLabel;
+        copyTimer = setTimeout(() => {
+          updateCopyLabel();
           els.copyBtn.classList.remove('is-copied');
         }, 1500);
       })
       .catch(() => {
+        if (generation !== copyGeneration) return;
+        if (manualCopy) {
+          manualCopy.value = generatedText;
+          manualCopy.hidden = false;
+          manualCopy.focus();
+          manualCopy.select();
+        }
         showListMessage(pageLang === 'en' ? 'Copy failed. Select the text and copy it manually.' : 'コピーに失敗しました。手動で選択してコピーしてください。');
       });
   }

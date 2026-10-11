@@ -6,7 +6,7 @@
   <meta name="robots" content="index, follow">
   <meta name="format-detection" content="telephone=no">
   
-  <title>テキスト差分チェックツール【無料】文章・コードの差分をリアルタイム比較（ブラウザ完結・安全） - KatakataLab</title>
+  <title>テキスト差分チェックツール【無料】文章・コードの差分を比較（ブラウザ完結・安全） - KatakataLab</title>
   <meta name="description" content="文章やコードの違いを色で表示する差分ツール。文字単位と行単位、左右比較と統合表示に対応。入力は比較のために外部送信しません。">
   <link rel="canonical" href="https://katakatalab.com/text-diff/">
   <link rel="alternate" hreflang="ja" href="https://katakatalab.com/text-diff/">
@@ -62,46 +62,46 @@
       <p class="app-desc">Secure Text & Code Comparator</p>
     </div>
     <span class="badge-security" title="入力した文章は比較処理のために外部送信しません">
-      <span class="icon-lock">🔒</span> Client-Side Only
+      <span class="icon-lock">🔒</span> ブラウザ内だけで処理
     </span>
   </header>
 
   <nav class="control-bar" aria-label="ツール操作メニュー">
     <div class="control-group">
-      <span class="control-label">Method:</span>
+      <span class="control-label">比較方式:</span>
       <div class="toggle-switch">
         <label class="radio-label">
-          <input type="radio" name="diffMode" value="chars" checked aria-label="文字単位で比較する">
-          <span class="radio-btn">文字 (Char)</span>
+          <input type="radio" name="diffMode" value="chars" aria-label="文字単位で比較する">
+          <span class="radio-btn">文字単位（文章向け）</span>
         </label>
         <label class="radio-label">
-          <input type="radio" name="diffMode" value="lines" aria-label="行単位で比較する">
-          <span class="radio-btn">行 (Line)</span>
+          <input type="radio" name="diffMode" value="lines" checked aria-label="行単位で比較する">
+          <span class="radio-btn">行単位（コード向け）</span>
         </label>
       </div>
     </div>
 
     <div class="control-group" id="viewToggle" style="display:none;">
-      <span class="control-label">View:</span>
+      <span class="control-label">表示:</span>
       <div class="toggle-switch">
         <label class="radio-label">
           <input type="radio" name="viewMode" value="split" checked aria-label="左右分割で表示する">
-          <span class="radio-btn">左右 (Split)</span>
+          <span class="radio-btn">左右</span>
         </label>
         <label class="radio-label">
           <input type="radio" name="viewMode" value="unified" aria-label="統合ビューで表示する">
-          <span class="radio-btn">統合 (Unified)</span>
+          <span class="radio-btn">統合</span>
         </label>
       </div>
     </div>
     
     <div class="actions">
-      <button type="button" id="swapBtn" class="btn-secondary" aria-label="左右のテキストを入れ替え" title="Swap Texts">
-        <span class="icon-swap">⇄</span> Swap
+      <button type="button" id="swapBtn" class="btn-secondary" aria-label="左右のテキストを入れ替え" title="入れ替え">
+        <span class="icon-swap">⇄</span> 入れ替え
       </button>
       <button type="button" id="clearBtn" class="btn-text" aria-label="両方の入力をすべてクリア">🗑 全クリア</button>
       <button type="button" id="compareBtn" class="btn-primary" aria-label="差分を比較 (Ctrl+Enter)">
-        <span class="icon-search">🔍</span> Compare
+        <span class="icon-search">🔍</span> 差分を比較
       </button>
     </div>
   </nav>
@@ -119,14 +119,14 @@
   <section id="inputSection" class="editor-container two-pane">
     <div class="pane">
       <div class="pane-header">
-        <label for="textOriginal" class="pane-label">Original (変更前)</label>
+        <label for="textOriginal" class="pane-label">変更前</label>
         <div class="pane-actions">
           <span id="fileInfoOriginal" class="file-info-badge" style="display:none;"></span>
-          <span id="charCountOriginal" class="char-count">0 chars</span>
-          <button type="button" class="btn-paste" data-target="original" aria-label="Originalに貼り付け">Paste</button>
+          <span id="charCountOriginal" class="char-count">0文字</span>
+          <button type="button" class="btn-paste" data-target="original" aria-label="変更前に貼り付け">貼り付け</button>
           <label class="btn-file-label" title="ファイルから読み込み" aria-label="ファイルから読み込み">
-            <input type="file" class="file-input" data-target="original" accept=".txt,.md,.js,.css,.html,.json,.xml" style="display:none;" aria-label="Originalのファイルをアップロードする">
-            📁 File
+            <input type="file" class="file-input" data-target="original" accept=".txt,.md,.js,.css,.html,.json,.xml" style="display:none;" aria-label="変更前のファイルを端末内で開く">
+            📁 ファイルを開く
           </label>
         </div>
       </div>
@@ -135,14 +135,14 @@
     
     <div class="pane">
       <div class="pane-header">
-        <label for="textNew" class="pane-label">New (変更後)</label>
+        <label for="textNew" class="pane-label">変更後</label>
         <div class="pane-actions">
           <span id="fileInfoNew" class="file-info-badge" style="display:none;"></span>
-          <span id="charCountNew" class="char-count">0 chars</span>
-          <button type="button" class="btn-paste" data-target="new" aria-label="Newに貼り付け">Paste</button>
+          <span id="charCountNew" class="char-count">0文字</span>
+          <button type="button" class="btn-paste" data-target="new" aria-label="変更後に貼り付け">貼り付け</button>
           <label class="btn-file-label" title="ファイルから読み込み" aria-label="ファイルから読み込み">
-            <input type="file" class="file-input" data-target="new" accept=".txt,.md,.js,.css,.html,.json,.xml" style="display:none;" aria-label="Newのファイルをアップロードする">
-            📁 File
+            <input type="file" class="file-input" data-target="new" accept=".txt,.md,.js,.css,.html,.json,.xml" style="display:none;" aria-label="変更後のファイルを端末内で開く">
+            📁 ファイルを開く
           </label>
         </div>
       </div>
@@ -151,60 +151,63 @@
   </section>
 
   <section id="resultSection" class="result-container" style="display:none;">
+<p id="comparisonStatus" role="status" aria-live="polite"></p>
     <div class="result-header">
-      <h2>Diff Result</h2>
+      <h2>比較結果</h2>
       <div class="result-actions">
         <!-- 差分統計バッジ & スマートジャンプナビ -->
         <div id="diffNav" class="diff-nav" style="display:none;">
           <span id="diffStat" class="diff-stat"></span>
           <div class="jump-group">
-            <button type="button" id="btnPrevDiff" class="btn-jump" aria-label="前の差分へ" title="Previous Diff">▲</button>
-            <button type="button" id="btnNextDiff" class="btn-jump" aria-label="次の差分へ" title="Next Diff">▼</button>
+            <button type="button" id="btnPrevDiff" class="btn-jump" aria-label="前の差分へ" title="前の差分">▲</button>
+            <button type="button" id="btnNextDiff" class="btn-jump" aria-label="次の差分へ" title="次の差分">▼</button>
           </div>
         </div>
 
         <!-- 統合ビュー用コピーボタン -->
-        <button type="button" id="btnCopyDiff" class="btn-secondary btn-copy-diff" aria-label="差分をコピー" title="Copy Diff Text" style="display:none;">
-          <span class="icon-copy">📋</span> Copy Diff
+<label for="copyFormat">コピー内容</label><select id="copyFormat"><option value="diff">差分テキスト（+/-付き）</option><option value="new">変更後の全文</option></select>
+        <button type="button" id="btnCopyDiff" class="btn-secondary btn-copy-diff" aria-label="差分をコピー" title="選んだ内容をコピー" style="display:none;">
+          <span class="icon-copy">📋</span> 選んだ内容をコピー
         </button>
 
         <span id="statusMessage" class="status-msg" style="display:none;">
-          <span class="icon-check">✅</span> 完全一致 (Identical)
+          <span class="icon-check">✅</span> 完全一致
         </span>
         <button type="button" id="editBtn" class="btn-secondary" aria-label="編集に戻る">
-          <span class="icon-edit">✏️</span> Edit
+          <span class="icon-edit">✏️</span> 編集に戻る
         </button>
       </div>
     </div>
     
+<textarea id="manualCopyDiff" readonly hidden aria-label="手動コピー用テキスト"></textarea>
     <div id="diffViewSplit" class="diff-viewer split-view">
       <div class="pane diff-pane">
-        <div class="pane-sticky-header">Original</div>
+        <div class="pane-sticky-header">変更前</div>
         <div id="diffOriginal" class="diff-content" tabindex="0"></div>
       </div>
       <div class="pane diff-pane">
-        <div class="pane-sticky-header">New</div>
+        <div class="pane-sticky-header">変更後</div>
         <div id="diffNew" class="diff-content" tabindex="0"></div>
       </div>
     </div>
 
     <div id="diffViewUnified" class="diff-viewer unified-view" style="display:none;">
       <div class="pane diff-pane full-width">
-        <div class="pane-sticky-header">Combined Result</div>
+        <div class="pane-sticky-header">統合結果</div>
         <div id="diffUnified" class="diff-content" tabindex="0"></div>
       </div>
     </div>
     
     <div class="legend" aria-hidden="true">
-      <span class="legend-item del"><span class="swatch"></span>削除 (Deleted)</span>
-      <span class="legend-item add"><span class="swatch"></span>追加 (Added)</span>
+      <span class="legend-item del"><span class="swatch"></span>削除</span>
+      <span class="legend-item add"><span class="swatch"></span>追加</span>
       <span class="legend-item note"><small>※ 緑は追加、赤は削除です。改行の増減も同じ色で示します</small></span>
     </div>
   </section>
 
   <div id="loadingOverlay" class="loading-overlay" style="display:none;" aria-live="assertive">
     <div class="spinner"></div>
-    <p>Comparing...</p>
+    <p>比較中...</p>
   </div>
 
   <article class="article-content">

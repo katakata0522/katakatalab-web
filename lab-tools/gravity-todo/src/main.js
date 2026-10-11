@@ -4,6 +4,18 @@ import { normalizeTaskText } from './taskText.js';
 
 document.addEventListener('DOMContentLoaded', () => {
   const engine = new PhysicsEngine('canvas-container');
+  document.getElementById('undo-btn')?.addEventListener('click', () => engine.undoLastRemoval());
+  document.getElementById('redo-btn')?.addEventListener('click', () => engine.redoLastRemoval());
+  const reducedEffects = document.getElementById('reduced-effects');
+  if (reducedEffects) {
+    reducedEffects.checked = SettingsManager.load().reducedEffects === true;
+    reducedEffects.addEventListener('change', () => reportSettingsSave(SettingsManager.save({ reducedEffects: reducedEffects.checked })));
+  }
+  function reportSettingsSave(saved) {
+    const message = document.getElementById('settings-save-status');
+    if (message) message.textContent = saved ? '' : '設定はこの画面のみ反映しています。以前の保存データは保持しました。';
+  }
+
 
   const form           = document.getElementById('task-form');
   const input          = document.getElementById('task-input');
@@ -115,7 +127,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const customBorder  = document.getElementById('custom-block-border');
 
   function applyColorChange(color, border, presetId) {
-    SettingsManager.save({ blockColor: color, blockBorder: border, preset: presetId });
+    reportSettingsSave(SettingsManager.save({ blockColor: color, blockBorder: border, preset: presetId }));
     if (customColor)  customColor.value  = color;
     if (customBorder) customBorder.value = border;
     // 既存ブロックも一括変更
@@ -182,12 +194,13 @@ document.addEventListener('DOMContentLoaded', () => {
     const max = Number(input.getAttribute('maxlength') || 20);
     const len = input.value.length;
     if (charCount) charCount.textContent = `${len}/${max}`;
-    if (addBtn)    addBtn.disabled = normalizeTaskText(input.value).length === 0;
+    if (addBtn)    addBtn.disabled = engine.storageReady === false || normalizeTaskText(input.value).length === 0;
   };
 
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
     await engine.ready;
+    if (engine.storageReady === false) return;
 
     const now = Date.now();
     if (now - lastSubmitTime < 300) return;
@@ -235,6 +248,13 @@ document.addEventListener('DOMContentLoaded', () => {
   nukeBtn?.addEventListener('click', async () => {
     await engine.ready;
     engine.confirmAndNukeAll();
+  });
+
+  document.addEventListener('gravity:storageStatus', syncInputState);
+  document.getElementById('retry-storage')?.addEventListener('click', async () => {
+    await engine.ready;
+    await engine.restoreTasks();
+    syncInputState();
   });
 
   input.addEventListener('input', syncInputState);
@@ -303,3 +323,4 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
 });
+

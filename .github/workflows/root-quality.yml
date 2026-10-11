@@ -43,6 +43,7 @@ jobs:
           NODE_PATH: ${{ github.workspace }}/node_modules
         run: |
           node .github/scripts/local-tools-e2e.mjs
+          node qrcode/tests/quality-browser-smoke.cjs
           node .github/scripts/education-privacy-e2e.cjs --root-build
       - name: Publication contracts
         run: |

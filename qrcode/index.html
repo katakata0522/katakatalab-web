@@ -10,7 +10,7 @@
   
   <title>QRコード作成ツール | ブラウザ完結・登録不要 - KatakataLab</title>
   
-  <meta name="description" content="【登録不要・基本機能無料】URL・テキスト・Wi-Fi情報からQRコードを作成できるブラウザ完結型ツールです。入力内容をQRコード生成のために外部サーバーへ送信せず、色・サイズ・余白を調整してPNG・SVGで保存できます。">
+  <meta name="description" content="【登録不要・基本機能無料】URL・テキスト・Wi-Fi情報からQRコードを作成できるブラウザ完結型ツールです。入力内容をQRコード生成のために外部サーバーへ送信せず、色・サイズ・余白を調整してPNGで保存できます。">
   
   <link rel="canonical" href="https://katakatalab.com/qrcode/">
   <link rel="alternate" hreflang="ja" href="https://katakatalab.com/qrcode/">
@@ -20,7 +20,7 @@
   <link rel="icon" href="assets/icon-192.png" type="image/png">
 
   <meta property="og:title" content="QRコード作成ツール | ブラウザ完結・登録不要 - KatakataLab">
-  <meta property="og:description" content="URL・テキスト・Wi-Fi情報からQRコードを作成し、PNG・SVGで保存できるブラウザ完結型ツールです。">
+  <meta property="og:description" content="URL・テキスト・Wi-Fi情報からQRコードを作成し、PNGで保存できるブラウザ完結型ツールです。">
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://katakatalab.com/qrcode/">
   <meta property="og:site_name" content="KatakataLab">
@@ -28,7 +28,7 @@
   <meta property="og:locale" content="ja_JP">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="QRコード作成ツール | ブラウザ完結・登録不要 - KatakataLab">
-  <meta name="twitter:description" content="URL・テキスト・Wi-Fi情報からQRコードを作成し、PNG・SVGで保存できるブラウザ完結型ツールです。">
+  <meta name="twitter:description" content="URL・テキスト・Wi-Fi情報からQRコードを作成し、PNGで保存できるブラウザ完結型ツールです。">
   <meta name="twitter:image" content="https://katakatalab.com/qrcode/ogp.png">
 
   <link rel="stylesheet" href="style.css?v=20260824-responsive">
@@ -84,157 +84,7 @@
               <label for="qrText" class="group-label" data-i18n-html="main.inputLabel">作成する内容 <small>(URL / テキスト)</small></label>
               <span id="charCount" class="char-count" aria-live="polite">0 / 1000</span>
             </div>
-            <textarea id="qrText" class="input-text" placeholder="https://katakatalab.com" rows="4" spellcheck="false"></textarea>
-            <p id="errorMsg" class="error-text" role="alert" style="display:none;" data-i18n="main.errorTooLong">⚠️ 文字数が多すぎます (Max 1000)</p>
-          </div>
-
-          <div class="divider"></div>
-
-          <div class="settings-grid">
             <div class="setting-item">
-              <label class="setting-label" for="qrSize"><span data-i18n="main.sizeLabel">サイズ</span>: <span id="sizeValue">250</span>px</label>
-              <div class="slider-wrapper">
-                <button type="button" id="btnDecrease" class="btn-adjust" aria-label="小さくする" data-i18n-aria-label="main.decreaseAria">－</button>
-                <input type="range" id="qrSize" min="100" max="1000" step="10" value="250">
-                <button type="button" id="btnIncrease" class="btn-adjust" aria-label="大きくする" data-i18n-aria-label="main.increaseAria">＋</button>
-              </div>
-            </div>
-
-            <div class="setting-item">
-              <div class="label-row">
-                <label class="setting-label" data-i18n="main.colorLabel">カラー設定</label>
-                <button type="button" id="swapColorsBtn" class="btn-icon-small" title="色を反転" aria-label="色を反転" data-i18n-html="main.swapButton" data-i18n-title="main.swapAria" data-i18n-aria-label="main.swapAria">
-                  ⇄ 反転
-                </button>
-              </div>
-              <div class="color-pickers">
-                <label class="color-wrapper" for="qrForeground" title="QRコードの色" data-i18n-title="main.codeColorTitle">
-                  <input type="color" id="qrForeground" value="#111827">
-                  <span class="color-label" data-i18n="main.codeColor">コード</span>
-                </label>
-                <label class="color-wrapper" for="qrBackground" title="背景色" data-i18n-title="main.bgColorTitle">
-                  <input type="color" id="qrBackground" value="#ffffff">
-                  <span class="color-label" data-i18n="main.bgColor">背景</span>
-                </label>
-              </div>
-              <div class="color-swatches" role="group" aria-label="コード色のクイック選択">
-                <button type="button" class="color-swatch is-dark" data-color-target="foreground" data-color-value="#000000" title="黒" aria-label="黒"></button>
-                <button type="button" class="color-swatch" style="--swatch-color:#d11a2a;" data-color-target="foreground" data-color-value="#d11a2a" title="赤" aria-label="赤"></button>
-                <button type="button" class="color-swatch" style="--swatch-color:#0f766e;" data-color-target="foreground" data-color-value="#0f766e" title="緑" aria-label="緑"></button>
-                <button type="button" class="color-swatch" style="--swatch-color:#2563eb;" data-color-target="foreground" data-color-value="#2563eb" title="青" aria-label="青"></button>
-                <button type="button" class="color-swatch" style="--swatch-color:#7c3aed;" data-color-target="foreground" data-color-value="#7c3aed" title="紫" aria-label="紫"></button>
-                <button type="button" class="color-swatch" style="--swatch-color:#c2410c;" data-color-target="foreground" data-color-value="#c2410c" title="茶" aria-label="茶"></button>
-              </div>
-              <div id="contrastWarning" class="warning-box" style="display:none;">
-                <span class="icon-warn">⚠️</span>
-                <span data-i18n="main.contrastWarning">色が似すぎて読み取れない可能性があります</span>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        <section class="preview-panel" aria-label="プレビュー">
-          <div class="preview-card">
-            <div class="canvas-container">
-              <div id="loadingIndicator" class="loading-overlay" style="display:none;">
-                <div class="spinner"></div>
-                <span data-i18n="loading.generating">作成中...</span>
-              </div>
-              <div class="canvas-wrapper">
-                <canvas id="qrCanvas"></canvas>
-                <div id="placeholder" class="placeholder-msg">
-                  <span class="icon-qr">📱</span>
-                  <p data-i18n-html="main.placeholder">テキストを入力すると<br>即座に表示されます</p>
-                </div>
-              </div>
-            </div>
-            <div class="action-area">
-              <button type="button" id="downloadBtn" class="btn-download" disabled>
-                <span class="btn-icon">⬇</span> <span id="downloadBtnText" data-i18n="main.downloadDefault">PNGで保存する</span>
-              </button>
-              <p class="file-name-preview" id="fileNamePreview"></p>
-            </div>
-          </div>
-        </section>
-      </div>
-    </section>
-
-    <aside id="settingsSidebar" class="settings-sidebar" aria-label="詳細設定サイドバー" data-i18n-aria-label="sidebar.aria" aria-hidden="true" inert>
-      <div class="sidebar-header">
-        <h2 class="sidebar-title" data-i18n="sidebar.title">詳細設定</h2>
-        <button type="button" id="closeSidebarBtn" class="btn-sidebar-close" aria-label="詳細設定を閉じる" data-i18n-aria-label="sidebar.closeAria">×</button>
-      </div>
-
-      <details class="advanced-settings" data-details-id="plan" open>
-        <summary class="pro-feature-tag" data-i18n="pro.planTitle">Proプラン管理</summary>
-        <div class="advanced-settings-body extension-form">
-          <p id="planHelp" class="helper-text" data-i18n="pro.planHelpLicenseOnly">Pro機能はライセンス検証が通過した場合のみ有効になります。</p>
-          <div id="planToggle" class="plan-toggle" role="radiogroup" aria-label="Plan" hidden>
-            <label class="plan-option"><input type="radio" id="planFree" name="planMode" value="free" checked> <span data-i18n="pro.free">Free</span></label>
-            <label class="plan-option"><input type="radio" id="planPro" name="planMode" value="pro"> <span data-i18n="pro.pro">Pro</span></label>
-          </div>
-          <label class="setting-label pro-feature-tag" for="licenseKeyInput" data-i18n="pro.licenseLabel">ライセンスキー (Pro)</label>
-          <div class="license-row">
-            <input id="licenseKeyInput" class="text-input" type="text" autocomplete="off" placeholder="PRO-XXXX-XXXX" data-i18n-placeholder="pro.licensePlaceholder">
-            <button type="button" id="applyLicenseBtn" class="btn-secondary pro-feature-tag" data-i18n="pro.applyLicense">ライセンスを適用 (Pro)</button>
-          </div>
-          <p class="pro-note" data-i18n="pro.licenseNotice">ライセンス検証時のみ、ライセンスキーと利用ドメインを検証APIへ送信します。</p>
-          <p id="planStatus" class="helper-text" data-i18n="pro.statusFree">現在: Freeプラン</p>
-        </div>
-      </details>
-
-      <details class="advanced-settings" data-details-id="generate-options" open>
-        <summary data-i18n="sidebar.generateOptions">生成オプション</summary>
-        <div class="advanced-settings-body">
-          <div class="setting-item quick-template-nav">
-            <p class="quick-template-title" data-i18n="sidebar.quickStartTitle">よく使うテンプレート</p>
-            <div class="quick-template-buttons" role="group" aria-label="テンプレートのクイック選択" data-i18n-aria-label="sidebar.quickStartAria">
-              <button type="button" class="quick-template-btn is-active" data-quick-template="plain">
-                <span class="quick-template-icon" aria-hidden="true">🔗</span>
-                <span class="quick-template-copy">
-                  <span class="quick-template-main" data-i18n="sidebar.quickPlain">URL / テキスト</span>
-                  <span class="quick-template-sub" data-i18n="sidebar.quickPlainHint">自由入力</span>
-                </span>
-              </button>
-              <button type="button" class="quick-template-btn" data-quick-template="wifi">
-                <span class="quick-template-icon" aria-hidden="true">📶</span>
-                <span class="quick-template-copy">
-                  <span class="quick-template-main" data-i18n="sidebar.quickWifi">Wi-Fi</span>
-                  <span class="quick-template-sub" data-i18n="sidebar.quickWifiHint">店内共有向け</span>
-                </span>
-              </button>
-              <button type="button" class="quick-template-btn" data-quick-template="mailto">
-                <span class="quick-template-icon" aria-hidden="true">✉️</span>
-                <span class="quick-template-copy">
-                  <span class="quick-template-main" data-i18n="sidebar.quickMail">メール</span>
-                  <span class="quick-template-sub" data-i18n="sidebar.quickMailHint">問い合わせ受付</span>
-                </span>
-              </button>
-              <button type="button" class="quick-template-btn" data-quick-template="social">
-                <span class="quick-template-icon" aria-hidden="true">🌐</span>
-                <span class="quick-template-copy">
-                  <span class="quick-template-main" data-i18n="sidebar.quickSocial">SNS</span>
-                  <span class="quick-template-sub" data-i18n="sidebar.quickSocialHint">プロフィール案内</span>
-                </span>
-              </button>
-              <button type="button" class="quick-template-btn" data-quick-template="vcard">
-                <span class="quick-template-icon" aria-hidden="true">👤</span>
-                <span class="quick-template-copy">
-                  <span class="quick-template-main" data-i18n="sidebar.quickVcard">連絡先</span>
-                  <span class="quick-template-sub" data-i18n="sidebar.quickVcardHint">名刺交換向け</span>
-                </span>
-              </button>
-              <button type="button" class="quick-template-btn" data-quick-template="line">
-                <span class="quick-template-icon" aria-hidden="true">💬</span>
-                <span class="quick-template-copy">
-                  <span class="quick-template-main" data-i18n="sidebar.quickLine">LINE</span>
-                  <span class="quick-template-sub" data-i18n="sidebar.quickLineHint">友だち追加</span>
-                </span>
-              </button>
-            </div>
-          </div>
-
-          <div class="setting-item">
             <label for="dataType" class="setting-label" data-i18n="sidebar.dataTemplate">データテンプレート</label>
             <select id="dataType" class="select-input" aria-label="データテンプレート選択" data-i18n-aria-label="sidebar.dataTemplateAria">
               <option value="plain" data-i18n-option="sidebar.typePlain">URL / テキスト（自由入力）</option>
@@ -251,8 +101,7 @@
             </p>
             <p id="templateErrorMsg" class="error-text template-error-text" role="alert" aria-live="polite" style="display:none;"></p>
           </div>
-
-          <div id="templateFields" class="template-fields">
+<div id="templateFields" class="template-fields">
             <div class="template-group" data-type="wifi" hidden>
               <label class="setting-label" for="wifiSsid"><span data-i18n="sidebar.wifiSsid">SSID</span> <span class="field-badge field-badge-required" data-i18n="sidebar.required">必須</span></label>
               <input id="wifiSsid" class="text-input" type="text" autocomplete="off">
@@ -341,8 +190,40 @@
               </details>
             </div>
           </div>
+            <textarea id="qrText" class="input-text" placeholder="https://katakatalab.com" rows="4" spellcheck="false"></textarea>
+            <p id="errorMsg" class="error-text" role="alert" style="display:none;" data-i18n="main.errorTooLong">⚠️ 文字数が多すぎます (Max 1000)</p>
+          </div>
 
-          <div class="setting-item">
+          <div class="divider"></div><details class="advanced-settings" id="colorDetails"><summary data-i18n="main.colorDetails">色と詳細設定</summary><div class="advanced-settings-body"><div class="setting-item">
+              <div class="label-row">
+                <label class="setting-label" data-i18n="main.colorLabel">カラー設定</label>
+                <button type="button" id="swapColorsBtn" class="btn-icon-small" title="色を反転" aria-label="色を反転" data-i18n-html="main.swapButton" data-i18n-title="main.swapAria" data-i18n-aria-label="main.swapAria">
+                  ⇄ 反転
+                </button>
+              </div>
+              <div class="color-pickers">
+                <label class="color-wrapper" for="qrForeground" title="QRコードの色" data-i18n-title="main.codeColorTitle">
+                  <input type="color" id="qrForeground" value="#111827">
+                  <span class="color-label" data-i18n="main.codeColor">コード</span>
+                </label>
+                <label class="color-wrapper" for="qrBackground" title="背景色" data-i18n-title="main.bgColorTitle">
+                  <input type="color" id="qrBackground" value="#ffffff">
+                  <span class="color-label" data-i18n="main.bgColor">背景</span>
+                </label>
+              </div>
+              <div class="color-swatches" role="group" aria-label="コード色のクイック選択">
+                <button type="button" class="color-swatch is-dark" data-color-target="foreground" data-color-value="#000000" title="黒" aria-label="黒"></button>
+                <button type="button" class="color-swatch" style="--swatch-color:#d11a2a;" data-color-target="foreground" data-color-value="#d11a2a" title="赤" aria-label="赤"></button>
+                <button type="button" class="color-swatch" style="--swatch-color:#0f766e;" data-color-target="foreground" data-color-value="#0f766e" title="緑" aria-label="緑"></button>
+                <button type="button" class="color-swatch" style="--swatch-color:#2563eb;" data-color-target="foreground" data-color-value="#2563eb" title="青" aria-label="青"></button>
+                <button type="button" class="color-swatch" style="--swatch-color:#7c3aed;" data-color-target="foreground" data-color-value="#7c3aed" title="紫" aria-label="紫"></button>
+                <button type="button" class="color-swatch" style="--swatch-color:#c2410c;" data-color-target="foreground" data-color-value="#c2410c" title="茶" aria-label="茶"></button>
+              </div>
+              <div id="contrastWarning" class="warning-box" style="display:none;">
+                <span class="icon-warn">⚠️</span>
+                <span data-i18n="main.contrastWarning">色が似すぎて読み取れない可能性があります</span>
+              </div>
+            </div><div class="setting-item">
             <label class="setting-label" for="eccLevel" data-i18n="sidebar.eccLevel">誤り訂正レベル</label>
             <select id="eccLevel" class="select-input">
               <option value="auto" data-i18n-option="sidebar.eccAuto">自動（推奨）</option>
@@ -352,23 +233,50 @@
               <option value="L" data-i18n-option="sidebar.eccL">L（低）</option>
             </select>
             <p class="helper-text" data-i18n="sidebar.eccHelp">読み取りエラーへの強さです。迷ったら「自動（推奨）」のままで大丈夫です。</p>
-          </div>
-
-          <div class="setting-item">
+          </div><div class="setting-item">
             <label class="setting-label"><span data-i18n="sidebar.paddingLabel">余白（読み取り用スペース）</span>: <span id="paddingValue">4</span>px</label>
             <input type="range" id="qrPadding" min="0" max="20" step="1" value="4">
-          </div>
-
-          <div class="setting-item">
+          </div><div class="setting-item">
             <label class="check-input"><input id="transparentBg" type="checkbox"> <span data-i18n="sidebar.transparentBg">背景を透過</span></label>
             <div id="transparencyWarning" class="warning-box" style="display:none;">
               <span class="icon-warn">⚠️</span>
               <span data-i18n="sidebar.transparencyWarning">透過背景は設置面によって読み取りにくくなる場合があります</span>
             </div>
-          </div>
+          </div></div></details>
 
-          <div class="setting-item export-grid">
-            <div>
+          <div class="settings-grid">
+            <div class="setting-item">
+              <label class="setting-label" for="qrSize"><span data-i18n="main.sizeLabel">サイズ</span>: <span id="sizeValue">250</span>px</label>
+              <div class="slider-wrapper">
+                <button type="button" id="btnDecrease" class="btn-adjust" aria-label="小さくする" data-i18n-aria-label="main.decreaseAria">－</button>
+                <input type="range" id="qrSize" min="100" max="1000" step="10" value="250">
+                <button type="button" id="btnIncrease" class="btn-adjust" aria-label="大きくする" data-i18n-aria-label="main.increaseAria">＋</button>
+              </div>
+            </div>
+
+
+          </div>
+        </section>
+
+        <section class="preview-panel" aria-label="プレビュー">
+          <div class="preview-card">
+            <div class="canvas-container">
+              <div id="loadingIndicator" class="loading-overlay" style="display:none;">
+                <div class="spinner"></div>
+                <span data-i18n="loading.generating">作成中...</span>
+              </div>
+              <div class="canvas-wrapper">
+                <canvas id="qrCanvas"></canvas>
+                <div id="placeholder" class="placeholder-msg">
+                  <span class="icon-qr">📱</span>
+                  <p data-i18n-html="main.placeholder">テキストを入力すると<br>即座に表示されます</p>
+                </div>
+              </div>
+            </div>
+            <div class="action-area"><p id="previewSafety" class="helper-text" aria-live="polite"></p>
+              <div class="row-actions"><button type="button" id="openLogoBtn" class="btn-secondary" data-i18n="main.openLogo">ロゴを入れる · Pro</button>
+              <button type="button" id="printQrBtn" class="btn-secondary" disabled data-i18n="main.printQr">印刷</button></div>
+              <p class="helper-text" data-i18n="main.printNote">印刷は現在のQRのみ。透過背景は白地になります。</p><div>
               <label class="setting-label" for="exportFormat" data-i18n="sidebar.exportFormat">保存形式</label>
               <select id="exportFormat" class="select-input">
                 <option value="png" data-i18n-option="sidebar.formatPng">PNG</option>
@@ -377,8 +285,105 @@
                 <option value="svg" data-i18n-option="sidebar.formatSvg">SVG (Pro)</option>
                 <option value="pdf" data-i18n-option="sidebar.formatPdf">PDF (Pro)</option>
               </select>
-              <p class="helper-text pro-feature-tag" data-i18n="pro.exportProNotice">SVG / PDF保存はProで利用できます。</p>
+              <p class="helper-text pro-feature-tag" data-i18n="pro.exportProNotice">SVG / PDF保存はPro機能です。どちらもPNG画像を内包し、拡大しても細部は増えません。</p>
             </div>
+              <button type="button" id="downloadBtn" class="btn-download" disabled>
+                <span class="btn-icon">⬇</span> <span id="downloadBtnText" data-i18n="main.downloadDefault">PNGで保存する</span>
+              </button>
+              <p class="file-name-preview" id="fileNamePreview"></p>
+            </div>
+          </div>
+        </section>
+      </div>
+    </section>
+
+    <aside id="settingsSidebar" class="settings-sidebar" aria-label="詳細設定サイドバー" data-i18n-aria-label="sidebar.aria" aria-hidden="true" inert>
+      <div class="sidebar-header">
+        <h2 class="sidebar-title" data-i18n="sidebar.title">詳細設定</h2>
+        <button type="button" id="closeSidebarBtn" class="btn-sidebar-close" aria-label="詳細設定を閉じる" data-i18n-aria-label="sidebar.closeAria">×</button>
+      </div>
+
+      <details class="advanced-settings" data-details-id="plan" open>
+        <summary class="pro-feature-tag" data-i18n="pro.planTitle">Proプラン管理</summary>
+        <div class="advanced-settings-body extension-form">
+          <p id="planHelp" class="helper-text" data-i18n="pro.planHelpLicenseOnly">Pro機能はライセンス検証が通過した場合のみ有効になります。</p>
+          <div id="planToggle" class="plan-toggle" role="radiogroup" aria-label="Plan" hidden>
+            <label class="plan-option"><input type="radio" id="planFree" name="planMode" value="free" checked> <span data-i18n="pro.free">Free</span></label>
+            <label class="plan-option"><input type="radio" id="planPro" name="planMode" value="pro"> <span data-i18n="pro.pro">Pro</span></label>
+          </div>
+          <label class="setting-label pro-feature-tag" for="licenseKeyInput" data-i18n="pro.licenseLabel">ライセンスキー (Pro)</label>
+          <div class="license-row">
+            <input id="licenseKeyInput" class="text-input" type="text" autocomplete="off" placeholder="PRO-XXXX-XXXX" data-i18n-placeholder="pro.licensePlaceholder">
+            <button type="button" id="applyLicenseBtn" class="btn-secondary pro-feature-tag" data-i18n="pro.applyLicense">ライセンスを適用 (Pro)</button>
+          </div>
+          <p class="pro-note" data-i18n="pro.licenseNotice">ライセンス検証時のみ、ライセンスキーと利用ドメインを検証APIへ送信します。</p>
+          <p id="planStatus" class="helper-text" data-i18n="pro.statusFree">現在: Freeプラン</p>
+        </div>
+      </details>
+
+      <details class="advanced-settings" data-details-id="generate-options" open>
+        <summary data-i18n="sidebar.generateOptions">生成オプション</summary>
+        <div class="advanced-settings-body">
+          <div class="setting-item quick-template-nav">
+            <p class="quick-template-title" data-i18n="sidebar.quickStartTitle">よく使うテンプレート</p>
+            <div class="quick-template-buttons" role="group" aria-label="テンプレートのクイック選択" data-i18n-aria-label="sidebar.quickStartAria">
+              <button type="button" class="quick-template-btn is-active" data-quick-template="plain">
+                <span class="quick-template-icon" aria-hidden="true">🔗</span>
+                <span class="quick-template-copy">
+                  <span class="quick-template-main" data-i18n="sidebar.quickPlain">URL / テキスト</span>
+                  <span class="quick-template-sub" data-i18n="sidebar.quickPlainHint">自由入力</span>
+                </span>
+              </button>
+              <button type="button" class="quick-template-btn" data-quick-template="wifi">
+                <span class="quick-template-icon" aria-hidden="true">📶</span>
+                <span class="quick-template-copy">
+                  <span class="quick-template-main" data-i18n="sidebar.quickWifi">Wi-Fi</span>
+                  <span class="quick-template-sub" data-i18n="sidebar.quickWifiHint">店内共有向け</span>
+                </span>
+              </button>
+              <button type="button" class="quick-template-btn" data-quick-template="mailto">
+                <span class="quick-template-icon" aria-hidden="true">✉️</span>
+                <span class="quick-template-copy">
+                  <span class="quick-template-main" data-i18n="sidebar.quickMail">メール</span>
+                  <span class="quick-template-sub" data-i18n="sidebar.quickMailHint">問い合わせ受付</span>
+                </span>
+              </button>
+              <button type="button" class="quick-template-btn" data-quick-template="social">
+                <span class="quick-template-icon" aria-hidden="true">🌐</span>
+                <span class="quick-template-copy">
+                  <span class="quick-template-main" data-i18n="sidebar.quickSocial">SNS</span>
+                  <span class="quick-template-sub" data-i18n="sidebar.quickSocialHint">プロフィール案内</span>
+                </span>
+              </button>
+              <button type="button" class="quick-template-btn" data-quick-template="vcard">
+                <span class="quick-template-icon" aria-hidden="true">👤</span>
+                <span class="quick-template-copy">
+                  <span class="quick-template-main" data-i18n="sidebar.quickVcard">連絡先</span>
+                  <span class="quick-template-sub" data-i18n="sidebar.quickVcardHint">名刺交換向け</span>
+                </span>
+              </button>
+              <button type="button" class="quick-template-btn" data-quick-template="line">
+                <span class="quick-template-icon" aria-hidden="true">💬</span>
+                <span class="quick-template-copy">
+                  <span class="quick-template-main" data-i18n="sidebar.quickLine">LINE</span>
+                  <span class="quick-template-sub" data-i18n="sidebar.quickLineHint">友だち追加</span>
+                </span>
+              </button>
+            </div>
+          </div>
+
+
+
+
+
+
+
+
+
+
+
+          <div class="setting-item export-grid">
+
             <div>
               <label class="setting-label" for="filePrefix" data-i18n="sidebar.filePrefix">ファイル名プレフィックス</label>
               <input id="filePrefix" class="text-input" type="text" value="qr" maxlength="20" autocomplete="off">
@@ -390,7 +395,7 @@
       <details class="advanced-settings" data-details-id="logo">
         <summary class="pro-feature-tag" data-i18n="pro.logoTitle">ロゴ挿入 (Pro)</summary>
         <div class="advanced-settings-body extension-form">
-          <p class="helper-text" data-i18n="pro.logoHelp">中央ロゴを挿入し、読み取り安全性を自動判定します。</p>
+          <p class="helper-text" data-i18n="pro.logoHelp">中央ロゴを挿入し、色・余白・ロゴ比率などの設定を確認します。実機での読み取り確認も必要です。</p>
           <label class="setting-label pro-feature-tag" for="logoFile" data-i18n="pro.logoFileLabel">ロゴ画像 (Pro)</label>
           <input id="logoFile" class="text-input" type="file" accept="image/png,image/jpeg,image/webp,image/svg+xml">
           <img id="logoPreview" class="logo-preview" alt="logo preview" hidden>
@@ -408,13 +413,13 @@
       </details>
 
       <details class="advanced-settings" data-details-id="quality" open>
-        <summary data-i18n="pro.qualityTitle">品質チェック</summary>
+        <summary data-i18n="pro.qualityTitle">設定の目安</summary>
         <div class="advanced-settings-body">
           <div class="quality-grade-row">
             <span class="quality-label" data-i18n="pro.qualityGrade">評価</span>
             <strong id="qualityGrade" class="quality-grade quality-a">A</strong>
           </div>
-          <p id="qualitySummary" class="helper-text" data-i18n="pro.qualitySummaryDefault">良好です。通常環境での読み取りに適しています。</p>
+          <p id="qualitySummary" class="helper-text" data-i18n="pro.qualitySummaryDefault">色・余白・ロゴ比率などを確認します。読み取り成功を保証する評価ではありません。</p>
           <ul id="qualityChecklist" class="policy-list">
             <li data-i18n="pro.qualityItemContrast">コントラスト: 良好</li>
             <li data-i18n="pro.qualityItemPadding">余白: 良好</li>
@@ -540,8 +545,8 @@
     <h3>✨ 商用利用・印刷にも最適</h3>
     <ul>
       <li><strong>基本機能は無料・無制限:</strong> 作成回数や読み取り回数の制限はありません。</li>
-      <li><strong>有効期限なし:</strong> 作成したQRコードはずっと使えます（リンク切れQRではありません）。</li>
-      <li><strong>高解像度対応:</strong> 最大1000pxまで拡大でき、チラシやポスター印刷でもボケません。</li>
+      <li><strong>有効期限なし:</strong> QRコード自体に有効期限はありません。リンク先の公開やドメインが終了すると、アクセスできなくなります。</li>
+      <li><strong>高解像度対応:</strong> 最大1000pxのPNG画像として出力します。印刷時の鮮明さは掲載サイズによるため、原寸で画質と読み取りを確認してください。</li>
     </ul>
 
     <h3>📝 使う前に見ておくポイント</h3>
@@ -591,7 +596,7 @@
         </a>
         <a href="pro-plan.html" class="resource-card resource-card-pro" target="_blank" rel="noopener">
           <strong>Proプラン詳細を見る</strong>
-          <span>買い切り 2,980円・ロゴ挿入・SVG/PDF・ZIP一括保存</span>
+          <span>Proは販売準備中・ロゴ挿入・画像内包SVG/PDF・ZIP一括保存</span>
         </a>
       </div>
     </section>
@@ -637,7 +642,7 @@
                 チラシのデザインで余白を削りすぎたり、背景色とQRコードの色を近づけてコントラストを下げたりすると、カメラが輪郭を認識しにくくなります。印刷前に十分な余白と明暗差を確保し、実際に使う端末で読み取りを確認してください。
             </p>
             <p>
-                この「QR Maker Lab」は、用途に応じたコントラスト調整や、印刷向けのSVG/PDF書き出し、ライセンス購入によるロゴ重ねと訂正レベルの選択などをブラウザ内で行えます。QR作成に入力したデータはサーバーへ送信しません。保存後は、実際に使うサイズと端末で読み取りを確認してください。
+                この「QR Maker Lab」は、用途に応じたコントラスト調整や、PNG画像を内包するSVG/PDF書き出し、ライセンス購入によるロゴ重ねと訂正レベルの選択などをブラウザ内で行えます。QR作成に入力したデータはサーバーへ送信しません。保存後は、実際に使うサイズと端末で読み取りを確認してください。
             </p>
             <p><a href="https://www.qrcode.com/en/about/error_correction.html" target="_blank" rel="noopener noreferrer">DENSO WAVEの誤り訂正解説</a>では、復元率はQRコードを構成するコード語に対する値であり、汚れや損傷の状態によって完全に復元できない場合があると説明されています。</p>
         </div>
@@ -673,7 +678,7 @@
         </div>
         <div class="faq-item">
           <dt>Q. Do generated QR codes expire?</dt>
-          <dd>A. No. This tool encodes your original data directly, so there is no built-in expiration date.</dd>
+          <dd>A. No. This tool encodes your original data directly, so there is no built-in expiration date. A linked website must remain available and its domain must stay active.</dd>
         </div>
         <div class="faq-item">
           <dt>Q. Who owns generated images?</dt>
@@ -695,7 +700,7 @@
         </a>
         <a href="pro-plan.html" class="resource-card resource-card-pro">
           <strong>See Pro Plan Details</strong>
-          <span>One-time 2,980 JPY with logo, SVG/PDF, and ZIP export</span>
+          <span>Pro is in preparation: logo, PNG-based SVG/PDF, and ZIP export</span>
         </a>
       </div>
     </section>
@@ -733,15 +738,9 @@
         "name": "Free",
         "price": "0",
         "priceCurrency": "JPY"
-      },
-      {
-        "@type": "Offer",
-        "name": "Pro",
-        "price": "2980",
-        "priceCurrency": "JPY"
       }
     ],
-    "description": "URL・テキスト・Wi-Fi情報からQRコードを作成し、PNG・SVGで保存できるブラウザ完結型ツールです。入力内容はQRコード生成のために外部サーバーへ送信しません。"
+    "description": "URL・テキスト・Wi-Fi情報からQRコードを作成し、PNGで保存できるブラウザ完結型ツールです。入力内容はQRコード生成のために外部サーバーへ送信しません。"
   },
   {
     "@context": "https://schema.org",
@@ -799,5 +798,6 @@
 <script src="vendor/qrious.min.js" defer></script>
 <script src="script.js?v=20260504a" defer></script>
 <script src="js/details-ui.js" defer></script>
+<div id="qrPrintArea" aria-hidden="true"><canvas id="qrPrintImage" aria-label="QR"></canvas></div>
 </body>
 </html>

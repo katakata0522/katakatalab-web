@@ -171,3 +171,25 @@ body {
     }
 }
 
+
+/* A single celebration settles into a readable achievement. */
+.reward-celebrate { animation: reward-once .65s ease-out 1; }
+@keyframes reward-once { 0% { transform: scale(.85); } 45% { transform: scale(1.18) rotate(8deg); } 100% { transform: none; } }
+@media (prefers-reduced-motion: reduce) { .reward-celebrate { animation: none; } }
+#sound-options { position: relative; font-size: .75rem; }
+#sound-options[open] { max-width: 16rem; }
+.kids-header { flex-wrap: wrap; gap: 1rem; }
+.kids-header-main { flex: 1 1 17rem; min-width: 0; }
+.kids-title-block { flex: 1; min-width: 0; }
+.kids-header-controls { flex-wrap: wrap; }
+#btn-sound { white-space: nowrap; flex-shrink: 0; min-height: 44px; }
+@media (max-width: 640px) {
+    .kids-header { flex-direction: column; align-items: stretch; }
+    .kids-header-main { flex-basis: auto; width: 100%; flex-wrap: wrap; }
+    .kids-title-block { flex: 1 1 12rem; }
+    .kids-header-controls { width: 100%; }
+    #sound-options { order: 4; width: 100%; }
+    #sound-options[open] { max-width: none; }
+    #recommended-games + .grid .card-attraction { padding: 1rem .5rem; }
+}
+#all-games > summary { cursor: pointer; padding: 1rem .25rem; }

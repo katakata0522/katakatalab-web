@@ -69,11 +69,11 @@
       <span class="control-label">Method:</span>
       <div class="toggle-switch">
         <label class="radio-label">
-          <input type="radio" name="diffMode" value="chars" checked aria-label="Compare by character">
+          <input type="radio" name="diffMode" value="chars" aria-label="Compare by character">
           <span class="radio-btn">Character</span>
         </label>
         <label class="radio-label">
-          <input type="radio" name="diffMode" value="lines" aria-label="Compare by line">
+          <input type="radio" name="diffMode" value="lines" checked aria-label="Compare by line">
           <span class="radio-btn">Line</span>
         </label>
       </div>
@@ -149,6 +149,7 @@
   </section>
 
   <section id="resultSection" class="result-container" style="display:none;">
+<p id="comparisonStatus" role="status" aria-live="polite"></p>
     <div class="result-header">
       <h2>Diff Result</h2>
       <div class="result-actions">
@@ -162,6 +163,7 @@
         </div>
 
         <!-- 統合ビュー用コピーボタン -->
+<label for="copyFormat">Copy format</label><select id="copyFormat"><option value="diff">Difference text (+/-)</option><option value="new">Full changed text</option></select>
         <button type="button" id="btnCopyDiff" class="btn-secondary btn-copy-diff" aria-label="Copy differences" title="Copy Diff Text" style="display:none;">
           <span class="icon-copy">📋</span> Copy Diff
         </button>
@@ -175,6 +177,7 @@
       </div>
     </div>
     
+<textarea id="manualCopyDiff" readonly hidden aria-label="Text to copy manually"></textarea>
     <div id="diffViewSplit" class="diff-viewer split-view">
       <div class="pane diff-pane">
         <div class="pane-sticky-header">Original</div>

@@ -11,21 +11,21 @@
         content="default-src 'self'; base-uri 'self'; object-src 'none'; form-action 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data:; connect-src 'self'; frame-src 'self'; manifest-src 'self'; worker-src 'self'; font-src 'self' https://fonts.gstatic.com; upgrade-insecure-requests;">
 
     <!-- SEO & OGP -->
-    <meta name="description" content="【登録不要・無料】ブラウザ内で動作するパスワード一括生成ツール。生成内容のサーバー送信なし。文字種の設定、推測時間の目安表示、AES-256-GCM暗号化保管庫を利用できます。">
-    <meta property="og:title" content="【登録不要】パスワード一括生成・暗号化保管ツール - KatakataLab">
-    <meta property="og:description" content="ブラウザ内で動作するパスワード一括生成ツール。文字種の設定、推測時間の目安表示、暗号化保管庫を利用できます。">
+    <meta name="description" content="【登録不要・無料】ブラウザ内で動作するパスワード一括生成ツール。生成内容のサーバー送信なし。文字種の設定と強さの参考表示を利用できます。">
+    <meta property="og:title" content="【登録不要】パスワード一括生成ツール - KatakataLab">
+    <meta property="og:description" content="ブラウザ内で動作するパスワード一括生成ツール。文字種の設定と強さの参考表示を利用できます。">
     <meta property="og:type" content="website">
     <meta property="og:locale" content="ja_JP">
     <meta property="og:url" content="https://katakatalab.com/password-generator/">
     <meta property="og:image" content="https://katakatalab.com/ogp.png">
     <meta property="og:site_name" content="KatakataLab Tools">
     <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="【登録不要】パスワード一括生成・暗号化保管ツール - KatakataLab">
-    <meta name="twitter:description" content="ブラウザ内で動作するパスワード一括生成ツール。文字種の設定、推測時間の目安表示、暗号化保管庫を利用できます。">
+    <meta name="twitter:title" content="【登録不要】パスワード一括生成ツール - KatakataLab">
+    <meta name="twitter:description" content="ブラウザ内で動作するパスワード一括生成ツール。文字種の設定と強さの参考表示を利用できます。">
     <meta name="twitter:image" content="https://katakatalab.com/ogp.png">
     <link rel="canonical" href="https://katakatalab.com/password-generator/">
     
-    <title>【登録不要】パスワード一括生成・暗号化保管ツール【ブラウザ完結】 - KatakataLab</title>
+    <title>【登録不要】パスワード一括生成ツール【ブラウザ完結】 - KatakataLab</title>
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -43,8 +43,8 @@
     <script type="application/ld+json">
     [{
         "@context": "https://schema.org", "@type": "WebApplication",
-        "name": "パスワード一括生成・暗号化保管ツール",
-        "description": "用途別のパスワードを一括生成し、ブラウザ内でAES-256-GCM暗号化保存できるツールです。",
+        "name": "パスワード一括生成ツール",
+        "description": "用途別のパスワードをブラウザ内で一括生成するツールです。",
         "url": "https://katakatalab.com/password-generator/",
         "applicationCategory": "SecurityApplication", "operatingSystem": "All",
         "offers": { "@type": "Offer", "price": "0", "priceCurrency": "JPY" },
@@ -53,7 +53,7 @@
         "@context": "https://schema.org", "@type": "BreadcrumbList",
         "itemListElement": [
             { "@type": "ListItem", "position": 1, "name": "ホーム", "item": "https://katakatalab.com/" },
-            { "@type": "ListItem", "position": 2, "name": "パスワード生成・暗号管理" }
+            { "@type": "ListItem", "position": 2, "name": "パスワード生成" }
         ]
     }]
     </script>
@@ -110,6 +110,7 @@
                     <span id="net-status" class="pwd-net-status pwd-net-status-online" aria-live="polite">● オンライン</span>
                 </div>
                 <p class="small text-muted mt-3 mb-0">長さや安全な保管の考え方は <a href="../guides/password-guide.html" style="color: var(--c-primary); font-weight: 700; text-decoration: underline;">強いパスワードの考え方ガイド</a> にまとめています。</p>
+            <p class="small">このツールは作成専用です。作ったパスワードの保管には <a href="https://support.google.com/accounts/answer/6208650?hl=ja" target="_blank" rel="noopener noreferrer">Google パスワード マネージャーの公式ガイド</a> を参考にしてください。ここからパスワードを自動送信することはありません。</p>
             </header>
 
             <!-- プレミアムタブナビゲーション -->
@@ -121,8 +122,8 @@
                     <button type="button" class="pwd-tab-btn" data-tab="check" role="tab" aria-selected="false" aria-controls="panel-check">
                         🔮 パスワード診断
                     </button>
-                    <button type="button" class="pwd-tab-btn" data-tab="vault" role="tab" aria-selected="false" aria-controls="panel-vault">
-                        🔐 暗号化管理 (ボールト)
+                    <button type="button" class="pwd-tab-btn" data-tab="vault" hidden role="tab" aria-selected="false" aria-controls="panel-vault">
+                        旧保管庫のデータを取り出す
                     </button>
                 </div>
             </div>
@@ -136,14 +137,19 @@
                         <div>
                             <h2>⚙️ 生成設定</h2>
                             <form id="settings-form" onsubmit="return false;">
-                                <div class="pwd-presets-label">クイックプリセット</div>
+                                <div class="pwd-presets-label">パスワード用プリセット</div>
                                 <div class="pwd-presets-group">
                                     <button type="button" class="pwd-preset-btn preset-btn" data-preset="standard">📋 標準</button>
                                     <button type="button" class="pwd-preset-btn preset-btn" data-preset="strong">🛡️ 高強度</button>
-                                    <button type="button" class="pwd-preset-btn preset-btn" data-preset="pin">🔢 PIN</button>
                                     <button type="button" class="pwd-preset-btn preset-btn" data-preset="wifi">📶 Wi-Fi</button>
-                                    <button type="button" class="pwd-preset-btn preset-btn" data-preset="bank">🏦 銀行PIN</button>
                                 </div>
+
+                                <div class="pwd-presets-label">数字PIN（暗証番号）</div>
+                                <div class="pwd-presets-group">
+                                    <button type="button" class="pwd-preset-btn preset-btn" data-preset="pin">🔢 数字4桁（PIN）</button>
+                                    <button type="button" class="pwd-preset-btn preset-btn" data-preset="bank">🔢 数字6桁（PIN）</button>
+                                </div>
+                                <p id="generation-purpose" class="small text-muted">パスワード：利用先の条件に合わせ、サービスごとに使い回さず設定してください。</p>
 
                                 <div class="pwd-slider-wrapper">
                                     <div class="pwd-slider-label">
@@ -227,11 +233,13 @@
                                 <h2>📋 生成結果</h2>
                                 <div style="display: flex; gap: 1rem;">
                                     <button type="button" id="history-btn" class="btn-link" style="background:none; border:none; color:var(--c-primary); font-weight:700; cursor:pointer;" aria-label="履歴を表示">📜 履歴</button>
+                                    <button type="button" id="visibility-all-btn" class="btn-link" aria-pressed="false">すべて隠す</button>
                                     <button type="button" id="copy-all-btn" class="btn-link" style="background:none; border:none; color:var(--c-primary); font-weight:700; cursor:pointer;" aria-label="すべてのパスワードをコピー">全部コピー</button>
                                 </div>
                             </div>
                             
-                            <div id="result-list" class="pwd-result-list" aria-live="polite" role="region">
+                            <p class="small text-muted">強さは文字種と長さに基づく参考値で、安全性の保証ではありません。画面の表示は「隠す」で切り替えられます。コピーした内容は別に残ります。</p>
+                    <div id="result-list" class="pwd-result-list" aria-live="polite" role="region">
                                 <!-- JSで動的に生成結果が出力されます -->
                             </div>
 
@@ -288,155 +296,32 @@
                         
                         <progress id="check-bar" class="strength-progress strength-progress-md strength-low" max="100" value="0" style="width: 80%; max-width: 400px; height: 10px; margin-bottom: 1rem;"></progress>
                         
-                        <div class="pwd-defense-desc">文字の種類と長さだけから見た、オフライン総当たりの参考値です。実際の安全性は保存方法やサービス側の対策でも変わります。</div>
-                        <div class="pwd-defense-time">🕐 推定時間（1秒10億回の試行を仮定）: <strong id="check-time">一瞬</strong></div>
+                        <div class="pwd-defense-desc">文字の種類と長さを基に、単純な繰り返し・連番を減点した参考値です。辞書語や流出済みパスワードは検査せず、実際の安全性を保証しません。</div>
                     </div>
                 </section>
 
             </div>
 
-            <!-- ===== タブ3: パスワード管理 (暗号化ボールト) ===== -->
-            <div id="panel-vault" class="pwd-tab-panel" role="tabpanel" aria-labelledby="tab-vault">
-                
-                <div class="pwd-card">
-                    
-                    <!-- 1. ロック画面 (セットアップ ＆ 解錠) -->
-                    <div id="vault-lock-screen" aria-live="polite">
-                        <section style="background: rgba(255,118,117,0.04); border: 1px solid rgba(255,118,117,0.2); border-radius: var(--radius-md); padding: 1.25rem; margin-bottom: 2rem;">
-                            <h3 style="font-size: 1rem; font-weight: 800; color: var(--c-primary); margin-top: 0; margin-bottom: 0.5rem;">🗝️ 暗号化ボールト（保管庫）の使い方</h3>
-                            <ol style="font-size: 0.85rem; color: var(--c-text-light); padding-left: 1.2rem; margin: 0 0 0.75rem 0; line-height: 1.7;">
-                                <li><strong>1. マスターパスワードの設定</strong>：16文字以上の固有なパスワードを決めます（これがすべての鍵になります）。</li>
-                                <li><strong>2. 暗号化保管</strong>：サイト名、ユーザー名、パスワードを強固に暗号化してブラウザ内に保存します。</li>
-                                <li><strong>3. サーバー送信一切なし</strong>：AES-256暗号を用いてすべてブラウザ内で処理。パスワードがネットに送信されることはありません。</li>
-                            </ol>
-                            <p style="font-size: 0.78rem; color: var(--c-danger); margin: 0; font-weight: 700;">※ 警告：このサイトはマスターパスワードを保存しないため、忘れた場合に運営者側で復元することはできません。必ず安全な場所に控えてください。</p>
-                        </section>
-
-                        <div style="text-align: center; padding: 2rem 0;">
-                            <div class="pwd-chest-icon" id="pwd-chest-icon">🔒</div>
-                            <h2 style="font-size: 1.4rem; font-weight: 800; color: var(--c-text); margin-bottom: 0.75rem;" id="vault-lock-title">マスターパスワードを設定</h2>
-                            <p style="font-size: 0.9rem; color: var(--c-text-light); margin-bottom: 1.5rem;" id="vault-lock-desc">
-                                ボールト内のデータはマスターパスワードで強力に暗号化されます。
-                            </p>
-
-                            <div class="pwd-vault-box">
-                                <div class="pwd-input-group mb-2" style="margin-bottom: 0.75rem;">
-                                    <input type="password" class="pwd-text-input" id="vault-master-pw" placeholder="マスターパスワード" autocomplete="new-password" aria-label="マスターパスワード">
-                                    <button class="pwd-field-toggle" id="vault-pw-toggle" aria-label="マスターパスワード表示を切り替え" type="button">👁️</button>
-                                </div>
-                                <div id="vault-confirm-wrap" style="margin-bottom: 0.75rem;">
-                                    <input type="password" class="pwd-text-input" id="vault-master-pw-confirm" placeholder="確認: もう一度入力" autocomplete="new-password" aria-label="確認用マスターパスワード">
-                                </div>
-
-                                <!-- マスターPW強度診断インジケーター -->
-                                <div id="vault-master-help" style="border: 1px solid var(--c-glass-border); border-radius: 8px; background: rgba(255,118,117,0.03); padding: 0.75rem; text-align: left; margin-bottom: 1rem;" hidden>
-                                    <div style="display: flex; justify-content: space-between; align-items: center; font-size: 0.8rem; font-weight: 700; margin-bottom: 0.25rem;">
-                                        <span id="vault-master-label" style="color: var(--c-text);">強度: 弱い</span>
-                                        <span id="vault-master-score" style="color: var(--c-text-light);">0/100</span>
-                                    </div>
-                                    <progress id="vault-master-bar" class="strength-progress strength-progress-sm strength-low" max="100" value="0" style="height: 6px; width: 100%;"></progress>
-                                    <div id="vault-master-tip" style="font-size: 0.7rem; color: var(--c-text-light); margin-top: 0.25rem;">16文字以上を推奨。ほかのサービスと使い回さないでください。</div>
-                                </div>
-
-                                <div id="vault-lock-error" style="color: var(--c-danger); font-size: 0.85rem; font-weight: 700; margin-bottom: 1rem;" hidden></div>
-                                
-                                <button id="vault-reset-corrupt-btn" class="btn btn-secondary" style="width: 100%; min-height: 38px; margin-bottom: 0.75rem; font-size: 0.85rem;" type="button" hidden>⚠️ 壊れたボールトデータを初期化</button>
-                                <button type="button" id="vault-unlock-btn" class="pwd-unlock-btn btn-primary">🔓 ロック解除</button>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- 2. アンロック後のメイン管理画面 -->
-                    <div id="vault-main" hidden>
-                        <div class="pwd-vault-header">
-                            <h2>🗝️ パスワード保管庫</h2>
-                            <div class="pwd-vault-actions">
-                                <button type="button" id="vault-export-btn" class="btn btn-secondary" style="padding: 0.5rem 0.75rem; font-size: 0.85rem;" title="エクスポート(暗号化JSON)" aria-label="ボールトを暗号化JSONでエクスポート">📤 エクスポート</button>
-                                <label class="btn btn-secondary" style="padding: 0.5rem 0.75rem; font-size: 0.85rem; margin: 0; cursor: pointer;" title="インポート" aria-label="ボールトを暗号化JSONからインポート">
-                                    📥 インポート <input type="file" id="vault-import-input" accept=".json" class="d-none">
-                                </label>
-                                <button type="button" id="vault-lock-btn" class="btn btn-primary" style="padding: 0.5rem 1rem; font-size: 0.85rem; background: var(--c-warn); color:#2D3436; border-color:var(--c-warn);">🔒 ロック</button>
-                            </div>
-                        </div>
-
-                        <!-- 検索バー -->
-                        <div class="pwd-form-group" style="margin-bottom: 1rem;">
-                            <input type="text" class="pwd-text-input" id="vault-search" placeholder="🔍 サイト名やユーザー名で保管庫を検索...">
-                        </div>
-
-                        <!-- 提案B: カテゴリ別フィルタータブ -->
-                        <div class="pwd-category-filter" role="tablist">
-                            <button type="button" class="pwd-cat-btn active" data-category="all" role="tab" aria-selected="true">すべて</button>
-                            <button type="button" class="pwd-cat-btn" data-category="social" role="tab" aria-selected="false">🌐 SNS・メディア</button>
-                            <button type="button" class="pwd-cat-btn" data-category="shopping" role="tab" aria-selected="false">🛍️ ショッピング</button>
-                            <button type="button" class="pwd-cat-btn" data-category="finance" role="tab" aria-selected="false">🏦 銀行・金融</button>
-                            <button type="button" class="pwd-cat-btn" data-category="work" role="tab" aria-selected="false">💼 仕事・学校</button>
-                            <button type="button" class="pwd-cat-btn" data-category="other" role="tab" aria-selected="false">🗝️ その他</button>
-                        </div>
-
-                        <!-- エントリ一覧 -->
-                        <div id="vault-entries" style="display: flex; flex-direction: column; gap: 0.75rem; margin-bottom: 1.5rem;">
-                            <!-- JSで暗号化解除されたエントリカードが動的に出力されます -->
-                        </div>
-
-                        <!-- 追加ボタン -->
-                        <button type="button" id="vault-add-btn" class="btn btn-primary" style="width: 100%; height: 50px; font-weight: 800; font-size: 1rem;">＋ 新しいパスワードを追加</button>
-
-                        <!-- 全削除 -->
-                        <div style="text-align: center; margin-top: 1.5rem;">
-                            <button type="button" id="vault-destroy-btn" style="background: none; border: none; color: var(--c-danger); font-weight: 700; cursor: pointer; font-size: 0.85rem; text-decoration: underline;" aria-label="保管庫のデータをすべて削除">⚠️ ボールトを全削除</button>
-                        </div>
-                    </div>
-
-                    <!-- 3. 追加/編集フォーム (スライドイン的表示) -->
-                    <div id="vault-form" hidden>
-                        <h2 id="vault-form-title" style="margin-bottom: 1.5rem;">新規追加</h2>
-                        
-                        <div class="pwd-form-group">
-                            <label for="vault-site-name">サイト名 / サービス名 <span class="required">*</span></label>
-                            <input type="text" class="pwd-text-input" id="vault-site-name" placeholder="例: Twitter, Amazon, 社内システム" aria-required="true">
-                        </div>
-
-                        <!-- 提案B: カテゴリセレクトボックス -->
-                        <div class="pwd-form-group">
-                            <label for="vault-category">カテゴリー</label>
-                            <select class="pwd-select" id="vault-category" aria-label="カテゴリー選択">
-                                <option value="other" selected>🗝️ その他</option>
-                                <option value="social">🌐 SNS・メディア</option>
-                                <option value="shopping">🛍️ ショッピング</option>
-                                <option value="finance">🏦 銀行・金融</option>
-                                <option value="work">💼 仕事・学校</option>
-                            </select>
-                        </div>
-
-                        <div class="pwd-form-group">
-                            <label for="vault-password">パスワード <span class="required">*</span></label>
-                            <div class="pwd-input-group">
-                                <input type="password" class="pwd-text-input" id="vault-password" placeholder="パスワードを入力、または自動生成からコピペ" aria-required="true" autocomplete="new-password">
-                                <button class="pwd-field-toggle vault-field-toggle" aria-label="パスワード表示を切り替え" type="button">👁️</button>
-                            </div>
-                        </div>
-
-                        <!-- カスタムフィールド (ログインIDやメールアドレス等) -->
-                        <div class="pwd-form-group">
-                            <label style="margin-bottom: 0.25rem;">追加の項目 (ユーザー名やメールアドレスなど)</label>
-                            <div id="vault-custom-fields" style="margin-bottom: 0.75rem;">
-                                <!-- JSでカスタム項目入力行が追加されます -->
-                            </div>
-                            <button type="button" id="vault-add-field-btn" class="btn btn-secondary" style="font-size: 0.8rem; padding: 0.45rem 1rem; border-radius: var(--radius-btn);">
-                                ＋ 項目を追加
-                            </button>
-                        </div>
-
-                        <div style="display: flex; gap: 1rem; margin-top: 2rem;">
-                            <button type="button" id="vault-save-btn" class="btn btn-primary" style="flex: 2; height: 48px; font-weight: 800;">💾 保存する</button>
-                            <button type="button" id="vault-cancel-btn" class="btn btn-secondary" style="flex: 1; height: 48px; font-weight: 700;">キャンセル</button>
-                        </div>
-                        <input type="hidden" id="vault-edit-id">
-                    </div>
-
+            <!-- Existing saved data only: read-only recovery, no management form. -->
+            <div id="panel-vault" class="pwd-tab-panel" role="tabpanel" aria-label="旧保管庫のデータを取り出す">
+              <div class="pwd-card">
+                <h2>旧保管庫のデータを取り出す</h2>
+                <p>新規保存・編集は終了しました。以前このブラウザに保存した内容の表示・コピーと、暗号化バックアップの取り出しだけができます。元の保存データは削除しません。</p>
+                <div id="vault-lock-screen">
+                  <label for="vault-master-pw">以前のマスターパスワード</label>
+                  <input type="password" class="pwd-text-input" id="vault-master-pw" autocomplete="off">
+                  <p id="vault-lock-error" role="alert" hidden></p>
+                  <button type="button" id="vault-unlock-btn" class="btn btn-primary">ロック解除して取り出す</button>
                 </div>
-
+                <button type="button" id="vault-export-btn" class="btn btn-secondary">暗号化JSONを保存</button>
+                <p class="small">このJSONは旧保管庫専用の暗号化バックアップです。Google パスワード マネージャーへそのまま読み込む形式ではありません。暗号化バックアップの復元にも同じマスターパスワードが必要です。忘れた場合、内容は復元できません。</p>
+                <div id="vault-main" hidden>
+                  <button type="button" id="vault-lock-btn" class="btn btn-secondary">ロックして表示を消す</button>
+                  <label for="vault-search">保存済み項目を検索</label>
+                  <input type="search" id="vault-search" class="pwd-text-input">
+                  <div id="vault-entries"></div>
+                </div>
+              </div>
             </div>
 
             <!-- アコーディオン式極上コラムセクション (detailsタグでスマート収納！) -->
@@ -458,7 +343,7 @@
                         そんな、スマホ社会が生んだ現代の「パスワード難民」から脱出するために、このツールを作りました。
                     </p>
                     <p>
-                        ブラウザでもスマホでも、いざという時に「手入力しやすく、使い回さないパスワード」を作り、この端末のブラウザ内で暗号化して保管（ボールト機能）できるようにしてあります。端末やブラウザの状態によるリスクは残るため、重要な情報には専用のパスワード管理サービスも検討してください。私と同じようにログイン画面の前でフリーズした経験のあるあなたへ、このツールが届きますように！
+                        ブラウザでもスマホでも、使い回さないパスワードを作れるようにしました。生成後は専用のパスワードマネージャーへ保管し、利用先ごとに使い分けてください。
                     </p>
 
                     <div style="background: var(--c-bg); border-left: 4px solid var(--c-primary); border-radius: 0 var(--radius-md) var(--radius-md) 0; padding: 1.25rem; margin: 1.5rem 0;">
@@ -477,7 +362,7 @@
                             <strong>🔒 レベル1：重要アカウント（24文字以上）</strong><br>メール、銀行、主要SNSなど、ほかのアカウントの復旧にも関わる場所。多要素認証も併用します。<br>
                             <strong>🔑 レベル2：通常アカウント（16文字以上）</strong><br>ショッピングサイトや有料サブスクなど。サービスごとに異なる文字列を使います。<br>
                             <strong>🚪 レベル3：文字数制限があるサービス</strong><br>上限まで長くし、使い回さず、利用できる場合は多要素認証を有効にします。<br>
-                            この「パスワード一括生成くん」は、そうした用途別のパスワードを、ワンクリックで生成できるように設計しました。生成した文字列は、上の「パスワード管理（暗号化ボールト）」へ端末内保存できます。保存方法の制約と注意事項を確認したうえで利用してください。
+                            この「パスワード一括生成くん」は、そうした用途別のパスワードを、ワンクリックで生成できるように設計しました。生成した文字列は、Google パスワード マネージャーなどの保管先へ保存して利用してください。
                         </p>
                     </div>
 
@@ -509,10 +394,7 @@
                     </div>
 
                     <div class="pwd-faq-item">
-                        <button type="button" class="pwd-faq-question">パスワード管理は安全ですか？</button>
-                        <div class="pwd-faq-answer">
-                                保存データはマスターパスワードから導出した鍵でAES-256-GCM暗号化し、ブラウザのLocalStorageに保存します。端末を共有する場合やマルウェアが動作する環境ではリスクが残るため、重要な認証情報には専用のパスワードマネージャーも検討してください。
-                        </div>
+                        <button type="button" class="pwd-faq-question">生成したパスワードはどこに保管しますか？</button><div class="pwd-faq-answer">このツールは作成専用です。<a href="https://support.google.com/accounts/answer/6208650?hl=ja" target="_blank" rel="noopener noreferrer">Google パスワード マネージャーの公式ガイド</a> を参考に、サービスごとに異なるパスワードを保管してください。</div>
                     </div>
 
                     <div class="pwd-faq-item">
@@ -529,20 +411,7 @@
                         </div>
                     </div>
 
-                    <div class="pwd-faq-item">
-                        <button type="button" class="pwd-faq-question">「パスワード管理」の使い方は？</button>
-                        <div class="pwd-faq-answer">
-                            <strong>初回セットアップ</strong><br>
-                            ① 上部の「🔐 暗号化管理 (ボールト)」タブをタップ<br>
-                            ② ほかで使っていないマスターパスワード（16文字以上）を入力<br>
-                            ③ 確認のためもう一度同じパスワードを入力<br>
-                            ④ 「🔐 ボールトを作成」を押して完了！<br><br>
-                            <strong>パスワードの登録</strong><br>
-                            ボールト作成後、「＋ 新しいパスワードを追加」ボタンからサイト名とパスワードを保存できます。メールアドレスなどの追加情報も「＋ 項目を追加」で登録可能です。また、新機能として「🌐 SNS」や「🏦 金融」などのカテゴリ分類もサポートされました！<br><br>
-                            <strong>⚠️ 重要な注意</strong><br>
-                            マスターパスワードはどこにも保存されません。忘れると保存したデータは<strong>一切復元できません</strong>ので、必ず覚えられるものにしてください。心配な方は📤エクスポート機能でバックアップを取っておくと安心です。
-                        </div>
-                    </div>
+
 
                 </div>
             </section>

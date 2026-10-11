@@ -220,9 +220,11 @@ test('パスワード機能は安全側の初期値と誇張しない説明を�
   assert.match(html, /id="length"[^>]*max="64"[^>]*value="16"/);
   assert.match(html, /id="len-input"[^>]*max="64"[^>]*value="16"/);
   assert.match(script, /const MAX_LENGTH = 64;/);
-  assert.match(script, /const MIN_MASTER_PASSWORD_LENGTH = 16;/);
+  // New vault setup is removed; existing data remains read-only recoverable.
+  assert.doesNotMatch(script, /vault\.setup\(/);
+  assert.match(script, /vault\.unlock\(/);
   assert.doesNotMatch(`${html}\n${script}`, /絶対防衛|最強設定|解読予想時間/);
-  assert.match(html, /推定/);
+  assert.match(html, /参考/);
 });
 
 
