@@ -782,6 +782,26 @@ async function printMetrics(page) {
             transform: getComputedStyle(cardNode).transform, motion: ['body', '#quest-card', '.stamp-spot'].map(selector => { const style = getComputedStyle(document.querySelector(selector)); return { selector, transitionProperty: style.transitionProperty, transitionDuration: style.transitionDuration, animationName: style.animationName, animationDuration: style.animationDuration }; }) };
     });
 }
+async function waitForPrintLayout(page, viewport) {
+    // CDPの応答直後には画面用レイアウトが残る場合がある。余白の合否を待たず、
+    // 印刷メディア・用紙相当のviewport・印刷専用の外枠が反映されたことを確認する。
+    const evidence = await page.waitForFunction(({ width, height }) => {
+        const paddingKeys = ['paddingTop', 'paddingRight', 'paddingBottom', 'paddingLeft'];
+        const container = getComputedStyle(document.querySelector('.quest-container'));
+        const reward = getComputedStyle(document.querySelector('.reward-area'));
+        const header = getComputedStyle(document.querySelector('.quest-header'));
+        const containerPadding = paddingKeys.map(key => container[key]), rewardPadding = paddingKeys.map(key => reward[key]);
+        const landscape = matchMedia('(orientation: landscape)').matches;
+        if (!matchMedia('print').matches || matchMedia('screen').matches || innerWidth !== width || innerHeight !== height ||
+            landscape !== (width > height) || document.fonts.status !== 'loaded' ||
+            !containerPadding.every(value => value === '0px') || !rewardPadding.every(value => value === '8px') ||
+            header.borderBottomWidth !== '2px') return false;
+        return { media: 'print', viewport: { width: innerWidth, height: innerHeight }, landscape,
+            fonts: document.fonts.status, containerPadding, rewardPadding, headerBorder: header.borderBottomWidth };
+    }, viewport, { timeout: 5000, polling: 'raf' });
+    try { return await evidence.jsonValue(); }
+    finally { await evidence.dispose(); }
+}
 function assertPrintGeometry(metrics) {
     for (const name of ['header', 'grid', 'reward']) {
         const rect = metrics[name], content = metrics.cardContent;
@@ -825,10 +845,9 @@ async function printSuite() {
         await setCount(page, 35, current); await page.locator('.stamp-spot[data-index="3"]').click();
         await page.locator('#quest-title').fill(title); await page.locator('#quest-reward').fill(reward); await page.locator('#print-with-stamps').uncheck();
         const name = `pdf-${landscape ? 'landscape' : 'portrait'}-35-max30-japanese`; await savePDF(page, name, landscape, record);
-        await page.setViewportSize(landscape ? { width: 1123, height: 794 } : { width: 794, height: 1123 }); await page.emulateMedia({ media: 'print' });
-        // viewportと印刷メディアの切替が描画へ反映されてから長文の配置を測る。
-        // 即時の白背景・遷移停止は別ケースで待機なしのまま検証する。
-        await page.evaluate(() => new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve))));
+        const viewport = landscape ? { width: 1123, height: 794 } : { width: 794, height: 1123 };
+        await page.setViewportSize(viewport); await page.emulateMedia({ media: 'print' });
+        record.printMedia = await waitForPrintLayout(page, viewport);
         record.print = await printMetrics(page); assertPrintGeometry(record.print);
         assert.equal(record.print.title, title); assert.equal(record.print.rewardText, reward); assert.equal(record.print.stamps.length, 35);
         assert.ok(record.print.grid.bottom <= record.print.reward.top + 1); assert.ok(record.print.reward.bottom <= record.print.card.bottom + 1);

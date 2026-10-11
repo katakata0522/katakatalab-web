@@ -2594,3 +2594,55 @@ body.text-large .btn {
 .text-adventure-ocean {
     color: #0369a1;
 }
+
+
+/* 共有リンクとダイアログ操作が小さな画面からはみ出さないようにする。 */
+#share-link-input { min-width: 0; }
+#share-modal { max-height: calc(100dvh - 2rem); overflow-y: auto; }
+#gacha-modal-content { max-height: calc(100dvh - 2rem); overflow-y: auto; }
+#gacha-modal .modal-footer { flex-wrap: wrap; }
+#share-modal-close, [data-action="parents-modal-close"] { min-width: 44px; min-height: 44px; }
+.copy-card:focus-visible { outline: 3px solid var(--color-adventure-sky); outline-offset: 3px; }
+#book-grade-support input:focus-visible + span { outline: 3px solid var(--color-adventure-sky); outline-offset: 3px; }
+
+@media print {
+  /* native dialogの[open]指定にも勝ち、構成メモだけを紙面に残す。 */
+  body #parents-modal, body #parents-modal[open], body #share-modal, body #share-modal[open], #gacha-modal { display: none !important; }
+  body, body.theme-night { background: white !important; color: black !important; }
+  *, *::before, *::after { animation: none !important; transition: none !important; }
+  #draft-details::details-content { content-visibility: visible; }
+  #print-draft-view { white-space: pre-wrap; overflow-wrap: anywhere; }
+  .draft-editor-container, #draft-details, #draft-details > div, #print-draft-view { break-inside: auto; page-break-inside: auto; }
+}
+
+@media print {
+  /* 端末の暗色設定に関係なく、白い紙には通常の文字色を使う。 */
+  body.theme-night {
+    --color-adventure-sky: #4FC3F7;
+    --color-adventure-sun: #FFEB3B;
+    --color-adventure-sand: #FFF9C4;
+    --color-adventure-ocean: #0288D1;
+    --color-adventure-ocean-dark: #0277BD;
+    --color-adventure-grass: #8BC34A;
+    --color-adventure-wood: #8D6E63;
+    --color-adventure-paper: #FFFDE7;
+    --color-white: #ffffff;
+    --color-gray-50: #f9fafb;
+    --color-gray-100: #f3f4f6;
+    --color-gray-200: #e5e7eb;
+    --color-gray-300: #d1d5db;
+    --color-gray-500: #6b7280;
+    --color-gray-600: #4b5563;
+    --color-gray-700: #374151;
+    --color-gray-800: #1f2937;
+    --bg-primary: #ffffff;
+    --bg-blue-50: #EFF6FF;
+    --bg-yellow-50: #FFFBEB;
+    --bg-orange-50: #FFF7ED;
+  }
+}
+
+@media print {
+  /* 画面用のタイムライン丸印を見出しアイコンへ重ねて印刷しない。 */
+  .timeline-item::before { display: none !important; }
+}

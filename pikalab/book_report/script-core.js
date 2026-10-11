@@ -41,10 +41,7 @@ const SELECTORS = {
     PROGRESS_ANNOUNCEMENT: 'progress-announcement',
     WIZARD_FORM: 'wizard-form',
     RESULT_SECTION: 'result-section',
-    TOAST_CONTAINER: 'toast-container',
-    PARENT_MODAL: 'parent-modal',
-    PARENT_MODAL_CONTENT: 'parent-modal-content',
-    PARENT_MODAL_OVERLAY: 'parent-modal-overlay'
+    TOAST_CONTAINER: 'toast-container'
 };
 
 const TEXT_TEMPLATES = {
@@ -52,7 +49,7 @@ const TEXT_TEMPLATES = {
         cover: '表紙の絵やタイトルにとても惹かれたからです。',
         recommend: '先生（または親）に「面白いよ」とすすめられたからです。',
         movie: '前に映画（アニメ）で見たことがあって、本でも読んでみたいと思ったからです。',
-        interest: '私の好きなことに関系がある本だったからです。',
+        interest: '私の好きなことに関係がある本だったからです。',
         default: ''
     },
     OPENING_A: (title, author, reason) => `私が選んだ本は「${title}」（${author}）です。<br>この本を読もうと思ったきっかけは、${reason}`,
@@ -100,7 +97,7 @@ const GENRE_CONFIG = {
         partALabel: 'だれが（主人公の偉人は？）',
         partAPlaceholder: '例：エジソンが',
         partBLabel: '何をした？（発明や努力など）',
-        partBPlaceholder: '例：何度も実験をくり返し、電球を発明して',
+        partBPlaceholder: '例：何度も実験をくり返し、実用的な電球を開発して',
         partCLabel: 'どうなった？（世界への影響など）',
         partCPlaceholder: '例：世界を明るくした',
         assists: {
@@ -162,18 +159,14 @@ const GENRE_CONFIG = {
 // ============================================
 function applyPortalSettings() {
     try {
-        const portalRaw = localStorage.getItem('wonder_school_profile_v2');
-        if (portalRaw) {
-            const portalData = JSON.parse(portalRaw);
-            if (portalData.textSize === 'large') {
-                document.body.classList.add('text-large');
-            }
-            if (portalData.reduceMotion === true) {
-                document.body.classList.add('reduce-motion');
-            }
-        }
-    } catch (e) {
-        console.error("Failed to apply portal settings:", e);
+        const raw = localStorage.getItem('wonder_school_profile_v2');
+        const value = raw ? JSON.parse(raw) : null;
+        const settings = value && typeof value === 'object' && !Array.isArray(value) ? value : {};
+        document.body.classList.toggle('text-large', settings.textSize === 'large');
+        document.body.classList.toggle('reduce-motion', settings.reduceMotion === true);
+        document.body.classList.toggle('theme-night', settings.darkMode === true);
+    } catch (error) {
+        console.warn('Failed to apply portal settings:', error);
     }
 }
 
@@ -195,21 +188,22 @@ const Utils = {
 
     removeEmoji(text) {
         if (!text) return '';
-        return text.replace(/[\p{Emoji}\p{Emoji_Modifier}\p{Emoji_Component}\p{Extended_Pictographic}]+/gu, '').trim();
+        return String(text).replace(/[0-9#*]\uFE0F?\u20E3|[\p{Extended_Pictographic}\p{Emoji_Modifier}\p{Regional_Indicator}\u200D\uFE0F\u20E3]/gu, '').trim();
     },
 
     sanitizeFilename(name) {
         if (!name) return '';
-        return name
-            .replace(/[/\\:*?"<>|]/g, '_')
-            .replace(/\s+/g, '_')
-            .substring(0, 100);
+        return Array.from(name.replace(/[/\\:*?"<>|\x00-\x1f]/g, '_').replace(/\s+/g, '_')).slice(0, 100).join('');
     },
 
     coerceSafeString(value, maxLength = 300) {
         const normalized = typeof value === 'string' ? value : '';
         const trimmed = normalized.trim();
-        return trimmed.length > maxLength ? trimmed.slice(0, maxLength) : trimmed;
+        return this.truncateText(trimmed, maxLength);
+    },
+
+    truncateText(value, maxLength) {
+        return Array.from(typeof value === 'string' ? value : '').slice(0, maxLength).join('');
     },
 
     escapeSelectorValue(value = '') {
@@ -298,15 +292,56 @@ function getElement(id) {
 }
 
 function debounce(func, wait) {
-    let timeout;
-    return function executedFunction(...args) {
-        const later = () => {
-            clearTimeout(timeout);
-            func(...args);
-        };
-        clearTimeout(timeout);
-        timeout = setTimeout(later, wait);
+    let timeout = null;
+    let pending = false;
+    const run = () => {
+        if (timeout !== null) clearTimeout(timeout);
+        timeout = null;
+        if (!pending) return;
+        pending = false;
+        func();
     };
+    const wrapped = () => {
+        pending = true;
+        if (timeout !== null) clearTimeout(timeout);
+        timeout = setTimeout(run, wait);
+    };
+    wrapped.flush = run;
+    wrapped.cancel = () => {
+        if (timeout !== null) clearTimeout(timeout);
+        timeout = null;
+        pending = false;
+    };
+    return wrapped;
+}
+
+const FORM_IDS = Object.freeze({
+    title: 'book-title', author: 'book-author', synopsisPartA: 'synopsis-part-a',
+    synopsisPartB: 'synopsis-part-b', synopsisPartC: 'synopsis-part-c', motivationDetail: 'motivation-detail',
+    sceneDesc: 'scene-desc', sceneMyself: 'scene-myself', conclusionChange: 'conclusion-change', draftText: 'draft-textarea'
+});
+
+function normalizeFormData(value) {
+    if (!value || typeof value !== 'object' || Array.isArray(value)) return null;
+    const data = {};
+    for (const field of ALLOWED_FORM_FIELDS) {
+        data[field] = Utils.truncateText(value[field], CONFIG.MAX_LENGTHS[field] || 1000);
+    }
+    if (!Object.hasOwn(GENRE_CONFIG, data.genre)) data.genre = 'story';
+    if (!['cover', 'recommend', 'movie', 'interest', 'other', ''].includes(data.motivation)) data.motivation = '';
+    if (!['opening-a', 'opening-b', 'opening-c'].includes(data.selectedOpening)) data.selectedOpening = 'opening-a';
+    return data;
+}
+
+function mergeFormData(base, local, remote) {
+    if (!base || !remote) return { ...local };
+    return Object.fromEntries(ALLOWED_FORM_FIELDS.map(field => [field, local[field] !== base[field] ? local[field] : remote[field]]));
+}
+
+function emitBookEvent(name, detail = {}) {
+    if (typeof document !== 'undefined' && typeof CustomEvent !== 'undefined') {
+        document.dispatchEvent(new CustomEvent(`book-report:${name}`, { detail }));
+    }
 }
 
 // ============================================
@@ -332,7 +367,17 @@ function createBookReportApp() {
                 draftText: '' // 下書きエディタの中身
             },
 
-            activeSlot: 1, // 現在のスロット番号
+            activeSlot: 1, // 現在のタブで選んだしおり。別タブの選択では移動しない。
+            persistedFormData: null,
+            persistedStep: 1,
+            composing: new Set(),
+            dirty: false,
+            saveWarningShown: false,
+            counterUpdaters: [],
+            navigationTimer: null,
+            gachaTimer: null,
+            gachaCloseTimer: null,
+            gachaGeneration: 0,
             currentGachaTarget: null,
             latestGachaChosen: null,
             focusTrapHandler: null,
@@ -343,10 +388,8 @@ function createBookReportApp() {
             // ----------------------------------------
             init() {
                 applyPortalSettings();
-                const urlRestored = this.loadFromUrlParams();
-                if (!urlRestored) {
-                    this.loadSavedData();
-                }
+                this.loadSavedData();
+                this.loadFromUrlParams();
                 this.applyInputConstraints();
                 this.bindEvents();
                 this.bindFeelingChips();
@@ -360,25 +403,61 @@ function createBookReportApp() {
                 this.initShareModal();
                 this.syncPrintElements();
                 this.listenStorageChanges();
+                document.addEventListener('book-report:thinking-map-updated', () => this.updateMeter());
+                document.addEventListener('book-report:gacha-dismiss', event => this.closeGachaModal(event.detail?.focusTarget));
+                window.addEventListener('beforeprint', () => this.preparePrint());
+                window.addEventListener('afterprint', () => this.restoreAfterPrint());
             },
 
             listenStorageChanges() {
-                window.addEventListener('storage', (e) => {
-                    if (e.key === this.getStorageKey() || e.key === CONFIG.ACTIVE_SLOT_KEY) {
-                        this.loadSavedData();
-                        this.restoreStep();
-                        this.applyGenreUI();
-                        const resultSection = getElement(SELECTORS.RESULT_SECTION);
-                        if (resultSection && !resultSection.classList.contains('hidden')) {
-                            this.populateResults();
-                        }
-                    }
+                window.addEventListener('storage', event => {
+                    if (event.key === 'wonder_school_profile_v2' || event.key === null) applyPortalSettings();
+                    if (event.key === this.getStorageKey() || event.key === null) this.syncStoredState();
+                    if (event.key === CONFIG.ACTIVE_SLOT_KEY || event.key?.startsWith(CONFIG.STORAGE_KEY_PREFIX)) this.updateSlotTitles();
                 });
             },
 
-            // ----------------------------------------
-            // URL Share & Serialization & Print Synchronization
-            // ----------------------------------------
+            syncStoredState() {
+                if (this.composing.size || this.isSlotSwitching) return;
+                const remote = this.readStoredState();
+                if (!remote.ok) return;
+                if (!remote.data) {
+                    this.persistedFormData = { ...this.formData };
+                    return;
+                }
+                this.collectData();
+                const next = mergeFormData(this.persistedFormData, this.formData, remote.data.formData);
+                const changed = JSON.stringify(next) !== JSON.stringify(this.formData);
+                this.formData = next;
+                this.persistedFormData = { ...remote.data.formData };
+                if (changed) {
+                    this.populateForm();
+                    this.applyGenreUI();
+                    if (!getElement(SELECTORS.RESULT_SECTION)?.classList.contains('hidden')) this.populateResults();
+                    this.syncPrintElements();
+                }
+            },
+
+            readStoredState(slot = this.activeSlot) {
+                try {
+                    const raw = localStorage.getItem(this.getStorageKey(slot));
+                    if (raw === null) return { ok: true, data: null, raw };
+                    const value = JSON.parse(raw);
+                    if (!value || typeof value !== 'object' || Array.isArray(value)) return { ok: false, data: null };
+                    const source = value.formData;
+                    const formData = normalizeFormData(source);
+                    if (!formData) return { ok: false, data: null };
+                    if (typeof source.synopsis === 'string' && !source.synopsisPartA) formData.synopsisPartA = Utils.truncateText(source.synopsis, CONFIG.MAX_LENGTHS.synopsisPartA);
+                    const currentStep = Number.isInteger(value.currentStep) && value.currentStep >= 1 && value.currentStep <= CONFIG.TOTAL_STEPS ? value.currentStep : 1;
+                    return { ok: true, data: { formData, currentStep }, raw };
+                } catch (error) {
+                    return { ok: false, data: null };
+                }
+            },
+
+            // 共有データは端末の保存内容と独立して検証する。
+
+
             serializePlanData(data) {
                 try {
                     const jsonStr = JSON.stringify(data);
@@ -399,6 +478,7 @@ function createBookReportApp() {
 
             deserializePlanData(base64Str) {
                 try {
+                    if (typeof base64Str !== 'string' || base64Str.length > 100000 || !/^[A-Za-z0-9_-]+$/.test(base64Str)) return null;
                     let base64 = base64Str
                         .replace(/-/g, '+')
                         .replace(/_/g, '/');
@@ -410,7 +490,7 @@ function createBookReportApp() {
                     for (let i = 0; i < binString.length; i++) {
                         bytes[i] = binString.charCodeAt(i);
                     }
-                    const jsonStr = new TextDecoder().decode(bytes);
+                    const jsonStr = new TextDecoder('utf-8', { fatal: true }).decode(bytes);
                     return JSON.parse(jsonStr);
                 } catch (e) {
                     console.error('デシリアライズ失敗:', e);
@@ -420,49 +500,52 @@ function createBookReportApp() {
 
             loadFromUrlParams() {
                 try {
-                    const params = new URLSearchParams(window.location.search);
-                    const dataParam = params.get('data');
+                    const url = new URL(window.location.href);
+                    const dataParam = url.searchParams.get('data');
                     if (!dataParam) return false;
-
-                    const decodedData = this.deserializePlanData(dataParam);
-                    if (decodedData && typeof decodedData === 'object') {
-                        this.resetFormDataToDefault();
-                        for (const field of ALLOWED_FORM_FIELDS) {
-                            if (decodedData[field] !== undefined) {
-                                const maxLength = CONFIG.MAX_LENGTHS[field] || 1000;
-                                this.formData[field] = Utils.coerceSafeString(decodedData[field], maxLength);
-                            }
-                        }
-                        this.currentStep = decodedData.currentStep || 1;
-                        this.saveData();
-                        this.populateForm();
-
-                        if (decodedData.showResults) {
-                            const wizardForm = getElement(SELECTORS.WIZARD_FORM);
-                            const resultSection = getElement(SELECTORS.RESULT_SECTION);
-                            const progressContainer = getElement(SELECTORS.PROGRESS_CONTAINER);
-                            if (wizardForm) wizardForm.style.display = 'none';
-                            if (progressContainer) progressContainer.style.display = 'none';
-                            if (resultSection) {
-                                resultSection.classList.remove('hidden');
-                            }
-                            this.populateResults();
-                        } else {
-                            this.restoreStep();
-                        }
-
-                        if (typeof history !== 'undefined' && history.replaceState) {
-                            const cleanUrl = window.location.protocol + "//" + window.location.host + window.location.pathname;
-                            history.replaceState({path: cleanUrl}, '', cleanUrl);
-                        }
-
-                        this.showToast('共有された感想文データを読み込みました');
-                        return true;
+                    const decoded = this.deserializePlanData(dataParam);
+                    const normalized = normalizeFormData(decoded);
+                    if (!normalized || !ALLOWED_FORM_FIELDS.some(field => Object.hasOwn(decoded, field))) {
+                        this.showToast('共有データを読み込めませんでした', 'error');
+                        return false;
                     }
-                } catch (e) {
-                    console.warn('Failed to load from URL params:', e);
+                    const hasLocalData = Object.keys(FORM_IDS).some(field => this.formData[field]) || this.formData.genre !== 'story' || this.formData.motivation || this.formData.sceneFeeling || this.formData.selectedOpening !== 'opening-a';
+                    if (hasLocalData && !window.confirm(`しおり ${this.activeSlot} の内容を、共有された感想文データに置き換えますか？`)) return false;
+                    this.formData = normalized;
+                    this.currentStep = Number.isInteger(decoded.currentStep) && decoded.currentStep >= 1 && decoded.currentStep <= CONFIG.TOTAL_STEPS ? decoded.currentStep : 1;
+                    this.populateForm();
+                    // 明示的な取り込みは、確認前の保存値と合成しない。
+                    this.persistedFormData = null;
+                    this.pendingImportData = dataParam;
+                    const saved = this.persistState();
+                    this.updateSlotTitles();
+                    if (decoded.showResults === true) {
+                        const wizard = getElement(SELECTORS.WIZARD_FORM);
+                        const progress = getElement(SELECTORS.PROGRESS_CONTAINER);
+                        if (wizard) wizard.style.display = 'none';
+                        if (progress) progress.style.display = 'none';
+                        getElement(SELECTORS.RESULT_SECTION)?.classList.remove('hidden');
+                        this.populateResults();
+                    }
+                    if (saved) this.showToast('共有された感想文データを読み込みました');
+                    return true;
+                } catch (error) {
+                    console.warn('Failed to load from URL params:', error);
+                    return false;
                 }
-                return false;
+            },
+
+
+            clearImportedUrl() {
+                if (!this.pendingImportData) return;
+                try {
+                    const url = new URL(window.location.href);
+                    if (url.searchParams.get('data') === this.pendingImportData) {
+                        url.searchParams.delete('data');
+                        if (typeof history !== 'undefined' && history.replaceState) history.replaceState(history.state, '', url.href);
+                    }
+                    this.pendingImportData = null;
+                } catch (error) { /* 保存成功とは独立に、復元用URLは残しておく。 */ }
             },
 
             syncPrintElements() {
@@ -486,6 +569,8 @@ function createBookReportApp() {
                 let lastShareTrigger = null;
 
                 const openShareModal = () => {
+                    if (shareModal.open || this.composing.size) return;
+                    this.saveData();
                     lastShareTrigger = document.activeElement;
                     const isResultsVisible = !getElement(SELECTORS.RESULT_SECTION)?.classList.contains('hidden');
                     const shareState = {
@@ -539,15 +624,19 @@ function createBookReportApp() {
                     }
 
                     shareModal.showModal();
+                    shareBtn?.setAttribute('aria-expanded', 'true');
                 };
 
-                const closeShareModal = () => {
-                    shareModal.close();
+                const restoreShareFocus = () => {
+                    shareBtn?.setAttribute('aria-expanded', 'false');
                     if (lastShareTrigger && typeof lastShareTrigger.focus === 'function') {
                         lastShareTrigger.focus();
                         lastShareTrigger = null;
                     }
                 };
+
+                shareModal.addEventListener('close', restoreShareFocus);
+                const closeShareModal = () => shareModal.close();
 
                 if (shareBtn) {
                     shareBtn.addEventListener('click', openShareModal);
@@ -564,21 +653,44 @@ function createBookReportApp() {
                 });
 
                 if (shareCopyBtn && shareLinkInput) {
-                    shareCopyBtn.addEventListener('click', () => {
-                        shareLinkInput.select();
-                        shareLinkInput.setSelectionRange(0, 99999);
-                        try {
-                            navigator.clipboard.writeText(shareLinkInput.value).then(() => {
-                                this.showToast('📋 リンクをコピーしました！');
-                            }).catch(() => {
-                                document.execCommand('copy');
-                                this.showToast('📋 リンクをコピーしました！');
-                            });
-                        } catch (err) {
-                            document.execCommand('copy');
-                            this.showToast('📋 リンクをコピーしました！');
-                        }
+                    shareCopyBtn.addEventListener('click', async () => {
+                        if (shareCopyBtn.disabled) return;
+                        shareCopyBtn.disabled = true;
+                        const value = shareLinkInput.value;
+                        const copied = await this.copyClipboard(value, shareLinkInput, () => shareModal.open && shareLinkInput.value === value);
+                        shareCopyBtn.disabled = false;
+                        if (shareModal.open) this.showToast(copied ? '📋 リンクをコピーしました！' : 'コピーできませんでした', copied ? 'normal' : 'error');
                     });
+                }
+            },
+
+            async copyClipboard(text, field = null, isCurrent = () => true) {
+                try {
+                    if (navigator.clipboard?.writeText) {
+                        await navigator.clipboard.writeText(text);
+                        return true;
+                    }
+                } catch (error) {}
+                if (!isCurrent()) return false;
+                let temporary = null;
+                const previous = document.activeElement;
+                try {
+                    if (!field) {
+                        temporary = document.createElement('textarea');
+                        temporary.value = text;
+                        temporary.style.cssText = 'position:fixed;left:-10000px;top:0';
+                        document.body.appendChild(temporary);
+                        field = temporary;
+                    }
+                    field.focus();
+                    field.select();
+                    field.setSelectionRange(0, field.value.length);
+                    return document.execCommand('copy') === true;
+                } catch (error) {
+                    return false;
+                } finally {
+                    temporary?.remove();
+                    if (temporary && previous?.isConnected) previous.focus();
                 }
             },
 
@@ -587,47 +699,42 @@ function createBookReportApp() {
             },
 
             applyInputConstraints() {
-                const fieldConfig = [
-                    ['book-title', CONFIG.MAX_LENGTHS.title],
-                    ['book-author', CONFIG.MAX_LENGTHS.author],
-                    ['synopsis-part-a', CONFIG.MAX_LENGTHS.synopsisPartA],
-                    ['synopsis-part-b', CONFIG.MAX_LENGTHS.synopsisPartB],
-                    ['synopsis-part-c', CONFIG.MAX_LENGTHS.synopsisPartC],
-                    ['motivation-detail', CONFIG.MAX_LENGTHS.motivationDetail],
-                    ['scene-desc', CONFIG.MAX_LENGTHS.sceneDesc],
-                    ['scene-myself', CONFIG.MAX_LENGTHS.sceneMyself],
-                    ['conclusion-change', CONFIG.MAX_LENGTHS.conclusionChange]
-                ];
-
-                fieldConfig.forEach(([id, maxLength]) => {
+                for (const [field, id] of Object.entries(FORM_IDS)) {
                     const element = getElement(id);
-                    if (!element) return;
-                    element.maxLength = maxLength;
-                    
-                    const countSpan = getElement(`${id}-char-count`);
+                    if (!element) continue;
+                    const maxLength = CONFIG.MAX_LENGTHS[field];
+                    // 表示カウンターと同じコードポイント単位。UTF-16のmaxlengthでは制限しない。
+                    element.removeAttribute('maxlength');
                     const updateCount = () => {
-                        const len = Utils.getCharLength(element.value);
-                        if (countSpan) {
-                            countSpan.textContent = len;
-                        }
-                        const container = getElement(`${id}-counter-container`);
-                        if (container) {
-                            if (len >= maxLength) {
-                                container.className = 'char-counter danger';
-                            } else if (len >= maxLength * 0.8) {
-                                container.className = 'char-counter warning';
-                            } else {
-                                container.className = 'char-counter';
-                            }
-                        }
+                        const length = Utils.getCharLength(element.value);
+                        const count = document.getElementById(`${id}-char-count`);
+                        if (count) count.textContent = length;
+                        const container = document.getElementById(`${id}-counter-container`);
+                        if (container) container.className = `char-counter${length >= maxLength ? ' danger' : length >= maxLength * .8 ? ' warning' : ''}`;
                     };
-
-                    element.addEventListener('input', () => {
-                        element.value = Utils.coerceSafeString(element.value, maxLength);
+                    this.counterUpdaters.push(updateCount);
+                    element.addEventListener('compositionstart', () => {
+                        this.pendingSave?.flush();
+                        this.composing.add(id);
+                    });
+                    const commit = () => {
+                        const next = Utils.truncateText(element.value, maxLength);
+                        if (next !== element.value) element.value = next;
+                        this.formData[field] = element.value;
                         updateCount();
+                        if (field === 'draftText') { this.updateDraftCounters(); this.syncPrintElements(); }
+                    };
+                    element.addEventListener('input', event => {
+                        if (event.isComposing || this.composing.has(id)) return;
+                        commit();
+                    });
+                    element.addEventListener('compositionend', () => {
+                        this.composing.delete(id);
+                        commit();
+                        this.scheduleSave();
                     });
                     updateCount();
-                });
+                }
             },
 
             // ----------------------------------------
@@ -681,9 +788,13 @@ function createBookReportApp() {
                 // Action buttons
                 getElement('copy-all-btn')?.addEventListener('click', () => this.copyAllText());
                 getElement('download-text-btn')?.addEventListener('click', () => this.downloadText());
-                getElement('print-btn')?.addEventListener('click', () => window.print());
+                getElement('print-btn')?.addEventListener('click', () => this.print());
                 getElement('reset-btn')?.addEventListener('click', () => this.resetForm());
-                getElement('big-print-pdf-btn')?.addEventListener('click', () => window.print());
+                getElement('big-print-pdf-btn')?.addEventListener('click', () => this.print());
+                getElement('print-genko-btn')?.addEventListener('click', event => {
+                    if (!this.saveData()) { event.preventDefault(); return; }
+                    try { localStorage.setItem(CONFIG.ACTIVE_SLOT_KEY, String(this.activeSlot)); } catch (error) { event.preventDefault(); this.warnSaveFailure(); }
+                });
 
                 // Share buttons
                 getElement('line-share-btn')?.addEventListener('click', () => this.shareToSocial('line'));
@@ -698,8 +809,9 @@ function createBookReportApp() {
                             this.copyText(targetId);
                             
                             // Visual active highlight and active state registration
-                            document.querySelectorAll('.copy-card').forEach(c => c.classList.remove('active'));
+                            document.querySelectorAll('.copy-card').forEach(c => { c.classList.remove('active'); c.setAttribute('aria-pressed', 'false'); });
                             card.classList.add('active');
+                            card.setAttribute('aria-pressed', 'true');
                             this.formData.selectedOpening = targetId;
                             this.updateMeter();
                             this.saveData();
@@ -708,38 +820,15 @@ function createBookReportApp() {
 
                     card.setAttribute('tabindex', '0');
                     card.setAttribute('role', 'button');
-                    card.addEventListener('keydown', (e) => {
-                        if (e.key === 'Enter' || e.key === ' ') {
-                            e.preventDefault();
-                            const targetId = card.dataset.copyTarget;
-                            if (targetId) {
-                                this.copyText(targetId);
-                                
-                                document.querySelectorAll('.copy-card').forEach(c => c.classList.remove('active'));
-                                card.classList.add('active');
-                                this.formData.selectedOpening = targetId;
-                                this.updateMeter();
-                                this.saveData();
-                            }
+                    card.addEventListener('keydown', event => {
+                        if (event.key === 'Enter' || event.key === ' ') {
+                            event.preventDefault();
+                            card.click();
                         }
                     });
                 });
 
-                // Modal
-                getElement('open-parent-btn')?.addEventListener('click', () => this.openModal());
-                getElement(SELECTORS.PARENT_MODAL_OVERLAY)?.addEventListener('click', () => this.closeModal());
-                getElement('parent-modal-close')?.addEventListener('click', () => this.closeModal());
-                getElement('parent-modal-close-bottom')?.addEventListener('click', () => this.closeModal());
-
-                // Escape key to close modal
-                document.addEventListener('keydown', (e) => {
-                    if (e.key === 'Escape') {
-                        const modal = getElement(SELECTORS.PARENT_MODAL);
-                        if (modal && !modal.classList.contains('hidden')) {
-                            this.closeModal();
-                        }
-                    }
-                });
+                // 保護者向けnative dialogはHTML側の共通ハンドラーが管理する。
             },
 
             bindFeelingChips() {
@@ -811,39 +900,57 @@ function createBookReportApp() {
             },
 
             bindDraftEditor() {
-                const textarea = getElement('draft-textarea');
-                const loadBtn = getElement('load-outline-to-draft-btn');
+                getElement('load-outline-to-draft-btn')?.addEventListener('click', () => this.loadOutlineToDraft());
+            },
 
-                if (textarea) {
-                    textarea.addEventListener('input', () => {
-                        this.formData.draftText = textarea.value;
-                        this.updateDraftCounters();
-                        this.syncPrintElements();
-                        this.saveData();
-                    });
-                }
-
-                if (loadBtn) {
-                    loadBtn.addEventListener('click', () => {
-                        this.loadOutlineToDraft();
-                    });
-                }
+            scheduleSave() {
+                this.dirty = true;
+                if (!this.composing.size) this.pendingSave?.();
             },
 
             setupAutosave() {
-                const debouncedSave = debounce(() => this.saveData(), CONFIG.AUTOSAVE_DEBOUNCE);
+                this.pendingSave = debounce(() => this.saveData(), CONFIG.AUTOSAVE_DEBOUNCE);
+                for (const id of Object.values(FORM_IDS)) {
+                    getElement(id)?.addEventListener('input', event => {
+                        if (!event.isComposing && !this.composing.has(id)) this.scheduleSave();
+                    });
+                }
+                const flush = () => { if (!this.composing.size && this.dirty) this.saveData(); };
+                window.addEventListener('pagehide', flush);
+                document.addEventListener('visibilitychange', () => { if (document.hidden) flush(); });
+            },
 
-                document.querySelectorAll('input[type="text"], textarea').forEach(input => {
-                    if (input.id === 'draft-textarea') return; // 清書エディタは別途監視
-                    input.addEventListener('input', debouncedSave);
-                });
+            preparePrint() {
+                this.saveData();
+                this.syncPrintElements();
+                const details = getElement('draft-details');
+                if (details && this.printDetailsOpen === undefined) {
+                    this.printDetailsOpen = details.open;
+                    details.open = true;
+                }
+            },
+
+            restoreAfterPrint() {
+                const details = getElement('draft-details');
+                if (details && this.printDetailsOpen !== undefined) details.open = this.printDetailsOpen;
+                this.printDetailsOpen = undefined;
+            },
+
+            print() {
+                this.preparePrint();
+                try { window.print(); }
+                catch (error) { this.showToast('印刷を開始できませんでした', 'error'); }
+                finally { this.restoreAfterPrint(); }
             },
 
             // ----------------------------------------
             // Navigation Logic
             // ----------------------------------------
+
+
             nextStep(step) {
-                if (!this.validateStep(step)) return;
+                if (step !== this.currentStep || this.composing.size || !this.validateStep(step)) return;
+                this.cancelNavigation();
                 this.saveData();
 
                 const current = getElement(`${SELECTORS.STEP_PREFIX}${step}`);
@@ -858,8 +965,10 @@ function createBookReportApp() {
 
                     window.scrollTo({ top: 0, behavior: 'smooth' });
 
-                    setTimeout(() => {
-                        const firstInput = next.querySelector('input, textarea');
+                    this.navigationTimer = setTimeout(() => {
+                        this.navigationTimer = null;
+                        if (this.currentStep !== step + 1 || !next.classList.contains('active')) return;
+                        const firstInput = next.querySelector('input:not([type=hidden]), textarea');
                         if (firstInput) {
                             firstInput.focus();
                         }
@@ -867,7 +976,14 @@ function createBookReportApp() {
                 }
             },
 
+            cancelNavigation() {
+                if (this.navigationTimer !== null) clearTimeout(this.navigationTimer);
+                this.navigationTimer = null;
+            },
+
             prevStep(step) {
+                if (step !== this.currentStep || this.composing.size) return;
+                this.cancelNavigation();
                 this.saveData();
                 const current = getElement(`${SELECTORS.STEP_PREFIX}${step}`);
                 const prev = getElement(`${SELECTORS.STEP_PREFIX}${step - 1}`);
@@ -906,7 +1022,7 @@ function createBookReportApp() {
                 const clearError = (fieldId) => {
                     const field = getElement(fieldId);
                     const errorEl = getElement(`${fieldId}-error`);
-                    if (field) field.classList.remove('error');
+                    if (field) { field.classList.remove('error'); field.removeAttribute('aria-invalid'); }
                     if (errorEl) errorEl.textContent = '';
                 };
 
@@ -915,6 +1031,7 @@ function createBookReportApp() {
                     const errorEl = getElement(`${fieldId}-error`);
                     if (field) {
                         field.classList.add('error');
+                        field.setAttribute('aria-invalid', 'true');
                         field.focus();
                     }
                     if (errorEl) {
@@ -961,7 +1078,7 @@ function createBookReportApp() {
             // Data Management
             // ----------------------------------------
             getFieldValue(id) {
-                return getElement(id)?.value?.trim() || '';
+                return getElement(id)?.value || '';
             },
 
             getRadioValue(name) {
@@ -969,107 +1086,80 @@ function createBookReportApp() {
             },
 
             collectData() {
-                const selectedFeeling = document.querySelector('.feeling-chip.selected')?.dataset?.val || this.formData.sceneFeeling;
-                const selectedGenre = document.querySelector('input[name="genre"]:checked')?.value || this.formData.genre || 'story';
-                this.formData = {
-                    ...this.formData,
-                    genre: selectedGenre,
-                    title: Utils.coerceSafeString(this.getFieldValue('book-title'), CONFIG.MAX_LENGTHS.title),
-                    author: Utils.coerceSafeString(this.getFieldValue('book-author'), CONFIG.MAX_LENGTHS.author),
-                    synopsisPartA: Utils.coerceSafeString(this.getFieldValue('synopsis-part-a'), CONFIG.MAX_LENGTHS.synopsisPartA),
-                    synopsisPartB: Utils.coerceSafeString(this.getFieldValue('synopsis-part-b'), CONFIG.MAX_LENGTHS.synopsisPartB),
-                    synopsisPartC: Utils.coerceSafeString(this.getFieldValue('synopsis-part-c'), CONFIG.MAX_LENGTHS.synopsisPartC),
-                    motivation: this.getRadioValue('motivation'),
-                    motivationDetail: Utils.coerceSafeString(this.getFieldValue('motivation-detail'), CONFIG.MAX_LENGTHS.motivationDetail),
-                    sceneDesc: Utils.coerceSafeString(this.getFieldValue('scene-desc'), CONFIG.MAX_LENGTHS.sceneDesc),
-                    sceneFeeling: Utils.coerceSafeString(selectedFeeling, CONFIG.MAX_LENGTHS.sceneFeeling),
-                    sceneMyself: Utils.coerceSafeString(this.getFieldValue('scene-myself'), CONFIG.MAX_LENGTHS.sceneMyself),
-                    conclusionChange: Utils.coerceSafeString(this.getFieldValue('conclusion-change'), CONFIG.MAX_LENGTHS.conclusionChange),
-                    draftText: Utils.coerceSafeString(this.getFieldValue('draft-textarea'), CONFIG.MAX_LENGTHS.draftText)
-                };
+                for (const [field, id] of Object.entries(FORM_IDS)) {
+                    if (!this.composing.has(id)) this.formData[field] = Utils.truncateText(this.getFieldValue(id), CONFIG.MAX_LENGTHS[field]);
+                }
+                this.formData.genre = this.getRadioValue('genre') || this.formData.genre || 'story';
+                this.formData.motivation = this.getRadioValue('motivation');
+                this.formData.sceneFeeling = document.querySelector('.feeling-chip.selected')?.dataset?.val || this.formData.sceneFeeling;
+            },
+
+            warnSaveFailure() {
+                if (!this.saveWarningShown) {
+                    this.saveWarningShown = true;
+                    this.showToast('この端末に保存できませんでした。画面を閉じる前に、共有リンクやテキストで控えてください', 'error');
+                }
             },
 
             saveData() {
+                if (this.composing.size) return false;
+                this.pendingSave?.cancel();
                 this.collectData();
-                try {
-                    this.persistState();
-                    this.updateSlotTitles(); // しおりタイトルの更新
-                } catch (e) {
-                    console.warn('Failed to save data to localStorage:', e);
-                }
+                return this.persistState();
             },
 
-            saveStep() {
-                try {
-                    this.persistState();
-                } catch (e) {
-                    console.warn('Failed to save step:', e);
-                }
-            },
+            saveStep() { return this.persistState(); },
 
             persistState() {
-                const dataToSave = {
-                    formData: this.formData,
-                    currentStep: this.currentStep,
-                    savedAt: new Date().toISOString()
-                };
-                localStorage.setItem(this.getStorageKey(), JSON.stringify(dataToSave));
-                localStorage.setItem(CONFIG.ACTIVE_SLOT_KEY, String(this.activeSlot));
+                const remote = this.readStoredState();
+                const local = this.formData;
+                const next = mergeFormData(this.persistedFormData, local, remote.ok ? remote.data?.formData : null);
+                const changed = JSON.stringify(next) !== JSON.stringify(local);
+                const data = { formData: next, currentStep: this.currentStep };
+                try {
+                    const unchanged = remote.ok && JSON.stringify(remote.data) === JSON.stringify(data);
+                    if (!unchanged) localStorage.setItem(this.getStorageKey(), JSON.stringify({ ...data, savedAt: new Date().toISOString() }));
+                    this.formData = next;
+                    this.persistedFormData = { ...next };
+                    this.persistedStep = this.currentStep;
+                    this.dirty = false;
+                    this.saveWarningShown = false;
+                    if (changed) { this.populateForm(); this.applyGenreUI(); }
+                    this.updateSlotTitles();
+                    this.clearImportedUrl();
+                    return true;
+                } catch (error) {
+                    this.dirty = true;
+                    this.warnSaveFailure();
+                    return false;
+                }
             },
 
             loadSavedData(requestedSlot = null) {
                 this.resetFormDataToDefault();
                 this.currentStep = 1;
-                const hasRequestedSlot = [1, 2, 3].includes(requestedSlot);
-                if (hasRequestedSlot) this.activeSlot = requestedSlot;
-                try {
-                    // 現在のアクティブスロットを取得
-                    if (!hasRequestedSlot) {
-                        const savedActiveSlot = localStorage.getItem(CONFIG.ACTIVE_SLOT_KEY);
-                        this.activeSlot = ['1', '2', '3'].includes(savedActiveSlot) ? Number(savedActiveSlot) : 1;
-                    }
-
-                    const key = this.getStorageKey();
-                    const saved = localStorage.getItem(key);
-
-                    if (saved) {
-                        const data = JSON.parse(saved);
-                        if (data.formData && typeof data.formData === 'object' && !Array.isArray(data.formData)) {
-                            if (data.formData.synopsis && !data.formData.synopsisPartA) {
-                                data.formData.synopsisPartA = data.formData.synopsis;
-                                delete data.formData.synopsis;
-                            }
-
-                            for (const field of ALLOWED_FORM_FIELDS) {
-                                if (Object.prototype.hasOwnProperty.call(data.formData, field) &&
-                                    typeof data.formData[field] === 'string') {
-                                    const maxLength = CONFIG.MAX_LENGTHS[field] || 1000;
-                                    this.formData[field] = Utils.coerceSafeString(data.formData[field], maxLength);
-                                }
-                            }
-                            if (!this.formData.genre) {
-                                this.formData.genre = 'story';
-                            }
-                            if (!this.formData.selectedOpening) {
-                                this.formData.selectedOpening = 'opening-a';
-                            }
-                        }
-                        if (Number.isInteger(data.currentStep) && data.currentStep >= 1 && data.currentStep <= CONFIG.TOTAL_STEPS) {
-                            this.currentStep = data.currentStep;
-                        }
-                    } else {
-                        this.currentStep = 1;
-                    }
-                } catch (e) {
-                    console.warn('Failed to load saved data, self-repairing slot:', e);
+                if ([1, 2, 3].includes(requestedSlot)) this.activeSlot = requestedSlot;
+                else {
                     try {
-                        localStorage.removeItem(this.getStorageKey());
-                    } catch (err) {}
+                        const savedSlot = localStorage.getItem(CONFIG.ACTIVE_SLOT_KEY);
+                        this.activeSlot = ['1', '2', '3'].includes(savedSlot) ? Number(savedSlot) : 1;
+                    } catch (error) { this.activeSlot = 1; }
                 }
+                const stored = this.readStoredState();
+                if (stored.ok && stored.data) {
+                    this.formData = stored.data.formData;
+                    this.currentStep = stored.data.currentStep;
+                }
+                // 壊れた保存内容は閲覧だけで削除しない。
+                this.persistedFormData = { ...this.formData };
+                this.persistedStep = this.currentStep;
+                this.dirty = false;
                 this.populateForm();
                 this.updateSlotTabsUI();
                 this.updateSlotTitles();
                 this.syncPrintElements();
+                if (document.documentElement) document.documentElement.dataset.bookReportActiveSlot = String(this.activeSlot);
+                emitBookEvent('slot-restored', { slot: this.activeSlot });
             },
 
             resetFormDataToDefault() {
@@ -1095,7 +1185,7 @@ function createBookReportApp() {
                 const setVal = (id, value) => {
                     const el = getElement(id);
                     if (el) {
-                        el.value = value || '';
+                        if (el.value !== (value || '')) el.value = value || '';
                     }
                 };
 
@@ -1144,6 +1234,7 @@ function createBookReportApp() {
                     }
                 }
 
+                this.counterUpdaters.forEach(update => update());
                 this.updateDraftCounters();
             },
 
@@ -1167,38 +1258,21 @@ function createBookReportApp() {
             // Bookshelf Slot Select Logic
             // ----------------------------------------
             switchSlot(slotNum) {
-                if (![1, 2, 3].includes(slotNum) || slotNum === this.activeSlot || this.isSlotSwitching) return;
-
-                // 切り替え直前の入力も、元のしおりへ確実に保存する。
-                this.saveData();
+                if (![1, 2, 3].includes(slotNum) || slotNum === this.activeSlot || this.composing.size) return;
+                if (!this.saveData()) return;
+                this.cancelNavigation();
+                this.closeGachaModal();
+                try { localStorage.setItem(CONFIG.ACTIVE_SLOT_KEY, String(slotNum)); }
+                catch (error) { this.warnSaveFailure(); return; }
+                this.loadSavedData(slotNum);
+                this.restoreStep();
+                this.applyGenreUI();
                 const wizard = getElement(SELECTORS.WIZARD_FORM);
-                if (wizard) {
-                    this.isSlotSwitching = true;
-                    wizard.style.opacity = '0.5';
-                    setTimeout(() => {
-                        this.loadSavedData(slotNum);
-                        this.saveStep();
-                        this.restoreStep();
-                        this.applyGenreUI();
-                        
-                        const wizardForm = getElement(SELECTORS.WIZARD_FORM);
-                        const resultSection = getElement(SELECTORS.RESULT_SECTION);
-                        const progressContainer = getElement(SELECTORS.PROGRESS_CONTAINER);
-                        
-                        if (wizardForm) wizardForm.style.display = 'block';
-                        if (progressContainer) progressContainer.style.display = 'block';
-                        if (resultSection) resultSection.classList.add('hidden');
-
-                        wizard.style.opacity = '1';
-                        this.isSlotSwitching = false;
-                        this.showToast(`本棚のしおり ${slotNum} を開いたよ！📖`);
-                    }, 150);
-                } else {
-                    this.loadSavedData(slotNum);
-                    this.saveStep();
-                    this.restoreStep();
-                    this.applyGenreUI();
-                }
+                const progress = getElement(SELECTORS.PROGRESS_CONTAINER);
+                if (wizard) { wizard.style.display = 'block'; wizard.style.opacity = '1'; }
+                if (progress) progress.style.display = 'block';
+                getElement(SELECTORS.RESULT_SECTION)?.classList.add('hidden');
+                this.showToast(`本棚のしおり ${slotNum} を開いたよ！📖`);
             },
 
             updateSlotTabsUI() {
@@ -1223,8 +1297,8 @@ function createBookReportApp() {
                         const saved = localStorage.getItem(`${CONFIG.STORAGE_KEY_PREFIX}${i}`);
                         if (saved) {
                             const data = JSON.parse(saved);
-                            const title = data?.formData?.title;
-                            titleEl.textContent = title ? title : '題名なし';
+                            const title = Utils.truncateText(data?.formData?.title, CONFIG.MAX_LENGTHS.title);
+                            titleEl.textContent = title || '題名なし';
                         } else {
                             titleEl.textContent = 'からっぽ';
                         }
@@ -1292,16 +1366,19 @@ function createBookReportApp() {
             // Generation
             // ----------------------------------------
             generateOutline() {
+                if (this.composing.size) return;
+                this.cancelNavigation();
                 this.saveData();
                 const field = getElement('conclusion-change');
                 if (field) {
                     field.classList.remove('error');
                 }
 
-                if (!this.formData.conclusionChange) {
+                if (!this.formData.conclusionChange.trim()) {
                     const field = getElement('conclusion-change');
                     if (field) {
                         field.classList.add('error');
+                        field.setAttribute('aria-invalid', 'true');
                         field.focus();
                     }
                     this.showToast('最後に、どう変わったか教えてね！', 'error');
@@ -1361,13 +1438,14 @@ function createBookReportApp() {
 
                 const openingC = getElement('opening-c');
                 if (openingC) {
-                    const sceneSnippet = Utils.escapeHTML((d.sceneDesc || '').substring(0, 20));
+                    const sceneSnippet = Utils.escapeHTML(Utils.truncateText(d.sceneDesc || '', 20));
                     openingC.innerHTML = TEXT_TEMPLATES.OPENING_C(safeTitle, sceneSnippet);
                 }
 
                 // Sync UI selected copy-card active highlights
                 const activeId = this.formData.selectedOpening || 'opening-a';
                 document.querySelectorAll('.copy-card').forEach(card => {
+                    card.setAttribute('aria-pressed', String(card.dataset.copyTarget === activeId));
                     if (card.dataset.copyTarget === activeId) {
                         card.classList.add('active');
                     } else {
@@ -1399,6 +1477,7 @@ function createBookReportApp() {
                     conclusionText.innerHTML = TEXT_TEMPLATES.CONCLUSION(Utils.escapeHTML(d.conclusionChange));
                 }
 
+                emitBookEvent('results-rendered');
                 this.updateMeter();
             },
 
@@ -1409,7 +1488,8 @@ function createBookReportApp() {
                 const bodyMyself = getElement('body-myself-ref')?.innerText || '';
                 const conclusion = getElement('conclusion-text')?.innerText || '';
 
-                const total = Utils.getCharLength(openingText) + Utils.getCharLength(bodyScene) + Utils.getCharLength(bodyMyself) + Utils.getCharLength(conclusion);
+                const synopsis = getElement('body-synopsis-ref')?.innerText || '';
+                const total = [openingText, synopsis, bodyScene, bodyMyself, conclusion].reduce((sum, text) => sum + Utils.getCharLength(text), 0);
                 const sheets = (total / 400).toFixed(1);
 
                 const totalCountEl = getElement('total-char-count');
@@ -1453,7 +1533,7 @@ function createBookReportApp() {
                 const text = target.innerText;
 
                 try {
-                    await navigator.clipboard.writeText(text);
+                    if (!await this.copyClipboard(text)) throw new Error('copy failed');
                     this.showToast('コピーしました！');
                 } catch (err) {
                     console.error('Copy failed:', err);
@@ -1490,7 +1570,7 @@ ${bodyMyself}
 ${conclusion}`;
 
                 try {
-                    await navigator.clipboard.writeText(fullText);
+                    if (!await this.copyClipboard(fullText)) throw new Error('copy failed');
                     this.showToast('まとめてコピーしました！');
                 } catch (err) {
                     console.error('Copy all failed:', err);
@@ -1536,7 +1616,7 @@ ${conclusion}`;
                     document.body.appendChild(link);
                     link.click();
                     document.body.removeChild(link);
-                    URL.revokeObjectURL(url);
+                    setTimeout(() => URL.revokeObjectURL(url), 1000);
                     this.showToast('ダウンロードしました！');
                 } catch (err) {
                     console.error('Download failed:', err);
@@ -1591,7 +1671,7 @@ ${contentText}`;
 
 ---
 夏休みの宿題おたすけツール（読書感想文クエスト）：
-https://katakatalab.com/manner/`);
+https://katakatalab.com/pikalab/book_report/`);
                         
                         window.location.href = `mailto:?subject=${mailSubject}&body=${mailBody}`;
                     }).catch(err => {
@@ -1600,21 +1680,28 @@ https://katakatalab.com/manner/`);
                         const mailBody = encodeURIComponent(`本のタイトル：「${title}」の感想文設計図を作成しました。
 詳細はサイトでご確認ください。
 
-https://katakatalab.com/manner/`);
+https://katakatalab.com/pikalab/book_report/`);
                         window.location.href = `mailto:?subject=${mailSubject}&body=${mailBody}`;
                     });
                 }
             },
 
             resetForm() {
-                if (confirm('入力した内容が消えてしまいますが、よろしいですか？')) {
-                    try {
-                        localStorage.removeItem(this.getStorageKey());
-                    } catch (e) {
-                        console.warn('Failed to clear localStorage:', e);
-                    }
-                    location.reload();
+                if (!confirm('入力した内容が消えてしまいますが、よろしいですか？')) return;
+                try {
+                    localStorage.setItem(CONFIG.ACTIVE_SLOT_KEY, String(this.activeSlot));
+                    localStorage.removeItem(this.getStorageKey());
+                } catch (error) {
+                    console.warn('Failed to clear localStorage:', error);
+                    this.warnSaveFailure();
+                    // 削除できなかった場合は、直前の未保存入力を保護する。
+                    this.scheduleSave();
+                    return;
                 }
+                this.pendingSave?.cancel();
+                this.cancelNavigation();
+                this.dirty = false;
+                location.reload();
             },
 
             // ----------------------------------------
@@ -1659,10 +1746,10 @@ ${bodyMyself}
 
 ${conclusion}`;
 
-                this.formData.draftText = combinedText;
+                this.formData.draftText = Utils.truncateText(combinedText, CONFIG.MAX_LENGTHS.draftText);
                 const textarea = getElement('draft-textarea');
                 if (textarea) {
-                    textarea.value = combinedText;
+                    textarea.value = this.formData.draftText;
                 }
                 this.updateDraftCounters();
                 this.syncPrintElements();
@@ -1705,31 +1792,70 @@ ${conclusion}`;
             // Gacha Roulette演出 & ロジック
             // ----------------------------------------
             openGachaModal(target) {
+                if (this.gachaOpen) return;
                 const modal = getElement('gacha-modal');
                 const content = getElement('gacha-modal-content');
                 if (!modal || !content) return;
-
+                if (this.gachaCloseTimer !== null) clearTimeout(this.gachaCloseTimer);
+                this.gachaCloseTimer = null;
+                this.gachaTrigger = document.activeElement;
+                this.gachaOpen = true;
                 this.currentGachaTarget = target;
                 modal.classList.remove('hidden');
+                const generation = ++this.gachaGeneration;
                 requestAnimationFrame(() => {
-                    content.classList.add('active');
+                    if (this.gachaOpen && generation === this.gachaGeneration) content.classList.add('active');
                 });
-
+                const main = document.querySelector('main');
+                if (main) { this.mainWasInert = main.inert; main.inert = true; }
+                if (!this.gachaKeyHandler) {
+                    this.gachaKeyHandler = event => {
+                        if (!this.gachaOpen) return;
+                        if (event.key === 'Escape') { event.preventDefault(); this.closeGachaModal(); return; }
+                        if (event.key !== 'Tab') return;
+                        const focusable = [...modal.querySelectorAll('button:not(:disabled), [tabindex="0"]')].filter(element => element.getClientRects().length);
+                        const first = focusable[0], last = focusable.at(-1);
+                        if (!first) { event.preventDefault(); return; }
+                        if (event.shiftKey && (document.activeElement === first || !modal.contains(document.activeElement))) { event.preventDefault(); last.focus(); }
+                        else if (!event.shiftKey && (document.activeElement === last || !modal.contains(document.activeElement))) { event.preventDefault(); first.focus(); }
+                    };
+                    document.addEventListener('keydown', this.gachaKeyHandler);
+                }
                 this.rollGacha(target);
+                getElement('gacha-close-btn')?.focus();
             },
 
-            closeGachaModal() {
+            closeGachaModal(focusTarget = null) {
+                if (!this.gachaOpen) return;
+                const wasOpen = this.gachaOpen;
+                this.gachaOpen = false;
+                this.gachaGeneration++;
+                if (this.gachaTimer !== null) clearTimeout(this.gachaTimer);
+                if (this.gachaCloseTimer !== null) clearTimeout(this.gachaCloseTimer);
+                this.gachaTimer = null;
+                this.gachaCloseTimer = null;
+                this.latestGachaChosen = null;
                 const modal = getElement('gacha-modal');
                 const content = getElement('gacha-modal-content');
-                if (!modal || !content) return;
-
-                content.classList.remove('active');
-                setTimeout(() => {
+                if (content) content.classList.remove('active');
+                if (wasOpen && modal) this.gachaCloseTimer = setTimeout(() => {
                     modal.classList.add('hidden');
+                    this.gachaCloseTimer = null;
                 }, CONFIG.ANIMATION_DURATION);
+                if (typeof document.querySelector === 'function') {
+                    const main = document.querySelector('main');
+                    if (main && wasOpen) main.inert = this.mainWasInert || false;
+                }
+                if (wasOpen) {
+                    const target = typeof focusTarget === 'string' ? getElement(focusTarget) : this.gachaTrigger;
+                    if (target?.isConnected) target.focus();
+                }
             },
 
             rollGacha(target) {
+                if (this.gachaTimer !== null) clearTimeout(this.gachaTimer);
+                const generation = this.gachaGeneration;
+                this.latestGachaChosen = null;
                 const spinner = getElement('gacha-slot-spinner');
                 const resultDisplay = getElement('gacha-result-display');
                 const applyBtn = getElement('gacha-apply-btn');
@@ -1747,9 +1873,9 @@ ${conclusion}`;
                 if (applyBtn) applyBtn.disabled = true;
                 if (rerollBtn) rerollBtn.disabled = true;
                 if (closeBtn) {
-                    closeBtn.disabled = true;
-                    closeBtn.style.opacity = '0.5';
-                    closeBtn.style.pointerEvents = 'none';
+                    closeBtn.disabled = false;
+                    closeBtn.style.opacity = '';
+                    closeBtn.style.pointerEvents = '';
                 }
 
                 let pool = [];
@@ -1788,7 +1914,9 @@ ${conclusion}`;
                     return;
                 }
 
-                setTimeout(() => {
+                this.gachaTimer = setTimeout(() => {
+                    this.gachaTimer = null;
+                    if (!this.gachaOpen || generation !== this.gachaGeneration) return;
                     spinner.classList.remove('rolling');
                     spinner.classList.add('hidden');
 
@@ -1820,6 +1948,7 @@ ${conclusion}`;
 
                     this.latestGachaChosen = chosen;
                     resultDisplay.classList.remove('hidden');
+                    emitBookEvent('gacha-ready', { target });
                     
                     // ボタンのロック解除
                     if (applyBtn) applyBtn.disabled = false;
@@ -1832,38 +1961,6 @@ ${conclusion}`;
                 }, 1200);
             },
 
-            // ----------------------------------------
-            // Modal focus trap & transition
-            // ----------------------------------------
-            lastModalTrigger: null,
-
-            openModal() {
-                const modal = getElement(SELECTORS.PARENT_MODAL);
-                if (!modal) return;
-
-                this.lastModalTrigger = document.activeElement;
-
-                if (!modal.dataset.clickBound) {
-                    modal.addEventListener('click', (e) => {
-                        if (e.target === modal) {
-                            this.closeModal();
-                        }
-                    });
-                    modal.dataset.clickBound = 'true';
-                }
-
-                modal.showModal();
-            },
-
-            closeModal() {
-                const modal = getElement(SELECTORS.PARENT_MODAL);
-                if (!modal) return;
-                modal.close();
-                if (this.lastModalTrigger && typeof this.lastModalTrigger.focus === 'function') {
-                    this.lastModalTrigger.focus();
-                    this.lastModalTrigger = null;
-                }
-            },
         };
 
         return app;
@@ -1882,6 +1979,6 @@ if (typeof document !== 'undefined') {
 if (typeof module !== 'undefined' && module.exports) {
     module.exports = {
         Utils,
-        createBookReportApp
+        createBookReportApp, normalizeFormData, mergeFormData, debounce
     };
 }

@@ -1,6 +1,8 @@
 // 実行先を確認した検証専用ファイルだけを列挙する。
 // 未知のスクリプトや共有ヘルパーは全E2E・デプロイ判定から除外しない。
 const LAB_E2E_CHECKS = {
+    'test:book-e2e': { lab: 'book', file: 'pikalab/scripts/book-report-e2e.mjs' },
+    'test:kanji-e2e': { lab: 'kanji', file: 'pikalab/kanji_lab/tests/browser-interactions.test.cjs' },
     'test:rhythm-e2e': { lab: 'rhythm', file: 'pikalab/scripts/rhythm-lab-e2e.mjs' },
     'test:manabi-e2e': { lab: 'manabi', file: 'pikalab/scripts/manabi-land-e2e.mjs' },
     'test:speed-reader-e2e': { lab: 'speed_reader', file: 'pikalab/scripts/speed-reader-e2e.mjs' },

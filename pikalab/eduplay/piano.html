@@ -107,6 +107,7 @@
         // Web Audio API のコンテキスト
         const AudioContext = window.AudioContext || window.webkitAudioContext;
         let audioCtx;
+        let soundGeneration = 0;
         
         let currentInstrument = 'piano';
         let currentEmoji = '🎵'; // 音符のエフェクト用
@@ -118,51 +119,65 @@
         };
 
         // アプリ起動時の初期化
-        function initAudio() {
-            if (!audioCtx) {
-                audioCtx = new AudioContext();
-            }
-            if (audioCtx && audioCtx.state === 'suspended') {
-                audioCtx.resume();
+        async function initAudio() {
+            try {
+                if (!AudioContext) return false;
+                if (!audioCtx || audioCtx.state === 'closed') {
+                    audioCtx = new AudioContext();
+                }
+                if (audioCtx.state === 'suspended') {
+                    await audioCtx.resume();
+                }
+                return audioCtx.state === 'running';
+            } catch (error) {
+                console.warn('ピアノの音声を初期化できませんでした。', error);
+                return false;
             }
         }
 
         // 音を鳴らすメイン関数
-        function playSound(note, type = 'piano') {
-            if (!EduSound.isOn) return;
-            initAudio();
-            
-            const freq = frequencies[note];
-            if (!freq) return;
+        async function playSound(note, type = 'piano', isCurrent = () => true) {
+            try {
+                if (!EduSound.isOn) return;
 
-            // 動物の鳴き声モード（TTSで代用）
-            if (type === 'dog') {
-                EduSound.speak("ワン！", 1.5, getPitchRatio(note));
-                return;
-            } else if (type === 'cat') {
-                EduSound.speak("ニャン！", 1.5, getPitchRatio(note));
-                return;
+                const freq = frequencies[note];
+                if (!freq) return;
+
+                // 動物の鳴き声モード（TTSで代用）
+                if (type === 'dog') {
+                    EduSound.speak("ワン！", 1.5, getPitchRatio(note));
+                    return;
+                } else if (type === 'cat') {
+                    EduSound.speak("ニャン！", 1.5, getPitchRatio(note));
+                    return;
+                }
+
+                // 再開を待つ間に離した鍵盤や、消音・楽器変更後の音は遅れて鳴らさない。
+                if (!await initAudio() || !EduSound.isOn || !isCurrent()) return;
+
+                // ピアノモード（Web Audio API のオシレーター）
+                const osc = audioCtx.createOscillator();
+                const gainNode = audioCtx.createGain();
+
+                // 音色の設定
+                osc.type = 'triangle'; // トライアングル波が一番マイルドでピアノっぽい電子音になる
+                osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+
+                // 音量のエンベロープ（減衰）
+                const targetVolume = 0.5 * (EduSound.volume !== undefined ? EduSound.volume : 0.1);
+                gainNode.gain.setValueAtTime(0, audioCtx.currentTime);
+                gainNode.gain.linearRampToValueAtTime(targetVolume, audioCtx.currentTime + 0.05); // アタック
+                gainNode.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 1.5); // リリース
+
+                osc.connect(gainNode);
+                gainNode.connect(audioCtx.destination);
+
+                osc.start();
+                osc.stop(audioCtx.currentTime + 1.5);
+            } catch (error) {
+                // 音声の失敗で画面更新や鍵盤の解除を止めない。
+                console.warn('音を再生できませんでした。', error);
             }
-
-            // ピアノモード（Web Audio API のオシレーター）
-            const osc = audioCtx.createOscillator();
-            const gainNode = audioCtx.createGain();
-
-            // 音色の設定
-            osc.type = 'triangle'; // トライアングル波が一番マイルドでピアノっぽい電子音になる
-            osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
-
-            // 音量のエンベロープ（減衰）
-            const targetVolume = 0.5 * (EduSound.volume !== undefined ? EduSound.volume : 0.1);
-            gainNode.gain.setValueAtTime(0, audioCtx.currentTime);
-            gainNode.gain.linearRampToValueAtTime(targetVolume, audioCtx.currentTime + 0.05); // アタック
-            gainNode.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 1.5); // リリース
-
-            osc.connect(gainNode);
-            gainNode.connect(audioCtx.destination);
-
-            osc.start();
-            osc.stop(audioCtx.currentTime + 1.5);
         }
 
         // ドレミの高さに応じてTTSのピッチ（声の高さ）を変えるための計算
@@ -173,6 +188,7 @@
 
         // 楽器切り替え
         function changeInstrument(type, emoji, btnElement) {
+            soundGeneration++;
             currentInstrument = type;
             currentEmoji = emoji === '🎹' ? '🎵' : emoji; // ピアノの時は音符マーク
             
@@ -197,6 +213,7 @@
             document.body.addEventListener('pointercancel', () => isDragging = false);
 
             keys.forEach(key => {
+                let playId = 0;
                 const triggerPlay = () => {
                     // すでに押されている状態なら無視する（二重発音防止）
                     if (key.classList.contains('key-active')) return;
@@ -204,13 +221,17 @@
                     key.classList.add('key-active');
                     
                     const note = key.getAttribute('data-note');
-                    playSound(note, currentInstrument);
+                    const id = ++playId;
+                    const instrument = currentInstrument;
+                    const generation = soundGeneration;
+                    playSound(note, instrument, () => id === playId && generation === soundGeneration);
                     
                     spawnNoteEffect(key);
                     document.getElementById('message').innerText = key.getAttribute('data-label') + "！";
                 };
 
                 const releaseKey = () => {
+                    playId++;
                     key.classList.remove('key-active');
                 };
 
@@ -271,6 +292,7 @@
 
         window.onload = () => {
             setupKeys();
+            document.getElementById('sound-toggle').addEventListener('click', () => soundGeneration++);
             // 初回タップ時にAudioContextを初期化させる（ブラウザの自動再生ポリシー対策）
             document.body.addEventListener('pointerdown', initAudio, { once: true });
             
