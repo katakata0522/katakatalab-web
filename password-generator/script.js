@@ -24,8 +24,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const MAX_LENGTH = 64;
     const MAX_COUNT = 10;
     const MAX_CUSTOM_SYMBOLS_LENGTH = 128;
-    const MIN_MASTER_PASSWORD_LENGTH = 16;
-    const MIN_MASTER_PASSWORD_SCORE = 45;
     const MIN_CLIPBOARD_CLEAR_SECONDS = 5;
     const MAX_CLIPBOARD_CLEAR_SECONDS = 120;
     const STORAGE_KEY = 'password-gen-settings';
@@ -60,7 +58,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const checkLabel = $('check-label');
     const checkScore = $('check-score');
     const checkBar = $('check-bar');
-    const checkTime = $('check-time');
 
     // 履歴パネル DOM
     const historyBtn = $('history-btn');
@@ -76,8 +73,9 @@ document.addEventListener('DOMContentLoaded', () => {
     let debounceTimer = null;
     let clipboardClearTimer = null;
     let deferredInstallPrompt = null;
-    let pendingImportNotice = false;
+    let vaultUiSession = 0;
     let isPinMode = false;
+    let resultsHidden = false;
     const sessionHistory = [];
     const isEnterOrSpace = (event) => event.key === 'Enter' || event.key === ' ';
 
@@ -115,6 +113,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const tabPanels = document.querySelectorAll('.pwd-tab-panel');
 
     function switchTab(tabId) {
+        if (tabId !== 'vault') { vault.lock(); initVaultUI(); }
         tabBtns.forEach(btn => {
             const active = btn.getAttribute('data-tab') === tabId;
             btn.classList.toggle('active', active);
@@ -145,7 +144,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // ===== コピー自動消去視覚タイムバー連動 =====
-    async function copyTextWithPrivacy(text, successMessage, itemElement = null) {
+    async function copyTextWithPrivacy(text, successMessage, itemElement = null, isCurrent = () => true) {
         try {
             if (navigator.clipboard?.writeText) {
                 await navigator.clipboard.writeText(text);
@@ -153,6 +152,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 throw new Error('clipboard api unavailable');
             }
             
+            if (!isCurrent()) return false;
             if (successMessage) showToast(successMessage, 'success');
             
             // 消去オプションが有効な場合、進行バーアニメーションを発火
@@ -175,14 +175,16 @@ document.addEventListener('DOMContentLoaded', () => {
             scheduleClipboardAutoClear(text);
             return true;
         } catch (e) {
+            if (!isCurrent()) return false;
             showToast('コピーに失敗しました', 'error');
             return false;
         }
     }
 
     function fallbackCopyText(text) {
+        let temp = null;
         try {
-            const temp = document.createElement('textarea');
+            temp = document.createElement('textarea');
             temp.value = text;
             temp.setAttribute('readonly', '');
             temp.style.position = 'fixed';
@@ -190,11 +192,11 @@ document.addEventListener('DOMContentLoaded', () => {
             temp.style.pointerEvents = 'none';
             document.body.appendChild(temp);
             temp.select();
-            const copied = document.execCommand('copy');
-            temp.remove();
-            return copied;
+            return document.execCommand('copy');
         } catch {
             return false;
+        } finally {
+            if (temp) { temp.value = ''; temp.remove(); }
         }
     }
 
@@ -263,7 +265,7 @@ document.addEventListener('DOMContentLoaded', () => {
         slider.addEventListener('input', () => { numberInput.value = slider.value; });
         numberInput.addEventListener('input', () => {
             let v = parseInt(numberInput.value, 10);
-            if (isNaN(v)) return;
+            if (isNaN(v)) { numberInput.value = slider.value; return; }
             v = Math.max(parseInt(slider.min), Math.min(v, parseInt(slider.max)));
             slider.value = v;
             numberInput.value = v;
@@ -340,6 +342,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // ===== 生成 =====
     function generate() {
+        isPinMode = inputs.useNumber.checked && !inputs.useLower.checked && !inputs.useUpper.checked && !inputs.useSymbol.checked;
+        const purpose = $('generation-purpose');
+        if (purpose) purpose.textContent = isPinMode
+            ? '数字PIN：端末・サービスが数字の暗証番号を指定する場合に使用してください。一般的なログイン用パスワードには英字も加えてください。'
+            : 'パスワード：利用先の条件に合わせ、サービスごとに使い回さず設定してください。';
         let len = parseInt(inputs.length.value, 10);
         let cnt = parseInt(inputs.count.value, 10);
         len = clampLength(len);
@@ -373,9 +380,8 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
         passwords.forEach(pwd => {
-            const strength = logic.checkStrength(pwd);
+            const strength = logic.checkStrength(pwd, logic.lastGeneratedPoolSize);
             const label = logic.getStrengthLabel(strength);
-            const crackTime = logic.estimateCrackTime(pwd);
 
             const item = document.createElement('div');
             item.className = 'pwd-item';
@@ -389,7 +395,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
             const pwdText = document.createElement('div');
             pwdText.className = 'pwd-text';
-            pwdText.appendChild(createHighlightedPassword(pwd));
+            let hidden = resultsHidden;
+            const renderPassword = () => {
+                pwdText.replaceChildren();
+                if (hidden) pwdText.textContent = '••••••••';
+                else pwdText.appendChild(createHighlightedPassword(pwd));
+            };
+            renderPassword();
 
             clickTarget.appendChild(pwdText);
 
@@ -398,12 +410,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 infoRow.className = 'd-flex justify-content-between align-items-center mt-1 pwd-info-row';
                 const labelSpan = document.createElement('span');
                 labelSpan.className = label.class;
-                labelSpan.textContent = `${label.emoji} ${label.label}`;
-                const timeSpan = document.createElement('span');
-                timeSpan.className = 'text-muted';
-                timeSpan.textContent = `🕐 ${crackTime}`;
+                labelSpan.textContent = `${label.emoji} ${label.label} / 参考値`;
                 infoRow.appendChild(labelSpan);
-                infoRow.appendChild(timeSpan);
 
                 const meter = document.createElement('progress');
                 meter.className = `strength-progress strength-progress-sm ${getStrengthClass(strength)}`;
@@ -441,11 +449,34 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             });
             copyBtn.addEventListener('click', (e) => { e.stopPropagation(); doCopy(); });
+            const visibilityBtn = document.createElement('button');
+            visibilityBtn.type = 'button';
+            visibilityBtn.className = 'btn btn-sm btn-outline-secondary pwd-visibility-btn';
+            const updateVisibilityLabel = () => {
+                visibilityBtn.textContent = hidden ? '表示' : '隠す';
+                visibilityBtn.setAttribute('aria-label', hidden ? 'この生成結果を表示' : 'この生成結果を隠す');
+                visibilityBtn.setAttribute('aria-pressed', String(hidden));
+            };
+            updateVisibilityLabel();
+            visibilityBtn.addEventListener('click', () => {
+                hidden = !hidden;
+                renderPassword();
+                updateVisibilityLabel();
+            });
             item.appendChild(clickTarget);
+            item.appendChild(visibilityBtn);
             item.appendChild(copyBtn);
             resultList.appendChild(item);
         });
     }
+
+    const visibilityAllBtn = $('visibility-all-btn');
+    if (visibilityAllBtn) visibilityAllBtn.addEventListener('click', () => {
+        resultsHidden = !resultsHidden;
+        visibilityAllBtn.textContent = resultsHidden ? 'すべて表示' : 'すべて隠す';
+        visibilityAllBtn.setAttribute('aria-pressed', String(resultsHidden));
+        renderResults(currentPasswords);
+    });
 
     // ===== 全部コピー =====
     if (copyAllBtn) {
@@ -469,7 +500,7 @@ document.addEventListener('DOMContentLoaded', () => {
             inputs.useLower.checked = preset.useLower; inputs.useUpper.checked = preset.useUpper;
             inputs.useNumber.checked = preset.useNumber; inputs.useSymbol.checked = preset.useSymbol;
             inputs.customSymbolWrap.hidden = !preset.useSymbol;
-            isPinMode = (btn.dataset.preset === 'pin' || btn.dataset.preset === 'bank');
+            inputs.excludeAmbiguous.checked = !(btn.dataset.preset === 'pin' || btn.dataset.preset === 'bank');
             presetBtns.forEach(b => { b.classList.remove('active', 'btn-secondary'); b.classList.add('pwd-preset-btn'); });
             btn.classList.add('active');
             generate(); saveSettings();
@@ -547,7 +578,6 @@ document.addEventListener('DOMContentLoaded', () => {
             checkResult.hidden = false;
             const score = logic.checkStrength(pwd);
             const lbl = logic.getStrengthLabel(score);
-            const time = logic.estimateCrackTime(pwd);
             
             // 防壁のビジュアル連動
             let defense = DEFENSE_STATES.weak;
@@ -572,7 +602,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 checkResult.classList.remove('super');
             }
 
-            checkTime.innerHTML = `<strong>${time}</strong>`;
         });
     }
 
@@ -707,49 +736,17 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // ================================================================
-    //  ボールト（パスワード管理）
-    // ================================================================
+    // ===== Legacy vault: read-only recovery. No setup, import, save or delete UI. =====
     const vaultLockScreen = $('vault-lock-screen');
     const vaultMain = $('vault-main');
-    const vaultForm = $('vault-form');
     const vaultMasterPw = $('vault-master-pw');
-    const vaultMasterPwConfirm = $('vault-master-pw-confirm');
-    const vaultConfirmWrap = $('vault-confirm-wrap');
-    const vaultMasterHelp = $('vault-master-help');
-    const vaultMasterLabel = $('vault-master-label');
-    const vaultMasterScore = $('vault-master-score');
-    const vaultMasterBar = $('vault-master-bar');
-    const vaultMasterTip = $('vault-master-tip');
-    const vaultLockTitle = $('vault-lock-title');
-    const vaultLockDesc = $('vault-lock-desc');
     const vaultLockError = $('vault-lock-error');
     const vaultUnlockBtn = $('vault-unlock-btn');
-    const vaultPwToggle = $('vault-pw-toggle');
-    const vaultLockBtn = $('vault-lock-btn');
     const vaultEntries = $('vault-entries');
     const vaultSearch = $('vault-search');
-    const vaultAddBtn = $('vault-add-btn');
-    const vaultSiteName = $('vault-site-name');
-    
-    // 提案B: カテゴリ拡張
-    const vaultCategory = $('vault-category');
-    
-    const vaultPassword = $('vault-password');
-    const vaultCustomFields = $('vault-custom-fields');
-    const vaultAddFieldBtn = $('vault-add-field-btn');
-    const vaultSaveBtn = $('vault-save-btn');
-    const vaultCancelBtn = $('vault-cancel-btn');
-    const vaultEditId = $('vault-edit-id');
-    const vaultFormTitle = $('vault-form-title');
-    const vaultDestroyBtn = $('vault-destroy-btn');
-    const vaultResetCorruptBtn = $('vault-reset-corrupt-btn');
+    const vaultLockBtn = $('vault-lock-btn');
     const vaultExportBtn = $('vault-export-btn');
-    const vaultImportInput = $('vault-import-input');
-    
-    const chestIcon = $('pwd-chest-icon');
-
-    // カテゴリ定義
+    const recoveryTab = document.querySelector('[data-tab="vault"]');
     const CATEGORIES = Object.freeze({
         all: { label: 'すべて', emoji: '📂', class: 'pwd-cat-other' },
         social: { label: 'SNS・メディア', emoji: '🌐', class: 'pwd-cat-sns' },
@@ -758,233 +755,88 @@ document.addEventListener('DOMContentLoaded', () => {
         work: { label: '仕事・学校', emoji: '💼', class: 'pwd-cat-work' },
         other: { label: 'その他', emoji: '🗝', class: 'pwd-cat-other' }
     });
-
     let currentActiveCategory = 'all';
 
-    function evaluateMasterPassword(pw) {
-        let score = 0;
-        const tips = [];
-        const length = pw.length;
-        const typeCount =
-            (/[a-z]/.test(pw) ? 1 : 0) +
-            (/[A-Z]/.test(pw) ? 1 : 0) +
-            (/[0-9]/.test(pw) ? 1 : 0) +
-            (/[^a-zA-Z0-9]/.test(pw) ? 1 : 0);
-
-        score += Math.min(60, length * 3);
-        score += typeCount * 10;
-        if (typeCount >= 3) score += 10;
-        if (/(.)\1{2,}/.test(pw)) score -= 10;
-        if (/\s/.test(pw)) score -= 10;
-        score = Math.max(0, Math.min(100, score));
-
-        if (length < MIN_MASTER_PASSWORD_LENGTH) tips.push(`${MIN_MASTER_PASSWORD_LENGTH}文字以上にする`);
-        if (!/[a-z]/.test(pw)) tips.push('英小文字を入れる');
-        if (!/[A-Z]/.test(pw)) tips.push('英大文字を入れる');
-        if (!/[0-9]/.test(pw)) tips.push('数字を入れる');
-        if (!/[^a-zA-Z0-9]/.test(pw)) tips.push('記号を入れる');
-
-        let label = '弱い';
-        if (score >= 80) label = '強い';
-        else if (score >= 55) label = '普通';
-
-        return {
-            score,
-            label,
-            tip: tips.length > 0 ? `改善: ${tips[0]}` : '十分に強いパスワードです',
-            cssClass: getStrengthClass(score),
-        };
+    function clearMasterInputs() {
+        vaultMasterPw.value = '';
+        vaultMasterPw.type = 'password';
     }
-
-    function renderMasterPasswordHelp() {
-        if (!vaultMasterHelp) return;
-        if (vault.exists()) {
-            vaultMasterHelp.hidden = true;
-            return;
-        }
-        vaultMasterHelp.hidden = false;
-        const result = evaluateMasterPassword(vaultMasterPw.value);
-        vaultMasterLabel.textContent = `強度: ${result.label}`;
-        vaultMasterScore.textContent = `${result.score}/100`;
-        vaultMasterBar.value = result.score;
-        vaultMasterBar.className = `strength-progress strength-progress-sm ${result.cssClass}`;
-        vaultMasterTip.textContent = result.tip;
-    }
-
-    // 初期状態: ボールトの存在に応じてUIを切り替え
     function initVaultUI() {
-        const vaultExists = vault.exists();
-        const hasArtifacts = typeof vault.hasStoredArtifacts === 'function' && vault.hasStoredArtifacts();
-        const cryptoSupported = typeof vault.isCryptoSupported === 'function' && vault.isCryptoSupported();
-
-        chestIcon.textContent = vaultExists ? '🔒' : '🔑';
-
-        if (!cryptoSupported) {
-            vaultLockTitle.textContent = 'このブラウザではボールト機能を利用できません';
-            vaultLockDesc.textContent = 'Web Crypto API 非対応のため、パスワード管理タブは使用できません。';
-            vaultConfirmWrap.hidden = true;
-            vaultUnlockBtn.textContent = '利用不可';
-            vaultUnlockBtn.disabled = true;
-            if (vaultResetCorruptBtn) vaultResetCorruptBtn.hidden = true;
-        } else if (vaultExists) {
-            vaultLockTitle.textContent = 'マスターパスワードを入力';
-            vaultLockDesc.textContent = 'ボールトを開くにはマスターパスワードを入力してください。';
-            vaultConfirmWrap.hidden = true;
-            vaultUnlockBtn.textContent = '🔓 ロック解除';
-            vaultUnlockBtn.disabled = false;
-            if (vaultResetCorruptBtn) vaultResetCorruptBtn.hidden = true;
-        } else {
-            vaultLockTitle.textContent = 'マスターパスワードを設定';
-            vaultLockDesc.textContent = `ボールト内のデータはこのパスワード（${MIN_MASTER_PASSWORD_LENGTH}文字以上）で暗号化されます。忘れると復元できません。`;
-            vaultConfirmWrap.hidden = false;
-            vaultUnlockBtn.textContent = '🔐 ボールトを作成';
-            vaultUnlockBtn.disabled = false;
-            if (vaultResetCorruptBtn) vaultResetCorruptBtn.hidden = !hasArtifacts;
-        }
+        vaultUiSession++;
+        vaultEntries.replaceChildren();
+        vaultSearch.value = '';
+        clearMasterInputs();
         vaultLockScreen.hidden = false;
         vaultMain.hidden = true;
-        vaultForm.hidden = true;
         vaultLockError.hidden = true;
-        if (cryptoSupported && !vaultExists && hasArtifacts) {
-            vaultLockError.textContent = '⚠️ 以前のボールトデータが破損している可能性があります。必要なら下の初期化を実行してください。';
+        let artifacts = false;
+        try { artifacts = vault.hasStoredArtifacts(); }
+        catch (_) { artifacts = true; }
+        if (recoveryTab) recoveryTab.hidden = !artifacts;
+        const exists = vault.exists();
+        vaultUnlockBtn.disabled = !exists || !vault.isCryptoSupported();
+        vaultUnlockBtn.textContent = 'ロック解除して取り出す';
+        vaultExportBtn.disabled = !exists;
+        if (artifacts && !exists) {
+            vaultLockError.textContent = '旧データを読み込めませんでした。元の保存領域は変更していません。サイトデータを削除せず、以前のバックアップを保管してください。';
             vaultLockError.hidden = false;
         }
-        vaultMasterPw.value = '';
-        vaultMasterPwConfirm.value = '';
-        renderMasterPasswordHelp();
     }
-
-    // マスターPW表示切替
-    let vaultPwVisible = false;
-    if (vaultPwToggle) {
-        vaultPwToggle.addEventListener('click', () => {
-            vaultPwVisible = !vaultPwVisible;
-            vaultMasterPw.type = vaultPwVisible ? 'text' : 'password';
-            vaultMasterPwConfirm.type = vaultPwVisible ? 'text' : 'password';
-            vaultPwToggle.textContent = vaultPwVisible ? '🙈' : '👁️';
-        });
-    }
-    if (vaultMasterPw) vaultMasterPw.addEventListener('input', renderMasterPasswordHelp);
-    if (vaultMasterPwConfirm) vaultMasterPwConfirm.addEventListener('input', renderMasterPasswordHelp);
-
-    const handleVaultUnlockEnter = (e) => {
-        if (e.key !== 'Enter') return;
-        e.preventDefault();
-        if (vaultUnlockBtn) vaultUnlockBtn.click();
-    };
-    if (vaultMasterPw) vaultMasterPw.addEventListener('keydown', handleVaultUnlockEnter);
-    if (vaultMasterPwConfirm) vaultMasterPwConfirm.addEventListener('keydown', handleVaultUnlockEnter);
-
-    // ロック解除 / セットアップ
-    if (vaultUnlockBtn) {
-        vaultUnlockBtn.addEventListener('click', async () => {
-            const pw = vaultMasterPw.value;
-            vaultLockError.hidden = true;
-            if (typeof vault.isCryptoSupported === 'function' && !vault.isCryptoSupported()) {
-                vaultLockError.textContent = '❌ このブラウザはボールト暗号化に対応していません';
-                vaultLockError.hidden = false;
-                return;
-            }
-
-            if (vault.exists()) {
-                // 既存ボールトを開く
-                vaultUnlockBtn.disabled = true;
-                vaultUnlockBtn.textContent = '🔄 解錠中...';
-                chestIcon.style.transform = 'scale(0.8) rotate(-10deg)';
-                try {
-                    const ok = await vault.unlock(pw);
-                    if (ok) {
-                        chestIcon.textContent = '🔓';
-                        chestIcon.style.transform = 'scale(1.2) rotate(10deg)';
-                        setTimeout(() => {
-                            showVaultMain();
-                            if (pendingImportNotice) {
-                                showToast(`インポートデータを ${vault.entries.length} 件読み込みました`, 'success');
-                                pendingImportNotice = false;
-                            }
-                        }, 300);
-                    } else {
-                        chestIcon.textContent = '🔒';
-                        chestIcon.style.transform = 'none';
-                        vaultLockError.textContent = '❌ マスターパスワードが違います';
-                        vaultLockError.hidden = false;
-                    }
-                } catch (e) {
-                    chestIcon.textContent = '🔒';
-                    chestIcon.style.transform = 'none';
-                    vaultLockError.textContent = `エラー: ${e.message}`;
-                    vaultLockError.hidden = false;
-                }
-                vaultUnlockBtn.disabled = false;
-                vaultUnlockBtn.textContent = '🔓 ロック解除';
-            } else {
-                // 新規セットアップ
-                const confirmPw = vaultMasterPwConfirm.value;
-                if (pw.length < MIN_MASTER_PASSWORD_LENGTH) {
-                    vaultLockError.textContent = `❌ ${MIN_MASTER_PASSWORD_LENGTH}文字以上にしてください`;
-                    vaultLockError.hidden = false;
-                    return;
-                }
-                if (pw !== confirmPw) {
-                    vaultLockError.textContent = '❌ パスワードが一致しません';
-                    vaultLockError.hidden = false;
-                    return;
-                }
-                const pwStrength = evaluateMasterPassword(pw);
-                if (pwStrength.score < MIN_MASTER_PASSWORD_SCORE) {
-                    vaultLockError.textContent = '❌ 強度が弱いです。英大小文字・数字・記号を混ぜてください';
-                    vaultLockError.hidden = false;
-                    return;
-                }
-                vaultUnlockBtn.disabled = true;
-                vaultUnlockBtn.textContent = '🔄 作成中...';
-                try {
-                    await vault.setup(pw);
-                    showToast('ボールトを作成しました！', 'success');
-                    showVaultMain();
-                } catch (e) {
-                    vaultLockError.textContent = `エラー: ${e.message}`;
-                    vaultLockError.hidden = false;
-                }
-                vaultUnlockBtn.disabled = false;
-                vaultUnlockBtn.textContent = '🔐 ボールトを作成';
-            }
-        });
-    }
-
     function showVaultMain() {
+        if (!vault.isUnlocked) return;
+        clearMasterInputs();
         vaultLockScreen.hidden = true;
         vaultMain.hidden = false;
-        vaultForm.hidden = true;
         renderVaultEntries();
     }
-
-    // ロック
-    if (vaultLockBtn) {
-        vaultLockBtn.addEventListener('click', () => {
+    vaultUnlockBtn.addEventListener('click', async () => {
+        if (vaultUnlockBtn.disabled || !vault.exists()) return;
+        const session = vaultUiSession;
+        const password = vaultMasterPw.value;
+        clearMasterInputs();
+        vaultUnlockBtn.disabled = true;
+        vaultLockError.hidden = true;
+        try {
+            const ok = await vault.unlock(password);
+            if (session !== vaultUiSession) return;
+            if (ok) showVaultMain();
+            else { vaultLockError.textContent = 'マスターパスワードが違います。'; vaultLockError.hidden = false; }
+        } catch (error) {
+            if (session === vaultUiSession) { vaultLockError.textContent = `取り出しエラー: ${error.message}`; vaultLockError.hidden = false; }
+        } finally {
+            if (session === vaultUiSession) vaultUnlockBtn.disabled = false;
+        }
+    });
+    vaultMasterPw.addEventListener('keydown', event => {
+        if (event.key === 'Enter') { event.preventDefault(); vaultUnlockBtn.click(); }
+    });
+    vaultLockBtn.addEventListener('click', () => { vault.lock(); initVaultUI(); });
+    vaultSearch.addEventListener('input', () => { if (vault.isUnlocked) renderVaultEntries(vaultSearch.value); });
+    vaultExportBtn.addEventListener('click', () => {
+        if (vaultExportBtn.disabled) return;
+        try {
+            const data = vault.exportEncrypted();
+            const url = URL.createObjectURL(new Blob([data], { type: 'application/json' }));
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `password-vault-${new Date().toISOString().slice(0, 10)}.json`;
+            link.click();
+            setTimeout(() => URL.revokeObjectURL(url), 1000);
+            showToast('暗号化バックアップの保存を開始しました', 'info');
+        } catch (error) { showToast(`取り出しエラー: ${error.message}`, 'error'); }
+    });
+    window.addEventListener('storage', event => {
+        if (event.key === 'password-gen-vault' || event.key === 'password-gen-vault-salt' || event.key === null) {
             vault.lock();
             initVaultUI();
-            showToast('ボールトをロックしました', 'info');
-        });
-    }
-
-    // カテゴリフィルターイベント
-    const catBtns = document.querySelectorAll('.pwd-cat-btn');
-    catBtns.forEach(btn => {
-        btn.addEventListener('click', () => {
-            catBtns.forEach(b => {
-                b.classList.remove('active');
-                b.setAttribute('aria-selected', 'false');
-            });
-            btn.classList.add('active');
-            btn.setAttribute('aria-selected', 'true');
-            currentActiveCategory = btn.getAttribute('data-category');
-            renderVaultEntries(vaultSearch.value);
-        });
+            showToast('保存内容が変わりました。開き直してください。', 'info');
+        }
     });
-
-    // エントリ一覧レンダリング（カテゴリ絞り込み対応）
+    window.addEventListener('pagehide', () => { vault.lock(); initVaultUI(); });
     function renderVaultEntries(query = '') {
+        if (!vault.isUnlocked) { vaultEntries.replaceChildren(); return; }
+        const session = vaultUiSession;
+        const currentEntry = id => session === vaultUiSession && vault.isUnlocked ? vault.entries.find(item => item.id === id) : null;
         let entries = query ? vault.search(query) : vault.entries;
         
         // カテゴリ別フィルタリング
@@ -1003,7 +855,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 const lead = document.createElement('div');
                 lead.textContent = '📭 まだパスワードが登録されていません';
                 const help = document.createElement('small');
-                help.textContent = '下のボタンから追加してください';
+                help.textContent = '取り出せる保存済みパスワードはありません';
                 empty.appendChild(lead);
                 empty.appendChild(help);
             }
@@ -1030,7 +882,7 @@ document.addEventListener('DOMContentLoaded', () => {
             siteName.textContent = entry.siteName || '(名前なし)';
             
             // カテゴリバッジの表示 (提案B)
-            const cat = CATEGORIES[entry.category || 'other'];
+            const cat = CATEGORIES[entry.category] || CATEGORIES.other;
             const badge = document.createElement('span');
             badge.className = `pwd-cat-badge ${cat.class}`;
             badge.innerHTML = `${cat.emoji} ${cat.label}`;
@@ -1047,41 +899,17 @@ document.addEventListener('DOMContentLoaded', () => {
             copyBtn.textContent = '📋';
             copyBtn.title = 'パスワードをコピー';
             copyBtn.setAttribute('aria-label', `${entry.siteName || 'このエントリ'}のパスワードをコピー`);
+            const entryId = entry.id;
             copyBtn.addEventListener('click', async () => {
-                const copied = await copyTextWithPrivacy(entry.password, `${entry.siteName} のパスワードをコピーしました`, card);
+                const entry = currentEntry(entryId);
+                if (!entry) return;
+                const copied = await copyTextWithPrivacy(entry.password, 'パスワードをコピーしました', card, () => session === vaultUiSession && vault.isUnlocked);
                 if (!copied) return;
                 copyBtn.textContent = '✅';
                 setTimeout(() => { copyBtn.textContent = '📋'; }, 1000);
             });
 
-            // 編集ボタン
-            const editBtn = document.createElement('button');
-            editBtn.className = 'btn btn-outline-secondary btn-sm';
-            editBtn.textContent = '✏️';
-            editBtn.title = '編集';
-            editBtn.setAttribute('aria-label', `${entry.siteName || 'このエントリ'}を編集`);
-            editBtn.addEventListener('click', () => openEditForm(entry));
-
-            // 削除ボタン
-            const delBtn = document.createElement('button');
-            delBtn.className = 'btn btn-outline-danger btn-sm';
-            delBtn.textContent = '🗑️';
-            delBtn.title = '削除';
-            delBtn.setAttribute('aria-label', `${entry.siteName || 'このエントリ'}を削除`);
-            delBtn.addEventListener('click', async () => {
-                if (!confirm(`「${entry.siteName}」を削除しますか？`)) return;
-                try {
-                    await vault.deleteEntry(entry.id);
-                    renderVaultEntries(vaultSearch.value);
-                    showToast('削除しました', 'info');
-                } catch (e) {
-                    showToast(`削除エラー: ${e.message}`, 'error');
-                }
-            });
-
             actions.appendChild(copyBtn);
-            actions.appendChild(editBtn);
-            actions.appendChild(delBtn);
             header.appendChild(titleCol);
             header.appendChild(actions);
             body.appendChild(header);
@@ -1098,6 +926,8 @@ document.addEventListener('DOMContentLoaded', () => {
             pwToggle.textContent = '👁️';
             pwToggle.setAttribute('aria-label', 'パスワード表示を切り替え');
             pwToggle.addEventListener('click', () => {
+                const entry = currentEntry(entryId);
+                if (!entry) return;
                 pwVisible = !pwVisible;
                 pwDisplay.textContent = pwVisible ? entry.password : '••••••••';
                 pwToggle.textContent = pwVisible ? '🙈' : '👁️';
@@ -1110,7 +940,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (entry.fields && entry.fields.length > 0) {
                 const fieldsDiv = document.createElement('div');
                 fieldsDiv.className = 'mt-1';
-                entry.fields.forEach(f => {
+                entry.fields.forEach((f, fieldIndex) => {
                     const row = document.createElement('div');
                     row.className = 'd-flex align-items-center gap-1 small text-muted vault-field-row-inline';
                     const lbl = document.createElement('span');
@@ -1123,7 +953,9 @@ document.addEventListener('DOMContentLoaded', () => {
                     cpBtn.textContent = '📋';
                     cpBtn.setAttribute('aria-label', `${f.label || 'この項目'}をコピー`);
                     cpBtn.addEventListener('click', async () => {
-                        await copyTextWithPrivacy(f.value, `${f.label} をコピーしました`);
+                        const f = currentEntry(entryId)?.fields[fieldIndex];
+                        if (!f) return;
+                        await copyTextWithPrivacy(f.value, '項目をコピーしました', null, () => session === vaultUiSession && vault.isUnlocked);
                     });
                     row.appendChild(lbl);
                     row.appendChild(val);
@@ -1135,198 +967,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
             card.appendChild(body);
             vaultEntries.appendChild(card);
-        });
-    }
-
-    // 検索
-    if (vaultSearch) {
-        vaultSearch.addEventListener('input', () => {
-            if (vault.isUnlocked) renderVaultEntries(vaultSearch.value);
-        });
-    }
-
-    // ===== 追加/編集フォーム =====
-    function openAddForm() {
-        vaultMain.hidden = true;
-        vaultForm.hidden = false;
-        vaultFormTitle.textContent = '新規追加';
-        vaultSiteName.value = '';
-        vaultCategory.value = 'other'; // 初期化
-        vaultPassword.value = '';
-        vaultEditId.value = '';
-        vaultCustomFields.replaceChildren();
-    }
-
-    function openEditForm(entry) {
-        vaultMain.hidden = true;
-        vaultForm.hidden = false;
-        vaultFormTitle.textContent = '編集';
-        vaultSiteName.value = entry.siteName;
-        vaultCategory.value = entry.category || 'other'; // 編集値ロード
-        vaultPassword.value = entry.password;
-        vaultEditId.value = entry.id;
-        vaultCustomFields.replaceChildren();
-        if (entry.fields) {
-            entry.fields.forEach(f => addCustomFieldRow(f.label, f.value));
-        }
-    }
-
-    function addCustomFieldRow(label = '', value = '') {
-        const row = document.createElement('div');
-        row.className = 'd-flex gap-2 mb-2 vault-field-row';
-
-        const labelInput = document.createElement('input');
-        labelInput.type = 'text';
-        labelInput.className = 'pwd-text-input vault-field-label-input';
-        labelInput.style.height = '38px';
-        labelInput.placeholder = '項目名（例: メアド）';
-        labelInput.value = label;
-
-        const valueInput = document.createElement('input');
-        valueInput.type = 'text';
-        valueInput.className = 'pwd-text-input';
-        valueInput.style.height = '38px';
-        valueInput.placeholder = '値';
-        valueInput.value = value;
-
-        const removeBtn = document.createElement('button');
-        removeBtn.type = 'button';
-        removeBtn.className = 'btn btn-outline-danger btn-sm';
-        removeBtn.style.padding = '0 0.5rem';
-        removeBtn.textContent = '✕';
-        removeBtn.setAttribute('aria-label', 'この項目を削除');
-        removeBtn.addEventListener('click', () => row.remove());
-
-        row.appendChild(labelInput);
-        row.appendChild(valueInput);
-        row.appendChild(removeBtn);
-        vaultCustomFields.appendChild(row);
-    }
-
-    if (vaultAddBtn) vaultAddBtn.addEventListener('click', openAddForm);
-    if (vaultAddFieldBtn) vaultAddFieldBtn.addEventListener('click', () => addCustomFieldRow());
-
-    // パスワードフィールド表示切替
-    document.querySelectorAll('.vault-field-toggle').forEach(btn => {
-        btn.addEventListener('click', () => {
-            const input = btn.parentElement.querySelector('input');
-            if (input) {
-                const isPassword = input.type === 'password';
-                input.type = isPassword ? 'text' : 'password';
-                btn.textContent = isPassword ? '🙈' : '👁️';
-            }
-        });
-    });
-
-    // 保存
-    const submitVaultForm = async () => {
-        const siteName = vaultSiteName.value.trim();
-        const password = vaultPassword.value;
-        const category = vaultCategory.value;
-
-        if (!siteName) { showToast('サイト名を入力してください', 'error'); return; }
-        if (!password) { showToast('パスワードを入力してください', 'error'); return; }
-
-        // カスタムフィールド収集
-        const fields = [];
-        vaultCustomFields.querySelectorAll('.vault-field-row').forEach(row => {
-            const inputs = row.querySelectorAll('input');
-            const label = inputs[0]?.value.trim();
-            const value = inputs[1]?.value.trim();
-            if (label && value) fields.push({ label, value });
-        });
-
-        try {
-            const editId = vaultEditId.value;
-            if (editId) {
-                await vault.updateEntry(editId, { siteName, password, category, fields });
-                showToast('更新しました！', 'success');
-            } else {
-                await vault.addEntry({ siteName, password, category, fields });
-                showToast('追加しました！', 'success');
-            }
-            showVaultMain();
-        } catch (e) {
-            showToast(`保存エラー: ${e.message}`, 'error');
-        }
-    };
-
-    if (vaultSaveBtn) {
-        vaultSaveBtn.addEventListener('click', submitVaultForm);
-    }
-    const handleVaultFormEnter = (e) => {
-        if (e.key !== 'Enter') return;
-        if (!(e.target instanceof HTMLInputElement)) return;
-        e.preventDefault();
-        submitVaultForm();
-    };
-    if (vaultSiteName) vaultSiteName.addEventListener('keydown', handleVaultFormEnter);
-    if (vaultPassword) vaultPassword.addEventListener('keydown', handleVaultFormEnter);
-    if (vaultCustomFields) vaultCustomFields.addEventListener('keydown', handleVaultFormEnter);
-
-    // キャンセル
-    if (vaultCancelBtn) vaultCancelBtn.addEventListener('click', showVaultMain);
-
-    // 全削除
-    if (vaultDestroyBtn) {
-        vaultDestroyBtn.addEventListener('click', () => {
-            if (!confirm('⚠️ ボールトの全データを完全に削除しますか？\nこの操作は元に戻せません。')) return;
-            if (!confirm('本当に削除しますか？（最終確認）')) return;
-            vault.destroy();
-            pendingImportNotice = false;
-            initVaultUI();
-            showToast('ボールトを削除しました', 'info');
-        });
-    }
-
-    if (vaultResetCorruptBtn) {
-        vaultResetCorruptBtn.addEventListener('click', () => {
-            if (!confirm('壊れた可能性のあるボールトデータを初期化します。続行しますか？')) return;
-            vault.destroy();
-            pendingImportNotice = false;
-            initVaultUI();
-            showToast('ボールトデータを初期化しました', 'info');
-        });
-    }
-
-    // エクスポート (暗号インポート・エクスポートUX強化 B4)
-    if (vaultExportBtn) {
-        vaultExportBtn.addEventListener('click', () => {
-            try {
-                const data = vault.exportEncrypted();
-                const blob = new Blob([data], { type: 'application/json' });
-                const url = URL.createObjectURL(blob);
-                const a = document.createElement('a');
-                a.href = url;
-                a.download = `password-vault-${new Date().toISOString().slice(0, 10)}.json`;
-                a.click();
-                URL.revokeObjectURL(url);
-                showToast('🔑 ボールトをエクスポートしました', 'success');
-            } catch (e) { showToast(`エクスポートエラー: ${e.message}`, 'error'); }
-        });
-    }
-
-    // インポート
-    if (vaultImportInput) {
-        vaultImportInput.addEventListener('change', async (e) => {
-            const file = e.target.files[0];
-            if (!file) return;
-            try {
-                const fileKb = (file.size / 1024).toFixed(1);
-                const ok = confirm(`「${file.name}」(${fileKb} KB) をインポートします。\n現在のボールトデータは置き換えられます。続行しますか？`);
-                if (!ok) {
-                    e.target.value = '';
-                    return;
-                }
-                const text = await file.text();
-                vault.importEncrypted(text);
-                pendingImportNotice = true;
-                initVaultUI();
-                showToast('🔑 インポートが成功しました！ロック解除後に反映されます。', 'success');
-            } catch (err) {
-                showToast(`インポートエラー: ${err.message}`, 'error');
-            }
-            e.target.value = '';
         });
     }
 

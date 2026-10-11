@@ -6,7 +6,7 @@
   <meta name="theme-color" content="#0a0a0c">
   <link rel="manifest" href="manifest.json">
   <title>Gravity-Todo | 演出付きの実験Todo</title>
-  <meta name="description" content="20文字以内のタスクを重力ブロックとして積み、完了や削除で爆破演出する実験Todo。期限や履歴はなく、データはこの端末だけに残ります。">
+  <meta name="description" content="20文字以内のタスクを重力ブロックとして積み、完了や削除で爆破演出する実験Todo。期限管理はなく、データはこの端末だけに残ります。">
   <meta name="robots" content="noindex, follow">
   <link rel="icon" href="icon.svg" type="image/svg+xml">
   <link rel="canonical" href="https://katakatalab.com/lab-tools/gravity-todo/">
@@ -74,12 +74,20 @@
           <span class="status-label">TASKS</span>
           <div class="status-meter" aria-hidden="true"><span id="task-meter-fill"></span></div>
           <strong id="task-count">0</strong>
-          <span class="status-label" style="margin-left:0.8rem; color:var(--text-dim);">DESTROYED TODAY</span>
+          <span class="status-label" style="margin-left:0.8rem; color:var(--text-dim);">今日の爆破数</span>
           <strong id="destroy-count" style="color:var(--accent-color);">0</strong>
           <button id="share-btn" class="icon-btn" aria-label="Xでシェア" title="破壊スコアをXでシェア" style="margin-left:auto; font-family:sans-serif; font-size:1.1rem; padding: 0 4px;">𝕏</button>
         </div>
 
+        <div id="undo-snackbar" class="history-controls" role="status" aria-live="polite">
+          <span data-undo-message>単件の爆破を戻す・やり直す（この画面を開いている間）</span>
+          <button type="button" id="undo-btn" class="undo-btn" disabled>元に戻す</button>
+          <button type="button" id="redo-btn" class="undo-btn" disabled>やり直す</button>
+        </div>
+        <p class="settings-note">今日の爆破数は単件の手動爆破を数えます。元に戻しても減らず、やり直しでは増えません。</p>
         <div id="settings-panel" class="settings-panel hidden" role="dialog" aria-label="カラー設定">
+          <label class="settings-note"><input type="checkbox" id="reduced-effects"> 演出を控えめにする</label>
+          <p class="settings-note">OSの「動きを減らす」設定も優先します。</p><p id="settings-save-status" role="status"></p>
           <p class="settings-heading">ブロックカラー</p>
           <div id="preset-list" class="preset-list" role="radiogroup" aria-label="カラープリセット"></div>
           <div class="custom-colors">
@@ -116,7 +124,7 @@
       <details class="tool-guide">
         <summary>使い方とデータ保存について</summary>
         <div class="tool-guide-body">
-          <p>入力欄へ今日やることを20文字以内で追加すると、画面内に重力ブロックとして表示されます。完了は達成演出のあと消えます。削除はすぐ消えて、破壊数に加算されます。どちらも4秒以内なら元に戻せます。スワイプでは消しません。</p>
+          <p>入力欄へ今日やることを20文字以内で追加すると、画面内に重力ブロックとして表示されます。完了は達成演出のあと消えます。削除はすぐ消えて、破壊数に加算されます。どちらも画面を開いている間は、上の「元に戻す」「やり直す」で操作できます。全爆破は戻せません。スワイプでは消しません。</p>
           <p>タスクと設定はこの端末のブラウザ内に保存され、KatakataLabのサーバーへ送信しません。端末やブラウザを変えた場合は引き継がれず、ブラウザの保存データを消すとタスクも削除されます。大切な予定の唯一の保管場所にはせず、必要に応じて別の予定表やメモにも控えてください。</p>
           <p>ブロックのドラッグや爆破演出は整理を楽しくするための補助機能です。通常のTodo操作は一覧側だけでも完結します。</p>
         </div>
@@ -154,7 +162,8 @@
           <span class="input-cap">MAX 20文字</span>
           <span id="char-count">0/20</span>
         </div>
-        <p id="save-status" class="save-status" hidden></p>
+        <p id="save-status" class="save-status" role="status" hidden></p>
+        <button type="button" id="retry-storage" hidden>保存済みタスクを再読み込み</button>
       </div>
     </section>
 
@@ -213,11 +222,6 @@
     </form>
   </div>
 
-  <!-- Undo（元に戻す）スナックバー -->
-  <div id="undo-snackbar" class="undo-snackbar hidden" role="alert">
-    <span data-undo-message>タスクを削除しました</span>
-    <button id="undo-btn" class="undo-btn">元に戻す</button>
-  </div>
 
   <script type="module" src="src/main.js"></script>
   <script>
@@ -229,3 +233,4 @@
   </script>
 </body>
 </html>
+

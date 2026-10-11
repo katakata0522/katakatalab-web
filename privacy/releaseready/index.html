@@ -65,12 +65,12 @@
             <ul>
                 <li>title、meta、robots、canonical、OGP、JSON-LD などのHTML情報</li>
                 <li>見出し、画像、リンク、フォーム部品、table などのページ構造</li>
-                <li>ダミー文言や案件ごとの確認文言を探すための、ページに表示されているテキスト</li>
+                <li>ダミー文言や案件ごとの確認文言を探すための、ページのDOM内のテキスト（CSSで非表示になっている部分を含む場合があります）</li>
                 <li>電話番号、メールアドレス、問い合わせ先リンク、コピーライト表記など、案件ルールとの照合に使う情報</li>
                 <li>検査スクリプトを実行した後に、そのページで起きたJavaScriptエラーのメッセージ</li>
             </ul>
             <p>「要素から取り込む」を使った場合は、ユーザーがクリックした要素のテキストやリンク先を、案件ルールの入力欄に取り込みます。「位置確認」を使った場合は、該当箇所を一時的に枠線で強調表示します。</p>
-            <p>パスワードの値、Cookie、認証トークンを集めたり保存したりする機能はありません。</p>
+            <p>パスワード入力欄の値やCookieを専用APIで読み取る機能、認証トークンを収集するための機能はありません。ただし、検査するページのURL（クエリやフラグメントを含む）、DOMのテキスト・属性、JavaScriptエラーに個人情報や認証情報が含まれている場合、その一部が検査結果やレポートに残る可能性があります。機密情報を含むページの検査やレポート共有は、内容を確認したうえで行ってください。</p>
         </section>
 
         <section class="policy-section">
@@ -82,7 +82,7 @@
                     <tr><td>検査結果（ページのURL・タイトル、検査日時、検査時の案件ルール、判定、指摘内容、該当箇所の短い抜粋）</td><td>結果表示と案件レポート（1案件あたり20ページまで。上限に達したときは新しいページを保存せず、既存の結果を自動で消しません）</td><td><span class="tag-local">Chrome内保存</span></td></tr>
                     <tr><td>手動QAの確認状態とメモ</td><td>案件ごとの確認記録</td><td><span class="tag-local">Chrome内保存</span></td></tr>
                     <tr><td>検査実施者名、制作会社・屋号（任意入力）</td><td>レポートへの記載</td><td><span class="tag-local">Chrome内保存</span></td></tr>
-                    <tr><td>パスワード、Cookie、認証トークン</td><td>使用しません</td><td><span class="tag-none">取得しない</span></td></tr>
+                    <tr><td>パスワード入力値・Cookie・認証トークンの専用取得</td><td>専用の取得機能はありません。URLや抜粋等への意図しない混入には上記の注意が必要です</td><td><span class="tag-none">専用取得なし</span></td></tr>
                     <tr><td>HTML / CSV レポート、Markdownコピー、指示文コピー</td><td>ユーザー自身の報告・共有</td><td><span class="tag-file">選択した保存先</span></td></tr>
                 </tbody>
             </table></div>
@@ -94,6 +94,7 @@
             <p>ReleaseReadyは、検査したページのHTML・本文・検査結果・設定を、開発者サーバー、広告サービス、アクセス解析サービス、外部AIへ送信しません。サイドパネルは外部Webフォントや外部JavaScriptを読み込みません。</p>
             <p>HTML / CSV レポートの保存や、Markdown・指示文のコピーを利用した場合、その内容はユーザーが選択した保存先や貼り付け先で管理されます。ReleaseReadyが自動的にアップロードすることはありません。</p>
             <p>なお、表示しているWebサイト自体が行う通信や、Chrome / Chrome Web Store 側の通信を、ReleaseReadyが止めたり制御したりするものではありません。</p>
+            <p>本ページの説明はChrome拡張機能の動作を対象としています。本ページを含むKatakataLabのWebサイトについては、<a href="/privacy.html">共通プライバシーポリシー</a>をご確認ください。</p>
         </section>
 
         <section class="policy-section">

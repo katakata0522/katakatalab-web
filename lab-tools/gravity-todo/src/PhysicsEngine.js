@@ -34,6 +34,7 @@ export class PhysicsEngine {
     this.height = window.innerHeight;
     this.isNukingAll    = false;
     this.userMutatedStorage = false;
+    this.storageReady = false;
     this.nukeTimeoutIds = [];
     this.dpr = window.devicePixelRatio || 1;
 
@@ -55,6 +56,7 @@ export class PhysicsEngine {
     this.particleSystem = new ParticleSystem(this.ctx);
     this.soundManager   = new SoundManager();
     this.uiManager      = new UIManager();
+    this.uiManager.reduceMotion = () => this.reducedEffects();
     this.taskRenderer   = new TaskRenderer(this.ctx);
     this.bgmManager     = new BGMManager();
     this.gyroManager    = new GyroManager(this.engine);
@@ -63,6 +65,7 @@ export class PhysicsEngine {
     this.taskDetailPanel = new TaskDetailPanel();
     this.taskDetailPanel.onExplodeRequest = (body) => this.destroyTask(body);
     this.taskDetailPanel.onChanged = () => {
+      this.redoStack = [];
       this.updateBlockDensity(this.taskDetailPanel.currentBody);
       void this.persistTasks();
       this.syncTaskList();
@@ -212,6 +215,7 @@ export class PhysicsEngine {
   }
 
   addTask(text, x = null, y = null, angle = 0, options = {}) {
+    if (this.storageReady === false) return;
     const safeText = text.replace(/[<>"'`]/g, '').substring(0, 20);
     if (!safeText) return;
 
@@ -250,6 +254,7 @@ export class PhysicsEngine {
     if (options.persist !== false) void this.persistTasks();
     this.uiManager.updateNukeButtonVisibility(this.getTaskCount());
     this.syncTaskList();
+    return block;
   }
 
   // 全ブロックの色を一括変更
@@ -263,7 +268,21 @@ export class PhysicsEngine {
   }
 
   async restoreTasks() {
-    const { hasSavedState, tasks } = await StorageManager.loadState();
+    if (this.restoringState || this.restoredState) return;
+    this.restoringState = true;
+    this.storageReady = false;
+    const state = await StorageManager.loadState();
+    this.restoringState = false;
+    if (state.ok === false) {
+      this.showSaveStatus({ ok: false });
+      document.dispatchEvent(new CustomEvent('gravity:storageStatus'));
+      return;
+    }
+    this.storageReady = true;
+    this.restoredState = true;
+    this.showSaveStatus({ ok: true });
+    document.dispatchEvent(new CustomEvent('gravity:storageStatus'));
+    const { hasSavedState, tasks } = state;
     if (!hasSavedState) {
       const cx = this.width / 2;
       const floor = this.getFloorY();
@@ -303,6 +322,10 @@ export class PhysicsEngine {
   }
 
   persistTasks() {
+    if (this.storageReady === false) {
+      this.showSaveStatus({ ok: false });
+      return Promise.resolve({ ok: false, skipped: true });
+    }
     const bodies = this.getTaskBodies();
     const persistableCount = bodies.filter((body) => body.isDemo !== true).length;
     if (!shouldPersistTaskState({
@@ -319,7 +342,14 @@ export class PhysicsEngine {
 
   showSaveStatus(result) {
     const status = document.getElementById('save-status');
+    const retry = document.getElementById('retry-storage');
+    if (retry) retry.hidden = this.storageReady !== false;
     if (!status) return;
+    if (this.storageReady === false) {
+      status.textContent = '保存済みタスクを読み込めていません。上書きを防ぐため追加・削除と保存を停止しています。再読み込みを試してください。';
+      status.hidden = false;
+      return;
+    }
     if (result && result.ok === false) {
       status.textContent = 'この端末に保存できませんでした。ブラウザの保存領域を確認してください。';
       status.hidden = false;
@@ -330,7 +360,8 @@ export class PhysicsEngine {
   }
 
   destroyTask(body, skipUndo = false, options = {}) {
-    if (!body || body.label !== 'task') return;
+    if (this.storageReady === false) return;
+    if (!body || body.label !== 'task' || body._destroyed || !this.getTaskBodies().includes(body)) return;
     
     // Undo用のデータをクローン
     const taskData = {
@@ -340,26 +371,33 @@ export class PhysicsEngine {
       angle: body.angle,
       subTasks: body.subTasks ? JSON.parse(JSON.stringify(body.subTasks)) : [],
       blockColor: body.render.fillStyle,
-      blockBorder: body.render.strokeStyle
+      blockBorder: body.render.strokeStyle,
+      isDemo: body.isDemo === true
     };
 
     try {
       this.Composite.remove(this.world, body);
+      body._destroyed = true;
+      if (body._completionTimer != null) clearTimeout(body._completionTimer);
+      if (body._floatForce) this.Events.off(this.engine, 'afterUpdate', body._floatForce);
     } catch (e) {
       console.warn('destroyTask: remove failed', e);
       return;
     }
 
-    void this.soundManager.playExplosion(0.5); // 元の爆発音を少し抑えめに
-    void this.soundManager.playCracker(1.2);   // クラッカー音を派手に追加
-    const c = body.render.strokeStyle || '#ff3366';
-    this.particleSystem.explode(body.position.x, body.position.y, c);
-    this.spawnDebris(body.position.x, body.position.y, body.render.fillStyle, c); // 破片生成
-    this.uiManager.triggerShake();
+    const gentle = this.reducedEffects();
+    void this.soundManager.playExplosion(gentle ? 0.15 : 0.5);
+    if (!gentle) {
+      void this.soundManager.playCracker(1.2);
+      const c = body.render.strokeStyle || '#ff3366';
+      this.particleSystem.explode(body.position.x, body.position.y, c);
+      this.spawnDebris(body.position.x, body.position.y, body.render.fillStyle, c);
+      this.uiManager.triggerShake();
+    }
 
     this.userMutatedStorage = true;
     const reason = options.reason === 'complete' ? 'complete' : 'delete';
-    if (!skipUndo && !this.isNukingAll && reason === 'delete') {
+    if (!skipUndo && !this.isNukingAll && reason === 'delete' && body.isDemo !== true) {
       const newScore = StorageManager.incrementDestroyCount();
       this.uiManager.updateDestroyCount(newScore);
     }
@@ -369,40 +407,102 @@ export class PhysicsEngine {
     this.syncTaskList();
 
     if (!skipUndo && !this.isNukingAll) {
-      const message = reason === 'complete' ? 'タスクを完了しました' : 'タスクを削除しました';
+      this.undoStack ??= [];
+      const entry = { data: taskData, reason, restoredBody: null };
+      this.undoStack.push(entry);
+      this.redoStack = [];
+      const message = reason === 'complete' ? 'タスクを完了しました' : 'タスクを爆破しました';
       this.uiManager.showUndo(() => {
-        this.addTask(taskData.text, taskData.x, taskData.y, taskData.angle, {
-          persist: true,
-          subTasks: taskData.subTasks,
-          blockColor: taskData.blockColor,
-          blockBorder: taskData.blockBorder
-        });
+        if (this.undoStack.at(-1) === entry) this.undoLastRemoval();
       }, message);
     }
+    this.updateHistoryControls();
+    return true;
+  }
+
+  reducedEffects() {
+    return typeof SettingsManager !== 'undefined' && typeof SettingsManager.isReducedMotion === 'function' && SettingsManager.isReducedMotion();
+  }
+
+  historyFingerprint(body) {
+    return JSON.stringify([body.taskText, body.subTasks || [], body.render?.fillStyle, body.render?.strokeStyle]);
+  }
+
+  canRedoRemoval() {
+    const entry = this.redoStack?.at(-1);
+    return Boolean(entry && entry.restoredBody && !entry.restoredBody._destroyed && this.getTaskBodies().includes(entry.restoredBody) && this.historyFingerprint(entry.restoredBody) === entry.fingerprint);
+  }
+
+  updateHistoryControls() {
+    const available = this.storageReady !== false && !this.isNukingAll;
+    this.uiManager?.setHistoryState?.(available && this.getTaskBodies().length < MAX_RESTORED_TASKS && Boolean(this.undoStack?.length), available && this.canRedoRemoval(), available ? '' : '保存の読み込み中は操作できません');
+  }
+
+  undoLastRemoval() {
+    if (this.storageReady === false || this.isNukingAll || this.getTaskBodies().length >= MAX_RESTORED_TASKS || !this.undoStack?.length) return false;
+    const entry = this.undoStack.at(-1), data = entry.data;
+    const x = Number.isFinite(this.width) ? Math.min(Math.max(24, data.x), Math.max(24, this.width - 24)) : data.x;
+    const floor = typeof this.getFloorY === 'function' ? this.getFloorY() : this.height;
+    const y = Number.isFinite(floor) ? Math.min(Math.max(24, data.y), Math.max(24, floor - 24)) : data.y;
+    const body = this.addTask(data.text, x, y, data.angle, {
+      persist: true, subTasks: JSON.parse(JSON.stringify(data.subTasks)),
+      blockColor: data.blockColor, blockBorder: data.blockBorder, isDemo: data.isDemo
+    });
+    if (!body) return false;
+    this.Body?.setVelocity?.(body, { x: 0, y: 0 });
+    this.Body?.setAngularVelocity?.(body, 0);
+    this.undoStack.pop();
+    entry.restoredBody = body;
+    entry.fingerprint = this.historyFingerprint(body);
+    (this.redoStack ??= []).push(entry);
+    this.updateHistoryControls();
+    return true;
+  }
+
+  redoLastRemoval() {
+    if (this.storageReady === false || this.isNukingAll || !this.canRedoRemoval()) return false;
+    const entry = this.redoStack.at(-1);
+    if (!this.destroyTask(entry.restoredBody, true, { reason: entry.reason, replay: true })) return false;
+    this.redoStack.pop();
+    entry.restoredBody = null;
+    (this.undoStack ??= []).push(entry);
+    this.updateHistoryControls();
+    return true;
   }
 
   nukeAll() {
+    if (this.storageReady === false) return;
     if (this.isNukingAll) return;
     this.nukeTimeoutIds = [];
 
     const bodies = this.getTaskBodies();
     if (bodies.length === 0) return;
     this.isNukingAll = true;
+    this.undoStack = []; this.redoStack = [];
+    this.updateHistoryControls();
 
     bodies.forEach((body, i) => {
       const id = setTimeout(() => {
-        try { this.Composite.remove(this.world, body); } catch (e) { console.warn('nukeAll: remove failed', e); return; }
+        if (body._destroyed) return;
+        try {
+          this.Composite.remove(this.world, body);
+          body._destroyed = true;
+          if (body._completionTimer != null) clearTimeout(body._completionTimer);
+          if (body._floatForce) this.Events.off(this.engine, 'afterUpdate', body._floatForce);
+        } catch (e) { console.warn('nukeAll: remove failed', e); return; }
         void this.soundManager.playExplosion(0.7);
         const c = body.render.strokeStyle || '#ff3366';
-        this.particleSystem.explode(body.position.x, body.position.y, c);
-        this.spawnDebris(body.position.x, body.position.y, body.render.fillStyle, c); // 破片生成
+        if (!this.reducedEffects()) {
+          this.particleSystem.explode(body.position.x, body.position.y, c);
+          this.spawnDebris(body.position.x, body.position.y, body.render.fillStyle, c);
+        }
         this.uiManager.updateNukeButtonVisibility(this.getTaskCount());
         this.syncTaskList();
       }, i * 50);
       this.nukeTimeoutIds.push(id);
     });
 
-    this.uiManager.triggerShake(bodies.length * 50 + 400);
+    if (!this.reducedEffects()) this.uiManager.triggerShake(bodies.length * 50 + 400);
 
     const finalId = setTimeout(() => {
       void this.persistTasks(); // 保存は最後に1回だけ
@@ -410,6 +510,7 @@ export class PhysicsEngine {
       this.syncTaskList();
       this.isNukingAll = false;
       this.nukeTimeoutIds = [];
+      this.updateHistoryControls();
     }, bodies.length * 50 + 100);
     this.nukeTimeoutIds.push(finalId);
   }
@@ -426,6 +527,7 @@ export class PhysicsEngine {
   }
 
   syncTaskList() {
+    this.updateHistoryControls();
     this.uiManager?.renderTaskList?.(this.getTaskBodies(), {
       onOpenDetail: (body) => this.taskDetailPanel.open(body),
       onComplete: (body) => this.floatAndExplode(body),
@@ -456,7 +558,7 @@ export class PhysicsEngine {
 
   // サブタスクの完了率に応じてブロックの密度を変化させる
   updateBlockDensity(body) {
-    if (!body || body.label !== 'task') return;
+    if (!body || body.label !== 'task' || body._destroyed || !this.getTaskBodies().includes(body)) return;
     const subs = body.subTasks;
     if (!Array.isArray(subs) || subs.length === 0) return;
 
@@ -534,7 +636,8 @@ export class PhysicsEngine {
 
   // 全サブタスク完了時: ブロックが上に浮かんで弾ける
   floatAndExplode(body) {
-    if (!body || body._floating) return;
+    if (this.storageReady === false || !body || body._floating || body._destroyed) return;
+    if (this.reducedEffects()) { this.destroyTask(body, false, { reason: 'complete' }); return; }
     body._floating = true; // 二重起動防止フラグ
 
     // 初期山なりの上向き速度を付与
@@ -551,10 +654,12 @@ export class PhysicsEngine {
       this.Body.applyForce(body, body.position, { x: 0, y: -(antiGravity + liftForce) });
     };
 
+    body._floatForce = floatForce;
     this.Events.on(this.engine, 'afterUpdate', floatForce);
 
     // 1.5秒後に爆破（天井層付近まで浮上する時間）
-    setTimeout(() => {
+    body._completionTimer = setTimeout(() => {
+      body._completionTimer = null;
       this.Events.off(this.engine, 'afterUpdate', floatForce);
       this.destroyTask(body, false, { reason: 'complete' });
     }, 1500);

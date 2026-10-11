@@ -30,6 +30,7 @@ class PasswordLogic {
      * @returns {string[]} 生成されたパスワードの配列
      */
     generate(options) {
+        this.lastGeneratedPoolSize = 0;
         const {
             length = 12,
             useLower = true,
@@ -76,6 +77,7 @@ class PasswordLogic {
         // 必須セット数が長さを超える場合は生成不可
         if (length < requiredSets.length) return [];
 
+        this.lastGeneratedPoolSize = new Set(charPool.split('')).size;
         const passwords = [];
         for (let i = 0; i < count; i++) {
             passwords.push(this._createSingle(charPool, length, requiredSets));
@@ -89,9 +91,9 @@ class PasswordLogic {
      * @returns {number} 0-100の強度スコア
      */
     /**
-     * 文字種別のプールサイズを厳密に計算（共通プライベートヘルパー）
+     * 手入力の文字カテゴリから候補数を概算（生成条件とは別の参考値）
      * @param {string} pwd - 対象のパスワード
-     * @returns {number} 厳密なプールサイズ
+     * @returns {number} カテゴリから概算した候補数
      * @private
      */
     _calculatePoolSize(pwd) {
@@ -133,17 +135,40 @@ class PasswordLogic {
         return poolSize;
     }
 
-    checkStrength(pwd) {
+    // Generated values use their actual configured pool. Manual input is only a
+    // rough reference, with simple repetition and straight sequences discounted.
+    _estimateEntropy(pwd, generatedPoolSize) {
         if (!pwd) return 0;
+        const poolSize = generatedPoolSize === undefined ? this._calculatePoolSize(pwd) : generatedPoolSize;
+        if (!Number.isFinite(poolSize) || poolSize <= 1) return 0;
+        if (generatedPoolSize !== undefined) return pwd.length * Math.log2(poolSize);
+        const chars = Array.from(pwd);
+        let length = chars.length;
+        // KMP prefix table finds the shortest repeated unit in linear time.
+        const prefix = new Uint32Array(length);
+        for (let i = 1; i < length; i++) {
+            let j = prefix[i - 1];
+            while (j > 0 && chars[i] !== chars[j]) j = prefix[j - 1];
+            if (chars[i] === chars[j]) j++;
+            prefix[i] = j;
+        }
+        const period = length - prefix[length - 1];
+        if (length % period === 0) length = period;
+        if (length > 2) {
+            const step = chars[1].codePointAt(0) - chars[0].codePointAt(0);
+            if (step === 1 || step === -1) {
+                let sequential = true;
+                for (let i = 2; i < length; i++) {
+                    if (chars[i].codePointAt(0) - chars[i - 1].codePointAt(0) !== step) { sequential = false; break; }
+                }
+                if (sequential) length = 1;
+            }
+        }
+        return length * Math.log2(poolSize);
+    }
 
-        const poolSize = this._calculatePoolSize(pwd);
-        if (poolSize === 0) return 0;
-
-        // エントロピー計算: log2(poolSize^length)
-        const entropy = pwd.length * Math.log2(poolSize);
-
-        // エントロピーを100点満点にマッピング (128bitを100点とする)
-        return Math.min(100, Math.round((entropy / 128) * 100));
+    checkStrength(pwd, generatedPoolSize) {
+        return Math.min(100, Math.round((this._estimateEntropy(pwd, generatedPoolSize) / 128) * 100));
     }
 
     /**
@@ -152,7 +177,7 @@ class PasswordLogic {
      * @returns {{label: string, emoji: string, class: string}}
      */
     getStrengthLabel(score) {
-        if (score >= 80) return { label: '最強', emoji: '💎', class: 'text-primary' };
+        if (score >= 80) return { label: '非常に高い（参考）', emoji: '💎', class: 'text-primary' };
         if (score >= 60) return { label: '強い', emoji: '🟢', class: 'text-success' };
         if (score >= 40) return { label: '普通', emoji: '🟡', class: 'text-warning' };
         return { label: '弱い', emoji: '🔴', class: 'text-danger' };
@@ -163,18 +188,14 @@ class PasswordLogic {
      * @param {string} pwd - パスワード
      * @returns {string} 人間が読める推定時間
      */
-    estimateCrackTime(pwd) {
+    estimateCrackTime(pwd, generatedPoolSize) {
         if (!pwd) return '-';
 
-        const poolSize = this._calculatePoolSize(pwd);
-        if (poolSize === 0) return '-';
-
-        const length = pwd.length;
         const guessesPerSecond = 1e9; // 10億回/秒の攻撃速度を想定
 
         // 対数空間での計算 (モジュロバイアスやJSのInfinityによる桁崩れを完全回避)
         // log2(seconds) = length * log2(poolSize) - log2(2 * guessesPerSecond)
-        const log2Seconds = length * Math.log2(poolSize) - (1 + Math.log2(guessesPerSecond));
+        const log2Seconds = this._estimateEntropy(pwd, generatedPoolSize) - (1 + Math.log2(guessesPerSecond));
 
         // 1年 = 31536000 秒
         const log2Year = Math.log2(31536000);

@@ -5,19 +5,26 @@ export class StorageManager {
   static DB_NAME = 'gravity_todo_db';
   static STORE_NAME = 'app_state';
   static STATE_ID = 'tasks';
+  static writeBlocked = false;
+
+  static normalizeSubTasks(items) {
+    return (Array.isArray(items) ? items : [])
+      .filter(item => item && typeof item.text === 'string')
+      .map(item => ({ ...item, text: item.text, done: item.done === true }));
+  }
 
   // 保存用のタスク配列へ正規化する
   static normalizeTasks(items = []) {
-    return items
+    return (Array.isArray(items) ? items : [])
       .map((item) => {
-        if (item?.label === 'task' && item.taskText) {
+        if (item?.label === 'task' && typeof item.taskText === 'string' && item.taskText) {
           return {
             id: item.id,
             text: item.taskText,
-            x: item.position.x,
-            y: item.position.y,
-            angle: item.angle,
-            subTasks: Array.isArray(item.subTasks) ? item.subTasks : [],
+            x: Number.isFinite(item.position?.x) ? item.position.x : 0,
+            y: Number.isFinite(item.position?.y) ? item.position.y : 0,
+            angle: Number.isFinite(item.angle) ? item.angle : 0,
+            subTasks: this.normalizeSubTasks(item.subTasks),
             blockColor:  item.render?.fillStyle   || null,
             blockBorder: item.render?.strokeStyle || null,
             isDemo: item.isDemo === true,
@@ -30,7 +37,7 @@ export class StorageManager {
             x: Number.isFinite(item.x) ? item.x : 0,
             y: Number.isFinite(item.y) ? item.y : 0,
             angle: Number.isFinite(item.angle) ? item.angle : 0,
-            subTasks: Array.isArray(item.subTasks) ? item.subTasks : [],
+            subTasks: this.normalizeSubTasks(item.subTasks),
             blockColor: typeof item.blockColor === 'string' ? item.blockColor : null,
             blockBorder: typeof item.blockBorder === 'string' ? item.blockBorder : null,
             isDemo: item.isDemo === true
@@ -90,6 +97,7 @@ export class StorageManager {
 
   // IndexedDB へ状態レコードを書き込む
   static async writeStateRecord(tasks) {
+    if (this.writeBlocked) throw new Error('Task restore has not succeeded.');
     const db = await this.openDatabase();
 
     try {
@@ -122,9 +130,8 @@ export class StorageManager {
       let parsed = [];
       if (raw !== null) {
         const loaded = JSON.parse(raw);
-        if (Array.isArray(loaded)) {
-          parsed = loaded;
-        }
+        if (!Array.isArray(loaded)) throw new Error('Invalid legacy task state.');
+        parsed = loaded;
       }
 
       const persistable = this.normalizeTasks(parsed).filter((task) => !task.isDemo);
@@ -141,7 +148,9 @@ export class StorageManager {
       return migratedState;
     } catch (error) {
       console.warn('Failed to migrate legacy task state:', error);
+      this.writeBlocked = true;
       return {
+        ok: false, error,
         hasSavedState: false,
         tasks: []
       };
@@ -149,27 +158,33 @@ export class StorageManager {
   }
 
   // 現在のタスクリストを保存する
-  static async saveTasks(items) {
-    try {
-      const persistable = this.normalizeTasks(items).filter((task) => !task.isDemo);
-      await this.writeStateRecord(persistable);
-      return { ok: true };
-    } catch (error) {
-      console.warn('Failed to save tasks to IndexedDB:', error);
-      return { ok: false, error };
-    }
+  static writeQueue = Promise.resolve();
+  static saveTasks(items) {
+    // Snapshot before waiting. Writes cannot complete out of order after Undo/Redo.
+    const snapshot = this.normalizeTasks(items).filter(task => !task.isDemo)
+      .map(task => ({ ...task, subTasks: task.subTasks.map(item => ({ ...item })) }));
+    const work = this.writeQueue.then(async () => {
+      try { await this.writeStateRecord(snapshot); return { ok: true }; }
+      catch (error) { console.warn('Failed to save tasks to IndexedDB:', error); return { ok: false, error }; }
+    });
+    this.writeQueue = work.then(() => undefined, () => undefined);
+    return work;
   }
 
   // 保存状態の有無も含めて読み込む
   static async loadState() {
+    this.writeBlocked = true;
     try {
       const db = await this.openDatabase();
 
       try {
         const transaction = db.transaction(this.STORE_NAME, 'readonly');
         const store = transaction.objectStore(this.STORE_NAME);
-        const stateRecord = await this.readStateRecord(store);
-        await this.waitForTransaction(transaction);
+        // Attach transaction handlers before awaiting the request; observe both failures.
+        const [stateRecord] = await Promise.all([
+          this.readStateRecord(store), this.waitForTransaction(transaction)
+        ]);
+        this.writeBlocked = false;
 
         if (!stateRecord) {
           return this.migrateLegacyState();
@@ -184,7 +199,8 @@ export class StorageManager {
       }
     } catch (error) {
       console.warn('Failed to load tasks from IndexedDB:', error);
-      return this.migrateLegacyState();
+      this.writeBlocked = true;
+      return { ok: false, error, hasSavedState: false, tasks: [] };
     }
   }
 

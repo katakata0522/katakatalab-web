@@ -91,157 +91,7 @@
               <label for="qrText" class="group-label" data-i18n-html="main.inputLabel">Content to encode <small>(URL / Text)</small></label>
               <span id="charCount" class="char-count" aria-live="polite">0 / 1000</span>
             </div>
-            <textarea id="qrText" class="input-text" placeholder="https://katakatalab.com" rows="4" spellcheck="false"></textarea>
-            <p id="errorMsg" class="error-text" role="alert" style="display:none;" data-i18n="main.errorTooLong">⚠️ Too many characters (Max 1000)</p>
-          </div>
-
-          <div class="divider"></div>
-
-          <div class="settings-grid">
             <div class="setting-item">
-              <label class="setting-label" for="qrSize"><span data-i18n="main.sizeLabel">Size</span>: <span id="sizeValue">250</span>px</label>
-              <div class="slider-wrapper">
-                <button type="button" id="btnDecrease" class="btn-adjust" aria-label="Decrease size" data-i18n-aria-label="main.decreaseAria">－</button>
-                <input type="range" id="qrSize" min="100" max="1000" step="10" value="250">
-                <button type="button" id="btnIncrease" class="btn-adjust" aria-label="Increase size" data-i18n-aria-label="main.increaseAria">＋</button>
-              </div>
-            </div>
-
-            <div class="setting-item">
-              <div class="label-row">
-                <label class="setting-label" data-i18n="main.colorLabel">Colors</label>
-                <button type="button" id="swapColorsBtn" class="btn-icon-small" title="Swap colors" aria-label="Swap colors" data-i18n-html="main.swapButton" data-i18n-title="main.swapAria" data-i18n-aria-label="main.swapAria">
-                  ⇄ Swap
-                </button>
-              </div>
-              <div class="color-pickers">
-                <label class="color-wrapper" for="qrForeground" title="QR code color" data-i18n-title="main.codeColorTitle">
-                  <input type="color" id="qrForeground" value="#111827">
-                  <span class="color-label" data-i18n="main.codeColor">Code</span>
-                </label>
-                <label class="color-wrapper" for="qrBackground" title="Background color" data-i18n-title="main.bgColorTitle">
-                  <input type="color" id="qrBackground" value="#ffffff">
-                  <span class="color-label" data-i18n="main.bgColor">Background</span>
-                </label>
-              </div>
-              <div class="color-swatches" role="group" aria-label="Quick code colors">
-                <button type="button" class="color-swatch is-dark" data-color-target="foreground" data-color-value="#000000" title="Black" aria-label="Black"></button>
-                <button type="button" class="color-swatch" style="--swatch-color:#d11a2a;" data-color-target="foreground" data-color-value="#d11a2a" title="Red" aria-label="Red"></button>
-                <button type="button" class="color-swatch" style="--swatch-color:#0f766e;" data-color-target="foreground" data-color-value="#0f766e" title="Green" aria-label="Green"></button>
-                <button type="button" class="color-swatch" style="--swatch-color:#2563eb;" data-color-target="foreground" data-color-value="#2563eb" title="Blue" aria-label="Blue"></button>
-                <button type="button" class="color-swatch" style="--swatch-color:#7c3aed;" data-color-target="foreground" data-color-value="#7c3aed" title="Purple" aria-label="Purple"></button>
-                <button type="button" class="color-swatch" style="--swatch-color:#c2410c;" data-color-target="foreground" data-color-value="#c2410c" title="Brown" aria-label="Brown"></button>
-              </div>
-              <div id="contrastWarning" class="warning-box" style="display:none;">
-                <span class="icon-warn">⚠️</span>
-                <span data-i18n="main.contrastWarning">Low contrast may reduce scan accuracy.</span>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        <section class="preview-panel" aria-label="Preview">
-          <div class="preview-card">
-            <div class="canvas-container">
-              <div id="loadingIndicator" class="loading-overlay" style="display:none;">
-                <div class="spinner"></div>
-                <span data-i18n="loading.generating">Generating...</span>
-              </div>
-              <div class="canvas-wrapper">
-                <canvas id="qrCanvas"></canvas>
-                <div id="placeholder" class="placeholder-msg">
-                  <span class="icon-qr">📱</span>
-                  <p data-i18n-html="main.placeholder">Enter text or URL<br>to preview instantly</p>
-                </div>
-              </div>
-            </div>
-            <div class="action-area">
-              <button type="button" id="downloadBtn" class="btn-download" disabled>
-                <span class="btn-icon">⬇</span> <span id="downloadBtnText" data-i18n="main.downloadDefault">Save as PNG</span>
-              </button>
-              <p class="file-name-preview" id="fileNamePreview"></p>
-            </div>
-          </div>
-        </section>
-      </div>
-    </section>
-
-    <aside id="settingsSidebar" class="settings-sidebar" aria-label="Advanced settings sidebar" data-i18n-aria-label="sidebar.aria" aria-hidden="true" inert>
-      <div class="sidebar-header">
-        <h2 class="sidebar-title" data-i18n="sidebar.title">Advanced Settings</h2>
-        <button type="button" id="closeSidebarBtn" class="btn-sidebar-close" aria-label="Close advanced settings" data-i18n-aria-label="sidebar.closeAria">×</button>
-      </div>
-
-      <details class="advanced-settings" data-details-id="plan" open>
-        <summary class="pro-feature-tag" data-i18n="pro.planTitle">Pro Plan</summary>
-        <div class="advanced-settings-body extension-form">
-          <p id="planHelp" class="helper-text" data-i18n="pro.planHelpLicenseOnly">Pro features are enabled only after license verification succeeds.</p>
-          <div id="planToggle" class="plan-toggle" role="radiogroup" aria-label="Plan" hidden>
-            <label class="plan-option"><input type="radio" id="planFree" name="planMode" value="free" checked> <span data-i18n="pro.free">Free</span></label>
-            <label class="plan-option"><input type="radio" id="planPro" name="planMode" value="pro"> <span data-i18n="pro.pro">Pro</span></label>
-          </div>
-          <label class="setting-label pro-feature-tag" for="licenseKeyInput" data-i18n="pro.licenseLabel">License key (Pro)</label>
-          <div class="license-row">
-            <input id="licenseKeyInput" class="text-input" type="text" autocomplete="off" placeholder="PRO-XXXX-XXXX" data-i18n-placeholder="pro.licensePlaceholder">
-            <button type="button" id="applyLicenseBtn" class="btn-secondary pro-feature-tag" data-i18n="pro.applyLicense">Apply License (Pro)</button>
-          </div>
-          <p class="pro-note" data-i18n="pro.licenseNotice">Only during license verification, the license key and current origin are sent to the verification API.</p>
-          <p id="planStatus" class="helper-text" data-i18n="pro.statusFree">Current: Free plan</p>
-        </div>
-      </details>
-
-      <details class="advanced-settings" data-details-id="generate-options" open>
-        <summary data-i18n="sidebar.generateOptions">Generation Options</summary>
-        <div class="advanced-settings-body">
-          <div class="setting-item quick-template-nav">
-            <p class="quick-template-title" data-i18n="sidebar.quickStartTitle">Quick Start Templates</p>
-            <div class="quick-template-buttons" role="group" aria-label="Quick templates" data-i18n-aria-label="sidebar.quickStartAria">
-              <button type="button" class="quick-template-btn is-active" data-quick-template="plain">
-                <span class="quick-template-icon" aria-hidden="true">🔗</span>
-                <span class="quick-template-copy">
-                  <span class="quick-template-main" data-i18n="sidebar.quickPlain">URL / Text</span>
-                  <span class="quick-template-sub" data-i18n="sidebar.quickPlainHint">Manual input</span>
-                </span>
-              </button>
-              <button type="button" class="quick-template-btn" data-quick-template="wifi">
-                <span class="quick-template-icon" aria-hidden="true">📶</span>
-                <span class="quick-template-copy">
-                  <span class="quick-template-main" data-i18n="sidebar.quickWifi">Wi-Fi</span>
-                  <span class="quick-template-sub" data-i18n="sidebar.quickWifiHint">Guest sharing</span>
-                </span>
-              </button>
-              <button type="button" class="quick-template-btn" data-quick-template="mailto">
-                <span class="quick-template-icon" aria-hidden="true">✉️</span>
-                <span class="quick-template-copy">
-                  <span class="quick-template-main" data-i18n="sidebar.quickMail">Email</span>
-                  <span class="quick-template-sub" data-i18n="sidebar.quickMailHint">Contact intake</span>
-                </span>
-              </button>
-              <button type="button" class="quick-template-btn" data-quick-template="social">
-                <span class="quick-template-icon" aria-hidden="true">🌐</span>
-                <span class="quick-template-copy">
-                  <span class="quick-template-main" data-i18n="sidebar.quickSocial">Social</span>
-                  <span class="quick-template-sub" data-i18n="sidebar.quickSocialHint">Profile shortcut</span>
-                </span>
-              </button>
-              <button type="button" class="quick-template-btn" data-quick-template="vcard">
-                <span class="quick-template-icon" aria-hidden="true">👤</span>
-                <span class="quick-template-copy">
-                  <span class="quick-template-main" data-i18n="sidebar.quickVcard">Contact</span>
-                  <span class="quick-template-sub" data-i18n="sidebar.quickVcardHint">Digital business card</span>
-                </span>
-              </button>
-              <button type="button" class="quick-template-btn" data-quick-template="line">
-                <span class="quick-template-icon" aria-hidden="true">💬</span>
-                <span class="quick-template-copy">
-                  <span class="quick-template-main" data-i18n="sidebar.quickLine">LINE</span>
-                  <span class="quick-template-sub" data-i18n="sidebar.quickLineHint">Add friend flow</span>
-                </span>
-              </button>
-            </div>
-          </div>
-
-          <div class="setting-item">
             <label for="dataType" class="setting-label" data-i18n="sidebar.dataTemplate">Data templates</label>
             <select id="dataType" class="select-input" aria-label="Data template selection" data-i18n-aria-label="sidebar.dataTemplateAria">
               <option value="plain" data-i18n-option="sidebar.typePlain">URL / Text (manual input)</option>
@@ -258,8 +108,7 @@
             </p>
             <p id="templateErrorMsg" class="error-text template-error-text" role="alert" aria-live="polite" style="display:none;"></p>
           </div>
-
-          <div id="templateFields" class="template-fields">
+<div id="templateFields" class="template-fields">
             <div class="template-group" data-type="wifi" hidden>
               <label class="setting-label" for="wifiSsid"><span data-i18n="sidebar.wifiSsid">SSID</span> <span class="field-badge field-badge-required" data-i18n="sidebar.required">Required</span></label>
               <input id="wifiSsid" class="text-input" type="text" autocomplete="off">
@@ -348,8 +197,40 @@
               </details>
             </div>
           </div>
+            <textarea id="qrText" class="input-text" placeholder="https://katakatalab.com" rows="4" spellcheck="false"></textarea>
+            <p id="errorMsg" class="error-text" role="alert" style="display:none;" data-i18n="main.errorTooLong">⚠️ Too many characters (Max 1000)</p>
+          </div>
 
-          <div class="setting-item">
+          <div class="divider"></div><details class="advanced-settings" id="colorDetails"><summary data-i18n="main.colorDetails">Color and advanced settings</summary><div class="advanced-settings-body"><div class="setting-item">
+              <div class="label-row">
+                <label class="setting-label" data-i18n="main.colorLabel">Colors</label>
+                <button type="button" id="swapColorsBtn" class="btn-icon-small" title="Swap colors" aria-label="Swap colors" data-i18n-html="main.swapButton" data-i18n-title="main.swapAria" data-i18n-aria-label="main.swapAria">
+                  ⇄ Swap
+                </button>
+              </div>
+              <div class="color-pickers">
+                <label class="color-wrapper" for="qrForeground" title="QR code color" data-i18n-title="main.codeColorTitle">
+                  <input type="color" id="qrForeground" value="#111827">
+                  <span class="color-label" data-i18n="main.codeColor">Code</span>
+                </label>
+                <label class="color-wrapper" for="qrBackground" title="Background color" data-i18n-title="main.bgColorTitle">
+                  <input type="color" id="qrBackground" value="#ffffff">
+                  <span class="color-label" data-i18n="main.bgColor">Background</span>
+                </label>
+              </div>
+              <div class="color-swatches" role="group" aria-label="Quick code colors">
+                <button type="button" class="color-swatch is-dark" data-color-target="foreground" data-color-value="#000000" title="Black" aria-label="Black"></button>
+                <button type="button" class="color-swatch" style="--swatch-color:#d11a2a;" data-color-target="foreground" data-color-value="#d11a2a" title="Red" aria-label="Red"></button>
+                <button type="button" class="color-swatch" style="--swatch-color:#0f766e;" data-color-target="foreground" data-color-value="#0f766e" title="Green" aria-label="Green"></button>
+                <button type="button" class="color-swatch" style="--swatch-color:#2563eb;" data-color-target="foreground" data-color-value="#2563eb" title="Blue" aria-label="Blue"></button>
+                <button type="button" class="color-swatch" style="--swatch-color:#7c3aed;" data-color-target="foreground" data-color-value="#7c3aed" title="Purple" aria-label="Purple"></button>
+                <button type="button" class="color-swatch" style="--swatch-color:#c2410c;" data-color-target="foreground" data-color-value="#c2410c" title="Brown" aria-label="Brown"></button>
+              </div>
+              <div id="contrastWarning" class="warning-box" style="display:none;">
+                <span class="icon-warn">⚠️</span>
+                <span data-i18n="main.contrastWarning">Low contrast may reduce scan accuracy.</span>
+              </div>
+            </div><div class="setting-item">
             <label class="setting-label" for="eccLevel" data-i18n="sidebar.eccLevel">Error Correction Level</label>
             <select id="eccLevel" class="select-input">
               <option value="auto" data-i18n-option="sidebar.eccAuto">Auto (Recommended)</option>
@@ -359,23 +240,50 @@
               <option value="L" data-i18n-option="sidebar.eccL">L (Low)</option>
             </select>
             <p class="helper-text" data-i18n="sidebar.eccHelp">This controls scan error tolerance. If unsure, keep "Auto (Recommended)".</p>
-          </div>
-
-          <div class="setting-item">
+          </div><div class="setting-item">
             <label class="setting-label"><span data-i18n="sidebar.paddingLabel">Scan Margin</span>: <span id="paddingValue">4</span>px</label>
             <input type="range" id="qrPadding" min="0" max="20" step="1" value="4">
-          </div>
-
-          <div class="setting-item">
+          </div><div class="setting-item">
             <label class="check-input"><input id="transparentBg" type="checkbox"> <span data-i18n="sidebar.transparentBg">Transparent Background</span></label>
             <div id="transparencyWarning" class="warning-box" style="display:none;">
               <span class="icon-warn">⚠️</span>
               <span data-i18n="sidebar.transparencyWarning">Transparent backgrounds may reduce scan reliability on some surfaces.</span>
             </div>
-          </div>
+          </div></div></details>
 
-          <div class="setting-item export-grid">
-            <div>
+          <div class="settings-grid">
+            <div class="setting-item">
+              <label class="setting-label" for="qrSize"><span data-i18n="main.sizeLabel">Size</span>: <span id="sizeValue">250</span>px</label>
+              <div class="slider-wrapper">
+                <button type="button" id="btnDecrease" class="btn-adjust" aria-label="Decrease size" data-i18n-aria-label="main.decreaseAria">－</button>
+                <input type="range" id="qrSize" min="100" max="1000" step="10" value="250">
+                <button type="button" id="btnIncrease" class="btn-adjust" aria-label="Increase size" data-i18n-aria-label="main.increaseAria">＋</button>
+              </div>
+            </div>
+
+
+          </div>
+        </section>
+
+        <section class="preview-panel" aria-label="Preview">
+          <div class="preview-card">
+            <div class="canvas-container">
+              <div id="loadingIndicator" class="loading-overlay" style="display:none;">
+                <div class="spinner"></div>
+                <span data-i18n="loading.generating">Generating...</span>
+              </div>
+              <div class="canvas-wrapper">
+                <canvas id="qrCanvas"></canvas>
+                <div id="placeholder" class="placeholder-msg">
+                  <span class="icon-qr">📱</span>
+                  <p data-i18n-html="main.placeholder">Enter text or URL<br>to preview instantly</p>
+                </div>
+              </div>
+            </div>
+            <div class="action-area"><p id="previewSafety" class="helper-text" aria-live="polite"></p>
+              <div class="row-actions"><button type="button" id="openLogoBtn" class="btn-secondary" data-i18n="main.openLogo">ロゴを入れる · Pro</button>
+              <button type="button" id="printQrBtn" class="btn-secondary" disabled data-i18n="main.printQr">印刷</button></div>
+              <p class="helper-text" data-i18n="main.printNote">印刷は現在のQRのみ。透過背景は白地になります。</p><div>
               <label class="setting-label" for="exportFormat" data-i18n="sidebar.exportFormat">Export Format</label>
               <select id="exportFormat" class="select-input">
                 <option value="png" data-i18n-option="sidebar.formatPng">PNG</option>
@@ -384,8 +292,105 @@
                 <option value="svg" data-i18n-option="sidebar.formatSvg">SVG (Pro)</option>
                 <option value="pdf" data-i18n-option="sidebar.formatPdf">PDF (Pro)</option>
               </select>
-              <p class="helper-text pro-feature-tag" data-i18n="pro.exportProNotice">SVG and PDF export are available on Pro.</p>
+              <p class="helper-text pro-feature-tag" data-i18n="pro.exportProNotice">SVG and PDF are Pro formats. Both embed a PNG image; enlarging them does not add detail.</p>
             </div>
+              <button type="button" id="downloadBtn" class="btn-download" disabled>
+                <span class="btn-icon">⬇</span> <span id="downloadBtnText" data-i18n="main.downloadDefault">Save as PNG</span>
+              </button>
+              <p class="file-name-preview" id="fileNamePreview"></p>
+            </div>
+          </div>
+        </section>
+      </div>
+    </section>
+
+    <aside id="settingsSidebar" class="settings-sidebar" aria-label="Advanced settings sidebar" data-i18n-aria-label="sidebar.aria" aria-hidden="true" inert>
+      <div class="sidebar-header">
+        <h2 class="sidebar-title" data-i18n="sidebar.title">Advanced Settings</h2>
+        <button type="button" id="closeSidebarBtn" class="btn-sidebar-close" aria-label="Close advanced settings" data-i18n-aria-label="sidebar.closeAria">×</button>
+      </div>
+
+      <details class="advanced-settings" data-details-id="plan" open>
+        <summary class="pro-feature-tag" data-i18n="pro.planTitle">Pro Plan</summary>
+        <div class="advanced-settings-body extension-form">
+          <p id="planHelp" class="helper-text" data-i18n="pro.planHelpLicenseOnly">Pro features are enabled only after license verification succeeds.</p>
+          <div id="planToggle" class="plan-toggle" role="radiogroup" aria-label="Plan" hidden>
+            <label class="plan-option"><input type="radio" id="planFree" name="planMode" value="free" checked> <span data-i18n="pro.free">Free</span></label>
+            <label class="plan-option"><input type="radio" id="planPro" name="planMode" value="pro"> <span data-i18n="pro.pro">Pro</span></label>
+          </div>
+          <label class="setting-label pro-feature-tag" for="licenseKeyInput" data-i18n="pro.licenseLabel">License key (Pro)</label>
+          <div class="license-row">
+            <input id="licenseKeyInput" class="text-input" type="text" autocomplete="off" placeholder="PRO-XXXX-XXXX" data-i18n-placeholder="pro.licensePlaceholder">
+            <button type="button" id="applyLicenseBtn" class="btn-secondary pro-feature-tag" data-i18n="pro.applyLicense">Apply License (Pro)</button>
+          </div>
+          <p class="pro-note" data-i18n="pro.licenseNotice">Only during license verification, the license key and current origin are sent to the verification API.</p>
+          <p id="planStatus" class="helper-text" data-i18n="pro.statusFree">Current: Free plan</p>
+        </div>
+      </details>
+
+      <details class="advanced-settings" data-details-id="generate-options" open>
+        <summary data-i18n="sidebar.generateOptions">Generation Options</summary>
+        <div class="advanced-settings-body">
+          <div class="setting-item quick-template-nav">
+            <p class="quick-template-title" data-i18n="sidebar.quickStartTitle">Quick Start Templates</p>
+            <div class="quick-template-buttons" role="group" aria-label="Quick templates" data-i18n-aria-label="sidebar.quickStartAria">
+              <button type="button" class="quick-template-btn is-active" data-quick-template="plain">
+                <span class="quick-template-icon" aria-hidden="true">🔗</span>
+                <span class="quick-template-copy">
+                  <span class="quick-template-main" data-i18n="sidebar.quickPlain">URL / Text</span>
+                  <span class="quick-template-sub" data-i18n="sidebar.quickPlainHint">Manual input</span>
+                </span>
+              </button>
+              <button type="button" class="quick-template-btn" data-quick-template="wifi">
+                <span class="quick-template-icon" aria-hidden="true">📶</span>
+                <span class="quick-template-copy">
+                  <span class="quick-template-main" data-i18n="sidebar.quickWifi">Wi-Fi</span>
+                  <span class="quick-template-sub" data-i18n="sidebar.quickWifiHint">Guest sharing</span>
+                </span>
+              </button>
+              <button type="button" class="quick-template-btn" data-quick-template="mailto">
+                <span class="quick-template-icon" aria-hidden="true">✉️</span>
+                <span class="quick-template-copy">
+                  <span class="quick-template-main" data-i18n="sidebar.quickMail">Email</span>
+                  <span class="quick-template-sub" data-i18n="sidebar.quickMailHint">Contact intake</span>
+                </span>
+              </button>
+              <button type="button" class="quick-template-btn" data-quick-template="social">
+                <span class="quick-template-icon" aria-hidden="true">🌐</span>
+                <span class="quick-template-copy">
+                  <span class="quick-template-main" data-i18n="sidebar.quickSocial">Social</span>
+                  <span class="quick-template-sub" data-i18n="sidebar.quickSocialHint">Profile shortcut</span>
+                </span>
+              </button>
+              <button type="button" class="quick-template-btn" data-quick-template="vcard">
+                <span class="quick-template-icon" aria-hidden="true">👤</span>
+                <span class="quick-template-copy">
+                  <span class="quick-template-main" data-i18n="sidebar.quickVcard">Contact</span>
+                  <span class="quick-template-sub" data-i18n="sidebar.quickVcardHint">Digital business card</span>
+                </span>
+              </button>
+              <button type="button" class="quick-template-btn" data-quick-template="line">
+                <span class="quick-template-icon" aria-hidden="true">💬</span>
+                <span class="quick-template-copy">
+                  <span class="quick-template-main" data-i18n="sidebar.quickLine">LINE</span>
+                  <span class="quick-template-sub" data-i18n="sidebar.quickLineHint">Add friend flow</span>
+                </span>
+              </button>
+            </div>
+          </div>
+
+
+
+
+
+
+
+
+
+
+
+          <div class="setting-item export-grid">
+
             <div>
               <label class="setting-label" for="filePrefix" data-i18n="sidebar.filePrefix">Filename Prefix</label>
               <input id="filePrefix" class="text-input" type="text" value="qr" maxlength="20" autocomplete="off">
@@ -397,7 +402,7 @@
       <details class="advanced-settings" data-details-id="logo">
         <summary class="pro-feature-tag" data-i18n="pro.logoTitle">Logo Insert (Pro)</summary>
         <div class="advanced-settings-body extension-form">
-          <p class="helper-text" data-i18n="pro.logoHelp">Insert a center logo and automatically review likely scan safety.</p>
+          <p class="helper-text" data-i18n="pro.logoHelp">Insert a center logo and review contrast, margins, and logo coverage. Test scanning on real devices too.</p>
           <label class="setting-label pro-feature-tag" for="logoFile" data-i18n="pro.logoFileLabel">Logo image (Pro)</label>
           <input id="logoFile" class="text-input" type="file" accept="image/png,image/jpeg,image/webp,image/svg+xml">
           <img id="logoPreview" class="logo-preview" alt="logo preview" hidden>
@@ -415,13 +420,13 @@
       </details>
 
       <details class="advanced-settings" data-details-id="quality" open>
-        <summary data-i18n="pro.qualityTitle">Quality Check</summary>
+        <summary data-i18n="pro.qualityTitle">Settings Review</summary>
         <div class="advanced-settings-body">
           <div class="quality-grade-row">
             <span class="quality-label" data-i18n="pro.qualityGrade">Grade</span>
             <strong id="qualityGrade" class="quality-grade quality-a">A</strong>
           </div>
-          <p id="qualitySummary" class="helper-text" data-i18n="pro.qualitySummaryDefault">Looks good. Suitable for common scanning situations.</p>
+          <p id="qualitySummary" class="helper-text" data-i18n="pro.qualitySummaryDefault">Review contrast, margins, and logo coverage. This score does not guarantee a successful scan.</p>
           <ul id="qualityChecklist" class="policy-list">
             <li data-i18n="pro.qualityItemContrast">Contrast: Good</li>
             <li data-i18n="pro.qualityItemPadding">Quiet Zone: Good</li>
@@ -570,7 +575,7 @@
 </main>
 
 <script type="application/ld+json">
-  {
+{
   "@context": "https://schema.org",
   "@type": "WebApplication",
   "name": "QR Maker Lab",
@@ -591,7 +596,7 @@
   },
   "dateModified": "2026-07-16"
 }
-  </script>
+</script>
 
 <script src="js/pwa.js" defer></script>
 <script src="js/pro-config.js" defer></script>
@@ -599,5 +604,6 @@
 <script src="script.js?v=20260504a" defer></script>
 <script src="js/details-ui.js" defer></script>
   <script src="/international/english-runtime.js" defer></script>
+<div id="qrPrintArea" aria-hidden="true"><canvas id="qrPrintImage" aria-label="QR"></canvas></div>
 </body>
 </html>

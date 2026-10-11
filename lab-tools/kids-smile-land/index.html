@@ -38,7 +38,7 @@
     <div id="app" class="w-full max-w-4xl mx-auto flex flex-col flex-grow p-4 md:p-6 pb-28">
 
         <!-- ヘッダー（ステータスとおとなロック） -->
-        <header class="flex justify-between items-center bg-white/80 backdrop-blur-md rounded-2xl p-4 shadow-sm border-2 border-orange-100 mb-4">
+        <header class="kids-header flex justify-between items-center bg-white/80 backdrop-blur-md rounded-2xl p-4 shadow-sm border-2 border-orange-100 mb-4">
             <div class="flex items-center gap-2 md:gap-3 kids-header-main">
                 <!-- おうちにもどるボタン (ゲーム中のみ表示) -->
                 <button id="btn-back-home" class="hidden flex items-center gap-1.5 bg-sky-100 hover:bg-sky-200 text-sky-600 px-3.5 py-2 rounded-2xl border-2 border-sky-200 transition-all text-xs font-black shadow-sm shrink-0">
@@ -53,7 +53,9 @@
                 </div>
             </div>
 
-            <div class="flex items-center gap-2">
+            <div class="kids-header-controls flex items-center gap-2">
+                <button type="button" id="btn-sound" aria-pressed="false" class="px-3 py-2 rounded-xl border-2 border-sky-200 text-xs font-bold">音をオン（長押し）</button>
+                <details id="sound-options"><summary class="text-xs">音の操作</summary><p>初期は音なし。長押しが難しいときは、下のボタンで音を有効にできます。</p><button type="button" id="btn-enable-sound" class="px-3 py-2 rounded-xl border-2">音をオンにする</button></details>
                 <!-- タイマーカウント表示 (動作時のみ表示) -->
                 <div id="timer-badge" class="hidden bg-indigo-50 border border-indigo-200 text-indigo-600 px-2.5 py-1.5 rounded-full text-xs font-bold flex items-center gap-1">
                     ⏰ <span id="timer-countdown">00:00</span>
@@ -72,7 +74,7 @@
                 </button>
             </div>
         </header>
-        <p class="text-[11px] text-slate-500 mb-3 leading-relaxed">幼児向けの別の遊び場は <a href="../../pikalab/eduplay/" class="underline">PikaLab のちいくひろば</a> です。こちらはお絵かき・もっきん・おもちゃの音あてが中心です。</p>
+
 
         <!-- ももちゃん・おともだち案内エリア（ナビゲーター） -->
         <section id="navigator-area" class="mb-4 bg-white/70 rounded-2xl p-4 border border-orange-50 flex gap-4 items-center shadow-sm relative">
@@ -131,6 +133,14 @@
                     </button>
                 </section>
 
+                <section aria-labelledby="recommended-games"><h2 id="recommended-games" class="font-black">まずは おすすめ3つ</h2>
+                  <div class="grid grid-cols-3 gap-4 py-2">
+                    <button data-tab-target="draw" class="card-attraction btn-puni rounded-3xl p-5 border-4 border-rose-200 text-rose-500">🎨<br>おえかき</button>
+                    <button data-tab-target="count" class="card-attraction btn-puni rounded-3xl p-5 border-4 border-emerald-200 text-emerald-500">🔢<br>かずかぞえ</button>
+                    <button data-tab-target="match" class="card-attraction btn-puni rounded-3xl p-5 border-4 border-sky-200 text-sky-500">🃏<br>えあわせ</button>
+                  </div>
+                </section>
+                <details id="all-games"><summary class="font-black">ぜんぶの あそび（7つ）</summary>
                 <!-- アトラクション選択グリッド -->
                 <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 md:gap-5 flex-grow py-2">
                     <!-- おえかき -->
@@ -175,6 +185,8 @@
                         <span class="text-sm md:text-base font-black tracking-wide">シールデコ</span>
                     </button>
                 </div>
+                </details>
+        <p class="text-[11px] text-slate-500 mb-3 leading-relaxed">幼児向けの別の遊び場は <a href="../../pikalab/eduplay/" class="underline">PikaLab のちいくひろば</a> です。こちらはお絵かき・もっきん・おもちゃの音あてが中心です。</p>
             </div>
 
             <!-- TAB 1: おしゃべりボード（ひらがな） -->
@@ -455,7 +467,7 @@
             <h4 class="text-2xl font-black text-emerald-600 mb-2">やったー！あたり！ ✨</h4>
             <p class="text-sm text-slate-500 mb-6 font-bold">ごほうびの シールを ゲットしたよ！</p>
             
-            <div id="get-sticker-emoji" class="text-8xl my-6 animate-pulse select-none">🐶</div>
+            <div id="get-sticker-emoji" class="text-8xl my-6 select-none">🐶</div>
             
             <button id="btn-close-sticker-modal" class="btn-puni shadow-blue-700 bg-blue-500 hover:bg-blue-600 text-white font-bold py-3 px-8 rounded-full text-lg w-full border-2 border-white">
                 ありがとう！
@@ -719,3 +731,4 @@
     <script src="app.js"></script>
 </body>
 </html>
+

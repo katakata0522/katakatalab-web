@@ -8,7 +8,8 @@ const VAULT_STORAGE_KEY = 'password-gen-vault';
 const VAULT_SALT_KEY = 'password-gen-vault-salt';
 const MIN_MASTER_PASSWORD_LENGTH = 12;
 const KDF_ITERATIONS = 600000;
-const MAX_IMPORT_JSON_LENGTH = 2 * 1024 * 1024;
+const MAX_IMPORT_JSON_LENGTH = 16 * 1024 * 1024;
+const VAULT_WRITE_LOCK = 'password-gen-vault-write';
 const MAX_ENTRY_COUNT = 1000;
 const MAX_TEXT_LENGTH = 1024;
 
@@ -17,6 +18,9 @@ class PasswordVault {
         this._key = null;
         this._entries = [];
         this._unlocked = false;
+        this._epoch = 0;
+        this._baseline = null;
+        this._busy = false;
     }
 
     _storageGet(key) {
@@ -47,19 +51,47 @@ class PasswordVault {
         return new Error(`ボールトの${action}に失敗しました。ブラウザのストレージ容量やプライベートモードの制限を確認してください`);
     }
 
+    _snapshot() {
+        // Reads must fail closed: a denied read must never look like an empty vault.
+        try {
+            return { data: localStorage.getItem(VAULT_STORAGE_KEY), salt: localStorage.getItem(VAULT_SALT_KEY) };
+        } catch { throw this._storageFailure('読込'); }
+    }
+
+    _record(snapshot) {
+        const data = JSON.parse(snapshot.data);
+        const salt = data?.salt === undefined ? snapshot.salt : data.salt;
+        if (!this._isValidHex(salt)) throw new Error('ボールトのソルトが不正です');
+        if (!this._isValidEncryptedData(data)) throw new Error('暗号化データ形式が不正です');
+        return { salt, data: { iv: data.iv, ct: data.ct } };
+    }
+
+    _assertCurrent(snapshot, epoch) {
+        if (this._epoch !== epoch) throw new Error('操作はロックにより中止されました');
+        const current = this._snapshot();
+        if (current.data !== snapshot.data || current.salt !== snapshot.salt) {
+            throw new Error('別のタブでボールトが変更されました。ロックして最新データを開き直してください');
+        }
+    }
+
+    async _withWrite(action) {
+        if (!globalThis.navigator?.locks?.request) {
+            throw new Error('このブラウザでは安全な同時保存に対応していません。閲覧・エクスポートは利用できます');
+        }
+        if (this._busy) throw new Error('処理中です。完了してからもう一度お試しください');
+        this._busy = true;
+        const epoch = this._epoch;
+        try {
+            return await navigator.locks.request(VAULT_WRITE_LOCK, async () => {
+                if (epoch !== this._epoch) throw new Error('操作はロックにより中止されました');
+                return action(epoch);
+            });
+        } finally { this._busy = false; }
+    }
+
     /** ボールトが存在するか */
     exists() {
-        const encryptedText = this._storageGet(VAULT_STORAGE_KEY);
-        const saltHex = this._storageGet(VAULT_SALT_KEY);
-        if (!encryptedText || !saltHex || !this._isValidHex(saltHex)) {
-            return false;
-        }
-        try {
-            const encryptedData = JSON.parse(encryptedText);
-            return this._isValidEncryptedData(encryptedData);
-        } catch {
-            return false;
-        }
+        try { this._record(this._snapshot()); return true; } catch { return false; }
     }
 
     /** Web Crypto API が利用可能か */
@@ -80,173 +112,117 @@ class PasswordVault {
     }
 
     get entries() {
-        return [...this._entries];
+        return this._entries.map(entry => ({ ...entry, fields: entry.fields.map(field => ({ ...field })) }));
     }
 
     async setup(masterPassword) {
-        if (!this.isCryptoSupported()) {
-            throw new Error('このブラウザはボールト暗号化に対応していません');
-        }
+        if (!this.isCryptoSupported()) throw new Error('このブラウザはボールト暗号化に対応していません');
         this._validateMasterPassword(masterPassword);
-
-        const previousSalt = this._storageGet(VAULT_SALT_KEY);
-        const previousData = this._storageGet(VAULT_STORAGE_KEY);
-        const previousKey = this._key;
-        const previousEntries = this._entries;
-        const previousUnlocked = this._unlocked;
-
-        const salt = crypto.getRandomValues(new Uint8Array(16));
-        this._key = await this._deriveKey(masterPassword, salt);
-        this._entries = [];
-        this._unlocked = true;
-
-        try {
-            if (!this._storageSet(VAULT_SALT_KEY, this._bufToHex(salt))) {
-                throw this._storageFailure('作成');
+        return this._withWrite(async epoch => {
+            const snapshot = this._snapshot();
+            if (snapshot.data !== null || snapshot.salt !== null) {
+                throw new Error('既存のボールトデータがあります。新規作成で上書きできません');
             }
-            await this._save();
-        } catch (error) {
-            this._restoreStoragePair(previousSalt, previousData);
-            this._key = previousKey;
-            this._entries = previousEntries;
-            this._unlocked = previousUnlocked;
-            throw error;
-        }
+            const salt = this._bufToHex(crypto.getRandomValues(new Uint8Array(16)));
+            const key = await this._deriveKey(masterPassword, this._hexToBuf(salt));
+            await this._save([], key, salt, snapshot, epoch);
+            if (epoch !== this._epoch) throw new Error('操作はロックにより中止されました');
+            this._key = key;
+            this._entries = [];
+            this._unlocked = true;
+        });
     }
 
     async unlock(masterPassword) {
-        if (!this.isCryptoSupported()) {
-            throw new Error('このブラウザはボールト暗号化に対応していません');
-        }
-        if (typeof masterPassword !== 'string' || masterPassword.length === 0) {
-            throw new Error('マスターパスワードを入力してください');
-        }
-
-        const saltHex = this._storageGet(VAULT_SALT_KEY);
-        if (!saltHex || !this._isValidHex(saltHex)) {
-            throw new Error('ボールトのソルトが不正です');
-        }
-
-        const salt = this._hexToBuf(saltHex);
-        this._key = await this._deriveKey(masterPassword, salt);
-
+        if (!this.isCryptoSupported()) throw new Error('このブラウザはボールト暗号化に対応していません');
+        if (typeof masterPassword !== 'string' || !masterPassword) throw new Error('マスターパスワードを入力してください');
+        this.lock();
+        const epoch = this._epoch;
+        const snapshot = this._snapshot();
+        const { salt, data } = this._record(snapshot);
         try {
-            const encryptedText = this._storageGet(VAULT_STORAGE_KEY);
-            if (!encryptedText) throw new Error('データが見つかりません');
-
-            const encryptedData = JSON.parse(encryptedText);
-            if (!this._isValidEncryptedData(encryptedData)) {
-                throw new Error('暗号化データ形式が不正です');
-            }
-
-            const decrypted = await this._decrypt(encryptedData);
-            const parsed = JSON.parse(decrypted);
-            this._entries = this._normalizeEntries(parsed);
+            const key = await this._deriveKey(masterPassword, this._hexToBuf(salt));
+            const entries = this._normalizeEntries(JSON.parse(await this._decrypt(data, key)));
+            this._assertCurrent(snapshot, epoch);
+            this._key = key;
+            this._entries = entries;
+            this._baseline = snapshot;
             this._unlocked = true;
             return true;
-        } catch (e) {
-            this._key = null;
-            this._entries = [];
-            this._unlocked = false;
-            if (e.name === 'OperationError') return false;
-            throw e;
+        } catch (error) {
+            if (epoch === this._epoch) this.lock();
+            if (error.name === 'OperationError') return false;
+            throw error;
         }
     }
 
     lock() {
+        this._epoch++;
         this._key = null;
         this._entries = [];
+        this._baseline = null;
         this._unlocked = false;
     }
 
-    async addEntry(entry) {
+    async _mutate(change) {
         this._requireUnlocked();
-        if (!entry || typeof entry !== 'object') {
-            throw new Error('登録データが不正です');
-        }
-        if (this._entries.length >= MAX_ENTRY_COUNT) {
-            throw new Error(`登録上限（${MAX_ENTRY_COUNT}件）に達しました`);
-        }
+        return this._withWrite(async epoch => {
+            this._requireUnlocked();
+            const snapshot = this._baseline;
+            this._assertCurrent(snapshot, epoch);
+            const entries = this.entries;
+            const result = change(entries);
+            const { salt } = this._record(snapshot);
+            await this._save(entries, this._key, salt, snapshot, epoch);
+            if (epoch !== this._epoch) throw new Error('操作はロックにより中止されました');
+            this._entries = entries;
+            return result;
+        });
+    }
 
-        const now = new Date().toISOString();
-        const newEntry = {
-            id: crypto.randomUUID(),
-            siteName: this._sanitizeText(entry.siteName),
-            password: this._sanitizeText(entry.password),
-            category: this._sanitizeText(entry.category) || 'other',
-            fields: this._normalizeFields(entry.fields),
-            createdAt: now,
-            updatedAt: now,
-        };
-
-        this._entries.push(newEntry);
-        try {
-            await this._save();
-        } catch (error) {
-            this._entries.pop();
-            throw error;
-        }
-        return newEntry;
+    async addEntry(entry) {
+        return this._mutate(entries => {
+            if (!entry || typeof entry !== 'object') throw new Error('登録データが不正です');
+            if (entries.length >= MAX_ENTRY_COUNT) throw new Error(`登録上限（${MAX_ENTRY_COUNT}件）に達しました`);
+            const now = new Date().toISOString();
+            const newEntry = {
+                id: crypto.randomUUID(), siteName: this._sanitizeText(entry.siteName),
+                password: this._sanitizeText(entry.password), category: this._sanitizeText(entry.category) || 'other',
+                fields: this._normalizeFields(entry.fields), createdAt: now, updatedAt: now,
+            };
+            entries.push(newEntry);
+            return { ...newEntry, fields: newEntry.fields.map(field => ({ ...field })) };
+        });
     }
 
     async updateEntry(id, updates) {
-        this._requireUnlocked();
-        if (typeof id !== 'string' || id.length === 0) {
-            throw new Error('更新対象IDが不正です');
-        }
-        if (!updates || typeof updates !== 'object') {
-            throw new Error('更新データが不正です');
-        }
-
-        const idx = this._entries.findIndex(e => e.id === id);
-        if (idx === -1) throw new Error('エントリが見つかりません');
-
-        const entry = this._entries[idx];
-        const previousEntry = {
-            ...entry,
-            fields: Array.isArray(entry.fields) ? entry.fields.map(field => ({ ...field })) : [],
-        };
-
-        if (updates.siteName !== undefined) entry.siteName = this._sanitizeText(updates.siteName);
-        if (updates.password !== undefined) entry.password = this._sanitizeText(updates.password);
-        if (updates.category !== undefined) entry.category = this._sanitizeText(updates.category);
-        if (updates.fields !== undefined) entry.fields = this._normalizeFields(updates.fields);
-        entry.updatedAt = new Date().toISOString();
-
-        try {
-            await this._save();
-        } catch (error) {
-            this._entries[idx] = previousEntry;
-            throw error;
-        }
-        return entry;
+        return this._mutate(entries => {
+            if (typeof id !== 'string' || !id) throw new Error('更新対象IDが不正です');
+            if (!updates || typeof updates !== 'object') throw new Error('更新データが不正です');
+            const entry = entries.find(entry => entry.id === id);
+            if (!entry) throw new Error('エントリが見つかりません');
+            for (const name of ['siteName', 'password', 'category']) {
+                if (updates[name] !== undefined) entry[name] = this._sanitizeText(updates[name]);
+            }
+            if (updates.fields !== undefined) entry.fields = this._normalizeFields(updates.fields);
+            entry.updatedAt = new Date().toISOString();
+            return { ...entry, fields: entry.fields.map(field => ({ ...field })) };
+        });
     }
 
     async deleteEntry(id) {
-        this._requireUnlocked();
-        if (typeof id !== 'string' || id.length === 0) {
-            throw new Error('削除対象IDが不正です');
-        }
-
-        const previousEntries = this._entries;
-        const nextEntries = this._entries.filter(e => e.id !== id);
-        if (nextEntries.length === previousEntries.length) {
-            throw new Error('エントリが見つかりません');
-        }
-
-        this._entries = nextEntries;
-        try {
-            await this._save();
-        } catch (error) {
-            this._entries = previousEntries;
-            throw error;
-        }
+        return this._mutate(entries => {
+            if (typeof id !== 'string' || !id) throw new Error('削除対象IDが不正です');
+            const index = entries.findIndex(entry => entry.id === id);
+            if (index < 0) throw new Error('エントリが見つかりません');
+            entries.splice(index, 1);
+        });
     }
 
     search(query) {
         if (!query) return this.entries;
         const q = String(query).toLowerCase();
-        return this._entries.filter(e => {
+        return this.entries.filter(e => {
             const siteName = String(e.siteName || '').toLowerCase();
             const fieldsMatch = Array.isArray(e.fields)
                 && e.fields.some(f => String(f.value || '').toLowerCase().includes(q));
@@ -254,75 +230,70 @@ class PasswordVault {
         });
     }
 
-    destroy() {
-        const previousSalt = this._storageGet(VAULT_SALT_KEY);
-        const previousData = this._storageGet(VAULT_STORAGE_KEY);
-        const dataRemoved = this._storageRemove(VAULT_STORAGE_KEY);
-        const saltRemoved = this._storageRemove(VAULT_SALT_KEY);
-
-        if (!dataRemoved || !saltRemoved) {
-            this._restoreStoragePair(previousSalt, previousData);
-            throw this._storageFailure('削除');
-        }
-        this.lock();
+    async destroy() {
+        const snapshot = this._baseline || this._snapshot();
+        return this._withWrite(async epoch => {
+            this._assertCurrent(snapshot, epoch);
+            const dataRemoved = this._storageRemove(VAULT_STORAGE_KEY);
+            const saltRemoved = this._storageRemove(VAULT_SALT_KEY);
+            if (!dataRemoved || !saltRemoved) {
+                const restored = this._restoreStoragePair(snapshot.salt, snapshot.data);
+                if (!restored) throw new Error('削除に失敗し、保存状態を確認できません。バックアップを保持してください');
+                throw this._storageFailure('削除');
+            }
+            this.lock();
+        });
     }
 
     exportEncrypted() {
-        const encryptedText = this._storageGet(VAULT_STORAGE_KEY);
-        const salt = this._storageGet(VAULT_SALT_KEY);
-        if (!encryptedText || !salt) throw new Error('エクスポートするデータがありません');
-        if (!this._isValidHex(salt)) throw new Error('ソルト形式が不正です');
-
-        let encryptedData;
-        try {
-            encryptedData = JSON.parse(encryptedText);
-        } catch {
-            throw new Error('保存データの形式が壊れています');
-        }
-        if (!this._isValidEncryptedData(encryptedData)) {
-            throw new Error('保存データの形式が不正です');
-        }
-        return JSON.stringify({ salt, data: encryptedData });
+        const snapshot = this._snapshot();
+        if (!snapshot.data) throw new Error('エクスポートするデータがありません');
+        return JSON.stringify(this._record(snapshot));
     }
 
-    importEncrypted(jsonStr) {
-        if (typeof jsonStr !== 'string' || jsonStr.length === 0) {
-            throw new Error('インポートデータが空です');
-        }
-        if (jsonStr.length > MAX_IMPORT_JSON_LENGTH) {
-            throw new Error('インポートデータが大きすぎます');
-        }
-
+    async importEncrypted(jsonStr, masterPassword, signal = null) {
+        if (typeof jsonStr !== 'string' || !jsonStr) throw new Error('インポートデータが空です');
+        if (jsonStr.length > MAX_IMPORT_JSON_LENGTH) throw new Error('インポートデータが大きすぎます（上限16MB）');
         let parsed;
-        try {
-            parsed = JSON.parse(jsonStr);
-        } catch {
-            throw new Error('JSON形式が不正です');
-        }
-        if (!parsed || typeof parsed !== 'object') {
-            throw new Error('不正なインポートデータです');
-        }
-
+        try { parsed = JSON.parse(jsonStr); } catch { throw new Error('JSON形式が不正です'); }
+        if (!parsed || typeof parsed !== 'object') throw new Error('不正なインポートデータです');
         const { salt, data } = parsed;
         if (!this._isValidHex(salt)) throw new Error('ソルト形式が不正です');
         if (!this._isValidEncryptedData(data)) throw new Error('暗号化データ形式が不正です');
+        if (typeof masterPassword !== 'string' || !masterPassword) throw new Error('インポート元のマスターパスワードを入力してください');
+        const snapshot = this._baseline || this._snapshot();
+        return this._withWrite(async epoch => {
+            this._assertCurrent(snapshot, epoch);
+            const key = await this._deriveKey(masterPassword, this._hexToBuf(salt));
+            let entries;
+            try { entries = JSON.parse(await this._decrypt(data, key)); }
+            catch { throw new Error('インポート元のパスワードが違うか、バックアップが壊れています'); }
+            this._validateImportedEntries(entries);
+            if (signal?.aborted) throw new Error('インポートをキャンセルしました');
+            this._assertCurrent(snapshot, epoch);
+            // One atomic setItem: failed validation, quota denial or interruption preserves the old record.
+            const record = JSON.stringify({ salt, iv: data.iv, ct: data.ct });
+            if (!this._storageSet(VAULT_STORAGE_KEY, record)) throw this._storageFailure('インポート');
+            this.lock();
+        });
+    }
 
-        const previousSalt = this._storageGet(VAULT_SALT_KEY);
-        const previousData = this._storageGet(VAULT_STORAGE_KEY);
-
-        try {
-            if (!this._storageSet(VAULT_SALT_KEY, salt)) {
-                throw this._storageFailure('インポート');
+    _validateImportedEntries(entries) {
+        if (!Array.isArray(entries) || entries.length > MAX_ENTRY_COUNT) throw new Error('ボールト内データ形式が不正です');
+        const ids = new Set();
+        for (const entry of entries) {
+            if (!entry || typeof entry !== 'object' || Array.isArray(entry)) throw new Error('ボールト内データ形式が不正です');
+            for (const name of ['siteName', 'password']) {
+                if (typeof entry[name] !== 'string' || entry[name].length > MAX_TEXT_LENGTH) throw new Error('ボールト内データ形式が不正です');
             }
-            if (!this._storageSet(VAULT_STORAGE_KEY, JSON.stringify(data))) {
-                throw this._storageFailure('インポート');
+            if (typeof entry.id !== 'string' || !entry.id || ids.has(entry.id)) throw new Error('ボールト内IDが不正です');
+            ids.add(entry.id);
+            if (entry.category !== undefined && (typeof entry.category !== 'string' || entry.category.length > MAX_TEXT_LENGTH)) throw new Error('カテゴリ形式が不正です');
+            if (entry.fields !== undefined && (!Array.isArray(entry.fields) || entry.fields.length > 50)) throw new Error('項目形式が不正です');
+            for (const field of entry.fields || []) {
+                if (!field || typeof field.label !== 'string' || typeof field.value !== 'string' || field.label.length > MAX_TEXT_LENGTH || field.value.length > MAX_TEXT_LENGTH) throw new Error('項目形式が不正です');
             }
-        } catch (error) {
-            this._restoreStoragePair(previousSalt, previousData);
-            throw error;
         }
-
-        this.lock();
     }
 
     _requireUnlocked() {
@@ -390,12 +361,14 @@ class PasswordVault {
         return true;
     }
 
-    async _save() {
-        const plaintext = JSON.stringify(this._entries);
-        const encrypted = await this._encrypt(plaintext);
-        if (!this._storageSet(VAULT_STORAGE_KEY, JSON.stringify(encrypted))) {
-            throw this._storageFailure('保存');
-        }
+    async _save(entries, key, salt, snapshot, epoch) {
+        const encrypted = await this._encrypt(JSON.stringify(entries), key);
+        const backup = JSON.stringify({ salt, data: encrypted });
+        if (backup.length > MAX_IMPORT_JSON_LENGTH) throw new Error('保存上限（バックアップ16MB）を超えています。登録内容を減らしてください');
+        const data = JSON.stringify({ salt, ...encrypted });
+        this._assertCurrent(snapshot, epoch);
+        if (!this._storageSet(VAULT_STORAGE_KEY, data)) throw this._storageFailure('保存');
+        this._baseline = { data, salt: snapshot.salt };
     }
 
     async _deriveKey(password, salt) {
@@ -412,12 +385,12 @@ class PasswordVault {
         );
     }
 
-    async _encrypt(plaintext) {
+    async _encrypt(plaintext, key = this._key) {
         const enc = new TextEncoder();
         const iv = crypto.getRandomValues(new Uint8Array(12));
         const ciphertext = await crypto.subtle.encrypt(
             { name: 'AES-GCM', iv },
-            this._key,
+            key,
             enc.encode(plaintext)
         );
         return {
@@ -426,12 +399,12 @@ class PasswordVault {
         };
     }
 
-    async _decrypt(data) {
+    async _decrypt(data, key = this._key) {
         const iv = this._hexToBuf(data.iv);
         const ct = this._hexToBuf(data.ct);
         const plaintext = await crypto.subtle.decrypt(
             { name: 'AES-GCM', iv },
-            this._key,
+            key,
             ct
         );
         return new TextDecoder().decode(plaintext);

@@ -52,7 +52,7 @@
     <div class="root-setting">
       <label for="rootBase">基準サイズ (Root HTML):</label>
       <div class="root-input-group">
-        <input type="number" id="rootBase" value="16" min="1" max="100" inputmode="decimal" aria-label="基準サイズ (Root HTML)">
+        <input type="number" id="rootBase" value="16" min="1" max="100" inputmode="decimal" aria-label="基準サイズ (Root HTML)" aria-describedby="rootError"><p id="rootError" class="helper-text" role="alert" hidden>基準は0より大きい、計算可能な範囲の数値を入力してください。</p>
         <span class="unit">px</span>
         <div class="root-presets" role="group" aria-label="よく使う基準">
           <button type="button" class="btn-root-preset is-active" data-root="16" aria-label="基準を16pxにする" aria-pressed="true">16</button>
@@ -118,11 +118,13 @@
     </div>
     <p class="copy-hint">コピーは主要サイズのみ（早見表の全行ではありません）</p>
     
+    <textarea id="manualCopyCode" readonly hidden rows="14" aria-label="手動コピー用コード" spellcheck="false" style="width:100%;box-sizing:border-box"></textarea>
+
     <div class="custom-add-container">
 
       <label for="customPxInput">早見表にサイズを追加する：</label>
       <div class="add-input-group">
-        <input type="number" id="customPxInput" placeholder="24" min="1" max="500" inputmode="numeric" aria-label="早見表に追加するピクセル値">
+        <input type="number" id="customPxInput" placeholder="24" min="1" max="500" inputmode="decimal" aria-label="早見表に追加するピクセル値" step="any">
         <span class="unit">px</span>
         <button type="button" id="addSizeBtn" class="btn-primary-sm">リストに追加</button>
         <button type="button" id="resetSizesBtn" class="btn-secondary-sm" title="早見表をデフォルトに戻す" aria-label="早見表をデフォルトのサイズに戻す">↩ リセット</button>

@@ -49,6 +49,8 @@ export class InteractionManager {
     // 長押し(700ms) → 爆破
     // ダブルクリック(350ms以内に2回) → 詳細パネル
     this.render.canvas.addEventListener('mousedown', (e) => {
+      this._cancelLongPress();
+      if (e.button !== undefined && e.button !== 0) return;
       const { x, y } = this._canvasCoords(e.clientX, e.clientY);
       const taskBody = this.findTaskAtPoint(x, y);
       this.longPressTriggered = false;
@@ -67,16 +69,8 @@ export class InteractionManager {
       this.lastClickTime = now;
       this.lastClickBody = taskBody;
 
-      // 長押し検知 → 爆破
-      if (taskBody) {
-        taskBody.isPressing = true;
-        taskBody.pressStartTime = Date.now();
-        this.longPressBody = taskBody;
-        this.longPressTimer = setTimeout(() => {
-          this.longPressTriggered = true;
-          this.onDestroyTask(taskBody);
-        }, this.LONG_PRESS_MS);
-      }
+      if (taskBody) this._startLongPress(taskBody);
+
     });
 
     this.render.canvas.addEventListener('mousemove', (e) => {
@@ -102,7 +96,9 @@ export class InteractionManager {
 
     // ---------- Mobile: touch ----------
     this.render.canvas.addEventListener('touchstart', (e) => {
-      if (e.touches.length > 0) {
+      this._cancelLongPress();
+      this.touchStart = null;
+      if (e.touches.length === 1) {
         const { x, y } = this._canvasCoords(
           e.touches[0].clientX, e.touches[0].clientY
         );
@@ -125,28 +121,20 @@ export class InteractionManager {
         this.lastTapTime = now;
         this.lastTapBody = body;
 
-        // 長押し検知 → 爆破
-        if (body) {
-          body.isPressing = true;
-          body.pressStartTime = Date.now();
-          this.longPressBody = body;
-          this.longPressTimer = setTimeout(() => {
-            this.longPressTriggered = true;
-            this.onDestroyTask(body);
-          }, this.LONG_PRESS_MS);
-        }
+        if (body) this._startLongPress(body);
+
       }
     }, { passive: false });
 
     this.render.canvas.addEventListener('touchmove', (e) => {
-      if (!this.touchStart) return;
+      if (!this.touchStart || e.touches.length !== 1) { this._cancelLongPress(); return; }
       const { x, y } = this._canvasCoords(
         e.touches[0].clientX, e.touches[0].clientY
       );
       const dist = Math.hypot(x - this.touchStart.x, y - this.touchStart.y);
       if (this.touchStart.body) e.preventDefault();
       // 15px以上動いたら長押しキャンセル（スワイプやドラッグ）
-      if (dist > 15) {
+      if (dist > 8) {
         this._cancelLongPress();
       }
     }, { passive: false });
@@ -155,6 +143,31 @@ export class InteractionManager {
       this._cancelLongPress();
       this.touchStart = null;
     }, { passive: false });
+    const cancel = () => { this._cancelLongPress(); this.mouseDownPos = null; this.touchStart = null; };
+    window.addEventListener('mouseup', cancel);
+    window.addEventListener('touchend', cancel);
+    window.addEventListener('touchcancel', cancel);
+    window.addEventListener('blur', cancel);
+    window.addEventListener('pointercancel', cancel);
+    window.addEventListener('pagehide', cancel);
+    this.render.canvas.addEventListener('pointercancel', cancel);
+    this.render.canvas.addEventListener('lostpointercapture', cancel);
+    this.render.canvas.addEventListener('mouseleave', cancel);
+    document.addEventListener('visibilitychange', () => { if (document.hidden) cancel(); });
+  }
+
+  _startLongPress(body) {
+    this._cancelLongPress();
+    body.isPressing = true;
+    body.pressStartTime = Date.now();
+    this.longPressBody = body;
+    const token = this.pressGeneration;
+    this.longPressTimer = setTimeout(() => {
+      if (token !== this.pressGeneration || this.longPressBody !== body || body._destroyed || !this.Composite.allBodies(this.world).includes(body)) return;
+      this._cancelLongPress();
+      this.longPressTriggered = true;
+      this.onDestroyTask(body);
+    }, this.LONG_PRESS_MS);
   }
 
   _canvasCoords(clientX, clientY) {
@@ -168,6 +181,7 @@ export class InteractionManager {
   }
 
   _cancelLongPress() {
+    this.pressGeneration = (this.pressGeneration || 0) + 1;
     if (this.longPressBody) {
       this.longPressBody.isPressing = false;
       this.longPressBody.pressStartTime = null;
@@ -192,3 +206,4 @@ export class InteractionManager {
     return null;
   }
 }
+

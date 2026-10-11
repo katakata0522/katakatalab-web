@@ -49,6 +49,7 @@ function loadPasswordVault(storage) {
     console,
     crypto: browserCrypto,
     localStorage: storage,
+    navigator: require('./helpers/vault-locks.cjs')(storage),
     TextEncoder,
     TextDecoder,
     Uint8Array,
@@ -143,7 +144,7 @@ test('import途中で保存に失敗したら既存ボールトを壊さず解�
   const beforeEntry = destinationVault.entries[0];
 
   destinationStorage.failSet(VAULT_STORAGE_KEY);
-  assert.throws(() => destinationVault.importEncrypted(importedPayload), /インポートに失敗/);
+  await assert.rejects(() => destinationVault.importEncrypted(importedPayload, MASTER_PASSWORD), /インポートに失敗/);
 
   assert.deepEqual(destinationStorage.snapshot(), beforeStorage);
   assert.equal(destinationVault.isUnlocked, true);
@@ -157,7 +158,7 @@ test('destroyの途中失敗では既存データと解除状態を維持する'
   const beforeStorage = storage.snapshot();
 
   storage.failRemove(VAULT_SALT_KEY);
-  assert.throws(() => vault.destroy(), /削除に失敗/);
+  await assert.rejects(() => vault.destroy(), /削除に失敗/);
 
   assert.deepEqual(storage.snapshot(), beforeStorage);
   assert.equal(vault.isUnlocked, true);

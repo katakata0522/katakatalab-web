@@ -49,7 +49,20 @@ document.addEventListener('DOMContentLoaded', () => {
     fileInfoNew: document.getElementById('fileInfoNew')
   };
 
+  const isEnglish = document.documentElement.lang === 'en';
   // State Variables
+  const pasteReads = new WeakMap();
+  let comparisonGeneration = 0, compareTimer = null, lastComparison = null, comparisonDirty = true;
+  const fileReads = new WeakMap();
+  function cancelFileRead(area) {
+    pasteReads.delete(area);
+    const pending = fileReads.get(area);
+    fileReads.delete(area);
+    if (pending && typeof pending.abort === 'function') pending.abort();
+  }
+  function cancelAllFileReads() {
+    [els.textOriginal, els.textNew].forEach(cancelFileRead);
+  }
   let clearBackup = null;
   let toastTimeoutId = null;
   let toastProgressIntervalId = null;
@@ -68,7 +81,7 @@ document.addEventListener('DOMContentLoaded', () => {
   function init() {
     // 1. 文字入力監視 & ショートカットキー
     [els.textOriginal, els.textNew].forEach(area => {
-      area.addEventListener('input', updateCharCounts);
+      area.addEventListener('input', () => { cancelFileRead(area); updateCharCounts(); });
       area.addEventListener('keydown', handleKeyInput);
       
       // Drag & Drop Setup
@@ -82,12 +95,17 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // 3. ボタンアクション
     els.compareBtn.addEventListener('click', () => {
+      clearTimeout(compareTimer);
+      const generation = ++comparisonGeneration;
+      comparisonDirty = true;
+      els.btnCopyDiff.disabled = true;
       els.loading.style.display = 'flex';
-      setTimeout(runCompare, 50); 
+      compareTimer = setTimeout(() => { if (generation === comparisonGeneration) runCompare(); }, 50);
     });
     
     // Undo付きスマートクリア
     els.clearBtn.addEventListener('click', () => {
+      cancelAllFileReads();
       const origVal = els.textOriginal.value;
       const newVal = els.textNew.value;
       
@@ -104,10 +122,11 @@ document.addEventListener('DOMContentLoaded', () => {
       showUndoToast();
     });
 
-    els.editBtn.addEventListener('click', () => toggleSection('input'));
+    els.editBtn.addEventListener('click', () => { invalidateComparison(); toggleSection('input'); });
 
     // Swap機能
     els.swapBtn.addEventListener('click', () => {
+      cancelAllFileReads();
       const temp = els.textOriginal.value;
       els.textOriginal.value = els.textNew.value;
       els.textNew.value = temp;
@@ -130,25 +149,26 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     els.modeRadios.forEach((radio) => {
-      radio.addEventListener('change', () => {
-        if (els.resultSection.style.display !== 'none') {
-          els.loading.style.display = 'flex';
-          setTimeout(runCompare, 50);
-        }
-      });
+      radio.addEventListener('change', invalidateComparison);
     });
 
     // Paste機能
     els.pasteBtns.forEach(btn => {
       btn.addEventListener('click', async () => {
+        const targetId = btn.dataset.target === 'original' ? 'textOriginal' : 'textNew';
+        const area = document.getElementById(targetId);
+        cancelFileRead(area);
+        const token = {};
+        pasteReads.set(area, token);
         try {
           const text = await navigator.clipboard.readText();
-          const targetId = btn.dataset.target === 'original' ? 'textOriginal' : 'textNew';
-          const area = document.getElementById(targetId);
+          if (pasteReads.get(area) !== token) return;
+          cancelFileRead(area);
           area.value = text;
           updateCharCounts();
           area.focus();
         } catch (err) {
+          if (pasteReads.get(area) !== token) return;
           const isEn = document.documentElement.lang === 'en';
           showAlert(isEn
             ? 'Clipboard permission is missing. Paste manually.'
@@ -213,7 +233,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // 強固なファイル検証（クラッシュと文字化けの徹底防御）
   function validateTextFile(file) {
     if (file.size > CONFIG.MAX_FILE_SIZE_BYTES) {
-      showAlert(`⚠️ ファイルサイズが大きすぎます。読み込み上限は2MBです。（ドロップされたファイル: ${(file.size / (1024 * 1024)).toFixed(2)}MB）`);
+      showAlert(isEnglish ? 'File is too large. The limit is 2 MB.' : `⚠️ ファイルサイズが大きすぎます。読み込み上限は2MBです。（ドロップされたファイル: ${(file.size / (1024 * 1024)).toFixed(2)}MB）`);
       return false;
     }
 
@@ -225,7 +245,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const isAllowedExt = CONFIG.ALLOWED_EXTENSIONS.includes(ext);
 
     if (!isTextMime && !isAllowedExt) {
-      showAlert(`⚠️ テキストファイル以外のファイルは読み込めません。（サポート拡張子: ${CONFIG.ALLOWED_EXTENSIONS.join(', ')}）`);
+      showAlert(isEnglish ? `Use a text file (${CONFIG.ALLOWED_EXTENSIONS.join(', ')}).` : `⚠️ テキストファイル以外のファイルは読み込めません。（サポート拡張子: ${CONFIG.ALLOWED_EXTENSIONS.join(', ')}）`);
       return false;
     }
 
@@ -234,8 +254,12 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   function readFileToTextarea(file, textarea) {
+    cancelFileRead(textarea);
     const reader = new FileReader();
+    fileReads.set(textarea, reader);
     reader.onload = (event) => {
+      if (fileReads.get(textarea) !== reader) return;
+      fileReads.delete(textarea);
       textarea.value = event.target.result;
       updateCharCounts();
       textarea.focus();
@@ -252,7 +276,7 @@ document.addEventListener('DOMContentLoaded', () => {
       if (badge) {
         // 表示名が長い場合は省略
         const displayName = file.name.length > 20 ? file.name.substring(0, 17) + '...' : file.name;
-        badge.textContent = `✓ ${displayName} 読込済`;
+        badge.textContent = `✓ ${displayName} ${isEnglish ? 'loaded' : '読込済'}`;
         badge.style.display = 'inline-flex';
         badge.style.opacity = '1';
         
@@ -269,7 +293,9 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     };
     reader.onerror = () => {
-      showAlert('ファイルの読み込み中にエラーが発生しました。');
+      if (fileReads.get(textarea) !== reader) return;
+      fileReads.delete(textarea);
+      showAlert(isEnglish ? 'Could not read the file.' : 'ファイルの読み込み中にエラーが発生しました。');
     };
     reader.readAsText(file, 'UTF-8');
   }
@@ -281,11 +307,13 @@ document.addEventListener('DOMContentLoaded', () => {
   function handleKeyInput(e) {
     if (e.key === 'Tab') {
       e.preventDefault();
+      cancelFileRead(this);
       const start = this.selectionStart;
       const end = this.selectionEnd;
       const spaces = '  ';
       this.value = this.value.substring(0, start) + spaces + this.value.substring(end);
       this.selectionStart = this.selectionEnd = start + spaces.length;
+      updateCharCounts();
     }
     
     if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
@@ -294,16 +322,31 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
+  function invalidateComparison() {
+    comparisonGeneration++;
+    clearTimeout(compareTimer);
+    comparisonDirty = true;
+    els.loading.style.display = 'none';
+    els.btnCopyDiff.disabled = true;
+    els.btnPrevDiff.disabled = true;
+    els.btnNextDiff.disabled = true;
+    const status = document.getElementById('comparisonStatus');
+    if (status) status.textContent = lastComparison ? (isEnglish ? 'Inputs or method changed. Compare again.' : '入力・方式が変わりました。比較し直してください。') : '';
+    const manual = document.getElementById('manualCopyDiff');
+    if (manual) { manual.hidden = true; manual.value = ''; }
+  }
+
   function updateCharCounts() {
+    invalidateComparison();
     const lenOrig = els.textOriginal.value.length;
     const lenNew = els.textNew.value.length;
-    els.charCountOriginal.textContent = `${lenOrig} chars`;
-    els.charCountNew.textContent = `${lenNew} chars`;
+    els.charCountOriginal.textContent = `${lenOrig}${isEnglish ? ' chars' : '文字'}`;
+    els.charCountNew.textContent = `${lenNew}${isEnglish ? ' chars' : '文字'}`;
 
     if (lenOrig > CONFIG.MAX_CHARS || lenNew > CONFIG.MAX_CHARS) {
       els.charCountOriginal.style.color = '#ef4444';
       els.charCountNew.style.color = '#ef4444';
-      showAlert(`⚠️ 文字数が多すぎます（推奨: ${CONFIG.MAX_CHARS}文字以内）。動作が遅くなる可能性があります。`);
+      showAlert(isEnglish ? `Text exceeds ${CONFIG.MAX_CHARS} characters and may be slow.` : `⚠️ 文字数が多すぎます（推奨: ${CONFIG.MAX_CHARS}文字以内）。動作が遅くなる可能性があります。`);
     } else {
       els.charCountOriginal.style.color = '';
       els.charCountNew.style.color = '';
@@ -312,25 +355,30 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   function getMode() {
-    let mode = 'chars';
+    let mode = 'lines';
     els.modeRadios.forEach(r => { if(r.checked) mode = r.value; });
     return mode;
   }
 
   function runCompare() {
+    const generation = ++comparisonGeneration;
+    clearTimeout(compareTimer);
+    comparisonDirty = true;
+    els.btnCopyDiff.disabled = true;
+    hideAlert();
     const original = els.textOriginal.value;
     const newTxt = els.textNew.value;
     const mode = getMode();
 
     if (typeof Diff === 'undefined') {
       els.loading.style.display = 'none';
-      showAlert('差分ライブラリの読み込みに失敗しました。通信状況を確認して再読み込みしてください。');
+      showAlert(isEnglish ? 'Could not load the comparison library. Check your connection and reload.' : '差分ライブラリの読み込みに失敗しました。通信状況を確認して再読み込みしてください。');
       return;
     }
 
     if (!original && !newTxt) {
       els.loading.style.display = 'none';
-      showAlert('比較するテキストを入力してください。');
+      showAlert(isEnglish ? 'Enter text to compare.' : '比較するテキストを入力してください。');
       return;
     }
 
@@ -348,13 +396,24 @@ document.addEventListener('DOMContentLoaded', () => {
         diff = Diff.diffChars(original, newTxt);
       }
 
-      renderSplitView(diff);
+      renderSplitView(diff, mode);
       renderUnifiedView(diff);
+      // Copy is derived from raw line differences, never reconstructed from HTML.
+      unifiedLinesCache = rawDiffLines(Diff.diffLines(original, newTxt));
+      lastComparison = { original, newText: newTxt, mode };
+      comparisonDirty = false;
+      els.btnCopyDiff.disabled = false;
+      els.btnPrevDiff.disabled = false;
+      els.btnNextDiff.disabled = false;
+      const status = document.getElementById('comparisonStatus');
+      if (status) status.textContent = '';
+      els.resultSection.classList.toggle('code-mode', mode === 'lines');
       toggleSection('result');
       
       calculateDiffStats(diff);
 
       setTimeout(() => {
+        if (generation !== comparisonGeneration || comparisonDirty) return;
         // Stickyヘッダーの高さ分だけ上にスクロールマージンを設ける（ヘッダーと被るのを防止）
         const offset = 70;
         const bodyRect = document.body.getBoundingClientRect().top;
@@ -370,7 +429,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     } catch (e) {
       console.error(e);
-      showAlert('エラーが発生しました。テキストが複雑すぎるか、長すぎます。');
+      showAlert(isEnglish ? 'Comparison failed. The text may be too complex or too long.' : 'エラーが発生しました。テキストが複雑すぎるか、長すぎます。');
     } finally {
       els.loading.style.display = 'none';
     }
@@ -390,7 +449,44 @@ document.addEventListener('DOMContentLoaded', () => {
     }).join('');
   }
 
-  function renderSplitView(diff) {
+  function splitRawLines(text) {
+    if (!text) return [];
+    const lines = text.split('\n');
+    if (lines.at(-1) === '') lines.pop();
+    return lines;
+  }
+  function rawDiffLines(diff) {
+    return diff.flatMap(part => splitRawLines(part.value).map(line => `${part.added ? '+' : part.removed ? '-' : ' '} ${line.replace(/\r$/, '')}`));
+  }
+  function alignedRows(diff) {
+    const rows = []; let left = [], right = [];
+    const flush = () => {
+      for (let i=0;i<Math.max(left.length,right.length);i++) rows.push({left:left[i] ?? null,right:right[i] ?? null,changed:true});
+      left=[]; right=[];
+    };
+    for (const part of diff) {
+      if (part.removed) left.push(...splitRawLines(part.value));
+      else if (part.added) right.push(...splitRawLines(part.value));
+      else { flush(); for (const line of splitRawLines(part.value)) rows.push({left:line,right:line,changed:false}); }
+    }
+    flush(); return rows;
+  }
+  function renderAlignedLines(diff) {
+    const rows = alignedRows(diff); let leftNumber=0,rightNumber=0;
+    const render = (row, side) => {
+      const value = row[side];
+      if (value === null) return '<div class="diff-line diff-placeholder" aria-hidden="true"><div class="diff-line-num"></div><div class="diff-line-marker"></div><div class="diff-line-content">&nbsp;</div></div>';
+      const number = side === 'left' ? ++leftNumber : ++rightNumber;
+      const tag = row.changed ? (side === 'left' ? 'del' : 'ins') : 'span';
+      const kind = row.changed ? (side === 'left' ? 'del' : 'add') : '';
+      const marker = row.changed ? (side === 'left' ? '-' : '+') : ' ';
+      return `<div class="diff-line ${kind}"><div class="diff-line-num">${number}</div><div class="diff-line-marker">${marker}</div><div class="diff-line-content"><${tag}>${escapeHtml(value) || '&nbsp;'}</${tag}></div></div>`;
+    };
+    els.diffOriginal.innerHTML = rows.map(row=>render(row,'left')).join('');
+    els.diffNew.innerHTML = rows.map(row=>render(row,'right')).join('');
+  }
+  function renderSplitView(diff, mode = getMode()) {
+    if (mode === 'lines') { renderAlignedLines(diff); return; }
     let htmlOrig = '';
     let htmlNew = '';
 
@@ -460,11 +556,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
       // エスケープ除去＆プレーンテキスト抽出で行をキャッシュ保存
       const textContent = line.replace(/<[^>]*>/g, '')
-                              .replace(/&amp;/g, '&')
                               .replace(/&lt;/g, '<')
                               .replace(/&gt;/g, '>')
                               .replace(/&quot;/g, '"')
-                              .replace(/&#039;/g, "'");
+                              .replace(/&#039;/g, "'")
+                              .replace(/&amp;/g, '&');
       cacheLines.push(`${marker} ${textContent}`);
 
       result += `
@@ -529,8 +625,8 @@ document.addEventListener('DOMContentLoaded', () => {
     if ((addCount > 0 || delCount > 0) && els.textOriginal.value !== els.textNew.value) {
       els.diffNav.style.display = 'flex';
       els.diffStat.innerHTML = `
-        <span class="del-count">削除: ${delCount}箇所</span>
-        <span class="add-count">追加: ${addCount}箇所</span>
+        <span class="del-count">${isEnglish ? 'Removed: ' : '削除: '}${delCount}${isEnglish ? ' regions' : '箇所'}</span>
+        <span class="add-count">${isEnglish ? 'Added: ' : '追加: '}${addCount}${isEnglish ? ' regions' : '箇所'}</span>
       `;
       updateJumpTargets();
     } else {
@@ -584,7 +680,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   function scrollDiff(direction) {
-    if (jumpTargets.length === 0) return;
+    if (comparisonDirty || jumpTargets.length === 0) return;
 
     currentJumpIndex += direction;
     if (currentJumpIndex >= jumpTargets.length) {
@@ -624,11 +720,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // OS自動判別によるインテリジェントコピー（WindowsならCRLF、それ以外はLF）
   function copyUnifiedDiff() {
-    if (unifiedLinesCache.length === 0) return;
+    if (!lastComparison || comparisonDirty) return;
+    const generation = comparisonGeneration;
 
     const isWindows = navigator.userAgent.toLowerCase().includes('win');
     const newline = isWindows ? '\r\n' : '\n';
-    const copyText = unifiedLinesCache.join(newline) + newline;
+    const format = document.getElementById('copyFormat')?.value || 'diff';
+    const copyText = format === 'new' ? lastComparison.newText : unifiedLinesCache.join(newline) + (unifiedLinesCache.length ? newline : '');
+    const manual = document.getElementById('manualCopyDiff');
+    if (manual) { manual.hidden = true; manual.value = ''; }
 
     const doCopy = (text) => {
       if (navigator.clipboard && typeof navigator.clipboard.writeText === 'function') {
@@ -655,18 +755,21 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     doCopy(copyText).then(() => {
-      const origHTML = els.btnCopyDiff.innerHTML;
-      els.btnCopyDiff.innerHTML = `<span class="icon-copy">✅</span> Copied!`;
+      if (generation !== comparisonGeneration || comparisonDirty) return;
+      els.btnCopyDiff.textContent = isEnglish ? 'Copied!' : 'コピーしました';
       els.btnCopyDiff.style.borderColor = '#16a34a';
       els.btnCopyDiff.style.color = '#16a34a';
       
       setTimeout(() => {
-        els.btnCopyDiff.innerHTML = origHTML;
+        if (generation !== comparisonGeneration || comparisonDirty) return;
+        els.btnCopyDiff.textContent = isEnglish ? 'Copy selected text' : '選んだ内容をコピー';
         els.btnCopyDiff.style.borderColor = '';
         els.btnCopyDiff.style.color = '';
       }, 1500);
     }).catch(err => {
-      showAlert('コピーに失敗しました。ブラウザの権限設定を確認してください。');
+      if (generation !== comparisonGeneration || comparisonDirty) return;
+      if (manual) { manual.value = copyText; manual.hidden = false; manual.focus(); manual.select(); }
+      showAlert(isEnglish ? 'Copy failed. Select the text below and copy manually.' : 'コピーに失敗しました。下のテキストを選択して手動でコピーしてください。');
     });
   }
 
@@ -726,11 +829,8 @@ document.addEventListener('DOMContentLoaded', () => {
       els.diffViewUnified.style.display = 'flex';
     }
 
-    if (els.textOriginal.value !== els.textNew.value && els.resultSection.style.display !== 'none') {
-      els.btnCopyDiff.style.display = 'inline-flex';
-    } else {
-      els.btnCopyDiff.style.display = 'none';
-    }
+    els.btnCopyDiff.style.display = lastComparison ? 'inline-flex' : 'none';
+
   }
 
   function showAlert(msg) {
@@ -775,6 +875,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }, intervalTick);
 
     undoBtn.onclick = () => {
+      cancelAllFileReads();
       if (clearBackup) {
         els.textOriginal.value = clearBackup.original;
         els.textNew.value = clearBackup.new;
