@@ -33,7 +33,7 @@
   <link rel="icon" href="./pwa-icon.svg" type="image/svg+xml">
   <link rel="icon" href="/favicon.ico" sizes="any">
   <link rel="apple-touch-icon" href="./pwa-icon.svg">
-  <link rel="stylesheet" href="./style.css?v=20261002-v33-usability">
+  <link rel="stylesheet" href="./style.css?v=20261008-v2-save-feedback">
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
@@ -245,6 +245,28 @@
           </section>
 
 
+          <details class="advanced-panel redaction-panel" id="redactionPanel">
+            <summary>
+              <span>
+                <span class="mini-label">必要なときだけ</span>
+                <strong>見せたくない部分を隠す</strong>
+              </span>
+              <span class="redaction-count" id="redactionCount" hidden>0件</span>
+            </summary>
+            <div class="redaction-panel-body">
+              <p class="redaction-help" id="redactionHelp">隠し方を選び、画像上で隠したい範囲をなぞります。</p>
+              <div class="redaction-tools" role="group" aria-label="隠し方">
+                <button class="secondary-button compact redaction-tool" type="button" data-redaction-tool="black" aria-pressed="false">黒塗り</button>
+                <button class="secondary-button compact redaction-tool" type="button" data-redaction-tool="blur" aria-pressed="false">ぼかし</button>
+              </div>
+              <div class="redaction-actions">
+                <button class="text-button" id="undoRedactionButton" type="button" disabled>1つ戻す</button>
+                <button class="text-button danger-lite" id="clearRedactionButton" type="button" disabled>全部消す</button>
+              </div>
+              <p class="redaction-safety">確実に隠したい情報は「黒塗り」を使ってください。</p>
+            </div>
+          </details>
+
           <div class="export-card">
             <div class="export-heading">
               <h3>保存</h3>
@@ -266,7 +288,7 @@
             <p class="inline-message" id="exportMessage" role="status" aria-live="polite"></p>
           </div>
 
-          <details class="advanced-panel">
+          <details class="advanced-panel" id="advancedCropPanel">
             <summary>
               <span>
                 <span class="mini-label">必要な人だけ</span>
@@ -333,6 +355,7 @@
     </section>
 
     <div class="quick-action-dock" id="quickActionDock" hidden aria-label="クイック操作">
+      <p class="inline-message quick-save-message" id="quickSaveMessage" aria-hidden="true" hidden></p>
       <button class="quick-action secondary-button" id="quickCopyButton" type="button" hidden>コピー</button>
       <button class="quick-action secondary-button" id="quickShareButton" type="button" hidden>共有</button>
       <button class="quick-action primary-button" id="quickSaveButton" type="button">保存</button>
@@ -341,8 +364,8 @@
     <section class="explain-section" aria-labelledby="why-title">
       <div class="explain-main">
         <p class="eyebrow">こんな時に便利</p>
-        <h2 id="why-title">投稿前に、見せたくない画面端だけを整理。</h2>
-        <p>時刻や通知、ナビゲーションバー、PCのタスクバーなど、スクショの端に写った不要な情報だけを手早く切れます。基本は「上」だけ。必要なときだけ下・左・右も追加できます。</p>
+        <h2 id="why-title">投稿前に、見せたくないところだけを整理。</h2>
+        <p>時刻や通知、ナビゲーションバーなどの端を手早く切り、必要なときだけ画像内も黒塗り・ぼかしで隠せます。普段の操作はこれまでどおり、端カットが主役です。</p>
       </div>
       <div class="use-cases">
         <article>
@@ -367,7 +390,7 @@
       <h2 id="faq-title">よくある確認</h2>
       <details>
         <summary>本当に画像はアップロードされませんか？</summary>
-        <p>このツールの画像読み込み・判定・切り抜き・書き出し処理はブラウザ内で行います。画像本体・サムネイル・ファイル名は永続保存しません。保存・コピー・共有が正常に終わったときだけ、同じ端末で次回も合わせられるよう、端末の種類・向き・基準サイズ・切る辺・px値をこの端末内に保存します。これらの個別値をアクセス解析へ送りません。</p>
+        <p>このツールの画像読み込み・判定・切り抜き・書き出し処理はブラウザ内で行います。画像本体・サムネイル・ファイル名は永続保存しません。黒塗り・ぼかしの範囲も保存しません。保存・コピー・共有が正常に終わったときだけ、同じ端末で次回も合わせられるよう、端末の種類・向き・基準サイズ・切る辺・px値をこの端末内に保存します。これらの個別値をアクセス解析へ送りません。</p>
       </details>
       <details>
         <summary>自動判定で必ずきれいに切れますか？</summary>
@@ -404,10 +427,11 @@
   <script src="./core.js?v=20261002-v31-mobile-density" defer></script>
   <script src="./device-profiles.js?v=20261002-v31-mobile-density" defer></script>
   <script src="./crop-presets.js?v=20261002-v31-mobile-density" defer></script>
-  <script src="./image.js?v=20261002-v31-mobile-density" defer></script>
+  <script src="./redaction.js?v=20261005-v1-hide" defer></script>
+  <script src="./image.js?v=20261005-v1-hide" defer></script>
   <script src="./preview.js?v=20261002-v31-mobile-density" defer></script>
   <script src="./zip.js?v=20261002-v31-mobile-density" defer></script>
-  <script src="./script.js?v=20261002-v33-usability" defer></script>
+  <script src="./script.js?v=20261008-v2-save-feedback" defer></script>
   <script src="./pwa.js?v=20261002-v31-mobile-density" defer></script>
 </body>
 </html>

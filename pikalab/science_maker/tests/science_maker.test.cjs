@@ -251,6 +251,42 @@ test('index.html: 安全チェックの表示領域が存在する', () => {
     assert.ok(html.includes('安全に進めるための共通ルール'));
 });
 
+test('予想を自動保存し、印刷では研究後の記録を全文表示して通知を除外する', async () => {
+    await withBrowserPage(pikalabRoot, async ({ page, baseUrl }) => {
+        await page.addInitScript(() => {
+            if (localStorage.getItem('scienceMakerData_v1')) return;
+            localStorage.setItem('scienceMakerData_v1', JSON.stringify({
+                topicId: '1d_exp_1', createdAt: '2026/10/11',
+                studentName: '', title: '合成検証の研究', motivation: '',
+                hypothesis: '', materials: '', method: ''
+            }));
+        });
+        await page.goto(`${baseUrl}/science_maker/`);
+        await page.waitForFunction(() => document.documentElement.dataset.scienceSummerSupportReady === 'true');
+        await page.locator('#plan-hypothesis').fill('合成検証：保存する予想');
+        await page.waitForFunction(() => JSON.parse(localStorage.getItem('scienceMakerData_v1')).hypothesis === '合成検証：保存する予想');
+        await page.reload();
+        await page.waitForFunction(() => document.documentElement.dataset.scienceSummerSupportReady === 'true');
+        assert.equal(await page.locator('#plan-hypothesis').inputValue(), '合成検証：保存する予想');
+
+        await page.locator('#plan-result').fill('合成検証：結果を印刷する');
+        const discussion = `${'合成検証の考察\n'.repeat(24)}考察の最後まで印刷する`;
+        await page.locator('#plan-discussion').fill(discussion);
+        await page.locator('#plan-next-question').fill('合成検証：次の疑問を印刷する');
+        await page.emulateMedia({ media: 'print' });
+        await page.evaluate(() => window.dispatchEvent(new Event('beforeprint')));
+        const printedText = await page.locator('#plan-paper').innerText();
+        for (const expected of ['合成検証：保存する予想', '合成検証：結果を印刷する', '考察の最後まで印刷する', '合成検証：次の疑問を印刷する']) {
+            assert.ok(printedText.includes(expected), expected);
+        }
+        assert.equal(await page.locator('#toast-container').isVisible(), false);
+        await page.evaluate(() => window.dispatchEvent(new Event('afterprint')));
+        await page.emulateMedia({ media: 'screen' });
+        assert.equal(await page.locator('#plan-result').inputValue(), '合成検証：結果を印刷する');
+        assert.equal(await page.locator('#plan-discussion').inputValue(), discussion);
+    });
+});
+
 test('topics.js: 高リスクテーマには safety が定義されている', () => {
     const topicsSource = fs.readFileSync(path.join(projectRoot, 'topics.js'), 'utf8');
     const topicIds = ['1d_craft_1', '1d_obs_2', '1w_obs_1'];

@@ -67,9 +67,22 @@
                 .filter(Boolean);
 
             textareas.forEach((textarea) => {
-                textarea.dataset.printOriginalHeight = textarea.style.height || '';
+                if (!Object.hasOwn(textarea.dataset, 'printOriginalHeight')) {
+                    textarea.dataset.printOriginalHeight = textarea.style.height || '';
+                }
                 textarea.style.height = 'auto';
                 textarea.style.height = `${textarea.scrollHeight}px`;
+                // 入力欄を非表示にする印刷CSSでも、研究後の記録を全文出力する。
+                let printView = document.getElementById(`print-${textarea.id}`);
+                if (!printView) {
+                    printView = document.createElement('div');
+                    printView.id = `print-${textarea.id}`;
+                    printView.className = 'hidden print-text-view';
+                    printView.style.whiteSpace = 'pre-wrap';
+                    printView.style.overflowWrap = 'anywhere';
+                    textarea.insertAdjacentElement('afterend', printView);
+                }
+                printView.textContent = textarea.value;
             });
         }
 
@@ -79,6 +92,7 @@
                 if (!textarea) return;
                 textarea.style.height = textarea.dataset.printOriginalHeight || '';
                 delete textarea.dataset.printOriginalHeight;
+                document.getElementById(`print-${id}`)?.remove();
             });
         }
 

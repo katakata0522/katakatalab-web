@@ -4,6 +4,9 @@
   const Core = typeof window !== 'undefined'
     ? window.ScreenshotCropCore
     : (typeof module !== 'undefined' && module.exports ? require('./core.js') : null);
+  const Redaction = typeof window !== 'undefined'
+    ? window.ScreenshotCropRedaction
+    : (typeof module !== 'undefined' && module.exports ? require('./redaction.js') : null);
 
   function requireCore() {
     if (!Core) throw new Error('Screenshot crop core is required');
@@ -234,7 +237,16 @@
     const ctx = canvas.getContext('2d', { alpha: true });
     if (!ctx) throw new Error('canvas-context');
     ctx.drawImage(image, sx, sy, sw, sh, 0, 0, sw, sh);
+    if (options.redactions?.length && Redaction?.applyRedactions) {
+      Redaction.applyRedactions(canvas, options.redactions, {
+        crop,
+        sourceWidth: image.naturalWidth,
+        sourceHeight: image.naturalHeight,
+      });
+    }
 
+    // Re-encoding through Canvas creates a new image instead of passing the
+    // original file through, so EXIF/GPS/camera metadata is not inherited.
     const mime = options.mime || outputMime(file);
     const quality = mime === 'image/jpeg' || mime === 'image/webp' ? 0.94 : undefined;
     const blob = await canvasToBlob(canvas, mime, quality);
