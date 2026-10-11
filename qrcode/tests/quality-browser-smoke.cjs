@@ -1,0 +1,56 @@
+'use strict';
+const { chromium } = require('playwright');
+const fs = require('node:fs');
+const path = require('node:path');
+const os = require('node:os');
+const assert = require('node:assert/strict');
+const root = path.resolve(__dirname,'../..');
+(async()=>{
+  const browser = await chromium.launch({headless:true});
+  const context = await browser.newContext({viewport:{width:1280,height:900},acceptDownloads:true,serviceWorkers:'block'});
+  const errors=[];
+  try {
+    await context.route('**/*',async route=>{
+      const url=new URL(route.request().url());
+      if(url.pathname==='/license')return route.fulfill({contentType:'application/json',body:JSON.stringify({valid:true})});
+      let relative=decodeURIComponent(url.pathname).replace(/^\//,'');if(relative.endsWith('/'))relative+='index.html';
+      const file=path.resolve(root,relative);
+      if(!file.startsWith(root+path.sep)||!fs.existsSync(file)||!fs.statSync(file).isFile())return route.fulfill({status:404,body:''});
+      const ext=path.extname(file);const types={'.html':'text/html','.js':'text/javascript','.css':'text/css','.png':'image/png','.json':'application/json'};
+      return route.fulfill({contentType:types[ext]||'application/octet-stream',body:fs.readFileSync(file)});
+    });
+    await context.addInitScript(()=>{window.__QR_PRO_CONFIG__={licenseApiUrl:'https://fixture.test/license',strictVerification:true,allowLocalLicenseFallback:false,allowManualPlanSwitch:false};});
+    const page=await context.newPage();page.on('pageerror',error=>errors.push(error.message));
+    await page.goto('https://fixture.test/qrcode/');
+    await page.locator('#qrText').fill('https://example.com/quality-check');
+    await page.waitForFunction(()=>!document.querySelector('#downloadBtn').disabled);
+    let waiting=page.waitForEvent('download');await page.locator('#downloadBtn').click();let download=await waiting;
+    assert.match(download.suggestedFilename(),/\.png$/);
+    await page.locator('#openSidebarBtn').click();
+    await page.locator('#licenseKeyInput').locator('xpath=ancestor::details').evaluate(node=>{node.open=true;});
+    await page.locator('#licenseKeyInput').fill('PRO-TEST-ABCD');await page.locator('#applyLicenseBtn').click();
+    await page.waitForFunction(()=>document.querySelector('#planPro').checked);
+    await page.locator('#exportFormat').locator('xpath=ancestor::details').evaluate(node=>{node.open=true;});
+    await page.locator('#exportFormat').selectOption('svg');
+    assert.match(await page.locator('[data-i18n="pro.exportProNotice"]').textContent(),/PNG画像/);
+    assert.match(await page.locator('[data-i18n="pro.logoHelp"]').textContent(),/実機/);
+    await page.locator('#closeSidebarBtn').click();
+    waiting=page.waitForEvent('download');await page.locator('#downloadBtn').click();download=await waiting;
+    const dir=fs.mkdtempSync(path.join(os.tmpdir(),'qr-quality-'));const file=path.join(dir,'result.svg');await download.saveAs(file);
+    const svg=fs.readFileSync(file,'utf8');assert.match(svg,/<image href="data:image\/png;base64,/);assert.doesNotMatch(svg,/<path\b/);
+    await page.setViewportSize({width:390,height:844});
+    assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=window.innerWidth));
+    await page.locator('#openSidebarBtn').click();
+    assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=window.innerWidth));
+    await page.goto('https://fixture.test/qrcode/en/');
+    await page.locator('#qrText').fill('https://example.com/english');
+    await page.locator('#openSidebarBtn').click();
+    await page.locator('#exportFormat').locator('xpath=ancestor::details').evaluate(node=>{node.open=true;});
+    assert.match(await page.locator('[data-i18n="pro.exportProNotice"]').textContent(),/embed a PNG/);
+    assert.match(await page.locator('[data-i18n="pro.logoHelp"]').textContent(),/real devices/);
+    assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=window.innerWidth));
+    assert.deepEqual(errors,[]);
+    fs.rmSync(dir,{recursive:true});
+    console.log('PASS Chromium '+browser.version()+': Free PNG保存、fixtureライセンス後のSVG実体、日英説明、1280/390pxの表示。実購入/実機QR読取は対象外。');
+  } finally {await browser.close();}
+})().catch(error=>{console.error(error);process.exitCode=1;});
