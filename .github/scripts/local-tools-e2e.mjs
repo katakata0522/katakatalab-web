@@ -12,6 +12,7 @@ await page.goto(base+'/chiritsumo-calc/',{waitUntil:'networkidle'});while(await 
 
 await page.addInitScript(()=>{
   window.__copiedImageTypes=[];
+  window.__lastClipboardBlob=null;
   window.__sharedFileCount=0;
   class TestClipboardItem{
     constructor(data){this.types=Object.keys(data);this.data=data;}
@@ -21,7 +22,10 @@ await page.addInitScript(()=>{
     read:async()=>[],
     write:async(items)=>{
       for(const item of items){
-        for(const value of Object.values(item.data||{})) await value;
+        for(const value of Object.values(item.data||{})){
+          const resolved=await value;
+          if(resolved instanceof Blob) window.__lastClipboardBlob=resolved;
+        }
       }
       window.__copiedImageTypes=items.flatMap(item=>item.types||[]);
     }
@@ -111,7 +115,7 @@ if(width===360){
 await page.locator('#fileInput').setInputFiles({name:'screenshot-test.png',mimeType:'image/png',buffer:screenshotPng});
 await page.locator('#editorSection').waitFor({state:'visible'});
 assert.match(await page.locator('#detectedLabel').textContent(),/スマホ縦長/);
-assert.match(await page.locator('#readyHint').textContent(),/保存できます/);
+assert.match(await page.locator('#readyHint').textContent(),/切り取り位置.*保存/);
 assert.equal(await page.locator('#batchProgress').isVisible(),false);
 assert.equal(await page.locator('.edge-toggle').count(),4);
 if(width<=390){
@@ -182,10 +186,77 @@ assert.equal(await page.locator('#edgeRight').isChecked(),false);
 assert.ok(Number(await page.locator('#cropTop').inputValue())>0);
 assert.equal(Number(await page.locator('#cropBottom').inputValue()),0);
 
+// Optional masking stays out of the way until explicitly opened.
+assert.equal(await page.locator('#redactionPanel').evaluate(el=>el.open),false);
+await page.locator('#redactionPanel > summary').click();
+assert.equal(await page.locator('#redactionPanel').evaluate(el=>el.open),true);
+
+await page.locator('[data-redaction-tool="black"]').click();
+assert.equal(await page.locator('[data-redaction-tool="black"]').getAttribute('aria-pressed'),'true');
+await page.locator('#previewCanvas').scrollIntoViewIfNeeded();
+const maskCanvasBox=await page.locator('#previewCanvas').boundingBox();
+assert.ok(maskCanvasBox);
+await page.mouse.move(maskCanvasBox.x+maskCanvasBox.width*0.30,maskCanvasBox.y+maskCanvasBox.height*0.35);
+await page.mouse.down();
+await page.mouse.move(maskCanvasBox.x+maskCanvasBox.width*0.55,maskCanvasBox.y+maskCanvasBox.height*0.45,{steps:4});
+await page.mouse.up();
+assert.equal((await page.locator('#redactionCount').textContent()).trim(),'1件');
+
+const blackMaskPixel=await page.locator('#previewCanvas').evaluate(canvas=>{
+  const data=canvas.getContext('2d').getImageData(
+    Math.round(canvas.width*0.40),
+    Math.round(canvas.height*0.40),
+    1,
+    1
+  ).data;
+  return Array.from(data);
+});
+assert.ok(blackMaskPixel[0]<40&&blackMaskPixel[1]<50&&blackMaskPixel[2]<60&&blackMaskPixel[3]>200);
+
+// The same mask is baked into the actual clipboard export, not preview-only.
+await page.locator(copySelector).click();
+await page.waitForFunction(()=>document.querySelector('#exportMessage').textContent.includes('コピーしました'));
+const exportedBlackMaskPixel=await page.evaluate(async()=>{
+  const blob=window.__lastClipboardBlob;
+  if(!(blob instanceof Blob)) return null;
+  const bitmap=await createImageBitmap(blob);
+  const canvas=document.createElement('canvas');
+  canvas.width=bitmap.width;
+  canvas.height=bitmap.height;
+  const ctx=canvas.getContext('2d');
+  ctx.drawImage(bitmap,0,0);
+  const cropTop=Number(document.querySelector('#cropTop').value)||0;
+  const cropLeft=Number(document.querySelector('#cropLeft').value)||0;
+  const x=Math.max(0,Math.min(canvas.width-1,Math.round(1080*0.40-cropLeft)));
+  const y=Math.max(0,Math.min(canvas.height-1,Math.round(2400*0.40-cropTop)));
+  return Array.from(ctx.getImageData(x,y,1,1).data);
+});
+assert.ok(exportedBlackMaskPixel);
+assert.ok(exportedBlackMaskPixel[0]<40&&exportedBlackMaskPixel[1]<50&&exportedBlackMaskPixel[2]<60&&exportedBlackMaskPixel[3]>200);
+
+await page.locator('#undoRedactionButton').click();
+assert.equal(await page.locator('#redactionCount').isHidden(),true);
+
+await page.locator('[data-redaction-tool="blur"]').click();
+assert.equal(await page.locator('[data-redaction-tool="blur"]').getAttribute('aria-pressed'),'true');
+await page.locator('#previewCanvas').scrollIntoViewIfNeeded();
+const blurCanvasBox=await page.locator('#previewCanvas').boundingBox();
+assert.ok(blurCanvasBox);
+await page.mouse.move(blurCanvasBox.x+blurCanvasBox.width*0.30,blurCanvasBox.y+blurCanvasBox.height*0.35);
+await page.mouse.down();
+await page.mouse.move(blurCanvasBox.x+blurCanvasBox.width*0.55,blurCanvasBox.y+blurCanvasBox.height*0.45,{steps:4});
+await page.mouse.up();
+assert.equal((await page.locator('#redactionCount').textContent()).trim(),'1件');
+
+await page.locator('#clearRedactionButton').click();
+assert.equal(await page.locator('#redactionCount').isHidden(),true);
+await page.locator('#redactionPanel > summary').click();
+assert.equal(await page.locator('#redactionPanel').evaluate(el=>el.open),false);
+
 // Explicit presets stay separate from automatic device learning.
 assert.equal(await page.locator('.preset-slot').count(),3);
 assert.equal(await page.locator('#presetSlot1 [data-preset-state]').textContent(),'＋');
-await page.locator('.advanced-panel > summary').click();
+await page.locator('#advancedCropPanel > summary').click();
 await page.locator('#cropTop').evaluate(el=>{el.value='137';el.dispatchEvent(new Event('input',{bubbles:true}));});
 assert.equal(await page.locator('#cropTopValue').textContent(),'137px');
 await page.locator('#presetSlot1').click();
@@ -235,8 +306,8 @@ assert.equal(await presetPage.locator('#cropTopValue').textContent(),'143px');
 await presetPage.close();
 
 await page.locator('#presetCloseButton').click();
-if(await page.locator('.advanced-panel').evaluate(el=>el.open)){
-  await page.locator('.advanced-panel > summary').click();
+if(await page.locator('#advancedCropPanel').evaluate(el=>el.open)){
+  await page.locator('#advancedCropPanel > summary').click();
 }
 
 // Add two more screenshots. Multi-image controls appear only now.
@@ -282,7 +353,7 @@ assert.equal(await page.locator('.batch-item[data-status="adjusted"]').count(),1
 // The most recent manual px adjustment is inherited by an untouched image of the same kind.
 await page.locator('#reviewNextButton').click();
 await page.waitForFunction(()=>document.querySelector('#batchProgress').textContent.includes('2枚目'));
-await page.locator('.advanced-panel > summary').click();
+await page.locator('#advancedCropPanel > summary').click();
 await page.locator('#cropTop').evaluate(el=>{el.value='123';el.dispatchEvent(new Event('input',{bubbles:true}));});
 assert.equal(await page.locator('#cropTopValue').textContent(),'123px');
 await page.locator('.batch-item').nth(2).click();
@@ -290,7 +361,7 @@ await page.waitForFunction(()=>document.querySelector('#batchProgress').textCont
 assert.equal(await page.locator('#cropTopValue').textContent(),'123px');
 assert.equal(await page.locator('#reviewNextButton').isVisible(),false);
 assert.match(await page.locator('#batchReviewText').textContent(),/全3枚を確認済み/);
-assert.match(await page.locator('#readyHint').textContent(),/前の画像で調整した位置/);
+assert.match(await page.locator('#readyHint').textContent(),/切り取り位置.*保存/);
 
 // A later manual adjustment becomes the new recent value, but does not overwrite an already manually adjusted image.
 await page.locator('#cropTop').evaluate(el=>{el.value='127';el.dispatchEvent(new Event('input',{bubbles:true}));});
@@ -395,7 +466,7 @@ if (!given) {
       name:'offline-test.png',mimeType:'image/png',buffer:Buffer.from(png,'base64')
     });
     await pwaPage.locator('#editorSection').waitFor({state:'visible'});
-    await pwaPage.waitForFunction(()=>document.querySelector('#readyHint').textContent.includes('保存できます'));
+    await pwaPage.waitForFunction(()=>/切り取り位置.*保存/.test(document.querySelector('#readyHint').textContent));
     const [download] = await Promise.all([
       pwaPage.waitForEvent('download'),
       pwaPage.locator('#quickSaveButton').click()

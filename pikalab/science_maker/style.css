@@ -203,6 +203,11 @@ body {
         margin: 0 !important;
     }
 
+    #plan-paper label {
+        break-inside: avoid;
+        break-after: avoid;
+    }
+
     /* 印刷時のみ表示する div/span */
     .print-text-view, span[id^="print-"], div[id^="print-"] {
         display: block !important;
@@ -213,7 +218,8 @@ body {
     }
 
     /* 印刷時に非表示にする input/textarea/button */
-    input, textarea, button, .print\:hidden {
+    input, textarea, button, .print\:hidden, #toast-container,
+    .material-symbols-outlined, .material-symbols-rounded {
         display: none !important;
     }
 

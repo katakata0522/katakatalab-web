@@ -1,7 +1,7 @@
 'use strict';
 
 const CACHE_PREFIX = 'screenshot-crop-';
-const STATIC_CACHE = 'screenshot-crop-static-20261003-v7-startup';
+const STATIC_CACHE = 'screenshot-crop-static-20261008-v10-save-feedback';
 const NETWORK_TIMEOUT_MS = 4000;
 const APP_SCOPE_PATH = '/screenshot-crop/';
 
@@ -12,6 +12,7 @@ const CORE_ASSETS = [
   './core.js',
   './device-profiles.js',
   './crop-presets.js',
+  './redaction.js',
   './image.js',
   './preview.js',
   './zip.js',
