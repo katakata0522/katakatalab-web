@@ -1031,4 +1031,13 @@ body.dark-mode .col-price {
 .selected-result #btnCartCustom { width: auto; height: auto; padding: .75rem 1rem; }
 .btn-select-rate { background: none; border: 0; color: inherit; cursor: pointer; text-align: left; }
 #priceError, #rateError, #extraError { color: var(--c-danger, #b91c1c); }
-.cart-drawer { position: static; margin-block: 1rem; }
+.cart-drawer {
+  position: static;
+  inset: auto;
+  transform: none;
+  width: 100%;
+  margin-block: 1rem;
+  border-bottom: 2px solid var(--c-primary);
+  border-radius: 20px;
+}
+.cart-drawer.hidden { display: none; transform: none; }
