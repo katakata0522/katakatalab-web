@@ -95,7 +95,7 @@ test('しおり往復と空のしおりでは、選択した理由・気持ち�
     const fields = new Map();
     h.context.document.getElementById = id => {
         if (id === 'wizard-form') return null;
-        if (!fields.has(id)) fields.set(id, { value: '' });
+        if (!fields.has(id)) fields.set(id, { value: '', style: {}, classList: { add() {}, remove() {} } });
         return fields.get(id);
     };
     h.context.document.querySelectorAll = selector => {

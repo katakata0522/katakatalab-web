@@ -18,6 +18,7 @@
     "test:kanji-data": "node kanji_lab/js/test_data.js",
     "test:kanji-ux": "node kanji_lab/js/test_ux.js",
     "test:kanji-exposure": "node kanji_lab/js/test_exposure.js",
+    "test:kanji-e2e": "node kanji_lab/tests/browser-interactions.test.cjs",
     "test:vitest": "vitest run deepsea_lab/js",
     "test:manabi-e2e": "node scripts/manabi-land-e2e.mjs",
     "test:rhythm-e2e": "node scripts/rhythm-lab-e2e.mjs",
@@ -31,7 +32,8 @@
     "test:space-e2e": "node scripts/space-lab-e2e.mjs",
     "test:focus-deep-e2e": "node scripts/focus-studio-deep-e2e.mjs",
     "test:paper-e2e": "node scripts/paper-gen-e2e.mjs",
-    "test:quest-e2e": "node scripts/quest-board-e2e.mjs"
+    "test:quest-e2e": "node scripts/quest-board-e2e.mjs",
+    "test:book-e2e": "node scripts/book-report-e2e.mjs"
   },
   "devDependencies": {
     "@types/node": "^25.9.1",

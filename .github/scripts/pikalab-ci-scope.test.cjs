@@ -232,7 +232,7 @@ test('共通検証の失敗は全ラボE2Eの起動を止め、必須validateに
         assert.ifError(actual.error);
         assert.equal(actual.status === 0, result === 'success');
     }
-    for (const name of ['space-browser', 'focus-browser', 'paper-browser', 'quest-browser']) {
+    for (const name of ['space-browser', 'focus-browser', 'paper-browser', 'quest-browser', 'book-browser']) {
         assert.match(jobs[name], /needs: scope/);
         assert.doesNotMatch(jobs[name].split('    steps:')[0], /always\(|!cancelled\(|failure\(/,
             '通常のsuccess依存で共通失敗時にrunnerを起動しない');
@@ -289,7 +289,7 @@ test('ビルドと成果物検証を先に済ませ、必要なブラウザとPD
         const installation = steps[install][2];
         assert.match(installation, /if \[ "\$\{\{ steps\.[\w-]+\.outputs\.cache-hit \}\}" != ["']true["'] \]; then\n\s+npx playwright install chromium\n\s+fi/,
             `${name}: OS依存は毎回準備し、ブラウザ本体は完全一致キャッシュだけで省く`);
-        assert.equal(installation.includes('sudo apt-get install -y poppler-utils'), name === 'quest-browser');
+        assert.equal(installation.includes('sudo apt-get install -y poppler-utils'), ['quest-browser', 'book-browser'].includes(name));
         const browserChecks = steps.filter(([, , step]) => /npm run (?:verify:code-studio-security|guard:visual|test:[\w-]+-e2e)|RUN_PIKALAB_TOP_BROWSER=1/.test(step));
         assert.ok(browserChecks.length > 0, name);
         for (const check of browserChecks) assert.ok(steps.indexOf(check) > install, `${name}: ${check[1]}`);
@@ -372,7 +372,7 @@ test('Eduplay browserのCI絞込はnpm test内の並列性と全体検証を維�
 
 test('baselineの教育監査モジュールはビルド前に必ず取得する', () => {
     const workflow = readWorkflow();
-    const baselines = ['pikalab', 'manabi', 'space', 'focus', 'paper', 'quest'];
+    const baselines = ['pikalab', 'manabi', 'space', 'focus', 'paper', 'quest', 'book'];
     for (const name of baselines) {
         const marker = '          path: .' + name + '-baseline\n';
         assert.equal(workflow.split(marker).length, 2, name + ' baseline checkout must exist exactly once');
@@ -381,4 +381,108 @@ test('baselineの教育監査モジュールはビルド前に必ず取得する
         assert.ok(workflow.includes('prepare.py --root .' + name + '-baseline'), name + ': baseline media must be prepared before build');
     }
     assert.doesNotMatch(workflow, /sparse-checkout:/);
+});
+
+test('Kanji専用検証は同じ宣言から選択・package実行へ反映される', () => {
+    const file = 'pikalab/kanji_lab/tests/browser-interactions.test.cjs';
+    const scope = classifyChanges([file]);
+    assert.equal(scope.full, false);
+    for (const lab of Object.keys(LABS)) assert.equal(scope[lab], lab === 'kanji', lab);
+    assert.equal(LAB_E2E_FILES[file], 'kanji');
+    assert.equal(LAB_E2E_SCRIPTS['test:kanji-e2e'], file);
+    assert.equal(classifyChanges(['pikalab/space_lab/index.html']).kanji, false);
+    assert.equal(classifyChanges(['pikalab/package-lock.json']).kanji, true);
+});
+
+test('Kanjiはscope内の共通検証成功と自身の選択を必要とし、別jobのstepを参照しない', () => {
+    const workflow = readWorkflow();
+    const jobs = workflowJobs(workflow);
+    assert.match(jobs.scope, /kanji: \$\{\{ steps\.scope\.outputs\.kanji \}\}/);
+    assert.match(jobs.scope, /name: Run all PikaLab tests\n\s+id: unit_tests/);
+    const step = jobs.validate.split('      - name: Verify Kanji Lab browser interactions\n')[1].split('      - name:')[0];
+    assert.doesNotMatch(jobs.validate, /steps\.unit_tests\./);
+    assert.match(step, /RUN_PIKALAB_KANJI_BROWSER: "1"/);
+    assert.match(step, /npm run test:kanji-e2e/);
+    const expression = step.match(/if: "\$\{\{ (.*?) \}\}"/)[1];
+    for (const selected of ['true', 'false', '']) {
+        for (const result of ['success', 'failure', 'cancelled', 'skipped']) {
+            const context = { success: () => true, cancelled: () => false,
+                steps: { verified_build: { outcome: 'success' }, browser_setup: { outcome: 'success' } },
+                needs: { scope: { result, outputs: { kanji: selected } } },
+                env: { PIKALAB_COLLECT_ALL_FAILURES: 'false' } };
+            assert.equal(evaluate(expression, context), selected === 'true' && result === 'success');
+        }
+    }
+});
+
+test('Kanjiの実ブラウザは専用指定時だけ起動し通常の全Nodeテストは重ねて起動しない', () => {
+    const { readFileSync } = require('node:fs');
+    const browser = readFileSync(join(__dirname, '../../pikalab/kanji_lab/tests/browser-interactions.test.cjs'), 'utf8');
+    assert.match(browser, /const enabled = process\.env\.RUN_PIKALAB_KANJI_BROWSER === '1'/);
+    assert.match(browser, /skip: !enabled/);
+    const workflow = readWorkflow();
+    assert.equal((workflow.match(/RUN_PIKALAB_KANJI_BROWSER:/g) || []).length, 1);
+    assert.equal((workflow.match(/npm run test:kanji-e2e\n/g) || []).length, 1);
+    assert.doesNotMatch(workflow, /actions\/upload-artifact@/);
+});
+
+test('Kanji統合後も教育プライバシー監査とscope一度だけの全体検証を維持する', () => {
+    const jobs = workflowJobs(readWorkflow());
+    assert.match(jobs.scope, /node scripts\/education-no-tracking\.cjs --pikalab-build/);
+    assert.match(jobs.scope, /node \.github\/scripts\/education-privacy-e2e\.cjs --root-build --pikalab-build/);
+    assert.ok(jobs.scope.indexOf('education-privacy-e2e.cjs') < jobs.scope.indexOf('name: Run all PikaLab tests'));
+    assert.equal((readWorkflow().match(/^          npm test$/gm) || []).length, 1);
+});
+
+test('book専用検証は対象変更だけで選択し、共有変更は全検証へ戻す', () => {
+    const scope = classifyChanges(['pikalab/scripts/book-report-e2e.mjs']);
+    assert.equal(scope.full, false);
+    assert.equal(scope.book, true);
+    for (const other of Object.keys(LABS)) if (other !== 'book') assert.equal(scope[other], false);
+    assert.equal(classifyChanges(['pikalab/space_lab/index.html']).book, false);
+    assert.equal(classifyChanges(['pikalab/package.json']).book, true);
+    const workflow = require('node:fs').readFileSync(require('node:path').join(__dirname, '../workflows/pikalab-quality.yml'), 'utf8');
+    assert.ok(workflow.includes('book: ${{ steps.scope.outputs.book }}'));
+    const job = workflow.split('  book-browser:')[1];
+    assert.match(job, /needs: scope/);
+    assert.ok(job.includes("needs.scope.outputs.book == 'true'"));
+});
+
+test('Bookの基点・Draft条件・証跡先は実際のPRとE2E実行先に対応する', () => {
+    const job = workflowJobs(readWorkflow())['book-browser'];
+    const expression = job.match(/if: "\$\{\{ (.*?) \}\}"/)[1];
+    for (const event_name of ['pull_request', 'workflow_dispatch']) {
+        for (const draft of [false, true]) {
+            for (const selected of [false, true]) {
+                const context = { github: { event_name, event: { pull_request: { draft } } },
+                    needs: { scope: { outputs: { book: String(selected) } } } };
+                assert.equal(evaluate(expression, context), selected && (event_name !== 'pull_request' || !draft));
+            }
+        }
+    }
+    assert.ok(job.includes('ref: ${{ github.event.pull_request.base.sha || github.event.repository.default_branch }}'));
+    assert.ok(job.includes('BOOK_REPORT_BASELINE_ROOT=../.book-baseline/pikalab/dist npm run test:book-e2e'));
+    assert.doesNotMatch(job, /actions\/upload-artifact@/);
+    const e2e = require('node:fs').readFileSync(join(__dirname, '../../pikalab/scripts/book-report-e2e.mjs'), 'utf8');
+    assert.ok(e2e.includes("path.join(root, 'visual-guard-artifacts', 'book-report')"));
+    assert.ok(e2e.includes('process.env.BOOK_REPORT_BASELINE_ROOT'));
+});
+
+test('KanjiとBookの同時追加は両方を一度ずつ登録し対象ラボだけを合成する', () => {
+    const packageBefore = { scripts: { test: 'node --test', build: 'vite build' } };
+    const packageAfter = structuredClone(packageBefore);
+    const files = ['pikalab/kanji_lab/tests/browser-interactions.test.cjs', 'pikalab/scripts/book-report-e2e.mjs'];
+    packageAfter.scripts['test:kanji-e2e'] = `node ${files[0].slice('pikalab/'.length)}`;
+    packageAfter.scripts['test:book-e2e'] = `node ${files[1].slice('pikalab/'.length)}`;
+    for (const changed of [files, ['pikalab/package.json', ...files]]) {
+        const scope = classifyChanges(changed, { packageBefore, packageAfter });
+        assert.equal(scope.full, false);
+        for (const lab of Object.keys(LABS)) assert.equal(scope[lab], ['kanji', 'book'].includes(lab), lab);
+    }
+    const registry = require('node:fs').readFileSync(join(__dirname, 'pikalab-e2e-inputs.cjs'), 'utf8');
+    const workflow = readWorkflow();
+    for (const lab of ['kanji', 'book']) {
+        assert.equal((registry.match(new RegExp(`'test:${lab}-e2e':`, 'g')) || []).length, 1);
+        assert.equal((workflow.match(new RegExp(`npm run test:${lab}-e2e\\n`, 'g')) || []).length, 1);
+    }
 });

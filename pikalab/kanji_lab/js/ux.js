@@ -23,7 +23,6 @@
         { modalId: 'collection-modal', panelId: 'collection-panel', closeId: 'close-collection-btn' },
         { modalId: 'wrong-modal', panelId: 'wrong-panel', closeId: 'close-wrong-btn' }
     ];
-    const modalReturnFocus = new Map();
 
     function whenAppReady(callback) {
         const run = () => {
@@ -58,11 +57,36 @@
         return String(value || '').normalize('NFKC').toLowerCase().trim();
     }
 
+    const entrySearchCache = new WeakMap();
     function entryHaystack(entry) {
-        return normalizeText([entry.k, entry.l, entry.r, entry.y, entry.on, entry.kun, entry.m].filter(Boolean).join(' '));
+        if (!entrySearchCache.has(entry)) {
+            entrySearchCache.set(entry, normalizeText([entry.k, entry.l, entry.r, entry.y, entry.on, entry.kun, entry.m].filter(Boolean).join(' ')));
+        }
+        return entrySearchCache.get(entry);
+    }
+
+    // パーツごとの検索・相棒・役割を一度索引化し、入力ごとの全件走査を避ける。
+    const poolIndexCache = new WeakMap();
+    function poolIndex(pool = currentPool()) {
+        if (!poolIndexCache.has(pool)) {
+            const index = { left: new Map(), right: new Map() };
+            for (const entry of pool) {
+                for (const [side, part, partner] of [['left', entry.l, entry.r], ['right', entry.r, entry.l]]) {
+                    if (!index[side].has(part)) index[side].set(part, { entries: [], partners: new Set(), deepOnly: true });
+                    const item = index[side].get(part);
+                    item.entries.push(entry);
+                    item.partners.add(partner);
+                    item.deepOnly = item.deepOnly && getTier(entry.k) === 'deep';
+                }
+            }
+            index.deepOnlyCount = [...index.left.values(), ...index.right.values()].filter(item => item.deepOnly).length;
+            poolIndexCache.set(pool, index);
+        }
+        return poolIndexCache.get(pool);
     }
 
     function getStoredCollection() {
+        if (window.App?.storage?.getCollection) return window.App.storage.getCollection();
         try {
             const raw = localStorage.getItem('pikalab_kanji_progress');
             if (!raw) return [];
@@ -136,90 +160,6 @@
         if (ud) setPressed(ud, !!isUd);
     }
 
-    function getFocusable(panel) {
-        if (!panel) return [];
-        const selector = [
-            'button:not([disabled])',
-            'a[href]',
-            'input:not([disabled])',
-            'select:not([disabled])',
-            'textarea:not([disabled])',
-            '[tabindex]:not([tabindex="-1"])'
-        ].join(',');
-        return Array.from(panel.querySelectorAll(selector)).filter(element => {
-            if (element.hidden) return false;
-            return !element.closest('[hidden], .hidden');
-        });
-    }
-
-    function isModalVisible(modal) {
-        return !!modal && !modal.classList.contains('hidden') && modal.getAttribute('aria-hidden') !== 'true';
-    }
-
-    function focusModal(modalId, trigger) {
-        const config = MODAL_CONFIGS.find(item => item.modalId === modalId);
-        const modal = document.getElementById(modalId);
-        const panel = config && document.getElementById(config.panelId);
-        if (!config || !modal || !panel) return;
-        if (trigger && typeof trigger.focus === 'function') modalReturnFocus.set(modalId, trigger);
-        setTimeout(() => {
-            if (!isModalVisible(modal)) return;
-            const close = document.getElementById(config.closeId);
-            const target = close || getFocusable(panel)[0] || panel;
-            if (target === panel && !panel.hasAttribute('tabindex')) panel.setAttribute('tabindex', '-1');
-            target?.focus?.();
-        }, 0);
-    }
-
-    function restoreModalFocus(modalId) {
-        const trigger = modalReturnFocus.get(modalId);
-        modalReturnFocus.delete(modalId);
-        if (trigger?.isConnected && typeof trigger.focus === 'function') {
-            setTimeout(() => trigger.focus(), 0);
-        }
-    }
-
-    function installModalKeyboardGuard() {
-        if (document.documentElement?.dataset.kanjiModalKeyboard === 'true') return;
-        if (document.documentElement) document.documentElement.dataset.kanjiModalKeyboard = 'true';
-        document.addEventListener('keydown', (event) => {
-            const visible = MODAL_CONFIGS.filter(config => isModalVisible(document.getElementById(config.modalId)));
-            if (visible.length === 0) return;
-            // 詳細モーダルを図鑑/にがてノートの上に重ねた場合などは、
-            // 現在フォーカスを持っているモーダルを最前面として扱う。
-            const active = visible.find(config => document.getElementById(config.panelId)?.contains(document.activeElement))
-                || visible[visible.length - 1];
-            const panel = document.getElementById(active.panelId);
-            if (!panel) return;
-
-            if (event.key === 'Escape') {
-                const close = document.getElementById(active.closeId);
-                if (close) {
-                    event.preventDefault();
-                    close.click();
-                }
-                return;
-            }
-
-            if (event.key !== 'Tab') return;
-            const focusable = getFocusable(panel);
-            if (focusable.length === 0) {
-                event.preventDefault();
-                panel.focus?.();
-                return;
-            }
-            const first = focusable[0];
-            const last = focusable[focusable.length - 1];
-            if (event.shiftKey && document.activeElement === first) {
-                event.preventDefault();
-                last.focus();
-            } else if (!event.shiftKey && document.activeElement === last) {
-                event.preventDefault();
-                first.focus();
-            }
-        });
-    }
-
     function enhanceModalA11y() {
         MODAL_CONFIGS.forEach(({ modalId, panelId }) => {
             const modal = document.getElementById(modalId);
@@ -253,7 +193,6 @@
             toast.setAttribute('role', 'status');
             toast.setAttribute('aria-live', 'polite');
         }
-        installModalKeyboardGuard();
     }
 
     function updateHelpAndParentCopy() {
@@ -350,9 +289,7 @@
     }
 
     function deepOnlyPartCount() {
-        if (!Roles?.getDeepOnlyParts) return 0;
-        const pool = currentPool();
-        return Roles.getDeepOnlyParts(pool, 'left').length + Roles.getDeepOnlyParts(pool, 'right').length;
+        return poolIndex().deepOnlyCount;
     }
 
     function syncDeepToggleLabel() {
@@ -439,23 +376,18 @@
         if (!q) return true;
         const part = button.textContent.trim();
         if (normalizeText(part).includes(q)) return true;
-        const key = side === 'left' ? 'l' : 'r';
-        return currentPool().some(entry => entry[key] === part && entryHaystack(entry).includes(q));
+        return poolIndex()[side].get(part)?.entries.some(entry => entryHaystack(entry).includes(q)) || false;
     }
 
     function isDeepOnlyPart(side, part) {
-        return !!Roles?.isDeepOnlyPart?.(currentPool(), side, part);
+        return poolIndex()[side].get(part)?.deepOnly || false;
     }
 
     function isCompatiblePart(side, part) {
         if (!UX_STATE.partnerOnly || !UX_STATE.anchorSide || side === UX_STATE.anchorSide) return true;
-        const pool = currentPool();
         const anchor = selectedPart(UX_STATE.anchorSide);
         if (!anchor) return true;
-        if (UX_STATE.anchorSide === 'left') {
-            return pool.some(entry => entry.l === anchor && entry.r === part);
-        }
-        return pool.some(entry => entry.r === anchor && entry.l === part);
+        return poolIndex()[UX_STATE.anchorSide].get(anchor)?.partners.has(part) || false;
     }
 
     function shouldShowDeepPart(side, part) {
@@ -691,55 +623,6 @@
         });
     }
 
-    function wrapModalMethods(App) {
-        const opens = [
-            ['openHelp', 'help-modal'],
-            ['openSettings', 'settings-modal'],
-            ['openTitleModal', 'title-modal'],
-            ['openWrongModal', 'wrong-modal']
-        ];
-        opens.forEach(([method, modalId]) => {
-            if (!App.ui?.[method]) return;
-            const original = App.ui[method].bind(App.ui);
-            App.ui[method] = function (...args) {
-                const trigger = document.activeElement;
-                const result = original(...args);
-                focusModal(modalId, trigger);
-                return result;
-            };
-        });
-
-        const closes = [
-            ['closeHelp', 'help-modal'],
-            ['closeSettings', 'settings-modal'],
-            ['closeTitleModal', 'title-modal'],
-            ['closeWrongModal', 'wrong-modal'],
-            ['closeDictDetail', 'dict-detail-modal']
-        ];
-        closes.forEach(([method, modalId]) => {
-            if (!App.ui?.[method]) return;
-            const original = App.ui[method].bind(App.ui);
-            App.ui[method] = function (...args) {
-                const result = original(...args);
-                restoreModalFocus(modalId);
-                return result;
-            };
-        });
-
-        if (App.ui?.toggleCollection) {
-            const originalToggleCollection = App.ui.toggleCollection.bind(App.ui);
-            App.ui.toggleCollection = function (...args) {
-                const modal = document.getElementById('collection-modal');
-                const opening = modal?.classList.contains('hidden');
-                const trigger = document.activeElement;
-                const result = originalToggleCollection(...args);
-                if (opening) focusModal('collection-modal', trigger);
-                else restoreModalFocus('collection-modal');
-                return result;
-            };
-        }
-    }
-
     function patchApp(App) {
         if (App.__kanjiUxPatched) return;
         App.__kanjiUxPatched = true;
@@ -773,9 +656,8 @@
                 else if (beforeRight && !beforeLeft) UX_STATE.anchorSide = 'right';
                 else if (!beforeLeft && !beforeRight) UX_STATE.anchorSide = side;
             }
+            // 元の処理が resetResult → updatePartButtonsAssist を必ず通る。
             const result = originalSelectPart(side, ...rest);
-            syncSelectedParts();
-            applyPartFilters();
             updateMobileResult();
             return result;
         };
@@ -819,10 +701,8 @@
 
         const originalOpenDict = App.ui.openDictDetail.bind(App.ui);
         App.ui.openDictDetail = function (kanji, ...rest) {
-            const trigger = document.activeElement;
             const result = originalOpenDict(kanji, ...rest);
             updateStructureBadge(kanji);
-            focusModal('dict-detail-modal', trigger);
             return result;
         };
 
@@ -833,7 +713,6 @@
             return result;
         };
 
-        wrapModalMethods(App);
     }
 
     function init(App) {

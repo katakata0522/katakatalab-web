@@ -15,6 +15,8 @@ export interface DeepSeaItem {
   border_class?: string;
   bg_class?: string;
   image: string;
+  imageCredit?: string;
+  imageSourceUrl?: string;
   glow?: boolean;
   is_artifact?: boolean;
   participants?: DeepSeaItem[];

@@ -64,6 +64,8 @@ jobs:
       full: ${{ steps.scope.outputs.full }}
       deepsea: ${{ steps.scope.outputs.deepsea }}
       color: ${{ steps.scope.outputs.color }}
+      kanji: ${{ steps.scope.outputs.kanji }}
+      book: ${{ steps.scope.outputs.book }}
       eduplay: ${{ steps.scope.outputs.eduplay }}
       rhythm: ${{ steps.scope.outputs.rhythm }}
       manabi: ${{ steps.scope.outputs.manabi }}
@@ -319,6 +321,15 @@ jobs:
         run: |
           RUN_PIKALAB_COLOR_BROWSER=1 node --test pikalab/color_lab/browser-interactions.test.cjs
 
+      - name: Verify Kanji Lab browser interactions
+        if: "${{ !cancelled() && (success() || env.PIKALAB_COLLECT_ALL_FAILURES == 'true') && steps.verified_build.outcome == 'success' && steps.browser_setup.outcome == 'success' && needs.scope.result == 'success' && needs.scope.outputs.kanji == 'true' }}"
+        env:
+          RUN_PIKALAB_KANJI_BROWSER: "1"
+        run: |
+          set -euo pipefail
+          cd pikalab
+          npm run test:kanji-e2e
+
       - name: Compare baseline and candidate initial layouts
         if: "${{ !cancelled() && (success() || env.PIKALAB_COLLECT_ALL_FAILURES == 'true') && steps.verified_build.outcome == 'success' && steps.browser_setup.outcome == 'success' && needs.scope.result == 'success' && env.PIKALAB_COMPARE_BASELINE == 'true' }}"
         run: |
@@ -435,7 +446,6 @@ jobs:
           cd pikalab
           npm run test:focus-e2e
 
-      # 通常成功時は保存せず、失敗・中断・明示的な診断と画面比較の証跡を3日保存する。
 
   space-browser:
     needs: scope
@@ -685,3 +695,62 @@ jobs:
           set -euo pipefail
           cd pikalab
           QUEST_BOARD_BASELINE_ROOT=../.quest-baseline/pikalab/dist npm run test:quest-e2e
+
+  book-browser:
+    needs: scope
+    # 共有変更では必ず実行し、ラボ内だけの変更は該当E2Eを実行する。
+    if: "${{ (github.event_name != 'pull_request' || !github.event.pull_request.draft) && needs.scope.outputs.book == 'true' }}"
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
+        with:
+          persist-credentials: false
+      - name: Prepare CI dependencies without publishing media
+        run: python3 scripts/public-qa/prepare.py
+      - name: Checkout Book Report baseline
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
+        with:
+          ref: ${{ github.event.pull_request.base.sha || github.event.repository.default_branch }}
+          path: .book-baseline
+          persist-credentials: false
+      - name: Prepare CI dependencies without publishing media
+        run: python3 scripts/public-qa/prepare.py --root .book-baseline
+      - name: Setup Node.js
+        uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6.5.0
+        with:
+          node-version: "20"
+          cache: npm
+          cache-dependency-path: pikalab/package-lock.json
+      - name: Build actual candidate and baseline
+        run: |
+          set -euo pipefail
+          cd pikalab
+          npm ci --prefer-offline --no-audit --no-fund
+          npm run build:all
+          npm run verify:build
+          git diff --exit-code -- .
+          cd ../.book-baseline/pikalab
+          npm ci --prefer-offline --no-audit --no-fund
+          npm run build:all
+      - name: Cache Playwright browsers
+        id: book-browsers
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-${{ runner.os }}-${{ hashFiles('pikalab/package-lock.json') }}
+      - name: Install browser check dependencies
+        run: |
+          set -euo pipefail
+          cd pikalab
+          npx playwright install-deps chromium
+          sudo apt-get install -y poppler-utils
+          if [ "${{ steps.book-browsers.outputs.cache-hit }}" != 'true' ]; then
+            npx playwright install chromium
+          fi
+      - name: Run Book Report browser E2E
+        run: |
+          set -euo pipefail
+          cd pikalab
+          BOOK_REPORT_BASELINE_ROOT=../.book-baseline/pikalab/dist npm run test:book-e2e

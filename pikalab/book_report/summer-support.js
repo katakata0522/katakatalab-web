@@ -51,6 +51,8 @@
     const volatileGradeBySlot = new Map();
 
     function activeSlot() {
+        const displayedSlot = document.documentElement.dataset.bookReportActiveSlot;
+        if (['1', '2', '3'].includes(displayedSlot)) return displayedSlot;
         try {
             const raw = localStorage.getItem('bookReportQuestActiveSlot');
             return ['1', '2', '3'].includes(raw) ? raw : '1';
@@ -65,11 +67,12 @@
 
     function selectedGrade() {
         const slot = activeSlot();
+        if (volatileGradeBySlot.has(slot)) return volatileGradeBySlot.get(slot);
         try {
             const value = localStorage.getItem(gradeStorageKey(slot));
             if (Object.prototype.hasOwnProperty.call(GRADE_META, value)) return value;
         } catch (error) {}
-        return volatileGradeBySlot.get(slot) || null;
+        return null;
     }
 
     function setSelectedGrade(value) {
@@ -298,8 +301,8 @@
             meter.appendChild(note);
         }
 
-        const synopsisLength = [textValue('synopsis-part-a'), textValue('synopsis-part-b'), textValue('synopsis-part-c')].join('').length;
-        const reflectionLength = [textValue('motivation-detail'), textValue('scene-desc'), textValue('scene-myself'), textValue('conclusion-change')].join('').length;
+        const synopsisLength = Array.from([textValue('synopsis-part-a'), textValue('synopsis-part-b'), textValue('synopsis-part-c')].join('')).length;
+        const reflectionLength = Array.from([textValue('motivation-detail'), textValue('scene-desc'), textValue('scene-myself'), textValue('conclusion-change')].join('')).length;
 
         if (synopsisLength > 80 && reflectionLength < synopsisLength) {
             note.className = 'mt-4 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-xs font-bold leading-relaxed text-amber-800';
@@ -313,21 +316,9 @@
         }
     }
 
-    function scheduleThinkingMap() {
-        window.setTimeout(transformResultIntoThinkingMap, 0);
-    }
-
     function setupResultTransformation() {
-        document.querySelector('.btn-generate')?.addEventListener('click', scheduleThinkingMap);
-        document.querySelectorAll('.copy-card').forEach((card) => card.addEventListener('click', () => window.setTimeout(transformResultIntoThinkingMap, 0)));
-
-        const resultSection = document.getElementById('result-section');
-        if (resultSection) {
-            const observer = new MutationObserver(() => {
-                if (!resultSection.classList.contains('hidden')) scheduleThinkingMap();
-            });
-            observer.observe(resultSection, { attributes: true, attributeFilter: ['class'] });
-        }
+        // 本体の描画と文字数計算の間に、必ず構成メモへ変換する。
+        document.addEventListener('book-report:results-rendered', transformResultIntoThinkingMap);
     }
 
     function pickPrompt(target) {
@@ -336,28 +327,21 @@
     }
 
     function replaceGachaResultWithQuestion(target) {
-        window.setTimeout(() => {
-            const display = document.getElementById('gacha-result-display');
-            const question = document.getElementById('gacha-question');
-            const text = document.getElementById('gacha-text');
-            const apply = document.getElementById('gacha-apply-btn');
-            if (!display || !question || !text || display.classList.contains('hidden')) return;
+        const display = document.getElementById('gacha-result-display');
+        const question = document.getElementById('gacha-question');
+        const text = document.getElementById('gacha-text');
+        const apply = document.getElementById('gacha-apply-btn');
+        if (!display || !question || !text || display.classList.contains('hidden')) return;
 
-            question.textContent = '自分に聞いてみよう！';
-            text.textContent = pickPrompt(target);
-            if (apply) {
-                apply.disabled = false;
-                apply.textContent = 'この質問を考える！ ✍️';
-            }
-        }, 1250);
+        question.textContent = '自分に聞いてみよう！';
+        text.textContent = pickPrompt(target);
+        if (apply) {
+            apply.disabled = false;
+            apply.textContent = 'この質問を考える！ ✍️';
+        }
     }
 
     function closeGachaAndFocusTarget() {
-        const modal = document.getElementById('gacha-modal');
-        const content = document.getElementById('gacha-modal-content');
-        content?.classList.remove('active');
-        window.setTimeout(() => modal?.classList.add('hidden'), 250);
-
         const targetMap = {
             'book-synopsis': 'synopsis-part-a',
             'motivation-detail': 'motivation-detail',
@@ -365,19 +349,16 @@
             'scene-myself': 'scene-myself',
             'conclusion-change': 'conclusion-change'
         };
-        const target = document.getElementById(targetMap[currentGachaTarget] || currentGachaTarget);
-        window.setTimeout(() => target?.focus(), 280);
+        document.dispatchEvent(new CustomEvent('book-report:gacha-dismiss', {
+            detail: { focusTarget: targetMap[currentGachaTarget] || currentGachaTarget }
+        }));
     }
 
     function setupThinkingGacha() {
-        document.querySelectorAll('.gacha-trigger-btn').forEach((button) => {
-            button.addEventListener('click', () => {
-                currentGachaTarget = button.dataset.target || null;
-                replaceGachaResultWithQuestion(currentGachaTarget);
-            });
+        document.addEventListener('book-report:gacha-ready', (event) => {
+            currentGachaTarget = event.detail?.target || null;
+            replaceGachaResultWithQuestion(currentGachaTarget);
         });
-
-        document.getElementById('gacha-reroll-btn')?.addEventListener('click', () => replaceGachaResultWithQuestion(currentGachaTarget));
 
         const applyButton = document.getElementById('gacha-apply-btn');
         applyButton?.addEventListener('click', (event) => {
@@ -418,8 +399,16 @@
     }
 
     function setupSlotSync() {
-        document.querySelectorAll('.slot-tab').forEach((tab) => {
-            tab.addEventListener('click', () => window.setTimeout(syncGradeUI, 220));
+        document.addEventListener('book-report:slot-restored', syncGradeUI);
+        window.addEventListener('storage', (event) => {
+            if (event.key === null) {
+                volatileGradeBySlot.clear();
+            } else if (event.key.startsWith(GRADE_PREFIX)) {
+                volatileGradeBySlot.delete(event.key.slice(GRADE_PREFIX.length));
+            } else if (event.key !== 'bookReportQuestActiveSlot') {
+                return;
+            }
+            syncGradeUI();
         });
     }
 
@@ -445,6 +434,8 @@
         setupSlotSync();
         addSubmissionNotice();
         transformResultIntoThinkingMap();
+        // 共有リンクなどで本体が先に描画済みの場合も、最終表示で数え直す。
+        document.dispatchEvent(new CustomEvent('book-report:thinking-map-updated'));
     }
 
     if (document.readyState === 'loading') {

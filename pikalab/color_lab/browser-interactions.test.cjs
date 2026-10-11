@@ -11,6 +11,8 @@ test('いろのじっけんしつの保存・混色・コース・ダイアロ�
     const root = path.resolve(__dirname, '../dist');
     const artifacts = path.resolve(__dirname, '../visual-guard-artifacts/color');
     const baselineRoot = path.resolve(__dirname, '../../.pikalab-baseline/pikalab/dist');
+    const hasBaseline = fs.existsSync(path.join(baselineRoot, 'color_lab/index.html'));
+    if (process.env.PIKALAB_COMPARE_BASELINE === 'true') assert.ok(hasBaseline, '表示比較を要求した検証ではbaseline配信物が必要');
     const server = http.createServer((req, res) => {
         try {
             const pathname = new URL(req.url, 'http://localhost').pathname;
@@ -51,7 +53,7 @@ test('いろのじっけんしつの保存・混色・コース・ダイアロ�
         assert.ok(slotGeometry.every(slot => slot.width > 0 && slot.height > 0), 'スロットが非表示・寸法ゼロにならない');
         let baselineSlotGeometry = null;
         // baseline比較が有効なCIだけで元画面と比較する。通常CIの404画面を基準にしない。
-        if (fs.existsSync(path.join(baselineRoot, 'color_lab/index.html'))) {
+        if (hasBaseline) {
             const baselinePage = await context.newPage();
             await baselinePage.goto(url.replace('/pikalab/', '/baseline/pikalab/'), { waitUntil: 'networkidle' });
             await baselinePage.waitForSelector('.palette-slot');

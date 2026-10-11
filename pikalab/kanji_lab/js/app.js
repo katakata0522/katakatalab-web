@@ -7,6 +7,14 @@
     // 定数定義
     const STORAGE_KEY = 'pikalab_kanji_progress';
     const CLASS_SHINING = 'shining-card';
+    const catalogByKanji = new Map(Data.KANJI_ALL.map(entry => [entry.k, entry]));
+    const verticalKanji = new Set(Data.KANJI_UD.map(entry => entry.k));
+
+    // 出題用の絞り込みで、図鑑・ラボ共用のカタログを書き換えない。
+    function getQuizPool(mode, exposure) {
+        if (window.KanjiLabExposure?.getPool) return window.KanjiLabExposure.getPool(mode, exposure);
+        return mode === 'lr' ? Data.KANJI_LR : mode === 'ud' ? Data.KANJI_UD : Data.KANJI_ALL;
+    }
 
     // DOMキャッシュオブジェクト
     const dom = {};
@@ -62,6 +70,9 @@
     let currentQuizIndex = 0;
     let currentQuiz = null;
     let isAwaitingAnswer = false;
+    let sessionFinished = true;
+    let dailyQuizDate = null;
+    let activeTab = 'lab';
     let qL = null;
     let qR = null;
 
@@ -253,21 +264,22 @@
         '田植え': 'たうえ'
     };
 
+    // 語順と正規表現は固定なので、表示のたびに作り直さない。
+    const rubyPatterns = Object.entries(RUBY_DICT)
+        .sort((a, b) => b[0].length - a[0].length)
+        .map(([kanji, ruby]) => [new RegExp(kanji, 'g'), `<ruby>${kanji}<rt>${ruby}</rt></ruby>`]);
+
     // ルビ置換ヘルパー
     function applyFurigana(text) {
         if (!configFurigana) return text;
         let result = text;
         
-        // 漢字の文字数（キーの長さ）の降順でソートして、長い単語の置換を優先（重複ルビ防止）
-        const sortedEntries = Object.entries(RUBY_DICT).sort((a, b) => b[0].length - a[0].length);
-        
-        for (const [kanji, ruby] of sortedEntries) {
+        for (const [regex, markup] of rubyPatterns) {
             // すでに置換されたrubyタグで分割し、その外側（平文）部分だけを置換することで入れ子を防ぐ
             const parts = result.split(/(<ruby>[^]*?<\/ruby>)/g);
             for (let i = 0; i < parts.length; i++) {
                 if (!parts[i].startsWith('<ruby>')) {
-                    const regex = new RegExp(kanji, 'g');
-                    parts[i] = parts[i].replace(regex, `<ruby>${kanji}<rt>${ruby}</rt></ruby>`);
+                    parts[i] = parts[i].replace(regex, markup);
                 }
             }
             result = parts.join('');
@@ -277,6 +289,7 @@
 
     // デイリータイマーの一時停止・再開制御ヘルパー
     function resumeDailyTimer() {
+        if (document.hidden || activeTab !== 'game' || !isDailyChallenge || !isAwaitingAnswer) return;
         if (dailyTimerInterval) clearInterval(dailyTimerInterval);
         dailyStartTime = Date.now() - dailyElapsedTime;
         dailyTimerInterval = setInterval(() => {
@@ -291,6 +304,7 @@
 
     function pauseDailyTimer() {
         if (dailyTimerInterval) {
+            dailyElapsedTime = Date.now() - dailyStartTime;
             clearInterval(dailyTimerInterval);
             dailyTimerInterval = null;
         }
@@ -407,7 +421,7 @@
             'result-reading', 'result-meaning', 'use-holo-ticket', 'holo-ticket-label',
             'holo-ticket-count', 'result-sparkle', 'collection-grid', 'selected-game-mode-label',
             'daily-date-label', 'daily-best-time-label', 'daily-stamps-container',
-            'courses-grid', 'quiz-score-container', 'quiz-time-container-header',
+            'courses-grid', 'quiz-score', 'quiz-score-container', 'quiz-time-container-header',
             'quiz-current-time', 'quiz-combo-badge', 'quiz-combo', 'quiz-course-name',
             'quiz-num', 'quiz-timer-container', 'quiz-timer-bar', 'quiz-instruction',
             'quiz-combine-display', 'quiz-target-reading', 'quiz-target-meaning',
@@ -427,26 +441,83 @@
         });
     }
 
-    let lastModalTrigger = null;
+    // モーダルごとに戻り先とタイマーを持ち、重ねた画面の順序を保つ。
+    const modalStates = new Map();
+    const modalStack = [];
+    const previousInert = new Map();
+
+    function getTopModal() {
+        return modalStack[modalStack.length - 1] || null;
+    }
+
+    function getModalFocusable(panel) {
+        return Array.from(panel.querySelectorAll('button, [href], input, select, textarea, [tabindex]'))
+            .filter(element => !element.disabled && element.tabIndex !== -1
+                && !element.closest('[hidden], .hidden, [inert], .ux-filtered-out, .ux-collection-hidden'));
+    }
+
+    function focusModalState(state) {
+        const focusable = getModalFocusable(state.panel);
+        const close = focusable.find(element => element.id.startsWith('close-'));
+        const target = close || focusable[0] || state.panel;
+        if (target === state.panel && !target.hasAttribute('tabindex')) target.setAttribute('tabindex', '-1');
+        target.focus();
+    }
+
+    function syncModalLayers() {
+        // この管理処理が変更した属性だけを元に戻す。
+        previousInert.forEach((value, element) => {
+            if (value === null) element.removeAttribute('inert');
+            else element.setAttribute('inert', value);
+        });
+        previousInert.clear();
+
+        const top = getTopModal();
+        if (!top) return;
+        // 本文だけでなく、背面のモーダルや後付けの操作バーも操作対象から外す。
+        let branch = top.modal;
+        while (branch.parentElement && branch.parentElement !== document.documentElement) {
+            Array.from(branch.parentElement.children).forEach(sibling => {
+                if (sibling === branch || ['SCRIPT', 'STYLE', 'LINK'].includes(sibling.tagName)) return;
+                previousInert.set(sibling, sibling.getAttribute('inert'));
+                sibling.setAttribute('inert', '');
+            });
+            branch = branch.parentElement;
+        }
+        modalStack.forEach((state, index) => {
+            state.modal.style.zIndex = String(50 + index);
+        });
+    }
 
     // 共通モーダル表示制御ヘルパー
-    function showModal(modalEl, contentEl, type) {
+    function showModal(modalEl, contentEl, type, labelledBy) {
         if (!modalEl) return;
 
-        lastModalTrigger = document.activeElement;
+        let state = modalStates.get(modalEl);
+        if (!state) {
+            state = { modal: modalEl, panel: contentEl || modalEl, type,
+                trigger: document.activeElement, zIndex: modalEl.style.zIndex,
+                focusTimer: null, hideTimer: null, closing: false };
+            modalStates.set(modalEl, state);
+        }
+        if (state.focusTimer !== null) clearTimeout(state.focusTimer);
+        if (state.hideTimer !== null) clearTimeout(state.hideTimer);
+        state.hideTimer = null;
+        state.closing = false;
+        const previousIndex = modalStack.indexOf(state);
+        if (previousIndex !== -1) modalStack.splice(previousIndex, 1);
+        modalStack.push(state);
 
-        // 背面要素を inert に設定 (モーダルの兄弟要素など)
-        const mainContent = document.getElementById('main-interface') || document.querySelector('main');
-        const header = document.querySelector('header');
-        if (mainContent) mainContent.setAttribute('inert', 'true');
-        if (header) header.setAttribute('inert', 'true');
-
+        modalEl.setAttribute('role', 'dialog');
+        modalEl.setAttribute('aria-modal', 'true');
+        if (labelledBy) modalEl.setAttribute('aria-labelledby', labelledBy);
         modalEl.classList.remove('hidden');
+        syncModalLayers();
         void modalEl.offsetWidth; // リフローを強制してアニメーションを有効化
         
         if (type === 'slide') {
             if (contentEl) contentEl.classList.remove('translate-x-full');
-        } else {
+        } else if (type !== 'instant') {
             modalEl.classList.remove('opacity-0');
             if (contentEl) {
                 contentEl.classList.remove('scale-95');
@@ -454,51 +525,55 @@
             }
         }
 
-        // モーダル内の最初のフォーカス可能な要素にフォーカスを当てる
-        setTimeout(() => {
-            const focusable = modalEl.querySelectorAll('button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])');
-            if (focusable && focusable.length > 0) {
-                focusable[0].focus();
-            }
-        }, 50);
+        // 開き直しや別モーダル表示後に、古い予約がフォーカスを奪わない。
+        state.focusTimer = setTimeout(() => {
+            state.focusTimer = null;
+            if (getTopModal() === state && !state.closing) focusModalState(state);
+        }, type === 'instant' ? 0 : 50);
     }
 
     // 共通モーダル非表示制御ヘルパー
     function hideModal(modalEl, contentEl, type) {
-        if (!modalEl || modalEl.classList.contains('hidden')) return;
-
-        // 背面要素の inert を解除
-        const mainContent = document.getElementById('main-interface') || document.querySelector('main');
-        const header = document.querySelector('header');
-        if (mainContent) mainContent.removeAttribute('inert');
-        if (header) header.removeAttribute('inert');
+        const state = modalEl && modalStates.get(modalEl);
+        if (!state || state.closing) return;
+        state.closing = true;
+        if (state.focusTimer !== null) clearTimeout(state.focusTimer);
+        state.focusTimer = null;
         
         if (type === 'slide') {
             if (contentEl) contentEl.classList.add('translate-x-full');
-            setTimeout(() => {
-                modalEl.classList.add('hidden');
-                if (lastModalTrigger && typeof lastModalTrigger.focus === 'function') {
-                    lastModalTrigger.focus();
-                    lastModalTrigger = null;
-                }
-            }, 300);
-        } else {
+        } else if (type !== 'instant') {
             modalEl.classList.add('opacity-0');
             if (contentEl) {
                 contentEl.classList.remove('scale-100');
                 contentEl.classList.add('scale-95');
             }
-            setTimeout(() => {
-                modalEl.classList.add('hidden');
-                // キラエフェクトクラスのクリーンアップ
-                if (contentEl) contentEl.classList.remove(CLASS_SHINING);
-
-                if (lastModalTrigger && typeof lastModalTrigger.focus === 'function') {
-                    lastModalTrigger.focus();
-                    lastModalTrigger = null;
-                }
-            }, 300);
         }
+        const complete = () => {
+            const wasTop = getTopModal() === state;
+            modalEl.classList.add('hidden');
+            modalEl.style.zIndex = state.zIndex;
+            if (contentEl) contentEl.classList.remove(CLASS_SHINING);
+            modalStates.delete(modalEl);
+            modalStack.splice(modalStack.indexOf(state), 1);
+            // 背面を先に閉じた場合も、その中の消えたボタンへ戻さない。
+            modalStack.forEach(other => {
+                if (state.modal.contains(other.trigger)) other.trigger = state.trigger;
+            });
+            syncModalLayers();
+            if (!wasTop) return;
+            const top = getTopModal();
+            const trigger = state.trigger;
+            if (trigger?.isConnected && !trigger.disabled
+                && !trigger.closest('[hidden], .hidden, [inert], .ux-filtered-out, .ux-collection-hidden')
+                && (!top || top.modal.contains(trigger))) {
+                trigger.focus();
+            } else if (top) {
+                focusModalState(top);
+            }
+        };
+        if (type === 'instant') complete();
+        else state.hideTimer = setTimeout(complete, 300);
     }
 
     const App = {
@@ -529,78 +604,32 @@
 
         // セーブデータ管理
         storage: {
+            getCollection: function () { return Array.from(col); },
             loadProgress: function () {
+                let saved = null;
                 try {
-                    const saved = localStorage.getItem(STORAGE_KEY);
-                    if (saved) {
-                        const parsed = JSON.parse(saved);
-                        if (parsed && typeof parsed === 'object') {
-                            if (Array.isArray(parsed.collection)) {
-                                parsed.collection.forEach(k => {
-                                    if (typeof k === 'string' && k.length > 0) {
-                                        col.add(k);
-                                    }
-                                });
-                            }
-                            // クイズデータの読み込み
-                            quizScores = parsed.quizScores || {};
-                            quizStars = parsed.quizStars || {};
-                            // テーマの読み込み
-                            currentTheme = parsed.theme || 'default';
-                            // 設定の読み込み
-                            configAssist = parsed.configAssist !== undefined ? parsed.configAssist : true;
-                            configFurigana = parsed.configFurigana !== undefined ? parsed.configFurigana : false;
-                            // デイリーデータの読み込み
-                            dailyClearHistory = parsed.dailyClearHistory || [];
-                            dailyBestTimes = parsed.dailyBestTimes || {};
-                            // キラカードデータの読み込み
-                            if (Array.isArray(parsed.shiningKanji)) {
-                                parsed.shiningKanji.forEach(k => shiningKanji.add(k));
-                            }
-                            // 称号・チケット・にがてノート用データの読み込み
-                            holoTickets = parsed.holoTickets !== undefined ? parsed.holoTickets : 0;
-                            if (Array.isArray(parsed.unlockedTitles)) {
-                                unlockedTitles.clear();
-                                parsed.unlockedTitles.forEach(t => unlockedTitles.add(t));
-                            } else {
-                                unlockedTitles.clear();
-                                unlockedTitles.add('合体ビギナー');
-                            }
-                            if (Array.isArray(parsed.unlockedThemes)) {
-                                unlockedThemes.clear();
-                                parsed.unlockedThemes.forEach(t => unlockedThemes.add(t));
-                            } else {
-                                unlockedThemes.clear();
-                                unlockedThemes.add('default');
-                            }
-                            const savedMuted = parsed.isMuted !== undefined ? parsed.isMuted : false;
-                            Audio.setMuted(savedMuted);
-                            selectedTitle = parsed.selectedTitle || '合体ビギナー';
-                            wrongKanjiList = parsed.wrongKanjiList || [];
-                            lastRewardedStreakDate = parsed.lastRewardedStreakDate || '';
-                        }
-                    }
-                } catch (e) {
-                    console.warn('Failed to load progress (falling back to initial):', e);
-                    col.clear();
-                    quizScores = {};
-                    quizStars = {};
-                    currentTheme = 'default';
-                    configAssist = true;
-                    configFurigana = false;
-                    dailyClearHistory = [];
-                    dailyBestTimes = {};
-                    shiningKanji.clear();
-                    holoTickets = 0;
-                    unlockedTitles.clear();
-                    unlockedTitles.add('合体ビギナー');
-                    unlockedThemes.clear();
-                    unlockedThemes.add('default');
-                    Audio.setMuted(false);
-                    selectedTitle = '合体ビギナー';
-                    wrongKanjiList = [];
-                    lastRewardedStreakDate = '';
+                    saved = JSON.parse(localStorage.getItem(STORAGE_KEY));
+                } catch (error) {
+                    console.warn('Failed to load progress (falling back to initial):', error);
                 }
+                const progress = window.KanjiLabProgress.normalizeProgress(saved, Data.KANJI_ALL, TITLES_CONFIG.map(title => title.name));
+                const replaceSet = (target, values) => { target.clear(); values.forEach(value => target.add(value)); };
+                replaceSet(col, progress.collection);
+                replaceSet(shiningKanji, progress.shiningKanji);
+                replaceSet(unlockedTitles, progress.unlockedTitles);
+                replaceSet(unlockedThemes, progress.unlockedThemes);
+                quizScores = progress.quizScores;
+                quizStars = progress.quizStars;
+                currentTheme = progress.theme;
+                configAssist = progress.configAssist;
+                configFurigana = progress.configFurigana;
+                dailyClearHistory = progress.dailyClearHistory;
+                dailyBestTimes = progress.dailyBestTimes;
+                holoTickets = progress.holoTickets;
+                Audio.setMuted(progress.isMuted);
+                selectedTitle = progress.selectedTitle;
+                wrongKanjiList = progress.wrongKanjiList;
+                lastRewardedStreakDate = progress.lastRewardedStreakDate;
             },
 
             saveProgress: function () {
@@ -806,17 +835,31 @@
                     });
                 }
 
-                // キーボードアクセシビリティ (Escキーで閉じる)
+                // 最前面だけを閉じ、Tab の移動も同じモーダル管理に集約する。
                 document.addEventListener('keydown', (e) => {
+                    const state = getTopModal();
+                    if (!state || e.defaultPrevented) return;
                     if (e.key === 'Escape') {
-                        App.ui.closeHelp();
-                        App.ui.closeDictDetail();
-                        App.ui.closeSettings();
-                        App.ui.closeTitleModal();
-                        App.ui.closeWrongModal();
-                        if (dom.collectionModal && !dom.collectionModal.classList.contains('hidden')) {
-                            App.ui.toggleCollection();
-                        }
+                        // クイズは「つぎへ」「コース選択にもどる」でのみ進める。
+                        if (state.type === 'instant') return;
+                        e.preventDefault();
+                        hideModal(state.modal, state.panel, state.type);
+                        return;
+                    }
+                    if (e.key !== 'Tab') return;
+                    const focusable = getModalFocusable(state.panel);
+                    const first = focusable[0];
+                    const last = focusable[focusable.length - 1];
+                    if (!first || !focusable.includes(document.activeElement)) {
+                        e.preventDefault();
+                        if (e.shiftKey && last) last.focus();
+                        else focusModalState(state);
+                    } else if (e.shiftKey && document.activeElement === first) {
+                        e.preventDefault();
+                        last.focus();
+                    } else if (!e.shiftKey && document.activeElement === last) {
+                        e.preventDefault();
+                        first.focus();
                     }
                 });
 
@@ -840,6 +883,8 @@
             },
 
             switchTab: function (tab) {
+                activeTab = tab;
+                if (tab === 'lab') pauseDailyTimer();
                 Audio.playSound('select');
                 const l = dom.viewLab;
                 const g = dom.viewGame;
@@ -960,7 +1005,7 @@
 
             openDictDetail: function (kanji) {
                 Audio.playSound('select');
-                const match = Data.KANJI_ALL.find(d => d.k === kanji);
+                const match = catalogByKanji.get(kanji);
                 if (!match) return;
 
                 const charEl = dom.dictDetailChar;
@@ -1258,10 +1303,11 @@
                 const quizNumEl = dom.quizNum;
                 if (quizNumEl && quizNumEl.parentNode) {
                     quizNumEl.parentNode.innerHTML = `もんだい <span id="quiz-num">${num}</span> / ${quizPool.length}`;
+                    dom.quizNum = document.getElementById('quiz-num');
                 }
 
                 qL = null; qR = null;
-                const isUD = Data.KANJI_UD.some(k => k.k === currentQuiz.k);
+                const isUD = verticalKanji.has(currentQuiz.k);
                 if (dom.quizLabelLeft) dom.quizLabelLeft.textContent = isUD ? 'かんむり (上)' : 'へん (ひだり)';
                 if (dom.quizLabelRight) dom.quizLabelRight.textContent = isUD ? 'あし (下)' : 'つくり (みぎ)';
 
@@ -1286,7 +1332,7 @@
                     if (dispDecompose) dispDecompose.textContent = currentQuiz.k;
                 }
 
-                const sourcePool = isUD ? Data.KANJI_UD : Data.KANJI_LR;
+                const sourcePool = getQuizPool(isUD ? 'ud' : 'lr');
                 const allL = [...new Set(sourcePool.map(d => d.l))];
                 const allR = [...new Set(sourcePool.map(d => d.r))];
                 
@@ -1312,6 +1358,7 @@
             },
 
             selectQuizPart: function (side, char, btn) {
+                if (!isAwaitingAnswer || !currentQuiz || !btn || !['left', 'right'].includes(side)) return;
                 Audio.playSound('select');
                 const container = side === 'left' ? dom.quizChoicesLeft : dom.quizChoicesRight;
                 if (container) {
@@ -1321,7 +1368,7 @@
                 }
                 btn.className = 'quiz-choice-btn quiz-choice-btn-selected';
                 if (side === 'left') qL = char; else qR = char;
-                const isUD = Data.KANJI_UD.some(k => k.k === currentQuiz.k);
+                const isUD = verticalKanji.has(currentQuiz.k);
                 App.ui.updateQuizSlotsDisplay(isUD);
             },
 
@@ -1465,7 +1512,7 @@
                 }
                 
                 wrongKanjiList.forEach(kanji => {
-                    const match = Data.KANJI_ALL.find(d => d.k === kanji);
+                    const match = catalogByKanji.get(kanji);
                     if (!match) return;
                     
                     const item = document.createElement('div');
@@ -1481,14 +1528,14 @@
                     const readingText = formatReading(match);
                     
                     item.innerHTML = `
-                        <div class="flex items-center gap-3 text-left">
+                        <button type="button" class="wrong-detail-btn flex items-center gap-3 text-left" aria-label="${kanji}の漢字カードを開く">
                             <span class="w-12 h-12 flex items-center justify-center text-3xl font-fude rounded-xl border border-red-50 bg-red-50/30 ${shinyClass}">${kanji}</span>
                             <div class="flex flex-col">
                                 <span class="text-xs font-black text-slate-400">${readingText}</span>
                                 <span class="text-xs text-slate-600 font-bold mt-0.5 line-clamp-1">${applyFurigana(match.m)}</span>
                             </div>
-                        </div>
-                        <button class="master-btn w-9 h-9 bg-emerald-500 hover:bg-emerald-600 text-white rounded-full flex items-center justify-center shadow-sm active:scale-95 transition-all focus:outline-none" title="克服した！">
+                        </button>
+                        <button type="button" class="master-btn w-9 h-9 bg-emerald-500 hover:bg-emerald-600 text-white rounded-full flex items-center justify-center shadow-sm active:scale-95 transition-all focus:outline-none" title="克服した！">
                             <span class="material-symbols-rounded text-xl">check</span>
                         </button>
                     `;
@@ -1668,7 +1715,9 @@
                     if (possiblePartners.length > 0) {
                         const uniquePartners = [...new Set(possiblePartners)].slice(0, 3);
                         const listStr = uniquePartners.map(p => `「${p}」`).join(' や ');
-                        hintText = `ヒント: 左パーツ「${selectedL}」は、右に ${listStr} をあわせると合体できるよ！`;
+                        hintText = currentLabMode === 'ud'
+                            ? `ヒント: 上パーツ「${selectedL}」は、下に ${listStr} をあわせると合体できるよ！`
+                            : `ヒント: 左パーツ「${selectedL}」は、右に ${listStr} をあわせると合体できるよ！`;
                     } else {
                         const possibleLefts = pool
                             .filter(d => d.r === selectedR)
@@ -1676,7 +1725,9 @@
                         if (possibleLefts.length > 0) {
                             const uniqueLefts = [...new Set(possibleLefts)].slice(0, 3);
                             const listStr = uniqueLefts.map(p => `「${p}」`).join(' や ');
-                            hintText = `ヒント: 右パーツ「${selectedR}」は、左に ${listStr} をあわせると合体できるよ！`;
+                            hintText = currentLabMode === 'ud'
+                                ? `ヒント: 下パーツ「${selectedR}」は、上に ${listStr} をあわせると合体できるよ！`
+                                : `ヒント: 右パーツ「${selectedR}」は、左に ${listStr} をあわせると合体できるよ！`;
                         } else {
                             hintText = 'このパーツを組み合わせる漢字は登録されていないよ。';
                         }
@@ -1700,10 +1751,10 @@
             },
 
             getKanjiRarity: function (kanjiChar) {
-                const match = Data.KANJI_ALL.find(d => d.k === kanjiChar);
+                const match = catalogByKanji.get(kanjiChar);
                 if (!match) return 1;
                 
-                const isUD = Data.KANJI_UD.some(k => k.k === kanjiChar);
+                const isUD = verticalKanji.has(kanjiChar);
                 if (isUD) return 3;
                 
                 const basicParts = ['木', '日', '言', '氵', '土', '亻', '女', '口'];
@@ -1718,6 +1769,9 @@
         // クイズ制御
         quiz: {
             startGame: function (mode) {
+                pauseDailyTimer();
+                isAwaitingAnswer = false;
+                sessionFinished = true;
                 Audio.playSound('select');
                 gameMode = mode;
                 isDailyChallenge = false;
@@ -1737,8 +1791,13 @@
 
             startCourse: function (courseId) {
                 Audio.playSound('select');
+                const course = COURSES.find(c => c.id === courseId);
+                if (!course) return;
+                pauseDailyTimer();
+                isDailyChallenge = false;
                 currentCourseId = courseId;
-                currentCourse = COURSES.find(c => c.id === courseId);
+                currentCourse = course;
+                sessionFinished = false;
                 
                 currentScore = 0;
                 currentCombo = 0;
@@ -1755,11 +1814,11 @@
                 
                 let filteredKanji = [];
                 if (currentCourse.type === 'lr') {
-                    filteredKanji = Data.KANJI_LR.filter(k => currentCourse.parts.includes(k.l));
+                    filteredKanji = getQuizPool('lr').filter(k => currentCourse.parts.includes(k.l));
                 } else if (currentCourse.type === 'ud') {
-                    filteredKanji = Data.KANJI_UD;
+                    filteredKanji = getQuizPool('ud');
                 } else {
-                    filteredKanji = Data.KANJI_ALL;
+                    filteredKanji = getQuizPool('all');
                 }
                 
                 quizPool = App.helpers.shuffle(filteredKanji).slice(0, 10);
@@ -1805,7 +1864,7 @@
                 const detail = dom.resultDetail;
                 const btn = dom.resultBtn;
                 
-                if (modal) modal.classList.remove('hidden');
+                showModal(modal, modal, 'instant', 'result-title');
                 
                 const isCorrect = (qL === currentQuiz.l && qR === currentQuiz.r);
                 const readingText = formatReading(currentQuiz);
@@ -1885,19 +1944,24 @@
                     if (comboBadge) comboBadge.classList.add('hidden');
                 }
                 
+                if (!isCorrect) App.storage.saveProgress();
                 currentQuizIndex++;
             },
 
             nextQuiz: function () {
-                if (dom.gameResult) dom.gameResult.classList.add('hidden');
+                if (!currentQuiz || isAwaitingAnswer || sessionFinished) return;
+                hideModal(dom.gameResult, dom.gameResult, 'instant');
                 if (currentQuizIndex >= quizPool.length) {
                     App.quiz.finishCourse();
                     return;
                 }
                 App.quiz.loadQuiz();
+                dom.quizChoicesLeft?.querySelector('button')?.focus();
             },
 
             finishCourse: function () {
+                if (sessionFinished || !quizPool.length || currentQuizIndex < quizPool.length) return;
+                sessionFinished = true;
                 isAwaitingAnswer = false;
                 if (dailyTimerInterval) {
                     clearInterval(dailyTimerInterval);
@@ -1907,7 +1971,7 @@
                 const clearModal = dom.stageClear;
                 if (!clearModal) return;
                 
-                clearModal.classList.remove('hidden');
+                showModal(clearModal, clearModal, 'instant', 'clear-title');
 
                 const reviewPanel = dom.clearReviewPanel;
                 if (reviewPanel) reviewPanel.classList.add('hidden');
@@ -1934,7 +1998,7 @@
                     const starsContainer = dom.clearStars;
                     if (starsContainer) starsContainer.innerHTML = '';
                     
-                    const todayStr = getTodayString();
+                    const todayStr = dailyQuizDate;
                     const clearTimeSec = dailyElapsedTime / 1000;
                     if (dom.clearDailyTime) dom.clearDailyTime.textContent = `${clearTimeSec.toFixed(2)} 秒`;
                     
@@ -1987,10 +2051,8 @@
                     const previousStars = quizStars[key] || 0;
                     
                     let isNewHighScore = false;
-                    if (currentScore > previousHighScore) {
-                        quizScores[key] = currentScore;
-                        isNewHighScore = true;
-                    }
+                    if (currentScore > previousHighScore) isNewHighScore = true;
+                    if (!(key in quizScores) || isNewHighScore) quizScores[key] = currentScore;
                     if (stars > previousStars) {
                         quizStars[key] = stars;
                     }
@@ -2034,6 +2096,7 @@
             },
 
             exitToCourses: function () {
+                sessionFinished = true;
                 isAwaitingAnswer = false;
                 pauseDailyTimer();
                 isDailyChallenge = false;
@@ -2042,17 +2105,17 @@
                 if (dom.quizTimeContainerHeader) dom.quizTimeContainerHeader.classList.add('hidden');
                 
                 if (dom.gamePlay) dom.gamePlay.classList.add('hidden');
-                if (dom.gameResult) dom.gameResult.classList.add('hidden');
-                
-                const stageClear = dom.stageClear;
-                if (stageClear) stageClear.classList.add('hidden');
+                hideModal(dom.gameResult, dom.gameResult, 'instant');
+                hideModal(dom.stageClear, dom.stageClear, 'instant');
                 
                 if (dom.gameCourses) dom.gameCourses.classList.remove('hidden');
                 App.ui.renderCourses();
                 App.ui.updateDailyChallengePanel();
+                dom.coursesBackBtn?.focus();
             },
 
             exitGame: function () {
+                sessionFinished = true;
                 isAwaitingAnswer = false;
                 pauseDailyTimer();
                 isDailyChallenge = false;
@@ -2062,10 +2125,8 @@
                 
                 if (dom.gamePlay) dom.gamePlay.classList.add('hidden');
                 if (dom.gameCourses) dom.gameCourses.classList.add('hidden');
-                if (dom.gameResult) dom.gameResult.classList.add('hidden');
-                
-                const stageClear = dom.stageClear;
-                if (stageClear) stageClear.classList.add('hidden');
+                hideModal(dom.gameResult, dom.gameResult, 'instant');
+                hideModal(dom.stageClear, dom.stageClear, 'instant');
                 
                 App.ui.closeDictDetail();
                 if (dom.gameMenu) dom.gameMenu.classList.remove('hidden');
@@ -2096,7 +2157,7 @@
                 const seedNum = parseInt(todayStr.replace(/-/g, ''));
                 const rand = seedRandom(seedNum);
                 
-                const allKanji = [...Data.KANJI_ALL];
+                const allKanji = [...getQuizPool('all', 'default')];
                 for (let i = allKanji.length - 1; i > 0; i--) {
                     const j = Math.floor(rand() * (i + 1));
                     [allKanji[i], allKanji[j]] = [allKanji[j], allKanji[i]];
@@ -2105,8 +2166,12 @@
             },
 
             startDailyChallenge: function () {
+                pauseDailyTimer();
                 Audio.playSound('select');
                 isDailyChallenge = true;
+                sessionFinished = false;
+                dailyQuizDate = getTodayString();
+                activeTab = 'game';
                 gameMode = 'combine';
                 
                 currentScore = 0;

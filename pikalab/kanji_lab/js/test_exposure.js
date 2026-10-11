@@ -83,7 +83,7 @@ if (Data && Roles) {
 
 // Runtime boundary test: normal courses/daily and their choice rendering use the
 // default pool. The all course and its choice rendering use the complete catalog.
-// Every temporary swap must restore the 337-entry catalog afterward.
+// Filtering is explicit; the shared catalog must remain unchanged throughout.
 if (Data && Roles) {
     const runtimeContext = {
         window: {
@@ -100,11 +100,12 @@ if (Data && Roles) {
 
     const observations = [];
     function observe(type, extra = {}) {
+        assert(Data.KANJI_ALL.length === 337, 'shared catalog stays complete during every callback');
         observations.push({
             type,
             ...extra,
-            count: Data.KANJI_ALL.length,
-            deepPresent: Data.KANJI_ALL.some(entry => Roles.getTier(entry.k) === 'deep')
+            count: runtimeContext.window.KanjiLabExposure.getPool('all', type === 'daily-pool' ? 'default' : undefined).length,
+            deepPresent: runtimeContext.window.KanjiLabExposure.getPool('all', type === 'daily-pool' ? 'default' : undefined).some(entry => Roles.getTier(entry.k) === 'deep')
         });
     }
 
@@ -119,7 +120,7 @@ if (Data && Roles) {
         daily: {
             getDailyQuizzes() {
                 observe('daily-pool');
-                return Data.KANJI_ALL.slice(0, 5);
+                return runtimeContext.window.KanjiLabExposure.getPool('all', 'default').slice(0, 5);
             },
             startDailyChallenge() {
                 observe('daily-start');
@@ -174,8 +175,9 @@ if (Data && Roles) {
     assert(choiceObservations[2]?.count === 312 && choiceObservations[2]?.deepPresent === false,
         `daily choices must exclude deep entries; got ${JSON.stringify(choiceObservations[2])}`);
 
+    assert(runtimeContext.window.KanjiLabExposure.defaultPool(Data.KANJI_ALL) === runtimeContext.window.KanjiLabExposure.defaultPool(Data.KANJI_ALL), 'default pool is cached for the same catalog');
     assert(Data.KANJI_ALL.length === 337,
-        `temporary filtering must restore full catalog after calls; got ${Data.KANJI_ALL.length}`);
+        `shared catalog remains complete after calls; got ${Data.KANJI_ALL.length}`);
 }
 
 const loaderVersions = Object.fromEntries(
