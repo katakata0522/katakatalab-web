@@ -1537,16 +1537,22 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   };
 
+  // 起動時の再検証や連続入力の古い応答で、最新の判定を上書きしない。
+  let licenseVerificationId = 0;
+
   const applyLicense = async () => {
+    const verificationId = ++licenseVerificationId;
     const raw = sanitizeTemplateValue(els.licenseKeyInput.value).toUpperCase();
     els.licenseKeyInput.value = raw;
     if (!VALID_LICENSE_PATTERN.test(raw)) {
+      els.applyLicenseBtn.disabled = false;
       setPlanStatus(t('pro.statusInvalid'));
       return;
     }
     setPlanStatus(t('pro.statusVerifying'));
     els.applyLicenseBtn.disabled = true;
     const verification = await verifyLicenseWithApi(raw);
+    if (verificationId !== licenseVerificationId) return;
     els.applyLicenseBtn.disabled = false;
 
     if (verification.valid) {
@@ -1592,7 +1598,9 @@ document.addEventListener('DOMContentLoaded', () => {
       return;
     }
 
+    const verificationId = ++licenseVerificationId;
     const verification = await verifyLicenseWithApi(state.licenseKey);
+    if (verificationId !== licenseVerificationId) return;
     if (verification.valid) {
       if (!isProPlan()) {
         setPlan('pro');

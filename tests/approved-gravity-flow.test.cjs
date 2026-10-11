@@ -13,3 +13,23 @@ test('settings merge preserves colors and gentle preference; corrupt or rejected
 function interactions(){const clock=new Clock();clock.now=1000;const canvas=element(),win={},doc={};canvas.getBoundingClientRect=()=>({left:0,top:0});const body={label:'task'},bodies=[body];let destroyed=0;const docState={hidden:false,addEventListener(k,f){doc[k]=f}};const I=loadClass('InteractionManager',{...clock.bindings(),Date:{now:()=>clock.now},window:{devicePixelRatio:1,addEventListener(k,f){win[k]=f}},document:docState,Matter:{Mouse:{create:()=>({})},MouseConstraint:{create:()=>({})},Composite:{add(){},allBodies:()=>bodies},Query:{point:()=>bodies}},console});const i=new I({}, {canvas}, {},b=>{destroyed++;b._destroyed=true});return {i,canvas,win,doc,docState,body,clock,get destroyed(){return destroyed}}}
 test('one long press causes one removal, while drag-then-rest never re-arms',async()=>{const h=interactions();await h.canvas.fire('mousedown',{clientX:10,clientY:10,button:0});const old=[...h.clock.jobs.values()][0].fn;await h.canvas.fire('mousemove',{clientX:30,clientY:10});await h.canvas.fire('mousemove',{clientX:10,clientY:10});old();h.clock.tick(1000);assert.equal(h.destroyed,0);await h.canvas.fire('mousedown',{clientX:10,clientY:10,button:0});h.clock.tick(700);assert.equal(h.destroyed,1);old();assert.equal(h.destroyed,1)});
 test('release outside, blur, visibility, touchcancel and multi-touch cancel old long-press callbacks',async()=>{for(const action of ['mouseup','blur','visibilitychange','touchcancel','pointercancel','pagehide','lostpointercapture','multi']){const h=interactions();await h.canvas.fire('mousedown',{clientX:10,clientY:10,button:0});const old=[...h.clock.jobs.values()][0].fn;if(action==='visibilitychange'){h.docState.hidden=true;h.doc.visibilitychange()}else if(action==='multi')await h.canvas.fire('touchstart',{touches:[{clientX:10,clientY:10},{clientX:12,clientY:12}]});else if(action==='lostpointercapture')await h.canvas.fire(action);else h.win[action]();old();assert.equal(h.destroyed,0,action)}});
+test('pending saves remain visible until the newest queued snapshot settles', async () => {
+  const status = { hidden: true, textContent: '' }, gates = [];
+  const P = loadClass('PhysicsEngine', {
+    document: { getElementById: id => id === 'save-status' ? status : null },
+    shouldPersistTaskState: () => true,
+    StorageManager: { saveTasks: () => new Promise(resolve => gates.push(resolve)) }
+  });
+  const p = Object.create(P.prototype);
+  Object.assign(p, { storageReady: true, getTaskBodies: () => [], Composite: { allBodies: () => [] } });
+  const first = p.persistTasks(), latest = p.persistTasks();
+  assert.equal(status.hidden, false);
+  assert.match(status.textContent, /保存中/);
+  gates[0]({ ok: true }); await first;
+  assert.equal(status.hidden, false, 'an older successful save cannot hide the newest pending save');
+  gates[1]({ ok: false }); await latest;
+  assert.equal(status.hidden, false);
+  assert.match(status.textContent, /保存できません/);
+  const retry = p.persistTasks(); gates[2]({ ok: true }); await retry;
+  assert.equal(status.hidden, true);
+});

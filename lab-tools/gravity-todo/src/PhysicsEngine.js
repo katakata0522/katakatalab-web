@@ -334,8 +334,10 @@ export class PhysicsEngine {
     })) {
       return Promise.resolve({ ok: true, skipped: true });
     }
+    const revision = this.saveRevision = (this.saveRevision || 0) + 1;
+    this.showSaveStatus({ pending: true });
     return StorageManager.saveTasks(this.Composite.allBodies(this.world)).then((result) => {
-      this.showSaveStatus(result);
+      if (revision === this.saveRevision) this.showSaveStatus(result);
       return result;
     });
   }
@@ -347,6 +349,11 @@ export class PhysicsEngine {
     if (!status) return;
     if (this.storageReady === false) {
       status.textContent = '保存済みタスクを読み込めていません。上書きを防ぐため追加・削除と保存を停止しています。再読み込みを試してください。';
+      status.hidden = false;
+      return;
+    }
+    if (result && result.pending) {
+      status.textContent = 'この端末に保存中です。表示が消えるまで画面を開いておいてください。';
       status.hidden = false;
       return;
     }
