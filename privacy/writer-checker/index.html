@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>表記ゆれチェッカー プライバシーポリシー | KatakataLab</title>
+    <meta name="description" content="Chrome拡張機能「表記ゆれチェッカー」v1.1.1が扱う文章・ルール、Chrome内の保存、権限、外部通信について説明します。">
+    <link rel="canonical" href="https://katakatalab.com/privacy/writer-checker/">
+    <link rel="stylesheet" href="/style.css?v=20260830-pomomemo">
+    <link rel="icon" href="/icon.svg" type="image/svg+xml">
+    <meta name="theme-color" content="#FF7675">
+    <meta property="og:title" content="表記ゆれチェッカー プライバシーポリシー | KatakataLab">
+    <meta property="og:description" content="表記ゆれチェッカー（Chrome拡張）が文章やルールをどう扱い、どこに保存し、外部へ送らないかを説明します。">
+    <meta property="og:type" content="article">
+    <meta property="og:url" content="https://katakatalab.com/privacy/writer-checker/">
+    <meta property="og:image" content="https://katakatalab.com/ogp.png">
+    <meta name="twitter:card" content="summary_large_image">
+    <style>
+        .policy-shell{max-width:960px;margin:0 auto;padding:clamp(1rem,3vw,2rem)}
+        .policy-hero,.policy-summary,.policy-section,.policy-actions{background:var(--c-surface);border:1px solid color-mix(in srgb,var(--c-primary) 18%,transparent);border-radius:var(--radius-lg)}
+        .policy-hero{padding:clamp(1.5rem,5vw,3rem);margin-bottom:1rem;box-shadow:0 12px 36px rgba(15,23,42,.08)}
+        .eyebrow{display:inline-flex;align-items:center;gap:.45rem;margin-bottom:.75rem;color:var(--c-primary);font-size:.9rem;font-weight:800}
+        .policy-hero h1{margin:0;line-height:1.2}.lead{max-width:760px;margin:1rem 0 0;line-height:1.8}.meta{color:var(--c-text-light);margin:1rem 0 0;font-size:.9rem}
+        .policy-summary{margin-bottom:1rem;padding:clamp(1.1rem,3vw,1.5rem);border-left:4px solid #397a63}.policy-summary h2{margin:0 0 .75rem;font-size:1.15rem}
+        .summary-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:.75rem}.summary-item{padding:.9rem;background:color-mix(in srgb,#397a63 7%,var(--c-surface));border-radius:.8rem}.summary-item strong{display:block;margin-bottom:.35rem}.summary-item p{margin:0;color:var(--c-text-light);line-height:1.65;font-size:.92rem}
+        .policy-section{padding:clamp(1.25rem,4vw,2rem);margin-bottom:1rem}.policy-section h2{margin:0 0 .9rem;color:var(--c-primary);font-size:clamp(1.2rem,3vw,1.5rem)}.policy-section h3{margin:1.25rem 0 .45rem;font-size:1.05rem}.policy-section p,.policy-section li{line-height:1.85}.policy-section ul{margin:.6rem 0 0;padding-left:1.25rem}.policy-section code{padding:.1em .35em;border-radius:.35rem;background:color-mix(in srgb,var(--c-primary) 10%,transparent);color:var(--c-text)}
+        .policy-actions{display:grid;grid-template-columns:1.25fr .75fr;gap:1rem;margin-bottom:1rem;padding:clamp(1.2rem,4vw,1.75rem)}.policy-actions h2{margin:0 0 .5rem;font-size:1.2rem}.policy-actions p{margin:0;line-height:1.75}.links{display:flex;flex-direction:column;align-items:flex-start;justify-content:center;gap:.45rem}.links a{font-weight:700}
+        @media(max-width:720px){.summary-grid,.policy-actions{grid-template-columns:1fr}}@media(max-width:480px){.policy-shell{padding:.75rem}.policy-hero h1{font-size:1.65rem}.policy-section ul{padding-left:1.05rem}}
+    </style>
+    <script defer src="/analytics.js"></script>
+</head>
+<body>
+    <script>try{if(localStorage.getItem('theme')==='dark')document.body.classList.add('dark-mode');}catch(e){}</script>
+    <header class="header">
+        <div class="container header-container">
+            <a href="/" class="logo" aria-label="KatakataLab ホーム"><span class="logo-icon" aria-hidden="true">🧪</span><span class="logo-text">KatakataLab</span></a>
+            <nav class="nav" aria-label="主要ナビゲーション"><ul class="nav-list"><li><a href="/" class="nav-link">ホーム</a></li><li><a href="/#projects" class="nav-link">作ったもの</a></li><li><a href="/contact.html" class="nav-link">お問い合わせ</a></li></ul></nav>
+            <div class="header-actions"><button type="button" id="theme-toggle" class="theme-btn" aria-label="テーマ切り替え"><svg viewBox="0 0 24 24" class="svg-icon svg-moon" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg><svg viewBox="0 0 24 24" class="svg-icon svg-sun" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="display:none"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg></button></div>
+        </div>
+    </header>
+
+    <main class="policy-shell">
+        <nav class="breadcrumbs" aria-label="パンくずリスト"><a href="/">KatakataLab</a><span class="breadcrumbs-sep" aria-hidden="true">/</span><span class="breadcrumbs-current" aria-current="page">表記ゆれチェッカー プライバシーポリシー</span></nav>
+
+        <section class="policy-hero">
+            <div class="eyebrow"><span aria-hidden="true">✍️</span> Chrome拡張機能 表記ゆれチェッカー v1.1.1</div>
+            <h1>表記ゆれチェッカー プライバシーポリシー</h1>
+            <p class="lead">表記ゆれチェッカーは、入力した文章や明示的に選んだ文章を、端末内のルールで確認・置換する校正支援ツールです。Chrome拡張版が何を扱い、どこに保存し、どこへ送らないのかを説明します。</p>
+            <p class="meta">最終更新：2026年10月10日　／　下書き（未公開）</p>
+        </section>
+
+        <section class="policy-summary" aria-labelledby="summary-title">
+            <h2 id="summary-title">最初に知ってほしい3点</h2>
+            <div class="summary-grid">
+                <div class="summary-item"><strong>扱うのは明示した文章だけ</strong><p>校正画面へ入力した文章と、右クリックで送った選択文章だけを扱います。ページ全体の自動収集はありません。</p></div>
+                <div class="summary-item"><strong>ルールは端末内に保存</strong><p>カスタムルールや設定はブラウザ内に保存します。文章本文は自動保存しません。</p></div>
+                <div class="summary-item"><strong>外部送信なし</strong><p>文章・ルール・利用イベントを開発者サーバーや解析サービスへ送りません。</p></div>
+            </div>
+        </section>
+
+        <section class="policy-section">
+            <h2>1. Chrome拡張版が扱う情報</h2>
+            <ul>
+                <li>校正画面へ入力した文章</li>
+                <li>登録したカスタム置換ルール、ルールセット、表示設定</li>
+                <li>Webページ上で明示的に選択し、右クリックメニューから校正画面へ送った文章</li>
+                <li>誤検知として端末内に記録したルール情報</li>
+            </ul>
+            <p>閲覧中ページの本文を自動収集したり、選択していないページ内容を読み取ったりする機能ではありません。</p>
+        </section>
+
+        <section class="policy-section">
+            <h2>2. 保存場所</h2>
+            <ul>
+                <li>カスタムルール、ルールセット、表示設定などは拡張機能originの <code>localStorage</code> に保存します。</li>
+                <li>右クリックメニューから受け渡す選択文章は <code>chrome.storage.local</code> に受信ごとの識別子付きで一時保存し、対象ウィンドウの校正画面で読み取った後に削除します。未受信の文章は10分を過ぎると取り込まず、次の受信・転送時に削除します。文章本文と「指摘のみモード」は自動保存しません。</li>
+                <li>開発者のサーバーへ文章やルールの複製を保存しません。</li>
+            </ul>
+            <p>Chromeプロファイルや端末そのものへアクセスできる第三者からの保護を、本拡張機能単体で保証するものではありません。</p>
+        </section>
+
+        <section class="policy-section">
+            <h2>3. 外部通信</h2>
+            <p>Chrome拡張版では、ユーザーの文章、カスタムルール、閲覧履歴、利用イベントを開発者や解析サービスへ送信しません。</p>
+            <p>拡張機能ページには Content Security Policy として <code>connect-src 'none'</code> を設定し、拡張機能コンテキストではAnalytics処理を無効化しています。</p>
+            <p>同じコードベースから提供されるWebサイト版には、Webサイト運用のため別の計測設定が存在する場合があります。Chrome拡張版の本ポリシーとは対象が異なります。</p>
+            <p>本ページの説明はChrome拡張機能の動作を対象としています。本ページを含むKatakataLabのWebサイトについては、<a href="/privacy.html">共通プライバシーポリシー</a>をご確認ください。</p>
+        </section>
+
+        <section class="policy-section">
+            <h2>4. Chrome権限</h2>
+            <h3><code>storage</code></h3><p>右クリックで選択した文章を、ユーザー操作により校正画面へ一時的に受け渡すために使用します。</p>
+            <h3><code>sidePanel</code></h3><p>執筆中のページと並べて校正画面を表示するために使用します。</p>
+            <h3><code>contextMenus</code></h3><p>選択中の文章を「表記ゆれチェッカーで確認する」操作へ渡す右クリックメニューを提供するために使用します。</p>
+            <p>本拡張機能は <code>&lt;all_urls&gt;</code> のhost permissionを要求しません。</p>
+        </section>
+
+        <section class="policy-section">
+            <h2>5. 分析・広告・第三者提供</h2>
+            <p>Chrome拡張版では、入力文章やカスタムルールを広告、行動ターゲティング、ユーザー分析、データ販売に使用しません。これらの情報をデータブローカーや広告事業者へ提供しません。</p>
+        </section>
+
+        <section class="policy-section">
+            <h2>6. 削除</h2>
+            <p>カスタムルール等は本拡張機能の設定操作で変更・削除できます。Chromeから本拡張機能を削除すると、Chromeが管理する拡張機能用のローカルデータも削除対象になります。</p>
+        </section>
+
+        <section class="policy-section">
+            <h2>7. 機能上の注意</h2>
+            <p>本拡張機能は、登録済みのルールに一致する表現を確認するツールです。一般的な日本語辞書やAIを使って、あらゆる誤字脱字・文脈上の誤り・事実誤認を自動判定するものではありません。</p>
+        </section>
+
+        <section class="policy-section">
+            <h2>8. 変更</h2>
+            <p>保存対象、権限、外部通信、分析機能などプライバシーに影響する仕様を変更する場合は、変更した機能の公開前に本ポリシーとChrome Web Store上の開示を更新します。</p>
+        </section>
+
+        <section class="policy-actions">
+            <div><h2>問い合わせ・共通ポリシー</h2><p>Privacyや表記ゆれチェッカーの挙動について不明点がある場合は、KatakataLabのお問い合わせページからご連絡ください。</p></div>
+            <div class="links"><a href="/contact.html">お問い合わせ</a><a href="/privacy.html">KatakataLab共通プライバシーポリシー</a><a href="/terms.html">KatakataLab利用規約</a></div>
+        </section>
+    </main>
+
+    <footer class="footer"><div class="container"><div class="footer-links"><a href="/contact.html">お問い合わせ</a><a href="/privacy.html">共通プライバシーポリシー</a><a href="/terms.html">利用規約</a></div><p>&copy; 2024-2026 KatakataLab. All Rights Reserved.</p></div></footer>
+    <script src="/script.js?v=20260830-pomomemo"></script>
+</body>
+</html>
