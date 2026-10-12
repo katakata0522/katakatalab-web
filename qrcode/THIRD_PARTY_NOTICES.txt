@@ -3,9 +3,13 @@ Third Party Notices
 
 This project includes the following third-party libraries:
 
-- QRious (https://github.com/neocotic/qrious)
-  - Distributed under the MIT License
-  - Copyright (c) 2017 James Talmage
+- QRious 4.0.2 (https://github.com/airmrcr/qrious/tree/4.0.2)
+  - GNU General Public License, version 3 or (at your option) any later version
+  - Copyright (C) 2017 Alasdair Mercer
+  - Copyright (C) 2010 Tom Zerucha
+  - Upstream license: https://github.com/airmrcr/qrious/blob/4.0.2/LICENSE.md
+  - This corrects the previous MIT attribution. It does not relicense the
+    application or establish that all distribution obligations are satisfied.
 - JSZip (https://stuk.github.io/jszip/)
   - Distributed under the MIT License
   - Copyright (c) 2009-2016 Stuart Knightley, David Duponchel, Franz Buchinger, António Afonso
