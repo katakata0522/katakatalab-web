@@ -7,6 +7,7 @@ const projectRoot = path.resolve(__dirname, '..');
 
 const pages = [
     'index.html',
+    'atom_craft_lab/index.html',
     'articles/index.html',
     'privacy.html',
     'terms.html',

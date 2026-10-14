@@ -2,8 +2,10 @@
   "name": "pikalab",
   "version": "7.7.0",
   "scripts": {
+    "predev": "node scripts/build-atom-craft-css.cjs",
     "dev": "vite",
-    "build": "node scripts/build-articles-css.cjs && node scripts/sync-seo-metadata.cjs && vite build && node ../.github/scripts/copy-code-studio-reachable.cjs .code-studio dist/code-studio && node scripts/copy-build-runtime-assets.cjs dist && node scripts/harden-focus-studio-build.cjs dist && node scripts/finalize-deploy-output.cjs dist && node scripts/restore-lab-pwa-assets.cjs dist && node scripts/finalize-lab-service-workers.cjs dist && node scripts/finalize-service-worker.cjs dist && node ../scripts/education-no-tracking.cjs --pikalab-build",
+    "build:atom-css": "node scripts/build-atom-craft-css.cjs",
+    "build": "node scripts/build-atom-craft-css.cjs && node scripts/build-articles-css.cjs && node scripts/sync-seo-metadata.cjs && vite build && node ../.github/scripts/copy-code-studio-reachable.cjs .code-studio dist/code-studio && node scripts/copy-build-runtime-assets.cjs dist && node scripts/harden-focus-studio-build.cjs dist && node scripts/finalize-deploy-output.cjs dist && node scripts/restore-lab-pwa-assets.cjs dist && node scripts/finalize-lab-service-workers.cjs dist && node scripts/finalize-service-worker.cjs dist && node ../scripts/education-no-tracking.cjs --pikalab-build",
     "build:css": "tailwindcss -i ./tailwind.input.css -o ./style.css --minify",
     "build:css:articles": "node scripts/build-articles-css.cjs",
     "build:css:kanji": "tailwindcss -c ./tailwind.kanji.config.cjs -i ./tailwind.kanji.input.css -o ./kanji_lab/tailwind.css --minify",

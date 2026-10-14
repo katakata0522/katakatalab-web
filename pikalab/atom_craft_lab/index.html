@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="ja" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>アトム・クラフト・ラボ | PikaLab（ピカラボ）</title>
+    <meta name="description" content="水や二酸化炭素など8種類の物質を原子から組み立て、全8ステージの化学反応式をパズルで学べる無料の中学校理科教材。">
+    <link rel="canonical" href="https://katakatalab.com/pikalab/atom_craft_lab/">
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="アトム・クラフト・ラボ｜原子と分子・化学反応式を学ぼう | PikaLab">
+    <meta property="og:description" content="原子を組み合わせて物質を発見！化学反応式の係数をそろえて、16個のスタンプを集めよう。">
+    <meta property="og:url" content="https://katakatalab.com/pikalab/atom_craft_lab/">
+    <meta property="og:image" content="https://katakatalab.com/pikalab/pikalab_ogp_compressed.jpg">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="アトム・クラフト・ラボ｜原子と分子・化学反応式を学ぼう | PikaLab">
+    <meta name="twitter:description" content="原子を組み合わせて物質を発見！化学反応式の係数をそろえて、16個のスタンプを集めよう。">
+    <meta name="twitter:image" content="https://katakatalab.com/pikalab/pikalab_ogp_compressed.jpg">
+    <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"アトム・クラフト・ラボ","url":"https://katakatalab.com/pikalab/atom_craft_lab/","description":"原子と分子の組み合わせ、化学反応式の係数を学べる中学校理科の無料教材。","applicationCategory":"EducationalApplication","operatingSystem":"Any","isAccessibleForFree":true,"offers":{"@type":"Offer","price":"0","priceCurrency":"JPY"},"audience":{"@type":"EducationalAudience","educationalRole":"student"}}</script>
+    <link rel="stylesheet" href="./tailwind.generated.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@600;700;800&family=M+PLUS+Rounded+1c:wght@500;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="./assets/app.css">
+</head>
+<body class="bg-slate-100 text-slate-800 dark:bg-slate-950 dark:text-slate-100 min-h-screen flex flex-col transition-colors duration-200">
+<nav aria-label="サイト内ナビゲーション" class="max-w-5xl w-full mx-auto px-3 sm:px-6 pt-2">
+    <a href="../" class="inline-flex items-center gap-1 py-1.5 px-2 text-xs font-bold text-slate-600 dark:text-slate-300 hover:text-sky-700 dark:hover:text-sky-300 rounded-lg focus-visible:outline focus-visible:outline-2 focus-visible:outline-sky-500">← PikaLabにもどる</a>
+</nav>
+
+    <!-- ミニマルヘッダー：ノイズを削ぎ落とし、モード切替と設定に集中 -->
+    <header class="sticky top-0 z-30 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border-b border-slate-200/80 dark:border-slate-800">
+        <div class="max-w-5xl mx-auto px-3 sm:px-6 py-2.5 flex items-center justify-between gap-2">
+            <!-- ロゴ＆タイトル -->
+            <div class="flex items-center gap-2.5 min-w-0">
+                <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-sky-500 to-indigo-600 flex items-center justify-center text-white shadow-sm text-lg shrink-0">
+                    ⚛️
+                </div>
+                <div class="truncate">
+                    <div class="flex items-center gap-2">
+                        <h1 class="text-base sm:text-lg font-extrabold tracking-tight text-slate-900 dark:text-white truncate">
+                            アトム・クラフト・ラボ
+                        </h1>
+                        <span class="hidden sm:inline-block text-[11px] font-bold px-2 py-0.5 rounded-full bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-300">
+                            PIKALAB 理科
+                        </span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 右側：音トグル＆設定のみに厳選 -->
+            <div class="flex items-center gap-1.5 shrink-0">
+                <button id="toggleSoundBtn" type="button" data-action="toggle-sound" aria-pressed="true" class="px-3 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 text-xs font-bold flex items-center gap-1.5 transition cursor-pointer" title="効果音のON/OFF">
+                    <span id="soundIcon">🔊</span>
+                    <span class="hidden sm:inline" id="soundLabel">音 ON</span>
+                </button>
+
+                <button id="openSettingsBtn" type="button" data-action="toggle-settings" class="px-3 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 text-xs font-bold flex items-center gap-1.5 transition cursor-pointer" title="画面のせってい">
+                    <span>⚙️</span>
+                    <span class="hidden sm:inline">せってい</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- 折りたたみアクセシビリティ設定 -->
+        <div id="settingsDrawer" class="hidden border-t border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900 px-4 py-2.5">
+            <div class="max-w-5xl mx-auto flex flex-wrap items-center justify-between gap-2">
+                <span class="text-xs font-bold text-slate-500 dark:text-slate-400">
+                    🛠️ 見やすさの調整（ページを再読み込みすると設定は元に戻ります）
+                </span>
+                <div class="flex flex-wrap items-center gap-2">
+                    <button id="toggleFontBtn" type="button" data-action="toggle-font" class="px-3 py-1.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs font-bold flex items-center gap-1.5 hover:border-sky-500 transition cursor-pointer">
+                        <span>🔠</span>
+                        <span id="fontLabel">文字：ふつう</span>
+                    </button>
+                    <button id="toggleMotionBtn" type="button" data-action="toggle-motion" class="px-3 py-1.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs font-bold flex items-center gap-1.5 hover:border-sky-500 transition cursor-pointer">
+                        <span>🐢</span>
+                        <span id="motionLabel">動きをへらす：OFF</span>
+                    </button>
+                    <button id="toggleThemeBtn" type="button" data-action="toggle-theme" class="px-3 py-1.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs font-bold flex items-center gap-1.5 hover:border-sky-500 transition cursor-pointer">
+                        <span id="themeIcon">🌙</span>
+                        <span id="themeLabel">夜の画面：OFF</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="flex-1 max-w-5xl w-full mx-auto px-3 sm:px-6 py-4 space-y-4">
+
+        <!-- 3つのメインモード切替（図鑑タブにスタンプ数を統合し視線を一元化） -->
+        <nav aria-label="モード切り替え" class="grid grid-cols-3 gap-1.5 sm:gap-2 bg-slate-200/80 dark:bg-slate-900 p-1.5 rounded-2xl border border-slate-200 dark:border-slate-800">
+            <button id="tabModeCraft" type="button" data-action="switch-mode" data-mode="craft" class="flex items-center justify-center gap-1.5 py-2.5 px-2 rounded-xl font-extrabold text-xs sm:text-sm transition bg-white dark:bg-slate-800 text-sky-600 dark:text-sky-400 shadow-sm cursor-pointer">
+                <span class="text-base sm:text-lg">🧪</span>
+                <span>1. 分子をつくる</span>
+            </button>
+            <button id="tabModeBalance" type="button" data-action="switch-mode" data-mode="balance" class="flex items-center justify-center gap-1.5 py-2.5 px-2 rounded-xl font-extrabold text-xs sm:text-sm transition text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white cursor-pointer">
+                <span class="text-base sm:text-lg">⚖️</span>
+                <span>2. 反応式パズル</span>
+            </button>
+            <button id="tabModeBook" type="button" data-action="switch-mode" data-mode="book" class="flex items-center justify-center gap-1.5 py-2.5 px-2 rounded-xl font-extrabold text-xs sm:text-sm transition text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white cursor-pointer">
+                <span class="text-base sm:text-lg">📖</span>
+                <span>ずかん</span>
+                <span id="stampCountBadge" class="px-1.5 py-0.5 rounded-full text-[11px] bg-amber-100 text-amber-800 dark:bg-amber-900/60 dark:text-amber-300 font-extrabold">0/16</span>
+            </button>
+        </nav>
+
+        <!-- ==========================================
+             MODE 1: 分子をつくる（分子ガッタイ実験室）
+             ========================================== -->
+        <section id="sectionCraft" class="space-y-4">
+
+            <!-- ステップ＆お題セレクター（1か所に統合） -->
+            <div class="bg-white dark:bg-slate-900 rounded-3xl p-4 border border-slate-200/90 dark:border-slate-800 shadow-sm space-y-3">
+                <div class="flex items-center justify-between gap-2 flex-wrap">
+                    <span class="text-xs font-extrabold text-slate-400 dark:text-slate-500 uppercase tracking-wider">
+                        つくりたい物質をえらぼう（全8種）
+                    </span>
+                    <span id="craftMissionStatus" class="text-xs font-extrabold text-sky-600 dark:text-sky-400"></span>
+                </div>
+                <div id="craftMissionButtons" class="grid grid-cols-2 sm:grid-cols-4 gap-2"></div>
+            </div>
+
+            <!-- 実験メインエリア：左「原子パレット」＋右「合成ポッド（リアルタイムレシピ付き）」 -->
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-4 items-stretch">
+
+                <!-- 左：原子パレット（必要な原子が一目でわかるガイド付き） -->
+                <div class="lg:col-span-5 bg-white dark:bg-slate-900 rounded-3xl p-4 sm:p-5 border border-slate-200/90 dark:border-slate-800 shadow-sm flex flex-col justify-between space-y-4">
+                    <div>
+                        <div class="flex items-center justify-between mb-3">
+                            <h2 class="font-extrabold text-sm sm:text-base text-slate-800 dark:text-slate-100 flex items-center gap-1.5">
+                                <span>🎨</span>
+                                <span>1. 原子をタップして入れる</span>
+                            </h2>
+                            <span class="text-[11px] font-bold px-2 py-0.5 rounded-full bg-sky-50 text-sky-700 dark:bg-sky-950 dark:text-sky-300 border border-sky-200 dark:border-sky-800">
+                                ★＝今回のヒント
+                            </span>
+                        </div>
+                        <div id="atomPaletteGrid" class="grid grid-cols-2 gap-2.5"></div>
+                    </div>
+
+                    <!-- 目標ヒント＆ワンタップお手本ボタン -->
+                    <div class="rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/80 dark:border-slate-700/70 p-3.5 flex items-center justify-between gap-3">
+                        <div class="min-w-0">
+                            <div class="text-[11px] font-extrabold text-slate-400 dark:text-slate-400">💡 組み合わせのヒント</div>
+                            <p id="craftTargetDesc" class="text-xs font-bold text-slate-700 dark:text-slate-200 mt-0.5 leading-snug"></p>
+                        </div>
+                        <button type="button" data-action="fill-mission-atoms" class="shrink-0 px-3 py-2 rounded-xl bg-sky-100 hover:bg-sky-200 dark:bg-sky-900/70 dark:hover:bg-sky-800 text-sky-800 dark:text-sky-200 text-xs font-extrabold transition cursor-pointer">
+                            ✨ お手本を入れる
+                        </button>
+                    </div>
+                </div>
+
+                <!-- 右：ガッタイ合成ポッド -->
+                <div class="lg:col-span-7 bg-white dark:bg-slate-900 rounded-3xl p-4 sm:p-5 border border-slate-200/90 dark:border-slate-800 shadow-sm flex flex-col justify-between space-y-4">
+                    <!-- ポッド上部：お題の必要スロット表示（あといくつ必要か視覚化） -->
+                    <div class="flex flex-wrap items-center justify-between gap-2 pb-3 border-b border-slate-100 dark:border-slate-800">
+                        <div>
+                            <div class="text-[11px] font-extrabold text-slate-400">2. 目標のレシピチェック</div>
+                            <div id="recipeChecklist" class="flex flex-wrap items-center gap-2 mt-1"></div>
+                        </div>
+                        <button type="button" data-action="clear-chamber" class="px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-xs font-bold text-slate-600 dark:text-slate-300 transition cursor-pointer">
+                            🗑️ リセット
+                        </button>
+                    </div>
+
+                    <!-- ポッド中央キャンバス -->
+                    <div id="craftChamberArea" class="relative min-h-[230px] sm:min-h-[250px] rounded-2xl bg-gradient-to-b from-slate-50 to-slate-100 dark:from-slate-950 dark:to-slate-900 border-2 border-dashed border-slate-300 dark:border-slate-700 flex flex-col items-center justify-center p-4 overflow-hidden transition-colors">
+                        <!-- 投入された原子の粒 -->
+                        <div id="chamberAtomsContainer" class="flex flex-wrap items-center justify-center gap-3 z-10 max-w-md"></div>
+
+                        <!-- 合成完了時の分子モデルビュー -->
+                        <div id="synthesizedResultView" class="hidden flex-col items-center justify-center text-center z-20 w-full animate-pop">
+                            <div id="moleculeSvgHolder" class="w-full max-w-[240px] h-[135px] flex items-center justify-center mx-auto"></div>
+                            <span id="synthResultCategory" class="text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-sky-100 text-sky-700 dark:bg-sky-900 dark:text-sky-300 mt-1"></span>
+                            <h3 id="synthResultName" class="text-xl sm:text-2xl font-extrabold text-slate-900 dark:text-white mt-1"></h3>
+                            <p id="synthResultExplain" class="text-xs sm:text-sm text-slate-600 dark:text-slate-300 mt-1 max-w-md mx-auto leading-relaxed"></p>
+                            <div class="mt-3 flex items-center gap-2">
+                                <button type="button" data-action="next-mission" class="px-4 py-2 rounded-xl bg-sky-600 hover:bg-sky-500 text-white text-xs sm:text-sm font-extrabold shadow-sm transition cursor-pointer">
+                                    つぎの物質をつくる ➔
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- 空のときのガイド -->
+                        <div id="chamberEmptyPrompt" class="text-center text-slate-400 dark:text-slate-500 pointer-events-none">
+                            <div class="text-3xl mb-1">🫧</div>
+                            <p class="text-xs sm:text-sm font-bold">左の原子ボタンをタップして<br>ここに粒をあつめよう</p>
+                        </div>
+                    </div>
+
+                    <!-- ポッド下部：合体アクション＆フィードバック -->
+                    <div class="space-y-2.5">
+                        <button id="synthesizeBtn" type="button" data-action="synthesize-molecule" class="w-full py-3.5 px-6 rounded-2xl bg-gradient-to-r from-sky-500 to-indigo-600 hover:from-sky-400 hover:to-indigo-500 active:scale-[0.99] text-white font-extrabold text-sm sm:text-base shadow-md shadow-sky-500/20 flex items-center justify-center gap-2 transition cursor-pointer">
+                            <span>⚡</span>
+                            <span id="synthesizeBtnLabel">分子を合成する</span>
+                        </button>
+
+                        <div id="craftFeedbackBar" class="hidden rounded-xl px-3.5 py-2.5 text-xs sm:text-sm font-bold flex items-center gap-2">
+                            <span id="craftFeedbackText"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 折りたたみ解説（必要な人だけ開く） -->
+            <details class="group bg-white dark:bg-slate-900 rounded-2xl border border-slate-200/80 dark:border-slate-800 overflow-hidden">
+                <summary class="cursor-pointer list-none px-4 py-3 flex items-center justify-between font-extrabold text-xs sm:text-sm text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800/50 transition">
+                    <span>💡 なぜ「H₂O」の小さな数字は右下に書くの？（中2理科のポイント）</span>
+                    <span class="text-xs text-slate-400 group-open:rotate-180 transition-transform">▼</span>
+                </summary>
+                <div class="px-4 pb-4 pt-2 border-t border-slate-100 dark:border-slate-800 text-xs text-slate-600 dark:text-slate-300 grid grid-cols-1 md:grid-cols-2 gap-3 leading-relaxed">
+                    <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/50">
+                        <strong class="text-slate-900 dark:text-white block mb-0.5">① 右下の数字 ＝ 1パックの中の粒の数</strong>
+                        水の化学式 <strong>H₂O</strong> の「₂」は、「水素（H）2個と酸素（O）1個がくっついて1つの水分子になっている」という意味です（1は省略します）。
+                    </div>
+                    <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/50">
+                        <strong class="text-slate-900 dark:text-white block mb-0.5">② 分子をつくらない物質（CuO・FeSなど）</strong>
+                        酸化銅（CuO）や硫化鉄（FeS）は、何億個もの原子がずらっと並んでできています。そのため「1粒ずつの数の比（1:1）」で化学式を書きます。
+                    </div>
+                </div>
+            </details>
+        </section>
+
+        <!-- ==========================================
+             MODE 2: 反応式パズル（視線移動を最小化した一体型UI）
+             ========================================== -->
+        <section id="sectionBalance" class="hidden space-y-4">
+
+            <!-- ステージ選択バー＆問題タイトル -->
+            <div class="bg-white dark:bg-slate-900 rounded-3xl p-4 border border-slate-200/90 dark:border-slate-800 shadow-sm space-y-3">
+                <div id="balanceStageSelector" class="flex items-center gap-1.5 overflow-x-auto pb-1"></div>
+
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pt-1 border-t border-slate-100 dark:border-slate-800">
+                    <div>
+                        <h2 id="balanceStageTitle" class="text-base sm:text-lg font-extrabold text-slate-900 dark:text-white"></h2>
+                        <p id="balanceStageDesc" class="text-xs text-slate-600 dark:text-slate-400 mt-0.5"></p>
+                    </div>
+                    <button id="toggleCoeffOneBtn" type="button" data-action="toggle-coeff-one" class="self-start sm:self-center shrink-0 px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-xs font-bold text-slate-600 dark:text-slate-300 transition cursor-pointer">
+                        📝 係数「1」を省略中
+                    </button>
+                </div>
+            </div>
+
+            <!-- 一体型パズルボード：上のモニター＋中段のパック操作＋下段の天秤チェックを1画面に凝縮 -->
+            <div class="bg-white dark:bg-slate-900 rounded-3xl p-4 sm:p-5 border border-slate-200/90 dark:border-slate-800 shadow-sm space-y-5">
+
+                <!-- 1. リアルタイム化学反応式モニター -->
+                <div class="bg-slate-900 dark:bg-slate-950 text-white rounded-2xl p-3.5 sm:p-4 border border-slate-800 flex flex-col sm:flex-row items-center justify-between gap-3">
+                    <div id="liveEquationDisplay" class="flex flex-wrap items-center justify-center gap-2 sm:gap-3 text-lg sm:text-2xl font-mono font-extrabold tracking-wide mx-auto"></div>
+                    <span id="equationStatusBadge" class="shrink-0 text-xs font-extrabold px-3 py-1 rounded-full bg-amber-500/20 text-amber-300 border border-amber-400/30">
+                        ⚖️ 数をそろえよう
+                    </span>
+                </div>
+
+                <!-- 2. 左右の物質パック増減エリア（矢印をはさんで横並び） -->
+                <div class="grid grid-cols-1 lg:grid-cols-11 gap-3 items-stretch">
+                    <!-- 反応前（左辺） -->
+                    <div class="lg:col-span-5 rounded-2xl bg-sky-50/70 dark:bg-sky-950/25 border border-sky-200 dark:border-sky-800/70 p-3.5 space-y-2.5">
+                        <div class="flex items-center justify-between">
+                            <span class="font-extrabold text-xs sm:text-sm text-sky-800 dark:text-sky-300">🟦 反応まえ（左辺）</span>
+                            <span id="leftTotalAtomsBadge" class="text-[11px] font-bold px-2 py-0.5 rounded-full bg-sky-100 dark:bg-sky-900 text-sky-700 dark:text-sky-200"></span>
+                        </div>
+                        <div id="reactantsControlList" class="space-y-2.5"></div>
+                    </div>
+
+                    <!-- 矢印 -->
+                    <div class="lg:col-span-1 flex lg:flex-col items-center justify-center py-1">
+                        <span class="text-2xl font-black text-indigo-500 dark:text-indigo-400 rotate-90 lg:rotate-0">➔</span>
+                    </div>
+
+                    <!-- 反応後（右辺） -->
+                    <div class="lg:col-span-5 rounded-2xl bg-emerald-50/70 dark:bg-emerald-950/25 border border-emerald-200 dark:border-emerald-800/70 p-3.5 space-y-2.5">
+                        <div class="flex items-center justify-between">
+                            <span class="font-extrabold text-xs sm:text-sm text-emerald-800 dark:text-emerald-300">🟩 反応あと（右辺）</span>
+                            <span id="rightTotalAtomsBadge" class="text-[11px] font-bold px-2 py-0.5 rounded-full bg-emerald-100 dark:bg-emerald-900 text-emerald-700 dark:text-emerald-200"></span>
+                        </div>
+                        <div id="productsControlList" class="space-y-2.5"></div>
+                    </div>
+                </div>
+
+                <!-- 3. 元素ごとの左右バランス＆天秤バー（すぐ下に配置し視線移動を最小化） -->
+                <div class="rounded-2xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200/80 dark:border-slate-800 p-3.5 space-y-3">
+                    <div class="flex items-center justify-between flex-wrap gap-2">
+                        <span class="text-xs font-extrabold text-slate-600 dark:text-slate-300">⚖️ 左右の原子の数チェック</span>
+                        <span id="seesawTiltCaption" class="text-xs font-extrabold"></span>
+                    </div>
+
+                    <!-- 元素別カウンター -->
+                    <div id="elementComparisonGrid" class="grid grid-cols-1 sm:grid-cols-3 gap-2"></div>
+
+                    <!-- コンパクト天秤ビーム -->
+                    <div class="max-w-md mx-auto pt-1 flex flex-col items-center">
+                        <div id="seesawBeam" class="seesaw-beam w-full h-2.5 rounded-full bg-gradient-to-r from-sky-500 via-indigo-500 to-emerald-500 shadow-sm"></div>
+                        <div class="w-0 h-0 border-l-[12px] border-l-transparent border-r-[12px] border-r-transparent border-b-[16px] border-b-slate-400 dark:border-b-slate-600"></div>
+                    </div>
+                </div>
+
+                <!-- 4. アクションボタン＆結果メッセージ -->
+                <div class="flex flex-wrap items-center justify-between gap-2.5">
+                    <div class="flex items-center gap-2">
+                        <button type="button" data-action="reset-stage" class="px-3.5 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-xs font-bold text-slate-600 dark:text-slate-300 transition cursor-pointer">
+                            🔄 1個ずつに戻す
+                        </button>
+                        <button type="button" data-action="show-balance-hint" class="px-3.5 py-2.5 rounded-xl bg-amber-100 hover:bg-amber-200 dark:bg-amber-950/80 dark:hover:bg-amber-900 text-amber-800 dark:text-amber-300 text-xs font-extrabold transition cursor-pointer">
+                            💡 ヒント
+                        </button>
+                    </div>
+
+                    <button id="triggerReactionBtn" type="button" data-action="verify-balance" class="flex-1 sm:flex-initial px-6 py-3 rounded-2xl bg-gradient-to-r from-indigo-600 to-sky-500 hover:from-indigo-500 hover:to-sky-400 text-white font-extrabold text-sm sm:text-base shadow-md shadow-indigo-500/20 flex items-center justify-center gap-2 transition cursor-pointer">
+                        <span>⚗️</span>
+                        <span id="triggerReactionBtnLabel">この数で反応させる！</span>
+                    </button>
+                </div>
+
+                <div id="balanceFeedbackBox" class="hidden rounded-2xl p-4 border text-xs sm:text-sm font-bold leading-relaxed animate-pop"></div>
+            </div>
+        </section>
+
+        <!-- ==========================================
+             MODE 3: ずかん（けんきゅう手帳）
+             ========================================== -->
+        <section id="sectionBook" class="hidden space-y-4">
+            <div class="bg-white dark:bg-slate-900 rounded-3xl p-4 sm:p-5 border border-slate-200/90 dark:border-slate-800 shadow-sm space-y-5">
+                <div class="flex items-center justify-between flex-wrap gap-2 border-b border-slate-100 dark:border-slate-800 pb-3">
+                    <div>
+                        <h2 class="text-base sm:text-lg font-extrabold text-slate-900 dark:text-white">
+                            📖 発見した分子＆反応式ずかん
+                        </h2>
+                        <p class="text-xs text-slate-500 dark:text-slate-400">
+                            カードをタップすると、その物質やステージへすぐにジャンプできるよ！
+                        </p>
+                    </div>
+                    <div id="bookProgressText" class="px-3.5 py-1.5 rounded-xl bg-amber-50 dark:bg-amber-950/60 border border-amber-200 dark:border-amber-800 text-sm font-extrabold text-amber-800 dark:text-amber-200">
+                        🏅 0 / 16 スタンプ
+                    </div>
+                </div>
+
+                <div>
+                    <h3 class="font-extrabold text-xs sm:text-sm text-slate-500 dark:text-slate-400 mb-2.5">
+                        🧪 分子コレクション（全8種）
+                    </h3>
+                    <div id="bookMoleculesGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2.5"></div>
+                </div>
+
+                <div class="pt-2 border-t border-slate-100 dark:border-slate-800">
+                    <h3 class="font-extrabold text-xs sm:text-sm text-slate-500 dark:text-slate-400 mb-2.5">
+                        ⚖️ 化学反応式コレクション（全8ステージ）
+                    </h3>
+                    <div id="bookReactionsGrid" class="grid grid-cols-1 sm:grid-cols-2 gap-2.5"></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 保護者・先生向けフッター（控えめで安心感のあるデザイン） -->
+        <footer class="pt-2 pb-4 px-2 text-[11px] text-slate-400 dark:text-slate-500 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
+            <div>
+                🛡️ <strong>PikaLab 安心設計：</strong>完全広告なし・追跡なし・ブラウザ完結処理（中学校理科「化学変化と原子・分子」対応）
+            </div>
+            <div>30分に1回は遠くを見て目を休めよう</div>
+        </footer>
+    </main>
+
+    <!-- 30分休憩リマインダーモーダル（画面上の時計は出さず、30分経過時のみ優しく声かけ） -->
+    <div id="breakModal" class="hidden fixed inset-0 z-50 bg-slate-950/60 backdrop-blur-sm flex items-center justify-center p-4">
+        <div class="bg-white dark:bg-slate-900 rounded-3xl max-w-sm w-full p-6 border border-slate-200 dark:border-slate-800 shadow-2xl text-center space-y-4 animate-pop">
+            <div class="w-12 h-12 rounded-2xl bg-emerald-100 dark:bg-emerald-900/60 text-emerald-600 dark:text-emerald-300 flex items-center justify-center text-2xl mx-auto">
+                🍵
+            </div>
+            <h3 class="text-base sm:text-lg font-extrabold text-slate-900 dark:text-white">
+                30分たったよ！少し目を休めよう
+            </h3>
+            <p class="text-xs text-slate-600 dark:text-slate-300 leading-relaxed">
+                ここまでたくさん実験してすごいね！一度遠くの景色を見たり、水分をとったりしてからまた遊ぼう。
+            </p>
+            <button type="button" data-action="close-break-modal" class="w-full py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-extrabold text-xs sm:text-sm transition cursor-pointer">
+                わかった！（つづける）
+            </button>
+        </div>
+    </div>
+
+    <script type="module" src="./js/app.js"></script>
+</body>
+</html>
