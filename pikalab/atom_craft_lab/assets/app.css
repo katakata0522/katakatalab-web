@@ -1,3 +1,5 @@
+@import url("../tailwind.generated.css");
+
 body {
     font-family: 'M PLUS Rounded 1c', 'Inter', sans-serif;
     -webkit-tap-highlight-color: transparent;

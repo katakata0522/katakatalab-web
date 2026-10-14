@@ -20,7 +20,7 @@ test('カタログ・トップ入口・サイトマップに新教材が存在�
 
 test('専用CSSとローカルJSを使い、広告・外部解析を含まない', () => {
   const html = read('atom_craft_lab/index.html');
-  assert.match(html, /href="\.\/tailwind\.generated\.css"/);
+  assert.match(read("atom_craft_lab/assets/app.css"), /@import url\("\.\.\/tailwind\.generated\.css"\)/);
   assert.match(html, /src="\.\/js\/app\.js"/);
   assert.match(html, /href="https:\/\/katakatalab\.com\/pikalab\/atom_craft_lab\//);
   assert.doesNotMatch(html, /cdn\.tailwindcss\.com|adsbygoogle|googletagmanager|google-analytics/);
