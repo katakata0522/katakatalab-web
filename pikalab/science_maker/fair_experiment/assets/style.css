@@ -609,3 +609,55 @@ a{color:inherit;text-decoration:none}button{font:inherit;cursor:pointer}button:d
 
 /* Keep the central question on two readable lines, even at 320 px. */
 @media(max-width:390px){.hero h1{font-size:clamp(30px,9vw,37px);letter-spacing:-.06em}}
+
+
+/* Experiment Detective v3: collision-safe layout refinement */
+.hero-art{max-width:520px;height:330px;transform:none;display:block}
+.art-halo--back{inset:26px 22px 8px 24px}
+.art-paper--main{width:252px;height:292px;top:24px;left:126px}
+.art-sprout{top:100px;left:38px;width:168px;height:148px}
+.art-magnifier{left:20px;top:36px;width:138px;height:222px;transform:rotate(7deg)}
+.lens{top:0;left:0;width:116px;height:116px;border-width:13px}
+.lens-question{font-size:72px;transform:translateY(-4px)}
+.lens-sheen{top:14px;left:14px;width:36px;height:18px;border-top-width:5px}
+.lens-handle{width:29px;height:94px;left:70px;top:108px;border-width:4px;box-shadow:4px 3px 0 #483471}
+.art-card-note{right:18px;bottom:24px;width:110px;height:104px;transform:rotate(7deg)}
+.art-card-note svg{width:64px;height:64px}
+.art-sticker--left{left:14px;bottom:26px;font-size:39px}
+.art-sticker--right{right:28px;top:16px;font-size:38px}
+.experiment-stage{height:300px}
+.scene-header{margin-bottom:12px}
+.scene-label{font-size:12px}
+.comparison-board{margin-top:12px}
+.compare-row,.comparison-head{padding-inline:14px}
+.compare-row{min-height:44px}
+@media(max-width:900px){
+  .hero-art{height:306px;max-width:470px}
+  .art-paper--main{left:118px}
+}
+@media(max-width:767px){
+  .hero-art{height:250px;width:100%;max-width:400px;transform:none;margin-top:8px}
+  .art-paper--main{width:230px;height:268px;top:14px;left:96px}
+  .art-sprout{top:93px;left:30px;width:154px;height:134px}
+  .art-magnifier{left:10px;top:34px;width:122px;height:195px}
+  .lens{width:101px;height:101px;border-width:11px}
+  .lens-question{font-size:61px}
+  .lens-handle{left:59px;top:95px;height:84px;width:25px}
+  .art-card-note{right:10px;bottom:16px;width:96px;height:92px}
+  .art-card-note svg{width:56px;height:56px}
+  .experiment-stage{height:274px}
+}
+@media(max-width:390px){
+  .hero-art{height:238px}
+  .art-paper--main{width:214px;height:248px;left:88px}
+  .art-sprout{top:89px;left:28px;width:142px;height:124px}
+  .art-magnifier{left:8px;top:37px;width:112px;height:181px}
+  .lens{width:92px;height:92px;border-width:10px}
+  .lens-question{font-size:56px}
+  .lens-handle{left:54px;top:87px;height:77px;width:23px}
+  .art-card-note{right:8px;bottom:12px;width:88px;height:84px}
+  .art-card-note svg{width:52px;height:52px}
+  .experiment-stage{height:252px}
+  .scene-header{margin-bottom:9px}
+  .compare-row,.comparison-head{padding-inline:9px}
+}

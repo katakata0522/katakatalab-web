@@ -51,3 +51,12 @@ npx tailwindcss@3 -c tailwind.config.cjs -i tailwind.input.css -o assets/style.c
 ## 画面検証の制約
 
 この更新作業の実行環境に組織のChromium URLBlocklistポリシーが設定され、ブラウザへのページ遷移（`file://`/`http://localhost`）が制限されました。静的コード・Nodeテストは実施しますが、**更新後画面のブラウザスクリーンショットと実操作回帰は未確認**として、レビュワーによるPlaywright実ブラウザ検証を別途必要とします。以前の画面のスクリーンショットはv2の検証証拠として再利用しません。
+
+
+## v4: 表示・操作・起動の品質改善
+- 起動時 `STORAGE_KEY` 未初期化参照を修正。保存不能環境でも解答可能。
+- 選択のたびの `render()` を廃止し、選択中のradio要素・キーボードフォーカスを保持。
+- 9事件のSVGに共通の安全余白とA/Bラベルの定位置を設け、スマホの縮小表示も含め重なりを軽減。
+- CSS追加分は `tailwind.input.css` と生成済み `assets/style.css` に反映。
+- 回帰テスト: `node --test tests/*.cjs`。Chromiumの9事件×3問のE2E操作は320px/390pxで確認。
+- 公開前に実端末（iOS Safari/Android Chrome）で文字拡大・タップ操作・動作確認が必要。
