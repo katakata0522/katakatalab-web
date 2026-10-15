@@ -241,7 +241,7 @@
             <div class="policy-eyebrow"><span aria-hidden="true">🔒</span> Chrome拡張機能 UIKata v2.7.0</div>
             <h1>UIKata プライバシーポリシー</h1>
             <p class="policy-lead">UIKataがWebページ上で何を読み取り、どの情報を端末内に残し、どの操作で外部通信が発生し得るかを説明します。</p>
-            <p class="policy-meta">最終更新：2026年8月30日 ／ 旧称：TailSnap</p>
+            <p class="policy-meta">最終更新：2026年10月15日 ／ 旧称：TailSnap</p>
         </section>
 
         <section class="policy-summary" aria-labelledby="summary-title">
@@ -249,7 +249,7 @@
             <div class="summary-grid">
                 <div class="summary-item">
                     <strong>調査はユーザー操作時だけ</strong>
-                    <p>常時すべてのサイトを読む権限は要求せず、調査開始後の現在タブを対象にします。</p>
+                    <p>「調査開始」を押したときに、調査するページを読むためのサイト権限をChromeが一度だけ確認します。対象は調査開始後の現在タブだけです。</p>
                 </div>
                 <div class="summary-item">
                     <strong>解析結果を開発者へ送信しない</strong>
@@ -309,7 +309,8 @@
                 <li><code>scripting</code>：明示的な起動後に、現在のタブへローカルの調査用スクリプトとスタイルを注入するために使用します。</li>
                 <li><code>sidePanel</code>：調査結果、コード、履歴、素材、辞典をサイドパネルへ表示するために使用します。</li>
             </ul>
-            <p>UIKataは常時サイトアクセスを要求するhost permissionsや、全ページで常時動作するcontent scriptを宣言していません。</p>
+            <p>UIKataは、全ページで常時動作するcontent scriptを宣言していません。サイトへのアクセスは、http/httpsの任意のサイト権限として、「調査開始」を押したときにだけ求めます。</p>
+            <p>「調査開始」を押したとき、Chrome が「すべてのサイトのデータの読み取りと変更」の許可を求めることがあります。ツールバーのアイコンからサイドパネルを開いたときに、調査するページを読むために必要な許可です。確認は最初の1回だけで、拒否することも、あとから Chrome の拡張機能の設定で取り消すこともできます。UIKata がページを読むのは、調査を始めたときに、調査しているページだけです。ページの内容を外部へ送ることはありません（「Tailwind Playで開く」を押したときだけ、生成したコードが play.tailwindcss.com で開かれます）。</p>
         </section>
 
         <section class="policy-section">
