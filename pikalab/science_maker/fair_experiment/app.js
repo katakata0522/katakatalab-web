@@ -12,10 +12,27 @@
   const state = {
     activeId: lib.CASES[0].id,
     entries: new Map(lib.CASES.map(item => [item.id, newEntry()])),
-    solved: new Set()
+    solved: readSolved()
   };
   const OPTION_LETTERS = ['A', 'B', 'C'];
-  const initialLabels = { plant: '植物', sugar: 'コップ', pendulum: 'ふりこ' };
+  const CHAPTERS = Object.freeze([
+    { id: 'intro', label: 'はじめの事件', range: '01–03' },
+    { id: 'compare', label: '光と動き', range: '04–06' },
+    { id: 'advanced', label: 'もう一歩', range: '07–09' }
+  ]);
+  const STORAGE_KEY = 'pikalab_experiment_detective_v2';
+  function readSolved() {
+    try {
+      const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
+      if (!Array.isArray(saved.completed)) return new Set();
+      return new Set(saved.completed.filter(id => !!lib.getCase(id)));
+    } catch (_) { return new Set(); }
+  }
+  function saveSolved() {
+    try { localStorage.setItem(STORAGE_KEY, JSON.stringify({ version: 1, completed: [...state.solved] })); }
+    catch (_) { /* No tracking, and storage is optional. */ }
+  }
+  let activeChapter = 'intro';
 
   function newEntry() {
     return { index: 0, selected: null, accepted: false, lastFeedback: null, incorrectId: null, hintLevel: 0, finished: false };
@@ -31,6 +48,7 @@
   function goToCase(id, shouldScroll = true) {
     if (!lib.getCase(id)) return;
     state.activeId = id;
+    activeChapter = lib.getCase(id).chapter;
     render();
     if (shouldScroll) focusWorkbench();
   }
@@ -38,55 +56,72 @@
     $('investigation').scrollIntoView({ block: 'start', behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' });
     $('investigation').focus({ preventScroll: true });
   }
+  function renderChapters() {
+    const container = $('caseChapters'); container.replaceChildren();
+    CHAPTERS.forEach(chapter => {
+      const items = lib.CASES.filter(item => item.chapter === chapter.id);
+      const solved = items.filter(item => state.solved.has(item.id)).length;
+      const btn = el('button', `chapter-button${activeChapter === chapter.id ? ' is-active' : ''}`);
+      btn.type = 'button'; btn.dataset.chapter = chapter.id;
+      btn.setAttribute('aria-pressed', activeChapter === chapter.id ? 'true' : 'false');
+      btn.setAttribute('aria-label', `${chapter.label}、全${items.length}事件中${solved}事件解決`);
+      btn.append(el('span', 'chapter-name', chapter.label), el('span', 'chapter-progress', `${solved}/${items.length}`));
+      container.appendChild(btn);
+    });
+  }
   function renderNav() {
-    for (const btn of document.querySelectorAll('[data-case-id]')) {
-      const id = btn.dataset.caseId;
-      const current = id === state.activeId;
-      const complete = state.solved.has(id);
-      btn.classList.toggle('is-current', current);
-      btn.classList.toggle('is-complete', complete);
+    renderChapters();
+    const list = $('caseNavigation'); list.replaceChildren();
+    const cases = lib.CASES.filter(item => item.chapter === activeChapter);
+    cases.forEach(item => {
+      const current = item.id === state.activeId;
+      const complete = state.solved.has(item.id);
+      const btn = el('button', `case-ticket${current ? ' is-current' : ''}${complete ? ' is-complete' : ''}`);
+      btn.type = 'button'; btn.dataset.caseId = item.id;
       btn.setAttribute('aria-pressed', current ? 'true' : 'false');
-      const label = btn.querySelector('.ticket-status');
-      if (label) label.textContent = complete ? '✓ 解決済み' : current ? '調査中 ↗' : '未調査 ↗';
-    }
+      const title = el('span', 'ticket-title');
+      const emoji = el('span', 'ticket-emoji', item.emoji); emoji.setAttribute('aria-hidden', 'true');
+      const copy = el('span', 'ticket-copy', item.title);
+      copy.append(el('small', '', item.subtitle));
+      title.append(emoji, copy);
+      btn.append(el('span', 'ticket-number', `事件 ${item.order}`), title,
+        el('span', 'ticket-status', complete ? '✓ 解決済み' : current ? '調査中' : '未調査'));
+      list.appendChild(btn);
+    });
     $('completedCount').textContent = `${state.solved.size} / ${lib.CASES.length}`;
+    $('fileCount').textContent = String(lib.CASES.length).padStart(2, '0');
   }
   function renderCaseHeader() {
     const item = activeCase(); const progress = entry();
-    $('caseOrdinal').textContent = '/ FILE ' + item.order;
+    $('caseOrdinal').textContent = ` / 事件 ${item.order}`;
     $('currentCaseTitle').textContent = item.title;
     $('caseDescription').textContent = item.description;
-    $('caseOrdinal').textContent = `/ FILE ${item.order}`;
-    $('stageCounter').innerHTML = progress.finished
-      ? '<span aria-hidden="true">✦</span> <strong>調査完了！</strong>'
-      : `<span aria-hidden="true">✶</span> 手がかりを <strong>${progress.index + 1} / ${item.steps.length}</strong> 調査中`;
+
+    $('stageCounter').textContent = progress.finished ? '調査完了' : `手がかり ${progress.index + 1} / ${item.steps.length}`;
   }
   function renderObservations() {
     const item = activeCase(); const progress = entry();
     const repaired = progress.index === 2 || (progress.index === 1 && progress.accepted) || progress.finished;
-    const container = $('observationList'); container.replaceChildren();
-    const rows = item.observations;
-    ['a', 'b'].forEach((side, sideIndex) => {
-      const card = el('div', 'observation-card');
-      const top = el('div', 'observation-head');
-      top.append(el('strong', '', `実験 ${side.toUpperCase()}`), el('span', '', initialLabels[item.id] || 'じっけん'));
-      const list = el('div', 'observation-rows');
-      for (const obs of rows) {
-        const visibleValue = side === 'b' && repaired && obs.repairedB ? obs.repairedB : obs[side];
-        const highlighted = obs.kind === 'mistake' && !repaired;
-        const row = el('div', `observation-row${highlighted ? ' emphasis' : ''}${obs.kind === 'mistake' && repaired ? ' resolved' : ''}`);
-        row.append(el('span', '', obs.name), el('strong', '', visibleValue));
-        list.appendChild(row);
-      }
-      card.append(top, list);
-      container.appendChild(card);
+    const locatedMistake = progress.index > 0 || progress.accepted || progress.finished;
+    const board = $('observationList'); board.replaceChildren();
+    const head = el('div', 'comparison-head');
+    head.append(el('span', '', '条件'), el('span', '', '実験 A'), el('span', '', '実験 B'));
+    board.append(head);
+    item.observations.forEach(obs => {
+      const found = obs.kind === 'mistake' && locatedMistake && !repaired;
+      const corrected = obs.kind === 'mistake' && repaired;
+      const row = el('div', `compare-row${found ? ' is-found' : ''}${corrected ? ' is-corrected' : ''}`);
+      row.append(el('span', 'compare-name', obs.name), el('strong', 'compare-a', obs.a),
+        el('strong', 'compare-b', repaired && obs.repairedB ? obs.repairedB : obs.b));
+      if (corrected) row.lastElementChild.setAttribute('aria-label', `修正後 ${obs.repairedB}`);
+      board.appendChild(row);
     });
     $('sceneArt').dataset.type = item.scene;
     $('sceneArt').innerHTML = sceneSvg(item.scene, repaired);
   }
   function renderChoices() {
     const item = activeCase(), progress = entry(), step = item.steps[progress.index];
-    $('stepEyebrow').textContent = step.eyebrow;
+    $('stepEyebrow').textContent = step.eyebrow.replace(/^\d+\s*\/\s*/, '');
     $('questionTitle').textContent = step.title;
     $('questionDetail').textContent = step.description;
     $('stepNumber').textContent = String(progress.index + 1).padStart(2, '0');
@@ -124,7 +159,7 @@
       $('hintCopy').textContent = step.hints[progress.hintLevel - 1];
     } else { hint.hidden = true; $('hintCopy').textContent = ''; }
     $('hintButton').hidden = progress.accepted;
-    $('hintButton').textContent = progress.hintLevel ? (progress.hintLevel === 1 ? '✳ もう少しヒント' : '✳ ヒントを確認') : '✳ ヒントをみる';
+    $('hintButton').textContent = progress.hintLevel ? (progress.hintLevel === 1 ? 'もう少しヒント' : 'ヒントを確認') : 'ヒントを見る';
     const submit = $('submitButton');
     submit.disabled = !progress.accepted && !progress.selected;
     submit.innerHTML = progress.accepted
@@ -137,7 +172,7 @@
     $('completeText').textContent = item.ending;
     $('completeLearning').textContent = item.learning;
     const allDone = state.solved.size === lib.CASES.length;
-    $('nextCaseButton').innerHTML = allDone ? '最初の事件を見直す <span aria-hidden="true">→</span>' : 'つぎの事件へ <span aria-hidden="true">→</span>';
+    $('nextCaseButton').innerHTML = allDone ? '事件一覧に戻る <span aria-hidden="true">→</span>' : 'つぎの事件へ <span aria-hidden="true">→</span>';
   }
   function render() {
     const progress = entry();
@@ -157,6 +192,7 @@
       if (progress.index === item.steps.length - 1) {
         progress.finished = true;
         state.solved.add(item.id);
+        saveSolved();
         render();
         $('completionPanel').focus({ preventScroll: true });
       } else {
@@ -205,7 +241,8 @@
   function nextCase() {
     const currentIndex = lib.CASES.findIndex(item => item.id === state.activeId);
     const unsolved = lib.CASES.slice(currentIndex + 1).concat(lib.CASES.slice(0, currentIndex + 1)).find(item => !state.solved.has(item.id));
-    goToCase(unsolved ? unsolved.id : lib.CASES[0].id);
+    if (unsolved) goToCase(unsolved.id);
+    else { $('filesTitle').scrollIntoView({ behavior: 'auto', block: 'start' }); $('filesTitle').focus({ preventScroll: true }); }
   }
   function showHelp() {
     const d = $('helpDialog');
@@ -215,6 +252,19 @@
     const d = $('helpDialog');
     if (typeof d.close === 'function') d.close(); else d.removeAttribute('open');
   }
+  $('caseChapters').addEventListener('click', event => {
+    const button = event.target.closest('[data-chapter]');
+    if (!button) return;
+    const chapter = button.dataset.chapter;
+    if (!CHAPTERS.some(c => c.id === chapter)) return;
+    activeChapter = chapter;
+    const available = lib.CASES.filter(item => item.chapter === chapter);
+    const preferred = available.find(item => !state.solved.has(item.id)) || available[0];
+    state.activeId = preferred.id;
+    render();
+    const current = $('caseChapters').querySelector('[aria-pressed="true"]');
+    current?.focus({ preventScroll: true });
+  });
   $('caseNavigation').addEventListener('click', event => {
     const btn = event.target.closest('[data-case-id]');
     if (btn) goToCase(btn.dataset.caseId);
@@ -230,6 +280,12 @@
   $('helpClose').addEventListener('click', closeHelp);
   $('helpStart').addEventListener('click', () => { closeHelp(); focusWorkbench(); });
   $('helpDialog').addEventListener('click', event => { if (event.target === $('helpDialog')) closeHelp(); });
+  $('clearProgress').addEventListener('click', () => {
+    if (!window.confirm('この端末の解決済み記録を消して、すべて最初から調査しますか？')) return;
+    state.solved.clear();
+    state.entries = new Map(lib.CASES.map(item => [item.id, newEntry()]));
+    saveSolved(); closeHelp(); goToCase(lib.CASES[0].id);
+  });
   render();
 
   function sceneSvg(type, repaired) {
@@ -249,6 +305,30 @@
     if (type === 'pendulum') {
       const swing = (x,length,r) => `<g transform="translate(${x},0)"><path d="M-82 66H82" stroke="#837a90" stroke-width="9" stroke-linecap="round"/><path d="M-64 66V256M64 66V256" stroke="#b6a9b7" stroke-width="7" stroke-linecap="round"/><path d="M-84 260H83" stroke="#ad9cae" stroke-width="8" stroke-linecap="round"/><circle cy="68" cx="0" r="9" fill="#f1c579" stroke="#9f8275" stroke-width="3"/><path d="M0 72L${length===125?'-39':'-22'} ${72+length}" stroke="#777386" stroke-width="3.8" stroke-linecap="round"/><circle cx="${length===125?'-39':'-22'}" cy="${72+length}" r="${r}" fill="#f5a577" stroke="#c27963" stroke-width="3"/><path d="M${length===125?'-39':'-22'} ${74+length-r}q8-6 15 1" fill="none" stroke="#ffe2b9" stroke-width="3.5" stroke-linecap="round"/><path d="M-81 260H84" stroke="#897e90" stroke-width="2.5"/></g>`;
       return baseStart + `${swing(193,125,17)}${swing(444,163,repaired?17:24)}<path d="M217 93q36 45 24 83" fill="none" stroke="#c3b0c9" stroke-width="2" stroke-dasharray="5 6"/><path d="M458 96q47 42 28 99" fill="none" stroke="#c3b0c9" stroke-width="2" stroke-dasharray="5 6"/>` + end;
+    }
+    if (type === 'ramp') {
+      const ramp = (x,steep,heavy) => `<g transform="translate(${x},0)"><path d="M-110 246L-12 ${steep?148:194}H110V260H-110Z" fill="#dac5af" stroke="#a89989" stroke-width="3"/><path d="M-110 246L-12 ${steep?148:194}" stroke="#8f8299" stroke-width="9" stroke-linecap="round"/><g transform="translate(${-42},${steep?188:222}) rotate(${steep?-42:-26})"><rect x="-30" y="-18" width="60" height="27" rx="9" fill="#81b7a7" stroke="#3e897d" stroke-width="3"/><path d="M-17-18l8-15h27l11 15" fill="#b1d9cf" stroke="#3e897d" stroke-width="3"/><circle cx="-19" cy="12" r="10" fill="#5c5877"/><circle cx="20" cy="12" r="10" fill="#5c5877"/></g>${heavy?'<circle cx="72" cy="210" r="16" fill="#e0ac7f" stroke="#c38b68" stroke-width="3"/>':''}</g>`;
+      return baseStart + ramp(185,false,false) + ramp(450,true,!repaired) + end;
+    }
+    if (type === 'shadow') {
+      const shadow = (x,big,far) => `<g transform="translate(${x},0)"><rect x="73" y="95" width="9" height="142" rx="3" fill="#92afa7"/><rect x="66" y="230" width="40" height="8" rx="4" fill="#659889"/><path d="M78 107L24 150L6 128Q30 84 77 94Z" fill="#f8cf7d" stroke="#ce9e59" stroke-width="3"/><path d="M23 147L${far?95:120} 202L135 146" fill="#fff0b9" opacity=".5"/><circle cx="${far?114:130}" cy="193" r="${big?24:15}" fill="#db967e" stroke="#b97868" stroke-width="3"/><rect x="177" y="99" width="10" height="139" fill="#9a8baf"/><rect x="187" y="107" width="48" height="130" rx="5" fill="#fffef8" stroke="#b5a4bf" stroke-width="3"/><ellipse cx="206" cy="195" rx="${big?25:18}" ry="${big?30:23}" fill="#8a7499" opacity=".22"/></g>`;
+      return baseStart + shadow(41,false,false) + shadow(351,!repaired,true) + end;
+    }
+    if (type === 'magnet') {
+      const magnet = (x,far,many) => `<g transform="translate(${x},0)"><path d="M-70 100v62q0 78 71 78 71 0 71-78v-62h-36v61q0 42-35 42-35 0-35-42v-61Z" fill="#dc8d83" stroke="#b46e66" stroke-width="4"/><path d="M-70 101h36v29h-36zm106 0h36v29H36z" fill="#b8e0d2" stroke="#598f80" stroke-width="3"/><path d="M-15 257h70" stroke="#9d9eac" stroke-width="3"/><g stroke="#758394" stroke-width="3" fill="none">${Array.from({length:many?10:5},(_,i)=>`<path d="M${-46+(i%5)*26} ${(far?51:82)+Math.floor(i/5)*29}q-6-6-13 0l-8 8q-5 8 3 10 7 3 11-4l7-7"/>`).join('')}</g></g>`;
+      return baseStart + magnet(184,false,false) + magnet(454,true,!repaired) + end;
+    }
+    if (type === 'sprout') {
+      const bowl = (x,water,other) => `<g transform="translate(${x},0)"><ellipse cx="0" cy="259" rx="94" ry="9" fill="#a58a73" opacity=".14"/><path d="M-86 203H86l-17 42H-69z" fill="#e3b587" stroke="#bd896a" stroke-width="4"/><rect x="-78" y="186" width="157" height="22" rx="11" fill="#f2c9a8" stroke="#bc927d" stroke-width="3"/>${Array.from({length:5},(_,i)=>`<ellipse cx="${-55+i*27}" cy="189" rx="8" ry="5" fill="${other?'#a9856f':'#997853'}" stroke="#8b7259" stroke-width="1.8"/>`).join('')}${water?'<path d="M-75 197H74" stroke="#81c3ca" stroke-width="5" stroke-linecap="round" opacity=".7"/>':''}</g>`;
+      return baseStart + bowl(182,true,false) + bowl(454,false,!repaired) + end;
+    }
+    if (type === 'evaporate') {
+      const vessel=(x,wide,more)=>`<g transform="translate(${x},0)"><ellipse cx="0" cy="260" rx="${wide?102:68}" ry="8" fill="#8a928d" opacity=".13"/><path d="M${wide?-102:-62} 120v104q0 20 20 20h${wide?164:84}q20 0 20-20V120" fill="url(#glassGr)" stroke="#78a5ac" stroke-width="5"/><path d="M${wide?-100:-60} ${more?171:205}v48q0 21 18 21h${wide?164:84}q18 0 18-21v-48z" fill="#a6d8df" opacity=".82"/><path d="M${wide?-102:-62} 121H${wide?102:62}" stroke="#78a5ac" stroke-width="6" stroke-linecap="round"/><path d="M-35 92q-10-15 0-28m32 26q-10-15 0-28m34 30q-10-15 0-28" stroke="#a5bfc2" stroke-width="3" stroke-dasharray="4 6" fill="none"/></g>`;
+      return baseStart + vessel(184,false,true) + vessel(452,true,repaired) + end;
+    }
+    if (type === 'rubber') {
+      const guitar = (x,long,strong)=>`<g transform="translate(${x},0)"><rect x="-98" y="119" width="196" height="113" rx="19" fill="#e9cfae" stroke="#bd9b82" stroke-width="4"/><rect x="-78" y="137" width="157" height="75" rx="9" fill="#f9e8c6"/><path d="M${long?-70:-42} 176H${long?72:43}" stroke="#b67a98" stroke-width="${strong?10:6}" stroke-linecap="round"/><path d="M${long?-70:-42} 156v40M${long?72:43} 156v40" stroke="#917e9b" stroke-width="5"/><path d="M-37 115q13-35 30-18 18 17 31-9" fill="none" stroke="#dca76e" stroke-width="4" stroke-dasharray="5 7"/><circle cx="0" cy="90" r="5" fill="#f5c56b"/></g>`;
+      return baseStart + guitar(190,false,false) + guitar(450,true,!repaired) + end;
     }
     return baseStart + end;
   }

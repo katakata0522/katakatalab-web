@@ -52,3 +52,107 @@ a{color:inherit;text-decoration:none}button{font:inherit;cursor:pointer}button:d
 @media(max-width:767px){.page-container{width:min(100% - 32px,560px)}.header-inner{min-height:68px}.brand-emblem{width:39px;height:39px;border-radius:12px}.brand-copy strong{font-size:18px}.brand-copy small{font-size:9px}.header-progress{font-size:10px;gap:5px;padding:7px 9px}.header-progress-icon{width:20px;height:20px}.help-text{display:none}.header-help{min-height:40px;padding:6px 10px}.help-icon{border:0;font-size:19px}.hero{padding:31px 0 10px;grid-template-columns:minmax(0,1fr);min-height:0;gap:0}.hero-lead{font-size:13px}.eyebrow{font-size:8px;gap:7px;margin-bottom:13px}.hero h1{font-size:clamp(39px,8.2vw,52px)}.hero-desc{font-size:13px;margin-top:13px}.hero-buttons{margin-top:17px}.hero-note{font-size:10px}.hero-art{height:226px;width:360px;max-width:100%;justify-self:center;transform:scale(.67);transform-origin:top center;margin-bottom:0;margin-top:12px}.files-section{margin:6px 0 30px}.files-head{padding:0 0 13px}.files-heading h2{font-size:19px}.files-subtitle{font-size:10px}.case-list{gap:10px}.case-ticket{min-height:93px;gap:5px;padding:13px 18px 12px}.ticket-title{font-size:14px}.ticket-title small{font-size:10px}.ticket-emoji{width:36px;height:36px;font-size:23px}.ticket-status{top:11px}.section-bar{padding:0 1px 15px}.section-heading h2{font-size:24px}.section-heading p{font-size:11px}.case-counter{font-size:10px;padding:8px 11px}.workbench{border-radius:21px}.scene-panel{border-right:0;border-bottom:2px dashed #dfd8d2;padding:17px 16px 19px}.scene-header{margin-bottom:10px}.scene-label{font-size:11px}.scene-subtitle{font-size:9px}.experiment-stage{height:218px}.observation-grid{margin-top:12px;gap:9px}.observation-head{padding:7px 9px}.observation-rows{padding:8px;gap:5px}.observation-row,.observation-row strong{font-size:10px}.scene-caption{margin-top:10px;font-size:9px}.task-panel{padding:20px 18px 19px}.task-head{margin-bottom:15px}.question-copy h3{font-size:20px}.choices-fieldset{margin-top:17px}.choice-option{min-height:56px;padding:11px 13px}.choice-group{gap:9px}.learning-strip{margin-top:25px;margin-bottom:29px;padding:21px 23px;min-height:145px;gap:12px}.strip-asterisk{font-size:37px}.learning-strip h2{font-size:15px}.learning-strip p{font-size:11px}.strip-spark{font-size:62px;right:3px}.below-workbench{padding:12px 5px}.below-workbench p{font-size:10px}.page-footer{font-size:9px}}
 @media(max-width:390px){.page-container{width:calc(100% - 24px)}.hero h1{font-size:clamp(36px,9.1vw,41px)}.brand-mark{gap:8px}.header-tools{gap:7px}.header-progress>span:nth-child(2){display:none}.scene-panel{padding:14px 12px}.experiment-stage{height:194px}.observation-row,.observation-row strong{font-size:9px}.ticket-number{font-size:9px}.task-panel{padding:18px 13px 17px}.question-copy h3{font-size:19px}.choice-label{font-size:12px}.hero-art{margin-left:-10px}}
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}}
+
+/* Experiment Detective v2: content-first refinement. Tailwind + authored scene styles.
+   Deliberately keep tactile paper, coral CTA and detective desk. */
+.hero{min-height:350px;padding-top:32px;padding-bottom:24px}
+.hero h1{max-width:100%;text-wrap:balance}
+.hero-desc{margin-top:12px;max-width:36em}
+.hero-buttons{margin-top:18px}
+.hero-art{height:304px}
+.files-section{margin-top:2px}
+.files-head{padding-bottom:12px}
+.files-heading h2{margin-top:0}
+.case-chapters{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px;margin:1px 0 15px;border-bottom:1.5px solid #e6dace;padding-bottom:12px}
+.chapter-button{min-height:53px;min-width:0;background:#fffdf8;color:#71697c;border:1.5px solid #e6ddd4;border-radius:12px;padding:10px 15px;display:flex;align-items:center;justify-content:space-between;gap:6px;text-align:left;transition:border-color .15s,background .15s,box-shadow .15s}
+.chapter-button:hover{border-color:#b1a5c5;background:#fcf8ff}
+.chapter-button.is-active{color:#554483;border-color:#8b78c0;background:#f1edfc;box-shadow:inset 0 0 0 1px #d8cbed}
+.chapter-name{font-weight:950;font-size:13px;line-height:1.35;overflow-wrap:anywhere}
+.chapter-progress{font-weight:900;font-size:11px;white-space:nowrap;color:#82758b}
+.chapter-button.is-active .chapter-progress{color:#6555a4}
+.ticket-copy{min-width:0;overflow-wrap:anywhere;line-height:1.35}
+.ticket-copy small{line-height:1.55}
+.case-ticket{padding-right:18px}
+.ticket-status{top:14px;right:15px;white-space:nowrap}
+.investigation{scroll-margin-top:22px}
+.section-bar{padding-bottom:17px}
+.section-heading h2{overflow-wrap:anywhere}
+.section-heading p{max-width:58ch}
+.scene-panel{padding:23px 25px}
+.experiment-stage[data-type=ramp]{background:#ecede3}
+.experiment-stage[data-type=shadow]{background:#fff1d9}
+.experiment-stage[data-type=magnet]{background:#e8edf6}
+.experiment-stage[data-type=sprout]{background:#ecf1e1}
+.experiment-stage[data-type=evaporate]{background:#e5f3ef}
+.experiment-stage[data-type=rubber]{background:#f3ebec}
+.comparison-board{margin-top:15px;background:#fffdf9;border:1.5px solid #e1d7c9;border-radius:15px;box-shadow:0 3px 0 #e4dccc;overflow:hidden}
+.comparison-head,.compare-row{display:grid;grid-template-columns:minmax(0,1.38fr) minmax(0,.81fr) minmax(0,.81fr);align-items:center;gap:8px;text-align:left}
+.comparison-head{background:#f4eee8;color:#6a5b79;border-bottom:1px solid #e2d6d0;padding:10px 12px;font-size:11px;font-weight:950}
+.comparison-head span:nth-child(2),.comparison-head span:nth-child(3){text-align:center}
+.compare-row{border-top:1px solid #eee8e0;padding:10px 12px;min-height:41px;font-size:11px;font-weight:780;color:#777080}
+.compare-row:nth-child(2){border-top:0}
+.compare-row .compare-name{overflow-wrap:anywhere;line-height:1.5}
+.compare-row strong{font-weight:950;color:#4c475b;font-size:11px;line-height:1.4;text-align:center;min-width:0;overflow-wrap:anywhere}
+.compare-row .compare-b{border-radius:8px;padding:4px 2px}
+.compare-row.is-found .compare-b{color:#9c514d;background:#fff0e8;box-shadow:inset 0 0 0 1.5px #eab7aa}
+.compare-row.is-corrected .compare-b{color:#226c57;background:#dff4e9;box-shadow:inset 0 0 0 1.5px #a6d5bf}
+.scene-caption{font-size:11px;margin-top:12px;line-height:1.6}
+.task-head{margin-bottom:20px}
+.question-copy h3{overflow-wrap:anywhere}
+.choice-label{min-width:0;overflow-wrap:anywhere;line-height:1.55}
+.choice-option{align-items:center}
+.hint-box,.feedback{overflow-wrap:anywhere}
+.below-workbench{display:flex;justify-content:flex-end;padding:9px 0 0}
+.below-workbench button{font-size:12px}
+.learning-strip{min-height:0;margin:29px 0 36px;padding:21px 28px;border-radius:17px}
+.learning-strip h2{margin:0 0 5px;font-size:16px}
+.learning-strip p{font-size:12px;font-weight:730;line-height:1.75}
+.learning-strip p strong{color:#514180}
+.complete-burst{margin-bottom:8px}
+.complete-seal{width:130px;height:130px}
+.complete-seal strong{font-size:33px}
+.completion-panel>p:not(.complete-kicker){margin-top:4px}
+.clear-progress{margin:0 0 17px;background:transparent;color:#716477;text-decoration:underline;text-underline-offset:3px;padding:8px 0;font-size:12px;font-weight:850;display:block;text-align:left}
+.clear-progress:hover{color:#a04949}
+@media(max-width:900px){.hero{min-height:320px}.hero-art{height:287px}}
+@media(max-width:767px){
+ .hero{padding:23px 0 9px;min-height:0;gap:0}
+ .hero h1{white-space:normal;overflow-wrap:anywhere;letter-spacing:-.065em;font-size:clamp(35px,8.2vw,48px)}
+ .hero-desc{font-size:13px;margin-top:12px}
+ .hero-art{height:216px;margin-top:2px}
+ .files-section{margin-top:0;margin-bottom:29px}
+ .case-chapters{gap:6px;margin-bottom:12px;padding-bottom:11px}
+ .chapter-button{padding:8px 9px;display:grid;gap:3px;align-content:center;min-height:59px}
+ .chapter-name{font-size:12px;letter-spacing:-.02em}
+ .chapter-progress{font-size:10px}
+ .case-ticket{min-height:98px}
+ .scene-panel{padding:16px 16px 20px}
+ .comparison-board{margin-top:12px}
+ .comparison-head,.compare-row{grid-template-columns:minmax(0,1.3fr) minmax(0,.8fr) minmax(0,.8fr);gap:6px;padding:9px 10px;font-size:11px}
+ .compare-row strong{font-size:11px}
+ .scene-caption{font-size:10px}
+ .task-panel{padding:20px 18px 22px}
+ .learning-strip{padding:19px 22px;min-height:0}
+ .learning-strip h2{font-size:15px}
+ .learning-strip p{font-size:11px}
+}
+@media(max-width:390px){
+ .hero h1{font-size:clamp(33px,9.2vw,39px)}
+ .hero-art{margin-left:0;height:205px}
+ .chapter-button{padding:8px 6px}
+ .chapter-name{font-size:11px}
+ .scene-panel{padding:14px 11px 18px}
+ .comparison-head,.compare-row{grid-template-columns:minmax(0,1.32fr) minmax(0,.78fr) minmax(0,.78fr);gap:4px;padding:9px 7px;font-size:10.5px}
+ .compare-row strong{font-size:10.5px}
+ .ticket-title{gap:9px}
+ .ticket-title small{overflow-wrap:anywhere}
+ .question-copy h3{font-size:19px}
+ .choice-label{font-size:12px}
+}
+
+/* Note card is now an icon, not decorative copy. */
+.art-card-note{align-items:center;justify-content:center;padding:12px}
+.art-card-note svg{width:72px;height:72px;filter:drop-shadow(0 3px 0 rgba(169,126,62,.08))}
+
+/* Keep the central question on two readable lines, even at 320 px. */
+@media(max-width:390px){.hero h1{font-size:clamp(30px,9vw,37px);letter-spacing:-.06em}}
