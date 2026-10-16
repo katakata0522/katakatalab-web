@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#88bfc2">
+  <meta name="robots" content="noindex,nofollow">
+  <meta name="description" content="PikaLabの3Dミニチュア鉄道。島の中を走る列車の速さを変えて、到着時間とグラフの関係を学ぼう。">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; font-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'self'; form-action 'none'">
+  <title>3D列車の島 | PikaLab</title>
+  <link rel="stylesheet" href="./style.css">
+  <script src="./world3d.js" defer></script>
+  <script src="./game.js" defer></script>
+</head>
+<body>
+  <a class="skip-link" href="#gameControls">操作パネルへ移動</a>
+  <main>
+    <section class="world-viewport" aria-labelledby="appTitle">
+      <div id="worldCover" class="world-cover" aria-hidden="true"></div>
+      <canvas id="worldCanvas" class="world-canvas" aria-label="水に浮かぶ島と2本の線路、列車AとB、中央駅、風車などを立体表示。ドラッグすると視点を変更できます。" role="img"></canvas>
+      <canvas id="labelCanvas" class="label-canvas" aria-hidden="true"></canvas>
+      <div class="world-overlay" aria-hidden="true"></div>
+      <header class="world-header">
+        <div class="identity">
+          <a href="../" class="logo-link" aria-label="PikaLabトップに戻る">
+            <span class="logo-icon" aria-hidden="true">⚗</span>
+            <span class="logo-type"><strong>PikaLab</strong><small>デジタル研究室</small></span>
+          </a>
+          <h1 id="appTitle">3D列車の島</h1>
+        </div>
+        <div class="mission-tag"><span class="mission-mark" aria-hidden="true">◎</span><span>2台を<span class="emphasis">同時に</span>中央駅へ着かせよう</span></div>
+      </header>
+      <div class="camera-dock" aria-label="3Dカメラの操作">
+        <button type="button" id="zoomIn" title="近づく" aria-label="3D世界を拡大">＋</button>
+        <button type="button" id="zoomOut" title="遠ざかる" aria-label="3D世界を縮小">－</button>
+        <button type="button" id="resetCamera" title="視点を戻す" aria-label="カメラの視点を元に戻す">⟲</button>
+      </div>
+      <div class="scene-status"><span class="status-dot" aria-hidden="true"></span><span id="renderStatus">島を準備しています…</span></div>
+    </section>
+    <section class="console-wrap" id="gameControls" aria-label="列車の操作パネル">
+      <div class="console-inner">
+        <div class="console-heading"><div><span class="console-kicker">ミッション 01</span><h2>ちゅうおう駅で出会わせよう！</h2></div><p>2本の線路は、どちらも駅まで <strong>1,200 m</strong>。</p></div>
+        <div class="console-grid">
+          <div class="control-column">
+            <div class="train-control is-a">
+              <div class="train-control-heading"><div class="train-identity"><span class="train-icon" aria-hidden="true"><svg viewBox="0 0 60 55" fill="none"><path d="M12 13C12 7 18 6 30 6s18 1 18 7v24c0 5-4 7-9 7H21c-5 0-9-2-9-7V13Z" fill="currentColor"/><rect x="17" y="14" width="26" height="14" rx="4" fill="#D8E9ED"/><circle cx="20" cy="36" r="3.5" fill="#FFF5D9"/><circle cx="40" cy="36" r="3.5" fill="#FFF5D9"/><path d="M19 45l-4 6m26-6 4 6" stroke="#52536D" stroke-width="3" stroke-linecap="round"/></svg></span><div><strong>Aれっしゃ</strong><span>あかい列車</span></div></div><output for="speedA" id="speedAValue">30 <small>km/h</small></output></div>
+              <label for="speedA">はやさを かえよう</label>
+              <input type="range" min="12" max="48" step="6" value="30" id="speedA" aria-describedby="speedHint">
+            </div>
+            <div class="train-control is-b">
+              <div class="train-control-heading"><div class="train-identity"><span class="train-icon" aria-hidden="true"><svg viewBox="0 0 60 55" fill="none"><path d="M12 13C12 7 18 6 30 6s18 1 18 7v24c0 5-4 7-9 7H21c-5 0-9-2-9-7V13Z" fill="currentColor"/><rect x="17" y="14" width="26" height="14" rx="4" fill="#D8E9ED"/><circle cx="20" cy="36" r="3.5" fill="#FFF5D9"/><circle cx="40" cy="36" r="3.5" fill="#FFF5D9"/><path d="M19 45l-4 6m26-6 4 6" stroke="#52536D" stroke-width="3" stroke-linecap="round"/></svg></span><div><strong>Bれっしゃ</strong><span>あおい列車</span></div></div><output for="speedB" id="speedBValue">24 <small>km/h</small></output></div>
+              <label for="speedB">はやさを かえよう</label>
+              <input type="range" min="12" max="48" step="6" value="24" id="speedB" aria-describedby="speedHint">
+            </div>
+            <p class="short-hint" id="speedHint">速さがちがうと、到着時間はどうなるかな？</p>
+            <div class="actions"><button type="button" id="startButton" class="start-button"><span aria-hidden="true" id="playIcon">▶</span><span id="playLabel">列車を走らせる</span></button><button type="button" id="againButton" class="again-button" aria-label="もう一度最初から走らせる">↺ もどす</button></div>
+            <div class="result" id="result" role="status" aria-live="polite" aria-atomic="true" hidden><strong id="resultHeading"></strong><p id="resultExplanation"></p></div>
+          </div>
+          <section class="graph-card" aria-labelledby="graphTitle"><div class="graph-header"><div><h3 id="graphTitle">速さと時間のグラフ</h3><p>駅まで進んだ距離</p></div><div class="legend"><span><i class="dot-a"></i>A</span><span><i class="dot-b"></i>B</span></div></div>
+            <svg id="timeGraph" viewBox="0 0 560 310" role="img" aria-labelledby="chartTitle chartDesc" preserveAspectRatio="xMidYMid meet"><title id="chartTitle">駅まで進んだ距離と時間のグラフ</title><desc id="chartDesc">横軸は経過時間（分）。縦軸は駅まで進んだ距離（m）。あかい線はA列車、あおい線はB列車。</desc><g id="graphGrid"></g><g id="graphLines"></g><g id="graphDots"></g></svg>
+            <div class="graph-footer"><span>経過 <strong id="timeOutput">0.0分</strong></span><span id="arrivalOutput">列車を走らせてみよう</span></div>
+          </section>
+        </div>
+      </div>
+    </section>
+    <div class="notes"><p>※ これは速さを学ぶための模型です。画面の列車は別々の線路で走り、中央駅で止まります。距離と時間は学習用の設定です。</p><p>広告・追跡なし。外部通信なし。</p></div>
+  </main>
+  <script>/* Intentionally no inline behavior. */</script>
+</body>
+</html>
