@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#fff9ef">
+  <meta name="robots" content="noindex,nofollow">
+  <meta name="description" content="2台の列車を動かして、速さ・時間・位置とグラフの関係を学ぶPikaLabの体験型教材。">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; font-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'self'; form-action 'none'">
+  <title>動きとグラフの司令室 | PikaLab</title>
+  <link rel="stylesheet" href="./style.css">
+  <script src="./game-core.js" defer></script>
+  <script src="./scene.js" defer></script>
+  <script src="./main.js" defer></script>
+</head>
+<body>
+  <a class="skip-link" href="#main">ゲームへ移動</a>
+  <header class="site-header">
+    <div class="container header-inner">
+      <a class="brand" href="../" aria-label="PikaLabトップへ戻る">
+        <span class="brand-logo" aria-hidden="true">
+          <svg viewBox="0 0 44 44" fill="none"><path d="M17 7h10M21 7v12L11 34a4 4 0 0 0 3.3 6h15.4a4 4 0 0 0 3.3-6L23 19V7" stroke="currentColor" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"/><path d="M13 31q5-3 9 0t9 0" stroke="currentColor" stroke-width="3" stroke-linecap="round"/></svg>
+        </span>
+        <span class="brand-name"><strong>PikaLab</strong><span>デジタル研究室</span></span>
+      </a>
+      <div class="header-right">
+        <span class="progress-badge" id="progressBadge" aria-live="polite">できた 0 / 3</span>
+        <button type="button" class="text-button" id="openGuide"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="12" cy="12" r="9.3" stroke="currentColor" stroke-width="1.8"/><path d="M9.5 9a2.7 2.7 0 1 1 4 2.5c-1.4.9-1.5 1.4-1.5 2.7" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><circle cx="12" cy="17.7" r="1" fill="currentColor"/></svg><span>あそびかた</span></button>
+      </div>
+    </div>
+  </header>
+
+  <main id="main" class="container page-main">
+    <div class="intro">
+      <div class="intro-copy">
+        <h1>動きとグラフの<span>司令室</span><span class="title-dash" aria-hidden="true">.</span></h1>
+        <p>速さや発車時刻を変えると、出会う場所はどうなる？</p>
+      </div>
+      <div class="intro-figure" aria-hidden="true"><span class="signal-bars"><i></i><i></i><i></i></span><span class="intro-train">🚃</span></div>
+    </div>
+
+    <nav class="mission-tabs" id="missionTabs" aria-label="挑戦するミッション">
+      <button class="mission-tab is-current" type="button" data-mission="meeting" aria-current="step"><span class="mission-tab-no">01</span><span class="mission-tab-title">中央駅で会おう</span><span class="mission-tab-check" aria-hidden="true"></span></button>
+      <button class="mission-tab" type="button" data-mission="delay"><span class="mission-tab-no">02</span><span class="mission-tab-title">発車時刻のナゾ</span><span class="mission-tab-check" aria-hidden="true"></span></button>
+      <button class="mission-tab" type="button" data-mission="target"><span class="mission-tab-no">03</span><span class="mission-tab-title">800m地点へ</span><span class="mission-tab-check" aria-hidden="true"></span></button>
+    </nav>
+
+    <section class="mission-goal" aria-labelledby="missionTitle">
+      <div class="mission-goal-copy">
+        <div class="goal-label"><span class="goal-diamond" aria-hidden="true"></span><span id="missionNumber">ミッション 01 / 03</span></div>
+        <h2 id="missionTitle">中央駅で出会おう</h2>
+        <p id="missionGoal">2台の列車を、中央駅で同じ時刻に出会わせよう。</p>
+      </div>
+      <div class="goal-target"><span>めざす場所</span><strong id="goalPosition">中央駅・600m</strong></div>
+    </section>
+
+    <section class="diorama-shell" aria-labelledby="dioramaHeading">
+      <div class="scene-topbar"><h2 id="dioramaHeading">ミニチュア鉄道</h2><p>西の駅から東の駅まで <strong>1,200m</strong></p></div>
+      <div id="diorama" class="diorama" aria-label="列車AとBが走るミニチュア鉄道"></div>
+      <div class="station-ticks" aria-hidden="true"><span>西の駅 <b>0m</b></span><span>中央駅 <b>600m</b></span><span>東の駅 <b>1,200m</b></span></div>
+      <div class="train-readout">
+        <div class="train-readout-item"><span class="train-bullet blue"></span><strong>A列車</strong><span id="posA">0m</span></div>
+        <span class="readout-time">経過 <strong id="currentTime">0.0分</strong></span>
+        <div class="train-readout-item"><span class="train-bullet amber"></span><strong>B列車</strong><span id="posB">1,200m</span></div>
+      </div>
+    </section>
+
+    <div class="panel-grid">
+      <section class="control-panel" aria-labelledby="controlTitle">
+        <div class="panel-heading"><div><h2 id="controlTitle">列車を動かそう</h2></div><span class="panel-mark" aria-hidden="true">↗</span></div>
+        <div class="constants-row"><div><span class="train-bullet blue"></span><span>A列車</span><strong id="fixedA">24km/h</strong></div><div><span class="train-bullet amber"></span><span>B列車</span><strong id="fixedB">12km/h</strong></div></div>
+        <div class="adjustment">
+          <label class="adjust-label" for="controlSlider"><span id="sliderLabel">B列車の速さ</span><output id="sliderValue" for="controlSlider">12km/h</output></label>
+          <input id="controlSlider" type="range" min="12" max="36" step="6" value="12" aria-describedby="sliderHelp">
+          <div id="sliderTicks" class="slider-ticks" aria-hidden="true"></div>
+          <p class="adjust-help" id="sliderHelp">スライダーを動かしてみよう。</p>
+        </div>
+        <div class="action-row"><button id="playButton" class="primary-button" type="button"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="m9 5 11 7-11 7V5Z" fill="currentColor"/></svg><span id="playLabel">列車を走らせる</span></button><button id="resetButton" class="outline-button" type="button">もう一度</button></div>
+        <div id="resultCard" class="result-card" hidden aria-live="polite" aria-atomic="true"><div class="result-top"><span id="resultIcon" class="result-icon">✓</span><div><strong id="resultTitle">結果</strong><p id="resultText"></p></div></div><p id="resultWhy" class="result-why"></p><button type="button" id="nextButton" class="next-button" hidden>次のミッションへ <span aria-hidden="true">→</span></button></div>
+      </section>
+      <section class="graph-panel" aria-labelledby="graphTitle">
+        <div class="panel-heading graph-panel-heading"><div><h2 id="graphTitle">出会いを線で見よう</h2></div><div class="graph-legend"><span><i class="legend-a"></i>A</span><span><i class="legend-b"></i>B</span></div></div>
+        <div class="graph-frame">
+          <svg id="timeGraph" viewBox="0 0 620 344" role="img" aria-labelledby="graphSvgTitle graphSvgDesc" preserveAspectRatio="xMidYMid meet"><title id="graphSvgTitle">位置と時間のグラフ</title><desc id="graphSvgDesc">横軸は経過時間、縦軸は西の駅からの距離。青線がA列車、橙線がB列車を表す。</desc><g id="graphGrid"></g><g id="graphTraces"></g><g id="graphMarkers"></g></svg>
+          <p id="graphEmpty" class="graph-empty">走らせると、列車の動きが線になるよ。</p>
+        </div>
+        <p id="graphSummary" class="graph-summary">線が交わるところが、2台の出会い。</p>
+      </section>
+    </div>
+    <p class="small-note">※ 実際の列車の運行とは異なる、速さとグラフを学ぶための模型です。2台は別々の線路を走ります。</p>
+  </main>
+  <footer class="footer"><div class="container footer-inner"><strong>PikaLab</strong><span>広告・行動追跡なし／クリア記録は端末内のみ</span></div></footer>
+
+  <dialog id="guideDialog" class="guide-dialog" aria-labelledby="guideTitle"><div class="guide-body"><div class="guide-top"><h2 id="guideTitle">あそびかた</h2><button id="closeGuide" class="guide-close" type="button" aria-label="あそびかたを閉じる">×</button></div><ol><li><strong>めざす場所を見よう</strong><span>どこで出会わせたいかを確認。</span></li><li><strong>条件を1つ変えてみよう</strong><span>列車の速さか、発車を待つ時間を動かすよ。</span></li><li><strong>走らせてグラフを見よう</strong><span>2本の線が交わるところが出会いの場所。</span></li></ol><p>間違えても大丈夫！ 出会った場所を見て、もう一度試せるよ。</p><button id="guideOkay" class="primary-button guide-confirm" type="button">わかった！</button></div></dialog>
+</body>
+</html>
