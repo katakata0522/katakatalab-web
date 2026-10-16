@@ -14,6 +14,7 @@
 </head>
 <body>
   <a class="skip-link" href="#gameControls">操作パネルへ移動</a>
+  <noscript><p class="noscript-warning">この3Dゲームを遊ぶには、JavaScriptを有効にしてください。</p></noscript>
   <main>
     <section class="world-viewport" aria-labelledby="appTitle">
       <div id="worldCover" class="world-cover" aria-hidden="true"></div>
@@ -62,7 +63,8 @@
             <div class="result" id="result" role="status" aria-live="polite" aria-atomic="true" hidden><strong id="resultHeading"></strong><p id="resultExplanation"></p></div>
           </div>
           <section class="graph-card" aria-labelledby="graphTitle"><div class="graph-header"><div><h3 id="graphTitle">速さと時間のグラフ</h3><p>駅まで進んだ距離</p></div><div class="legend"><span><i class="dot-a"></i>A</span><span><i class="dot-b"></i>B</span></div></div>
-            <svg id="timeGraph" viewBox="0 0 560 310" role="img" aria-labelledby="chartTitle chartDesc" preserveAspectRatio="xMidYMid meet"><title id="chartTitle">駅まで進んだ距離と時間のグラフ</title><desc id="chartDesc">横軸は経過時間（分）。縦軸は駅まで進んだ距離（m）。あかい線はA列車、あおい線はB列車。</desc><g id="graphGrid"></g><g id="graphLines"></g><g id="graphDots"></g></svg>
+            <svg id="timeGraph" viewBox="0 0 500 310" role="img" aria-labelledby="chartTitle chartDesc" preserveAspectRatio="xMidYMid meet"><title id="chartTitle">駅まで進んだ距離と時間のグラフ</title><desc id="chartDesc">横軸は経過時間（分）。縦軸は駅まで進んだ距離（m）。あかい線はA列車、あおい線はB列車。</desc><g id="graphGrid"></g><g id="graphLines"></g><g id="graphDots"></g></svg>
+            <p class="graph-learning" id="graphLearning" hidden></p>
             <div class="graph-footer"><span>経過 <strong id="timeOutput">0.0分</strong></span><span id="arrivalOutput">走らせると線がのびるよ</span></div>
           </section>
         </div>

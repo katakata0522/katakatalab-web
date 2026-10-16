@@ -60,3 +60,11 @@
 .skip-button:hover{background:#e3f5ec}
 .actions{flex-wrap:wrap}
 @media(max-width:390px){.skip-button{width:100%;min-height:42px}}
+
+/* Result-only learning insight; no decorative copy on the resting scene. */
+.graph-learning{margin:0 0 10px;padding:9px 11px;border-radius:11px;background:#eef7ef;color:#427365;font-size:12px;line-height:1.7;font-weight:800}
+.graph-learning[hidden]{display:none}
+
+/* Keep camera tools above the overlapping dashboard on desktop/tablet. */
+@media(min-width:601px){.camera-dock{bottom:53px}.scene-status{bottom:54px}}
+.noscript-warning{padding:14px 20px;margin:0;text-align:center;background:#fff1dd;color:#765338;font-weight:800}

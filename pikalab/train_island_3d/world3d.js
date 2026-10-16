@@ -17,7 +17,7 @@
   const normalize=a=>scale(a,1/(length(a)||1));
   const lerp=(a,b,t)=>plus(scale(a,1-t),scale(b,t));
   const LIGHT=normalize(V(-0.55,1,0.75));
-  const COLORS={water:'#89c5c9',seaDeep:'#74b9c2',foam:'#edf8ec',grass:'#d9e889',grassLight:'#e9ed9a',grassRim:'#c2d779',cliff:'#f6e3b5',cliffDark:'#d9bb96',cliffEdge:'#fff0ca',forest:'#769579',forestLight:'#a8b982',pine:'#799177',trunk:'#947959',wood:'#876b60',rail:'#6c697b',iron:'#9a92a0',roof:'#d98764',wall:'#ffeed6',window:'#7caebe',navy:'#45425b',red:'#ce6367',blue:'#4d84b5'};
+  const COLORS={water:'#89c5c9',seaDeep:'#74b9c2',foam:'#e2fbef',grass:'#e0ea91',grassLight:'#f0efa6',grassRim:'#c6db83',cliff:'#f8e7c4',cliffDark:'#dac29e',cliffEdge:'#ffeed2',forest:'#769579',forestLight:'#a8b982',pine:'#799177',trunk:'#947959',wood:'#876b60',rail:'#6c697b',iron:'#9a92a0',roof:'#d98764',wall:'#ffeed6',window:'#7caebe',navy:'#45425b',red:'#ce6367',blue:'#4d84b5'};
   function hash(v){let n=v>>>0; n=Math.imul(n^(n>>>16),0x7feb352d);n=Math.imul(n^(n>>>15),0x846ca68b);return (n^(n>>>16))>>>0;}
   function randFrom(i){return hash(i)/4294967295;}
   function hexRgb(hex){const n=parseInt(hex.replace('#',''),16);return [(n>>16)&255,(n>>8)&255,n&255];}
@@ -45,8 +45,8 @@
   function cone(list,x,y,z,rad,h,color,segments=6){cylinder(list,x,y,z,rad,0.05,h,color,segments);}
   function disc(list,x,y,z,r,color,n=10){let pts=[];for(let i=0;i<n;i++){const a=2*Math.PI*i/n;pts.push(V(x+Math.cos(a)*r,y,z+Math.sin(a)*r));}polygon(list,pts,color);}
   function silhouette(list,cx,cz,rx,rz,height,seed){
-    const n=11,points=[];
-    for(let i=0;i<n;i++){let a=(i/n)*Math.PI*2,variation=.88 +randFrom(seed+i*103)*.24;points.push(V(cx+Math.cos(a)*rx*variation,height,cz+Math.sin(a)*rz*variation));}
+    const n=12,points=[];
+    for(let i=0;i<n;i++){let a=(i/n)*Math.PI*2,variation=.93 +randFrom(seed+i*103)*.14;points.push(V(cx+Math.cos(a)*rx*variation,height,cz+Math.sin(a)*rz*variation));}
     const core=V(cx,height,cz);
     // Stratified creams and grass lips follow the same true 3D polygon contour.
     const bottom=-3.26;
@@ -55,7 +55,7 @@
       const above=V(p[0],height-.10,p[2]),aboveQ=V(q[0],height-.10,q[2]);
       const m1=V(p[0],height-.10-(height-bottom)*.44,p[2]),m2=V(q[0],height-.10-(height-bottom)*.44,q[2]);
       const foot1=V(p[0],bottom,p[2]),foot2=V(q[0],bottom,q[2]);
-      quad(list,p,q,aboveQ,above,COLORS.grassRim);
+      quad(list,p,q,aboveQ,above,i%4===0?COLORS.grassLight:COLORS.grassRim);
       quad(list,above,aboveQ,m2,m1,i%3===0?COLORS.cliff:COLORS.cliffEdge);
       quad(list,m1,m2,foot2,foot1,i%4===0?COLORS.cliffDark:COLORS.cliff);
       // The pale waterline visually separates the island from its turquoise sea.
@@ -92,6 +92,10 @@
     box(list,x,y+.36*s,z+.41*s,.23*s,.39*s,.035*s,'#b88871');
     for(let d of [-.32,.32])box(list,x+d*s,y+.53*s,z+.426*s,.17*s,.19*s,.036*s,'#a4c4ca');
     box(list,x+.25*s,y+1.50*s,z-.22*s,.15*s,.35*s,.16*s,'#ae8b7d');
+    // A narrow doorstep and tiny flowerbox suggest a lived-in model village.
+    box(list,x,y+.07*s,z+.56*s,.48*s,.11*s,.31*s,'#d3bca1');
+    box(list,x+.34*s,y+.28*s,z+.46*s,.23*s,.08*s,.16*s,'#ae9675');
+    shrub(list,x+.34*s,y+.30*s,z+.48*s,.10*s,3);
   }
   function station(list){
     const x=0,y=.73,z=-.52;
@@ -104,6 +108,17 @@
     polygon(list,[V(x+a,yBase,z+b),V(x-a,yBase,z+b),V(x,yPeak,z+b)],'#eeb48a');
     quad(list,V(x-a,yBase,z-b),V(x,yPeak,z-b),V(x,yPeak,z+b),V(x-a,yBase,z+b),'#d37e62');
     quad(list,V(x,yPeak,z-b),V(x+a,yBase,z-b),V(x+a,yBase,z+b),V(x,yPeak,z+b),'#e29169');
+    // Subtle low-poly roof-tile courses: an architectural detail, not text decoration.
+    for (const roofSide of [-1,1]) {
+      for (let row=1;row<=3;row++) {
+        const fraction=row/4, yy=yPeak+(yBase-yPeak)*fraction,xx=x+roofSide*a*fraction;
+        const c=roofSide<0?'#e9a27c':'#d78167';
+        beam(list,V(xx,yy+.012,z-b+.07),V(xx,yy+.012,z+b-.07),.035,.018,c);
+      }
+    }
+    // Platform canopy and tiny station clock are intentionally part of the real mesh.
+    box(list,x,y+.30,z+1.35,3.12,.11,.63,'#e5d1af');
+    for(const dx of [-1.4,1.4])cylinder(list,x+dx,y+.49,z+1.56,.055,.05,.82,'#998b78',6);
     for(const dx of [-1.1,1.1]){box(list,x+dx,y+1.25,z+0.945,.46,.56,.04,'#87b7c0');box(list,x+dx,y+1.25,z+.977,.045,.57,.05,'#fff1d7')}
     box(list,x,y+.76,z+.949,.55,1.05,.04,'#b79077');
     cylinder(list,x,y+2.20,z+1.143,.29,.29,.04,'#f9f5e5',12);
@@ -159,11 +174,24 @@
     for(let i=0;i<=samples;i++){
       const u=i/samples,p=curve.point(u),t=curve.tangent(u),n=normalize(V(-t[2],0,t[0]));
       const tieP=V(p[0],p[1]+.05,p[2]);const yaw=Math.atan2(t[0],t[2]);
+      // Ties, a narrow bridge deck and support piles are genuine 3D geometry.
+      // Deck follows the curved railway and sits below the cross-ties.
+      const bridge=(seed===1 && i>18 && i<78)||(seed===2 && i>37 && i<75);
+      if(bridge && i<samples){
+        const next=curve.point((i+1)/samples);
+        const boardA=V(p[0],p[1]-.13,p[2]);
+        const boardB=V(next[0],next[1]-.13,next[2]);
+        beam(list,boardA,boardB,1.08,.17,'#c2a686');
+      }
       box(list,tieP[0],tieP[1],tieP[2],.99,.12,.18,'#947864',yaw);
-      // Rail supports and bridges over sea passages are real upright meshes.
-      if(i>4&&i<samples-5&&i%8===0 && (i>16&&i<48)){
+      if(bridge&&i%9===0){
         const drop=p[1]-(-3.18);
-        if(drop>.7){cylinder(list,p[0],(-3.18+p[1])/2,p[2],.15,.16,drop,'#ccb99b',6);}
+        if(drop>.7){
+          for(const side of [-.39,.39]){
+            const x=p[0]+n[0]*side,z=p[2]+n[2]*side;
+            cylinder(list,x,(-3.18+p[1])*.5,z,.105,.12,drop,'#b99f83',6);
+          }
+        }
       }
     }
     for(let side of [-1,1]){
@@ -250,6 +278,11 @@
       boulder(list,Math.sin(angle)*rr*.92,-3.15,Math.cos(angle)*rr*.7,.25+randFrom(id+1)*.64);
     }
     for(let i=0;i<9;i++)box(list,8.0+i*.36,-3.05,6.1, .30,.16,1.25,'#a28a70');
+    // Tiny low-poly water glints at island margins: helps the archipelago feel afloat.
+    const glints=[[11.2,2.5],[10.3,-5.4],[-11.5,1.2],[-9.8,-7.7],[1.2,7.7],[10.5,7.0],[-2.6,-10.0]];
+    for(const [x,z] of glints){
+      for(let i=0;i<3;i++)box(list,x+i*.26,-3.22,z+i*.17,.34,.018,.065,i===1?'#def1dd':'#b7ded4',-.32);
+    }
     return islands;
   }
   function rollingWheel(list,x,y,z,r,width,yaw){
@@ -340,59 +373,127 @@
       orbit:(dx,dy)=>{azimuth=Math.min(1.65,Math.max(-1.30,azimuth+dx*.006)); elevation=Math.min(1.32,Math.max(.34,elevation+dy*.006));},
       zoomBy:d=>{zoom=Math.min(1.85,Math.max(.65,zoom*d))},reset:()=>{azimuth=.70;elevation=.73;zoom=defaultZoom;},getState:()=>({azimuth,elevation,zoom})};
   }
-  function createWebGL(canvas){
-    let gl;try{gl=canvas.getContext('webgl2',{alpha:false,antialias:true,preserveDrawingBuffer:true})||canvas.getContext('webgl',{alpha:false,antialias:true,preserveDrawingBuffer:true})}catch(_){gl=null}
+  /* GPU path: upload static island vertices once; train/windmill vertices are dynamic.
+     Orbit/zoom are shader uniforms instead of re-projecting every island triangle on the CPU. */
+  function createWebGL(canvas, staticFaces){
+    let gl;
+    try {gl=canvas.getContext('webgl2',{alpha:false,antialias:true})||canvas.getContext('webgl',{alpha:false,antialias:true});}
+    catch(_){gl=null;}
     if(!gl)return null;
-    const vertex=`attribute vec3 pos; attribute vec3 tint; varying vec3 outTint; void main(){gl_Position=vec4(pos,1.0);outTint=tint;}`;
-    const frag=`precision mediump float; varying vec3 outTint; void main(){gl_FragColor=vec4(outTint,1.0);}`;
-    function shader(type,src){const sh=gl.createShader(type);gl.shaderSource(sh,src);gl.compileShader(sh);if(!gl.getShaderParameter(sh,gl.COMPILE_STATUS))throw new Error(gl.getShaderInfoLog(sh));return sh;}
+    const vertex=`attribute vec3 pos; attribute vec3 tint;
+      uniform vec3 uRight,uUp,uForward; uniform vec2 uScale;
+      varying vec3 outTint;
+      void main(){vec3 rel=pos-vec3(0.0,0.35,0.0);
+        gl_Position=vec4(dot(rel,uRight)*uScale.x, -.06 +dot(rel,uUp)*uScale.y, dot(rel,uForward)/45.0,1.0);
+        outTint=tint;}`;
+    const fragment=`precision mediump float;varying vec3 outTint;void main(){gl_FragColor=vec4(outTint,1.0);}`;
+    let program,staticBuffer,dynamicBuffer,attribPos,attribColor,uniformRight,uniformUp,uniformForward,uniformScale;
+    function shader(type,source){const item=gl.createShader(type);gl.shaderSource(item,source);gl.compileShader(item);
+      if(!gl.getShaderParameter(item,gl.COMPILE_STATUS))throw new Error(gl.getShaderInfoLog(item));return item;}
+    function pack(items){let count=0;for(const f of items)count+=Math.max(0,f.v.length-2)*3;
+      const data=new Float32Array(count*6);let k=0;
+      for(const f of items){const c=rgb(f.c);for(let j=1;j<f.v.length-1;j++){
+        for(const p of [f.v[0],f.v[j],f.v[j+1]]){
+          data[k++]=p[0];data[k++]=p[1];data[k++]=p[2];
+          data[k++]=c[0]/255;data[k++]=c[1]/255;data[k++]=c[2]/255;
+        }
+      }}return data;
+    }
     try{
-      const program=gl.createProgram();gl.attachShader(program,shader(gl.VERTEX_SHADER,vertex));gl.attachShader(program,shader(gl.FRAGMENT_SHADER,frag));gl.linkProgram(program);
-      if(!gl.getProgramParameter(program,gl.LINK_STATUS))throw new Error('3D shader link failed');
-      const buf=gl.createBuffer();gl.useProgram(program);gl.enableVertexAttribArray(gl.getAttribLocation(program,'pos'));gl.enableVertexAttribArray(gl.getAttribLocation(program,'tint'));
-      return function render(items,basis,camera){
-        const vertexCount=items.reduce((n,f)=>n+Math.max(0,f.v.length-2)*3,0);const bufData=new Float32Array(vertexCount*6);let idx=0;
-        const put=(point,c)=>{const p=camera.project(point,basis);bufData[idx++]=(p.x/basis.w)*2-1;bufData[idx++]=1-(p.y/basis.h)*2;bufData[idx++]=p.depth/45;const color=rgb(c);bufData[idx++]=color[0]/255;bufData[idx++]=color[1]/255;bufData[idx++]=color[2]/255};
-        for(const f of items){const v=f.v;for(let j=1;j<v.length-1;j++){put(v[0],f.c);put(v[j],f.c);put(v[j+1],f.c)}}
-        gl.viewport(0,0,canvas.width,canvas.height);gl.clearColor(.55,.79,.82,1);gl.clear(gl.COLOR_BUFFER_BIT|gl.DEPTH_BUFFER_BIT);gl.enable(gl.DEPTH_TEST);gl.depthFunc(gl.LEQUAL);gl.disable(gl.CULL_FACE);gl.useProgram(program);gl.bindBuffer(gl.ARRAY_BUFFER,buf);gl.bufferData(gl.ARRAY_BUFFER,bufData.subarray(0,idx),gl.DYNAMIC_DRAW);
-        const pLoc=gl.getAttribLocation(program,'pos'),cLoc=gl.getAttribLocation(program,'tint');gl.vertexAttribPointer(pLoc,3,gl.FLOAT,false,24,0);gl.vertexAttribPointer(cLoc,3,gl.FLOAT,false,24,12);gl.drawArrays(gl.TRIANGLES,0,idx/6);
+      program=gl.createProgram();gl.attachShader(program,shader(gl.VERTEX_SHADER,vertex));gl.attachShader(program,shader(gl.FRAGMENT_SHADER,fragment));gl.linkProgram(program);
+      if(!gl.getProgramParameter(program,gl.LINK_STATUS))throw new Error(gl.getProgramInfoLog(program));
+      gl.useProgram(program);attribPos=gl.getAttribLocation(program,'pos');attribColor=gl.getAttribLocation(program,'tint');
+      uniformRight=gl.getUniformLocation(program,'uRight');uniformUp=gl.getUniformLocation(program,'uUp');uniformForward=gl.getUniformLocation(program,'uForward');uniformScale=gl.getUniformLocation(program,'uScale');
+      if(attribPos<0||attribColor<0||!uniformScale)throw new Error('WebGL shader variables are missing');
+      staticBuffer=gl.createBuffer();dynamicBuffer=gl.createBuffer();
+      const staticData=pack(staticFaces);
+      gl.bindBuffer(gl.ARRAY_BUFFER,staticBuffer);gl.bufferData(gl.ARRAY_BUFFER,staticData,gl.STATIC_DRAW);
+      const staticVertexCount=staticData.length/6;
+      gl.enable(gl.DEPTH_TEST);gl.depthFunc(gl.LEQUAL);gl.disable(gl.CULL_FACE);
+      const bind=(buffer)=>{gl.bindBuffer(gl.ARRAY_BUFFER,buffer);gl.enableVertexAttribArray(attribPos);gl.enableVertexAttribArray(attribColor);gl.vertexAttribPointer(attribPos,3,gl.FLOAT,false,24,0);gl.vertexAttribPointer(attribColor,3,gl.FLOAT,false,24,12);};
+      return {
+        render(dynamicFaces,basis){
+          if(gl.isContextLost())return;
+          const fresh=pack(dynamicFaces);
+          gl.viewport(0,0,canvas.width,canvas.height);gl.clearColor(.54,.77,.79,1);gl.clear(gl.COLOR_BUFFER_BIT|gl.DEPTH_BUFFER_BIT);
+          gl.useProgram(program);
+          gl.uniform3fv(uniformRight,basis.right);gl.uniform3fv(uniformUp,basis.up);gl.uniform3fv(uniformForward,basis.forward);
+          gl.uniform2f(uniformScale,2*basis.k/basis.w,2*basis.k/basis.h);
+          bind(staticBuffer);gl.drawArrays(gl.TRIANGLES,0,staticVertexCount);
+          gl.bindBuffer(gl.ARRAY_BUFFER,dynamicBuffer);gl.bufferData(gl.ARRAY_BUFFER,fresh,gl.DYNAMIC_DRAW);
+          bind(dynamicBuffer);gl.drawArrays(gl.TRIANGLES,0,fresh.length/6);
+        },
+        getMetrics:()=>({staticVertexCount,staticUploads:1}),
+        destroy(){gl.deleteBuffer(staticBuffer);gl.deleteBuffer(dynamicBuffer);gl.deleteProgram(program);}
       };
-    }catch(e){return null;}
+    }catch(error){
+      if(staticBuffer)gl.deleteBuffer(staticBuffer);if(dynamicBuffer)gl.deleteBuffer(dynamicBuffer);if(program)gl.deleteProgram(program);
+      return null;
+    }
   }
-  function softwarePainter(canvas){const ctx=canvas.getContext('2d',{alpha:false});if(!ctx)throw new Error('Canvas描画が利用できません');
-    return function render(items,basis,camera){
-      const w=basis.w,h=basis.h,grad=ctx.createLinearGradient(0,0,0,h);grad.addColorStop(0,'#83b8b9');grad.addColorStop(1,'#92cccf');ctx.fillStyle=grad;ctx.fillRect(0,0,w,h);
-      // The software fallback also uses actual 3D polygons and depth sorting.
-      const drawables=[];
-      for(const f of items){const p=f.v.map(v=>camera.project(v,basis));const depth=p.reduce((sum,k)=>sum+k.depth,0)/p.length;
-        drawables.push({p,c:f.c,depth});}
-      drawables.sort((a,b)=>b.depth-a.depth);
-      for(const item of drawables){ctx.beginPath();ctx.moveTo(item.p[0].x,item.p[0].y);for(let i=1;i<item.p.length;i++)ctx.lineTo(item.p[i].x,item.p[i].y);ctx.closePath();ctx.fillStyle=item.c;ctx.fill();}
+  /* Canvas fallback: project static island faces only when the camera or viewport changes.
+     Dynamic models still depth-sort correctly with the fixed scenery. */
+  function softwarePainter(canvas,staticFaces){
+    const ctx=canvas.getContext('2d',{alpha:false});if(!ctx)throw new Error('Canvas描画が利用できません');
+    let cachedCameraKey='',cachedStatic=[],staticProjectionCount=0;
+    const projectFaces=(faces,basis,camera)=>faces.map(f=>{
+      const p=f.v.map(v=>camera.project(v,basis));
+      return {p,c:f.c,depth:p.reduce((sum,k)=>sum+k.depth,0)/p.length};
+    });
+    return {
+      render(dynamicFaces,basis,camera){
+        const {w,h}=basis,cs=camera.getState();const key=[w,h,cs.azimuth,cs.elevation,cs.zoom].join('/');
+        if(key!==cachedCameraKey){cachedStatic=projectFaces(staticFaces,basis,camera);cachedCameraKey=key;staticProjectionCount++;}
+        const grad=ctx.createLinearGradient(0,0,0,h);grad.addColorStop(0,'#82b8bb');grad.addColorStop(1,'#96cdcf');ctx.fillStyle=grad;ctx.fillRect(0,0,w,h);
+        const dynamic=projectFaces(dynamicFaces,basis,camera);
+        const drawables=cachedStatic.concat(dynamic);drawables.sort((a,b)=>b.depth-a.depth);
+        for(const item of drawables){const p=item.p;ctx.beginPath();ctx.moveTo(p[0].x,p[0].y);
+          for(let i=1;i<p.length;i++)ctx.lineTo(p[i].x,p[i].y);
+          ctx.closePath();ctx.fillStyle=item.c;ctx.fill();}
+      },
+      getMetrics:()=>({staticProjectionCount,cachedStaticFaces:cachedStatic.length}),destroy(){}
     };
   }
   function createWorld(canvas,labels){
     const world=compileWorld(),camera=makeCamera(canvas);
     // WebGL preferred. Some enterprise browsers disable WebGL; 3D mesh software rasterization remains functional.
-    const hardwarePainter=createWebGL(canvas);
-    const paint=hardwarePainter||softwarePainter(canvas);
+    const hardwarePainter=createWebGL(canvas,world.mesh);
+    const painter=hardwarePainter||softwarePainter(canvas,world.mesh);
     const renderType=hardwarePainter?'webgl':'software3d';
-    let progressA=0,progressB=0,animating=true,phase=0,raf=null,drag=null,moving=false,dirty=true;
+    let progressA=0,progressB=0,animating=true,phase=0,raf=null,idleTimer=null,drag=null,moving=false,dirty=true,immediatePaint=true;
+    let renderedFrames=0;
     let width=0,height=0,dpr=1,lastPaintAt=0;
-    function resize(){let bb=canvas.getBoundingClientRect();let nw=Math.max(1,Math.round(bb.width)),nh=Math.max(1,Math.round(bb.height));const ndpr=Math.min(window.devicePixelRatio||1,1.8);
-      if(nw!==width||nh!==height||ndpr!==dpr){width=nw;height=nh;dpr=ndpr;canvas.width=Math.round(nw*dpr);canvas.height=Math.round(nh*dpr);camera.setSize(canvas.width,canvas.height);dirty=true;}}
-    function draw(timestamp){if(!animating)return;
-      const frameInterval=moving?(renderType==='webgl'?22:40):160;
-      if(!dirty && timestamp-lastPaintAt<frameInterval){raf=requestAnimationFrame(draw);return;}
-      if(typeof document!=='undefined' && document.visibilityState==='hidden'){raf=requestAnimationFrame(draw);return;}
-      dirty=false;lastPaintAt=timestamp;resize();
+    function scheduleNext(immediate=false){
+      if(!animating||raf!==null||idleTimer!==null)return;
+      if(immediate||moving||drag){raf=requestAnimationFrame(draw);}
+      else idleTimer=setTimeout(()=>{idleTimer=null;raf=requestAnimationFrame(draw);},440);
+    }
+    function invalidate(urgent=false){dirty=true;if(urgent)immediatePaint=true;
+      if(idleTimer!==null){clearTimeout(idleTimer);idleTimer=null;}
+      scheduleNext(true);
+    }
+    function resize(){const bb=canvas.getBoundingClientRect();const nw=Math.max(1,Math.round(bb.width)),nh=Math.max(1,Math.round(bb.height));
+      const ndpr=Math.min(window.devicePixelRatio||1,renderType==='webgl'?1.8:1.5);
+      if(nw!==width||nh!==height||ndpr!==dpr){
+        width=nw;height=nh;dpr=ndpr;canvas.width=Math.round(nw*dpr);canvas.height=Math.round(nh*dpr);
+        camera.setSize(canvas.width,canvas.height);dirty=true;immediatePaint=true;
+      }
+    }
+    function draw(timestamp){
+      raf=null;if(!animating)return;
+      resize();
+      if(typeof document!=='undefined'&&document.visibilityState==='hidden'){scheduleNext();return;}
+      const frameInterval=moving?(renderType==='webgl'?28:48):440;
+      if(!immediatePaint && timestamp-lastPaintAt<frameInterval){scheduleNext();return;}
+      immediatePaint=false;dirty=false;lastPaintAt=timestamp;renderedFrames++;
       phase=window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches?0:timestamp*.001;
-      const mesh=world.mesh.slice();
-      trainFaces(mesh,world.paths[0],.23 + progressA*.77,COLORS.red,true);
-      trainFaces(mesh,world.paths[1],.15 + progressB*.85,COLORS.blue,false);
-      windmillBlades(mesh,7.55,-.19,4.16,phase*.65);
-      const b=camera.getBasis();paint(mesh,b,camera);
+      const movingMesh=[];
+      trainFaces(movingMesh,world.paths[0],.23 + progressA*.77,COLORS.red,true);
+      trainFaces(movingMesh,world.paths[1],.15 + progressB*.85,COLORS.blue,false);
+      windmillBlades(movingMesh,7.55,-.19,4.16,phase*.65);
+      const b=camera.getBasis();painter.render(movingMesh,b,camera);
       // Draw indispensable labels using a separate overlay canvas, not on a WebGL surface.
-      if(labels){const cx=labels.getContext('2d');const vw=canvas.clientWidth,vh=canvas.clientHeight; const scaleLabel=vw/canvas.width;
+      if(labels){const cx=labels.getContext('2d');const vw=canvas.clientWidth;
         if(labels.width!==canvas.width||labels.height!==canvas.height){labels.width=canvas.width;labels.height=canvas.height;}
         cx.clearRect(0,0,labels.width,labels.height);
         function tag(worldPoint,name,bg,large){const p=camera.project(worldPoint,b);const w=(large?100:50)*dpr,h=(large?34:29)*dpr;
@@ -402,12 +503,17 @@
         tag(V(-1.15,4.06,-.42),'ちゅうおう駅','#c88169',true);
         if(vw>530){tag(plus(world.paths[0].point(.23 + progressA*.77),V(0,1.5,0)),'A','#d16d71',false);tag(plus(world.paths[1].point(.15 + progressB*.85),V(0,1.5,0)),'B','#5787be',false);}
       }
-      raf=requestAnimationFrame(draw);
+      scheduleNext();
     }
-    function onPointerDown(e){if(e.button!==0)return;drag={x:e.clientX,y:e.clientY};canvas.setPointerCapture(e.pointerId);canvas.style.cursor='grabbing';}
-    function onPointerMove(e){if(!drag)return;camera.orbit(e.clientX-drag.x,e.clientY-drag.y);drag.x=e.clientX;drag.y=e.clientY;dirty=true;}
-    function onPointerUp(){drag=null;canvas.style.cursor='grab';}
-    function onWheel(e){e.preventDefault();camera.zoomBy(e.deltaY>0?.9:1.1);dirty=true;}
+    function onPointerDown(e){if(e.button!==0||drag)return;drag={id:e.pointerId,x:e.clientX,y:e.clientY};try{canvas.setPointerCapture(e.pointerId);}catch(_){/* interrupted gestures */}canvas.style.cursor='grabbing';}
+    function onPointerMove(e){if(!drag||drag.id!==e.pointerId)return;const dx=e.clientX-drag.x,dy=e.clientY-drag.y;camera.orbit(dx,dy);drag.x=e.clientX;drag.y=e.clientY;invalidate(true);}
+    function onPointerUp(e){if(drag&&e.pointerId!==drag.id)return;drag=null;canvas.style.cursor='grab';scheduleNext(true);}
+    function onWheel(e){
+      // Scrolling over the scenery should still scroll the page. Ctrl/Cmd+wheel zooms
+      // deliberately; the +/- buttons remain usable without a modifier.
+      if(!e.ctrlKey&&!e.metaKey)return;
+      e.preventDefault();camera.zoomBy(e.deltaY>0?.9:1.1);invalidate(true);
+    }
     function onKey(e){let handled=true;
       if(e.key==='ArrowLeft')camera.orbit(-26,0);
       else if(e.key==='ArrowRight')camera.orbit(26,0);
@@ -417,13 +523,16 @@
       else if(e.key==='-')camera.zoomBy(1/1.12);
       else if(e.key.toLowerCase()==='r')camera.reset();
       else handled=false;
-      if(handled){e.preventDefault();dirty=true;}
+      if(handled){e.preventDefault();invalidate(true);}
     }
+    const observer=typeof ResizeObserver!=='undefined'?new ResizeObserver(()=>{resize();invalidate(true);}):null;observer?.observe(canvas);
+    const onVisibility=()=>{if(document.visibilityState==='visible'){lastPaintAt=0;invalidate(true);}};
+    if(typeof document!=='undefined')document.addEventListener('visibilitychange',onVisibility);
     canvas.addEventListener('keydown',onKey);
     canvas.addEventListener('pointerdown',onPointerDown);canvas.addEventListener('pointermove',onPointerMove);canvas.addEventListener('pointerup',onPointerUp);canvas.addEventListener('pointercancel',onPointerUp);canvas.addEventListener('wheel',onWheel,{passive:false});
-    raf=requestAnimationFrame(draw);
-    return {setTrains:(a,b)=>{progressA=Math.max(0,Math.min(1,a));progressB=Math.max(0,Math.min(1,b));dirty=true;},setMoving:v=>{moving=Boolean(v);dirty=true;},resetCamera:()=>{camera.reset();dirty=true;},zoomBy:k=>{camera.zoomBy(k);dirty=true;},getRenderType:()=>renderType,getCameraState:()=>camera.getState(),
-      destroy(){animating=false;if(raf)cancelAnimationFrame(raf);canvas.removeEventListener('keydown',onKey);canvas.removeEventListener('pointerdown',onPointerDown);canvas.removeEventListener('pointermove',onPointerMove);canvas.removeEventListener('pointerup',onPointerUp);canvas.removeEventListener('pointercancel',onPointerUp);canvas.removeEventListener('wheel',onWheel);}, getSceneStats:()=>({faces:world.mesh.length,rails:2,islands:world.islands.length,trainProgress:[progressA,progressB]})};
+    scheduleNext(true);
+    return {setTrains:(a,b)=>{progressA=Math.max(0,Math.min(1,a));progressB=Math.max(0,Math.min(1,b));invalidate();},setMoving:v=>{moving=Boolean(v);invalidate(true);},resetCamera:()=>{camera.reset();invalidate(true);},zoomBy:k=>{camera.zoomBy(k);invalidate(true);},getRenderType:()=>renderType,getCameraState:()=>camera.getState(),
+      destroy(){animating=false;if(raf!==null)cancelAnimationFrame(raf);if(idleTimer!==null)clearTimeout(idleTimer);observer?.disconnect();if(typeof document!=='undefined')document.removeEventListener('visibilitychange',onVisibility);painter.destroy();canvas.removeEventListener('keydown',onKey);canvas.removeEventListener('pointerdown',onPointerDown);canvas.removeEventListener('pointermove',onPointerMove);canvas.removeEventListener('pointerup',onPointerUp);canvas.removeEventListener('pointercancel',onPointerUp);canvas.removeEventListener('wheel',onWheel);}, getSceneStats:()=>({faces:world.mesh.length,rails:2,islands:world.islands.length,trainProgress:[progressA,progressB],renderedFrames,rendererMetrics:painter.getMetrics()})};
   }
   return {createWorld,compileWorld,trackCurve,makeCamera,sceneConstants:{islands:9,LENGTH_METRES:1200},V,length,dot};
 });

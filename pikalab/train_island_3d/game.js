@@ -1,7 +1,7 @@
 /* PikaLab Train Island — pure educational model, plus accessible controls and SVG graph. */
 (function (root,factory){'use strict';const api=factory(); if(typeof module!=='undefined'&&module.exports)module.exports=api;if(root)root.TrainIslandGame=api;})(typeof globalThis!=='undefined'?globalThis:this,function(){
 'use strict';
-const DISTANCE=1200;const MIN_SPEED=12,MAX_SPEED=48,STEP=6;
+const DISTANCE=1200;const MIN_SPEED=12,MAX_SPEED=48,STEP=6;const GRAPH_MAX_MINUTES=6;
 // A simulated minute takes ~1.8 real seconds: the island should be seen, not flash by.
 const SIM_MINUTES_PER_SECOND=.56;
 function validSpeed(n){return Number.isFinite(n)&&n>=MIN_SPEED&&n<=MAX_SPEED&&(n-MIN_SPEED)%STEP===0;}
@@ -18,22 +18,27 @@ function init(){
  }catch(error){$('renderStatus').textContent='3Dを表示できません。ページを読み直してください。';console.error(error);return;}
  const speedInputs=[$('speedA'),$('speedB')];const labels=[$('speedAValue'),$('speedBValue')];
  let state={t:0,running:false,finished:false,last:0,started:false};
- let lastGraphPaint=0;
+ let lastGraphPaint=0,runnerId=null,graphScaffoldReady=false;
+ // The graph always uses the same 0–6 minute scale. Changing its scale with
+ // speed would make the slopes incomparable and obscure the intended lesson.
  const svgNS='http://www.w3.org/2000/svg';const svgEl=(tag,attrs)=>{const e=document.createElementNS(svgNS,tag);for(const [k,v] of Object.entries(attrs))e.setAttribute(k,String(v));return e};
  function speeds(){return [Number(speedInputs[0].value),Number(speedInputs[1].value)];}
  function updateSliderLabels(){speeds().forEach((v,i)=>{labels[i].innerHTML=`${v} <small>km/h</small>`;speedInputs[i].style.setProperty('--percent',Math.round((v-MIN_SPEED)/(MAX_SPEED-MIN_SPEED)*100)+'%');});}
  function resetResult(){const r=$('result');r.hidden=true;r.removeAttribute('data-success');
-   $('worldOutcome').hidden=true;$('worldOutcome').removeAttribute('data-success');}
+   $('worldOutcome').hidden=true;$('worldOutcome').removeAttribute('data-success');
+   const tip=$('graphLearning');if(tip)tip.hidden=true;}
  function updateSceneMessage(text){$('renderStatus').textContent=text;}
  function syncRunUi(){setPlayLabel();$('skipRun').hidden=!state.started||state.finished;}
  function reducedMotion(){return Boolean(window.matchMedia?.('(prefers-reduced-motion: reduce)').matches);}
+ function scheduleRunningFrame(){if(state.running&&runnerId===null)runnerId=requestAnimationFrame(frame);}
+ function haltRunningFrame(){if(runnerId!==null){cancelAnimationFrame(runnerId);runnerId=null;}}
  function showWorld(){
    const box=$('worldCanvas').closest('.world-viewport');
    box.scrollIntoView({behavior:reducedMotion()?'instant':'smooth',block:'start'});
  }
  function setPlayLabel(){let text=state.finished?'もう一度走らせる':state.running?'一時停止':state.started?'つづきを走らせる':'列車を走らせる'; $('playLabel').textContent=text; $('playIcon').textContent=state.running?'Ⅱ':'▶';}
  function setRunningInputs(disabled){speedInputs.forEach(e=>e.disabled=disabled);}
- function clearRun(){state.t=0;state.running=false;state.finished=false;state.started=false;state.last=0;
+ function clearRun(){state.t=0;state.running=false;state.finished=false;state.started=false;state.last=0;haltRunningFrame();
    stage.setTrains(0,0);stage.setMoving(false);setRunningInputs(false);resetResult();syncRunUi();updateGraph();
    updateSceneMessage('島を左右にドラッグして見渡せるよ');}
  function checkResult(){const [a,b]=speeds(),r=outcome(a,b);const card=$('result');card.hidden=false;card.dataset.success=String(r.success);
@@ -47,24 +52,30 @@ function init(){
    updateSceneMessage('2台とも駅へ到着しました');
  }
  function finishRun(){
+   haltRunningFrame();
    const [a,b]=speeds();state.t=Math.max(outcome(a,b).a,outcome(a,b).b);
    state.running=false;state.started=true;state.finished=true;state.last=0;
    stage.setTrains(1,1);stage.setMoving(false);setRunningInputs(false);
    checkResult();syncRunUi();updateGraph();
+   const tip=$('graphLearning');if(tip){tip.hidden=false;tip.textContent=a===b?'線が同じ速さでのびると、同じ時間で同じ距離に着くよ。':'速い列車ほど線が急になるよ。横の同じ時間で比べると、進んだ距離の違いが分かるね。';}
  }
- function updateGraph(){const [a,b]=speeds(),r=outcome(a,b);const maxT=Math.ceil((Math.max(r.a,r.b)+.45)*2)/2;
-    const x0=65,y0=259,w=470,h=216;const xp=t=>x0+w*t/maxT,yp=d=>y0-h*d/DISTANCE;
-    const grid=$('graphGrid'),lines=$('graphLines'),dots=$('graphDots');grid.replaceChildren();lines.replaceChildren();dots.replaceChildren();
-    for(let dist=0;dist<=DISTANCE;dist+=400){const y=yp(dist);grid.append(svgEl('line',{x1:x0,x2:x0+w,y1:y,y2:y,stroke:'#e2e8e8','stroke-width':1.5}));let label=svgEl('text',{x:x0-11,y:y+5,fill:'#82959b','font-size':14,'font-weight':750,'text-anchor':'end'});label.textContent=dist;grid.append(label);}
-    const tickStep=maxT>6?2:1;for(let t=0;t<=maxT+.001;t+=tickStep){const x=xp(t);grid.append(svgEl('line',{x1:x,x2:x,y1:y0,y2:y0-h,stroke:'#edf0ed','stroke-width':1.2}));const label=svgEl('text',{x,y:y0+22,'text-anchor':'middle',fill:'#84969a','font-size':13,'font-weight':750});label.textContent=t;grid.append(label);}
-    grid.append(svgEl('path',{d:`M${x0},${y0-h-8}V${y0}H${x0+w+8}`,fill:'none',stroke:'#8c9fa3','stroke-width':2,'stroke-linecap':'round'}));
-    const xLabel=svgEl('text',{x:x0+w/2,y:302,'text-anchor':'middle',fill:'#7a898f','font-size':15,'font-weight':800});xLabel.textContent='時間（分）';grid.append(xLabel);
-    const yLabel=svgEl('text',{x:15,y:28,fill:'#7a898f','font-size':13,'font-weight':850});yLabel.textContent='距離（m）';grid.append(yLabel);
+ function updateGraph(){const [a,b]=speeds(),r=outcome(a,b);const maxT=GRAPH_MAX_MINUTES;
+    const x0=64,y0=259,w=402,h=216;const xp=t=>x0+w*t/maxT,yp=d=>y0-h*d/DISTANCE;
+    const grid=$('graphGrid'),lines=$('graphLines'),dots=$('graphDots');lines.replaceChildren();dots.replaceChildren();
+    if(!graphScaffoldReady){
+      grid.replaceChildren();
+      for(let dist=0;dist<=DISTANCE;dist+=400){const y=yp(dist);grid.append(svgEl('line',{x1:x0,x2:x0+w,y1:y,y2:y,stroke:'#e2e8e8','stroke-width':1.5}));let label=svgEl('text',{x:x0-11,y:y+5,fill:'#82959b','font-size':18,'font-weight':750,'text-anchor':'end'});label.textContent=dist;grid.append(label);}
+      for(let t=0;t<=maxT;t++){const x=xp(t);grid.append(svgEl('line',{x1:x,x2:x,y1:y0,y2:y0-h,stroke:'#edf0ed','stroke-width':'1.2'}));const label=svgEl('text',{x,y:y0+22,'text-anchor':'middle',fill:'#84969a','font-size':18,'font-weight':750});label.textContent=t;grid.append(label);}
+      grid.append(svgEl('path',{d:`M${x0},${y0-h-8}V${y0}H${x0+w+8}`,fill:'none',stroke:'#8c9fa3','stroke-width':2,'stroke-linecap':'round'}));
+      const xLabel=svgEl('text',{x:x0+w/2,y:302,'text-anchor':'middle',fill:'#7a898f','font-size':17,'font-weight':800});xLabel.textContent='時間（分）';grid.append(xLabel);
+      const yLabel=svgEl('text',{x:15,y:28,fill:'#7a898f','font-size':16,'font-weight':850});yLabel.textContent='距離（m）';grid.append(yLabel);
+      graphScaffoldReady=true;
+    }
     const plotTime=state.started?Math.min(state.t,maxT):0;
     // Do not draw the full answers before the user experiments with the trains.
     if(!state.started){
-      const caption=svgEl('text',{x:305,y:139,'text-anchor':'middle',fill:'#7c9194','font-size':16,'font-weight':750});
-      caption.textContent='列車が進むと、線がのびるよ';grid.append(caption);
+      const caption=svgEl('text',{x:265,y:139,'text-anchor':'middle',fill:'#7c9194','font-size':17,'font-weight':750});
+      caption.textContent='列車が進むと、線がのびるよ';lines.append(caption);
       for(const [dx,color] of [[-4,'#ce676b'],[4,'#548db6']]){
         dots.append(svgEl('circle',{cx:x0+dx,cy:y0-2,r:5.8,fill:color,stroke:'#fff','stroke-width':2}));
       }
@@ -92,6 +103,7 @@ function init(){
    const wasRunning=state.running;
    state.running=!state.running;state.started=true;state.last=0;
    stage.setMoving(state.running);setRunningInputs(true);resetResult();syncRunUi();updateGraph();
+   if(state.running)scheduleRunningFrame();else haltRunningFrame();
    updateSceneMessage(state.running?'列車が中央駅へ走っています':'一時停止しています');
    if(!wasRunning&&state.t===0)showWorld();
  });
@@ -100,20 +112,21 @@ function init(){
  $('viewGraph').addEventListener('click',()=>{$('graphTitle').scrollIntoView({behavior:reducedMotion()?'instant':'smooth',block:'start'});});
  $('againButton').addEventListener('click',clearRun);
  $('zoomIn').addEventListener('click',()=>stage.zoomBy(1.17));$('zoomOut').addEventListener('click',()=>stage.zoomBy(1/1.17));$('resetCamera').addEventListener('click',()=>stage.resetCamera());
- function frame(now){const dt=state.last?Math.min(.08,(now-state.last)/1000):0;state.last=now;
-   if(state.running){const [a,b]=speeds();state.t+=dt*SIM_MINUTES_PER_SECOND;const ends=outcome(a,b);let endT=Math.max(ends.a,ends.b);
-     if(state.t>=endT){finishRun();}
-     else {
-       stage.setTrains(positionMetres(a,state.t)/DISTANCE,positionMetres(b,state.t)/DISTANCE);
-       // SVG labels and grid need not be recreated 60 times each second.
-       if(now-lastGraphPaint>105){lastGraphPaint=now;updateGraph();}
-     }
-   }
-   window.requestAnimationFrame(frame);
+ function frame(now){
+   runnerId=null;
+   if(!state.running)return;
+   const dt=state.last?Math.min(.25,Math.max(0,(now-state.last)/1000)):0;state.last=now;
+   const [a,b]=speeds();state.t+=dt*SIM_MINUTES_PER_SECOND;
+   const ends=outcome(a,b),endT=Math.max(ends.a,ends.b);
+   if(state.t>=endT){finishRun();return;}
+   stage.setTrains(positionMetres(a,state.t)/DISTANCE,positionMetres(b,state.t)/DISTANCE);
+   // The chart's fixed grid is built once. Only moving paths and dots change.
+   if(now-lastGraphPaint>105){lastGraphPaint=now;updateGraph();updateSceneMessage('走行中　'+round1(state.t)+'分');}
+   scheduleRunningFrame();
  }
- updateSliderLabels();syncRunUi();stage.setTrains(0,0);stage.setMoving(false);updateGraph();window.requestAnimationFrame(frame);
- window.__pikaIslandDebug={getState:()=>({...state,speeds:speeds(),renderer:stage.getRenderType(),camera:stage.getCameraState(),scene:stage.getSceneStats()}),jumpToEnd:finishRun};
+ updateSliderLabels();syncRunUi();stage.setTrains(0,0);stage.setMoving(false);updateGraph();
+ window.__pikaIslandDebug={getState:()=>({...state,speeds:speeds(),renderer:stage.getRenderType(),camera:stage.getCameraState(),scene:stage.getSceneStats(),runningRaf:runnerId!==null,graphGridNodes:$('graphGrid').childNodes.length}),jumpToEnd:finishRun};
 }
 if(typeof window!=='undefined'&&typeof document!=='undefined'){if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init,{once:true});else init();}
-return {DISTANCE,MIN_SPEED,MAX_SPEED,STEP,SIM_MINUTES_PER_SECOND,validSpeed,arrivalMinutes,positionMetres,outcome,modelAt};
+return {DISTANCE,MIN_SPEED,MAX_SPEED,STEP,GRAPH_MAX_MINUTES,SIM_MINUTES_PER_SECOND,validSpeed,arrivalMinutes,positionMetres,outcome,modelAt};
 });

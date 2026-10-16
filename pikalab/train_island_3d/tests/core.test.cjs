@@ -40,3 +40,24 @@ test('2本の3D線路は最終駅へ到達するまで連続した曲線にな�
     }
   }
 });
+
+test('速さの比較に使うグラフの横軸は全速度で一定',()=>{
+  assert.equal(g.GRAPH_MAX_MINUTES,6);
+  for(const speed of [12,18,24,30,36,42,48]){
+    assert.ok(g.arrivalMinutes(speed)<=g.GRAPH_MAX_MINUTES);
+    assert.ok(g.arrivalMinutes(speed)>0);
+  }
+  assert.ok(g.positionMetres(48,1)>g.positionMetres(24,1));
+});
+
+test('到着時刻後はグラフの距離が1200mで水平になる',()=>{
+  const end=g.arrivalMinutes(30);
+  assert.equal(g.positionMetres(30,end),1200);
+  assert.equal(g.positionMetres(30,end+1),1200);
+});
+
+test('3D橋・建物の造形は有限で、描画対象の面が十分にある',()=>{
+  const world=w.compileWorld();
+  assert.ok(world.mesh.length>7000);
+  assert.ok(world.mesh.every(f=>f.v.length>=3 && f.v.every(v=>v.length===3&&v.every(Number.isFinite))));
+});
