@@ -6,7 +6,7 @@ test('列車は発車前と到着後を範囲内に保つ',()=>{assert.equal(g.p
 test('境界以外・刻み以外の速さを拒否',()=>{for(let x of [-2,0,16,50,NaN,Infinity])assert.equal(g.validSpeed(x),false);assert.throws(()=>g.arrivalMinutes(9),RangeError)});
 test('同じ世界時刻に両列車の距離が正しく進む',()=>{const s=g.modelAt(24,12,1.5);assert.equal(s.a,600);assert.equal(s.b,300)});
 test('曲線の始点終点・接線・弧長が一貫する',()=>{let c=w.trackCurve([[0,0,0],[2,0,1],[4,0,2]]);assert.deepEqual(c.point(0),[0,0,0]);assert.deepEqual(c.point(1),[4,0,2]);assert.ok(c.totalLength>4&&c.totalLength<5);assert.ok(w.length(c.tangent(.5))>0.99)});
-test('島は9つの3D立体島と2本の線路で構成される',()=>{const s=w.compileWorld();assert.equal(s.islands.length,9);assert.equal(s.paths.length,2);assert.ok(s.mesh.length>2000);assert.ok(s.mesh.every(m=>m.v.every(v=>v.every(Number.isFinite))))});
+test('島は15の3D立体島と2本の線路で構成される',()=>{const s=w.compileWorld();assert.equal(s.islands.length,15);assert.equal(s.paths.length,2);assert.ok(s.mesh.length>2000);assert.ok(s.mesh.every(m=>m.v.every(v=>v.every(Number.isFinite))))});
 test('3Dカメラは斜め見下ろしで画面上の座標に投影できる',()=>{const c=w.makeCamera({width:1280,height:720});const b=c.getBasis();let a=c.project([0,0,0],b),p=c.project([4,0,0],b);assert.ok(Number.isFinite(a.x)&&Number.isFinite(p.y));assert.notEqual(a.x,p.x);c.orbit(30,-12);c.zoomBy(1.2);assert.ok(c.getState().zoom>1)});
 
 test('実際の1,200mと時速の単位変換が一貫する',()=>{
@@ -60,4 +60,54 @@ test('3D橋・建物の造形は有限で、描画対象の面が十分にある
   const world=w.compileWorld();
   assert.ok(world.mesh.length>7000);
   assert.ok(world.mesh.every(f=>f.v.length>=3 && f.v.every(v=>v.length===3&&v.every(Number.isFinite))));
+});
+
+
+test('建物と風車の全配置は、車体の幅を含む線路安全帯の外側',()=>{
+  const scene=w.compileWorld();
+  const segments=w.trackSegments(scene.paths,900);
+  assert.ok(scene.landmarks.length>=8);
+  for(const object of scene.landmarks){
+    const measured=w.clearanceToTracks(object.x,object.z,segments);
+    const minDistance=object.radius+1.15;
+    assert.ok(measured>=minDistance-.025,`${object.id}: track distance ${measured.toFixed(2)}, required ${minDistance.toFixed(2)}`);
+    const island=scene.islands.find(i=>i.seed===object.islandSeed);
+    assert.ok(island,`${object.id} island exists`);
+    const frac=Math.hypot((object.x-island.cx)/island.rx,(object.z-island.cz)/island.rz);
+    assert.ok(frac<1-(object.radius+.14)/Math.min(island.rx,island.rz)+.005,`${object.id}: the entire object must fit inside island grass, ratio ${frac}`);
+  }
+});
+
+test('木も線路と建物を遮らない位置を自動で選ぶ',()=>{
+  const scene=w.compileWorld();
+  const segments=w.trackSegments(scene.paths,600);
+  assert.ok(scene.trees.length>=40,'scenery should remain richly populated');
+  for(const tree of scene.trees){
+    assert.ok(w.clearanceToTracks(tree.x,tree.z,segments)>=.50*tree.size+1.05-.025);
+    for(const landmark of scene.landmarks){
+      assert.ok(Math.hypot(tree.x-landmark.x,tree.z-landmark.z)>=landmark.radius+.53*tree.size+.28-.01);
+    }
+  }
+});
+
+test('新しい島を巡る2本の線路は旧版より長く、駅の座標を維持',()=>{
+  const scene=w.compileWorld();
+  assert.ok(scene.paths[0].totalLength>14);
+  assert.ok(scene.paths[1].totalLength>26);
+  assert.deepEqual(scene.paths[0].point(1),[-1.4,.99,1.17]);
+  assert.deepEqual(scene.paths[1].point(1),[1.52,.98,1.25]);
+  assert.equal(w.sceneConstants.islands,15);
+});
+
+test('地図を広げて見るためのカメラ移動はリセットできる',()=>{
+  const camera=w.makeCamera({width:1280,height:800,clientWidth:1280});
+  const original=camera.getState();
+  const p0=camera.project([10,0,4],camera.getBasis());
+  camera.pan(140,-90);
+  const after=camera.getState();
+  assert.notDeepEqual(after.target,original.target);
+  const p1=camera.project([10,0,4],camera.getBasis());
+  assert.notEqual(p0.x,p1.x);
+  camera.reset();
+  assert.deepEqual(camera.getState(),original);
 });

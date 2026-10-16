@@ -26,8 +26,7 @@
   const colCache=new Map();
   function tint(hex,n){const id=hex+'_'+Math.round(n*100);if(colCache.has(id))return colCache.get(id); const c=rgb(hex).map(v=>Math.max(0,Math.min(255,Math.round(v*n)))); const result='#'+c.map(v=>v.toString(16).padStart(2,'0')).join('');colCache.set(id,result);return result;}
   function shade(verts,color){const normal=normalize(cross(sub(verts[1],verts[0]),sub(verts[2],verts[0])));const light=Math.max(0,dot(normal,LIGHT)); const brightness=Math.abs(normal[1])>.96? .99: .87+light*.19;return tint(color,brightness);}
-  const faces=[];
-  function polygon(list,verts,color,override){if(verts.length<3)return;list.push({v:verts,c:override||shade(verts,color)});}
+    function polygon(list,verts,color,override){if(verts.length<3)return;list.push({v:verts,c:override||shade(verts,color)});}
   function quad(list,a,b,c,d,color){polygon(list,[a,b,c,d],color);}
   function box(list,x,y,z,w,h,d,color,rotation=0){
     const ca=Math.cos(rotation),sa=Math.sin(rotation);
@@ -170,7 +169,7 @@
     const yaw=Math.atan2(dx,dz);box(list,(a[0]+b[0])/2,(a[1]+b[1])/2,(a[2]+b[2])/2,width,height,d+.035,color,yaw);
   }
   function railLine(list,curve,seed){
-    const samples=98;
+    const samples=Math.max(98,Math.ceil(curve.totalLength*7));
     for(let i=0;i<=samples;i++){
       const u=i/samples,p=curve.point(u),t=curve.tangent(u),n=normalize(V(-t[2],0,t[0]));
       const tieP=V(p[0],p[1]+.05,p[2]);const yaw=Math.atan2(t[0],t[2]);
@@ -227,63 +226,125 @@
       disc(list,x,island.y+.048,z,.11+randFrom(seed+i*7)*.075,i%2?'#f8e7b9':'#e5dbab',6);
     }
   }
-  function addLandscape(list,paths){
-    // The staggered terrain is what makes the scene read as a 3D island, not a wallpaper.
-    const islands=[
-      silhouette(list,-7.3,-4.7,3.15,2.35,3.05,2),
-      silhouette(list,-7.4,.10,3.05,2.48,1.65,19),
-      silhouette(list,-7.1,4.3,2.9,2.05,-.13,32),
-      silhouette(list,-.8,-6.58,3.05,2.14,2.02,44),
-      silhouette(list,6.1,-5.20,3.25,2.34,2.55,69),
-      silhouette(list,6.6,-.20,3.25,2.46,1.48,80),
-      silhouette(list,6.45,4.48,3.72,2.50,-.19,95),
-      silhouette(list,-.65,4.50,4.25,2.35,-.16,110),
-      silhouette(list,0,0,3.8,2.94,.74,128)
-    ];
-    // Forests occupy island edges, keeping the playable tracks legible.
-    for(const island of islands){
-      const treeCount=island.y>2?7:island.y>0?6:4;
-      for(let j=0;j<treeCount;j++){
-        const id=hash(island.seed*391+j*897),ang=randFrom(id)*Math.PI*2,rr=.47+randFrom(id+6)*.45;
-        const x=island.cx+Math.cos(ang)*island.rx*rr,z=island.cz+Math.sin(ang)*island.rz*rr;
-        if(Math.abs(x)<2.4&&Math.abs(z)<2.25)continue;
-        // Keep trees a little way off both tracks so the trains remain visible.
-        let onTrack=false;
-        for(const curve of paths){
-          for(let k=0;k<=55;k++){
-            const c=curve.point(k/55);
-            if(Math.abs(c[1]-island.y)<1.7 && Math.hypot(x-c[0],z-c[2])<1.12){onTrack=true;break;}
-          }
-          if(onTrack)break;
+  // Level geometry and object placement share the same track-proximity model.
+  // All static props use the actual curved rails, not a rectangular exclusion guess.
+  const ISLAND_DEFINITIONS=Object.freeze([
+    [-7.3,-4.7,3.15,2.35,3.05,2],[-7.4,.10,3.05,2.48,1.65,19],[-7.1,4.3,2.90,2.05,-.13,32],
+    [-.8,-6.58,3.05,2.14,2.02,44],[6.1,-5.20,3.25,2.34,2.55,69],[6.6,-.20,3.25,2.46,1.48,80],
+    [6.45,4.48,3.72,2.50,-.19,95],[-.65,4.50,4.25,2.35,-.16,110],[0,0,3.8,2.94,.74,128],
+    // New surrounding archipelago: paths now traverse the west and east extensions.
+    [-12.2,5.4,2.65,2.12,-.10,162],[11.10,-6.35,3.15,2.32,2.70,165],
+    [-11.65,-4.75,2.70,2.25,3.03,171],[-.40,-10.55,3.15,2.12,3.38,188],
+    [11.45,4.45,3.10,2.55,-.18,220],[0,8.65,3.5,2.08,-.18,210]
+  ]);
+  const LANDMARK_SPECS=Object.freeze([
+    {id:'seaside-windmill',type:'windmill',islandSeed:220,preferred:[.0,-.10],size:1},
+    {id:'upper-cottage',type:'house',islandSeed:44,preferred:[-.08,.05],size:.70,roof:'#a98779'},
+    {id:'north-cottage',type:'house',islandSeed:188,preferred:[.05,.07],size:.78,roof:'#b18879'},
+    {id:'garden-cottage',type:'house',islandSeed:210,preferred:[-.12,-.11],size:.72,roof:'#9d8588'},
+    {id:'south-cottage',type:'house',islandSeed:110,preferred:[.42,.35],size:.63,roof:'#bc9f7d'},
+    {id:'west-cottage',type:'house',islandSeed:19,preferred:[.04,-.16],size:.54,roof:'#ab9680'},
+    {id:'mountain-cottage',type:'house',islandSeed:171,preferred:[-.1,.03],size:.62,roof:'#b99b82'},
+    {id:'sunrise-cottage',type:'house',islandSeed:165,preferred:[.25,-.12],size:.57,roof:'#b39b85'}
+  ]);
+  function trackSegments(paths,step=220){
+    return paths.map(curve=>{
+      const pts=[];
+      for(let i=0;i<=step;i++)pts.push(curve.point(i/step));
+      return pts;
+    });
+  }
+  function pointSegmentDistanceXZ(x,z,a,b){
+    const dx=b[0]-a[0],dz=b[2]-a[2],div=dx*dx+dz*dz;
+    const t=div?Math.max(0,Math.min(1,((x-a[0])*dx+(z-a[2])*dz)/div)):0;
+    return Math.hypot(x-a[0]-dx*t,z-a[2]-dz*t);
+  }
+  function clearanceToTracks(x,z,segments){
+    let best=Infinity;
+    for(const path of segments){for(let i=1;i<path.length;i++){
+      const distance=pointSegmentDistanceXZ(x,z,path[i-1],path[i]);
+      if(distance<best)best=distance;
+    }}
+    return best;
+  }
+  function footprintRadius(spec){return spec.type==='windmill'?1.57:1.06*spec.size;}
+  function layoutLandmarks(islands,paths){
+    const segments=trackSegments(paths),occupied=[];
+    const anchors=new Map(islands.map(island=>[island.seed,island]));
+    const sites=[];
+    for(const spec of LANDMARK_SPECS){
+      const island=anchors.get(spec.islandSeed);
+      if(!island)throw new Error('Unknown island for '+spec.id);
+      const radius=footprintRadius(spec),railMargin=1.15; // train width, wheels, and a gap
+      // Spiral candidates preserve the original designer intention when safe.
+      const candidates=[spec.preferred];
+      for(const ring of [.18,.34,.49,.63,.73]){
+        for(let i=0;i<24;i++){
+          const angle=(2*Math.PI*i/24)+(spec.islandSeed*.027);
+          candidates.push([spec.preferred[0]+Math.cos(angle)*ring, spec.preferred[1]+Math.sin(angle)*ring]);
         }
-        if(onTrack)continue;
-        tree(list,x,island.y+.04,z,.55+randFrom(id+31)*.65,randFrom(id+15));
       }
-      flowers(list,island,30);
+      let chosen=null;
+      for(const [u,v] of candidates){
+        // Leave at least part of the building roof inside the low-poly grass rim.
+        if(Math.hypot(u,v)>Math.min(spec.type==='windmill'?.68:.79,1-(radius+.14)/Math.min(island.rx,island.rz)))continue;
+        const x=island.cx+island.rx*u,z=island.cz+island.rz*v;
+        if(clearanceToTracks(x,z,segments)<radius+railMargin)continue;
+        if(Math.hypot(x,z)<(spec.type==='windmill'?4.5:3.45))continue; // central station
+        if(occupied.some(other=>Math.hypot(x-other.x,z-other.z)<radius+other.radius+.44))continue;
+        chosen={...spec,x,z,y:island.y,radius,clearance:clearanceToTracks(x,z,segments)};
+        break;
+      }
+      if(!chosen)throw new Error('Could not place '+spec.id+' away from the tracks');
+      sites.push(chosen);occupied.push(chosen);
+    }
+    return sites;
+  }
+  function trainSafeSite(x,z,radius,paths){
+    return clearanceToTracks(x,z,paths)>=radius+1.05;
+  }
+  function addLandscape(list,paths){
+    const islands=ISLAND_DEFINITIONS.map(([cx,cz,rx,rz,y,seed])=>silhouette(list,cx,cz,rx,rz,y,seed));
+    const segments=trackSegments(paths);
+    const landmarks=layoutLandmarks(islands,paths);
+    const trees=[];
+    for(const item of landmarks){
+      if(item.type==='windmill')windmill(list,item.x,item.y,item.z);
+      else house(list,item.x,item.y,item.z,item.size,item.roof);
+    }
+    for(const island of islands){
+      const treeCount=island.y>2?7:island.y>0?5:4;
+      for(let j=0;j<treeCount;j++){
+        const id=hash(island.seed*391+j*897),ang=randFrom(id)*Math.PI*2,rr=.40+randFrom(id+6)*.47;
+        const x=island.cx+Math.cos(ang)*island.rx*rr,z=island.cz+Math.sin(ang)*island.rz*rr;
+        const size=.55+randFrom(id+31)*.65;
+        if(Math.abs(x)<2.65&&Math.abs(z)<2.55)continue;
+        if(!trainSafeSite(x,z,.50*size,segments))continue;
+        if(landmarks.some(item=>Math.hypot(x-item.x,z-item.z)<item.radius+.53*size+.28))continue;
+        tree(list,x,island.y+.04,z,size,randFrom(id+15));
+        trees.push({x,z,size,y:island.y,clearance:clearanceToTracks(x,z,segments)});
+      }
+      flowers(list,island,24);
       footpath(list,island,island.seed+1000);
     }
-    for(let i=0;i<12;i++){let x=-7.6+(i%4)*.65,z=5.3+Math.floor(i/4)*.35; shrub(list,x,-.04,z,.19+(i%3)*.05,i)}
-    station(list);
-    house(list,-2.3,2.12,-6.4,.70,'#a98779');
-    house(list,6.0,2.64,-5.6,.78,'#b18879');
-    house(list,5.25,-.12,5.42,.72,'#9d8588');
-    house(list,2.1,-.12,5.7,.63,'#bc9f7d');
-    house(list,-7.1,1.69,.6,.54,'#ab9680');
-    windmill(list,7.55,-.19,4.16);
+    // Beach sheep were previously beside the B line; their new enclosure is inland.
+    for(let i=0;i<3;i++){
+      const x=-1.18+(i%2)*.85,z=8.30+(i>>1)*.68;
+      if(!trainSafeSite(x,z,.34,segments))continue;
+      cylinder(list,x,-.03,z,.32,.29,.28,'#fff3d6',7);
+      cone(list,x,.19,z,.23,.20,'#fffaf0',7);
+    }
     waterfall(list,-4.55,1.58,1.90);
-    // Little sheep, sea stones, and a pier as 3D meshes.
-    for(let i=0;i<3;i++){const x=4.3+(i%2)*.75,z=4.53+(i>>1)*.7; cylinder(list,x,-.03,z,.32,.29,.28,'#fff3d6',7);cone(list,x,-.03+.22,z,.23,.20,'#fffaf0',7);}
-    for(let i=0;i<13;i++){
-      const id=hash(i*1027+77),angle=randFrom(id)*2*Math.PI,rr=14+randFrom(id+15)*5;
+    // Rocks and a small pier sit in the water, outside the train's clearance envelope.
+    for(let i=0;i<15;i++){
+      const id=hash(i*1027+77),angle=randFrom(id)*2*Math.PI,rr=17+randFrom(id+15)*5;
       boulder(list,Math.sin(angle)*rr*.92,-3.15,Math.cos(angle)*rr*.7,.25+randFrom(id+1)*.64);
     }
-    for(let i=0;i<9;i++)box(list,8.0+i*.36,-3.05,6.1, .30,.16,1.25,'#a28a70');
-    // Tiny low-poly water glints at island margins: helps the archipelago feel afloat.
-    const glints=[[11.2,2.5],[10.3,-5.4],[-11.5,1.2],[-9.8,-7.7],[1.2,7.7],[10.5,7.0],[-2.6,-10.0]];
-    for(const [x,z] of glints){
-      for(let i=0;i<3;i++)box(list,x+i*.26,-3.22,z+i*.17,.34,.018,.065,i===1?'#def1dd':'#b7ded4',-.32);
-    }
-    return islands;
+    for(let i=0;i<9;i++)box(list,11.6+i*.33,-3.05,8.10,.30,.16,1.20,'#a28a70');
+    const glints=[[15,2.5],[14.2,-7],[-15.5,1.2],[-14.8,-9.1],[2.7,12],[14,9.3],[-4.4,-12.9]];
+    for(const [x,z] of glints){for(let i=0;i<3;i++)box(list,x+i*.26,-3.22,z+i*.17,.34,.018,.065,i===1?'#def1dd':'#b7ded4',-.32);}
+    station(list);
+    return {islands,landmarks,trees};
   }
   function rollingWheel(list,x,y,z,r,width,yaw){
     // Wheels are horizontal-axle cylinders, not vertical discs planted in the track.
@@ -356,22 +417,25 @@
   }
   function compileWorld(){
     const mesh=[];
-    const A=trackCurve([V(-8.8,.07,5.34),V(-7.3,.06,5.45),V(-6.0,.10,5.65),V(-4.45,.23,4.4),V(-3.14,.92,2.94),V(-1.4,.99,1.17)]);
-    const B=trackCurve([V(6.1,2.70,-4.25),V(7.6,2.56,-3.0),V(8.5,1.68,-.7),V(8.0,1.48,1.05),V(8.0,.17,4.5),V(6.10,.08,5.6),V(4.0,.16,4.5),V(2.50,.88,2.55),V(1.52,.98,1.25)]);
-    const islands=addLandscape(mesh,[A,B]);
+    // Long scenic approach: both routes visit the outer archipelago before reaching the station.
+    const A=trackCurve([V(-13.25,-.02,5.35),V(-12.80,.01,6.12),V(-11.45,.03,6.45),V(-10.10,.02,6.28),V(-8.8,.07,5.34),V(-7.3,.06,5.45),V(-6.0,.10,5.65),V(-4.45,.23,4.4),V(-3.14,.92,2.94),V(-1.4,.99,1.17)]);
+    const B=trackCurve([V(12.20,2.78,-6.20),V(11.60,2.83,-7.10),V(10.10,2.80,-7.30),V(8.80,2.75,-6.40),V(7.80,2.68,-5.20),V(6.1,2.70,-4.25),V(7.6,2.56,-3.0),V(8.5,1.68,-.7),V(8.0,1.48,1.05),V(8.0,.17,4.5),V(6.10,.08,5.6),V(4.0,.16,4.5),V(2.50,.88,2.55),V(1.52,.98,1.25)]);
+    const {islands,landmarks,trees}=addLandscape(mesh,[A,B]);
     railLine(mesh,A,1);railLine(mesh,B,2);
     tunnel(mesh,A.point(0),A.tangent(.007));tunnel(mesh,B.point(0),B.tangent(.007));
-    return {mesh,islands,paths:[A,B]};
+    return {mesh,islands,paths:[A,B],landmarks,trees};
   }
-  function makeCamera(canvas){const defaultZoom=canvas.clientWidth<600?1.22:1.11;let w=canvas.width,h=canvas.height,azimuth=.70,elevation=.73,zoom=defaultZoom;
+  function makeCamera(canvas){const defaultZoom=canvas.clientWidth<600?1.12:1.05;let w=canvas.width,h=canvas.height,azimuth=.70,elevation=.73,zoom=defaultZoom,target=V(0,.35,0);
     function basis(){const cy=Math.sin(elevation),cx=Math.sin(azimuth)*Math.cos(elevation),cz=Math.cos(azimuth)*Math.cos(elevation);
       const forward=normalize(V(-cx,-cy,-cz)),right=normalize(cross(forward,V(0,1,0))),up=normalize(cross(right,forward));
-      const k=Math.min(w/30.0,h/21.1)*zoom;
+      const k=Math.min(w/38.5,h/27.2)*zoom;
       return {forward,right,up,k,w,h};}
     return {setSize:(a,b)=>{w=a;h=b},getBasis:basis,
-      project:(p,b)=>{const rel=sub(p,V(0,.35,0));return {x:b.w*.50+dot(rel,b.right)*b.k,y:b.h*.53-dot(rel,b.up)*b.k,depth:dot(rel,b.forward)}},
+      project:(p,b)=>{const rel=sub(p,target);return {x:b.w*.50+dot(rel,b.right)*b.k,y:b.h*.53-dot(rel,b.up)*b.k,depth:dot(rel,b.forward)}},
       orbit:(dx,dy)=>{azimuth=Math.min(1.65,Math.max(-1.30,azimuth+dx*.006)); elevation=Math.min(1.32,Math.max(.34,elevation+dy*.006));},
-      zoomBy:d=>{zoom=Math.min(1.85,Math.max(.65,zoom*d))},reset:()=>{azimuth=.70;elevation=.73;zoom=defaultZoom;},getState:()=>({azimuth,elevation,zoom})};
+      zoomBy:d=>{zoom=Math.min(2.7,Math.max(.63,zoom*d))},
+      pan:(dx,dy)=>{const b=basis(),wx=scale(b.right,-dx/b.k),wy=scale(b.up,dy/b.k);target=V(Math.max(-5.2,Math.min(5.2,target[0]+wx[0]+wy[0])),.35,Math.max(-5.2,Math.min(5.2,target[2]+wx[2]+wy[2])))},
+      reset:()=>{azimuth=.70;elevation=.73;zoom=defaultZoom;target=V(0,.35,0);},getState:()=>({azimuth,elevation,zoom,target:target.slice()})};
   }
   /* GPU path: upload static island vertices once; train/windmill vertices are dynamic.
      Orbit/zoom are shader uniforms instead of re-projecting every island triangle on the CPU. */
@@ -381,13 +445,13 @@
     catch(_){gl=null;}
     if(!gl)return null;
     const vertex=`attribute vec3 pos; attribute vec3 tint;
-      uniform vec3 uRight,uUp,uForward; uniform vec2 uScale;
+      uniform vec3 uRight,uUp,uForward,uTarget; uniform vec2 uScale;
       varying vec3 outTint;
-      void main(){vec3 rel=pos-vec3(0.0,0.35,0.0);
+      void main(){vec3 rel=pos-uTarget;
         gl_Position=vec4(dot(rel,uRight)*uScale.x, -.06 +dot(rel,uUp)*uScale.y, dot(rel,uForward)/45.0,1.0);
         outTint=tint;}`;
     const fragment=`precision mediump float;varying vec3 outTint;void main(){gl_FragColor=vec4(outTint,1.0);}`;
-    let program,staticBuffer,dynamicBuffer,attribPos,attribColor,uniformRight,uniformUp,uniformForward,uniformScale;
+    let program,staticBuffer,dynamicBuffer,attribPos,attribColor,uniformRight,uniformUp,uniformForward,uniformScale,uniformTarget;
     function shader(type,source){const item=gl.createShader(type);gl.shaderSource(item,source);gl.compileShader(item);
       if(!gl.getShaderParameter(item,gl.COMPILE_STATUS))throw new Error(gl.getShaderInfoLog(item));return item;}
     function pack(items){let count=0;for(const f of items)count+=Math.max(0,f.v.length-2)*3;
@@ -403,8 +467,8 @@
       program=gl.createProgram();gl.attachShader(program,shader(gl.VERTEX_SHADER,vertex));gl.attachShader(program,shader(gl.FRAGMENT_SHADER,fragment));gl.linkProgram(program);
       if(!gl.getProgramParameter(program,gl.LINK_STATUS))throw new Error(gl.getProgramInfoLog(program));
       gl.useProgram(program);attribPos=gl.getAttribLocation(program,'pos');attribColor=gl.getAttribLocation(program,'tint');
-      uniformRight=gl.getUniformLocation(program,'uRight');uniformUp=gl.getUniformLocation(program,'uUp');uniformForward=gl.getUniformLocation(program,'uForward');uniformScale=gl.getUniformLocation(program,'uScale');
-      if(attribPos<0||attribColor<0||!uniformScale)throw new Error('WebGL shader variables are missing');
+      uniformRight=gl.getUniformLocation(program,'uRight');uniformUp=gl.getUniformLocation(program,'uUp');uniformForward=gl.getUniformLocation(program,'uForward');uniformScale=gl.getUniformLocation(program,'uScale');uniformTarget=gl.getUniformLocation(program,'uTarget');
+      if(attribPos<0||attribColor<0||!uniformScale||!uniformTarget)throw new Error('WebGL shader variables are missing');
       staticBuffer=gl.createBuffer();dynamicBuffer=gl.createBuffer();
       const staticData=pack(staticFaces);
       gl.bindBuffer(gl.ARRAY_BUFFER,staticBuffer);gl.bufferData(gl.ARRAY_BUFFER,staticData,gl.STATIC_DRAW);
@@ -412,12 +476,12 @@
       gl.enable(gl.DEPTH_TEST);gl.depthFunc(gl.LEQUAL);gl.disable(gl.CULL_FACE);
       const bind=(buffer)=>{gl.bindBuffer(gl.ARRAY_BUFFER,buffer);gl.enableVertexAttribArray(attribPos);gl.enableVertexAttribArray(attribColor);gl.vertexAttribPointer(attribPos,3,gl.FLOAT,false,24,0);gl.vertexAttribPointer(attribColor,3,gl.FLOAT,false,24,12);};
       return {
-        render(dynamicFaces,basis){
+        render(dynamicFaces,basis,camera){
           if(gl.isContextLost())return;
           const fresh=pack(dynamicFaces);
           gl.viewport(0,0,canvas.width,canvas.height);gl.clearColor(.54,.77,.79,1);gl.clear(gl.COLOR_BUFFER_BIT|gl.DEPTH_BUFFER_BIT);
           gl.useProgram(program);
-          gl.uniform3fv(uniformRight,basis.right);gl.uniform3fv(uniformUp,basis.up);gl.uniform3fv(uniformForward,basis.forward);
+          gl.uniform3fv(uniformRight,basis.right);gl.uniform3fv(uniformUp,basis.up);gl.uniform3fv(uniformForward,basis.forward);gl.uniform3fv(uniformTarget,camera.getState().target);
           gl.uniform2f(uniformScale,2*basis.k/basis.w,2*basis.k/basis.h);
           bind(staticBuffer);gl.drawArrays(gl.TRIANGLES,0,staticVertexCount);
           gl.bindBuffer(gl.ARRAY_BUFFER,dynamicBuffer);gl.bufferData(gl.ARRAY_BUFFER,fresh,gl.DYNAMIC_DRAW);
@@ -436,20 +500,32 @@
   function softwarePainter(canvas,staticFaces){
     const ctx=canvas.getContext('2d',{alpha:false});if(!ctx)throw new Error('Canvas描画が利用できません');
     let cachedCameraKey='',cachedStatic=[],staticProjectionCount=0;
-    const projectFaces=(faces,basis,camera)=>faces.map(f=>{
-      const p=f.v.map(v=>camera.project(v,basis));
-      return {p,c:f.c,depth:p.reduce((sum,k)=>sum+k.depth,0)/p.length};
-    });
+    const projectFaces=(faces,basis,camera)=>{
+      const visible=[];
+      for(const face of faces){
+        const p=face.v.map(v=>camera.project(v,basis));
+        // Keep a margin so faces crossing the viewport border are never clipped.
+        if(p.every(v=>v.x< -36)||p.every(v=>v.x>basis.w+36)||
+           p.every(v=>v.y< -36)||p.every(v=>v.y>basis.h+36))continue;
+        visible.push({p,c:face.c,depth:p.reduce((sum,k)=>sum+k.depth,0)/p.length});
+      }
+      return visible;
+    };
     return {
       render(dynamicFaces,basis,camera){
-        const {w,h}=basis,cs=camera.getState();const key=[w,h,cs.azimuth,cs.elevation,cs.zoom].join('/');
-        if(key!==cachedCameraKey){cachedStatic=projectFaces(staticFaces,basis,camera);cachedCameraKey=key;staticProjectionCount++;}
+        const {w,h}=basis,cs=camera.getState();const key=[w,h,cs.azimuth,cs.elevation,cs.zoom,...cs.target].join('/');
+        if(key!==cachedCameraKey){cachedStatic=projectFaces(staticFaces,basis,camera).sort((a,b)=>b.depth-a.depth);cachedCameraKey=key;staticProjectionCount++;}
         const grad=ctx.createLinearGradient(0,0,0,h);grad.addColorStop(0,'#82b8bb');grad.addColorStop(1,'#96cdcf');ctx.fillStyle=grad;ctx.fillRect(0,0,w,h);
-        const dynamic=projectFaces(dynamicFaces,basis,camera);
-        const drawables=cachedStatic.concat(dynamic);drawables.sort((a,b)=>b.depth-a.depth);
-        for(const item of drawables){const p=item.p;ctx.beginPath();ctx.moveTo(p[0].x,p[0].y);
+        const dynamic=projectFaces(dynamicFaces,basis,camera).sort((a,b)=>b.depth-a.depth);
+        // Linear merge of two sorted lists: static scenery is not re-sorted every animation frame.
+        let si=0,di=0;
+        while(si<cachedStatic.length||di<dynamic.length){
+          const next=si>=cachedStatic.length?dynamic[di++]:di>=dynamic.length?cachedStatic[si++]:
+            (cachedStatic[si].depth>=dynamic[di].depth?cachedStatic[si++]:dynamic[di++]);
+          const p=next.p;ctx.beginPath();ctx.moveTo(p[0].x,p[0].y);
           for(let i=1;i<p.length;i++)ctx.lineTo(p[i].x,p[i].y);
-          ctx.closePath();ctx.fillStyle=item.c;ctx.fill();}
+          ctx.closePath();ctx.fillStyle=next.c;ctx.fill();
+        }
       },
       getMetrics:()=>({staticProjectionCount,cachedStaticFaces:cachedStatic.length}),destroy(){}
     };
@@ -490,7 +566,7 @@
       const movingMesh=[];
       trainFaces(movingMesh,world.paths[0],.23 + progressA*.77,COLORS.red,true);
       trainFaces(movingMesh,world.paths[1],.15 + progressB*.85,COLORS.blue,false);
-      windmillBlades(movingMesh,7.55,-.19,4.16,phase*.65);
+      {const mill=world.landmarks.find(item=>item.type==='windmill');windmillBlades(movingMesh,mill.x,mill.y,mill.z,phase*.65);}
       const b=camera.getBasis();painter.render(movingMesh,b,camera);
       // Draw indispensable labels using a separate overlay canvas, not on a WebGL surface.
       if(labels){const cx=labels.getContext('2d');const vw=canvas.clientWidth;
@@ -505,9 +581,41 @@
       }
       scheduleNext();
     }
-    function onPointerDown(e){if(e.button!==0||drag)return;drag={id:e.pointerId,x:e.clientX,y:e.clientY};try{canvas.setPointerCapture(e.pointerId);}catch(_){/* interrupted gestures */}canvas.style.cursor='grabbing';}
-    function onPointerMove(e){if(!drag||drag.id!==e.pointerId)return;const dx=e.clientX-drag.x,dy=e.clientY-drag.y;camera.orbit(dx,dy);drag.x=e.clientX;drag.y=e.clientY;invalidate(true);}
-    function onPointerUp(e){if(drag&&e.pointerId!==drag.id)return;drag=null;canvas.style.cursor='grab';scheduleNext(true);}
+    // A one-finger horizontal drag rotates the scene while ordinary vertical
+    // touch scrolling remains available. Two fingers pan across the larger map.
+    const activeTouches=new Map();
+    let touchCentre=null;
+    function meanTouch(){const items=[...activeTouches.values()];return {x:items.reduce((n,p)=>n+p.x,0)/items.length,y:items.reduce((n,p)=>n+p.y,0)/items.length};}
+    function onPointerDown(e){
+      if(e.pointerType==='touch'){
+        activeTouches.set(e.pointerId,{x:e.clientX,y:e.clientY});
+        if(activeTouches.size>=2){drag=null;touchCentre=meanTouch();}
+        else {drag={id:e.pointerId,x:e.clientX,y:e.clientY,pan:false};}
+      }else if(e.button===0&&!drag){drag={id:e.pointerId,x:e.clientX,y:e.clientY,pan:e.shiftKey};}
+      else return;
+      try{canvas.setPointerCapture(e.pointerId);}catch(_){/* interrupted gestures */}
+      canvas.style.cursor='grabbing';
+    }
+    function onPointerMove(e){
+      if(e.pointerType==='touch'&&activeTouches.has(e.pointerId)){
+        activeTouches.set(e.pointerId,{x:e.clientX,y:e.clientY});
+        if(activeTouches.size>=2){
+          const now=meanTouch();
+          if(touchCentre)camera.pan(now.x-touchCentre.x,now.y-touchCentre.y);
+          touchCentre=now;invalidate(true);return;
+        }
+      }
+      if(!drag||drag.id!==e.pointerId)return;
+      const dx=e.clientX-drag.x,dy=e.clientY-drag.y;
+      if(drag.pan)camera.pan(dx,dy);else camera.orbit(dx,dy);
+      drag.x=e.clientX;drag.y=e.clientY;invalidate(true);
+    }
+    function onPointerUp(e){
+      if(e.pointerType==='touch'){
+        activeTouches.delete(e.pointerId);touchCentre=null;drag=null;
+      }else if(!drag||drag.id===e.pointerId)drag=null;
+      canvas.style.cursor='grab';scheduleNext(true);
+    }
     function onWheel(e){
       // Scrolling over the scenery should still scroll the page. Ctrl/Cmd+wheel zooms
       // deliberately; the +/- buttons remain usable without a modifier.
@@ -515,10 +623,10 @@
       e.preventDefault();camera.zoomBy(e.deltaY>0?.9:1.1);invalidate(true);
     }
     function onKey(e){let handled=true;
-      if(e.key==='ArrowLeft')camera.orbit(-26,0);
-      else if(e.key==='ArrowRight')camera.orbit(26,0);
-      else if(e.key==='ArrowUp')camera.orbit(0,-22);
-      else if(e.key==='ArrowDown')camera.orbit(0,22);
+      if(e.key==='ArrowLeft')e.shiftKey?camera.pan(-26,0):camera.orbit(-26,0);
+      else if(e.key==='ArrowRight')e.shiftKey?camera.pan(26,0):camera.orbit(26,0);
+      else if(e.key==='ArrowUp')e.shiftKey?camera.pan(0,-22):camera.orbit(0,-22);
+      else if(e.key==='ArrowDown')e.shiftKey?camera.pan(0,22):camera.orbit(0,22);
       else if(e.key==='+'||e.key==='=')camera.zoomBy(1.12);
       else if(e.key==='-')camera.zoomBy(1/1.12);
       else if(e.key.toLowerCase()==='r')camera.reset();
@@ -532,7 +640,7 @@
     canvas.addEventListener('pointerdown',onPointerDown);canvas.addEventListener('pointermove',onPointerMove);canvas.addEventListener('pointerup',onPointerUp);canvas.addEventListener('pointercancel',onPointerUp);canvas.addEventListener('wheel',onWheel,{passive:false});
     scheduleNext(true);
     return {setTrains:(a,b)=>{progressA=Math.max(0,Math.min(1,a));progressB=Math.max(0,Math.min(1,b));invalidate();},setMoving:v=>{moving=Boolean(v);invalidate(true);},resetCamera:()=>{camera.reset();invalidate(true);},zoomBy:k=>{camera.zoomBy(k);invalidate(true);},getRenderType:()=>renderType,getCameraState:()=>camera.getState(),
-      destroy(){animating=false;if(raf!==null)cancelAnimationFrame(raf);if(idleTimer!==null)clearTimeout(idleTimer);observer?.disconnect();if(typeof document!=='undefined')document.removeEventListener('visibilitychange',onVisibility);painter.destroy();canvas.removeEventListener('keydown',onKey);canvas.removeEventListener('pointerdown',onPointerDown);canvas.removeEventListener('pointermove',onPointerMove);canvas.removeEventListener('pointerup',onPointerUp);canvas.removeEventListener('pointercancel',onPointerUp);canvas.removeEventListener('wheel',onWheel);}, getSceneStats:()=>({faces:world.mesh.length,rails:2,islands:world.islands.length,trainProgress:[progressA,progressB],renderedFrames,rendererMetrics:painter.getMetrics()})};
+      destroy(){animating=false;if(raf!==null)cancelAnimationFrame(raf);if(idleTimer!==null)clearTimeout(idleTimer);observer?.disconnect();if(typeof document!=='undefined')document.removeEventListener('visibilitychange',onVisibility);painter.destroy();canvas.removeEventListener('keydown',onKey);canvas.removeEventListener('pointerdown',onPointerDown);canvas.removeEventListener('pointermove',onPointerMove);canvas.removeEventListener('pointerup',onPointerUp);canvas.removeEventListener('pointercancel',onPointerUp);canvas.removeEventListener('wheel',onWheel);}, getSceneStats:()=>({faces:world.mesh.length,rails:2,islands:world.islands.length,landmarks:world.landmarks.length,treeCount:world.trees.length,trainProgress:[progressA,progressB],renderedFrames,rendererMetrics:painter.getMetrics()})};
   }
-  return {createWorld,compileWorld,trackCurve,makeCamera,sceneConstants:{islands:9,LENGTH_METRES:1200},V,length,dot};
+  return {createWorld,compileWorld,trackCurve,makeCamera,layoutLandmarks,clearanceToTracks,trackSegments,LANDMARK_SPECS,ISLAND_DEFINITIONS,sceneConstants:{islands:15,LENGTH_METRES:1200},V,length,dot};
 });

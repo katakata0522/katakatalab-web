@@ -15,7 +15,7 @@ test('WebGL 3D path uploads static scenery once, moves trains using a separate G
     getProgramInfoLog:()=>'',createBuffer:()=>({}),useProgram:()=>{},
     getAttribLocation:(_p,name)=>name==='pos'?0:1,getUniformLocation:(_p,name)=>({name}),
     enableVertexAttribArray:()=>{},viewport:()=>{},clearColor:()=>{},clear:()=>{},
-    enable:()=>{},disable:()=>{},depthFunc:()=>{},uniform3fv:()=>{},uniform2f:()=>{},
+    enable:()=>{},disable:()=>{},depthFunc:()=>{},uniform3fv(loc,arr){calls.uniforms.push({name:loc.name,values:[...arr]});},uniform2f:()=>{},
     bindBuffer:()=>{},bufferData(_target,data,usage){calls.uploads.push({usage,count:data.length});},
     vertexAttribPointer:()=>{},drawArrays(_kind,_first,count){calls.draws.push(count);},
     isContextLost:()=>false,deleteBuffer:()=>{},deleteProgram:()=>{}
@@ -37,12 +37,13 @@ test('WebGL 3D path uploads static scenery once, moves trains using a separate G
     assert.equal(stage.getRenderType(),'webgl');
     assert.equal(calls.uploads.length,1,'Static mesh should be uploaded only during setup');
     assert.equal(calls.uploads[0].usage,gl.STATIC_DRAW);
-    assert.ok(calls.vertexSource.includes('uRight')&&calls.vertexSource.includes('uForward'));
+    assert.ok(calls.vertexSource.includes('uRight')&&calls.vertexSource.includes('uForward')&&calls.vertexSource.includes('uTarget'), 'GPU orbit and panning use shader uniforms');
     const draw=callbacks.get(1);assert.ok(draw);callbacks.delete(1);draw(1000);
     assert.equal(calls.draws.length,2,'Static and animated models should be separate draw calls');
     assert.equal(calls.uploads.length,2,'Animated models should use a second buffer upload');
     assert.equal(calls.uploads[1].usage,gl.DYNAMIC_DRAW);
     assert.equal(stage.getSceneStats().rendererMetrics.staticUploads,1);
+    assert.ok(calls.uniforms.some(u=>u.name==='uTarget'), 'camera target is uploaded to shader');
     stage.zoomBy(1.1);
     const pending=[...callbacks.entries()];
     assert.equal(pending.length,1);
