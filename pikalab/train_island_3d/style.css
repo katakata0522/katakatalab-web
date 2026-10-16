@@ -11,3 +11,52 @@
 @media(max-width:600px){.world-viewport{height:clamp(340px,51vh,480px)}.world-header{padding:15px 15px;gap:8px}.logo-icon{width:39px;height:39px;border-radius:13px;font-size:21px}.logo-type strong{font-size:24px}.logo-type small{font-size:8px}.world-header h1{font-size:11px}.mission-tag{max-width:167px;font-size:10px;padding:8px 10px;border-radius:14px;gap:5px}.mission-mark{font-size:21px}.camera-dock{bottom:11px;right:12px;gap:4px}.camera-dock button{min-width:39px;height:39px}.scene-status{left:10px;bottom:10px;font-size:9px}.console-wrap{margin-top:0;padding:0 8px}.console-inner{padding:20px 13px 24px;border-radius:24px;box-shadow:none}.console-heading{display:block;margin-bottom:16px}.console-heading h2{font-size:21px}.console-heading p{margin-top:7px;max-width:none}.control-column{grid-template-columns:1fr;gap:10px}.train-control{padding:13px 16px 20px}.train-control label{margin-top:6px}.train-control-heading output{font-size:23px}.short-hint,.actions,.result{grid-column:1}.notes{flex-direction:column;gap:3px;padding:15px 15px 25px}.graph-card{padding:14px 10px}.graph-header{padding-inline:4px}.graph-header h3{font-size:15px}.graph-footer{font-size:10px}.start-button{min-height:52px}.again-button{min-height:52px}}
 @media(max-width:340px){.logo-type strong{font-size:21px}.mission-tag{font-size:9px;max-width:147px}.train-control{padding-inline:11px}}
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}.start-button{transition:none}}
+
+/* v0.3 — visual-first and child-friendly navigation */
+.world-canvas:focus-visible{outline:3px solid #fff6db;outline-offset:-6px}
+.jump-controls{pointer-events:auto;align-self:start;background:#fffaf0;color:#456572;border:1px solid rgba(255,255,255,.9);border-radius:999px;padding:12px 18px;font-size:13px;font-weight:900;box-shadow:0 5px 15px rgba(55,105,108,.13);min-height:44px;white-space:nowrap}
+.jump-controls:hover{background:white;transform:translateY(-2px)}
+.jump-controls span{color:#ca7769;font-size:18px;margin-left:4px}
+.world-outcome{position:absolute;bottom:77px;right:clamp(18px,3vw,45px);z-index:8;display:flex;flex-direction:column;gap:4px;max-width:min(360px,calc(100% - 36px));background:rgba(255,251,239,.97);color:#3b5963;border:2px solid rgba(255,255,255,.8);border-radius:23px;box-shadow:0 14px 38px rgba(40,98,104,.20);padding:15px 19px}
+.world-outcome[data-success="true"]{border-color:#a6d6a0}
+.world-outcome[data-success="false"]{border-color:#eed2b0}
+.world-outcome strong{font-size:17px;line-height:1.4;font-weight:950}
+.world-outcome>span{font-size:12px;line-height:1.6}
+.world-outcome button{align-self:flex-start;border-radius:12px;border:1px solid #cbded8;background:#eff8f2;color:#426e65;padding:7px 12px;font-weight:900;font-size:12px;margin-top:4px;min-height:40px}
+.world-outcome button:hover{background:#def1e5}
+.world-outcome[hidden]{display:none}
+.scene-status{max-width:55%;backdrop-filter:blur(5px)}
+.train-control label{font-size:12px;color:#64737b}
+.train-control input{height:15px;margin-block:8px 12px;min-height:15px}
+.train-control input::-webkit-slider-thumb{height:34px;width:34px}
+.train-control input::-moz-range-thumb{height:24px;width:24px}
+.train-control-heading{flex-wrap:wrap}
+.train-control output{font-variant-numeric:tabular-nums}
+.train-control{transition:border-color .2s}
+.graph-card{scroll-margin-top:18px}
+.graph-footer{min-height:37px}
+@media(max-width:600px){
+ .world-viewport{height:clamp(420px,58svh,535px)}
+ .world-header{gap:9px}
+ .jump-controls{font-size:11px;min-height:42px;padding:9px 12px}
+ .world-canvas{touch-action:pan-y}
+ .world-outcome{bottom:78px;left:13px;right:auto;max-width:calc(100% - 28px);padding:12px 15px;border-radius:17px}
+ .world-outcome strong{font-size:15px}
+ .world-outcome>span{font-size:11px}
+ .scene-status{max-width:46%;padding:8px 10px;font-size:9px}
+ .train-control label{font-size:12px}
+ .console-heading p{max-width:100%}
+ .graph-footer{align-items:flex-start;flex-wrap:wrap}
+}
+@media(max-width:360px){
+ .logo-type strong{font-size:21px}
+ .logo-icon{width:35px;height:35px}
+ .jump-controls{font-size:10px;white-space:normal;max-width:142px;text-align:center}
+ .camera-dock button{min-width:40px}
+ .scene-status{max-width:40%}
+}
+
+.skip-button{min-height:48px;padding:0 12px;border:1.5px solid #c3d9d5;color:#4e7c74;background:#f0faf3;border-radius:14px;font-size:12px;font-weight:850;white-space:nowrap}
+.skip-button:hover{background:#e3f5ec}
+.actions{flex-wrap:wrap}
+@media(max-width:390px){.skip-button{width:100%;min-height:42px}}

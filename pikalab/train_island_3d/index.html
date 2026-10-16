@@ -17,7 +17,7 @@
   <main>
     <section class="world-viewport" aria-labelledby="appTitle">
       <div id="worldCover" class="world-cover" aria-hidden="true"></div>
-      <canvas id="worldCanvas" class="world-canvas" aria-label="水に浮かぶ島と2本の線路、列車AとB、中央駅、風車などを立体表示。ドラッグすると視点を変更できます。" role="img"></canvas>
+      <canvas id="worldCanvas" class="world-canvas" aria-label="水に浮かぶ3Dの島。2本の線路にA列車とB列車が走ります。" aria-describedby="cameraHint" tabindex="0" role="group"></canvas>
       <canvas id="labelCanvas" class="label-canvas" aria-hidden="true"></canvas>
       <div class="world-overlay" aria-hidden="true"></div>
       <header class="world-header">
@@ -28,18 +28,23 @@
           </a>
           <h1 id="appTitle">3D列車の島</h1>
         </div>
-        <div class="mission-tag"><span class="mission-mark" aria-hidden="true">◎</span><span>2台を<span class="emphasis">同時に</span>中央駅へ着かせよう</span></div>
+        <button type="button" id="jumpControls" class="jump-controls">はやさを変える <span aria-hidden="true">↓</span></button>
       </header>
       <div class="camera-dock" aria-label="3Dカメラの操作">
         <button type="button" id="zoomIn" title="近づく" aria-label="3D世界を拡大">＋</button>
         <button type="button" id="zoomOut" title="遠ざかる" aria-label="3D世界を縮小">－</button>
         <button type="button" id="resetCamera" title="視点を戻す" aria-label="カメラの視点を元に戻す">⟲</button>
       </div>
-      <div class="scene-status"><span class="status-dot" aria-hidden="true"></span><span id="renderStatus">島を準備しています…</span></div>
+      <div class="scene-status" id="cameraHint"><span class="status-dot" aria-hidden="true"></span><span id="renderStatus">島を準備しています…</span></div>
+      <div id="worldOutcome" class="world-outcome" hidden>
+        <strong id="worldOutcomeTitle"></strong>
+        <span id="worldOutcomeDetail"></span>
+        <button type="button" id="viewGraph">グラフを見てみる <span aria-hidden="true">↓</span></button>
+      </div>
     </section>
     <section class="console-wrap" id="gameControls" aria-label="列車の操作パネル">
       <div class="console-inner">
-        <div class="console-heading"><div><span class="console-kicker">ミッション 01</span><h2>ちゅうおう駅で出会わせよう！</h2></div><p>2本の線路は、どちらも駅まで <strong>1,200 m</strong>。</p></div>
+        <div class="console-heading"><div><span class="console-kicker">ミッション 01</span><h2>ちゅうおう駅で出会わせよう！</h2></div><p>2本の線路は、どちらも駅まで <strong>1,200 m</strong>。速さをそろえてみよう。</p></div>
         <div class="console-grid">
           <div class="control-column">
             <div class="train-control is-a">
@@ -52,19 +57,18 @@
               <label for="speedB">はやさを かえよう</label>
               <input type="range" min="12" max="48" step="6" value="24" id="speedB" aria-describedby="speedHint">
             </div>
-            <p class="short-hint" id="speedHint">速さがちがうと、到着時間はどうなるかな？</p>
-            <div class="actions"><button type="button" id="startButton" class="start-button"><span aria-hidden="true" id="playIcon">▶</span><span id="playLabel">列車を走らせる</span></button><button type="button" id="againButton" class="again-button" aria-label="もう一度最初から走らせる">↺ もどす</button></div>
+            <p class="short-hint" id="speedHint">速くすると、駅に着くまでの時間はどう変わるかな？</p>
+            <div class="actions"><button type="button" id="startButton" class="start-button"><span aria-hidden="true" id="playIcon">▶</span><span id="playLabel">列車を走らせる</span></button><button type="button" id="againButton" class="again-button" aria-label="もう一度最初から走らせる">↺ もどす</button><button type="button" id="skipRun" class="skip-button" hidden>結果へ進む →</button></div>
             <div class="result" id="result" role="status" aria-live="polite" aria-atomic="true" hidden><strong id="resultHeading"></strong><p id="resultExplanation"></p></div>
           </div>
           <section class="graph-card" aria-labelledby="graphTitle"><div class="graph-header"><div><h3 id="graphTitle">速さと時間のグラフ</h3><p>駅まで進んだ距離</p></div><div class="legend"><span><i class="dot-a"></i>A</span><span><i class="dot-b"></i>B</span></div></div>
             <svg id="timeGraph" viewBox="0 0 560 310" role="img" aria-labelledby="chartTitle chartDesc" preserveAspectRatio="xMidYMid meet"><title id="chartTitle">駅まで進んだ距離と時間のグラフ</title><desc id="chartDesc">横軸は経過時間（分）。縦軸は駅まで進んだ距離（m）。あかい線はA列車、あおい線はB列車。</desc><g id="graphGrid"></g><g id="graphLines"></g><g id="graphDots"></g></svg>
-            <div class="graph-footer"><span>経過 <strong id="timeOutput">0.0分</strong></span><span id="arrivalOutput">列車を走らせてみよう</span></div>
+            <div class="graph-footer"><span>経過 <strong id="timeOutput">0.0分</strong></span><span id="arrivalOutput">走らせると線がのびるよ</span></div>
           </section>
         </div>
       </div>
     </section>
-    <div class="notes"><p>※ これは速さを学ぶための模型です。画面の列車は別々の線路で走り、中央駅で止まります。距離と時間は学習用の設定です。</p><p>広告・追跡なし。外部通信なし。</p></div>
+    <div class="notes"><p>※ 2本の線路は模型上では異なる形ですが、教材ではどちらも1,200mとして計算します。</p></div>
   </main>
-  <script>/* Intentionally no inline behavior. */</script>
 </body>
 </html>

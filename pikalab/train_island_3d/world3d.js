@@ -17,7 +17,7 @@
   const normalize=a=>scale(a,1/(length(a)||1));
   const lerp=(a,b,t)=>plus(scale(a,1-t),scale(b,t));
   const LIGHT=normalize(V(-0.55,1,0.75));
-  const COLORS={water:'#8ecbd1',seaDeep:'#74bdc8',foam:'#e8ffeb',grass:'#e3ec89',grassLight:'#f1ef98',grassRim:'#c9db77',cliff:'#f7e4b1',cliffDark:'#d7bb94',cliffEdge:'#fff3c6',forest:'#769579',forestLight:'#a8b982',pine:'#799177',trunk:'#947959',wood:'#876b60',rail:'#6c697b',iron:'#9a92a0',roof:'#d98764',wall:'#ffeed6',window:'#7caebe',navy:'#45425b',red:'#ce6367',blue:'#4d84b5'};
+  const COLORS={water:'#89c5c9',seaDeep:'#74b9c2',foam:'#edf8ec',grass:'#d9e889',grassLight:'#e9ed9a',grassRim:'#c2d779',cliff:'#f6e3b5',cliffDark:'#d9bb96',cliffEdge:'#fff0ca',forest:'#769579',forestLight:'#a8b982',pine:'#799177',trunk:'#947959',wood:'#876b60',rail:'#6c697b',iron:'#9a92a0',roof:'#d98764',wall:'#ffeed6',window:'#7caebe',navy:'#45425b',red:'#ce6367',blue:'#4d84b5'};
   function hash(v){let n=v>>>0; n=Math.imul(n^(n>>>16),0x7feb352d);n=Math.imul(n^(n>>>15),0x846ca68b);return (n^(n>>>16))>>>0;}
   function randFrom(i){return hash(i)/4294967295;}
   function hexRgb(hex){const n=parseInt(hex.replace('#',''),16);return [(n>>16)&255,(n>>8)&255,n&255];}
@@ -58,6 +58,10 @@
       quad(list,p,q,aboveQ,above,COLORS.grassRim);
       quad(list,above,aboveQ,m2,m1,i%3===0?COLORS.cliff:COLORS.cliffEdge);
       quad(list,m1,m2,foot2,foot1,i%4===0?COLORS.cliffDark:COLORS.cliff);
+      // The pale waterline visually separates the island from its turquoise sea.
+      const outer1=V(cx+(foot1[0]-cx)*1.065,bottom+.025,cz+(foot1[2]-cz)*1.065);
+      const outer2=V(cx+(foot2[0]-cx)*1.065,bottom+.025,cz+(foot2[2]-cz)*1.065);
+      quad(list,foot1,foot2,outer2,outer1,COLORS.foam);
       if(i%3===0){quad(list,V(p[0],bottom+.16,p[2]),V(q[0],bottom+.16,q[2]),foot2,foot1,'#d6ccb0');}
       // Fine layer cuts in the limestone, under the grass (actual polygons, not an image).
       if(i%4===0){const lo=height-.30;let a=V(p[0],lo,p[2]),b=V(q[0],lo,q[2]);quad(list,a,b,V(b[0],lo-.07,b[2]),V(a[0],lo-.07,a[2]),'#eee2bf');}
@@ -186,7 +190,16 @@
     const x=island.cx+Math.cos(t)*island.rx*r,z=island.cz+Math.sin(t)*island.rz*r;
     disc(list,x,island.y+.036,z,.035,i%3===0?'#eaaea1':i%4===0?'#fffbed':'#c3d2a2',5);
   }}
-  function addLandscape(list){
+  function footpath(list,island,seed){
+    // Small irregular stone spots, kept away from the station/track itself.
+    for(let i=0;i<5;i++){
+      const r=randFrom(seed+i*43)*.50,angle=randFrom(seed+i*117+19)*Math.PI*2;
+      const x=island.cx+Math.cos(angle)*island.rx*r;
+      const z=island.cz+Math.sin(angle)*island.rz*r;
+      disc(list,x,island.y+.048,z,.11+randFrom(seed+i*7)*.075,i%2?'#f8e7b9':'#e5dbab',6);
+    }
+  }
+  function addLandscape(list,paths){
     // The staggered terrain is what makes the scene read as a 3D island, not a wallpaper.
     const islands=[
       silhouette(list,-7.3,-4.7,3.15,2.35,3.05,2),
@@ -201,14 +214,25 @@
     ];
     // Forests occupy island edges, keeping the playable tracks legible.
     for(const island of islands){
-      const treeCount=island.y>2?10:island.y>0?8:6;
+      const treeCount=island.y>2?7:island.y>0?6:4;
       for(let j=0;j<treeCount;j++){
         const id=hash(island.seed*391+j*897),ang=randFrom(id)*Math.PI*2,rr=.47+randFrom(id+6)*.45;
         const x=island.cx+Math.cos(ang)*island.rx*rr,z=island.cz+Math.sin(ang)*island.rz*rr;
         if(Math.abs(x)<2.4&&Math.abs(z)<2.25)continue;
-        tree(list,x,island.y+.04,z,.66+randFrom(id+31)*.85,randFrom(id+15));
+        // Keep trees a little way off both tracks so the trains remain visible.
+        let onTrack=false;
+        for(const curve of paths){
+          for(let k=0;k<=55;k++){
+            const c=curve.point(k/55);
+            if(Math.abs(c[1]-island.y)<1.7 && Math.hypot(x-c[0],z-c[2])<1.12){onTrack=true;break;}
+          }
+          if(onTrack)break;
+        }
+        if(onTrack)continue;
+        tree(list,x,island.y+.04,z,.55+randFrom(id+31)*.65,randFrom(id+15));
       }
-      flowers(list,island,22);
+      flowers(list,island,30);
+      footpath(list,island,island.seed+1000);
     }
     for(let i=0;i<12;i++){let x=-7.6+(i%4)*.65,z=5.3+Math.floor(i/4)*.35; shrub(list,x,-.04,z,.19+(i%3)*.05,i)}
     station(list);
@@ -218,7 +242,7 @@
     house(list,2.1,-.12,5.7,.63,'#bc9f7d');
     house(list,-7.1,1.69,.6,.54,'#ab9680');
     windmill(list,7.55,-.19,4.16);
-    waterfall(list,-4.65,1.62,-2.20);
+    waterfall(list,-4.55,1.58,1.90);
     // Little sheep, sea stones, and a pier as 3D meshes.
     for(let i=0;i<3;i++){const x=4.3+(i%2)*.75,z=4.53+(i>>1)*.7; cylinder(list,x,-.03,z,.32,.29,.28,'#fff3d6',7);cone(list,x,-.03+.22,z,.23,.20,'#fffaf0',7);}
     for(let i=0;i<13;i++){
@@ -227,6 +251,22 @@
     }
     for(let i=0;i<9;i++)box(list,8.0+i*.36,-3.05,6.1, .30,.16,1.25,'#a28a70');
     return islands;
+  }
+  function rollingWheel(list,x,y,z,r,width,yaw){
+    // Wheels are horizontal-axle cylinders, not vertical discs planted in the track.
+    const side=V(Math.cos(yaw),0,-Math.sin(yaw));
+    const along=V(Math.sin(yaw),0,Math.cos(yaw));
+    const left=[],right=[];
+    for(let i=0;i<9;i++){
+      const a=i*Math.PI*2/9,c=Math.cos(a)*r,up=Math.sin(a)*r;
+      const radial=plus(scale(along,c),V(0,up,0));
+      const base=plus(V(x,y,z),radial);
+      left.push(plus(base,scale(side,-width/2)));
+      right.push(plus(base,scale(side,width/2)));
+    }
+    polygon(list,left.slice().reverse(),'#424052');
+    polygon(list,right,'#414052');
+    for(let i=0;i<9;i++)quad(list,left[i],left[(i+1)%9],right[(i+1)%9],right[i],'#5d5963');
   }
   function trainFaces(list,curve,progress,color,smoke=false){
     const p=curve.point(progress),t=curve.tangent(progress),yaw=Math.atan2(t[0],t[2]);
@@ -247,33 +287,50 @@
     for(let i=0;i<3;i++){
       for(let d of [-.38,.38]){
         const o=offset(d,i===0? .30:(i===1?-.40:-.94));
-        cylinder(list,o[0],o[1]-.17,o[2],.14,.14,.13,'#3f3d52',8);
+        rollingWheel(list,o[0],o[1]-.13,o[2],.16,.11,yaw);
       }
     }
+    // Every carriage follows its own point and tangent on the actual 3D curve.
+    // A straight translation of the locomotive frame would cut corners and float off the rails.
     for(let i=0;i<2;i++){
-      const dz=-1.50-i*1.0, o=offset(0,dz);
-      box(list,o[0],o[1]+.25,o[2],.76,.62,.82,i===0?'#c46e79':tint(color,.85),yaw);
-      box(list,o[0],o[1]+.62,o[2],.82,.16,.87,'#54536c',yaw);
-      for(let side of [-1,1]){
-        const w=offset(side*.39,dz);
-        box(list,w[0],w[1]+.34,w[2],.08,.25,.42,'#e1ddd0',yaw);
+      const carriageProgress=Math.max(0,progress-(1.48+i*1.00)/curve.totalLength);
+      const cp=curve.point(carriageProgress),ct=curve.tangent(carriageProgress);
+      const cyaw=Math.atan2(ct[0],ct[2]);
+      const o=V(cp[0],cp[1]+.30,cp[2]);
+      const paint=i===0?'#cf8792':tint(color,.9);
+      box(list,o[0],o[1]+.20,o[2],.77,.63,.88,paint,cyaw);
+      box(list,o[0],o[1]+.56,o[2],.84,.16,.94,'#56576c',cyaw);
+      // Tiny pale-blue square windows on both sides, in the carriage's frame.
+      const sn=Math.sin(cyaw),cs=Math.cos(cyaw);
+      for(const side of [-1,1]){
+        for(const along of [-.21,.21]){
+          const wx=o[0]+side*.405*cs+along*sn;
+          const wz=o[2]-side*.405*sn+along*cs;
+          box(list,wx,o[1]+.33,wz,.075,.21,.19,'#d7eff1',cyaw);
+        }
       }
-      for(let d of [-.35,.35]){
-        const wh=offset(d*.9,dz);cylinder(list,wh[0],wh[1]-.17,wh[2],.13,.13,.12,'#454457',8);
+      for(const along of [-.31,.31]){
+        const wx=o[0]+along*sn,wz=o[2]+along*cs;
+        for(const side of [-.38,.38]){
+          rollingWheel(list,wx+side*cs,o[1]-.14,wz-side*sn,.15,.11,cyaw);
+        }
       }
+      // Dark short coupler visible between separate wagon meshes.
+      if(i===0){const front=curve.point(Math.max(0,progress-.95/curve.totalLength));
+        beam(list,V(front[0],front[1]+.20,front[2]),V(o[0],o[1]-.11,o[2]),.10,.10,'#67616c');}
     }
     if(smoke&&progress<.97){const o=offset(0,.4);for(let i=0;i<3;i++)cylinder(list,o[0]-.24*i,o[1]+.95+.31*i,o[2]-.13*i,.21+.05*i,.14,.18,'#fdf7e1',7);}
   }
   function compileWorld(){
     const mesh=[];
-    const islands=addLandscape(mesh);
     const A=trackCurve([V(-8.8,.07,5.34),V(-7.3,.06,5.45),V(-6.0,.10,5.65),V(-4.45,.23,4.4),V(-3.14,.92,2.94),V(-1.4,.99,1.17)]);
     const B=trackCurve([V(6.1,2.70,-4.25),V(7.6,2.56,-3.0),V(8.5,1.68,-.7),V(8.0,1.48,1.05),V(8.0,.17,4.5),V(6.10,.08,5.6),V(4.0,.16,4.5),V(2.50,.88,2.55),V(1.52,.98,1.25)]);
+    const islands=addLandscape(mesh,[A,B]);
     railLine(mesh,A,1);railLine(mesh,B,2);
     tunnel(mesh,A.point(0),A.tangent(.007));tunnel(mesh,B.point(0),B.tangent(.007));
     return {mesh,islands,paths:[A,B]};
   }
-  function makeCamera(canvas){let w=canvas.width,h=canvas.height,azimuth=.70,elevation=.73,zoom=canvas.clientWidth<600?1.18:1.08;
+  function makeCamera(canvas){const defaultZoom=canvas.clientWidth<600?1.22:1.11;let w=canvas.width,h=canvas.height,azimuth=.70,elevation=.73,zoom=defaultZoom;
     function basis(){const cy=Math.sin(elevation),cx=Math.sin(azimuth)*Math.cos(elevation),cz=Math.cos(azimuth)*Math.cos(elevation);
       const forward=normalize(V(-cx,-cy,-cz)),right=normalize(cross(forward,V(0,1,0))),up=normalize(cross(right,forward));
       const k=Math.min(w/30.0,h/21.1)*zoom;
@@ -281,7 +338,7 @@
     return {setSize:(a,b)=>{w=a;h=b},getBasis:basis,
       project:(p,b)=>{const rel=sub(p,V(0,.35,0));return {x:b.w*.50+dot(rel,b.right)*b.k,y:b.h*.53-dot(rel,b.up)*b.k,depth:dot(rel,b.forward)}},
       orbit:(dx,dy)=>{azimuth=Math.min(1.65,Math.max(-1.30,azimuth+dx*.006)); elevation=Math.min(1.32,Math.max(.34,elevation+dy*.006));},
-      zoomBy:d=>{zoom=Math.min(1.85,Math.max(.65,zoom*d))},reset:()=>{azimuth=.70;elevation=.73;zoom=1;},getState:()=>({azimuth,elevation,zoom})};
+      zoomBy:d=>{zoom=Math.min(1.85,Math.max(.65,zoom*d))},reset:()=>{azimuth=.70;elevation=.73;zoom=defaultZoom;},getState:()=>({azimuth,elevation,zoom})};
   }
   function createWebGL(canvas){
     let gl;try{gl=canvas.getContext('webgl2',{alpha:false,antialias:true,preserveDrawingBuffer:true})||canvas.getContext('webgl',{alpha:false,antialias:true,preserveDrawingBuffer:true})}catch(_){gl=null}
@@ -319,11 +376,16 @@
     const hardwarePainter=createWebGL(canvas);
     const paint=hardwarePainter||softwarePainter(canvas);
     const renderType=hardwarePainter?'webgl':'software3d';
-    let progressA=0,progressB=0,animating=true,phase=0,raf=null,drag=null;
+    let progressA=0,progressB=0,animating=true,phase=0,raf=null,drag=null,moving=false,dirty=true;
     let width=0,height=0,dpr=1,lastPaintAt=0;
     function resize(){let bb=canvas.getBoundingClientRect();let nw=Math.max(1,Math.round(bb.width)),nh=Math.max(1,Math.round(bb.height));const ndpr=Math.min(window.devicePixelRatio||1,1.8);
-      if(nw!==width||nh!==height||ndpr!==dpr){width=nw;height=nh;dpr=ndpr;canvas.width=Math.round(nw*dpr);canvas.height=Math.round(nh*dpr);camera.setSize(canvas.width,canvas.height);}}
-    function draw(timestamp){if(!animating)return; if(renderType==='software3d'&&timestamp-lastPaintAt<30){raf=requestAnimationFrame(draw);return;}lastPaintAt=timestamp;resize();phase=window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches?0:timestamp*.001;
+      if(nw!==width||nh!==height||ndpr!==dpr){width=nw;height=nh;dpr=ndpr;canvas.width=Math.round(nw*dpr);canvas.height=Math.round(nh*dpr);camera.setSize(canvas.width,canvas.height);dirty=true;}}
+    function draw(timestamp){if(!animating)return;
+      const frameInterval=moving?(renderType==='webgl'?22:40):160;
+      if(!dirty && timestamp-lastPaintAt<frameInterval){raf=requestAnimationFrame(draw);return;}
+      if(typeof document!=='undefined' && document.visibilityState==='hidden'){raf=requestAnimationFrame(draw);return;}
+      dirty=false;lastPaintAt=timestamp;resize();
+      phase=window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches?0:timestamp*.001;
       const mesh=world.mesh.slice();
       trainFaces(mesh,world.paths[0],.23 + progressA*.77,COLORS.red,true);
       trainFaces(mesh,world.paths[1],.15 + progressB*.85,COLORS.blue,false);
@@ -337,19 +399,31 @@
           if(p.x<0||p.x>canvas.width||p.y<0||p.y>canvas.height)return;
           cx.fillStyle='rgba(255,253,242,.96)';cx.beginPath();cx.roundRect(p.x-w/2,p.y-h/2,w,h,12*dpr);cx.fill();cx.lineWidth=1.4*dpr;cx.strokeStyle=bg;cx.stroke();cx.fillStyle='#46526a';cx.font=`${large?800:900} ${(large?13:14)*dpr}px system-ui, sans-serif`;cx.textAlign='center';cx.textBaseline='middle';cx.fillText(name,p.x,p.y+1*dpr);
         }
-        tag(V(0,3.83,.52),'ちゅうおう駅','#c88169',true);
+        tag(V(-1.15,4.06,-.42),'ちゅうおう駅','#c88169',true);
         if(vw>530){tag(plus(world.paths[0].point(.23 + progressA*.77),V(0,1.5,0)),'A','#d16d71',false);tag(plus(world.paths[1].point(.15 + progressB*.85),V(0,1.5,0)),'B','#5787be',false);}
       }
       raf=requestAnimationFrame(draw);
     }
-    function onPointerDown(e){drag={x:e.clientX,y:e.clientY};canvas.setPointerCapture(e.pointerId);canvas.style.cursor='grabbing';}
-    function onPointerMove(e){if(!drag)return;camera.orbit(e.clientX-drag.x,e.clientY-drag.y);drag.x=e.clientX;drag.y=e.clientY;}
+    function onPointerDown(e){if(e.button!==0)return;drag={x:e.clientX,y:e.clientY};canvas.setPointerCapture(e.pointerId);canvas.style.cursor='grabbing';}
+    function onPointerMove(e){if(!drag)return;camera.orbit(e.clientX-drag.x,e.clientY-drag.y);drag.x=e.clientX;drag.y=e.clientY;dirty=true;}
     function onPointerUp(){drag=null;canvas.style.cursor='grab';}
-    function onWheel(e){e.preventDefault();camera.zoomBy(e.deltaY>0?.9:1.1);}
+    function onWheel(e){e.preventDefault();camera.zoomBy(e.deltaY>0?.9:1.1);dirty=true;}
+    function onKey(e){let handled=true;
+      if(e.key==='ArrowLeft')camera.orbit(-26,0);
+      else if(e.key==='ArrowRight')camera.orbit(26,0);
+      else if(e.key==='ArrowUp')camera.orbit(0,-22);
+      else if(e.key==='ArrowDown')camera.orbit(0,22);
+      else if(e.key==='+'||e.key==='=')camera.zoomBy(1.12);
+      else if(e.key==='-')camera.zoomBy(1/1.12);
+      else if(e.key.toLowerCase()==='r')camera.reset();
+      else handled=false;
+      if(handled){e.preventDefault();dirty=true;}
+    }
+    canvas.addEventListener('keydown',onKey);
     canvas.addEventListener('pointerdown',onPointerDown);canvas.addEventListener('pointermove',onPointerMove);canvas.addEventListener('pointerup',onPointerUp);canvas.addEventListener('pointercancel',onPointerUp);canvas.addEventListener('wheel',onWheel,{passive:false});
     raf=requestAnimationFrame(draw);
-    return {setTrains:(a,b)=>{progressA=Math.max(0,Math.min(1,a));progressB=Math.max(0,Math.min(1,b));},resetCamera:()=>camera.reset(),zoomBy:k=>camera.zoomBy(k),getRenderType:()=>renderType,
-      destroy(){animating=false;if(raf)cancelAnimationFrame(raf);canvas.removeEventListener('pointerdown',onPointerDown);canvas.removeEventListener('pointermove',onPointerMove);canvas.removeEventListener('pointerup',onPointerUp);canvas.removeEventListener('wheel',onWheel);}, getSceneStats:()=>({faces:world.mesh.length,rails:2,islands:world.islands.length,trainProgress:[progressA,progressB]})};
+    return {setTrains:(a,b)=>{progressA=Math.max(0,Math.min(1,a));progressB=Math.max(0,Math.min(1,b));dirty=true;},setMoving:v=>{moving=Boolean(v);dirty=true;},resetCamera:()=>{camera.reset();dirty=true;},zoomBy:k=>{camera.zoomBy(k);dirty=true;},getRenderType:()=>renderType,getCameraState:()=>camera.getState(),
+      destroy(){animating=false;if(raf)cancelAnimationFrame(raf);canvas.removeEventListener('keydown',onKey);canvas.removeEventListener('pointerdown',onPointerDown);canvas.removeEventListener('pointermove',onPointerMove);canvas.removeEventListener('pointerup',onPointerUp);canvas.removeEventListener('pointercancel',onPointerUp);canvas.removeEventListener('wheel',onWheel);}, getSceneStats:()=>({faces:world.mesh.length,rails:2,islands:world.islands.length,trainProgress:[progressA,progressB]})};
   }
   return {createWorld,compileWorld,trackCurve,makeCamera,sceneConstants:{islands:9,LENGTH_METRES:1200},V,length,dot};
 });

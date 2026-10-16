@@ -50,6 +50,7 @@ async def one(browser,w,h):
  assert not errors,errors
  await page.locator('#againButton').click()
  await page.locator('#resetCamera').click()
+ await page.wait_for_timeout(450)
  await page.screenshot(path=str(P/f'preview_{w}_final.png'),full_page=True,animations='disabled')
  print(w,'×',h,'3d faces:',data['scene']['faces'],'3D rotate: PASS','success/failure/pause: PASS','overflows: none','errors:',errors)
  await page.close()
