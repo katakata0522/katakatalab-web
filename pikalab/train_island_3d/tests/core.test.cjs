@@ -6,7 +6,7 @@ test('列車は発車前と到着後を範囲内に保つ',()=>{assert.equal(g.p
 test('境界以外・刻み以外の速さを拒否',()=>{for(let x of [-2,0,16,50,NaN,Infinity])assert.equal(g.validSpeed(x),false);assert.throws(()=>g.arrivalMinutes(9),RangeError)});
 test('同じ世界時刻に両列車の距離が正しく進む',()=>{const s=g.modelAt(24,12,1.5);assert.equal(s.a,600);assert.equal(s.b,300)});
 test('曲線の始点終点・接線・弧長が一貫する',()=>{let c=w.trackCurve([[0,0,0],[2,0,1],[4,0,2]]);assert.deepEqual(c.point(0),[0,0,0]);assert.deepEqual(c.point(1),[4,0,2]);assert.ok(c.totalLength>4&&c.totalLength<5);assert.ok(w.length(c.tangent(.5))>0.99)});
-test('島は15の3D立体島と2本の線路で構成される',()=>{const s=w.compileWorld();assert.equal(s.islands.length,15);assert.equal(s.paths.length,2);assert.ok(s.mesh.length>2000);assert.ok(s.mesh.every(m=>m.v.every(v=>v.every(Number.isFinite))))});
+test('平地の本島と7つの高い離島、2本の線路で構成される',()=>{const s=w.compileWorld();assert.equal(s.islands.length,8);assert.equal(s.islands[0].shape,'mainland');assert.equal(s.paths.length,2);assert.ok(s.mesh.length>2000);assert.ok(s.mesh.every(m=>m.v.every(v=>v.every(Number.isFinite))))});
 test('3Dカメラは斜め見下ろしで画面上の座標に投影できる',()=>{const c=w.makeCamera({width:1280,height:720});const b=c.getBasis();let a=c.project([0,0,0],b),p=c.project([4,0,0],b);assert.ok(Number.isFinite(a.x)&&Number.isFinite(p.y));assert.notEqual(a.x,p.x);c.orbit(30,-12);c.zoomBy(1.2);assert.ok(c.getState().zoom>1)});
 
 test('実際の1,200mと時速の単位変換が一貫する',()=>{
@@ -73,8 +73,7 @@ test('建物と風車の全配置は、車体の幅を含む線路安全帯の�
     assert.ok(measured>=minDistance-.025,`${object.id}: track distance ${measured.toFixed(2)}, required ${minDistance.toFixed(2)}`);
     const island=scene.islands.find(i=>i.seed===object.islandSeed);
     assert.ok(island,`${object.id} island exists`);
-    const frac=Math.hypot((object.x-island.cx)/island.rx,(object.z-island.cz)/island.rz);
-    assert.ok(frac<1-(object.radius+.14)/Math.min(island.rx,island.rz)+.005,`${object.id}: the entire object must fit inside island grass, ratio ${frac}`);
+    assert.ok(w.insideLand(island,object.x,object.z,object.radius+.14),`${object.id}: whole building must rest on grass`);
   }
 });
 
@@ -90,13 +89,13 @@ test('木も線路と建物を遮らない位置を自動で選ぶ',()=>{
   }
 });
 
-test('新しい島を巡る2本の線路は旧版より長く、駅の座標を維持',()=>{
+test('本島全域を巡る2本の線路は長く、駅の座標を維持',()=>{
   const scene=w.compileWorld();
-  assert.ok(scene.paths[0].totalLength>14);
-  assert.ok(scene.paths[1].totalLength>26);
+  assert.ok(scene.paths[0].totalLength>34);
+  assert.ok(scene.paths[1].totalLength>33);
   assert.deepEqual(scene.paths[0].point(1),[-1.4,.99,1.17]);
   assert.deepEqual(scene.paths[1].point(1),[1.52,.98,1.25]);
-  assert.equal(w.sceneConstants.islands,15);
+  assert.equal(w.sceneConstants.islands,8);
 });
 
 test('地図を広げて見るためのカメラ移動はリセットできる',()=>{
@@ -110,4 +109,52 @@ test('地図を広げて見るためのカメラ移動はリセットできる',
   assert.notEqual(p0.x,p1.x);
   camera.reset();
   assert.deepEqual(camera.getState(),original);
+});
+
+
+test('広大な本島の全ルートが平地から海へ落ちない',()=>{
+  const scene=w.compileWorld(),mainland=scene.islands[0];
+  assert.equal(mainland.shape,'mainland');
+  for(const [id,route] of scene.paths.entries()){
+    let minX=Infinity,maxX=-Infinity,minZ=Infinity,maxZ=-Infinity;
+    for(let k=0;k<=500;k++){
+      const [x,y,z]=route.point(k/500);
+      assert.ok(w.insideLand(mainland,x,z,.18),`route ${id} has left the mainland at ${k/500}: (${x.toFixed(2)},${z.toFixed(2)})`);
+      assert.ok(Math.abs(y-0.98)<0.03,`route ${id} must remain at the flat railway height`);
+      minX=Math.min(minX,x);maxX=Math.max(maxX,x);minZ=Math.min(minZ,z);maxZ=Math.max(maxZ,z);
+    }
+    assert.ok(maxX-minX>10.5,`route ${id} should use an extensive east-west span`);
+    assert.ok(maxZ-minZ>10.0,`route ${id} should use the north-south meadows`);
+  }
+});
+
+test('高い島は本島から離れた離島になり、建物は本島にも分散する',()=>{
+  const scene=w.compileWorld(),mainland=scene.islands[0];
+  assert.equal(w.MAINLAND_OUTLINE.length,18);
+  assert.equal(scene.islands.length,8);
+  for(const island of scene.islands.slice(1)){
+    assert.ok(island.y>2.5,'offshore plateau must be raised');
+    assert.ok(!w.insideLand(mainland,island.cx,island.cz,.1),'offshore centre cannot overlap mainland');
+  }
+  const village=scene.landmarks.filter(x=>x.islandSeed===128);
+  assert.ok(village.length>=5,'railway town, coast and farm should occupy the mainland');
+  assert.ok(village.some(x=>x.x< -5)&&village.some(x=>x.x>5),'homes should cover both western and eastern sides');
+});
+
+test('立体地形を細分化して線路の描画抜けを防ぎ、メッシュ数を制限する',()=>{
+  const world=w.compileWorld();
+  assert.ok(world.mesh.length>=12000,'landscape and train scenery must have sufficient polygons');
+  assert.ok(world.mesh.length<23000,'avoid unbounded scenery generation on mobile');
+  assert.ok(world.mesh.every(f=>f.v.every(point=>point.every(Number.isFinite))));
+  assert.ok(world.trees.length>=70,'wide meadow should contain groves outside railroad clearance');
+  assert.equal(w.sceneConstants.layout,'broad-mainland-with-offshore-mesas');
+});
+
+
+test('カメラで遠い離島や平原の端まで移動できる',()=>{
+  const c=w.makeCamera({width:1280,height:800,clientWidth:1280});
+  c.pan(3000,0);const far=c.getState();
+  assert.ok(Math.abs(far.target[0])>10 || Math.abs(far.target[2])>10,'camera must reach outer islands');
+  assert.ok(Math.abs(far.target[0])<=20.5 && Math.abs(far.target[2])<=15.8,'camera remains bounded');
+  c.reset();assert.deepEqual(c.getState().target,[0,.35,0]);
 });

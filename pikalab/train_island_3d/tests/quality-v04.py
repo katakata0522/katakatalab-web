@@ -30,7 +30,7 @@ async def check(browser,width,height):
     # On controls: changes speed but the plotted scale and grid nodes remain the same.
     initial_grid=await page.locator('#graphGrid').evaluate('(el)=>el.firstElementChild')
     await page.locator('#speedA').fill('48')
-    assert await page.locator('#graphGrid').evaluate('(el)=>el.firstElementChild===window.__firstGridChild') if False else True
+    assert initial_grid is not None
     assert (await stats())['graphGridNodes']==start['graphGridNodes']
     # Static island projection is reused during train motion.
     await page.locator('#speedA').fill('30')

@@ -19,7 +19,7 @@ async def check(browser,w,h):
     await page.wait_for_function('Boolean(window.__pikaIslandDebug)',timeout=30000)
     await page.wait_for_timeout(450)
     before=await page.evaluate('window.__pikaIslandDebug.getState()')
-    assert before['scene']['islands']==15,before['scene']
+    assert before['scene']['islands']==8,before['scene']
     assert before['scene']['landmarks']==8,before['scene']
     assert before['scene']['rendererMetrics'].get('staticProjectionCount',1)==1,before
     assert await page.evaluate('document.documentElement.scrollWidth<=innerWidth')
@@ -69,7 +69,7 @@ async def check(browser,w,h):
     assert await page.evaluate('document.documentElement.scrollWidth<=innerWidth')
     assert not errors,errors
     await page.close()
-    print(f'{w}x{h}: 15 islands, input, pan, orbit, train success/failure, graph, overflow, JS errors PASS',flush=True)
+    print(f'{w}x{h}: mainland and offshore islets, input, pan, orbit, train success/failure, graph, overflow, JS errors PASS',flush=True)
 
 async def main():
     async with async_playwright() as p:

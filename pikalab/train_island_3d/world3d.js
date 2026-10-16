@@ -228,24 +228,101 @@
   }
   // Level geometry and object placement share the same track-proximity model.
   // All static props use the actual curved rails, not a rectangular exclusion guess.
+  // A connected, mostly level mainland is the playable railway surface.
+  // Higher dramatic mesas live offshore so the railroad is never squeezed between them.
+  // Polygon is deliberately asymmetric, with an eastern cape and broad western meadow.
+  const MAINLAND_OUTLINE=Object.freeze([
+    [-17.35,-5.45],[-15.45,-9.25],[-11.05,-10.85],[-6.5,-11.2],[-2.2,-10.08],
+    [3.1,-10.70],[9.45,-9.85],[14.28,-8.23],[17.45,-4.5],[18.30,.35],
+    [15.96,5.35],[11.65,8.15],[6.24,9.74],[.90,10.28],[-4.77,9.55],
+    [-10.32,8.58],[-15.73,6.22],[-18.16,1.57]
+  ]);
+  function pointInPolygon(x,z,polygon){
+    let inside=false;
+    for(let i=0,j=polygon.length-1;i<polygon.length;j=i++){
+      const a=polygon[i],b=polygon[j];
+      if((a[1]>z)!==(b[1]>z)&&x<(b[0]-a[0])*(z-a[1])/(b[1]-a[1])+a[0])inside=!inside;
+    }
+    return inside;
+  }
+  function distanceToPolygonEdge(x,z,polygon){
+    let best=Infinity;
+    for(let i=0;i<polygon.length;i++){
+      const a=polygon[i],b=polygon[(i+1)%polygon.length];
+      best=Math.min(best,pointSegmentDistanceXZ(x,z,[a[0],0,a[1]],[b[0],0,b[1]]));
+    }
+    return best;
+  }
+  function insideLand(island,x,z,padding=.10){
+    if(island.shape==='mainland')return pointInPolygon(x,z,MAINLAND_OUTLINE)&&distanceToPolygonEdge(x,z,MAINLAND_OUTLINE)>=padding;
+    const u=(x-island.cx)/island.rx,v=(z-island.cz)/island.rz;
+    return Math.hypot(u,v)<1-padding/Math.min(island.rx,island.rz);
+  }
+  function mainland(list){
+    const height=.73,bottom=-3.26,outline=MAINLAND_OUTLINE;
+    const n=outline.length,pts=outline.map(([x,z])=>V(x,height,z));
+    // Tessellate the grass into small cells. Giant centre-fan triangles would be
+    // sorted behind/in front of the railroad as a whole by the Canvas fallback,
+    // causing tracks to disappear even though their real Y coordinate is above it.
+    function clipHalfplane(poly,axis,limit,keepGreater){
+      const inside=p=>keepGreater?p[axis]>=limit-1e-8:p[axis]<=limit+1e-8;
+      const clipped=[];
+      for(let i=0;i<poly.length;i++){
+        const a=poly[i],b=poly[(i+1)%poly.length],ia=inside(a),ib=inside(b);
+        if(ia)clipped.push(a);
+        if(ia!==ib){
+          const t=(limit-a[axis])/(b[axis]-a[axis]);
+          clipped.push([a[0]+t*(b[0]-a[0]),a[1]+t*(b[1]-a[1])]);
+        }
+      }
+      return clipped;
+    }
+    const cellSize=1.28;
+    for(let ix=0;ix<30;ix++)for(let iz=0;iz<20;iz++){
+      const x0=-19+ix*cellSize,z0=-12+iz*cellSize;
+      let patch=clipHalfplane(outline,0,x0,true);
+      if(patch.length<3)continue;
+      patch=clipHalfplane(patch,0,x0+cellSize,false);
+      if(patch.length<3)continue;
+      patch=clipHalfplane(patch,1,z0,true);
+      if(patch.length<3)continue;
+      patch=clipHalfplane(patch,1,z0+cellSize,false);
+      if(patch.length<3)continue;
+      polygon(list,patch.map(([x,z])=>V(x,height,z)),COLORS.grass);
+    }
+    for(let i=0;i<n;i++){
+      const j=(i+1)%n,p=pts[i],q=pts[j];
+      const first=V(p[0],height-.13,p[2]),next=V(q[0],height-.13,q[2]);
+      const m1=V(p[0],bottom+(height-bottom)*.53,p[2]),m2=V(q[0],bottom+(height-bottom)*.53,q[2]);
+      const foot1=V(p[0],bottom,p[2]),foot2=V(q[0],bottom,q[2]);
+      quad(list,p,q,next,first,COLORS.grassRim);
+      quad(list,first,next,m2,m1,i%4===0?COLORS.cliffEdge:COLORS.cliff);
+      quad(list,m1,m2,foot2,foot1,i%4===0?COLORS.cliffDark:COLORS.cliff);
+      const foam1=V(p[0]*1.018,bottom+.034,p[2]*1.018),foam2=V(q[0]*1.018,bottom+.034,q[2]*1.018);
+      quad(list,foot1,foot2,foam2,foam1,COLORS.foam);
+      if(i%3===0)quad(list,V(p[0],bottom+.43,p[2]),V(q[0],bottom+.43,q[2]),
+        V(q[0],bottom+.31,q[2]),V(p[0],bottom+.31,p[2]),'#e6d4b1');
+    }
+    return {cx:0,cz:0,rx:15.1,rz:8.65,y:height,seed:128,shape:'mainland'};
+  }
+  // Seed 128 is the whole mainland, not a small round pedestal.
+  // Elevated pieces are purposefully *off* the railroad map.
   const ISLAND_DEFINITIONS=Object.freeze([
-    [-7.3,-4.7,3.15,2.35,3.05,2],[-7.4,.10,3.05,2.48,1.65,19],[-7.1,4.3,2.90,2.05,-.13,32],
-    [-.8,-6.58,3.05,2.14,2.02,44],[6.1,-5.20,3.25,2.34,2.55,69],[6.6,-.20,3.25,2.46,1.48,80],
-    [6.45,4.48,3.72,2.50,-.19,95],[-.65,4.50,4.25,2.35,-.16,110],[0,0,3.8,2.94,.74,128],
-    // New surrounding archipelago: paths now traverse the west and east extensions.
-    [-12.2,5.4,2.65,2.12,-.10,162],[11.10,-6.35,3.15,2.32,2.70,165],
-    [-11.65,-4.75,2.70,2.25,3.03,171],[-.40,-10.55,3.15,2.12,3.38,188],
-    [11.45,4.45,3.10,2.55,-.18,220],[0,8.65,3.5,2.08,-.18,210]
+    [-19.90,8.96,2.28,1.72,3.34,162],[-13.08,14.04,2.32,1.72,3.28,171],
+    [0.95,14.44,2.65,1.86,3.52,188],[12.46,13.03,2.59,1.75,3.08,210],
+    [20.82,6.80,2.72,1.99,3.16,220],[20.62,-11.40,2.36,1.75,2.70,165],
+    [-19.75,-12.65,2.67,1.85,3.18,44]
   ]);
   const LANDMARK_SPECS=Object.freeze([
-    {id:'seaside-windmill',type:'windmill',islandSeed:220,preferred:[.0,-.10],size:1},
-    {id:'upper-cottage',type:'house',islandSeed:44,preferred:[-.08,.05],size:.70,roof:'#a98779'},
-    {id:'north-cottage',type:'house',islandSeed:188,preferred:[.05,.07],size:.78,roof:'#b18879'},
-    {id:'garden-cottage',type:'house',islandSeed:210,preferred:[-.12,-.11],size:.72,roof:'#9d8588'},
-    {id:'south-cottage',type:'house',islandSeed:110,preferred:[.42,.35],size:.63,roof:'#bc9f7d'},
-    {id:'west-cottage',type:'house',islandSeed:19,preferred:[.04,-.16],size:.54,roof:'#ab9680'},
-    {id:'mountain-cottage',type:'house',islandSeed:171,preferred:[-.1,.03],size:.62,roof:'#b99b82'},
-    {id:'sunrise-cottage',type:'house',islandSeed:165,preferred:[.25,-.12],size:.57,roof:'#b39b85'}
+    {id:'seaside-windmill',type:'windmill',islandSeed:220,preferred:[.01,-.08],size:1},
+    // The town, farm and waterfront now genuinely occupy the broad mainland.
+    {id:'west-village',type:'house',islandSeed:128,preferred:[-.70,-.43],size:.69,roof:'#ab9680'},
+    {id:'flower-cottage',type:'house',islandSeed:128,preferred:[-.47,.43],size:.73,roof:'#bc9f7d'},
+    {id:'farm-cottage',type:'house',islandSeed:128,preferred:[.43,-.64],size:.78,roof:'#b18879'},
+    {id:'east-village',type:'house',islandSeed:128,preferred:[.74,.29],size:.72,roof:'#b39b85'},
+    {id:'southern-house',type:'house',islandSeed:128,preferred:[-.17,-.79],size:.68,roof:'#a98779'},
+    {id:'northern-islet',type:'house',islandSeed:188,preferred:[.04,.01],size:.71,roof:'#9d8588'},
+    {id:'east-islet',type:'house',islandSeed:165,preferred:[-.04,.02],size:.65,roof:'#b99b82'}
   ]);
   function trackSegments(paths,step=220){
     return paths.map(curve=>{
@@ -287,8 +364,8 @@
       let chosen=null;
       for(const [u,v] of candidates){
         // Leave at least part of the building roof inside the low-poly grass rim.
-        if(Math.hypot(u,v)>Math.min(spec.type==='windmill'?.68:.79,1-(radius+.14)/Math.min(island.rx,island.rz)))continue;
         const x=island.cx+island.rx*u,z=island.cz+island.rz*v;
+        if(!insideLand(island,x,z,radius+.19))continue;
         if(clearanceToTracks(x,z,segments)<radius+railMargin)continue;
         if(Math.hypot(x,z)<(spec.type==='windmill'?4.5:3.45))continue; // central station
         if(occupied.some(other=>Math.hypot(x-other.x,z-other.z)<radius+other.radius+.44))continue;
@@ -304,7 +381,7 @@
     return clearanceToTracks(x,z,paths)>=radius+1.05;
   }
   function addLandscape(list,paths){
-    const islands=ISLAND_DEFINITIONS.map(([cx,cz,rx,rz,y,seed])=>silhouette(list,cx,cz,rx,rz,y,seed));
+    const islands=[mainland(list),...ISLAND_DEFINITIONS.map(([cx,cz,rx,rz,y,seed])=>silhouette(list,cx,cz,rx,rz,y,seed))];
     const segments=trackSegments(paths);
     const landmarks=layoutLandmarks(islands,paths);
     const trees=[];
@@ -313,34 +390,51 @@
       else house(list,item.x,item.y,item.z,item.size,item.roof);
     }
     for(const island of islands){
-      const treeCount=island.y>2?7:island.y>0?5:4;
+      const treeCount=island.shape==='mainland'?180:8;
       for(let j=0;j<treeCount;j++){
-        const id=hash(island.seed*391+j*897),ang=randFrom(id)*Math.PI*2,rr=.40+randFrom(id+6)*.47;
+        const id=hash(island.seed*391+j*897),ang=randFrom(id)*Math.PI*2,rr=.28+randFrom(id+6)*.71;
         const x=island.cx+Math.cos(ang)*island.rx*rr,z=island.cz+Math.sin(ang)*island.rz*rr;
-        const size=.55+randFrom(id+31)*.65;
-        if(Math.abs(x)<2.65&&Math.abs(z)<2.55)continue;
+        const size=.47+randFrom(id+31)*.67;
+        if(!insideLand(island,x,z,.55*size+.24))continue;
+        if(Math.abs(x)<3.4&&Math.abs(z)<3.1)continue;
         if(!trainSafeSite(x,z,.50*size,segments))continue;
         if(landmarks.some(item=>Math.hypot(x-item.x,z-item.z)<item.radius+.53*size+.28))continue;
         tree(list,x,island.y+.04,z,size,randFrom(id+15));
         trees.push({x,z,size,y:island.y,clearance:clearanceToTracks(x,z,segments)});
       }
-      flowers(list,island,24);
+      if(island.shape==='mainland'){
+        // Meadows, tiny picnic parks and farm rows spread the story across the map.
+        for(const [cx,cz] of [[-12,3.6],[-8.7,-7.5],[-3.8,-6.4],[5.5,7.1],[10,-2.5],[13,3.8]]){
+          if(!insideLand(island,cx,cz,1.05)||!trainSafeSite(cx,cz,1.05,segments))continue;
+          for(let q=0;q<4;q++){
+            const px=cx+(q%2)*.68-.34,pz=cz+Math.floor(q/2)*.62-.31;
+            disc(list,px,island.y+.036,pz,.27,q%3===0?'#d6df8e':'#edf0ad',7);
+            shrub(list,px,island.y+.041,pz,.13,q);
+          }
+        }
+        for(let r=0;r<5;r++){
+          const fx=-5.70+r*.39,fz=-6.6;
+          if(insideLand(island,fx,fz,.24)&&trainSafeSite(fx,fz,.36,segments))
+            box(list,fx,island.y+.018,fz,.23,.025,1.4,r%2?'#a3b87a':'#b6c486');
+        }
+      }
+      flowers(list,island,island.shape==='mainland'?140:20);
       footpath(list,island,island.seed+1000);
     }
     // Beach sheep were previously beside the B line; their new enclosure is inland.
     for(let i=0;i<3;i++){
-      const x=-1.18+(i%2)*.85,z=8.30+(i>>1)*.68;
-      if(!trainSafeSite(x,z,.34,segments))continue;
-      cylinder(list,x,-.03,z,.32,.29,.28,'#fff3d6',7);
-      cone(list,x,.19,z,.23,.20,'#fffaf0',7);
+      const x=5.15+(i%2)*.85,z=7.00+(i>>1)*.68;
+      if(!trainSafeSite(x,z,.34,segments)||!insideLand(islands[0],x,z,.4))continue;
+      cylinder(list,x,.92,z,.32,.29,.28,'#fff3d6',7);
+      cone(list,x,1.13,z,.23,.20,'#fffaf0',7);
     }
-    waterfall(list,-4.55,1.58,1.90);
+    waterfall(list,-19.55,3.33,7.91);
     // Rocks and a small pier sit in the water, outside the train's clearance envelope.
     for(let i=0;i<15;i++){
-      const id=hash(i*1027+77),angle=randFrom(id)*2*Math.PI,rr=17+randFrom(id+15)*5;
+      const id=hash(i*1027+77),angle=randFrom(id)*2*Math.PI,rr=23.0+randFrom(id+15)*5;
       boulder(list,Math.sin(angle)*rr*.92,-3.15,Math.cos(angle)*rr*.7,.25+randFrom(id+1)*.64);
     }
-    for(let i=0;i<9;i++)box(list,11.6+i*.33,-3.05,8.10,.30,.16,1.20,'#a28a70');
+    for(let i=0;i<9;i++)box(list,14.5+i*.31,-3.05,7.35,.28,.16,1.15,'#a28a70');
     const glints=[[15,2.5],[14.2,-7],[-15.5,1.2],[-14.8,-9.1],[2.7,12],[14,9.3],[-4.4,-12.9]];
     for(const [x,z] of glints){for(let i=0;i<3;i++)box(list,x+i*.26,-3.22,z+i*.17,.34,.018,.065,i===1?'#def1dd':'#b7ded4',-.32);}
     station(list);
@@ -417,15 +511,26 @@
   }
   function compileWorld(){
     const mesh=[];
-    // Long scenic approach: both routes visit the outer archipelago before reaching the station.
-    const A=trackCurve([V(-13.25,-.02,5.35),V(-12.80,.01,6.12),V(-11.45,.03,6.45),V(-10.10,.02,6.28),V(-8.8,.07,5.34),V(-7.3,.06,5.45),V(-6.0,.10,5.65),V(-4.45,.23,4.4),V(-3.14,.92,2.94),V(-1.4,.99,1.17)]);
-    const B=trackCurve([V(12.20,2.78,-6.20),V(11.60,2.83,-7.10),V(10.10,2.80,-7.30),V(8.80,2.75,-6.40),V(7.80,2.68,-5.20),V(6.1,2.70,-4.25),V(7.6,2.56,-3.0),V(8.5,1.68,-.7),V(8.0,1.48,1.05),V(8.0,.17,4.5),V(6.10,.08,5.6),V(4.0,.16,4.5),V(2.50,.88,2.55),V(1.52,.98,1.25)]);
+    // Two full-span routes sweep the grassy mainland instead of staying on a few isolated pedestals.
+    // Their curved approaches keep the final station position exactly as before.
+    const A=trackCurve([
+      V(-15.9,.98,-5.85),V(-15.0,.98,-7.65),V(-12.8,.98,-8.10),V(-10.40,.98,-6.78),
+      V(-11.7,.98,-3.60),V(-13.75,.98,-.15),V(-13.20,.98,3.35),
+      V(-10.50,.98,5.42),V(-7.45,.98,6.90),V(-4.54,.98,6.36),
+      V(-4.35,.98,4.05),V(-5.13,.98,2.27),V(-3.20,.98,1.15),V(-1.4,.99,1.17)
+    ]);
+    const B=trackCurve([
+      V(14.95,.98,-6.95),V(12.50,.98,-7.66),V(9.70,.98,-7.48),
+      V(8.30,.98,-5.20),V(9.97,.98,-2.58),V(13.25,.98,-.58),
+      V(13.90,.98,2.77),V(11.65,.98,5.03),V(8.00,.98,6.11),
+      V(5.05,.98,5.98),V(3.67,.98,3.65),V(2.77,.98,1.72),V(1.52,.98,1.25)
+    ]);
     const {islands,landmarks,trees}=addLandscape(mesh,[A,B]);
     railLine(mesh,A,1);railLine(mesh,B,2);
     tunnel(mesh,A.point(0),A.tangent(.007));tunnel(mesh,B.point(0),B.tangent(.007));
-    return {mesh,islands,paths:[A,B],landmarks,trees};
+    return {mesh,islands,paths:[A,B],landmarks,trees,mainlandOutline:MAINLAND_OUTLINE};
   }
-  function makeCamera(canvas){const defaultZoom=canvas.clientWidth<600?1.12:1.05;let w=canvas.width,h=canvas.height,azimuth=.70,elevation=.73,zoom=defaultZoom,target=V(0,.35,0);
+  function makeCamera(canvas){const defaultZoom=canvas.clientWidth<600?.94:.87;let w=canvas.width,h=canvas.height,azimuth=.58,elevation=.94,zoom=defaultZoom,target=V(0,.35,0);
     function basis(){const cy=Math.sin(elevation),cx=Math.sin(azimuth)*Math.cos(elevation),cz=Math.cos(azimuth)*Math.cos(elevation);
       const forward=normalize(V(-cx,-cy,-cz)),right=normalize(cross(forward,V(0,1,0))),up=normalize(cross(right,forward));
       const k=Math.min(w/38.5,h/27.2)*zoom;
@@ -434,8 +539,8 @@
       project:(p,b)=>{const rel=sub(p,target);return {x:b.w*.50+dot(rel,b.right)*b.k,y:b.h*.53-dot(rel,b.up)*b.k,depth:dot(rel,b.forward)}},
       orbit:(dx,dy)=>{azimuth=Math.min(1.65,Math.max(-1.30,azimuth+dx*.006)); elevation=Math.min(1.32,Math.max(.34,elevation+dy*.006));},
       zoomBy:d=>{zoom=Math.min(2.7,Math.max(.63,zoom*d))},
-      pan:(dx,dy)=>{const b=basis(),wx=scale(b.right,-dx/b.k),wy=scale(b.up,dy/b.k);target=V(Math.max(-5.2,Math.min(5.2,target[0]+wx[0]+wy[0])),.35,Math.max(-5.2,Math.min(5.2,target[2]+wx[2]+wy[2])))},
-      reset:()=>{azimuth=.70;elevation=.73;zoom=defaultZoom;target=V(0,.35,0);},getState:()=>({azimuth,elevation,zoom,target:target.slice()})};
+      pan:(dx,dy)=>{const b=basis(),wx=scale(b.right,-dx/b.k),wy=scale(b.up,dy/b.k);target=V(Math.max(-20.5,Math.min(20.5,target[0]+wx[0]+wy[0])),.35,Math.max(-15.8,Math.min(15.8,target[2]+wx[2]+wy[2])))},
+      reset:()=>{azimuth=.58;elevation=.94;zoom=defaultZoom;target=V(0,.35,0);},getState:()=>({azimuth,elevation,zoom,target:target.slice()})};
   }
   /* GPU path: upload static island vertices once; train/windmill vertices are dynamic.
      Orbit/zoom are shader uniforms instead of re-projecting every island triangle on the CPU. */
@@ -564,8 +669,8 @@
       immediatePaint=false;dirty=false;lastPaintAt=timestamp;renderedFrames++;
       phase=window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches?0:timestamp*.001;
       const movingMesh=[];
-      trainFaces(movingMesh,world.paths[0],.23 + progressA*.77,COLORS.red,true);
-      trainFaces(movingMesh,world.paths[1],.15 + progressB*.85,COLORS.blue,false);
+      trainFaces(movingMesh,world.paths[0],.068 + progressA*.932,COLORS.red,true);
+      trainFaces(movingMesh,world.paths[1],.062 + progressB*.938,COLORS.blue,false);
       {const mill=world.landmarks.find(item=>item.type==='windmill');windmillBlades(movingMesh,mill.x,mill.y,mill.z,phase*.65);}
       const b=camera.getBasis();painter.render(movingMesh,b,camera);
       // Draw indispensable labels using a separate overlay canvas, not on a WebGL surface.
@@ -577,7 +682,7 @@
           cx.fillStyle='rgba(255,253,242,.96)';cx.beginPath();cx.roundRect(p.x-w/2,p.y-h/2,w,h,12*dpr);cx.fill();cx.lineWidth=1.4*dpr;cx.strokeStyle=bg;cx.stroke();cx.fillStyle='#46526a';cx.font=`${large?800:900} ${(large?13:14)*dpr}px system-ui, sans-serif`;cx.textAlign='center';cx.textBaseline='middle';cx.fillText(name,p.x,p.y+1*dpr);
         }
         tag(V(-1.15,4.06,-.42),'ちゅうおう駅','#c88169',true);
-        if(vw>530){tag(plus(world.paths[0].point(.23 + progressA*.77),V(0,1.5,0)),'A','#d16d71',false);tag(plus(world.paths[1].point(.15 + progressB*.85),V(0,1.5,0)),'B','#5787be',false);}
+        if(vw>530){tag(plus(world.paths[0].point(.068 + progressA*.932),V(0,1.5,0)),'A','#d16d71',false);tag(plus(world.paths[1].point(.062 + progressB*.938),V(0,1.5,0)),'B','#5787be',false);}
       }
       scheduleNext();
     }
@@ -640,7 +745,7 @@
     canvas.addEventListener('pointerdown',onPointerDown);canvas.addEventListener('pointermove',onPointerMove);canvas.addEventListener('pointerup',onPointerUp);canvas.addEventListener('pointercancel',onPointerUp);canvas.addEventListener('wheel',onWheel,{passive:false});
     scheduleNext(true);
     return {setTrains:(a,b)=>{progressA=Math.max(0,Math.min(1,a));progressB=Math.max(0,Math.min(1,b));invalidate();},setMoving:v=>{moving=Boolean(v);invalidate(true);},resetCamera:()=>{camera.reset();invalidate(true);},zoomBy:k=>{camera.zoomBy(k);invalidate(true);},getRenderType:()=>renderType,getCameraState:()=>camera.getState(),
-      destroy(){animating=false;if(raf!==null)cancelAnimationFrame(raf);if(idleTimer!==null)clearTimeout(idleTimer);observer?.disconnect();if(typeof document!=='undefined')document.removeEventListener('visibilitychange',onVisibility);painter.destroy();canvas.removeEventListener('keydown',onKey);canvas.removeEventListener('pointerdown',onPointerDown);canvas.removeEventListener('pointermove',onPointerMove);canvas.removeEventListener('pointerup',onPointerUp);canvas.removeEventListener('pointercancel',onPointerUp);canvas.removeEventListener('wheel',onWheel);}, getSceneStats:()=>({faces:world.mesh.length,rails:2,islands:world.islands.length,landmarks:world.landmarks.length,treeCount:world.trees.length,trainProgress:[progressA,progressB],renderedFrames,rendererMetrics:painter.getMetrics()})};
+      destroy(){animating=false;if(raf!==null)cancelAnimationFrame(raf);if(idleTimer!==null)clearTimeout(idleTimer);observer?.disconnect();if(typeof document!=='undefined')document.removeEventListener('visibilitychange',onVisibility);painter.destroy();canvas.removeEventListener('keydown',onKey);canvas.removeEventListener('pointerdown',onPointerDown);canvas.removeEventListener('pointermove',onPointerMove);canvas.removeEventListener('pointerup',onPointerUp);canvas.removeEventListener('pointercancel',onPointerUp);canvas.removeEventListener('wheel',onWheel);}, getSceneStats:()=>({faces:world.mesh.length,rails:2,islands:world.islands.length,mainland:true,landmarks:world.landmarks.length,treeCount:world.trees.length,trainProgress:[progressA,progressB],renderedFrames,rendererMetrics:painter.getMetrics()})};
   }
-  return {createWorld,compileWorld,trackCurve,makeCamera,layoutLandmarks,clearanceToTracks,trackSegments,LANDMARK_SPECS,ISLAND_DEFINITIONS,sceneConstants:{islands:15,LENGTH_METRES:1200},V,length,dot};
+  return {createWorld,compileWorld,trackCurve,makeCamera,layoutLandmarks,clearanceToTracks,trackSegments,pointInPolygon,distanceToPolygonEdge,insideLand,MAINLAND_OUTLINE,LANDMARK_SPECS,ISLAND_DEFINITIONS,sceneConstants:{islands:ISLAND_DEFINITIONS.length+1,LENGTH_METRES:1200,layout:'broad-mainland-with-offshore-mesas'},V,length,dot};
 });

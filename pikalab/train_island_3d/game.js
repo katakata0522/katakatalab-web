@@ -2,8 +2,8 @@
 (function (root,factory){'use strict';const api=factory(); if(typeof module!=='undefined'&&module.exports)module.exports=api;if(root)root.TrainIslandGame=api;})(typeof globalThis!=='undefined'?globalThis:this,function(){
 'use strict';
 const DISTANCE=1200;const MIN_SPEED=12,MAX_SPEED=48,STEP=6;const GRAPH_MAX_MINUTES=6;
-// A simulated minute takes ~1.8 real seconds: the island should be seen, not flash by.
-const SIM_MINUTES_PER_SECOND=.56;
+// A simulated minute takes ~2.3 real seconds, allowing longer journeys to be watched.
+const SIM_MINUTES_PER_SECOND=.44;
 function validSpeed(n){return Number.isFinite(n)&&n>=MIN_SPEED&&n<=MAX_SPEED&&(n-MIN_SPEED)%STEP===0;}
 function arrivalMinutes(speed){if(!validSpeed(speed))throw new RangeError('速度は12〜48km/hの6km/h刻みで指定してください');return DISTANCE/(speed*1000/60);}
 function positionMetres(speed,time){if(!validSpeed(speed)||!Number.isFinite(time)||time<0)throw new RangeError('速度または経過時間が正しくありません');return Math.min(DISTANCE,Math.max(0,speed*1000/60*time));}
