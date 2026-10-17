@@ -26,26 +26,22 @@ function init(){
  function updateSliderLabels(){speeds().forEach((v,i)=>{labels[i].innerHTML=`${v} <small>km/h</small>`;speedInputs[i].style.setProperty('--percent',Math.round((v-MIN_SPEED)/(MAX_SPEED-MIN_SPEED)*100)+'%');});}
  function resetResult(){const r=$('result');r.hidden=true;r.removeAttribute('data-success');
    $('worldOutcome').hidden=true;$('worldOutcome').removeAttribute('data-success');
-   const tip=$('graphLearning');if(tip)tip.hidden=true;}
+}
  function updateSceneMessage(text){$('renderStatus').textContent=text;}
  function syncRunUi(){setPlayLabel();$('skipRun').hidden=!state.started||state.finished;}
  function reducedMotion(){return Boolean(window.matchMedia?.('(prefers-reduced-motion: reduce)').matches);}
  function scheduleRunningFrame(){if(state.running&&runnerId===null)runnerId=requestAnimationFrame(frame);}
  function haltRunningFrame(){if(runnerId!==null){cancelAnimationFrame(runnerId);runnerId=null;}}
- function showWorld(){
-   const box=$('worldCanvas').closest('.world-viewport');
-   box.scrollIntoView({behavior:reducedMotion()?'instant':'smooth',block:'start'});
- }
  function setPlayLabel(){let text=state.finished?'もう一度走らせる':state.running?'一時停止':state.started?'つづきを走らせる':'列車を走らせる'; $('playLabel').textContent=text; $('playIcon').textContent=state.running?'Ⅱ':'▶';}
  function setRunningInputs(disabled){speedInputs.forEach(e=>e.disabled=disabled);}
  function clearRun(){state.t=0;state.running=false;state.finished=false;state.started=false;state.last=0;haltRunningFrame();
    stage.setTrains(0,0);stage.setMoving(false);setRunningInputs(false);resetResult();syncRunUi();updateGraph();
    updateSceneMessage('島を左右にドラッグして見渡せるよ');}
  function checkResult(){const [a,b]=speeds(),r=outcome(a,b);const card=$('result');card.hidden=false;card.dataset.success=String(r.success);
-   if(r.success){$('resultHeading').textContent='ぴったり！ 同時に到着！';$('resultExplanation').textContent=`2台とも${round1(r.a)}分で中央駅に着いたよ。同じ道のりでは、同じ速さなら時間も同じになるね。`;}
+   if(r.success){$('resultHeading').textContent='ぴったり！ 同時に到着！';$('resultExplanation').textContent=`2台とも${round1(r.a)}分で中央駅に着いたよ。同じ速さなので時間がそろい、グラフの線も重なるよ。`;}
    else{$('resultHeading').textContent=`${r.early}列車が先に到着したよ`;
      const hint=r.early==='A'?'Bを速くするか、Aをゆっくりにしてみよう。':'Aを速くするか、Bをゆっくりにしてみよう。';
-     $('resultExplanation').textContent=`Aは${round1(r.a)}分、Bは${round1(r.b)}分。${round1(r.delay)}分ちがったよ。${hint}`;}
+     $('resultExplanation').textContent=`Aは${round1(r.a)}分、Bは${round1(r.b)}分。${round1(r.delay)}分ちがったよ。${hint}グラフでは速い列車の線ほど急になるよ。`;}
    const notice=$('worldOutcome');notice.hidden=false;notice.dataset.success=String(r.success);
    $('worldOutcomeTitle').textContent=r.success?'やったね！ 同時に到着！':`${r.early}れっしゃが先に到着！`;
    $('worldOutcomeDetail').textContent=r.success?`どちらも${round1(r.a)}分で到着したよ。`:`Aは${round1(r.a)}分、Bは${round1(r.b)}分。`; 
@@ -57,7 +53,6 @@ function init(){
    state.running=false;state.started=true;state.finished=true;state.last=0;
    stage.setTrains(1,1);stage.setMoving(false);setRunningInputs(false);
    checkResult();syncRunUi();updateGraph();
-   const tip=$('graphLearning');if(tip){tip.hidden=false;tip.textContent=a===b?'線が同じ速さでのびると、同じ時間で同じ距離に着くよ。':'速い列車ほど線が急になるよ。横の同じ時間で比べると、進んだ距離の違いが分かるね。';}
  }
  function updateGraph(){const [a,b]=speeds(),r=outcome(a,b);const maxT=GRAPH_MAX_MINUTES;
     const x0=64,y0=259,w=402,h=216;const xp=t=>x0+w*t/maxT,yp=d=>y0-h*d/DISTANCE;
@@ -99,18 +94,32 @@ function init(){
  $('startButton').addEventListener('click',()=>{
    if(state.finished)clearRun();
    // People who ask to reduce animations can read the result immediately.
-   if(reducedMotion()){state.started=true;finishRun();showWorld();return;}
-   const wasRunning=state.running;
+   if(reducedMotion()){state.started=true;finishRun();return;}
    state.running=!state.running;state.started=true;state.last=0;
    stage.setMoving(state.running);setRunningInputs(true);resetResult();syncRunUi();updateGraph();
    if(state.running)scheduleRunningFrame();else haltRunningFrame();
    updateSceneMessage(state.running?'列車が中央駅へ走っています':'一時停止しています');
-   if(!wasRunning&&state.t===0)showWorld();
  });
  $('skipRun').addEventListener('click',finishRun);
- $('jumpControls').addEventListener('click',()=>{$('gameControls').scrollIntoView({behavior:reducedMotion()?'instant':'smooth',block:'start'});});
- $('viewGraph').addEventListener('click',()=>{$('graphTitle').scrollIntoView({behavior:reducedMotion()?'instant':'smooth',block:'start'});});
- $('againButton').addEventListener('click',clearRun);
+ // On narrow screens show the readable graph *over* the diorama instead of
+ // requiring a journey down the page. Desktop/tablet keep the chart visible.
+ function isGraphSheet(){return window.matchMedia('(max-width:600px)').matches;}
+ function setGraphOpen(open){
+   const active=Boolean(open)&&isGraphSheet();
+   $('appShell').classList.toggle('graph-open',active);
+   $('toggleGraph').setAttribute('aria-expanded',String(active));
+   $('toggleGraph').textContent=active?'閉じる':'グラフを見る';
+   if(active)$('closeGraph').focus({preventScroll:true});
+ }
+ $('toggleGraph').addEventListener('click',()=>setGraphOpen(!$('appShell').classList.contains('graph-open')));
+ $('viewGraph').addEventListener('click',()=>setGraphOpen(true));
+ $('closeGraph').addEventListener('click',()=>{setGraphOpen(false);$('toggleGraph').focus({preventScroll:true});});
+ document.addEventListener('keydown',event=>{
+   if(event.key==='Escape'&&$('appShell').classList.contains('graph-open')){
+     setGraphOpen(false);$('toggleGraph').focus({preventScroll:true});
+   }
+ });
+ window.addEventListener('resize',()=>{if(!isGraphSheet()&&$('appShell').classList.contains('graph-open'))setGraphOpen(false);});
  $('zoomIn').addEventListener('click',()=>stage.zoomBy(1.17));$('zoomOut').addEventListener('click',()=>stage.zoomBy(1/1.17));$('resetCamera').addEventListener('click',()=>stage.resetCamera());
  function frame(now){
    runnerId=null;

@@ -3,9 +3,9 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-  <meta name="theme-color" content="#88bfc2">
+  <meta name="theme-color" content="#e9f3eb">
   <meta name="robots" content="noindex,nofollow">
-  <meta name="description" content="PikaLabの3Dミニチュア鉄道。島の中を走る列車の速さを変えて、到着時間とグラフの関係を学ぼう。">
+  <meta name="description" content="PikaLabの3D列車の島。2台の列車の速さを変え、立体模型とグラフで到着時間を比べよう。">
   <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; font-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'self'; form-action 'none'">
   <title>3D列車の島 | PikaLab</title>
   <link rel="stylesheet" href="./style.css">
@@ -13,64 +13,79 @@
   <script src="./game.js" defer></script>
 </head>
 <body>
-  <a class="skip-link" href="#gameControls">操作パネルへ移動</a>
-  <noscript><p class="noscript-warning">この3Dゲームを遊ぶには、JavaScriptを有効にしてください。</p></noscript>
-  <main>
-    <section class="world-viewport" aria-labelledby="appTitle">
-      <div id="worldCover" class="world-cover" aria-hidden="true"></div>
-      <canvas id="worldCanvas" class="world-canvas" aria-label="水に浮かぶ3Dの島。2本の線路にA列車とB列車が走ります。ドラッグで回転、Shiftキーを押しながらドラッグまたは2本指のドラッグでマップを移動できます。" aria-describedby="cameraHint" tabindex="0" role="group"></canvas>
-      <canvas id="labelCanvas" class="label-canvas" aria-hidden="true"></canvas>
-      <div class="world-overlay" aria-hidden="true"></div>
-      <header class="world-header">
-        <div class="identity">
-          <a href="../" class="logo-link" aria-label="PikaLabトップに戻る">
-            <span class="logo-icon" aria-hidden="true">⚗</span>
-            <span class="logo-type"><strong>PikaLab</strong><small>デジタル研究室</small></span>
-          </a>
-          <h1 id="appTitle">3D列車の島</h1>
+  <a class="skip-link" href="#gameControls">列車の操作へ移動</a>
+  <noscript><p class="noscript-warning">このゲームを遊ぶにはJavaScriptを有効にしてください。</p></noscript>
+  <main class="app-shell" id="appShell">
+    <header class="site-header">
+      <a href="../" class="logo-link" aria-label="PikaLabトップに戻る">
+        <span class="logo-icon" aria-hidden="true">⚗</span>
+        <span class="logo-type"><strong>PikaLab</strong><small>デジタル研究室</small></span>
+      </a>
+      <div class="site-heading"><h1 id="appTitle">3D列車の島</h1><span class="site-subtitle">列車の速さをそろえよう</span></div>
+      <button type="button" id="toggleGraph" class="jump-controls" aria-controls="graphCard" aria-expanded="false">グラフを見る</button>
+    </header>
+    <div class="play-layout">
+      <section class="world-viewport" aria-labelledby="appTitle">
+        <div class="world-cover" aria-hidden="true"></div>
+        <canvas id="worldCanvas" class="world-canvas" tabindex="0" role="group" aria-label="立体的な列車の島。ドラッグで見回し、Shiftとドラッグまたは2本指で視点を動かせます。" aria-describedby="cameraHint"></canvas>
+        <canvas id="labelCanvas" class="label-canvas" aria-hidden="true"></canvas>
+        <div class="world-overlay" aria-hidden="true"></div>
+        <div class="scene-status" id="cameraHint"><span class="status-dot" aria-hidden="true"></span><span id="renderStatus">島を準備しています…</span></div>
+        <div class="camera-dock" aria-label="3Dカメラの操作">
+          <button type="button" id="zoomIn" title="近づく" aria-label="3D世界を拡大">＋</button>
+          <button type="button" id="zoomOut" title="遠ざかる" aria-label="3D世界を縮小">－</button>
+          <button type="button" id="resetCamera" title="視点を戻す" aria-label="カメラの視点を戻す">⟲</button>
         </div>
-        <button type="button" id="jumpControls" class="jump-controls">はやさを変える <span aria-hidden="true">↓</span></button>
-      </header>
-      <div class="camera-dock" aria-label="3Dカメラの操作">
-        <button type="button" id="zoomIn" title="近づく" aria-label="3D世界を拡大">＋</button>
-        <button type="button" id="zoomOut" title="遠ざかる" aria-label="3D世界を縮小">－</button>
-        <button type="button" id="resetCamera" title="視点を戻す" aria-label="カメラの視点を元に戻す">⟲</button>
-      </div>
-      <div class="scene-status" id="cameraHint"><span class="status-dot" aria-hidden="true"></span><span id="renderStatus">島を準備しています…</span></div>
-      <div id="worldOutcome" class="world-outcome" hidden>
-        <strong id="worldOutcomeTitle"></strong>
-        <span id="worldOutcomeDetail"></span>
-        <button type="button" id="viewGraph">グラフを見てみる <span aria-hidden="true">↓</span></button>
-      </div>
-    </section>
-    <section class="console-wrap" id="gameControls" aria-label="列車の操作パネル">
-      <div class="console-inner">
-        <div class="console-heading"><div><span class="console-kicker">ミッション 01</span><h2>ちゅうおう駅で出会わせよう！</h2></div><p>2本の線路は、どちらも駅まで <strong>1,200 m</strong>。速さをそろえてみよう。</p></div>
-        <div class="console-grid">
-          <div class="control-column">
-            <div class="train-control is-a">
-              <div class="train-control-heading"><div class="train-identity"><span class="train-icon" aria-hidden="true"><svg viewBox="0 0 60 55" fill="none"><path d="M12 13C12 7 18 6 30 6s18 1 18 7v24c0 5-4 7-9 7H21c-5 0-9-2-9-7V13Z" fill="currentColor"/><rect x="17" y="14" width="26" height="14" rx="4" fill="#D8E9ED"/><circle cx="20" cy="36" r="3.5" fill="#FFF5D9"/><circle cx="40" cy="36" r="3.5" fill="#FFF5D9"/><path d="M19 45l-4 6m26-6 4 6" stroke="#52536D" stroke-width="3" stroke-linecap="round"/></svg></span><div><strong>Aれっしゃ</strong><span>あかい列車</span></div></div><output for="speedA" id="speedAValue">30 <small>km/h</small></output></div>
-              <label for="speedA">はやさを かえよう</label>
-              <input type="range" min="12" max="48" step="6" value="30" id="speedA" aria-describedby="speedHint">
-            </div>
-            <div class="train-control is-b">
-              <div class="train-control-heading"><div class="train-identity"><span class="train-icon" aria-hidden="true"><svg viewBox="0 0 60 55" fill="none"><path d="M12 13C12 7 18 6 30 6s18 1 18 7v24c0 5-4 7-9 7H21c-5 0-9-2-9-7V13Z" fill="currentColor"/><rect x="17" y="14" width="26" height="14" rx="4" fill="#D8E9ED"/><circle cx="20" cy="36" r="3.5" fill="#FFF5D9"/><circle cx="40" cy="36" r="3.5" fill="#FFF5D9"/><path d="M19 45l-4 6m26-6 4 6" stroke="#52536D" stroke-width="3" stroke-linecap="round"/></svg></span><div><strong>Bれっしゃ</strong><span>あおい列車</span></div></div><output for="speedB" id="speedBValue">24 <small>km/h</small></output></div>
-              <label for="speedB">はやさを かえよう</label>
-              <input type="range" min="12" max="48" step="6" value="24" id="speedB" aria-describedby="speedHint">
-            </div>
-            <p class="short-hint" id="speedHint">速くすると、駅に着くまでの時間はどう変わるかな？</p>
-            <div class="actions"><button type="button" id="startButton" class="start-button"><span aria-hidden="true" id="playIcon">▶</span><span id="playLabel">列車を走らせる</span></button><button type="button" id="againButton" class="again-button" aria-label="もう一度最初から走らせる">↺ もどす</button><button type="button" id="skipRun" class="skip-button" hidden>結果へ進む →</button></div>
-            <div class="result" id="result" role="status" aria-live="polite" aria-atomic="true" hidden><strong id="resultHeading"></strong><p id="resultExplanation"></p></div>
+        <div class="world-outcome" id="worldOutcome" hidden role="status" aria-live="polite">
+          <strong id="worldOutcomeTitle"></strong>
+          <span id="worldOutcomeDetail"></span>
+          <button type="button" id="viewGraph">グラフを見る <span aria-hidden="true">↓</span></button>
+        </div>
+      </section>
+      <section class="console-wrap" id="gameControls" aria-label="列車を操作する">
+        <div class="console-inner">
+          <div class="console-heading">
+            <span class="console-kicker">ミッション 01</span>
+            <h2>ちゅうおう駅で出会わせよう！</h2>
+            <p>AもBも駅まで<strong>1,200m</strong>。速さを変えてみよう。</p>
           </div>
-          <section class="graph-card" aria-labelledby="graphTitle"><div class="graph-header"><div><h3 id="graphTitle">速さと時間のグラフ</h3><p>駅まで進んだ距離</p></div><div class="legend"><span><i class="dot-a"></i>A</span><span><i class="dot-b"></i>B</span></div></div>
-            <svg id="timeGraph" viewBox="0 0 500 310" role="img" aria-labelledby="chartTitle chartDesc" preserveAspectRatio="xMidYMid meet"><title id="chartTitle">駅まで進んだ距離と時間のグラフ</title><desc id="chartDesc">横軸は経過時間（分）。縦軸は駅まで進んだ距離（m）。あかい線はA列車、あおい線はB列車。</desc><g id="graphGrid"></g><g id="graphLines"></g><g id="graphDots"></g></svg>
-            <p class="graph-learning" id="graphLearning" hidden></p>
-            <div class="graph-footer"><span>経過 <strong id="timeOutput">0.0分</strong></span><span id="arrivalOutput">走らせると線がのびるよ</span></div>
-          </section>
+          <div class="console-grid">
+            <div class="control-column">
+              <div class="train-control is-a">
+                <div class="train-control-heading">
+                  <div class="train-identity"><span class="train-icon" aria-hidden="true"><svg viewBox="0 0 60 55" fill="none"><path d="M12 13C12 7 18 6 30 6s18 1 18 7v24c0 5-4 7-9 7H21c-5 0-9-2-9-7V13Z" fill="currentColor"/><rect x="17" y="14" width="26" height="14" rx="4" fill="#D8E9ED"/><circle cx="20" cy="36" r="3.5" fill="#FFF5D9"/><circle cx="40" cy="36" r="3.5" fill="#FFF5D9"/><path d="M19 45l-4 6m26-6 4 6" stroke="#52536D" stroke-width="3" stroke-linecap="round"/></svg></span><div><strong>Aれっしゃ</strong><span>あか</span></div></div>
+                  <output for="speedA" id="speedAValue">30 <small>km/h</small></output>
+                </div>
+                <label for="speedA" class="slider-label">Aれっしゃの速さ</label>
+                <input type="range" min="12" max="48" step="6" value="30" id="speedA" aria-describedby="speedHint">
+              </div>
+              <div class="train-control is-b">
+                <div class="train-control-heading">
+                  <div class="train-identity"><span class="train-icon" aria-hidden="true"><svg viewBox="0 0 60 55" fill="none"><path d="M12 13C12 7 18 6 30 6s18 1 18 7v24c0 5-4 7-9 7H21c-5 0-9-2-9-7V13Z" fill="currentColor"/><rect x="17" y="14" width="26" height="14" rx="4" fill="#D8E9ED"/><circle cx="20" cy="36" r="3.5" fill="#FFF5D9"/><circle cx="40" cy="36" r="3.5" fill="#FFF5D9"/><path d="M19 45l-4 6m26-6 4 6" stroke="#52536D" stroke-width="3" stroke-linecap="round"/></svg></span><div><strong>Bれっしゃ</strong><span>あお</span></div></div>
+                  <output for="speedB" id="speedBValue">24 <small>km/h</small></output>
+                </div>
+                <label for="speedB" class="slider-label">Bれっしゃの速さ</label>
+                <input type="range" min="12" max="48" step="6" value="24" id="speedB" aria-describedby="speedHint">
+              </div>
+              <p class="short-hint" id="speedHint">速いと駅には早く着くかな？</p>
+              <div class="actions">
+                <button type="button" id="startButton" class="start-button"><span aria-hidden="true" id="playIcon">▶</span><span id="playLabel">列車を走らせる</span></button>
+                <button type="button" id="skipRun" class="skip-button" hidden>結果を見る →</button>
+              </div>
+              <div class="result" id="result" role="status" aria-live="polite" aria-atomic="true" hidden>
+                <strong id="resultHeading"></strong><p id="resultExplanation"></p>
+              </div>
+            </div>
+            <section class="graph-card" id="graphCard" aria-labelledby="graphTitle">
+              <div class="graph-header"><h3 id="graphTitle">進んだ距離と時間</h3><div class="legend"><span><i class="dot-a"></i>A</span><span><i class="dot-b"></i>B</span></div><button type="button" id="closeGraph" class="close-graph" aria-label="グラフを閉じる">×</button></div>
+              <svg id="timeGraph" viewBox="0 0 500 310" role="img" aria-labelledby="chartTitle chartDesc" preserveAspectRatio="xMidYMid meet"><title id="chartTitle">駅まで進んだ距離と時間のグラフ</title><desc id="chartDesc">横軸は経過時間（分）。縦軸は駅まで進んだ距離（m）。あかい線はA列車、あおい線はB列車。</desc><g id="graphGrid"></g><g id="graphLines"></g><g id="graphDots"></g></svg>
+              <div class="graph-footer"><span>経過 <strong id="timeOutput">0.0分</strong></span><span id="arrivalOutput">走らせるとグラフがのびるよ</span></div>
+            </section>
+          </div>
+          <p class="notes">※ 模型の線路は違う形ですが、計算上は両方1,200mです。</p>
         </div>
-      </div>
-    </section>
-    <div class="notes"><p>※ 2本の線路は模型上では異なる形ですが、教材ではどちらも1,200mとして計算します。</p></div>
+      </section>
+    </div>
   </main>
 </body>
 </html>
