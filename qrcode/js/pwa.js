@@ -104,10 +104,16 @@
     const closeBtn = toast.querySelector('[data-update-close]');
     if (updateBtn) {
       updateBtn.addEventListener('click', () => {
+        const waiting = registration.waiting;
+        // 通知後に新版が有効になっていても、古い画面を更新できるようにする。
+        if (!waiting) {
+          window.location.reload();
+          return;
+        }
         navigator.serviceWorker.addEventListener('controllerchange', () => {
           window.location.reload();
         }, { once: true });
-        registration.waiting.postMessage({ type: 'SKIP_WAITING' });
+        waiting.postMessage({ type: 'SKIP_WAITING' });
       });
     }
     if (closeBtn) {
