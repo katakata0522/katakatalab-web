@@ -4,7 +4,7 @@
   "version": "1.0.0",
   "description": "QR Maker Lab quality checks and E2E tests",
   "scripts": {
-    "test": "node --test tests/site-integrity.test.js tests/license-lifecycle.test.js tests/logo-lifecycle.test.js",
+    "test": "node --test tests/site-integrity.test.js tests/license-lifecycle.test.js tests/logo-lifecycle.test.js tests/unicode-boundaries.test.js tests/csv-records.test.js tests/usability-regressions.test.js",
     "test:e2e": "playwright test",
     "test:e2e:headed": "playwright test --headed",
     "test:e2e:install": "playwright install chromium",

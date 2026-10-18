@@ -268,7 +268,7 @@ document.addEventListener('DOMContentLoaded', () => {
         eccHelp: '読み取りエラーへの強さです。迷ったら「自動（推奨）」のままで大丈夫です。',
         paddingLabel: '余白（読み取り用スペース）',
         transparentBg: '背景を透過',
-        transparencyWarning: '透過背景は設置面によって読み取りにくくなる場合があります',
+        transparencyWarning: '透過背景は設置面によって読み取りにくくなります。JPEG保存と印刷は白地になるため、濃いコード色を選んで確認してください。',
         exportFormat: '保存形式',
         formatPng: 'PNG',
         formatJpeg: 'JPEG',
@@ -322,6 +322,7 @@ document.addEventListener('DOMContentLoaded', () => {
         more: '…他 {count} 件',
         needInput: 'CSVテキストを入力してください。',
         noValidRows: '有効な行が見つかりませんでした。',
+        invalidCsv: 'CSVの引用符が正しくありません。引用符の対応と区切りを確認してください。',
         loaded: '{count}件の生成データを読み込みました。',
         fileReadFailed: 'CSVファイルの読み込みに失敗しました。',
         starting: '一括保存を開始します…',
@@ -374,7 +375,7 @@ document.addEventListener('DOMContentLoaded', () => {
         logoClear: 'ロゴを削除 (Pro)',
         logoSize: 'ロゴサイズ (Pro)',
         logoBackdrop: 'ロゴの下に白背景を敷く (Pro)',
-        logoWarning: 'ロゴが大きすぎるため読み取り精度が低下する可能性があります。',
+        logoWarning: 'ロゴや白い背景枠は読み取りを妨げる場合があります。小さくして誤り訂正Hを選び、保存画像を実際の掲載サイズで確認してください。',
         logoLoaded: 'ロゴ画像を読み込みました。',
         logoRemoved: 'ロゴを削除しました。',
         logoTooLargeFile: 'ロゴ画像は2MB以下にしてください。',
@@ -530,7 +531,7 @@ document.addEventListener('DOMContentLoaded', () => {
         eccHelp: 'This controls scan error tolerance. If unsure, keep "Auto (Recommended)".',
         paddingLabel: 'Scan Margin',
         transparentBg: 'Transparent Background',
-        transparencyWarning: 'Transparent backgrounds may reduce scan reliability on some surfaces.',
+        transparencyWarning: 'Transparent backgrounds depend on the display surface. JPEG and print use white, so choose a dark code color and test the output.',
         exportFormat: 'Export Format',
         formatPng: 'PNG',
         formatJpeg: 'JPEG',
@@ -584,6 +585,7 @@ document.addEventListener('DOMContentLoaded', () => {
         more: '... and {count} more',
         needInput: 'Please enter CSV text.',
         noValidRows: 'No valid rows were found.',
+        invalidCsv: 'Invalid CSV quoting. Check matching quotes and delimiters.',
         loaded: 'Loaded {count} rows for QR generation.',
         fileReadFailed: 'Failed to read the CSV file.',
         starting: 'Starting bulk export...',
@@ -636,7 +638,7 @@ document.addEventListener('DOMContentLoaded', () => {
         logoClear: 'Remove Logo (Pro)',
         logoSize: 'Logo Size (Pro)',
         logoBackdrop: 'Draw white backdrop behind logo (Pro)',
-        logoWarning: 'Logo is too large and may reduce scan reliability.',
+        logoWarning: 'Logos and their backdrop can prevent scanning. Use a small logo and error correction H, then test the saved image at its intended size.',
         logoLoaded: 'Logo image has been loaded.',
         logoRemoved: 'Logo has been removed.',
         logoTooLargeFile: 'Please use an image under 2MB.',
@@ -790,6 +792,7 @@ document.addEventListener('DOMContentLoaded', () => {
     licenseKey: storedLicenseKey,
     runtimeConfig,
     bulkRows: [],
+    bulkLoadId: 0,
     logoImage: null,
     logoDataUrl: '',
     logoLoadId: 0,
@@ -1023,15 +1026,28 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Preserve the requested pixel margin in presets; apply a safe quiet zone per QR.
   const setQrWithSafePadding = (engine, options) => {
-    engine.set(options);
+    // QRious 4.0.2 consumes one byte per JS code unit, not Unicode text.
+    // encodeURIComponent emits UTF-8 and rejects unpaired surrogates instead
+    // of silently replacing them. Keep this adapter shared by single/bulk QR.
+    const value = encodeURIComponent(options.value).replace(/%([0-9A-F]{2})/g,
+      (_, hex) => String.fromCharCode(parseInt(hex, 16)));
+    // Version 40 byte-mode payload limits. QRious silently truncates overflow.
+    const byteCapacity = { L: 2953, M: 2331, Q: 1663, H: 1273 }[options.level];
+    if (!byteCapacity || value.length > byteCapacity) {
+      throw new Error('Content exceeds QR UTF-8 byte capacity');
+    }
+    engine.set({ ...options, value });
     const width = engine.safeMatrixWidth;
     if (!Number.isInteger(width) || width <= 0) {
       throw new Error('QR matrix size could not be measured');
     }
-    const padding = Math.max(options.padding || 0, Math.ceil(4 * options.size / (width + 8)));
-    if (Math.floor((options.size - 2 * padding) / width) < 1) {
+    const minimumPadding = Math.max(options.padding || 0, Math.ceil(4 * options.size / (width + 8)));
+    const moduleSize = Math.floor((options.size - 2 * minimumPadding) / width);
+    if (moduleSize < 1) {
       throw new Error('QR size is too small for a four-module quiet zone');
     }
+    // Center the integer-pixel symbol as well as its canvas-centered logo.
+    const padding = Math.floor((options.size - width * moduleSize) / 2);
     engine.set({ padding });
     if (engine === state.qr) {
       state.lastQrPaddingPx = padding;
@@ -1236,8 +1252,14 @@ document.addEventListener('DOMContentLoaded', () => {
   const getLogoPercent = () => clamp(parseInt(els.logoSizePercent.value, 10) || 14, 8, 28);
   const getLogoCoverageRatio = () => {
     if (!hasLogo()) return 0;
-    const percent = getLogoPercent() / 100;
-    return percent * percent;
+    const size = parseInt(els.size.value, 10) || 250;
+    const logoSide = size * getLogoPercent() / 100;
+    const backdropPadding = els.logoBackdrop.checked ? Math.max(4, logoSide * 0.14) : 0;
+    const metrics = getQuietZoneMetrics();
+    const symbolSide = metrics.moduleSizePx * (state.lastQrMatrixWidth || 0);
+    // Bounding-box estimate includes the backdrop and excludes the quiet zone.
+    // It is not the fraction of damaged codewords or a correction guarantee.
+    return symbolSide > 0 ? Math.min(1, ((logoSide + 2 * backdropPadding) / symbolSide) ** 2) : 1;
   };
   const getQuietZoneMetrics = () => {
     const paddingPx = Number.isFinite(state.lastQrPaddingPx)
@@ -1304,9 +1326,13 @@ document.addEventListener('DOMContentLoaded', () => {
       ctx.restore();
     }
 
-    ctx.drawImage(state.logoImage, x, y, sizePx, sizePx);
-    const ratio = getLogoCoverageRatio();
-    els.logoWarning.style.display = ratio > MAX_LOGO_COVERAGE ? 'flex' : 'none';
+    // Contain non-square logos within the existing safety box without distortion.
+    const logoScale = sizePx / Math.max(state.logoImage.naturalWidth, state.logoImage.naturalHeight);
+    const logoWidth = state.logoImage.naturalWidth * logoScale;
+    const logoHeight = state.logoImage.naturalHeight * logoScale;
+    ctx.drawImage(state.logoImage, (canvas.width - logoWidth) / 2,
+      (canvas.height - logoHeight) / 2, logoWidth, logoHeight);
+    els.logoWarning.style.display = 'flex';
   };
 
   const updateLogoSizeDisplay = () => {
@@ -1662,6 +1688,10 @@ document.addEventListener('DOMContentLoaded', () => {
     if (quietZone.measured && quietZone.quietZoneModules < MIN_RECOMMENDED_QUIET_ZONE_MODULES) grade = 'C';
     else if (!quietZone.measured && grade === 'A') grade = 'B';
 
+    // These are risk indicators, never a guarantee that a reader can scan.
+    if ((hasLogo() || isTransparent) && grade === 'A') grade = 'B';
+    if ((quietZone.measured && quietZone.moduleSizePx < 2) || logoCoverage > MAX_LOGO_COVERAGE) grade = 'C';
+
     return {
       grade,
       contrast,
@@ -1704,7 +1734,13 @@ document.addEventListener('DOMContentLoaded', () => {
       : t('pro.qualityEccWarn', { level: report.ecc });
 
     els.qualityChecklist.innerHTML = '';
-    [contrastText, paddingText, logoText, eccText].forEach((text) => {
+    const checklist = [contrastText, paddingText, logoText, eccText];
+    if (report.quietZone.measured && report.quietZone.moduleSizePx < 2) {
+      checklist.push(state.currentLang === 'en'
+        ? 'Dense QR: less than 2 pixels per module. Increase the size and test the saved image.'
+        : '高密度のQRです（1モジュール2px未満）。サイズを大きくして保存画像を確認してください。');
+    }
+    checklist.forEach((text) => {
       const item = document.createElement('li');
       item.textContent = text;
       els.qualityChecklist.appendChild(item);
@@ -2129,33 +2165,60 @@ document.addEventListener('DOMContentLoaded', () => {
     els.fileNamePreview.textContent = t('file.preview', { name: generateSmartFileName() });
   };
 
-  const parseCsvLine = (line) => {
-    const fields = [];
+  const parseCsvRecords = (text) => {
+    const rows = [];
+    let fields = [];
     let current = '';
     let inQuotes = false;
+    let afterQuote = false;
+    let recordStarted = false;
 
-    for (let i = 0; i < line.length; i++) {
-      const ch = line[i];
+    const finishField = () => {
+      fields.push(current.trim());
+      current = '';
+      afterQuote = false;
+    };
+    const finishRecord = () => {
+      finishField();
+      if (recordStarted) rows.push(fields);
+      fields = [];
+      recordStarted = false;
+    };
 
-      if (ch === '"') {
-        if (inQuotes && line[i + 1] === '"') {
-          current += '"';
-          i += 1;
+    const source = String(text).replace(/^\uFEFF/, '');
+    for (let i = 0; i < source.length; i++) {
+      const ch = source[i];
+      if (!/\s/.test(ch)) recordStarted = true;
+      if (inQuotes) {
+        if (ch === '"') {
+          if (source[i + 1] === '"') {
+            current += '"';
+            i += 1;
+          } else {
+            inQuotes = false;
+            afterQuote = true;
+          }
         } else {
-          inQuotes = !inQuotes;
+          current += ch;
         }
-        continue;
-      }
-
-      if (ch === ',' && !inQuotes) {
-        fields.push(current);
+      } else if (ch === ',') {
+        finishField();
+      } else if (ch === '\r' || ch === '\n') {
+        finishRecord();
+        if (ch === '\r' && source[i + 1] === '\n') i += 1;
+      } else if (ch === '"') {
+        if (afterQuote || current.trim()) throw new Error('Invalid CSV quote');
         current = '';
+        inQuotes = true;
+      } else if (afterQuote) {
+        if (!/\s/.test(ch)) throw new Error('Invalid CSV after quote');
       } else {
         current += ch;
       }
     }
-    fields.push(current);
-    return fields.map((field) => field.trim());
+    if (inQuotes) throw new Error('Unclosed CSV quote');
+    finishRecord();
+    return rows;
   };
 
   const normalizeCsvRows = (rawRows) => {
@@ -2221,7 +2284,7 @@ document.addEventListener('DOMContentLoaded', () => {
   };
 
   const parseBulkCsv = () => {
-    const sourceText = sanitizeTemplateValue(els.bulkCsvText.value);
+    const sourceText = String(els.bulkCsvText.value || '').trim();
     if (!sourceText) {
       state.bulkRows = [];
       els.bulkSummary.textContent = t('bulk.needInput');
@@ -2231,12 +2294,17 @@ document.addEventListener('DOMContentLoaded', () => {
       return;
     }
 
-    const lines = sourceText
-      .split(/\r?\n/)
-      .map((line) => line.trim())
-      .filter((line) => line.length > 0);
-
-    const parsedRows = lines.map(parseCsvLine);
+    let parsedRows;
+    try {
+      parsedRows = parseCsvRecords(sourceText);
+    } catch (error) {
+      state.bulkRows = [];
+      els.bulkSummary.textContent = t('bulk.invalidCsv');
+      els.bulkStatus.textContent = '';
+      clearBulkPreview();
+      setBulkDownloadButtonsDisabled(true);
+      return;
+    }
     const normalized = normalizeCsvRows(parsedRows)
       .filter((row) => row.value.length <= MAX_CHARS);
 
@@ -2255,12 +2323,26 @@ document.addEventListener('DOMContentLoaded', () => {
     setBulkDownloadButtonsDisabled(false);
   };
 
+  const invalidateBulkRead = () => {
+    state.bulkLoadId += 1;
+    state.bulkRows = [];
+    clearBulkPreview();
+    els.bulkSummary.textContent = t('sidebar.bulkUnparsed');
+    els.bulkStatus.textContent = '';
+    setBulkDownloadButtonsDisabled(true);
+    return state.bulkLoadId;
+  };
+
   const readBulkCsvFile = async (file) => {
+    const loadId = invalidateBulkRead();
+    if (!file) return;
     try {
       const text = await file.text();
+      if (loadId !== state.bulkLoadId) return;
       els.bulkCsvText.value = text;
       parseBulkCsv();
     } catch (error) {
+      if (loadId !== state.bulkLoadId) return;
       console.error('CSV file read failed:', error);
       els.bulkSummary.textContent = t('bulk.fileReadFailed');
       setBulkDownloadButtonsDisabled(true);
@@ -2308,8 +2390,8 @@ document.addEventListener('DOMContentLoaded', () => {
       els.canvas.style.display = 'none';
       els.placeholder.style.display = 'block';
       els.errorMsg.textContent = state.currentLang === 'en'
-        ? 'Could not generate a QR with a safe margin. Increase the size or shorten the content.'
-        : '安全な余白を確保して生成できませんでした。サイズを大きくするか内容を短くしてください。';
+        ? 'Could not generate a QR. Check the text for invalid characters, shorten it, lower error correction, or increase the size.'
+        : 'QRを生成できませんでした。不正な文字を確認し、内容を短くする、誤り訂正を下げる、サイズを大きくするなどをお試しください。';
       els.errorMsg.style.display = 'block';
       state.lastQrMatrixWidth = null;
       state.lastQrPaddingPx = null;
@@ -3225,10 +3307,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
     els.bulkCsvFile.addEventListener('change', () => {
       const file = els.bulkCsvFile.files && els.bulkCsvFile.files[0];
-      if (!file) return;
       readBulkCsvFile(file);
     });
-    els.bulkPreviewBtn.addEventListener('click', parseBulkCsv);
+    els.bulkCsvText.addEventListener('input', () => {
+      invalidateBulkRead();
+      els.bulkSummary.textContent = t('sidebar.bulkUnparsed');
+    });
+    els.bulkPreviewBtn.addEventListener('click', () => {
+      invalidateBulkRead();
+      parseBulkCsv();
+    });
     els.bulkDownloadBtn.addEventListener('click', downloadBulkQr);
     els.bulkZipBtn.addEventListener('click', downloadBulkZip);
 
