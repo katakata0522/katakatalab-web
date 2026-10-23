@@ -90,7 +90,7 @@ self.PwaRuntime = {
       const key = keyFor(request);
       if (url.origin !== self.location.origin) return;
       // 共通ローダーを古いCache Storageから戻さず、HTTPの再検証方針を使う。
-      if (/\/analytics\.js$/i.test(url.pathname)) return;
+      if (/^\/analytics\.js$/i.test(url.pathname)) return;
       if (excludedPaths.some(path => url.pathname.startsWith(path))) return;
       if (/\/(?:sw|service-worker|sw-hardened)\.js$/.test(url.pathname)
         || (url.pathname.endsWith('/pwa-runtime.js') && !coreUrls.has(key))) return;
