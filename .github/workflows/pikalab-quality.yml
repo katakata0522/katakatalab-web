@@ -46,7 +46,8 @@ permissions:
   contents: read
 
 concurrency:
-  group: pikalab-quality-${{ github.ref }}
+  # Draft通知と明示的な診断は、配信用main検証や進行中のPR検証を取り消さない。
+  group: pikalab-quality-${{ github.event_name }}-${{ github.ref }}-${{ (github.event_name == 'workflow_dispatch' || (github.event_name == 'pull_request' && github.event.pull_request.draft)) && github.run_id || 'active' }}
   cancel-in-progress: true
 
 env:
@@ -56,6 +57,7 @@ env:
 
 jobs:
   scope:
+    name: ${{ (github.event_name != 'pull_request' || !github.event.pull_request.draft) && 'scope' || 'Draft scope' }}
     # 共通検証を一度通してから、変更対象の重いE2Eを起動する。
     if: "${{ github.event_name != 'pull_request' || !github.event.pull_request.draft }}"
     runs-on: ubuntu-latest
@@ -197,6 +199,7 @@ jobs:
 
 
   validate:
+    name: ${{ (github.event_name != 'pull_request' || !github.event.pull_request.draft) && 'validate' || 'Draft validate' }}
     needs: scope
     # PR品質検証はmain反映後に重ねて実行しない。Draft中の更新もrunnerを起動しない。
     if: "${{ !cancelled() && (github.event_name != 'pull_request' || !github.event.pull_request.draft) }}"
@@ -414,6 +417,7 @@ jobs:
 
 
   space-browser:
+    name: ${{ (github.event_name != 'pull_request' || !github.event.pull_request.draft) && 'space-browser' || 'Draft space-browser' }}
     needs: scope
     # 共有変更では必ず実行し、ラボ内だけの変更は該当E2Eを実行する。
     if: "${{ (github.event_name != 'pull_request' || !github.event.pull_request.draft) && needs.scope.outputs.space == 'true' }}"
@@ -476,6 +480,7 @@ jobs:
           SPACE_LAB_BASELINE_ROOT=../.space-baseline/pikalab/dist npm run test:space-e2e
 
   focus-browser:
+    name: ${{ (github.event_name != 'pull_request' || !github.event.pull_request.draft) && 'focus-browser' || 'Draft focus-browser' }}
     needs: scope
     # 共有変更では必ず実行し、ラボ内だけの変更は該当E2Eを実行する。
     if: "${{ (github.event_name != 'pull_request' || !github.event.pull_request.draft) && needs.scope.outputs.focus == 'true' }}"
@@ -538,6 +543,7 @@ jobs:
           FOCUS_STUDIO_BASELINE_ROOT=../.focus-baseline/pikalab/dist npm run test:focus-deep-e2e
 
   paper-browser:
+    name: ${{ (github.event_name != 'pull_request' || !github.event.pull_request.draft) && 'paper-browser' || 'Draft paper-browser' }}
     needs: scope
     # 共有変更では必ず実行し、ラボ内だけの変更は該当E2Eを実行する。
     if: "${{ (github.event_name != 'pull_request' || !github.event.pull_request.draft) && needs.scope.outputs.paper == 'true' }}"
@@ -600,6 +606,7 @@ jobs:
           PAPER_GEN_BASELINE_ROOT=../.paper-baseline/pikalab/dist npm run test:paper-e2e
 
   quest-browser:
+    name: ${{ (github.event_name != 'pull_request' || !github.event.pull_request.draft) && 'quest-browser' || 'Draft quest-browser' }}
     needs: scope
     # 共有変更では必ず実行し、ラボ内だけの変更は該当E2Eを実行する。
     if: "${{ (github.event_name != 'pull_request' || !github.event.pull_request.draft) && needs.scope.outputs.quest == 'true' }}"
@@ -663,6 +670,7 @@ jobs:
           QUEST_BOARD_BASELINE_ROOT=../.quest-baseline/pikalab/dist npm run test:quest-e2e
 
   book-browser:
+    name: ${{ (github.event_name != 'pull_request' || !github.event.pull_request.draft) && 'book-browser' || 'Draft book-browser' }}
     needs: scope
     # 共有変更では必ず実行し、ラボ内だけの変更は該当E2Eを実行する。
     if: "${{ (github.event_name != 'pull_request' || !github.event.pull_request.draft) && needs.scope.outputs.book == 'true' }}"

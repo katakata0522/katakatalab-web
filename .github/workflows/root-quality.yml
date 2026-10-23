@@ -9,10 +9,12 @@ on:
 permissions:
   contents: read
 concurrency:
-  group: public-root-${{ github.ref }}
+  # Draft通知と手動検証を、配信用main検証・実PR検証から分離する。
+  group: public-root-${{ github.event_name }}-${{ github.ref }}-${{ (github.event_name == 'workflow_dispatch' || (github.event_name == 'pull_request' && github.event.pull_request.draft)) && github.run_id || 'active' }}
   cancel-in-progress: true
 jobs:
   quality:
+    name: ${{ (github.event_name != 'pull_request' || !github.event.pull_request.draft) && 'quality' || 'Draft quality' }}
     if: ${{ github.event_name != 'pull_request' || !github.event.pull_request.draft }}
     runs-on: ubuntu-latest
     timeout-minutes: 15
