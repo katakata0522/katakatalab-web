@@ -52,6 +52,19 @@ document.addEventListener('DOMContentLoaded', () => {
     els.copyBtn.disabled = !customSizes.length || !Number.isFinite(getRoot());
   }
 
+  function invalidateCopy() {
+    copyGeneration += 1;
+    clearTimeout(copyTimer);
+    const manualCopy = document.getElementById('manualCopyCode');
+    if (manualCopy) {
+      if (!manualCopy.hidden && manualCopy.value) showListMessage('');
+      manualCopy.hidden = true;
+      manualCopy.value = '';
+    }
+    els.copyBtn.classList.remove('is-copied');
+    updateCopyLabel();
+  }
+
   // 初期化
   function init() {
     // 1. localStorage からカスタムサイズリストとプレビューテキストを復元
@@ -82,7 +95,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // 4. カスタムサイズ追加アクション
     els.customPxInput.addEventListener('input', disarmReset);
-    els.codeFormatSelect.addEventListener('change', disarmReset);
+    els.codeFormatSelect.addEventListener('change', () => { disarmReset(); invalidateCopy(); });
     els.addSizeBtn.addEventListener('click', addCustomSize);
     els.customPxInput.addEventListener('keydown', (e) => {
       if (e.key === 'Enter') {
@@ -262,27 +275,34 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // プレビューの更新（箱＝このページの基準、本文＝rem 相当）
+  // Preview uses a bounded demo root; numeric conversion retains the entered root.
   function updatePreview(px, rem) {
     const root = getRoot();
-    if (els.previewRoot) {
-      const clampedRoot = Math.max(MIN_PX, Math.min(MAX_PX, root));
-      els.previewRoot.style.fontSize = `${clampedRoot}px`;
-    }
-
-    if (isNaN(px) || px <= 0) {
+    const notice = document.getElementById('previewLimitNotice');
+    const displayRoot = Number.isFinite(root) ? Math.max(MIN_PX, Math.min(MAX_PX, root)) : 16;
+    if (els.previewRoot) els.previewRoot.style.fontSize = `${displayRoot}px`;
+    if (!Number.isFinite(px) || px <= 0 || !Number.isFinite(root)) {
       els.previewText.style.fontSize = '';
       els.infoPx.textContent = '- px';
       els.infoRem.textContent = '- rem';
+      if (notice) {
+        notice.hidden = false;
+        notice.textContent = pageLang === 'en' ? 'No font-size preview for invalid, zero or negative values. Numeric conversions can still be used for spacing.' : '無効な値・0・負数は文字サイズのプレビュー対象外です。数値の換算結果は余白などに利用できます。';
+      }
       return;
     }
-
-    // rem は html の font-size を見る。箱を擬似ルートにした追従デモとして em で同じ比率を見せる
-    const clampedPx = Math.max(MIN_PX, Math.min(MAX_PX, px));
-    const demoRem = root > 0 ? clampedPx / root : rem;
-    els.previewText.style.fontSize = `${demoRem}em`;
+    const displayPx = Math.max(MIN_PX, Math.min(MAX_PX, px));
+    // Divide by the actual demo root, not the unbounded numeric root.
+    els.previewText.style.fontSize = `${displayPx / displayRoot}em`;
     els.infoPx.textContent = `${px}px`;
     els.infoRem.textContent = `${rem}rem`;
+    if (notice) {
+      const limited = displayPx !== px || displayRoot !== root;
+      notice.hidden = !limited;
+      notice.textContent = limited ? (pageLang === 'en'
+        ? `Preview only: text ${displayPx}px, demo root ${displayRoot}px (bounded to 1–300px). Conversion values above are unchanged.`
+        : `プレビューのみ：文字 ${displayPx}px、擬似ルート ${displayRoot}px（1〜300pxに制限）。上の換算値は変更していません。`) : '';
+    }
   }
 
   // 基準値の取得（バリデーション付き）
@@ -341,10 +361,7 @@ document.addEventListener('DOMContentLoaded', () => {
   function generateTable() {
     const root = getRoot();
     els.tableBody.replaceChildren();
-    copyGeneration += 1;
-    clearTimeout(copyTimer);
-    els.copyBtn.classList.remove('is-copied');
-    updateCopyLabel();
+    invalidateCopy();
 
     customSizes.forEach((px) => {
       const rem = pxToRem(px, root);
@@ -373,6 +390,7 @@ document.addEventListener('DOMContentLoaded', () => {
       const sample = document.createElement('span');
       sample.className = 'sample-text';
       sample.style.fontSize = `${Math.min(MAX_PX, px)}px`;
+      if (px > MAX_PX) sample.title = pageLang === 'en' ? `Preview limited to ${MAX_PX}px` : `サンプル表示は${MAX_PX}pxに制限`;
       sample.textContent = 'The quick brown fox';
       sampleCell.appendChild(sample);
 
@@ -467,7 +485,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   function copyText(text) {
     if (navigator.clipboard && typeof navigator.clipboard.writeText === 'function') {
-      return navigator.clipboard.writeText(text);
+      try { return Promise.resolve(navigator.clipboard.writeText(text)); } catch (error) { return Promise.reject(error); }
     }
     return new Promise((resolve, reject) => {
       const area = document.createElement('textarea');

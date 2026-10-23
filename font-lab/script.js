@@ -110,7 +110,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (loadedFonts.has(fontFamily)) return Promise.resolve();
         if (pendingFonts[fontFamily]) return pendingFonts[fontFamily];
 
-        const promise = new Promise((resolve) => {
+        const promise = new Promise((resolve, reject) => {
             const fontQuery = FONTS[fontFamily] && !FONTS[fontFamily].preload
                 ? FONTS[fontFamily].query
                 : fontUrlMap[fontFamily];
@@ -132,7 +132,8 @@ document.addEventListener('DOMContentLoaded', () => {
             link.onerror = () => {
                 console.error(`Failed to load font: ${fontFamily}`);
                 delete pendingFonts[fontFamily];
-                resolve(); // Resolve anyway to avoid loading hangs
+                link.remove();
+                reject(new Error(`Failed to load font: ${fontFamily}`));
             };
             document.head.appendChild(link);
         });
@@ -162,6 +163,20 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Multi-task counter to prevent race conditions during rapid select switching
     let activeLoadTaskId = 0;
+    const readyFaces = new Set();
+    let activeCopyTaskId = 0;
+    const isEnglish = document.documentElement && document.documentElement.lang === 'en';
+    const message = (ja, en) => isEnglish ? en : ja;
+    const resetCopyStatus = (tab) => {
+        if (!copyBtn) return;
+        const activeTab = tab || document.querySelector('.code-tab-btn.active').getAttribute('data-tab');
+        const label = copyBtn.querySelector('.btn-text');
+        const icon = copyBtn.querySelector('.material-symbols-rounded');
+        if (label) label.textContent = activeTab === 'html'
+            ? message('インポートタグをコピー', 'Copy import tags')
+            : message('CSSコードをコピー', 'Copy CSS code');
+        if (icon) icon.textContent = 'content_copy';
+    };
     
     // Cached unhighlighted raw text code strings for absolute copy fidelity
     let rawCSSCode = '';
@@ -176,7 +191,7 @@ document.addEventListener('DOMContentLoaded', () => {
         weights.forEach(w => {
             const opt = document.createElement('option');
             opt.value = w;
-            opt.textContent = w === '400' && weights.length === 1 ? 'Regular (400のみ)' : w;
+            opt.textContent = w === '400' && weights.length === 1 ? message('Regular (400のみ)', 'Regular (400 only)') : w;
             weightSelect.appendChild(opt);
         });
 
@@ -227,21 +242,26 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     // --- 5. Code Highlight Tokens (Regex Based Lightweight Highlighter) ---
+    // Tokenize the original text once: never re-highlight generated span attributes.
     const highlightCSS = (code) => {
-        return code
-            .replace(/(\.[a-zA-Z0-9_-]+)/g, '<span class="hl-selector">$1</span>')
-            .replace(/([a-zA-Z0-9_-]+)(?=\s*:)/g, '<span class="hl-property">$1</span>')
-            .replace(/(:\s*)([^;}\n]+)/g, '$1<span class="hl-value">$2</span>')
-            .replace(/(\/\*[\s\S]*?\*\/)/g, '<span class="hl-comment">$1</span>');
+        const tokens = /(\.[a-zA-Z_-][a-zA-Z0-9_-]*)(?=\s*\{)|([a-zA-Z-]+)(?=\s*:)|(:\s*)([^;}\n]+)/g;
+        let result = '', offset = 0;
+        for (const match of code.matchAll(tokens)) {
+            result += escapeHTML(code.slice(offset, match.index));
+            const [, selector, property, colon, value] = match;
+            result += selector ? `<span class="hl-selector">${escapeHTML(selector)}</span>`
+                : property ? `<span class="hl-property">${escapeHTML(property)}</span>`
+                : `${escapeHTML(colon)}<span class="hl-value">${escapeHTML(value)}</span>`;
+            offset = match.index + match[0].length;
+        }
+        return result + escapeHTML(code.slice(offset));
     };
 
-    const highlightHTML = (code) => {
-        return code
-            .replace(/(&lt;!--[\s\S]*?--&gt;)/g, '<span class="hl-comment">$1</span>')
-            .replace(/(&lt;\/?[a-zA-Z0-9_-]+)(&gt;)?/g, '<span class="hl-tag">$1</span>$2')
-            .replace(/([a-zA-Z0-9_-]+)(?==)/g, '<span class="hl-attr">$1</span>')
-            .replace(/(".*?")/g, '<span class="hl-string">$1</span>');
-    };
+    const highlightHTML = (code) => code.replace(
+        /(&lt;!--[\s\S]*?--&gt;)|(&lt;\/?[a-zA-Z0-9_-]+)|([a-zA-Z0-9_-]+)(?==)|(&quot;[\s\S]*?&quot;)/g,
+        (token, comment, tag, attribute, string) =>
+            `<span class="${comment ? 'hl-comment' : tag ? 'hl-tag' : attribute ? 'hl-attr' : 'hl-string'}">${token}</span>`
+    );
 
     const escapeHTML = (text) => {
         return text
@@ -254,6 +274,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const applyTypography = () => {
         if (!fontSelect || !previewContainer) return;
+        ++activeCopyTaskId;
+        resetCopyStatus();
         const font = fontSelect.value;
         const size = sizeSlider.value;
         const weight = weightSelect.value;
@@ -273,40 +295,38 @@ document.addEventListener('DOMContentLoaded', () => {
         // 💡 ADVANCED: Race condition secure Font Load and spinner control
         const currentTaskId = ++activeLoadTaskId;
 
-        if (!loadedFonts.has(font)) {
-            // Activate status spinner
+        const faceKey = `${font}:${weight}`;
+        // A loaded stylesheet is not proof that the requested face has loaded.
+        if (!readyFaces.has(faceKey)) {
             fontLoadStatus.classList.remove('success');
             fontLoadStatus.classList.add('active');
-            fontLoadStatus.querySelector('.status-text').textContent = 'フォント適用中...';
+            fontLoadStatus.querySelector('.status-text').textContent = message('フォント適用中...', 'Loading font...');
             previewContainer.classList.add('loading');
-
             loadFontOnDemand(font).then(() => {
-                // If a newer font is selected during network load, abort this task!
-                if (currentTaskId !== activeLoadTaskId) return;
-
-                const weightLabel = weight === '900' ? '900' : (weight === '700' ? '700' : '400');
+                if (currentTaskId !== activeLoadTaskId) return null;
+                if (!document.fonts || typeof document.fonts.load !== 'function') {
+                    throw new Error('Font loading could not be verified');
+                }
                 const cleanFontName = font.split(',')[0].replace(/'/g, "");
-                
-                const markReady = () => {
-                    if (currentTaskId !== activeLoadTaskId) return;
-                    fontLoadStatus.querySelector('.status-text').textContent = '適用完了！';
-                    fontLoadStatus.classList.add('success');
-                    previewContainer.classList.remove('loading');
-                    window.setTimeout(() => {
-                        if (currentTaskId === activeLoadTaskId) {
-                            fontLoadStatus.classList.remove('active');
-                        }
-                    }, 1200);
-                };
-
-                const loadFace = document.fonts && typeof document.fonts.load === 'function'
-                    ? document.fonts.load(`${weightLabel} 1em "${cleanFontName}"`)
-                    : Promise.resolve();
-
-                loadFace.then(markReady).catch(markReady);
+                const sample = `${previewTitle.textContent} ${previewPara.textContent} ${previewBtn.textContent}`.trim() || '日本語 ABC';
+                return document.fonts.load(`${weight} 1em "${cleanFontName}"`, sample);
+            }).then((faces) => {
+                if (currentTaskId !== activeLoadTaskId) return;
+                if (!faces || faces.length === 0) throw new Error('No matching font face loaded');
+                readyFaces.add(faceKey);
+                fontLoadStatus.querySelector('.status-text').textContent = message('適用完了！', 'Font applied!');
+                fontLoadStatus.classList.add('success');
+                previewContainer.classList.remove('loading');
+                window.setTimeout(() => {
+                    if (currentTaskId === activeLoadTaskId) fontLoadStatus.classList.remove('active');
+                }, 1200);
+            }).catch(() => {
+                if (currentTaskId !== activeLoadTaskId) return;
+                fontLoadStatus.classList.remove('success');
+                previewContainer.classList.remove('loading');
+                fontLoadStatus.querySelector('.status-text').textContent = message('フォントの読み込みを確認できませんでした（代替書体で表示される場合があります）', 'Font loading could not be verified. A fallback font may be displayed.');
             });
         } else {
-            // Already cached, safely ensure loader spinner is inactive
             fontLoadStatus.classList.remove('active');
             previewContainer.classList.remove('loading');
         }
@@ -341,7 +361,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
     tabButtons.forEach(btn => {
         btn.addEventListener('click', () => {
+            ++activeCopyTaskId;
             const targetTab = btn.getAttribute('data-tab');
+            resetCopyStatus(targetTab);
             
             tabButtons.forEach(b => {
                 b.classList.remove('active');
@@ -373,7 +395,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const loadShowcaseFonts = () => {
         Object.keys(FONTS).forEach((fontFamily) => {
             if (!loadedFonts.has(fontFamily)) {
-                loadFontOnDemand(fontFamily);
+                loadFontOnDemand(fontFamily).catch(() => {});
             }
         });
     };
@@ -392,6 +414,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- 8. Copy to Clipboard (High-Fidelity Raw Copier) ---
     if (copyBtn) {
     copyBtn.addEventListener('click', () => {
+        const copyTaskId = ++activeCopyTaskId;
         const activeTab = document.querySelector('.code-tab-btn.active').getAttribute('data-tab');
         
         // Copy the raw cached text, NEVER copying the decorative span highlight HTML elements!
@@ -399,15 +422,20 @@ document.addEventListener('DOMContentLoaded', () => {
         
         const copyText = (text) => {
             if (navigator.clipboard && typeof navigator.clipboard.writeText === 'function') {
-                return navigator.clipboard.writeText(text).catch(() => fallbackCopy(text));
+                return Promise.resolve().then(() => navigator.clipboard.writeText(text)).catch(() => {
+                    if (copyTaskId !== activeCopyTaskId) throw new Error('stale copy');
+                    return fallbackCopy(text);
+                });
             }
             return fallbackCopy(text);
         };
 
         const fallbackCopy = (text) => {
             return new Promise((resolve, reject) => {
+                let ta;
+                const previousFocus = document.activeElement;
                 try {
-                    const ta = document.createElement('textarea');
+                    ta = document.createElement('textarea');
                     ta.value = text;
                     ta.setAttribute('readonly', '');
                     ta.style.position = 'fixed';
@@ -415,26 +443,31 @@ document.addEventListener('DOMContentLoaded', () => {
                     document.body.appendChild(ta);
                     ta.select();
                     const ok = document.execCommand('copy');
-                    ta.remove();
                     if (ok) resolve(); else reject(new Error('copy failed'));
-                } catch (e) { reject(e); }
+                } catch (e) { reject(e); } finally {
+                    if (ta) ta.remove();
+                    if (previousFocus && typeof previousFocus.focus === 'function') previousFocus.focus();
+                }
             });
         };
 
         copyText(textToCopy).then(() => {
+            if (copyTaskId !== activeCopyTaskId) return;
             const btnText = copyBtn.querySelector('.btn-text');
             const btnIcon = copyBtn.querySelector('.material-symbols-rounded');
-            if (btnText) btnText.textContent = activeTab === 'css' ? 'CSSコピー成功！' : 'インポートタグをコピーしました！';
+            if (btnText) btnText.textContent = activeTab === 'css' ? message('CSSコピー成功！', 'CSS copied!') : message('インポートタグをコピーしました！', 'Import tags copied!');
             if (btnIcon) btnIcon.textContent = 'done';
             window.setTimeout(() => {
-                if (btnText) btnText.textContent = 'CSSコードをコピー';
-                if (btnIcon) btnIcon.textContent = 'content_copy';
+                if (copyTaskId !== activeCopyTaskId) return;
+                resetCopyStatus();
             }, 2000);
         }).catch(() => {
+            if (copyTaskId !== activeCopyTaskId) return;
             const btnText = copyBtn.querySelector('.btn-text');
-            if (btnText) btnText.textContent = 'コピーに失敗しました';
+            if (btnText) btnText.textContent = message('コピーに失敗しました', 'Copy failed');
             window.setTimeout(() => {
-                if (btnText) btnText.textContent = 'CSSコードをコピー';
+                if (copyTaskId !== activeCopyTaskId) return;
+                resetCopyStatus();
             }, 2000);
         });
     });

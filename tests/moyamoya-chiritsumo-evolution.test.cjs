@@ -348,7 +348,9 @@ test('chiritsumo-calc: JSDoc type annotations, pure calculation functions, in-pl
   // Auto-healing LocalStorage with JSON parsing error catch
   assert.match(script, /JSON\.parse\(saved\)/);
   assert.match(script, /catch\s*\(jsonErr\)/);
-  assert.match(script, /localStorage\.removeItem\(STORAGE_KEY\)/);
+  // Preserve unreadable bytes; dynamic controller tests cover blocked writes.
+  assert.match(script, /storageReadBlocked = true/);
+  assert.doesNotMatch(script, /localStorage\.removeItem\(STORAGE_KEY\)/);
 
   // HTML: Font preconnect with swap & Live Announcer
   assert.match(html, /<link\s+rel="preconnect"\s+href="https:\/\/fonts\.googleapis\.com">/);
@@ -459,3 +461,4 @@ test('Edge cases & resilience: corrupted storage recovery, prompt injection defe
   assert.equal(ChiritsumoLogic.getAdviceData(10000).title.includes('温泉旅行や家電が現実的に！'), true);
   assert.equal(ChiritsumoLogic.getAdviceData(30000).title.includes('海外旅行や自由な暮らしが見えてくる！'), true);
 });
+

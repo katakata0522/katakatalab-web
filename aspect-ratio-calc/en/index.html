@@ -98,9 +98,9 @@
         </button>
       </div>
       <div class="inputs-row">
-        <input type="number" id="ratioW" class="input-number" placeholder="16" inputmode="decimal">
+        <input type="number" id="ratioW" aria-label="Ratio width" class="input-number" placeholder="16" inputmode="decimal">
         <span class="separator">:</span>
-        <input type="number" id="ratioH" class="input-number" placeholder="9" inputmode="decimal">
+        <input type="number" id="ratioH" aria-label="Ratio height" class="input-number" placeholder="9" inputmode="decimal">
       </div>
       <button type="button" id="detectBtn" class="btn-detect">
         <span class="icon-magic">🪄</span> Detect ratio from dimensions
@@ -128,6 +128,9 @@
 
   </section>
 
+  <p class="ratio-label">Width and height are rounded to whole pixels when you leave their input fields.</p>
+  <p id="calculationStatus" role="status" aria-live="polite" aria-atomic="true"></p>
+  <textarea id="manualAspectCopy" readonly hidden aria-label="Result for manual copying"></textarea>
   <section class="preview-area">
     <div class="preview-header">
       <h2 class="section-title">Frame Preview</h2>

@@ -8,7 +8,7 @@
   
   <title>OGPシミュレーター【無料】X・LINE・Facebook表示確認＆画像比率チェック - KatakataLab</title>
   
-  <meta name="description" content="【登録不要・完全無料】記事公開前にOGP画像(サムネイル)の表示を確認できるシミュレーター。X(Twitter)、Facebook、LINEに対応。ダークモード確認や画像比率の自動判定機能付き。画像データを外部送信しない設計。">
+  <meta name="description" content="【登録不要・無料】手入力の画像と文章をX・Facebook・LINE風のモックで比較。明暗テーマと比率の目安を確認できます。公式表示や公開URLの検証ではありません。画像を外部送信しない設計。">
   
   <link rel="canonical" href="https://katakatalab.com/ogp-simulator/">
   <link rel="alternate" hreflang="ja" href="https://katakatalab.com/ogp-simulator/">
@@ -16,11 +16,12 @@
   <link rel="alternate" hreflang="x-default" href="https://katakatalab.com/ogp-simulator/">
 
   <meta property="og:title" content="OGPシミュレーター - OGP Preview Tool">
-  <meta property="og:description" content="SNSシェア時の見え方をリアルタイム確認。推奨サイズ早見表付き。">
+  <meta property="og:description" content="SNS風モックで画像と文章の配置を比較。公式表示とは異なります。サイズ目安表付き。">
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://katakatalab.com/ogp-simulator/">
   <meta property="og:site_name" content="KatakataLab">
   <meta property="og:image" content="https://katakatalab.com/ogp-simulator/ogp.png">
+  <meta property="og:image:alt" content="OGPシミュレーターの紹介画像">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:image" content="https://katakatalab.com/ogp-simulator/ogp.png">
 
@@ -71,7 +72,8 @@
   <div class="two-column-layout">
     
     <section class="config-panel" aria-label="OGP設定入力">
-      <div class="input-group">
+      <p id="mockCountHelp" class="app-desc">文字数はUTF-16単位で数えています（絵文字などは2以上になる場合があります）。40・80はこのモック用の目安で、SNSの入力上限ではありません。</p>
+        <div class="input-group">
         <label class="group-label" for="imageInput">OG Image <small>(サムネイル画像)</small></label>
         <div class="file-upload-area" id="dropZone" tabindex="0" role="button" aria-label="画像をアップロード">
           <input type="file" id="imageInput" accept="image/*" class="file-input" tabindex="-1">
@@ -84,6 +86,8 @@
             <button type="button" id="removeImageBtn" class="btn-icon-remove" title="削除" aria-label="画像を削除">×</button>
           </div>
         </div>
+        <p class="app-desc">検査するのは画像形式・容量（10MiB以下）と読込可否、横長カード用の比率の目安です。画像の必要解像度、SNS別の受付条件、公開URLやOGタグ、キャッシュは検査しません。入力はこのページ内だけで扱い、再読み込みやリセットで消えます。</p>
+        <p id="imageLoadStatus" role="status" aria-live="polite" aria-atomic="true"></p>
         <div id="ratioWarning" class="warning-msg" role="alert" style="display:none;"></div>
       </div>
 
@@ -92,7 +96,7 @@
           <label for="ogTitle" class="group-label">OG Title</label>
           <span id="countTitle" class="char-count">0 / 40</span>
         </div>
-        <input type="text" id="ogTitle" class="input-text" placeholder="記事のタイトルを入力...">
+        <input type="text" id="ogTitle" aria-describedby="mockCountHelp" class="input-text" placeholder="記事のタイトルを入力...">
       </div>
 
       <div class="input-group">
@@ -100,7 +104,7 @@
           <label for="ogDesc" class="group-label">OG Description</label>
           <span id="countDesc" class="char-count">0 / 80</span>
         </div>
-        <textarea id="ogDesc" class="input-text" rows="3" placeholder="記事の説明文を入力..."></textarea>
+        <textarea id="ogDesc" aria-describedby="mockCountHelp" class="input-text" rows="3" placeholder="記事の説明文を入力..."></textarea>
       </div>
 
       <div class="input-group">
@@ -125,7 +129,7 @@
         </div>
         <div class="theme-toggle-wrapper" title="ダークモード切り替え">
           <label class="toggle-switch-theme">
-            <input type="checkbox" id="previewThemeToggle">
+            <input type="checkbox" id="previewThemeToggle" aria-label="このモックをダークモードで表示">
             <span class="slider round"></span>
             <span class="theme-icon icon-sun">☀️</span>
             <span class="theme-icon icon-moon">🌙</span>
@@ -274,7 +278,7 @@
 
     <div class="feature-box">
       <h3>💡 クイック使い方とポイント</h3>
-      <p>タイトル、説明文、画像を入力・選択すると、X（旧Twitter）、Facebook、LINEそれぞれの表示枠に即座に反映されます。画像の見切れ防止や、文字数の収まり確認にご活用ください。</p>
+      <p>タイトル、説明文、画像を入力・選択すると、X（旧Twitter）、Facebook、LINE風の表示枠に反映されます。このモック内での画像の見切れや文章の収まりを比較し、最後は各サービスの実表示を確認してください。</p>
     </div>
 
     <!-- 姉妹ツール（アスペクト比計算ツール）へのバナー導線 -->
@@ -336,10 +340,10 @@
       </summary>
       <div class="tool-accordion__body">
         <h4>Q. アップロードした画像は外部に流出しませんか？</h4>
-        <p>A. はい、安全です。このツールはお客様のブラウザ内（ローカル環境）だけで画像を処理しています。当サイトのサーバーに画像データが送信・保存されることは一切ありません。</p>
+        <p>A. このツールは画像をブラウザー内で処理し、画像を外部へ送信・保存しない設計です。ブラウザー拡張など、ツール外の動作まで保証するものではありません。</p>
 
         <h4>Q. ダークモードでの表示確認はできますか？</h4>
-        <p>A. はい。プレビュー画面右上のスイッチ（☀️/🌙）を切り替えることで、スマホのダークモード設定時の見え方を確認できます。</p>
+        <p>A. はい。プレビュー画面右上のスイッチ（☀️/🌙）を切り替えることで、このモックの明暗テーマを比較できます。実際のスマホやSNSの表示を再現・検証する機能ではありません。</p>
 
         <h4>Q. OGP画像がSNS側で反映されない時は？</h4>
         <p>A. 公開後に古い画像のままなら、各サービスのキャッシュが残っていることがあります。Facebook は Sharing Debugger、X は投稿プレビューで確認してください。この画面は外部URLを直接取得するものではありません。</p>
@@ -378,7 +382,7 @@
       "price": "0",
       "priceCurrency": "JPY"
     },
-    "description": "SNSシェア時のOGP表示シミュレーター。X, Facebook, LINE対応。ダークモード確認機能付き。"
+    "description": "手入力した画像と文章をX・Facebook・LINE風のモックで比較するツール。明暗テーマ付き。公式表示や公開URLは検証しません。"
   },
   {
     "@context": "https://schema.org",
@@ -387,7 +391,7 @@
       {
         "@type": "Question",
         "name": "推奨されるOGP画像のサイズは？",
-        "acceptedAnswer": { "@type": "Answer", "text": "一般的には 1200 x 630 px (比率 1.91:1) が多くのプラットフォームで最適に表示されます。" }
+        "acceptedAnswer": { "@type": "Answer", "text": "1200 x 630 px (比率 約1.91:1) は制作の出発点となる目安です。実際の表示や受付条件は各サービスで確認してください。" }
       },
       {
         "@type": "Question",

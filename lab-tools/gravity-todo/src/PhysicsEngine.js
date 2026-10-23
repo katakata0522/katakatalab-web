@@ -273,7 +273,9 @@ export class PhysicsEngine {
     this.storageReady = false;
     const state = await StorageManager.loadState();
     this.restoringState = false;
-    if (state.ok === false) {
+    if (state.ok === false || state.tasks.length > MAX_RESTORED_TASKS) {
+      // Do not truncate and immediately persist a partially restored collection.
+      StorageManager.writeBlocked = true;
       this.showSaveStatus({ ok: false });
       document.dispatchEvent(new CustomEvent('gravity:storageStatus'));
       return;
