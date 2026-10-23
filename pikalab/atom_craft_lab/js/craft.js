@@ -117,7 +117,7 @@ export function hideSynthesizedView() {
     document.getElementById('craftFeedbackBar').classList.add('hidden');
 }
 
-function showCraftFeedback(colorType, message) {
+export function showCraftFeedback(colorType, message) {
     const bar = document.getElementById('craftFeedbackBar');
     const textEl = document.getElementById('craftFeedbackText');
     bar.className = 'rounded-xl px-3.5 py-2.5 text-xs sm:text-sm font-bold flex items-center gap-2 border ';
