@@ -1,4 +1,4 @@
-import { TOAST_DURATION_MS } from '../constants.js?v=20260613-2';
+import { TOAST_DURATION_MS } from '../constants.js?v=20261010-1';
 
 /**
  * ToastManager - トースト通知を担当

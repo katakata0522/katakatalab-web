@@ -1,4 +1,4 @@
-import { PRESETS, DEFAULT_CANVAS_WIDTH, DEFAULT_CANVAS_HEIGHT } from './constants.js?v=20260613-2';
+import { PRESETS, DEFAULT_CANVAS_WIDTH, DEFAULT_CANVAS_HEIGHT } from './constants.js?v=20261010-1';
 
 export class Store {
     constructor() {
@@ -74,7 +74,9 @@ export class Store {
                 !Array.isArray(source[key]) &&
                 target[key] !== null &&
                 typeof target[key] === 'object' &&
-                !Array.isArray(target[key])
+                !Array.isArray(target[key]) &&
+                Object.getPrototypeOf(source[key]) === Object.prototype &&
+                Object.getPrototypeOf(target[key]) === Object.prototype
             ) {
                 result[key] = this.#deepMerge(target[key], source[key]);
             } else {
@@ -131,23 +133,24 @@ export class Store {
 
     // --- History Management ---
     getSnapshot() {
-        return JSON.parse(JSON.stringify({
+        // 画像はDOMオブジェクトの参照を保ち、編集値だけを複製する。
+        return { ...JSON.parse(JSON.stringify({
             params: this.state.params,
             centerX: this.state.centerX,
             centerY: this.state.centerY,
             type: this.state.type,
             mode: this.state.mode,
-            seed: this.state.seed
-        }));
+            seed: this.state.seed,
+            imgWidth: this.state.imgWidth,
+            imgHeight: this.state.imgHeight
+        })), image: this.state.image };
     }
 
     pushHistory(force = false) {
-        // Skip if nothing has changed since last push
-        if (!force && !this._isDirty && this.undoStack.length > 0) return;
-
+        // 履歴復元直後の新しい編集も保存する。直前と同一かどうかだけで重複を除く。
         const snapshot = this.getSnapshot();
         const last = this.undoStack[this.undoStack.length - 1];
-        if (last && JSON.stringify(last) === JSON.stringify(snapshot)) {
+        if (last && last.image === snapshot.image && JSON.stringify(last) === JSON.stringify(snapshot)) {
             this._isDirty = false;
             this.notify(['history']);
             return;
@@ -183,6 +186,9 @@ export class Store {
         this.state.type = snapshot.type;
         this.state.mode = snapshot.mode;
         this.state.seed = snapshot.seed;
+        this.state.image = snapshot.image;
+        this.state.imgWidth = snapshot.imgWidth;
+        this.state.imgHeight = snapshot.imgHeight;
         this._isDirty = false;
         this.notify(['snapshot', 'history']);
     }

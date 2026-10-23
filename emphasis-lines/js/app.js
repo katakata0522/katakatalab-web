@@ -1,7 +1,7 @@
-import { store } from './state.js?v=20260613-2';
-import { LineRenderer } from './renderers/renderer.js?v=20260613-2';
-import { UIManager } from './ui.js?v=20260613-2';
-import { DEFAULT_CANVAS_WIDTH, DEFAULT_CANVAS_HEIGHT } from './constants.js?v=20260613-2';
+import { store } from './state.js?v=20261010-1';
+import { LineRenderer } from './renderers/renderer.js?v=20261010-1';
+import { UIManager } from './ui.js?v=20261010-1';
+import { DEFAULT_CANVAS_WIDTH, DEFAULT_CANVAS_HEIGHT } from './constants.js?v=20261010-1';
 
 // Init Logic
 document.addEventListener('DOMContentLoaded', () => {
@@ -37,15 +37,8 @@ document.addEventListener('DOMContentLoaded', () => {
     renderer.render(initialState);
 
     // 4. データ保護 (beforeunload) — 画像ファイルがアップロード済みの場合のみ警告
-    const fileInput = document.getElementById('fileInput');
-    let hasUploadedFile = false;
-    if (fileInput) {
-        fileInput.addEventListener('change', () => {
-            hasUploadedFile = fileInput.files && fileInput.files.length > 0;
-        });
-    }
     window.addEventListener('beforeunload', (e) => {
-        if (hasUploadedFile) {
+        if (store.getState().image) {
             e.preventDefault();
             e.returnValue = '';
         }

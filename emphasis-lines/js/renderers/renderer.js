@@ -1,7 +1,7 @@
-import { REFERENCE_SIZE } from '../constants.js?v=20260613-2';
-import { Random } from '../utils/random.js?v=20260613-2';
-import { validateRenderParams } from '../utils/validation.js?v=20260613-2';
-import { AnalyticsManager } from '../utils/analytics.js?v=20260613-2';
+import { REFERENCE_SIZE } from '../constants.js?v=20261010-1';
+import { Random } from '../utils/random.js?v=20261010-1';
+import { validateRenderParams } from '../utils/validation.js?v=20261010-1';
+import { AnalyticsManager } from '../utils/analytics.js?v=20261010-1';
 
 /**
  * @typedef {Object} LineParams
@@ -65,13 +65,9 @@ export class LineRenderer {
         ctx.fillStyle = '#ffffff';
         ctx.fillRect(0, 0, width, height);
 
-        if (!state.image) {
-            ctx.fillStyle = '#cccccc';
-            ctx.font = 'bold 40px sans-serif';
-            ctx.textAlign = 'center';
-            ctx.textBaseline = 'middle';
-            ctx.fillText('No Image Loaded', width / 2, height / 2);
-        } else {
+        // No placeholder text: preview and PNG export must look the same.
+        // Without an image, leave a clean white background for the lines.
+        if (state.image) {
             ctx.drawImage(state.image, 0, 0, width, height);
         }
     }
