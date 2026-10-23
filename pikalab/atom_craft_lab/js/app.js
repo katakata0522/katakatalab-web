@@ -5,7 +5,8 @@ import {
     renderCraftMissionsAndPalette,
     renderCraftChamber,
     hideSynthesizedView,
-    synthesizeMolecule
+    synthesizeMolecule,
+    showCraftFeedback
 } from './craft.js';
 import { loadBalanceStage, renderBalanceStageUI, verifyBalanceAndReact } from './balance.js';
 import { renderBookSection, updateStampBadge } from './book.js';
