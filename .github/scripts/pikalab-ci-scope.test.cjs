@@ -140,6 +140,15 @@ test('共有・未知・削除・設定・共通検証器の変更は全E2Eへ�
     }
 });
 
+test('共有ブラウザ準備だけの変更でもPR検査と全ラボの検証を起動する', () => {
+    const file = '.github/scripts/verify-playwright-runtime.cjs';
+    const trigger = readWorkflow().split('  pull_request:\n')[1].split('  workflow_dispatch:')[0];
+    assert.ok(trigger.includes(`      - "${file}"`), '共有準備の単独変更もPR検査の起動対象に含める');
+    const scope = classifyChanges([file]);
+    assert.equal(scope.full, true);
+    for (const key of Object.keys(LABS)) assert.equal(scope[key], true, key);
+});
+
 test('空の差分、手動実行、視覚維持ラベルは全検証する', () => {
     assert.equal(classifyChanges([]).full, true);
     assert.equal(classifyChanges(null).full, true);
@@ -283,13 +292,15 @@ test('ビルドと成果物検証を先に済ませ、必要なブラウザとPD
         const indexOfCommand = command => steps.findIndex(([, , step]) => step.includes(command));
         const build = indexOfCommand('npm run build:all');
         const verify = indexOfCommand('npm run verify:build');
-        const cache = indexOfCommand('path: ~/.cache/ms-playwright');
-        const install = indexOfCommand('npx playwright install-deps chromium');
-        assert.ok(build >= 0 && verify >= build && cache > verify && install > cache, name);
+        const install = indexOfCommand('node ../.github/scripts/verify-playwright-runtime.cjs');
+        assert.ok(build >= 0 && verify >= build && install > verify, name);
         const installation = steps[install][2];
-        assert.match(installation, /if \[ "\$\{\{ steps\.[\w-]+\.outputs\.cache-hit \}\}" != ["']true["'] \]; then\n\s+npx playwright install chromium\n\s+fi/,
-            `${name}: OS依存は毎回準備し、ブラウザ本体は完全一致キャッシュだけで省く`);
-        assert.equal(installation.includes('sudo apt-get install -y poppler-utils'), ['quest-browser', 'book-browser'].includes(name));
+        assert.match(body, /image: mcr\.microsoft\.com\/playwright:v1\.60\.0-noble@sha256:[a-f0-9]{64}/,
+            `${name}: ブラウザ・font・OS依存を含む公式イメージを版とdigestで固定する`);
+        assert.doesNotMatch(installation, /playwright install|cache-hit/, '異版の取得やキャッシュへ暗黙に切り替えない');
+        const tools = indexOfCommand('command -v python3');
+        assert.ok(tools >= 0 && tools < build, `${name}: Pythonは素材準備前に必要`);
+        assert.equal(steps[tools][2].includes('poppler-utils'), ['quest-browser', 'book-browser'].includes(name));
         const browserChecks = steps.filter(([, , step]) => /npm run (?:verify:code-studio-security|guard:visual|test:[\w-]+-e2e)|RUN_PIKALAB_TOP_BROWSER=1/.test(step));
         assert.ok(browserChecks.length > 0, name);
         for (const check of browserChecks) assert.ok(steps.indexOf(check) > install, `${name}: ${check[1]}`);

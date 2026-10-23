@@ -78,7 +78,18 @@ async function verifyAssets(name) {
 
 // 保存・クリップボード・OS印刷の境界だけを観測する。本番・nativeケースでは適用しない。
 function browserEnvironment(options) {
-    const observation = window.__bookE2EBoundary = { writes: [], removals: [], clipboard: [], fallbackCopies: 0, prints: [], storageFaults: { write: Boolean(options.writeFail), writeKey: null, removeKey: null } };
+    const observation = window.__bookE2EBoundary = { writes: [], removals: [], clipboard: [], fallbackCopies: 0, prints: [], toasts: [], storageFaults: { write: Boolean(options.writeFail), writeKey: null, removeKey: null } };
+    if (options.observeToasts) {
+        // load/font待ちの間に消える通知も、実際にDOMへ表示された時点で記録する。
+        const seen = new WeakSet();
+        new MutationObserver(() => {
+            for (const toast of document.querySelectorAll('#toast-container .toast[role="alert"]')) {
+                if (!seen.has(toast) && toast.isConnected && getComputedStyle(toast).display !== 'none') {
+                    seen.add(toast); observation.toasts.push({ text: toast.textContent, time: performance.now() });
+                }
+            }
+        }).observe(document, { childList: true, subtree: true });
+    }
     const originalSet = Storage.prototype.setItem, originalRemove = Storage.prototype.removeItem;
     if (options.observeStorage || options.writeFail) Storage.prototype.setItem = function (key, value) {
         observation.writes.push({ key, value, time: performance.now() });
@@ -102,10 +113,10 @@ function browserEnvironment(options) {
 }
 async function createCase(viewport = VIEWPORTS[1], options = {}) {
     const target = options.url || candidateUrl;
-    assert.ok(!options.native || !['storage', 'observeStorage', 'writeFail', 'denyStorage', 'clipboard', 'observePrint'].some(key => options[key]), 'Native cases forbid browser-boundary fixtures');
+    assert.ok(!options.native || !['storage', 'observeStorage', 'writeFail', 'denyStorage', 'clipboard', 'observePrint', 'observeToasts'].some(key => options[key]), 'Native cases forbid browser-boundary fixtures');
     const context = await browser.newContext({ viewport, locale: 'ja-JP', timezoneId: 'UTC', colorScheme: 'light', reducedMotion: options.motion || 'reduce', hasTouch: viewport.width < 768, isMobile: viewport.width < 768, serviceWorkers: options.native ? 'allow' : 'block', acceptDownloads: true,
         ...(options.storage ? { storageState: { cookies: [], origins: [{ origin: new URL(target).origin, localStorage: Object.entries(options.storage).map(([name, value]) => ({ name, value })) }] } } : {}) });
-    if (['observeStorage', 'writeFail', 'denyStorage', 'clipboard', 'observePrint'].some(key => options[key])) await context.addInitScript(browserEnvironment, options);
+    if (['observeStorage', 'writeFail', 'denyStorage', 'clipboard', 'observePrint', 'observeToasts'].some(key => options[key])) await context.addInitScript(browserEnvironment, options);
     const current = { context, options, errors: [], requestFailures: [], externalFailures: [], consoleErrors: [], consoleWarnings: [], dialogs: [], dialogPlan: [...(options.dialogPlan || [])], fontTransfers: [] };
     if (!options.native && fontMode === 'api') await context.route(/^https:\/\/fonts\.(?:googleapis|gstatic)\.com\//, async route => {
         const response = await context.request.fetch(route.request(), { timeout: 30_000 }), bytes = await response.body();
@@ -399,14 +410,16 @@ async function shareSuite() {
         const encoded = new URL(url).searchParams.get('data'); assert.equal(new URL(page.url()).searchParams.get('data'), encoded, 'Failed import save retains the recovery payload in the address');
         assert.equal(current.dialogs.length, 1); assert.equal(current.dialogs[0].type, 'confirm'); await assertForm(page, incoming);
         assert.equal(await savedRaw(page, 2), current.options.storage[PREFIX + 2]); assert.equal(await savedRaw(page, 1), current.options.storage[PREFIX + 1]);
-        record.failedToasts = await page.locator('#toast-container').textContent(); assert.match(record.failedToasts, /保存.*(?:でき|失敗)|(?:でき|失敗).*保存/); assert.doesNotMatch(record.failedToasts, /共有された感想文データを読み込みました/, 'No import success toast precedes successful persistence');
+        // 通常の3秒の表示期限を過ぎても、保存失敗の警告と誤った成功通知の不存在を検証する。
+        await page.waitForFunction(() => ![...document.querySelectorAll('#toast-container .toast')].some(toast => /保存.*(?:でき|失敗)|(?:でき|失敗).*保存/.test(toast.textContent)));
+        record.failedToasts = await page.evaluate(() => window.__bookE2EBoundary.toasts.map(toast => toast.text).join('\n')); assert.match(record.failedToasts, /保存.*(?:でき|失敗)|(?:でき|失敗).*保存/); assert.doesNotMatch(record.failedToasts, /共有された感想文データを読み込みました/, 'No import success toast precedes successful persistence');
         await page.evaluate(() => { window.__bookE2EBoundary.storageFaults.write = false; });
         const recoveredTitle = incoming.title + '追記'; await page.locator('#book-title').fill(recoveredTitle); await settle(page, 750);
         assert.deepEqual((await saved(page, 2)).formData, { ...incoming, title: recoveredTitle }, 'Recovery saves imported fields without mixing the prior local draft');
         assert.equal(new URL(page.url()).searchParams.has('data'), false, 'Only successful save removes the recovery payload'); assert.equal(new URL(page.url()).searchParams.get('keep'), '1'); assert.equal(new URL(page.url()).hash, '#recovery');
         assert.equal(await savedRaw(page, 1), current.options.storage[PREFIX + 1]); assert.equal(current.dialogs.length, 1, 'Accepted import is not confirmed a second time during save recovery');
         record.recovered = await saved(page, 2); record.recoveredUrl = page.url(); await ready(current, candidateUrl, { reload: true }); await assertForm(page, { ...incoming, title: recoveredTitle });
-    }, { beforeReady: true, dialogPlan: [{ accept: true }], writeFail: true, storage: { [ACTIVE]: '2', [PREFIX + 1]: stored(form({ title: '触らない本棚1' })), [PREFIX + 2]: stored(form({ title: '元の本棚2', draftText: '元の本棚2の下書き' })) } });
+    }, { beforeReady: true, dialogPlan: [{ accept: true }], writeFail: true, observeToasts: true, storage: { [ACTIVE]: '2', [PREFIX + 1]: stored(form({ title: '触らない本棚1' })), [PREFIX + 2]: stored(form({ title: '元の本棚2', draftText: '元の本棚2の下書き' })) } });
     for (const [name, data] of [['malformed-base64', '%%%not-valid'], ['array', []], ['null', null], ['boolean', true], ['string', 'unexpected']]) await runCase(`invalid-url-${name}-never-overwrites-work`, async (page, record, current) => {
         const url = name === 'malformed-base64' ? candidateUrl + '?data=' + encodeURIComponent(data) : shareURL(candidateUrl, data); await ready(current, url);
         assert.equal(await savedRaw(page), current.options.storage[PREFIX + 1]); await assertForm(page, form()); assert.equal(current.dialogs.length, 0); record.slots = await readBookStorage(page);
