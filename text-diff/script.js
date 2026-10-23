@@ -52,6 +52,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const isEnglish = document.documentElement.lang === 'en';
   // State Variables
   const pasteReads = new WeakMap();
+  let copyGeneration = 0;
   let comparisonGeneration = 0, compareTimer = null, lastComparison = null, comparisonDirty = true;
   const fileReads = new WeakMap();
   function cancelFileRead(area) {
@@ -183,6 +184,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Unified コピーボタン
     els.btnCopyDiff.addEventListener('click', copyUnifiedDiff);
+    document.getElementById('copyFormat')?.addEventListener('change', resetCopyStatus);
 
     // Sync Scroll
     initScrollSync(els.diffOriginal, els.diffNew);
@@ -305,24 +307,24 @@ document.addEventListener('DOMContentLoaded', () => {
      ========================================= */
 
   function handleKeyInput(e) {
-    if (e.key === 'Tab') {
-      e.preventDefault();
-      cancelFileRead(this);
-      const start = this.selectionStart;
-      const end = this.selectionEnd;
-      const spaces = '  ';
-      this.value = this.value.substring(0, start) + spaces + this.value.substring(end);
-      this.selectionStart = this.selectionEnd = start + spaces.length;
-      updateCharCounts();
-    }
-    
+    // Tab and Shift+Tab retain native focus navigation without editing text.
     if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
       e.preventDefault();
       els.compareBtn.click();
     }
   }
 
+  function resetCopyStatus() {
+    ++copyGeneration;
+    els.btnCopyDiff.textContent = isEnglish ? 'Copy selected text' : '選んだ内容をコピー';
+    els.btnCopyDiff.style.borderColor = '';
+    els.btnCopyDiff.style.color = '';
+    const manual = document.getElementById('manualCopyDiff');
+    if (manual) { manual.hidden = true; manual.value = ''; }
+  }
+
   function invalidateComparison() {
+    resetCopyStatus();
     comparisonGeneration++;
     clearTimeout(compareTimer);
     comparisonDirty = true;
@@ -393,7 +395,10 @@ document.addEventListener('DOMContentLoaded', () => {
       if (mode === 'lines') {
         diff = Diff.diffLines(original, newTxt);
       } else {
-        diff = Diff.diffChars(original, newTxt);
+        // jsdiff 5 diffChars splits UTF-16 surrogate pairs. Compare code points,
+        // without Unicode normalization or changes to the user's original text.
+        diff = Diff.diffArrays(Array.from(original), Array.from(newTxt))
+          .map(part => ({ ...part, value: part.value.join('') }));
       }
 
       renderSplitView(diff, mode);
@@ -442,10 +447,12 @@ document.addEventListener('DOMContentLoaded', () => {
   function wrapDiffPart(value, tag) {
     const lines = String(value).split('\n');
     return lines.map((line, index) => {
-      const suffix = index < lines.length - 1 ? '\n' : '';
+      const hasNewline = index < lines.length - 1;
+      if (!hasNewline && line === '') return '';
       const escaped = escapeHtml(line);
-      if (tag) return `<${tag}>${escaped}</${tag}>${suffix}`;
-      return `<span>${escaped}</span>${suffix}`;
+      const content = line || !tag ? `<${tag || 'span'}>${escaped}</${tag || 'span'}>` : '';
+      const newline = hasNewline ? (tag ? `<${tag} class="is-newline"></${tag}>\n` : '\n') : '';
+      return content + newline;
     }).join('');
   }
 
@@ -506,6 +513,18 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   function renderUnifiedView(diff) {
+    if (getMode() === 'lines') {
+      unifiedLinesCache = rawDiffLines(diff);
+      let oldNumber = 0, newNumber = 0;
+      els.diffUnified.innerHTML = diff.flatMap(part => splitRawLines(part.value).map(value => {
+        const tag = part.added ? 'ins' : part.removed ? 'del' : 'span';
+        const kind = part.added ? 'add' : part.removed ? 'del' : '';
+        const marker = part.added ? '+' : part.removed ? '-' : ' ';
+        const number = part.added ? `  ${++newNumber}` : part.removed ? `${++oldNumber}` : `${++oldNumber}   ${++newNumber}`;
+        return `<div class="diff-line ${kind}"><div class="diff-line-num" style="width: 5.5em; text-align: center;">${number}</div><div class="diff-line-marker">${marker}</div><div class="diff-line-content"><${tag}>${escapeHtml(value)}</${tag}></div></div>`;
+      })).join('');
+      return;
+    }
     let html = '';
     diff.forEach(part => {
       if (part.added) {
@@ -528,8 +547,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
       let currentClass = 'diff-line';
       let marker = ' ';
-      const hasDel = line.includes('<del>') || line.includes('</del>');
-      const hasIns = line.includes('<ins>') || line.includes('</ins>');
+      const hasDel = /<del(?:\s|>)/.test(line);
+      const hasIns = /<ins(?:\s|>)/.test(line);
       let numDisplay = '';
 
       if (hasDel && hasIns) {
@@ -591,11 +610,11 @@ document.addEventListener('DOMContentLoaded', () => {
       let currentMarker = ' ';
       let currentClass = 'diff-line';
 
-      if (changeClass === 'del' && (line.includes('<del>') || line.includes('</del>'))) {
+      if (changeClass === 'del' && (/<del(?:\s|>)/.test(line))) {
         isChanged = true;
         currentClass += ' del';
         currentMarker = '-';
-      } else if (changeClass === 'add' && (line.includes('<ins>') || line.includes('</ins>'))) {
+      } else if (changeClass === 'add' && (/<ins(?:\s|>)/.test(line))) {
         isChanged = true;
         currentClass += ' add';
         currentMarker = '+';
@@ -722,6 +741,8 @@ document.addEventListener('DOMContentLoaded', () => {
   function copyUnifiedDiff() {
     if (!lastComparison || comparisonDirty) return;
     const generation = comparisonGeneration;
+    const copyTask = ++copyGeneration;
+    const isCurrent = () => generation === comparisonGeneration && !comparisonDirty && copyTask === copyGeneration;
 
     const isWindows = navigator.userAgent.toLowerCase().includes('win');
     const newline = isWindows ? '\r\n' : '\n';
@@ -732,15 +753,23 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const doCopy = (text) => {
       if (navigator.clipboard && typeof navigator.clipboard.writeText === 'function') {
-        return navigator.clipboard.writeText(text).catch(() => fallbackCopy(text));
+        try {
+          return Promise.resolve(navigator.clipboard.writeText(text)).catch(() => {
+            if (!isCurrent()) throw new Error('stale copy');
+            return fallbackCopy(text);
+          });
+        } catch (_) { return fallbackCopy(text); }
       }
       return fallbackCopy(text);
     };
 
     const fallbackCopy = (text) => {
       return new Promise((resolve, reject) => {
+        if (!isCurrent()) { reject(new Error('stale copy')); return; }
+        let ta;
+        const previousFocus = document.activeElement;
         try {
-          const ta = document.createElement('textarea');
+          ta = document.createElement('textarea');
           ta.value = text;
           ta.setAttribute('readonly', '');
           ta.style.position = 'fixed';
@@ -748,26 +777,28 @@ document.addEventListener('DOMContentLoaded', () => {
           document.body.appendChild(ta);
           ta.select();
           const ok = document.execCommand('copy');
-          ta.remove();
           if (ok) resolve(); else reject(new Error('copy failed'));
-        } catch (e) { reject(e); }
+        } catch (e) { reject(e); } finally {
+          if (ta) ta.remove();
+          if (previousFocus && typeof previousFocus.focus === 'function') previousFocus.focus();
+        }
       });
     };
 
     doCopy(copyText).then(() => {
-      if (generation !== comparisonGeneration || comparisonDirty) return;
+      if (!isCurrent()) return;
       els.btnCopyDiff.textContent = isEnglish ? 'Copied!' : 'コピーしました';
       els.btnCopyDiff.style.borderColor = '#16a34a';
       els.btnCopyDiff.style.color = '#16a34a';
       
       setTimeout(() => {
-        if (generation !== comparisonGeneration || comparisonDirty) return;
+        if (!isCurrent()) return;
         els.btnCopyDiff.textContent = isEnglish ? 'Copy selected text' : '選んだ内容をコピー';
         els.btnCopyDiff.style.borderColor = '';
         els.btnCopyDiff.style.color = '';
       }, 1500);
     }).catch(err => {
-      if (generation !== comparisonGeneration || comparisonDirty) return;
+      if (!isCurrent()) return;
       if (manual) { manual.value = copyText; manual.hidden = false; manual.focus(); manual.select(); }
       showAlert(isEnglish ? 'Copy failed. Select the text below and copy manually.' : 'コピーに失敗しました。下のテキストを選択して手動でコピーしてください。');
     });

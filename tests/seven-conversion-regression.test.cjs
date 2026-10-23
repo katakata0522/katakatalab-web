@@ -31,9 +31,9 @@ test('diff','both empty rejected',()=>{f.es.textOriginal.value='';f.es.textNew.v
 test('diff','identical Japanese controller flow using fixture',()=>{f.es.textOriginal.value=f.es.textNew.value='日本語\n同じ';f.api.runCompare();assert.equal(f.es.statusMessage.style.display,'inline-flex');assert.equal(f.es.diffNav.style.display,'none')});
 test('diff','HTML escaped',()=>assert.equal(f.api.wrapDiffPart('<img src=x onerror=alert(1)>','ins'),'<ins>&lt;img src=x onerror=alert(1)&gt;</ins>'));
 test('diff','copy preserves literal entity text',()=>{f.api.renderUnifiedView([{value:'&lt; &amp; &#039; &quot;'}]);assert.equal(f.api.getCache()[0],'  &lt; &amp; &#039; &quot;')});
-test('diff','multiline fixture stays balanced',()=>{const x=f.api.wrapDiffPart('一行\n二行\n','del');assert.equal((x.match(/<del>/g)||[]).length,(x.match(/<\/del>/g)||[]).length)});
+test('diff','multiline fixture stays balanced',()=>{const x=f.api.wrapDiffPart('一行\n二行\n','del');assert.equal((x.match(/<del(?:\s[^>]*)?>/g)||[]).length,(x.match(/<\/del>/g)||[]).length)});
 test('diff','clear and undo',()=>{f.es.textOriginal.value='元';f.es.textNew.value='新';f.es.clearBtn.click();assert.equal(f.es.textOriginal.value,'');f.es.undoBtn.onclick();assert.equal(f.es.textOriginal.value,'元');assert.equal(f.es.textNew.value,'新')});
-test('diff','Tab updates displayed count',()=>{f.es.textOriginal.value='a';f.api.updateCharCounts();f.api.handleKeyInput.call(f.es.textOriginal,{key:'Tab',preventDefault(){}});assert.equal(f.es.charCountOriginal.textContent,'3文字')});
+test('diff','Tab preserves user text and native focus navigation',()=>{f.es.textOriginal.value='a';f.api.updateCharCounts();f.api.handleKeyInput.call(f.es.textOriginal,{key:'Tab',preventDefault(){throw Error('Tab must retain native navigation')}});assert.equal(f.es.textOriginal.value,'a');assert.equal(f.es.charCountOriginal.textContent,'1文字')});
 test('diff','50001 chars warns',()=>{f.es.textOriginal.value='a'.repeat(50001);f.api.updateCharCounts();assert.match(f.es.alertBox.textContent,/50000/)});
 test('diff','successful compare clears previous error',()=>{f.es.textOriginal.value='';f.es.textNew.value='';f.api.runCompare();f.es.textOriginal.value=f.es.textNew.value='x';f.api.runCompare();assert.equal(f.es.alertBox.style.display,'none')});
 
@@ -45,3 +45,4 @@ test('discount','amount and row taps never copy; dedicated copy button does',()=
 
 test('diff','clear cancels in-flight file read',()=>{const pending=[];const x=load('text-diff','readFileToTextarea',true,{FileReader:class {constructor(){pending.push(this)}readAsText(){}}});x.es.textOriginal.value='before';x.api.readFileToTextarea({name:'draft.txt'},x.es.textOriginal);x.es.clearBtn.click();pending[0].onload({target:{result:'late file data'}});assert.equal(x.es.textOriginal.value,'')});
 test('diff','newer file selection wins when reads finish out of order',()=>{const pending=[];const x=load('text-diff','readFileToTextarea',true,{FileReader:class {constructor(){pending.push(this)}readAsText(){}}});x.api.readFileToTextarea({name:'old.txt'},x.es.textOriginal);x.api.readFileToTextarea({name:'new.txt'},x.es.textOriginal);pending[1].onload({target:{result:'new'}});pending[0].onload({target:{result:'old'}});assert.equal(x.es.textOriginal.value,'new')});
+

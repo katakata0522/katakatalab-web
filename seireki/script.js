@@ -21,6 +21,10 @@ const CONFIG = Logic ? {
 };
 
 let lastHighlightedYear = null;
+let warekiInputError = '';
+let manualEarlyBirth = false;
+let copyTaskId = 0;
+let previousCopyButton = null;
 
 // DOMのキャッシュ
 let UI = {};
@@ -94,6 +98,7 @@ function setupEventListeners() {
   });
 
   UI.inputYear.addEventListener('input', () => {
+    warekiInputError = '';
     sanitizeYearInput(UI.inputYear, 4);
     syncWarekiFromWestern();
     updateClearButtonVisibility();
@@ -121,6 +126,8 @@ function setupEventListeners() {
   });
 
   UI.clearBtn.addEventListener('click', () => {
+    warekiInputError = '';
+    manualEarlyBirth = false;
     UI.inputYear.value = '';
     UI.eraYear.value = '';
     UI.birthMonth.value = '';
@@ -133,16 +140,15 @@ function setupEventListeners() {
   });
 
   UI.earlyBirthCheckbox.addEventListener('change', () => {
+    manualEarlyBirth = UI.earlyBirthCheckbox.checked;
     updateAllCalculations();
   });
 
   // メイン結果コピーボタン
   UI.copyBtn.addEventListener('click', () => {
-    const val = UI.inputYear.value;
-    if (val.length < 4) return;
-    
-    const birthYear = Logic.parseWesternYear(val);
-    if (!birthYear) return;
+    const state = currentInputState();
+    if (state.error || state.incomplete) return;
+    const birthYear = state.year;
     const age = Logic.describeAge(birthYear, CONFIG.currentYear, currentBirthdayOptions());
     const wareki = Logic.warekiDisplay(birthYear);
     const eto = Logic.etoOf(birthYear);
@@ -156,6 +162,8 @@ function setupEventListeners() {
 
   // 学歴一括コピーボタン
   UI.copyAllResumeBtn.addEventListener('click', () => {
+    const state = currentInputState();
+    if (state.error || state.incomplete) return;
     const items = UI.resumeGrid.querySelectorAll('.seireki-resume-item');
     if (items.length === 0) return;
     
@@ -255,25 +263,58 @@ function sanitizeYearInput(field, maxLength) {
   if (!field) return;
   const cleaned = String(field.value || '')
     .replace(/[０-９]/g, (digit) => String.fromCharCode(digit.charCodeAt(0) - 0xFEE0))
-    .replace(/[^0-9]/g, '')
-    .slice(0, maxLength);
+    .trim().replace(/年$/, '').trim();
+  // Do not turn a negative, decimal, exponent or oversized input into another year.
   if (cleaned !== field.value) field.value = cleaned;
 }
 
 function syncWarekiFromWestern() {
   const year = Logic.parseWesternYear(UI.inputYear.value);
-  if (!year) return;
-  const era = Logic.ERAS.find((item) => year >= item.start);
-  if (!era || !UI.eraName || !UI.eraYear) return;
+  const era = year !== null && Logic.ERAS.find((item) => year >= item.start);
+  if (!era) {
+    if (UI.eraYear) UI.eraYear.value = '';
+    return;
+  }
+  if (!UI.eraName || !UI.eraYear) return;
   UI.eraName.value = era.name;
   UI.eraYear.value = String(year - era.start + 1);
 }
 
 function syncWesternFromWareki() {
-  if (!UI.eraName || !UI.eraYear || !UI.eraYear.value) return;
-  const year = Logic.warekiToWestern(UI.eraName.value, Number.parseInt(UI.eraYear.value, 10));
-  if (!year) return;
+  if (!UI.eraName || !UI.eraYear) return;
+  warekiInputError = '';
+  if (!UI.eraYear.value) {
+    UI.inputYear.value = '';
+    return;
+  }
+  const year = /^\d{1,2}$/.test(UI.eraYear.value)
+    ? Logic.warekiToWestern(UI.eraName.value, Number(UI.eraYear.value)) : null;
+  if (year === null) {
+    UI.inputYear.value = '';
+    warekiInputError = '選択した元号に存在する年を入力してください';
+    return;
+  }
   UI.inputYear.value = String(year);
+}
+
+function currentInputState() {
+  if (warekiInputError) return { error: warekiInputError };
+  const raw = UI.inputYear.value;
+  if (!raw || /^\d{1,3}$/.test(raw)) return { incomplete: true };
+  const year = Logic.parseWesternYear(raw);
+  if (year === null) return { error: '西暦は4桁の整数で入力してください' };
+  if (year > CONFIG.currentYear) return { error: '未来の年は入力できません' };
+  if (year < CONFIG.minYear) return { error: `明治元年（${CONFIG.minYear}年）以降で入力してください` };
+  const month = UI.birthMonth?.value, day = UI.birthDay?.value;
+  if (month && day) {
+    if (!Logic.isValidCalendarDate(year, month, day)) return { error: '存在する生年月日を入力してください' };
+    const today = new Date();
+    if (year === CONFIG.currentYear && (Number(month) > today.getMonth() + 1 ||
+      (Number(month) === today.getMonth() + 1 && Number(day) > today.getDate()))) {
+      return { error: '未来の生年月日は入力できません' };
+    }
+  }
+  return { year };
 }
 
 function currentBirthdayOptions() {
@@ -294,6 +335,7 @@ function applyEarlyBirthFromDate() {
   );
   if (judged === null) {
     UI.earlyBirthCheckbox.disabled = false;
+    UI.earlyBirthCheckbox.checked = manualEarlyBirth;
     return;
   }
   UI.earlyBirthCheckbox.checked = judged;
@@ -303,19 +345,39 @@ function applyEarlyBirthFromDate() {
 /**
  * クリップボードへのコピー処理（マイクロインタラクション付き）
  */
+function resetCopyButtons() {
+  if (previousCopyButton) {
+    const { button, label } = previousCopyButton;
+    button.textContent = label;
+    button.style.borderColor = '';
+    button.style.color = '';
+    previousCopyButton = null;
+  }
+  for (const [button, label] of [[UI.copyBtn, '📋 結果をコピー'], [UI.copyAllResumeBtn, '📋 学歴を一括コピー']]) {
+    if (!button) continue;
+    button.textContent = label;
+    button.style.borderColor = '';
+    button.style.color = '';
+  }
+}
+
 async function copyToClipboard(text, btnElement, originalHtml) {
+  resetCopyButtons();
+  previousCopyButton = { button: btnElement, label: originalHtml };
+  const task = ++copyTaskId;
   let copied = false;
-  if (navigator.clipboard && navigator.clipboard.writeText) {
+  if (navigator.clipboard && typeof navigator.clipboard.writeText === 'function') {
     try {
       await navigator.clipboard.writeText(text);
       copied = true;
-    } catch (_) {
-      copied = false;
-    }
+    } catch (_) {}
   }
+  if (task !== copyTaskId) return;
   if (!copied) {
+    let ta;
+    const previousFocus = document.activeElement;
     try {
-      const ta = document.createElement('textarea');
+      ta = document.createElement('textarea');
       ta.value = text;
       ta.setAttribute('readonly', '');
       ta.style.position = 'fixed';
@@ -323,21 +385,23 @@ async function copyToClipboard(text, btnElement, originalHtml) {
       document.body.appendChild(ta);
       ta.select();
       copied = document.execCommand('copy');
-      ta.remove();
     } catch (_) {
       copied = false;
+    } finally {
+      if (ta) ta.remove();
+      if (previousFocus && typeof previousFocus.focus === 'function') previousFocus.focus();
     }
   }
-
+  if (task !== copyTaskId) return;
   if (copied) {
-    btnElement.textContent = "✅ コピーしました！";
-    btnElement.style.borderColor = "var(--c-success)";
-    btnElement.style.color = "var(--c-success)";
-
+    btnElement.textContent = '✅ コピーしました！';
+    btnElement.style.borderColor = 'var(--c-success)';
+    btnElement.style.color = 'var(--c-success)';
     setTimeout(() => {
+      if (task !== copyTaskId) return;
       btnElement.textContent = originalHtml;
-      btnElement.style.borderColor = "";
-      btnElement.style.color = "";
+      btnElement.style.borderColor = '';
+      btnElement.style.color = '';
     }, 2000);
   } else {
     alert('コピーに失敗しました。手動で範囲選択してコピーしてください。');
@@ -383,26 +447,19 @@ function generateHayamiTable() {
  * すべての計算処理をアップデートする親関数
  */
 function updateAllCalculations() {
-  const val = UI.inputYear.value;
-  
-  if (val.length < 4) {
+  ++copyTaskId;
+  resetCopyButtons();
+  applyEarlyBirthFromDate();
+  const state = currentInputState();
+  if (state.error) {
+    showErrorState(state.error);
+    return;
+  }
+  if (state.incomplete) {
     showPlaceholderState();
     return;
   }
-  
-  const birthYear = Logic.parseWesternYear(val);
-  if (!birthYear) return;
-  
-  if (birthYear > CONFIG.currentYear) {
-    showErrorState("未来の年は入力できません");
-    return;
-  }
-  
-  if (birthYear < CONFIG.minYear) {
-    showErrorState(`明治元年（${CONFIG.minYear}年）以降で入力してください`);
-    return;
-  }
-  
+  const birthYear = state.year;
   // 正常計算処理へ
   calculateMainResult(birthYear);
   calculateResumeDates(birthYear);
@@ -432,6 +489,7 @@ function showPlaceholderState() {
   main.textContent = '---';
   UI.resultArea.append(sub, main);
   UI.copyBtn.classList.remove('visible');
+  UI.copyBtn.disabled = true;
 
   replaceWithMessage(
     UI.resumeGrid,
@@ -439,6 +497,7 @@ function showPlaceholderState() {
     '生まれた年を入力すると、履歴書用の入学・卒業年度が自動計算されます。'
   );
   UI.copyAllResumeBtn.classList.remove('visible');
+  UI.copyAllResumeBtn.disabled = true;
 
   UI.yakuniAlertMale.style.display = 'none';
   UI.yakuniAlertFemale.style.display = 'none';
@@ -455,10 +514,14 @@ function showPlaceholderState() {
  * エラー発生時の状態表示
  */
 function showErrorState(message) {
+  if (UI.resumeNote) UI.resumeNote.textContent = '';
+  highlightHayamiRow(null);
   replaceWithMessage(UI.resultArea, 'seireki-result-error', `⚠️ ${message}`);
   UI.copyBtn.classList.remove('visible');
+  UI.copyBtn.disabled = true;
   replaceWithMessage(UI.resumeGrid, 'seireki-empty-message seireki-empty-message--error', '⚠️ 正しい年を入力してください');
   UI.copyAllResumeBtn.classList.remove('visible');
+  UI.copyAllResumeBtn.disabled = true;
   UI.yakuniAlertMale.style.display = 'none';
   UI.yakuniAlertFemale.style.display = 'none';
   UI.longevityList.replaceChildren();
@@ -511,6 +574,7 @@ function calculateMainResult(birthYear) {
   UI.resultArea.append(sub, main, note);
 
   UI.copyBtn.classList.add('visible');
+  UI.copyBtn.disabled = false;
 }
 
 /**
@@ -556,6 +620,7 @@ function calculateResumeDates(birthYear) {
   });
 
   UI.copyAllResumeBtn.classList.add('visible');
+  UI.copyAllResumeBtn.disabled = false;
 }
 
 /**
