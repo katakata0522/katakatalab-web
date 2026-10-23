@@ -13,6 +13,17 @@ export class StorageManager {
       .map(item => ({ ...item, text: item.text, done: item.done === true }));
   }
 
+  // Reject unreadable records before normalization can silently discard user data.
+  static validateStoredTasks(items) {
+    if (!Array.isArray(items) || items.some(item =>
+      !item || typeof item.text !== 'string' || !item.text ||
+      item.text.replace(/[<>"'`]/g, '').substring(0, 20) !== item.text ||
+      (item.subTasks !== undefined && (!Array.isArray(item.subTasks) || item.subTasks.some(sub =>
+        !sub || typeof sub.text !== 'string' || (sub.done !== undefined && typeof sub.done !== 'boolean')))))) {
+      throw new Error('Invalid stored task state; original data was retained.');
+    }
+  }
+
   // 保存用のタスク配列へ正規化する
   static normalizeTasks(items = []) {
     return (Array.isArray(items) ? items : [])
@@ -134,6 +145,7 @@ export class StorageManager {
         parsed = loaded;
       }
 
+      this.validateStoredTasks(parsed);
       const persistable = this.normalizeTasks(parsed).filter((task) => !task.isDemo);
       const normalizedTasks = persistable;
       const migratedState = {
@@ -184,6 +196,7 @@ export class StorageManager {
         const [stateRecord] = await Promise.all([
           this.readStateRecord(store), this.waitForTransaction(transaction)
         ]);
+        if (stateRecord) this.validateStoredTasks(stateRecord.tasks);
         this.writeBlocked = false;
 
         if (!stateRecord) {
