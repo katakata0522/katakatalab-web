@@ -44,6 +44,7 @@ export class UIManager {
   updateDestroyCount(count) {
     if (this.destroyCount) {
       this.destroyCount.textContent = String(count);
+      if (this.reduceMotion?.()) return;
       // ちょっとしたアニメーション
       this.destroyCount.style.transform = 'scale(1.3)';
       setTimeout(() => {
@@ -135,32 +136,16 @@ export class UIManager {
     }, duration);
   }
 
-  showUndo(restoreCallback, message = 'タスクを削除しました') {
+  setHistoryState(canUndo, canRedo, reason = '') {
+    const undo = document.getElementById('undo-btn');
+    const redo = document.getElementById('redo-btn');
+    if (undo) { undo.disabled = !canUndo; undo.title = canUndo ? '直前の単件爆破を戻す' : reason || '戻せる単件爆破はありません'; }
+    if (redo) { redo.disabled = !canRedo; redo.title = canRedo ? '戻した単件爆破をやり直す' : reason || 'やり直せる単件爆破はありません'; }
+  }
+
+  showUndo(restoreCallback, message = 'タスクを爆破しました') {
     const snackbar = document.getElementById('undo-snackbar');
-    const undoBtn = document.getElementById('undo-btn');
-    if (!snackbar || !undoBtn) return;
-
-    const label = snackbar.querySelector('[data-undo-message]') || snackbar.querySelector('span');
+    const label = snackbar?.querySelector('[data-undo-message]');
     if (label) label.textContent = message;
-
-    // 既存のタイマーをクリア
-    if (this.undoTimerId) clearTimeout(this.undoTimerId);
-
-    // イベントリスナーの重複登録を防ぐため、古いボタンをクローンして置き換える
-    const newBtn = undoBtn.cloneNode(true);
-    undoBtn.parentNode.replaceChild(newBtn, undoBtn);
-
-    snackbar.classList.remove('hidden');
-
-    newBtn.addEventListener('click', () => {
-      snackbar.classList.add('hidden');
-      if (this.undoTimerId) clearTimeout(this.undoTimerId);
-      restoreCallback();
-    });
-
-    // 4秒後に自動で隠す
-    this.undoTimerId = setTimeout(() => {
-      snackbar.classList.add('hidden');
-    }, 4000);
   }
 }

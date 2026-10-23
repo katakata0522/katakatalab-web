@@ -131,12 +131,8 @@ requireText(ux, "role', 'tabpanel'", 'tabpanel semantics');
 requireText(ux, 'makeKeyboardClickable', 'keyboard activation helper');
 requireText(ux, "event.key !== 'Enter' && event.key !== ' '", 'Enter/Space activation');
 requireText(ux, 'enhanceTitleKeyboardNavigation', 'title keyboard navigation');
-requireText(ux, 'installModalKeyboardGuard', 'dialog keyboard containment');
-requireText(ux, "contains(document.activeElement)", 'nested dialogs prioritize the modal that owns focus');
-requireText(ux, "element.closest('[hidden], .hidden')", 'hidden controls are excluded from focus loop');
-requireText(ux, "event.key === 'Escape'", 'Escape closes custom dialogs');
-requireText(ux, "event.key !== 'Tab'", 'Tab focus loop');
-requireText(ux, 'restoreModalFocus', 'dialog trigger focus restoration');
+// モーダルのキー操作・入れ子・フォーカス復帰は、実装文字列ではなく
+// tests/modal-lifecycle.test.cjs でコアアプリの動作として検証する。
 requireText(ux, 'clearPartQueries', 'mode-switch search reset');
 requireText(ux, 'prefers-reduced-motion: reduce', 'reduced-motion behavior hook');
 requireText(ux, 'event.stopImmediatePropagation()', 'duplicate parents-listener guard');

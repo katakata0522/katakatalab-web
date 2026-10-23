@@ -209,6 +209,35 @@ export class AlbumManager {
         if (descEl) descEl.textContent = item.description;
         if (factEl) factEl.textContent = item.fact;
 
+        const photoCredit = document.getElementById('sea-photo-credit');
+        const photoCreditText = document.getElementById('sea-photo-credit-text');
+        const photoSource = document.getElementById('sea-photo-source') as HTMLAnchorElement | null;
+        const credit = typeof item.imageCredit === 'string' ? item.imageCredit.trim() : '';
+        let sourceUrl = '';
+        if (credit && typeof item.imageSourceUrl === 'string') {
+            try {
+                // 出典は絶対HTTP(S) URLだけを許可し、検証した値をそのまま使う。
+                const parsed = new URL(item.imageSourceUrl.trim());
+                if (parsed.protocol === 'https:' || parsed.protocol === 'http:') sourceUrl = parsed.href;
+            } catch {
+                // 不正な出典は前の項目のリンクを残さず非表示にする。
+            }
+        }
+        const hasVerifiedCredit = Boolean(credit && sourceUrl);
+        if (photoCredit) photoCredit.classList.toggle('hidden', !hasVerifiedCredit);
+        if (photoCreditText) photoCreditText.textContent = hasVerifiedCredit ? credit : '';
+        if (photoSource) {
+            if (hasVerifiedCredit) {
+                photoSource.href = sourceUrl;
+                photoSource.removeAttribute('aria-hidden');
+                photoSource.tabIndex = 0;
+            } else {
+                photoSource.removeAttribute('href');
+                photoSource.setAttribute('aria-hidden', 'true');
+                photoSource.tabIndex = -1;
+            }
+        }
+
         // --- 📸 モーダル内ビジュアルの初期化 📸 ---
         const modalImg = document.getElementById('modal-creature-img') as HTMLImageElement;
         if (modalImg) {

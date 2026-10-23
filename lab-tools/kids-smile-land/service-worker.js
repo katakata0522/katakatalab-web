@@ -1,5 +1,5 @@
 const CACHE_PREFIX = 'smile-land-v';
-const CACHE_NAME = 'smile-land-v2-20260818';
+const CACHE_NAME = 'smile-land-v4-20261011';
 const ASSETS = [
   './',
   './index.html',

@@ -8,7 +8,7 @@ const LABS = Object.freeze({
     deepsea: 'deepsea_lab', color: 'color_lab', eduplay: 'eduplay', rhythm: 'rhythm_lab',
     manabi: 'manabi_land', speed_reader: 'speed_reader', typing_dojo: 'typing_dojo',
     kotowaza: 'kotowaza_quiz', fraction: 'fraction_lab', focus: 'focus_studio',
-    space: 'space_lab', paper: 'paper_gen', quest: 'quest_board'
+    space: 'space_lab', paper: 'paper_gen', quest: 'quest_board', kanji: 'kanji_lab', book: 'book_report'
 });
 const LOCAL_DIRECTORIES = new Set([...Object.values(LABS),
     'book_report', 'kanji_lab', 'eduplay', 'science_maker']);

@@ -68,7 +68,8 @@ test('読書感想文の学年は未選択を維持し、保存できない環�
     const support = read('book_report/summer-support.js');
 
     assert.match(support, /const volatileGradeBySlot = new Map\(\)/);
-    assert.match(support, /return volatileGradeBySlot\.get\(slot\) \|\| null/);
+    assert.match(support, /if \(volatileGradeBySlot\.has\(slot\)\) return volatileGradeBySlot\.get\(slot\)/);
+    assert.match(support, /return null;/);
     assert.doesNotMatch(support, /\? value : 'high'/);
     assert.match(support, /volatileGradeBySlot\.set\(slot, value\)/);
     assert.match(support, /学年を選ぶと、第72回青少年読書感想文全国コンクールの参考上限を表示します/);

@@ -246,7 +246,7 @@
                         <span class="font-bold text-gray-700">映画やアニメで見た</span>
                     </label>
                     <label class="option-card cursor-pointer">
-                        <input type="radio" name="motivation" value="interest" class="sr-only" aria-label="好きなことに関系あったから選んだ">
+                        <input type="radio" name="motivation" value="interest" class="sr-only" aria-label="好きなことに関係があったから選んだ">
                         <div class="option-card-icon"><span class="material-symbols-rounded" aria-hidden="true">sports_soccer</span></div>
                         <span class="font-bold text-gray-700">好きなことに関係あった</span>
                     </label>
@@ -449,7 +449,7 @@
                                     <div class="w-full">
                                         <strong class="flex items-center gap-2 text-sm text-gray-500 mb-1">一番心が動いた場面<span class="paragraph-badge mini bg-adventure-sun">第３段落</span></strong>
                                         <p id="body-scene-ref" class="font-bold text-gray-800 bg-yellow-50 p-2 rounded"></p>
-                                        <p class="text-sm mt-1">この場面について、「まるで自分もそこにいるように」詳しく書おう。</p>
+                                        <p class="text-sm mt-1">この場面について、「まるで自分もそこにいるように」詳しく書こう。</p>
                                     </div>
                                 </li>
                                 <li class="flex gap-3">
@@ -523,7 +523,7 @@
                     <button type="button" class="btn-secondary bg-white border-2 border-gray-200 text-gray-600 font-bold py-3 px-6 rounded-xl flex items-center justify-center gap-2" id="copy-all-btn"><span class="material-symbols-rounded" aria-hidden="true">content_copy</span> まとめてコピー</button>
                     
                     <!-- 共有ボタン -->
-                    <button type="button" class="btn-adventure bg-adventure-ocean text-white font-bold py-3 px-6 rounded-xl flex items-center justify-center gap-2 hover:scale-105 active:scale-95 transition-all" id="share-btn">
+                    <button type="button" class="btn-adventure bg-adventure-ocean text-white font-bold py-3 px-6 rounded-xl flex items-center justify-center gap-2 hover:scale-105 active:scale-95 transition-all" id="share-btn" aria-haspopup="dialog" aria-controls="share-modal" aria-expanded="false">
                         <span class="material-symbols-rounded text-lg" aria-hidden="true">share</span> 計画書を共有
                     </button>
 
@@ -608,7 +608,7 @@
                 別のスマホやタブレットで読み取ると、この感想文データをそのままコピーして続きを書くことができます。
             </p>
             <div class="w-full flex gap-2">
-                <input id="share-link-input" type="text" readonly class="flex-1 px-3 py-2 text-xs font-mono rounded-lg border border-gray-200 outline-none bg-gray-50 text-gray-600">
+                <input id="share-link-input" aria-label="共有リンク" type="text" readonly class="flex-1 px-3 py-2 text-xs font-mono rounded-lg border border-gray-200 outline-none bg-gray-50 text-gray-600">
                 <button id="share-copy-btn" type="button" class="bg-adventure-sky text-white hover:bg-adventure-ocean font-bold text-xs px-4 py-2 rounded-lg transition whitespace-nowrap">
                     コピー
                 </button>
@@ -722,6 +722,10 @@ document.addEventListener('DOMContentLoaded', () => {
     const dialog = document.getElementById('parents-modal');
 
     if (dialog) {
+        dialog.addEventListener('close', () => {
+            openBtns.forEach(btn => btn.setAttribute('aria-expanded', 'false'));
+            openBtns[0]?.focus();
+        });
         openBtns.forEach(btn => {
             btn.addEventListener('click', (e) => {
                 e.preventDefault();

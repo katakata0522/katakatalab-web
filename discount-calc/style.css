@@ -1021,3 +1021,23 @@ body.dark-mode .col-price {
 }
 
 
+
+/* Primary selected result and optional local shopping memo. */
+.selected-result { padding: 1rem; margin-block: 1rem; border: 1px solid var(--c-border, #ddd); border-radius: 12px; }
+.selected-result #customPrice { display: inline-block; font-size: clamp(2rem, 7vw, 3rem); font-weight: 800; }
+.memo-fields { display: flex; flex-wrap: wrap; gap: .75rem; margin-block: 1rem; }
+.memo-fields label { flex: 1 1 10rem; min-width: 0; }
+.memo-fields input { display: block; width: 100%; box-sizing: border-box; }
+.selected-result #btnCartCustom { width: auto; height: auto; padding: .75rem 1rem; }
+.btn-select-rate { background: none; border: 0; color: inherit; cursor: pointer; text-align: left; }
+#priceError, #rateError, #extraError { color: var(--c-danger, #b91c1c); }
+.cart-drawer {
+  position: static;
+  inset: auto;
+  transform: none;
+  width: 100%;
+  margin-block: 1rem;
+  border-bottom: 2px solid var(--c-primary);
+  border-radius: 20px;
+}
+.cart-drawer.hidden { display: none; transform: none; }

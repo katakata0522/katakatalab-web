@@ -16,15 +16,15 @@ document.addEventListener('DOMContentLoaded', () => {
    * 数値関連のユーティリティ
    */
   const NumUtils = {
-    // 全角数字を半角にし、数字以外を除去して整数化
+    // 金額は非負の整数円。桁区切り以外の記号や小数は受け付けない。
     sanitize: (val) => {
-      if (!val) return 0;
-      const str = val.toString()
+      const str = String(val ?? '').trim()
         .replace(/[０-９]/g, s => String.fromCharCode(s.charCodeAt(0) - 0xFEE0))
-        .replace(/[^0-9]/g, '');
-      return str === '' ? 0 : parseInt(str, 10);
+        .replace(/,/g, '');
+      if (!/^\d+$/.test(str)) return 0;
+      return Number(str.replace(/^0+/, '').slice(0, 9) || '0');
     },
-    
+
     // 3桁区切りフォーマット
     format: (num) => {
       return num.toLocaleString('ja-JP');
@@ -75,6 +75,7 @@ document.addEventListener('DOMContentLoaded', () => {
      ========================================= */
   const state = {
     price: 0,
+    priceValid: true, priceEntered: false, rateValid: true, extraValid: true,
     customRate: null,
     extraDisc: 0,
     taxRate: 1.10,
@@ -94,30 +95,29 @@ document.addEventListener('DOMContentLoaded', () => {
      * 戻り値: { finalPrice, savedAmount }
      */
     exec: (price, percent, settings) => {
-      let basePrice = price;
-      
-      // メイン割引 (パーセント計算)
-      let discounted = basePrice * (1 - percent / 100);
-
-      // さらに割引 (レジ落ち)
-      if (settings.isExtraEnabled && settings.extraDisc > 0) {
-        discounted = discounted * (1 - settings.extraDisc / 100);
+      // Decimal rates are converted to exact integer ratios before multiplication.
+      // Floor only once after all discounts and tax, matching the displayed rules.
+      const ratio = (value) => {
+        const [coefficient, exponent = '0'] = String(value).toLowerCase().split('e');
+        const [whole, fraction = ''] = coefficient.split('.');
+        const scale = fraction.length - Number(exponent);
+        const digits = BigInt(whole + fraction);
+        return scale >= 0 ? [digits, 10n ** BigInt(scale)] : [digits * 10n ** BigInt(-scale), 1n];
+      };
+      const rate = (value, max = 100) => Number.isFinite(Number(value))
+        ? Math.min(max, Math.max(0, Number(value))) : 0;
+      const basePrice = BigInt(Number.isFinite(price) ? Math.min(CONFIG.LIMITS.PRICE_MAX, Math.max(0, Math.trunc(price))) : 0);
+      const [mainN, mainD] = ratio(rate(percent));
+      let numerator = basePrice * (100n * mainD - mainN);
+      let denominator = 100n * mainD;
+      if (settings.isExtraEnabled) {
+        const [extraN, extraD] = ratio(rate(settings.extraDisc, 99));
+        numerator *= 100n * extraD - extraN;
+        denominator *= 100n * extraD;
       }
-
-      // 消費税計算
-      let finalPrice;
-      let originalPriceWithTax;
-
-      if (settings.taxType === 'included') {
-        finalPrice = Math.floor(discounted);
-        originalPriceWithTax = price;
-      } else {
-        finalPrice = Math.floor(discounted * settings.taxRate);
-        originalPriceWithTax = Math.floor(price * settings.taxRate);
-      }
-
-      // 負の値にならないようガード
-      finalPrice = Math.max(0, finalPrice);
+      const [taxN, taxD] = settings.taxType === 'included' ? [1n, 1n] : ratio(rate(settings.taxRate, 2));
+      const finalPrice = Number(numerator * taxN / (denominator * taxD));
+      const originalPriceWithTax = Number(basePrice * taxN / taxD);
       const savedAmount = originalPriceWithTax - finalPrice;
 
       return { finalPrice, savedAmount };
@@ -129,6 +129,9 @@ document.addEventListener('DOMContentLoaded', () => {
      ========================================= */
   function init() {
     bindEvents();
+    const dateField = document.getElementById('memoDate');
+    if (dateField) dateField.value = localDate();
+    loadMemo();
     renderBaseRows();
     syncTaxRateAvailability();
     render();
@@ -139,42 +142,31 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // 金額入力: リアルタイム更新
     els.price.addEventListener('input', (e) => {
-      const rawVal = e.target.value;
-      const sanitizedVal = NumUtils.sanitize(rawVal);
-      const strVal = sanitizedVal.toString();
-      
-      if (sanitizedVal > CONFIG.LIMITS.PRICE_MAX) {
-        const limited = parseInt(strVal.slice(0, 9), 10);
-        state.price = limited;
-        e.target.value = limited;
-      } else {
-        state.price = sanitizedVal;
-        
-        if (rawVal !== '' && rawVal !== strVal && parseInt(rawVal) !== sanitizedVal) {
-           e.target.value = sanitizedVal;
-        }
-      }
-      
-      if (rawVal === '') state.price = 0;
+      const normalized = e.target.value.trim().replace(/[０-９]/g, c => String.fromCharCode(c.charCodeAt(0) - 0xFEE0)).replace(/,/g, '');
+      state.priceEntered = normalized !== '';
+      if (!state.priceEntered) state.price = 0;
+      state.priceValid = /^\d{1,9}$/.test(normalized);
+      if (state.priceValid) state.price = Number(normalized);
+      setInputError(els.price, 'priceError', !state.priceValid && state.priceEntered, '金額は0〜999,999,999の整数円で入力してください。');
 
       render();
     });
 
     // 自由入力率
     els.customRate.addEventListener('input', (e) => {
-      const val = parseFloat(e.target.value);
-      if (isNaN(val) || val < 0) {
-        state.customRate = null;
-      } else {
-        state.customRate = NumUtils.clamp(val, 0, CONFIG.LIMITS.RATE_MAX);
-      }
-      renderCustomRow();
+      const raw = e.target.value.trim();
+      const val = Number(raw);
+      state.rateValid = raw === '' || (Number.isFinite(val) && val >= 0 && val <= 100);
+      state.customRate = raw !== '' && state.rateValid ? val : null;
+      setInputError(els.customRate, 'rateError', !state.rateValid, '割引率は0〜100の数値で入力してください。');
+      render();
     });
 
-    // さらに割引率
     els.extraDisc.addEventListener('input', (e) => {
-      const val = parseFloat(e.target.value);
-      state.extraDisc = NumUtils.clamp(isNaN(val) ? 0 : val, 0, 99);
+      const raw = e.target.value.trim();
+      const val = Number(raw);
+      state.extraValid = Number.isFinite(val) && val >= 0 && val <= 99;
+      if (state.extraValid) state.extraDisc = val;
       render();
     });
 
@@ -193,12 +185,14 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- Quick Buttons ---
     els.quickBtns.forEach(btn => {
       btn.addEventListener('click', () => {
+        if (!state.priceValid && state.priceEntered) { UI.showToast('先に金額を訂正してください。'); return; }
         UI.triggerHaptic();
         const addVal = parseInt(btn.dataset.add, 10);
         const newVal = state.price + addVal;
 
         if (newVal <= CONFIG.LIMITS.PRICE_MAX) {
           state.price = newVal;
+          state.priceValid = true; state.priceEntered = true;
           els.price.value = newVal;
           UI.triggerFlash(els.price);
           render();
@@ -210,6 +204,8 @@ document.addEventListener('DOMContentLoaded', () => {
     els.clearBtn.addEventListener('click', () => {
       UI.triggerHaptic();
       state.price = 0;
+      state.priceEntered = false; state.priceValid = true;
+      setInputError(els.price, 'priceError', false, '');
       els.price.value = '';
       els.price.focus();
       render();
@@ -222,6 +218,9 @@ document.addEventListener('DOMContentLoaded', () => {
         UI.triggerHaptic();
         // 価格リセット
         state.price = 0;
+        state.priceEntered = false; state.priceValid = true; state.rateValid = true; state.extraValid = true;
+        setInputError(els.price, 'priceError', false, '');
+        setInputError(els.customRate, 'rateError', false, '');
         els.price.value = '';
         // 税率リセット（10%税込に戻す）
         state.taxRate = 1.10;
@@ -238,7 +237,7 @@ document.addEventListener('DOMContentLoaded', () => {
         state.customRate = null;
         els.customRate.value = '';
         render();
-        UI.showToast('全てリセットしました');
+        UI.showToast('入力・計算設定をリセットしました（買物メモは保持）');
       });
     }
 
@@ -249,6 +248,8 @@ document.addEventListener('DOMContentLoaded', () => {
         UI.triggerHaptic();
         const rate = parseInt(btn.dataset.rate, 10);
         state.customRate = rate;
+        state.rateValid = true;
+        setInputError(els.customRate, 'rateError', false, '');
         els.customRate.value = rate;
         renderCustomRow();
         UI.triggerFlash(els.customRate);
@@ -280,72 +281,107 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     }, { passive: true });
 
-    // --- カートドロワーのクリアボタン ---
     els.cartClearBtn.addEventListener('click', () => {
-      UI.triggerHaptic();
+      if (!state.cart.length || !confirm('この端末の買物メモをすべて削除しますか？')) return;
       state.cart = [];
       updateCartDrawer();
-      UI.showToast("買い物かごを空にしました");
+      persistMemo();
     });
+    els.btnCartCustom.addEventListener('click', () => {
+      if (canCalculate()) addToCart(state.price, state.customRate);
+    });
+    document.getElementById('copyPriceBtn')?.addEventListener('click', () => {
+      if (canCalculate()) UI.copyToClipboard(String(Calculator.exec(state.price, state.customRate, state).finalPrice));
+    });
+    // Rows do not copy or save. Choosing a rate updates the primary result.
+    els.resultList.addEventListener('click', event => {
+      const button = event.target.closest('.btn-select-rate');
+      if (!button) return;
+      const percent = Number(button.dataset.percent);
+      if (!Number.isFinite(percent) || percent < 0 || percent > 100) return;
+      state.customRate = percent; state.rateValid = true;
+      els.customRate.value = String(percent);
+      setInputError(els.customRate, 'rateError', false, '');
+      render();
+    });
+    document.getElementById('memoDate')?.addEventListener('input', () => { dateEdited = true; });
+    document.getElementById('memoRetry')?.addEventListener('click', persistMemo);
+  }
 
-    // --- カスタム行のカート追加ボタン ---
-    els.btnCartCustom.addEventListener('click', (e) => {
-      e.stopPropagation(); // コピータップの発火を防ぐ
-      if (state.customRate !== null && state.price > 0) {
-        addToCart(state.price, state.customRate);
+  function setInputError(input, id, invalid, text) {
+    input.setAttribute('aria-invalid', String(invalid));
+    const message = document.getElementById(id);
+    if (message) { message.hidden = !invalid; message.textContent = invalid ? text : ''; }
+  }
+  function canCalculate() {
+    return state.priceEntered && state.priceValid && state.rateValid && state.customRate !== null && (!state.isExtraEnabled || state.extraValid);
+  }
+  const MEMO_KEY = 'discountCalcShoppingMemoV1';
+  let memoReadBlocked = false;
+  let dateEdited = false;
+  function localDate(now = new Date()) {
+    return `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}`;
+  }
+  function validDate(value) {
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(value)) return false;
+    const [year,month,day] = value.split('-').map(Number);
+    const date = new Date(year, month-1, day);
+    return year >= 1000 && date.getFullYear() === year && date.getMonth() === month-1 && date.getDate() === day;
+  }
+  function memoMessage(text, retry = false) {
+    const message = document.getElementById('memoStatus');
+    if (message) message.textContent = text;
+    const button = document.getElementById('memoRetry');
+    if (button) button.hidden = !retry;
+  }
+  function loadMemo() {
+    try {
+      const raw = localStorage.getItem(MEMO_KEY);
+      if (raw === null) return;
+      const data = JSON.parse(raw);
+      if (data?.version !== 1 || !Array.isArray(data.items) || data.items.length > 200) throw new Error('schema');
+      const ids = new Set();
+      for (const item of data.items) {
+        if (!item || typeof item !== 'object' || typeof item.id !== 'string' || !item.id || ids.has(item.id) || typeof item.shopName !== 'string' || item.shopName.length > 100 || !validDate(item.date) || !['included','excluded'].includes(item.taxType) || ![1,1.08,1.1].includes(item.taxRate) || typeof item.isExtraEnabled !== 'boolean') throw new Error('item');
+        for (const key of ['price','percent','extraDisc','origPrice','finalPrice','savedAmount']) if (typeof item[key] !== 'number' || !Number.isFinite(item[key]) || item[key] < 0) throw new Error('number');
+        if (!Number.isInteger(item.price) || item.price > CONFIG.LIMITS.PRICE_MAX || item.percent > 100 || item.extraDisc > 99) throw new Error('range');
+        const result = Calculator.exec(item.price, item.percent, item);
+        if (result.finalPrice !== item.finalPrice || result.savedAmount !== item.savedAmount || item.origPrice !== result.finalPrice + result.savedAmount) throw new Error('snapshot');
+        ids.add(item.id);
       }
-    });
-
-    // --- Copy & Cart Event Delegation ---
-    els.resultList.addEventListener('click', (e) => {
-      // 1. カート追加ボタンのクリック判定
-      const cartBtn = e.target.closest('.btn-add-cart');
-      if (cartBtn) {
-        e.stopPropagation(); // コピータップの発火を防ぐ
-        const item = cartBtn.closest('.discount-item');
-        if (item && !item.classList.contains('custom-row')) {
-          const percent = parseFloat(cartBtn.dataset.percent);
-          if (!isNaN(percent) && state.price > 0) {
-            addToCart(state.price, percent);
-          }
-        }
-        return;
-      }
-
-      // 2. input要素やボタンの直クリックはコピー処理を無視
-      if (e.target.tagName === 'INPUT' || e.target.closest('button')) return;
-      
-      // 3. 通常の行タップコピー処理
-      const item = e.target.closest('.discount-item');
-      if (item) {
-        const priceEl = item.querySelector('.col-price');
-        const text = priceEl.textContent.replace(/[¥,]/g, '').trim();
-        if (text && !isNaN(parseInt(text))) {
-          UI.copyToClipboard(text);
-        }
-      }
-    });
-
-    els.resultList.addEventListener('keydown', (e) => {
-      if (e.key !== 'Enter' && e.key !== ' ') return;
-      const item = e.target.closest('.discount-item');
-      if (!item || e.target.tagName === 'INPUT') return;
-      e.preventDefault();
-      item.click();
-    });
+      state.cart = data.items;
+    } catch (_) {
+      memoReadBlocked = true;
+      memoMessage('保存済みメモを読み込めませんでした。元のデータを保護するため保存を停止しています。');
+    }
+  }
+  function persistMemo() {
+    if (memoReadBlocked) { memoMessage('元の保存データを保護しています。この画面の変更はまだ保存できていません。'); return false; }
+    try {
+      localStorage.setItem(MEMO_KEY, JSON.stringify({version:1,items:state.cart}));
+      memoMessage('この端末に保存しました。'); return true;
+    } catch (_) { memoMessage('この画面の変更はまだ保存できていません。以前の保存データは保持しています。', true); return false; }
   }
 
   /* =========================================
      7. CART MANAGEMENT (カート管理ロジック)
      ========================================= */
   function addToCart(price, percent) {
+    if (!Number.isInteger(price) || price < 0 || price > CONFIG.LIMITS.PRICE_MAX || !Number.isFinite(percent) || percent < 0 || percent > 100 || !state.priceValid || !state.rateValid || (state.isExtraEnabled && !state.extraValid)) return;
+    if (state.cart.length >= 200) { memoMessage('買物メモは200件までです。不要なメモを削除してから追加してください。'); return; }
+    const dateInput = document.getElementById('memoDate');
+    if (dateInput && !dateEdited) dateInput.value = localDate();
+    const date = dateInput ? dateInput.value : localDate();
+    if (!validDate(date)) { memoMessage('実在する日付を入力してください。'); return; }
+    const shopName = (document.getElementById('memoShop')?.value || '').trim();
+    if (shopName.length > 100) { memoMessage('店名は100文字以内で入力してください。'); return; }
     UI.triggerHaptic();
 
     // 割引計算を実行
     const res = Calculator.exec(price, percent, state);
     let origPrice = price;
     if (state.taxType === 'excluded') {
-      origPrice = Math.floor(price * state.taxRate);
+      origPrice = res.finalPrice + res.savedAmount;
     }
 
     // カートに追加
@@ -356,14 +392,15 @@ document.addEventListener('DOMContentLoaded', () => {
       extraDisc: state.isExtraEnabled ? state.extraDisc : 0,
       origPrice: origPrice,
       finalPrice: res.finalPrice,
-      savedAmount: res.savedAmount
+      savedAmount: res.savedAmount,
+      shopName, date, taxType: state.taxType, taxRate: state.taxRate, isExtraEnabled: state.isExtraEnabled
     };
 
     state.cart.push(cartItem);
     updateCartDrawer();
 
     // アニメーション演出＆トースト
-    UI.showToast(`¥${NumUtils.format(res.finalPrice)} をかごに追加しました！`);
+    persistMemo();
   }
 
   function payNote() {
@@ -389,23 +426,16 @@ document.addEventListener('DOMContentLoaded', () => {
         : '元が税込のときは、入力額をそのまま基準にします。税率は「元は税抜」のときだけ使います。';
     }
     if (els.payHeaderNote) els.payHeaderNote.textContent = payNote();
-    const liveCartNote = document.getElementById('cartTaxNote');
-    if (liveCartNote) liveCartNote.textContent = payNote();
   }
 
   function removeFromCart(id) {
     state.cart = state.cart.filter((item) => item.id !== id);
     updateCartDrawer();
+    persistMemo();
   }
 
   function updateCartDrawer() {
     const count = state.cart.length;
-
-    if (count === 0) {
-      els.cartDrawer.classList.add('hidden');
-      if (els.cartItems) els.cartItems.replaceChildren();
-      return;
-    }
 
     let originalTotal = 0;
     let finalTotal = 0;
@@ -419,8 +449,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
     els.cartCount.textContent = count;
     els.cartOriginalTotal.textContent = `¥${NumUtils.format(originalTotal)}`;
-    els.cartFinalTotal.innerHTML = `¥${NumUtils.format(finalTotal)} <small id="cartTaxNote">${payNote()}</small>`;
+    els.cartFinalTotal.textContent = `¥${NumUtils.format(finalTotal)}`;
     els.cartSaveTotal.textContent = `🉐 -¥${NumUtils.format(saveTotal)}`;
+
+    if (count === 0) {
+      els.cartDrawer.classList.add('hidden');
+      if (els.cartItems) els.cartItems.replaceChildren();
+      return;
+    }
 
     if (els.cartItems) {
       els.cartItems.replaceChildren();
@@ -429,7 +465,7 @@ document.addEventListener('DOMContentLoaded', () => {
         li.className = 'cart-item';
         const label = document.createElement('span');
         label.className = 'cart-item-label';
-        label.textContent = `¥${NumUtils.format(item.price)} / ${formatRateLabel(item.percent, item.extraDisc)} → ¥${NumUtils.format(item.finalPrice)}`;
+        label.textContent = `${item.date || ''}${item.shopName ? ' · '+item.shopName : ''} / ¥${NumUtils.format(item.price)} / ${formatRateLabel(item.percent, item.extraDisc)} → ¥${NumUtils.format(item.finalPrice)}`;
         const del = document.createElement('button');
         del.type = 'button';
         del.className = 'btn-cart-remove';
@@ -519,15 +555,14 @@ document.addEventListener('DOMContentLoaded', () => {
     CONFIG.DISCOUNTS.forEach(percent => {
       const li = document.createElement('li');
       li.className = 'discount-item';
-      li.tabIndex = 0;
       li.dataset.percent = percent;
 
       li.innerHTML = `
-        <div class="col-rate" data-field="rate">${percent}<span class="unit">%OFF</span></div>
+        <button type="button" class="col-rate btn-select-rate" data-percent="${percent}" data-field="rate" aria-label="${percent}%を選ぶ">${percent}<span class="unit">%OFF</span></button>
         <div class="col-price" data-field="price"><span>¥</span>0</div>
         <div class="col-save-wrapper">
           <div class="col-save" data-field="save">🉐 -0</div>
-          <button type="button" class="btn-add-cart" data-percent="${percent}" aria-label="${percent}%オフの支払額を買い物かごに追加">🛒</button>
+
         </div>
       `;
       fragment.appendChild(li);
@@ -536,8 +571,9 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   function render() {
-    // 0円以下ならEmpty表示
-    if (state.price <= 0) {
+    setInputError(els.extraDisc, 'extraError', state.isExtraEnabled && !state.extraValid, '追加割引は0〜99の数値で入力してください。');
+    renderCustomRow();
+    if (!state.priceEntered || !state.priceValid || (state.isExtraEnabled && !state.extraValid)) {
       els.resultList.style.display = 'none';
       els.emptyState.style.display = 'block';
       updateCartDrawer();
@@ -573,7 +609,11 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   function renderCustomRow() {
-    if (state.customRate === null || state.price <= 0) {
+    const copyButton = document.getElementById('copyPriceBtn');
+    const selected = document.getElementById('selectedRate');
+    if (selected) selected.textContent = state.customRate === null ? '割引率を選ぶ' : formatRateLabel(state.customRate, state.isExtraEnabled ? state.extraDisc : 0);
+    if (copyButton) copyButton.disabled = !canCalculate();
+    if (!canCalculate()) {
       els.customPrice.textContent = '-';
       els.customSave.textContent = '-';
       els.customPrice.disabled = true;

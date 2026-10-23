@@ -7,7 +7,8 @@
   const Zip = window.ScreenshotCropZip;
   const DeviceProfiles = window.ScreenshotCropDeviceProfiles;
   const Presets = window.ScreenshotCropPresets;
-  if (!Core || !ImageOps || !Preview || !Zip || !DeviceProfiles || !Presets) {
+  const Redaction = window.ScreenshotCropRedaction;
+  if (!Core || !ImageOps || !Preview || !Zip || !DeviceProfiles || !Presets || !Redaction) {
     throw new Error('Screenshot crop dependencies failed to load');
   }
 
@@ -40,6 +41,7 @@
     closestEdge: findClosestEdge,
   } = Preview;
   const { createStoredZip } = Zip;
+  const { normalizeRedaction, cloneRedactions, applyRedactions, drawDraft: drawRedactionDraft } = Redaction;
   const {
     loadProfiles,
     saveProfiles,
@@ -60,6 +62,8 @@
   let interactiveNeedsControls = false;
   let lastBatchScrolledIndex = -1;
   let profileToastTimer = 0;
+  let saveInProgress = false;
+  let exportMessageVersion = 0;
 
 
 
@@ -73,6 +77,9 @@
     enabledEdges: defaultEdges(),
     compareOriginal: false,
     draggingEdge: '',
+    redactions: [],
+    redactionTool: '',
+    redactionDraft: null,
     manualTouched: false,
     activationToken: 0,
     profiles: loadProfiles(),
@@ -119,6 +126,12 @@
       resultSize: document.getElementById('resultSize'),
       removedSummary: document.getElementById('removedSummary'),
       compareButton: document.getElementById('compareButton'),
+      redactionPanel: document.getElementById('redactionPanel'),
+      redactionCount: document.getElementById('redactionCount'),
+      redactionHelp: document.getElementById('redactionHelp'),
+      redactionToolButtons: [...document.querySelectorAll('[data-redaction-tool]')],
+      undoRedactionButton: document.getElementById('undoRedactionButton'),
+      clearRedactionButton: document.getElementById('clearRedactionButton'),
       autoAgainButton: document.getElementById('autoAgainButton'),
       safeMargin: document.getElementById('safeMargin'),
       modeButtons: [...document.querySelectorAll('.mode-button')],
@@ -142,6 +155,7 @@
       shareButton: document.getElementById('shareButton'),
       quickActionDock: document.getElementById('quickActionDock'),
       quickSaveButton: document.getElementById('quickSaveButton'),
+      quickSaveMessage: document.getElementById('quickSaveMessage'),
       quickCopyButton: document.getElementById('quickCopyButton'),
       quickShareButton: document.getElementById('quickShareButton'),
       exportMessage: document.getElementById('exportMessage'),
@@ -153,6 +167,7 @@
     updateCompareState();
     updateBatchUI();
     updatePresetUI();
+    updateRedactionUI();
     updateQuickActions();
 
     els.fileInput.addEventListener('change', (event) => {
@@ -297,8 +312,24 @@
 
     els.compareButton.addEventListener('click', () => {
       state.compareOriginal = !state.compareOriginal;
+      state.redactionDraft = null;
       updateCompareState();
+      updateRedactionUI();
       drawPreview();
+    });
+
+    els.redactionToolButtons.forEach((button) => {
+      button.addEventListener('click', () => setRedactionTool(button.dataset.redactionTool || ''));
+    });
+    els.undoRedactionButton?.addEventListener('click', undoRedaction);
+    els.clearRedactionButton?.addEventListener('click', clearRedactions);
+    els.redactionPanel?.addEventListener('toggle', () => {
+      if (!els.redactionPanel.open) {
+        state.redactionTool = '';
+        state.redactionDraft = null;
+        updateRedactionUI();
+        drawPreview();
+      }
     });
 
     els.previewCanvas.addEventListener('pointerdown', onPointerDown);
@@ -350,6 +381,7 @@
       profileMatch: null,
       inheritedBatchAdjustment: false,
       appliedPresetSlot: 0,
+      redactions: [],
       manualTouched: false,
       visited: false,
       saved: false,
@@ -432,6 +464,9 @@
     state.crop = { top: 0, right: 0, bottom: 0, left: 0 };
     state.detected = 'generic';
     state.compareOriginal = false;
+    state.redactions = [];
+    state.redactionTool = '';
+    state.redactionDraft = null;
     state.selectedPresetSlot = 0;
     state.lastManualBatchAdjustment = null;
     invalidatePreviewCache();
@@ -732,6 +767,9 @@
       state.detected = item.detected;
       state.crop = cloneCrop(item.crop);
       state.enabledEdges = cloneEdges(item.enabledEdges || defaultEdges());
+      state.redactions = cloneRedactions(item.redactions || []);
+      state.redactionTool = '';
+      state.redactionDraft = null;
       state.manualTouched = Boolean(item.manualTouched);
 
       configureRanges();
@@ -746,6 +784,7 @@
       drawPreview();
       updateBatchUI();
       updatePresetUI();
+      updateRedactionUI();
       updateQuickActions();
       setMessage(els.uploadMessage, '');
 
@@ -773,6 +812,7 @@
     if (!item || !state.image) return;
     item.crop = cloneCrop(state.crop);
     item.enabledEdges = cloneEdges(state.enabledEdges);
+    item.redactions = cloneRedactions(state.redactions);
     item.manualTouched = Boolean(state.manualTouched);
     if (item.manualTouched) item.inheritedBatchAdjustment = false;
     item.detected = state.detected;
@@ -879,16 +919,8 @@
 
     if (!state.image) {
       els.readyHint.textContent = '自動調整中…';
-    } else if (state.manualTouched) {
-      els.readyHint.textContent = '調整済み。このまま保存できます';
-    } else if (currentItem()?.inheritedBatchAdjustment) {
-      els.readyHint.textContent = '前の画像で調整した位置に合わせました。そのまま微調整できます';
-    } else if (currentItem()?.profileMatch?.matchType === 'profile') {
-      els.readyHint.textContent = '前回使った切り取り位置に合わせました。そのまま保存できます';
-    } else if (state.detected === 'generic') {
-      els.readyHint.textContent = '自動候補を表示しました。黄色いバーだけ確認してください';
     } else {
-      els.readyHint.textContent = '自動調整済み。このまま保存できます';
+      els.readyHint.textContent = '切り取り位置を確認して保存';
     }
   }
 
@@ -1245,7 +1277,15 @@
     ctx.drawImage(base, 0, 0);
 
     if (state.compareOriginal) return;
+    applyRedactions(canvas, state.redactions, {
+      crop: { top: 0, right: 0, bottom: 0, left: 0 },
+      sourceWidth: imageW,
+      sourceHeight: imageH,
+    });
     drawCropOverlay(ctx, drawW, drawH, scaleCrop(state.crop, scale), state.enabledEdges);
+    if (state.redactionDraft) {
+      drawRedactionDraft(ctx, state.redactionDraft, imageW, imageH, drawW, drawH);
+    }
   }
 
   function pointerPosition(event) {
@@ -1256,8 +1296,89 @@
     };
   }
 
+  function pointerImagePosition(event) {
+    const pos = pointerPosition(event);
+    return {
+      x: clamp((pos.x / Math.max(1, els.previewCanvas.width)) * state.image.naturalWidth, 0, state.image.naturalWidth),
+      y: clamp((pos.y / Math.max(1, els.previewCanvas.height)) * state.image.naturalHeight, 0, state.image.naturalHeight),
+    };
+  }
+
+  function setRedactionTool(mode) {
+    const next = mode === 'black' || mode === 'blur' ? mode : '';
+    state.redactionTool = state.redactionTool === next ? '' : next;
+    state.redactionDraft = null;
+    if (state.redactionTool) state.compareOriginal = false;
+    updateCompareState();
+    updateRedactionUI();
+    drawPreview();
+  }
+
+  function updateRedactionUI() {
+    const count = state.redactions.length;
+    els.redactionToolButtons?.forEach((button) => {
+      const active = button.dataset.redactionTool === state.redactionTool && !state.compareOriginal;
+      button.classList.toggle('is-active', active);
+      button.setAttribute('aria-pressed', String(active));
+    });
+
+    if (els.redactionCount) {
+      els.redactionCount.hidden = count === 0;
+      els.redactionCount.textContent = `${count}件`;
+    }
+    if (els.undoRedactionButton) els.undoRedactionButton.disabled = count === 0;
+    if (els.clearRedactionButton) els.clearRedactionButton.disabled = count === 0;
+
+    if (els.redactionHelp) {
+      els.redactionHelp.textContent = state.compareOriginal
+        ? '元画像の比較中です。比較を閉じると隠す操作へ戻れます。'
+        : state.redactionTool
+          ? '画像上で隠したい範囲をなぞってください。続けて複数箇所を追加できます。'
+          : '隠し方を選び、画像上で隠したい範囲をなぞります。';
+    }
+
+    if (els.canvasHelp) {
+      els.canvasHelp.textContent = state.redactionTool && !state.compareOriginal
+        ? '画像上で隠したい範囲をなぞってください'
+        : '黄色いバーを動かして調整できます';
+    }
+  }
+
+  function undoRedaction() {
+    if (!state.redactions.length) return;
+    state.redactions.pop();
+    state.redactionDraft = null;
+    markCurrentItemUnsaved();
+    storeCurrentItemState();
+    updateRedactionUI();
+    updateBatchUI();
+    setMessage(els.exportMessage, '');
+    drawPreview();
+  }
+
+  function clearRedactions() {
+    if (!state.redactions.length) return;
+    state.redactions = [];
+    state.redactionDraft = null;
+    markCurrentItemUnsaved();
+    storeCurrentItemState();
+    updateRedactionUI();
+    updateBatchUI();
+    setMessage(els.exportMessage, '');
+    drawPreview();
+  }
+
   function onPointerDown(event) {
     if (!state.image) return;
+
+    if (state.redactionTool && !state.compareOriginal) {
+      const start = pointerImagePosition(event);
+      state.redactionDraft = { start, end: start, mode: state.redactionTool };
+      els.previewCanvas.setPointerCapture?.(event.pointerId);
+      event.preventDefault();
+      return;
+    }
+
     const edge = findClosestEdge({
       position: pointerPosition(event),
       canvasWidth: els.previewCanvas.width,
@@ -1275,7 +1396,16 @@
   }
 
   function onPointerMove(event) {
-    if (!state.image || !state.draggingEdge) return;
+    if (!state.image) return;
+
+    if (state.redactionDraft) {
+      state.redactionDraft.end = pointerImagePosition(event);
+      scheduleInteractiveRender(false);
+      event.preventDefault();
+      return;
+    }
+
+    if (!state.draggingEdge) return;
     const pos = pointerPosition(event);
     const imageX = (pos.x / els.previewCanvas.width) * state.image.naturalWidth;
     const imageY = (pos.y / els.previewCanvas.height) * state.image.naturalHeight;
@@ -1307,6 +1437,34 @@
   }
 
   function onPointerUp(event) {
+    if (state.redactionDraft) {
+      const draft = state.redactionDraft;
+      state.redactionDraft = null;
+      const redactionItem = normalizeRedaction(
+        draft.start,
+        draft.end,
+        state.image.naturalWidth,
+        state.image.naturalHeight,
+        draft.mode,
+      );
+
+      if (redactionItem) {
+        state.redactions.push(redactionItem);
+        markCurrentItemUnsaved();
+        storeCurrentItemState();
+        setMessage(els.exportMessage, '');
+      }
+
+      flushInteractiveRender();
+      updateRedactionUI();
+      updateBatchUI();
+      drawPreview();
+      if (els.previewCanvas.hasPointerCapture?.(event.pointerId)) {
+        els.previewCanvas.releasePointerCapture(event.pointerId);
+      }
+      return;
+    }
+
     if (!state.draggingEdge) return;
     flushInteractiveRender();
     updateBatchUI();
@@ -1350,9 +1508,25 @@
   }
 
   function setMessage(element, message = '', tone = '') {
+    // 保存結果は編集や別操作の案内が出た時点で取り下げる。
+    if (element === els.exportMessage) exportMessageVersion += 1;
+    if (element === els.exportMessage && els.quickSaveMessage) {
+      els.quickSaveMessage.textContent = '';
+      els.quickSaveMessage.hidden = true;
+      delete els.quickSaveMessage.dataset.tone;
+    }
     element.textContent = message;
     if (tone) element.dataset.tone = tone;
     else delete element.dataset.tone;
+  }
+
+  function setSaveMessage(message, shortMessage, tone) {
+    setMessage(els.exportMessage, message, tone);
+    if (!els.quickSaveMessage) return;
+    // 読み上げは既存の exportMessage 一か所に任せる。
+    els.quickSaveMessage.textContent = shortMessage;
+    els.quickSaveMessage.dataset.tone = tone;
+    els.quickSaveMessage.hidden = false;
   }
 
   async function pasteFromClipboard() {
@@ -1502,7 +1676,7 @@
         state.image,
         item.file,
         state.crop,
-        { mime: 'image/png' },
+        { mime: 'image/png', redactions: state.redactions },
       ).then(({ blob }) => blob);
       const clipboardItem = new window.ClipboardItem({ 'image/png': blobPromise });
       await navigator.clipboard.write([clipboardItem]);
@@ -1527,7 +1701,11 @@
     if (!item.crop || item.autoDirty || !item.width || !item.height) {
       computeAutoForItem(item, image);
     }
-    return { image, crop: cloneCrop(item.crop) };
+    return {
+      image,
+      crop: cloneCrop(item.crop),
+      redactions: cloneRedactions(item.redactions || []),
+    };
   }
 
   function triggerDownload(blob, name) {
@@ -1543,16 +1721,25 @@
 
   async function saveImage() {
     const item = currentItem();
-    if (!item || !state.image) return;
+    if (!item || !state.image || saveInProgress) return;
+    saveInProgress = true;
 
     storeCurrentItemState();
     const saveButtons = [els.saveButton, els.quickSaveButton];
     setButtonsBusy(saveButtons, true, '作成中…');
-    setMessage(els.exportMessage, '保存用画像を作っています…', 'info');
+    setSaveMessage('保存用画像を作っています…', '保存用画像を作成中…', 'info');
+    const messageVersion = exportMessageVersion;
 
     try {
-      const { blob, name } = await exportCroppedBlob(state.image, item.file, state.crop);
+      const { blob, name } = await exportCroppedBlob(
+        state.image,
+        item.file,
+        state.crop,
+        { redactions: state.redactions },
+      );
       triggerDownload(blob, name);
+      // 保存中に編集・画像切替・別操作があれば、その画面の案内を優先する。
+      if (messageVersion !== exportMessageVersion || currentItem() !== item) return;
       rememberSuccessfulItems([item]);
       item.saved = true;
       updateBatchUI();
@@ -1560,15 +1747,23 @@
       const hasNext = state.items.length > 1 && state.currentIndex < state.items.length - 1;
       if (hasNext) {
         const nextIndex = state.currentIndex + 1;
-        await activateItem(nextIndex);
-        setMessage(els.exportMessage, `${nextIndex}枚目を保存しました。次の画像です。`, 'success');
+        const nextItem = state.items[nextIndex];
+        const nextToken = state.activationToken + 1;
+        const activation = activateItem(nextIndex);
+        const nextMessageVersion = exportMessageVersion;
+        await activation;
+        if (currentItem() !== nextItem || state.activationToken !== nextToken
+          || exportMessageVersion !== nextMessageVersion) return;
+        setSaveMessage(`${nextIndex}枚目の保存用画像を作成しました。次の画像です。`, `${nextIndex}枚目を作成済み・次の画像へ`, 'success');
       } else {
-        setMessage(els.exportMessage, '保存用画像を作成しました。元画像は変更していません。', 'success');
+        setSaveMessage('保存用画像を作成しました。元画像は変更していません。', '保存用画像を作成しました', 'success');
       }
     } catch (error) {
       console.error(error);
-      setMessage(els.exportMessage, '画像の書き出しに失敗しました。切る範囲を少し戻して、もう一度お試しください。', 'error');
+      if (messageVersion !== exportMessageVersion || currentItem() !== item) return;
+      setSaveMessage('画像の書き出しに失敗しました。切る範囲を少し戻して、もう一度お試しください。', '保存失敗・範囲を戻して再試行', 'error');
     } finally {
+      saveInProgress = false;
       setButtonsBusy(saveButtons, false);
       updateBatchUI();
     }
@@ -1599,8 +1794,8 @@
       for (let index = 0; index < state.items.length; index += 1) {
         const item = state.items[index];
         els.saveAllIndividualButton.textContent = `準備中 ${index + 1} / ${state.items.length}`;
-        const { image, crop } = await prepareItemForExport(item);
-        const result = await exportCroppedBlob(image, item.file, crop);
+        const { image, crop, redactions } = await prepareItemForExport(item);
+        const result = await exportCroppedBlob(image, item.file, crop, { redactions });
         const prefix = `${String(index + 1).padStart(2, '0')}-`;
         downloads.push({
           name: outputName(item.file, result.mime, prefix),
@@ -1649,8 +1844,8 @@
       for (let index = 0; index < state.items.length; index += 1) {
         const item = state.items[index];
         els.saveAllButton.textContent = `ZIPを作成中 ${index + 1} / ${state.items.length}`;
-        const { image, crop } = await prepareItemForExport(item);
-        const result = await exportCroppedBlob(image, item.file, crop);
+        const { image, crop, redactions } = await prepareItemForExport(item);
+        const result = await exportCroppedBlob(image, item.file, crop, { redactions });
         const prefix = `${String(index + 1).padStart(2, '0')}-`;
         entries.push({
           name: outputName(item.file, result.mime, prefix),
@@ -1688,7 +1883,12 @@
     setMessage(els.exportMessage, '共有用画像を作っています…', 'info');
 
     try {
-      const { blob, mime, name } = await exportCroppedBlob(state.image, item.file, state.crop);
+      const { blob, mime, name } = await exportCroppedBlob(
+        state.image,
+        item.file,
+        state.crop,
+        { redactions: state.redactions },
+      );
       const file = new File([blob], name, { type: mime });
       if (navigator.canShare && !navigator.canShare({ files: [file] })) {
         throw new Error('cannot-share-files');

@@ -6,12 +6,35 @@ const root=path.resolve('public-build');const given=process.argv[2];let server;
 let base=given;if(!base){server=createServer((req,res)=>{const u=new URL(req.url,'http://localhost');let f=path.resolve(root,'.'+decodeURIComponent(u.pathname));if(f!==root&&!f.startsWith(root+path.sep)){res.writeHead(403).end();return;}if(fs.existsSync(f)&&fs.statSync(f).isDirectory())f=path.join(f,'index.html');if(!fs.existsSync(f)){res.writeHead(404).end();return;}const types={'.html':'text/html; charset=utf-8','.js':'text/javascript','.css':'text/css','.svg':'image/svg+xml','.json':'application/json','.webmanifest':'application/manifest+json'};res.setHeader('Content-Type',types[path.extname(f)]||'application/octet-stream');res.end(fs.readFileSync(f));});await new Promise(r=>server.listen(0,'127.0.0.1',r));base='http://127.0.0.1:'+server.address().port;}
 const artifactDir=path.resolve(process.env.KATAKATA_BROWSER_ARTIFACTS||path.join(os.tmpdir(),'katakata-local-tools-browser'));fs.mkdirSync(artifactDir,{recursive:true});
 const browser=await chromium.launch({headless:true});
+// 買物メモは通常の文書内に置き、旧ドロワーの移動指定による左切れも検出する。
+async function verifyDiscountMemo(page, width) {
+  await page.goto(base+'/discount-calc/', {waitUntil:'networkidle'});
+  assert.equal(await page.locator('#cartDrawer').isVisible(), false);
+  await page.locator('#price').fill('1000');
+  await page.locator('#customRate').fill('20');
+  await page.locator('#memoShop').fill('検証用の店');
+  await page.locator('#memoDate').fill('2026-10-11');
+  await page.locator('#btnCartCustom').click();
+  assert.match(await page.locator('#cartItems').textContent(), /検証用の店/);
+  assert.match(await page.locator('#cartFinalTotal').textContent(), /800/);
+  await page.reload({waitUntil:'networkidle'});
+  assert.match(await page.locator('#cartItems').textContent(), /2026-10-11/);
+  const geometry=await page.locator('#cartDrawer,#cartItems,#cartClearBtn').evaluateAll(nodes=>nodes.map(node=>{const rect=node.getBoundingClientRect();return {id:node.id,left:rect.left,right:rect.right,width:rect.width};}));
+  for(const rect of geometry){assert.ok(rect.width>0, rect.id+' has visible width');assert.ok(rect.left>=0&&rect.right<=width, rect.id+' stays inside viewport');}
+  await page.locator('#cartDrawer').screenshot({path:path.join(artifactDir,'discount-memo-'+width+'.png')});
+  page.once('dialog', dialog=>dialog.accept());
+  await page.locator('#cartClearBtn').click();
+  assert.equal(await page.locator('#cartDrawer').isVisible(), false);
+  console.log(JSON.stringify({discountMemo:'PASS',width,geometry,storageReload:'PASS',clear:'PASS'}));
+}
 try{if(!given){const {verifyRootUpdate}=await import('./pwa-update-e2e.mjs');await verifyRootUpdate(browser,root);}for(const width of [360,390,1366]){const page=await browser.newPage({viewport:{width,height:850}});const errors=[];const missing=[];page.on('pageerror',e=>errors.push(e.message));page.on('response',r=>{if(r.status()>=400&&r.url().startsWith(base))missing.push(r.url());});
 await page.goto(base+'/moyamoya-sorter/',{waitUntil:'networkidle'});await page.clock.install();await page.locator('#moyamoyaText').fill('メール返信 <img src=x onerror="window.__xss=true">');await page.locator('#sortBtn').click();await page.locator('#resultSection').waitFor({state:'visible'});if(width===360){const analyticsEvents=await page.evaluate(()=>window.dataLayer.map(entry=>Array.from(entry)).filter(entry=>entry[0]==='event'));assert.ok(analyticsEvents.some(entry=>entry[1]==='tool_start'&&entry[2]?.tool_id==='moyamoya-sorter'));assert.ok(analyticsEvents.some(entry=>entry[1]==='tool_action'&&entry[2]?.action_id==='sort'));const analyticsPayload=JSON.stringify(analyticsEvents);assert.equal(analyticsPayload.includes('メール返信'),false);assert.equal(analyticsPayload.includes('<img'),false);}assert.equal(await page.evaluate(()=>Boolean(window.__xss)),false);assert.equal(await page.locator('#resultSection img').count(),0);await page.locator('#startTimerBtn').click();await page.clock.fastForward(6100);assert.notEqual(await page.locator('#timerDigits').textContent(),'02:00');await page.locator('#startTimerBtn').click();const paused=await page.locator('#timerDigits').textContent();await page.clock.fastForward(8000);assert.equal(await page.locator('#timerDigits').textContent(),paused);await page.locator('#resetTimerBtn').click();assert.equal(await page.locator('#timerDigits').textContent(),'02:00');assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),true);await page.screenshot({path:path.join(artifactDir,'moyamoya-'+width+'.png'),fullPage:true});
 await page.goto(base+'/chiritsumo-calc/',{waitUntil:'networkidle'});while(await page.locator('.item-switch:checked').count())await page.locator('.item-switch:checked').first().locator('..').click();await page.locator('#toggleCustomBtn').click();await page.locator('#customName').fill('<img src=x onerror=alert(1)>');await page.locator('#customAmount').fill('1000');await page.locator('#customFreq').selectOption('monthly');await page.locator('#addCustomBtn').click();assert.equal(await page.locator('#expenseGrid img').count(),0);assert.equal(await page.locator('#monthlyStat').textContent(),'¥1,000');await page.locator('[data-period="1y"]').click();await page.waitForFunction(()=>document.querySelector('#summaryAmount').textContent==='12,000');await page.locator('#investToggle').locator('..').click();await page.waitForFunction(()=>document.querySelector('#summaryAmount').textContent==='12,279');assert.equal(await page.locator('#investResultBanner').isVisible(),true);assert.match(await page.locator('#summaryPeriodLabel').textContent(),/仮定/);assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),true);await page.screenshot({path:path.join(artifactDir,'chiritsumo-'+width+'.png'),fullPage:true});await page.reload({waitUntil:'networkidle'});assert.equal(await page.locator('#monthlyStat').textContent(),'¥1,000');await page.locator('#toggleCustomBtn').click();await page.locator('#customName').fill('Enter確認');await page.locator('#customAmount').fill('1000');await page.locator('#customName').press('Enter');assert.equal(await page.locator('#monthlyStat').textContent(),'¥2,000');assert.equal(await page.locator('.expense-del-btn').count(),2);
 
+await verifyDiscountMemo(page, width);
 await page.addInitScript(()=>{
   window.__copiedImageTypes=[];
+  window.__lastClipboardBlob=null;
   window.__sharedFileCount=0;
   class TestClipboardItem{
     constructor(data){this.types=Object.keys(data);this.data=data;}
@@ -21,7 +44,10 @@ await page.addInitScript(()=>{
     read:async()=>[],
     write:async(items)=>{
       for(const item of items){
-        for(const value of Object.values(item.data||{})) await value;
+        for(const value of Object.values(item.data||{})){
+          const resolved=await value;
+          if(resolved instanceof Blob) window.__lastClipboardBlob=resolved;
+        }
       }
       window.__copiedImageTypes=items.flatMap(item=>item.types||[]);
     }
@@ -111,7 +137,7 @@ if(width===360){
 await page.locator('#fileInput').setInputFiles({name:'screenshot-test.png',mimeType:'image/png',buffer:screenshotPng});
 await page.locator('#editorSection').waitFor({state:'visible'});
 assert.match(await page.locator('#detectedLabel').textContent(),/スマホ縦長/);
-assert.match(await page.locator('#readyHint').textContent(),/保存できます/);
+assert.match(await page.locator('#readyHint').textContent(),/切り取り位置.*保存/);
 assert.equal(await page.locator('#batchProgress').isVisible(),false);
 assert.equal(await page.locator('.edge-toggle').count(),4);
 if(width<=390){
@@ -182,10 +208,77 @@ assert.equal(await page.locator('#edgeRight').isChecked(),false);
 assert.ok(Number(await page.locator('#cropTop').inputValue())>0);
 assert.equal(Number(await page.locator('#cropBottom').inputValue()),0);
 
+// Optional masking stays out of the way until explicitly opened.
+assert.equal(await page.locator('#redactionPanel').evaluate(el=>el.open),false);
+await page.locator('#redactionPanel > summary').click();
+assert.equal(await page.locator('#redactionPanel').evaluate(el=>el.open),true);
+
+await page.locator('[data-redaction-tool="black"]').click();
+assert.equal(await page.locator('[data-redaction-tool="black"]').getAttribute('aria-pressed'),'true');
+await page.locator('#previewCanvas').scrollIntoViewIfNeeded();
+const maskCanvasBox=await page.locator('#previewCanvas').boundingBox();
+assert.ok(maskCanvasBox);
+await page.mouse.move(maskCanvasBox.x+maskCanvasBox.width*0.30,maskCanvasBox.y+maskCanvasBox.height*0.35);
+await page.mouse.down();
+await page.mouse.move(maskCanvasBox.x+maskCanvasBox.width*0.55,maskCanvasBox.y+maskCanvasBox.height*0.45,{steps:4});
+await page.mouse.up();
+assert.equal((await page.locator('#redactionCount').textContent()).trim(),'1件');
+
+const blackMaskPixel=await page.locator('#previewCanvas').evaluate(canvas=>{
+  const data=canvas.getContext('2d').getImageData(
+    Math.round(canvas.width*0.40),
+    Math.round(canvas.height*0.40),
+    1,
+    1
+  ).data;
+  return Array.from(data);
+});
+assert.ok(blackMaskPixel[0]<40&&blackMaskPixel[1]<50&&blackMaskPixel[2]<60&&blackMaskPixel[3]>200);
+
+// The same mask is baked into the actual clipboard export, not preview-only.
+await page.locator(copySelector).click();
+await page.waitForFunction(()=>document.querySelector('#exportMessage').textContent.includes('コピーしました'));
+const exportedBlackMaskPixel=await page.evaluate(async()=>{
+  const blob=window.__lastClipboardBlob;
+  if(!(blob instanceof Blob)) return null;
+  const bitmap=await createImageBitmap(blob);
+  const canvas=document.createElement('canvas');
+  canvas.width=bitmap.width;
+  canvas.height=bitmap.height;
+  const ctx=canvas.getContext('2d');
+  ctx.drawImage(bitmap,0,0);
+  const cropTop=Number(document.querySelector('#cropTop').value)||0;
+  const cropLeft=Number(document.querySelector('#cropLeft').value)||0;
+  const x=Math.max(0,Math.min(canvas.width-1,Math.round(1080*0.40-cropLeft)));
+  const y=Math.max(0,Math.min(canvas.height-1,Math.round(2400*0.40-cropTop)));
+  return Array.from(ctx.getImageData(x,y,1,1).data);
+});
+assert.ok(exportedBlackMaskPixel);
+assert.ok(exportedBlackMaskPixel[0]<40&&exportedBlackMaskPixel[1]<50&&exportedBlackMaskPixel[2]<60&&exportedBlackMaskPixel[3]>200);
+
+await page.locator('#undoRedactionButton').click();
+assert.equal(await page.locator('#redactionCount').isHidden(),true);
+
+await page.locator('[data-redaction-tool="blur"]').click();
+assert.equal(await page.locator('[data-redaction-tool="blur"]').getAttribute('aria-pressed'),'true');
+await page.locator('#previewCanvas').scrollIntoViewIfNeeded();
+const blurCanvasBox=await page.locator('#previewCanvas').boundingBox();
+assert.ok(blurCanvasBox);
+await page.mouse.move(blurCanvasBox.x+blurCanvasBox.width*0.30,blurCanvasBox.y+blurCanvasBox.height*0.35);
+await page.mouse.down();
+await page.mouse.move(blurCanvasBox.x+blurCanvasBox.width*0.55,blurCanvasBox.y+blurCanvasBox.height*0.45,{steps:4});
+await page.mouse.up();
+assert.equal((await page.locator('#redactionCount').textContent()).trim(),'1件');
+
+await page.locator('#clearRedactionButton').click();
+assert.equal(await page.locator('#redactionCount').isHidden(),true);
+await page.locator('#redactionPanel > summary').click();
+assert.equal(await page.locator('#redactionPanel').evaluate(el=>el.open),false);
+
 // Explicit presets stay separate from automatic device learning.
 assert.equal(await page.locator('.preset-slot').count(),3);
 assert.equal(await page.locator('#presetSlot1 [data-preset-state]').textContent(),'＋');
-await page.locator('.advanced-panel > summary').click();
+await page.locator('#advancedCropPanel > summary').click();
 await page.locator('#cropTop').evaluate(el=>{el.value='137';el.dispatchEvent(new Event('input',{bubbles:true}));});
 assert.equal(await page.locator('#cropTopValue').textContent(),'137px');
 await page.locator('#presetSlot1').click();
@@ -235,8 +328,8 @@ assert.equal(await presetPage.locator('#cropTopValue').textContent(),'143px');
 await presetPage.close();
 
 await page.locator('#presetCloseButton').click();
-if(await page.locator('.advanced-panel').evaluate(el=>el.open)){
-  await page.locator('.advanced-panel > summary').click();
+if(await page.locator('#advancedCropPanel').evaluate(el=>el.open)){
+  await page.locator('#advancedCropPanel > summary').click();
 }
 
 // Add two more screenshots. Multi-image controls appear only now.
@@ -282,7 +375,7 @@ assert.equal(await page.locator('.batch-item[data-status="adjusted"]').count(),1
 // The most recent manual px adjustment is inherited by an untouched image of the same kind.
 await page.locator('#reviewNextButton').click();
 await page.waitForFunction(()=>document.querySelector('#batchProgress').textContent.includes('2枚目'));
-await page.locator('.advanced-panel > summary').click();
+await page.locator('#advancedCropPanel > summary').click();
 await page.locator('#cropTop').evaluate(el=>{el.value='123';el.dispatchEvent(new Event('input',{bubbles:true}));});
 assert.equal(await page.locator('#cropTopValue').textContent(),'123px');
 await page.locator('.batch-item').nth(2).click();
@@ -290,7 +383,7 @@ await page.waitForFunction(()=>document.querySelector('#batchProgress').textCont
 assert.equal(await page.locator('#cropTopValue').textContent(),'123px');
 assert.equal(await page.locator('#reviewNextButton').isVisible(),false);
 assert.match(await page.locator('#batchReviewText').textContent(),/全3枚を確認済み/);
-assert.match(await page.locator('#readyHint').textContent(),/前の画像で調整した位置/);
+assert.match(await page.locator('#readyHint').textContent(),/切り取り位置.*保存/);
 
 // A later manual adjustment becomes the new recent value, but does not overwrite an already manually adjusted image.
 await page.locator('#cropTop').evaluate(el=>{el.value='127';el.dispatchEvent(new Event('input',{bubbles:true}));});
@@ -395,7 +488,7 @@ if (!given) {
       name:'offline-test.png',mimeType:'image/png',buffer:Buffer.from(png,'base64')
     });
     await pwaPage.locator('#editorSection').waitFor({state:'visible'});
-    await pwaPage.waitForFunction(()=>document.querySelector('#readyHint').textContent.includes('保存できます'));
+    await pwaPage.waitForFunction(()=>/切り取り位置.*保存/.test(document.querySelector('#readyHint').textContent));
     const [download] = await Promise.all([
       pwaPage.waitForEvent('download'),
       pwaPage.locator('#quickSaveButton').click()
@@ -464,6 +557,24 @@ if (!given) {
       assert.equal(await page.title(), first, app+': 同じ入口をオフライン表示');
       assert.equal(await page.evaluate(() => localStorage.getItem('pwa-audit-sentinel')), 'keep');
       assert.ok((await page.locator('body').textContent()).trim().length > 20);
+      if (app === '/lab-tools/gravity-todo/') {
+        // Canvasより上の常設ボタンを実クリックし、pointer-events継承の回帰を検出する。
+        await page.waitForFunction(() => document.querySelector('#task-count').textContent === '3');
+        await page.locator('#task-input').fill('履歴ボタン検証');
+        await page.locator('#task-input').press('Enter');
+        const task = page.locator('.task-list-item').filter({hasText:'履歴ボタン検証'});
+        await task.locator('[data-action="destroy"]').click();
+        await page.locator('#undo-btn').click();
+        await task.waitFor({state:'visible'});
+        await page.locator('#redo-btn').click();
+        await task.waitFor({state:'detached'});
+        await page.locator('#undo-btn').click();
+        await task.waitFor({state:'visible'});
+          await page.locator('#save-status').waitFor({state:'hidden'});
+        await page.reload({waitUntil:'domcontentloaded'});
+        await task.waitFor({state:'visible'});
+        assert.equal(await page.locator('#task-count').textContent(), '1', 'デモを保存せず実タスクだけ復元');
+      }
       console.log(JSON.stringify({app,offlineLaunch:'PASS',stalledAnalytics:'PASS',storagePreserved:'PASS'}));
     } finally { await context.close(); }
   }

@@ -1,5 +1,5 @@
 const APP_SHELL_CACHE_PREFIX = 'gravity-todo-app-v';
-const APP_SHELL_CACHE = 'gravity-todo-app-v21';
+const APP_SHELL_CACHE = 'gravity-todo-app-v24';
 const APP_SHELL_URLS = [
   './',
   './index.html',

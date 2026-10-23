@@ -46,6 +46,7 @@ function loadPasswordVault(storage) {
     console,
     crypto: browserCrypto,
     localStorage: storage,
+    navigator: require('./helpers/vault-locks.cjs')(storage),
     TextEncoder,
     TextDecoder,
     Uint8Array,
@@ -153,7 +154,7 @@ test('壊れたIVやsaltは暗号処理に渡す前に拒否する', async () =>
   }
 
   {
-    const badSalt = { ...encryptedFixture, [VAULT_SALT_KEY]: 'not-hex' };
+    const badSalt = { ...encryptedFixture, [VAULT_STORAGE_KEY]: JSON.stringify({ ...JSON.parse(encryptedFixture[VAULT_STORAGE_KEY]), salt: 'not-hex' }) };
     const storage = createMemoryStorage(badSalt);
     const { PasswordVault } = loadPasswordVault(storage);
     const vault = new PasswordVault();
@@ -161,12 +162,12 @@ test('壊れたIVやsaltは暗号処理に渡す前に拒否する', async () =>
   }
 });
 
-test('暗号化export/importは平文に戻さず移送でき、import後は必ずロックされる', () => {
+test('暗号化export/importは復号検証後に暗号文だけを保存し、import後は必ずロックされる', async () => {
   const destination = createMemoryStorage();
   const { PasswordVault } = loadPasswordVault(destination);
   const vault = new PasswordVault();
 
-  vault.importEncrypted(exportedFixture);
+  await vault.importEncrypted(exportedFixture, MASTER_PASSWORD);
 
   assert.equal(vault.isUnlocked, false);
   assert.equal(vault.exists(), true);
@@ -181,8 +182,8 @@ test('短すぎるマスターパスワードと不正なimport形式を拒否�
   const vault = new PasswordVault();
 
   await assert.rejects(() => vault.setup('too-short'), /12文字以上/);
-  assert.throws(() => vault.importEncrypted('not-json'), /JSON形式が不正/);
-  assert.throws(
+  await assert.rejects(() => vault.importEncrypted('not-json', MASTER_PASSWORD), /JSON形式が不正/);
+  await assert.rejects(
     () => vault.importEncrypted(JSON.stringify({ salt: 'zz', data: { iv: '00', ct: '00' } })),
     /ソルト形式が不正/,
   );

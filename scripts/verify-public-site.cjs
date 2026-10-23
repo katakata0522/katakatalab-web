@@ -45,8 +45,18 @@ function createDefaultChecks(baseUrl, canonicalBaseUrl = baseUrl) {
       ],
     },
     {
+      path: '/privacy/releaseready/',
+      markers: [
+        `rel="canonical" href="${canonicalBaseUrl}/privacy/releaseready/"`,
+        '<h1>ReleaseReady プライバシーポリシー</h1>',
+      ],
+    },
+    {
       path: '/sitemap.xml',
-      markers: [`<loc>${canonicalBaseUrl}/guides/en/password-security.html</loc>`],
+      markers: [
+        `<loc>${canonicalBaseUrl}/guides/en/password-security.html</loc>`,
+        `<loc>${canonicalBaseUrl}/privacy/releaseready/</loc>`,
+      ],
     },
     {
       path: '/.user.ini',

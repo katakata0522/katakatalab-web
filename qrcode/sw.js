@@ -1,7 +1,7 @@
 'use strict';
 
 const CACHE_PREFIX = 'qrcode-';
-const STATIC_CACHE = 'qrcode-static-v24';
+const STATIC_CACHE = 'qrcode-static-v29';
 const RUNTIME_CACHE = 'qrcode-runtime-v1';
 
 const STATIC_ASSETS = [

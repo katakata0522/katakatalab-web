@@ -264,6 +264,11 @@ function checkDiscoveryPolicy() {
     }
 }
 
+// 単字の読みと送り仮名、意味の対象を辞書と照合した回帰検査。
+for (const [kanji, key, expected] of [['洞', 'y', 'ほら'], ['志', 'kun', 'こころざし'], ['芯', 'm', '植物の茎などの中心部分']]) {
+    if (findKanji(data.KANJI_ALL, kanji)?.[key] !== expected) reportError(`${kanji}: ${key} must be ${expected}`);
+}
+
 checkGlobalIntegrity();
 checkMode('LR', data.KANJI_LR, data.PARTS_L_LR, data.PARTS_R_LR);
 checkMode('UD', data.KANJI_UD, data.PARTS_L_UD, data.PARTS_R_UD);

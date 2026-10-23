@@ -71,14 +71,14 @@
     <div class="price-area">
       <div class="price-input-wrapper">
         <span class="currency-symbol">¥</span>
-        <input type="text" id="price" class="input-price" placeholder="0" inputmode="numeric" pattern="[0-9]*" aria-label="商品価格">
+        <input type="text" id="price" class="input-price" placeholder="0" inputmode="numeric" pattern="[0-9]*" aria-label="商品価格" aria-describedby="priceError"><p id="priceError" role="alert" hidden></p>
         <button type="button" id="clearBtn" class="btn-clear" aria-label="金額をクリア">×</button>
       </div>
       <div class="quick-add-buttons">
         <button type="button" data-add="10000" class="btn-haptic" aria-label="1万円追加">＋1万</button>
         <button type="button" data-add="1000" class="btn-haptic" aria-label="千円追加">＋1000</button>
         <button type="button" data-add="100" class="btn-haptic" aria-label="百円追加">＋100</button>
-        <button type="button" id="resetAllBtn" class="btn-haptic" aria-label="全設定をリセット" title="価格・税率・追加割引をすべてリセット" style="background:rgba(239,68,68,0.12);color:#f87171;border-color:rgba(239,68,68,0.3);">↩ 全リセット</button>
+        <button type="button" id="resetAllBtn" class="btn-haptic" aria-label="入力・計算設定をリセット" title="価格・税率・追加割引・カスタム割引率をリセット（買物メモは保持）" style="background:rgba(239,68,68,0.12);color:#f87171;border-color:rgba(239,68,68,0.3);">↩ 入力・計算設定をリセット</button>
       </div>
     </div>
     <div class="settings-grid">
@@ -103,7 +103,7 @@
         <div class="extra-input-row">
           <span>主割引のあと、さらに</span>
           <div class="suffix-input">
-            <input type="number" id="extraDisc" placeholder="0" inputmode="numeric" min="0" max="99" aria-label="追加の値引きパーセンテージ">
+            <input type="text" id="extraDisc" placeholder="0" inputmode="decimal" aria-label="追加の値引きパーセンテージ" aria-describedby="extraError"><p id="extraError" role="alert" hidden></p>
             <span class="suffix">% OFF</span>
           </div>
         </div>
@@ -112,13 +112,6 @@
   </section>
 
   <section class="result-list-area">
-    <div class="table-header">
-      <span>割引率</span>
-      <span class="text-right">支払額<small id="payHeaderNote">(税込)</small></span>
-      <span class="text-right">お得額</span>
-    </div>
-    <div class="tap-hint">※ 行をタップしてコピー / 🛒ボタンでかご追加</div>
-    
     <div class="quick-rate-buttons" role="group" aria-label="よく使う割引率のショートカット">
       <span class="quick-rate-label">⚡ よく使う割引:</span>
       <div class="quick-rate-chips">
@@ -129,21 +122,27 @@
       </div>
     </div>
     
-    <ul id="resultList" class="discount-list" aria-live="polite">
-      <!-- 自由入力行 -->
-      <li class="discount-item custom-row btn-haptic">
-        <div class="col-rate-input">
-          <input type="number" id="customRate" placeholder="?" inputmode="numeric" min="0" max="100" aria-label="任意の割引率" onclick="event.stopPropagation()">
-          <span class="unit">%</span>
-        </div>
-        <button type="button" class="col-price btn-copy-custom" id="customPrice" aria-label="任意割引率の税込価格をコピー" disabled>-</button>
-        <div class="col-save-wrapper">
-          <div class="col-save" id="customSave">-</div>
-          <button type="button" class="btn-add-cart" id="btnCartCustom" aria-label="買い物かごに追加" disabled>🛒</button>
-        </div>
-      </li>
-    </ul>
-    
+    <div class="selected-result">
+      <label for="customRate">任意の割引率（0〜100%）</label>
+      <input type="text" id="customRate" placeholder="例: 20" inputmode="decimal" aria-describedby="rateError">
+      <p id="rateError" role="alert" hidden></p>
+      <p id="selectedRate">割引率を選ぶ</p>
+      <h2>支払額 <small id="payHeaderNote">(税込)</small></h2>
+      <output id="customPrice" class="col-price">-</output>
+      <button type="button" id="copyPriceBtn" class="btn-cart-remove" disabled>金額をコピー</button>
+      <p id="customSave">-</p>
+      <div class="memo-fields">
+        <label>店名（任意）<input type="text" id="memoShop" maxlength="100" autocomplete="off"></label>
+        <label>日付<input type="date" id="memoDate"></label>
+      </div>
+      <button type="button" id="btnCartCustom" class="btn-add-cart" disabled>買物メモに追加</button>
+      <p id="memoStatus" role="status" aria-live="polite"></p>
+      <button type="button" id="memoRetry" hidden>同じメモの保存を再試行</button>
+      <p class="tax-help">メモはこの端末のブラウザ内に保存します。別のブラウザとは共有されず、サイトデータを削除すると失われます。</p>
+    </div>
+    <details class="tool-accordion"><summary>ほかの割引率を見る</summary>
+      <ul id="resultList" class="discount-list"></ul>
+    </details>
     <div id="emptyState" class="empty-state">
       <span class="icon-cart">🛒</span>
       <p>金額を入力してください</p>
@@ -155,10 +154,10 @@
     <div class="cart-drawer-inner">
       <div class="cart-drawer-header">
         <span class="cart-title">
-          <span class="cart-icon">🛒</span> 買い物かご 
+          <span class="cart-icon">🛒</span> 買物メモ
           <span id="cartCount" class="badge">0</span>
         </span>
-        <button type="button" id="cartClearBtn" class="btn-cart-clear" aria-label="買い物かごを空にする">🧹 空にする</button>
+        <button type="button" id="cartClearBtn" class="btn-cart-clear" aria-label="買物メモを空にする">🧹 空にする</button>
       </div>
       <ul id="cartItems" class="cart-items"></ul>
       
@@ -169,8 +168,8 @@
           <span id="cartOriginalTotal" class="total-value">¥0</span>
         </div>
         <div class="total-row main-total">
-          <span class="total-label">合計支払額</span>
-          <span id="cartFinalTotal" class="total-value">¥0 <small id="cartTaxNote">(税込)</small></span>
+          <span class="total-label">メモの支払額合計</span>
+          <span id="cartFinalTotal" class="total-value">¥0</span>
         </div>
         <div class="total-row save-total">
           <span class="total-label">お得額の合計</span>
@@ -188,7 +187,7 @@
     
     <div class="feature-box">
       <h3>💡 クイック使い方とポイント</h3>
-      <p>金額を入力するだけで割引後の価格を一括計算します。タイムセールなどの「レジにてさらに〇〇%OFF」の重ね割や、買い物かごでの合計額メモにも対応。計算はすべてブラウザ内で完結し、外部サーバーへ送信しません。</p>
+      <p>金額を入力するだけで割引後の価格を一括計算します。タイムセールなどの「レジにてさらに〇〇%OFF」の重ね割や、買物メモでの合計額メモにも対応。計算はすべてブラウザ内で完結し、外部サーバーへ送信しません。</p>
       <div style="display: flex; justify-content: space-between; align-items: center; gap: 1rem; flex-wrap: wrap; margin-top: 0.75rem;">
         <div>
           <strong style="color: var(--c-primary, #f59e0b);">📘 あわせて読みたい実践ガイド:</strong>

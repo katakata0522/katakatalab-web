@@ -1,6 +1,7 @@
 const fs = require('node:fs');
 const path = require('node:path');
 const crypto = require('node:crypto');
+const { verifyReleaseReadyPrivacy } = require('../../scripts/verify-releaseready-privacy.cjs');
 const { isEducationPage, findTrackingSignals, auditEducationFiles } = require('../../scripts/education-no-tracking.cjs');
 
 const repositoryRoot = path.resolve(__dirname, '..', '..');
@@ -343,6 +344,8 @@ function buildPublicRoot() {
   stampRuntimeWorkers(outputRoot);
   const educationAudit = auditEducationFiles({ requireRootBuild: true });
   if (educationAudit.errors.length) throw new Error(educationAudit.errors.join('\n'));
+  // コピー・解析ローダー挿入後の最終成果物で公開必須ページを確認する。
+  verifyReleaseReadyPrivacy(outputRoot);
   console.log(`公開成果物を作成しました: files=${PUBLIC_ROOT_FILES.length}, directories=${PUBLIC_DIRECTORIES.length}, analytics=${analyticsCoverage.checked}, injected=${analyticsCoverage.injected}, existing=${analyticsCoverage.existing}, legacyRemoved=${analyticsCoverage.legacyRemoved}`);
 }
 

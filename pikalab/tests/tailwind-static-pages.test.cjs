@@ -7,6 +7,7 @@ const projectRoot = path.resolve(__dirname, '..');
 
 const pages = [
     'index.html',
+    'atom_craft_lab/index.html',
     'articles/index.html',
     'privacy.html',
     'terms.html',
@@ -26,7 +27,7 @@ test('Tailwind CDNに依存せずサイト内アセットを読み込む', () =>
         );
         assert.match(
             html,
-            /(?:tailwind(?:\.generated)?|style)\.css/,
+            relativePath === 'atom_craft_lab/index.html' ? /assets\/app\.css/ : /(?:tailwind(?:\.generated)?|style)\.css/,
             `${relativePath} がサイト内の表示アセットを参照していません。`
         );
     }

@@ -2,8 +2,10 @@
   "name": "pikalab",
   "version": "7.7.0",
   "scripts": {
+    "predev": "node scripts/build-atom-craft-css.cjs",
     "dev": "vite",
-    "build": "node scripts/build-articles-css.cjs && node scripts/sync-seo-metadata.cjs && vite build && node ../.github/scripts/copy-code-studio-reachable.cjs .code-studio dist/code-studio && node scripts/copy-build-runtime-assets.cjs dist && node scripts/harden-focus-studio-build.cjs dist && node scripts/finalize-deploy-output.cjs dist && node scripts/restore-lab-pwa-assets.cjs dist && node scripts/finalize-lab-service-workers.cjs dist && node scripts/finalize-service-worker.cjs dist && node ../scripts/education-no-tracking.cjs --pikalab-build",
+    "build:atom-css": "node scripts/build-atom-craft-css.cjs",
+    "build": "node scripts/build-atom-craft-css.cjs && node scripts/build-articles-css.cjs && node scripts/sync-seo-metadata.cjs && vite build && node ../.github/scripts/copy-code-studio-reachable.cjs .code-studio dist/code-studio && node scripts/copy-build-runtime-assets.cjs dist && node scripts/harden-focus-studio-build.cjs dist && node scripts/finalize-deploy-output.cjs dist && node scripts/restore-lab-pwa-assets.cjs dist && node scripts/finalize-lab-service-workers.cjs dist && node scripts/finalize-service-worker.cjs dist && node ../scripts/education-no-tracking.cjs --pikalab-build",
     "build:css": "tailwindcss -i ./tailwind.input.css -o ./style.css --minify",
     "build:css:articles": "node scripts/build-articles-css.cjs",
     "build:css:kanji": "tailwindcss -c ./tailwind.kanji.config.cjs -i ./tailwind.kanji.input.css -o ./kanji_lab/tailwind.css --minify",
@@ -18,6 +20,7 @@
     "test:kanji-data": "node kanji_lab/js/test_data.js",
     "test:kanji-ux": "node kanji_lab/js/test_ux.js",
     "test:kanji-exposure": "node kanji_lab/js/test_exposure.js",
+    "test:kanji-e2e": "node kanji_lab/tests/browser-interactions.test.cjs",
     "test:vitest": "vitest run deepsea_lab/js",
     "test:manabi-e2e": "node scripts/manabi-land-e2e.mjs",
     "test:rhythm-e2e": "node scripts/rhythm-lab-e2e.mjs",
@@ -31,7 +34,8 @@
     "test:space-e2e": "node scripts/space-lab-e2e.mjs",
     "test:focus-deep-e2e": "node scripts/focus-studio-deep-e2e.mjs",
     "test:paper-e2e": "node scripts/paper-gen-e2e.mjs",
-    "test:quest-e2e": "node scripts/quest-board-e2e.mjs"
+    "test:quest-e2e": "node scripts/quest-board-e2e.mjs",
+    "test:book-e2e": "node scripts/book-report-e2e.mjs"
   },
   "devDependencies": {
     "@types/node": "^25.9.1",

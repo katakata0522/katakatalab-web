@@ -213,7 +213,7 @@ const TOOL_CONFIGS = Object.freeze([
       ['JavaScriptを有効にするとQRコードを作成できます。', 'Enable JavaScript to create a QR code.'],
       ['登録不要・基本機能無料・無制限で使えるQR作成ツール', 'No signup · Core features are free · Create without a usage counter'],
       ['データテンプレート', 'Data templates'],
-      ['中央ロゴを挿入し、読み取り安全性を自動判定します。', 'Insert a center logo and automatically review likely scan safety.'],
+      ['中央ロゴを挿入し、読み取り安全性を自動判定します。', 'Insert a center logo and review contrast, margins, and logo coverage. Test scanning on real devices too.'],
       ['色・サイズ・余白・ロゴ設定を保存して再利用できます。', 'Save and reuse color, size, margin, and logo settings.'],
       ['テンプレートを切り替えなくても、SNS向けQRをすぐ生成できます。', 'Create a social-profile QR without switching away from this panel.'],
       ['`value,name` 形式で複数のQRをまとめて生成できます。', 'Generate multiple QR codes from `value,name` CSV rows.'],

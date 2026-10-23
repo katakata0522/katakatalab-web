@@ -63,6 +63,8 @@
     }
 
     function getCurrentTopicId() {
+        // 永続化に失敗しても、画面に表示しているテーマへ記録する。
+        if (typeof getPlanState === 'function') return getPlanState().topicId || 'draft';
         return getCorePlan()?.topicId || 'draft';
     }
 
@@ -84,6 +86,9 @@
             localStorage.setItem(REFLECTION_STORAGE_KEY, JSON.stringify(map));
         } catch (error) {
             console.warn('Science reflection data could not be saved:', error);
+            if (typeof showToast === 'function') {
+                showToast('この端末に保存できませんでした。入力内容を控えてからページを閉じてください。', 'error');
+            }
         }
     }
 
@@ -262,7 +267,6 @@
             } catch (error) {
                 console.error('Science Maker topic could not be opened:', error);
             }
-            window.setTimeout(loadReflectionIntoPanel, 0);
         };
 
         card.setAttribute('aria-label', `${topic.title} - 研究メモを開く`);
@@ -401,12 +405,7 @@
     }
 
     function setupTopicChangeSync() {
-        document.getElementById('results-container')?.addEventListener('click', () => {
-            window.setTimeout(loadReflectionIntoPanel, 0);
-        });
-        document.getElementById('share-import-confirm-btn')?.addEventListener('click', () => {
-            window.setTimeout(loadReflectionIntoPanel, 0);
-        });
+        document.addEventListener('science-maker:plan-loaded', loadReflectionIntoPanel);
     }
 
     function init() {

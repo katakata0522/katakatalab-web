@@ -242,6 +242,33 @@
       }
     },
     {
+      "id": "atom-craft-lab",
+      "categories": [
+        "high",
+        "middle",
+        "rikei",
+        "all"
+      ],
+      "appName": "Atom Craft Lab",
+      "url": "atom_craft_lab/",
+      "indexable": true,
+      "title": "アトム・クラフト・ラボ",
+      "description": "原子を組み合わせて8種類の物質を発見！<br>化学反応式パズルで原子の数をそろえよう。",
+      "subjectTag": "理科・化学",
+      "subjectTagColor": "bg-sky-600",
+      "gradeTag": "中学理科",
+      "icon": "science",
+      "iconColor": "text-sky-600 bg-sky-50",
+      "buttonText": "分子をつくる",
+      "buttonHoverColor": "hover:bg-sky-600",
+      "headerBgClass": "bg-gradient-to-br from-sky-100 via-indigo-50 to-blue-100",
+      "badge": {
+        "name": "原子博士",
+        "icon": "science",
+        "color": "text-sky-600 bg-sky-50"
+      }
+    },
+    {
       "id": "space-lab",
       "categories": [
         "high",

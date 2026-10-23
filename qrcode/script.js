@@ -185,6 +185,7 @@ document.addEventListener('DOMContentLoaded', () => {
         contrastWarning: '色が似すぎて読み取れない可能性があります',
         placeholder: 'テキストを入力すると<br>即座に表示されます',
         downloadDefault: 'PNGで保存する',
+        colorDetails: '色と詳細設定', openLogo: 'ロゴを入れる · Pro', printQr: '印刷', printNote: '印刷は現在のQRのみ。透過背景は白地になります。',
         templatePlaceholder: 'テンプレート入力から自動生成されます'
       },
       sidebar: {
@@ -267,7 +268,7 @@ document.addEventListener('DOMContentLoaded', () => {
         eccHelp: '読み取りエラーへの強さです。迷ったら「自動（推奨）」のままで大丈夫です。',
         paddingLabel: '余白（読み取り用スペース）',
         transparentBg: '背景を透過',
-        transparencyWarning: '透過背景は設置面によって読み取りにくくなる場合があります',
+        transparencyWarning: '透過背景は設置面によって読み取りにくくなります。JPEG保存と印刷は白地になるため、濃いコード色を選んで確認してください。',
         exportFormat: '保存形式',
         formatPng: 'PNG',
         formatJpeg: 'JPEG',
@@ -321,12 +322,14 @@ document.addEventListener('DOMContentLoaded', () => {
         more: '…他 {count} 件',
         needInput: 'CSVテキストを入力してください。',
         noValidRows: '有効な行が見つかりませんでした。',
+        invalidCsv: 'CSVの引用符が正しくありません。引用符の対応と区切りを確認してください。',
         loaded: '{count}件の生成データを読み込みました。',
         fileReadFailed: 'CSVファイルの読み込みに失敗しました。',
         starting: '一括保存を開始します…',
         engineFailed: 'QRエンジンの初期化に失敗しました。',
         savingProgress: '{current} / {total} を保存中…',
-        saved: '{count}件を保存しました。'
+        saved: '{count}件を保存しました。',
+        result: '保存: {count}件、失敗: {failed}件。失敗した場合はサイズを大きくするか内容を短くして再試行してください。'
       },
       scanner: {
         start: 'スキャン開始',
@@ -356,7 +359,7 @@ document.addEventListener('DOMContentLoaded', () => {
         licensePlaceholder: 'PRO-XXXX-XXXX',
         applyLicense: 'ライセンスを適用 (Pro)',
         licenseNotice: 'ライセンス検証時のみ、ライセンスキーと利用ドメインを検証APIへ送信します。',
-        exportProNotice: 'SVG / PDF保存はProで利用できます。',
+        exportProNotice: 'SVG / PDF保存はPro機能です。どちらもPNG画像を内包し、拡大しても細部は増えません。',
         statusFree: '現在: Freeプラン',
         statusPro: '現在: Proプラン',
         statusActivated: 'Proプランを有効化しました。',
@@ -367,26 +370,26 @@ document.addEventListener('DOMContentLoaded', () => {
         statusUnavailable: '現在はライセンス検証サーバー未設定のため、Pro機能を有効化できません。',
         statusRevoked: 'ライセンスが無効または期限切れです。',
         logoTitle: 'ロゴ挿入 (Pro)',
-        logoHelp: '中央にロゴを挿入し、読み取りやすさを自動チェックします。',
+        logoHelp: '中央ロゴを挿入し、色・余白・ロゴ比率などの設定を確認します。実機での読み取り確認も必要です。',
         logoFileLabel: 'ロゴ画像 (Pro)',
         logoClear: 'ロゴを削除 (Pro)',
         logoSize: 'ロゴサイズ (Pro)',
         logoBackdrop: 'ロゴの下に白背景を敷く (Pro)',
-        logoWarning: 'ロゴが大きすぎるため読み取り精度が低下する可能性があります。',
+        logoWarning: 'ロゴや白い背景枠は読み取りを妨げる場合があります。小さくして誤り訂正Hを選び、保存画像を実際の掲載サイズで確認してください。',
         logoLoaded: 'ロゴ画像を読み込みました。',
         logoRemoved: 'ロゴを削除しました。',
         logoTooLargeFile: 'ロゴ画像は2MB以下にしてください。',
         logoReadFailed: 'ロゴ画像の読み込みに失敗しました。',
-        qualityTitle: '品質チェック',
+        qualityTitle: '設定の目安',
         qualityGrade: '評価',
-        qualitySummaryDefault: '良好です。通常環境での読み取りに適しています。',
+        qualitySummaryDefault: '色・余白・ロゴ比率などを確認します。読み取り成功を保証する評価ではありません。',
         qualityItemContrast: 'コントラスト: 良好',
         qualityItemPadding: '余白: 良好',
         qualityItemLogo: 'ロゴ占有率: 良好',
         qualityItemEcc: '誤り訂正: 良好',
-        qualityHigh: '良好です。印刷・画面表示ともに安定した読み取りが期待できます。',
-        qualityMedium: '概ね良好ですが、距離や環境によって読み取りにくい場合があります。',
-        qualityLow: '読み取り失敗の可能性があります。色・余白・ロゴサイズを調整してください。',
+        qualityHigh: '設定の目安を満たしています。保存後、実際の掲載サイズで読み取りを確認してください。',
+        qualityMedium: '一部の設定を見直せます。下の項目を確認し、実際の掲載サイズでも試してください。',
+        qualityLow: '設定に注意点があります。色・余白・ロゴサイズを調整し、実機でも確認してください。',
         qualityContrastUnknown: 'コントラスト: 背景透過のため判定不可',
         qualityContrastGood: 'コントラスト: 良好 ({ratio})',
         qualityContrastWarn: 'コントラスト: 低め ({ratio})',
@@ -445,6 +448,7 @@ document.addEventListener('DOMContentLoaded', () => {
         contrastWarning: 'Low contrast may reduce scan accuracy.',
         placeholder: 'Enter text or URL<br>to preview instantly',
         downloadDefault: 'Save as PNG',
+        colorDetails: 'Color and advanced settings', openLogo: 'Add a logo · Pro', printQr: 'Print', printNote: 'Prints only the current QR. Transparent backgrounds print on white.',
         templatePlaceholder: 'Auto-generated from the selected template'
       },
       sidebar: {
@@ -527,7 +531,7 @@ document.addEventListener('DOMContentLoaded', () => {
         eccHelp: 'This controls scan error tolerance. If unsure, keep "Auto (Recommended)".',
         paddingLabel: 'Scan Margin',
         transparentBg: 'Transparent Background',
-        transparencyWarning: 'Transparent backgrounds may reduce scan reliability on some surfaces.',
+        transparencyWarning: 'Transparent backgrounds depend on the display surface. JPEG and print use white, so choose a dark code color and test the output.',
         exportFormat: 'Export Format',
         formatPng: 'PNG',
         formatJpeg: 'JPEG',
@@ -581,12 +585,14 @@ document.addEventListener('DOMContentLoaded', () => {
         more: '... and {count} more',
         needInput: 'Please enter CSV text.',
         noValidRows: 'No valid rows were found.',
+        invalidCsv: 'Invalid CSV quoting. Check matching quotes and delimiters.',
         loaded: 'Loaded {count} rows for QR generation.',
         fileReadFailed: 'Failed to read the CSV file.',
         starting: 'Starting bulk export...',
         engineFailed: 'Failed to initialize the QR engine.',
         savingProgress: 'Saving {current} / {total} ...',
-        saved: 'Saved {count} files.'
+        saved: 'Saved {count} files.',
+        result: 'Saved: {count}, failed: {failed}. For failed items, increase the size or shorten the content and retry.'
       },
       scanner: {
         start: 'Start Scan',
@@ -616,7 +622,7 @@ document.addEventListener('DOMContentLoaded', () => {
         licensePlaceholder: 'PRO-XXXX-XXXX',
         applyLicense: 'Apply License (Pro)',
         licenseNotice: 'Only during license verification, the license key and current origin are sent to the verification API.',
-        exportProNotice: 'SVG and PDF export are available on Pro.',
+        exportProNotice: 'SVG and PDF are Pro formats. Both embed a PNG image; enlarging them does not add detail.',
         statusFree: 'Current: Free plan',
         statusPro: 'Current: Pro plan',
         statusActivated: 'Pro plan has been activated.',
@@ -627,26 +633,26 @@ document.addEventListener('DOMContentLoaded', () => {
         statusUnavailable: 'Pro activation is unavailable because the license verification server is not configured.',
         statusRevoked: 'License is invalid or expired.',
         logoTitle: 'Logo Insert (Pro)',
-        logoHelp: 'Insert a center logo and run automatic scan-readability checks.',
+        logoHelp: 'Insert a center logo and review contrast, margins, and logo coverage. Test scanning on real devices too.',
         logoFileLabel: 'Logo image (Pro)',
         logoClear: 'Remove Logo (Pro)',
         logoSize: 'Logo Size (Pro)',
         logoBackdrop: 'Draw white backdrop behind logo (Pro)',
-        logoWarning: 'Logo is too large and may reduce scan reliability.',
+        logoWarning: 'Logos and their backdrop can prevent scanning. Use a small logo and error correction H, then test the saved image at its intended size.',
         logoLoaded: 'Logo image has been loaded.',
         logoRemoved: 'Logo has been removed.',
         logoTooLargeFile: 'Please use an image under 2MB.',
         logoReadFailed: 'Failed to read the logo image.',
-        qualityTitle: 'Quality Check',
+        qualityTitle: 'Settings Review',
         qualityGrade: 'Grade',
-        qualitySummaryDefault: 'Looks good. Suitable for common scanning situations.',
+        qualitySummaryDefault: 'Review contrast, margins, and logo coverage. This score does not guarantee a successful scan.',
         qualityItemContrast: 'Contrast: Good',
         qualityItemPadding: 'Quiet Zone: Good',
         qualityItemLogo: 'Logo Coverage: Good',
         qualityItemEcc: 'Error Correction: Good',
-        qualityHigh: 'Looks good. Stable scanning is expected for print and screens.',
-        qualityMedium: 'Mostly good, but scanning may vary by distance or lighting.',
-        qualityLow: 'Scan failures are likely. Adjust colors, quiet zone, or logo size.',
+        qualityHigh: 'The settings meet the guide values. Test the saved code at its intended display or print size.',
+        qualityMedium: 'Some settings could be improved. Review the items below and test at the intended size.',
+        qualityLow: 'Review colors, margins, and logo size, then test scanning on a real device.',
         qualityContrastUnknown: 'Contrast: Not scored when transparent background is enabled',
         qualityContrastGood: 'Contrast: Good ({ratio})',
         qualityContrastWarn: 'Contrast: Low ({ratio})',
@@ -727,9 +733,21 @@ document.addEventListener('DOMContentLoaded', () => {
       const stored = localStorage.getItem(PLAN_STORAGE_KEY);
       if (stored === 'pro') {
         if (runtimeConfig.allowManualPlanSwitch) return 'pro';
+        // APIを使う構成では、保存済みPro状態を再検証前に復元しない。
+        // ローカルfallbackを明示的に許可した構成だけ、保存キーの形式確認で復元する。
         if (
-          VALID_LICENSE_PATTERN.test(licenseKey)
-          && (runtimeConfig.allowLocalLicenseFallback || Boolean(runtimeConfig.licenseApiUrl))
+          !runtimeConfig.licenseApiUrl
+          && runtimeConfig.allowLocalLicenseFallback
+          && VALID_LICENSE_PATTERN.test(licenseKey)
+        ) {
+          return 'pro';
+        }
+        // strictVerification=false は移行期間の猶予設定。
+        // API構成済みでも保存済みキーの再検証が終わるまで直前のPro状態を維持する。
+        if (
+          runtimeConfig.strictVerification === false
+          && Boolean(runtimeConfig.licenseApiUrl)
+          && VALID_LICENSE_PATTERN.test(licenseKey)
         ) {
           return 'pro';
         }
@@ -774,15 +792,18 @@ document.addEventListener('DOMContentLoaded', () => {
     licenseKey: storedLicenseKey,
     runtimeConfig,
     bulkRows: [],
+    bulkLoadId: 0,
     logoImage: null,
     logoDataUrl: '',
+    logoLoadId: 0,
     presets: loadStoredPresets(),
     scanning: false,
     scanDetector: null,
     scannerStream: null,
     scannerTimer: null,
     lastContrastRatio: null,
-    lastQrMatrixWidth: null
+    lastQrMatrixWidth: null,
+    lastQrPaddingPx: null
   };
   const optionalLibPromiseMap = new Map();
 
@@ -984,8 +1005,8 @@ document.addEventListener('DOMContentLoaded', () => {
     els.fileNamePreview.textContent = '';
   };
 
-  const attachQrMetricsHook = () => {
-    const renderer = state.qr && state.qr._canvasRenderer;
+  const attachQrMetricsHook = (engine = state.qr) => {
+    const renderer = engine && engine._canvasRenderer;
     if (!renderer || typeof renderer.render !== 'function') {
       return;
     }
@@ -993,12 +1014,45 @@ document.addEventListener('DOMContentLoaded', () => {
     const originalRender = renderer.render.bind(renderer);
     renderer.render = (frame) => {
       if (frame && Number.isFinite(frame.width)) {
-        state.lastQrMatrixWidth = frame.width;
+        engine.safeMatrixWidth = frame.width;
+        if (engine === state.qr) state.lastQrMatrixWidth = frame.width;
       } else {
-        state.lastQrMatrixWidth = null;
+        engine.safeMatrixWidth = null;
+        if (engine === state.qr) state.lastQrMatrixWidth = null;
       }
       return originalRender(frame);
     };
+  };
+
+  // Preserve the requested pixel margin in presets; apply a safe quiet zone per QR.
+  const setQrWithSafePadding = (engine, options) => {
+    // QRious 4.0.2 consumes one byte per JS code unit, not Unicode text.
+    // encodeURIComponent emits UTF-8 and rejects unpaired surrogates instead
+    // of silently replacing them. Keep this adapter shared by single/bulk QR.
+    const value = encodeURIComponent(options.value).replace(/%([0-9A-F]{2})/g,
+      (_, hex) => String.fromCharCode(parseInt(hex, 16)));
+    // Version 40 byte-mode payload limits. QRious silently truncates overflow.
+    const byteCapacity = { L: 2953, M: 2331, Q: 1663, H: 1273 }[options.level];
+    if (!byteCapacity || value.length > byteCapacity) {
+      throw new Error('Content exceeds QR UTF-8 byte capacity');
+    }
+    engine.set({ ...options, value });
+    const width = engine.safeMatrixWidth;
+    if (!Number.isInteger(width) || width <= 0) {
+      throw new Error('QR matrix size could not be measured');
+    }
+    const minimumPadding = Math.max(options.padding || 0, Math.ceil(4 * options.size / (width + 8)));
+    const moduleSize = Math.floor((options.size - 2 * minimumPadding) / width);
+    if (moduleSize < 1) {
+      throw new Error('QR size is too small for a four-module quiet zone');
+    }
+    // Center the integer-pixel symbol as well as its canvas-centered logo.
+    const padding = Math.floor((options.size - width * moduleSize) / 2);
+    engine.set({ padding });
+    if (engine === state.qr) {
+      state.lastQrPaddingPx = padding;
+      updatePaddingDisplay();
+    }
   };
 
   const initQrEngine = () => {
@@ -1101,6 +1155,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const setLoading = (isLoading) => {
     if (state.criticalError) return;
 
+    if (isLoading) state.renderReady = false;
     if (isLoading && isValidContent()) {
       els.loading.style.display = 'flex';
       els.downloadBtn.disabled = true;
@@ -1109,7 +1164,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     els.loading.style.display = 'none';
-    if (isValidContent()) {
+    if (state.renderReady && isValidContent()) {
       els.downloadBtn.disabled = false;
       updateFileNamePreview();
       return;
@@ -1124,12 +1179,16 @@ document.addEventListener('DOMContentLoaded', () => {
   };
 
   const updatePaddingDisplay = () => {
-    els.paddingValue.textContent = els.qrPadding.value;
+    const requested = els.qrPadding.value;
+    const applied = state.lastQrPaddingPx;
+    els.paddingValue.textContent = Number.isFinite(applied) && applied !== Number(requested)
+      ? (state.currentLang === 'en' ? `${requested} (applied: ${applied})` : `${requested}（適用: ${applied}）`)
+      : requested;
   };
 
   const updateDownloadLabel = () => {
     const formatLabel = getEffectiveExtension().toUpperCase();
-    els.downloadBtnText.textContent = t('download.saveAs', { format: formatLabel });
+    els.downloadBtnText.textContent = t('download.saveAs', { format: formatLabel }) + (isProOnlyFormat(els.exportFormat.value) ? ' · Pro' : '');
   };
 
   const updateBackgroundMode = () => {
@@ -1193,11 +1252,18 @@ document.addEventListener('DOMContentLoaded', () => {
   const getLogoPercent = () => clamp(parseInt(els.logoSizePercent.value, 10) || 14, 8, 28);
   const getLogoCoverageRatio = () => {
     if (!hasLogo()) return 0;
-    const percent = getLogoPercent() / 100;
-    return percent * percent;
+    const size = parseInt(els.size.value, 10) || 250;
+    const logoSide = size * getLogoPercent() / 100;
+    const backdropPadding = els.logoBackdrop.checked ? Math.max(4, logoSide * 0.14) : 0;
+    const metrics = getQuietZoneMetrics();
+    const symbolSide = metrics.moduleSizePx * (state.lastQrMatrixWidth || 0);
+    // Bounding-box estimate includes the backdrop and excludes the quiet zone.
+    // It is not the fraction of damaged codewords or a correction guarantee.
+    return symbolSide > 0 ? Math.min(1, ((logoSide + 2 * backdropPadding) / symbolSide) ** 2) : 1;
   };
   const getQuietZoneMetrics = () => {
-    const paddingPx = parseInt(els.qrPadding.value, 10) || 0;
+    const paddingPx = Number.isFinite(state.lastQrPaddingPx)
+      ? state.lastQrPaddingPx : parseInt(els.qrPadding.value, 10) || 0;
     const matrixWidth = Number.isFinite(state.lastQrMatrixWidth) ? state.lastQrMatrixWidth : 0;
     if (matrixWidth <= 0) {
       return {
@@ -1209,7 +1275,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     const qrSize = parseInt(els.size.value, 10) || 250;
-    const moduleSizePx = Math.max(1, Math.floor((qrSize - (paddingPx * 2)) / matrixWidth));
+    const moduleSizePx = Math.floor((qrSize - (paddingPx * 2)) / matrixWidth);
     const quietZoneModules = moduleSizePx > 0 ? paddingPx / moduleSizePx : 0;
     return {
       measured: true,
@@ -1260,9 +1326,13 @@ document.addEventListener('DOMContentLoaded', () => {
       ctx.restore();
     }
 
-    ctx.drawImage(state.logoImage, x, y, sizePx, sizePx);
-    const ratio = getLogoCoverageRatio();
-    els.logoWarning.style.display = ratio > MAX_LOGO_COVERAGE ? 'flex' : 'none';
+    // Contain non-square logos within the existing safety box without distortion.
+    const logoScale = sizePx / Math.max(state.logoImage.naturalWidth, state.logoImage.naturalHeight);
+    const logoWidth = state.logoImage.naturalWidth * logoScale;
+    const logoHeight = state.logoImage.naturalHeight * logoScale;
+    ctx.drawImage(state.logoImage, (canvas.width - logoWidth) / 2,
+      (canvas.height - logoHeight) / 2, logoWidth, logoHeight);
+    els.logoWarning.style.display = 'flex';
   };
 
   const updateLogoSizeDisplay = () => {
@@ -1419,6 +1489,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const setPlan = (plan, options = {}) => {
     const { statusMessage = '' } = options;
     state.currentPlan = plan === 'pro' ? 'pro' : 'free';
+    if (!isProPlan()) state.logoLoadId = (state.logoLoadId || 0) + 1;
     if (!isProPlan() && hasLogo()) {
       state.logoImage = null;
       state.logoDataUrl = '';
@@ -1481,7 +1552,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
       const payload = await response.json();
       return {
-        valid: Boolean(payload && payload.valid),
+        valid: Boolean(payload) && payload.valid === true,
         reason: payload && typeof payload.reason === 'string' ? payload.reason : '',
         source: 'api'
       };
@@ -1492,16 +1563,22 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   };
 
+  // 起動時の再検証や連続入力の古い応答で、最新の判定を上書きしない。
+  let licenseVerificationId = 0;
+
   const applyLicense = async () => {
+    const verificationId = ++licenseVerificationId;
     const raw = sanitizeTemplateValue(els.licenseKeyInput.value).toUpperCase();
     els.licenseKeyInput.value = raw;
     if (!VALID_LICENSE_PATTERN.test(raw)) {
+      els.applyLicenseBtn.disabled = false;
       setPlanStatus(t('pro.statusInvalid'));
       return;
     }
     setPlanStatus(t('pro.statusVerifying'));
     els.applyLicenseBtn.disabled = true;
     const verification = await verifyLicenseWithApi(raw);
+    if (verificationId !== licenseVerificationId) return;
     els.applyLicenseBtn.disabled = false;
 
     if (verification.valid) {
@@ -1511,13 +1588,21 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     if (verification.error) {
-      state.licenseKey = '';
-      setPlan('free', { statusMessage: t('pro.statusVerifyFailed') });
+      // 通信障害では入力済みキーを失効扱いにしない。再試行できるよう保持する。
+      state.licenseKey = raw;
+      if (state.runtimeConfig.strictVerification) {
+        setPlan('free', { statusMessage: t('pro.statusVerifyFailed') });
+      } else {
+        savePlanState();
+        syncPlanInputs();
+        setPlanStatus(t('pro.statusVerifyFailed'));
+      }
       return;
     }
 
     if (verification.reason === 'unconfigured') {
-      state.licenseKey = '';
+      // 設定不足はキーの無効判定ではない。設定復旧後に再試行できるよう保持する。
+      state.licenseKey = raw;
       setPlan('free', { statusMessage: t('pro.statusUnavailable') });
       return;
     }
@@ -1531,7 +1616,7 @@ document.addEventListener('DOMContentLoaded', () => {
       return;
     }
     if (!getLicenseApiUrl() && !canUseLocalLicenseFallback()) {
-      state.licenseKey = '';
+      // API未設定でも保存済みキーは削除せず、Pro機能だけを無効にする。
       setPlan('free', { statusMessage: t('pro.statusUnavailable') });
       return;
     }
@@ -1539,7 +1624,9 @@ document.addEventListener('DOMContentLoaded', () => {
       return;
     }
 
+    const verificationId = ++licenseVerificationId;
     const verification = await verifyLicenseWithApi(state.licenseKey);
+    if (verificationId !== licenseVerificationId) return;
     if (verification.valid) {
       if (!isProPlan()) {
         setPlan('pro');
@@ -1548,8 +1635,14 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     if (verification.error) {
-      state.licenseKey = '';
-      setPlan('free', { statusMessage: t('pro.statusVerifyFailed') });
+      // サーバーへ到達できないだけでは保存済みキーを削除しない。
+      if (state.runtimeConfig.strictVerification) {
+        setPlan('free', { statusMessage: t('pro.statusVerifyFailed') });
+      } else {
+        savePlanState();
+        syncPlanInputs();
+        setPlanStatus(t('pro.statusVerifyFailed'));
+      }
       return;
     }
 
@@ -1591,6 +1684,13 @@ document.addEventListener('DOMContentLoaded', () => {
     let grade = 'A';
     if (total < 0.56) grade = 'C';
     else if (total < 0.76) grade = 'B';
+    // Other weighted scores must not compensate for missing QR quiet zone.
+    if (quietZone.measured && quietZone.quietZoneModules < MIN_RECOMMENDED_QUIET_ZONE_MODULES) grade = 'C';
+    else if (!quietZone.measured && grade === 'A') grade = 'B';
+
+    // These are risk indicators, never a guarantee that a reader can scan.
+    if ((hasLogo() || isTransparent) && grade === 'A') grade = 'B';
+    if ((quietZone.measured && quietZone.moduleSizePx < 2) || logoCoverage > MAX_LOGO_COVERAGE) grade = 'C';
 
     return {
       grade,
@@ -1634,7 +1734,13 @@ document.addEventListener('DOMContentLoaded', () => {
       : t('pro.qualityEccWarn', { level: report.ecc });
 
     els.qualityChecklist.innerHTML = '';
-    [contrastText, paddingText, logoText, eccText].forEach((text) => {
+    const checklist = [contrastText, paddingText, logoText, eccText];
+    if (report.quietZone.measured && report.quietZone.moduleSizePx < 2) {
+      checklist.push(state.currentLang === 'en'
+        ? 'Dense QR: less than 2 pixels per module. Increase the size and test the saved image.'
+        : '高密度のQRです（1モジュール2px未満）。サイズを大きくして保存画像を確認してください。');
+    }
+    checklist.forEach((text) => {
       const item = document.createElement('li');
       item.textContent = text;
       els.qualityChecklist.appendChild(item);
@@ -1642,6 +1748,7 @@ document.addEventListener('DOMContentLoaded', () => {
   };
 
   const clearLogoState = (statusText = '') => {
+    state.logoLoadId = (state.logoLoadId || 0) + 1;
     state.logoImage = null;
     state.logoDataUrl = '';
     els.logoFile.value = '';
@@ -1656,6 +1763,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   const loadLogoFromFile = async (file) => {
     if (!file) return;
+    const loadId = state.logoLoadId = (state.logoLoadId || 0) + 1;
     if (file.size > MAX_LOGO_FILE_BYTES) {
       setPlanStatus(t('pro.logoTooLargeFile'));
       els.logoFile.value = '';
@@ -1668,9 +1776,10 @@ document.addEventListener('DOMContentLoaded', () => {
       reader.onerror = () => reject(new Error('logo-read-failed'));
       reader.readAsDataURL(file);
     }).catch(() => {
-      setPlanStatus(t('pro.logoReadFailed'));
+      if (loadId === state.logoLoadId) setPlanStatus(t('pro.logoReadFailed'));
     });
 
+    if (loadId !== state.logoLoadId || !isProPlan()) return;
     if (!reader.result || typeof reader.result !== 'string') {
       return;
     }
@@ -1681,9 +1790,10 @@ document.addEventListener('DOMContentLoaded', () => {
       image.onerror = () => reject(new Error('logo-image-invalid'));
       image.src = reader.result;
     }).catch(() => {
-      setPlanStatus(t('pro.logoReadFailed'));
+      if (loadId === state.logoLoadId) setPlanStatus(t('pro.logoReadFailed'));
     });
 
+    if (loadId !== state.logoLoadId || !isProPlan()) return;
     if (!image.complete || !image.naturalWidth || !image.naturalHeight) {
       return;
     }
@@ -2055,33 +2165,60 @@ document.addEventListener('DOMContentLoaded', () => {
     els.fileNamePreview.textContent = t('file.preview', { name: generateSmartFileName() });
   };
 
-  const parseCsvLine = (line) => {
-    const fields = [];
+  const parseCsvRecords = (text) => {
+    const rows = [];
+    let fields = [];
     let current = '';
     let inQuotes = false;
+    let afterQuote = false;
+    let recordStarted = false;
 
-    for (let i = 0; i < line.length; i++) {
-      const ch = line[i];
+    const finishField = () => {
+      fields.push(current.trim());
+      current = '';
+      afterQuote = false;
+    };
+    const finishRecord = () => {
+      finishField();
+      if (recordStarted) rows.push(fields);
+      fields = [];
+      recordStarted = false;
+    };
 
-      if (ch === '"') {
-        if (inQuotes && line[i + 1] === '"') {
-          current += '"';
-          i += 1;
+    const source = String(text).replace(/^\uFEFF/, '');
+    for (let i = 0; i < source.length; i++) {
+      const ch = source[i];
+      if (!/\s/.test(ch)) recordStarted = true;
+      if (inQuotes) {
+        if (ch === '"') {
+          if (source[i + 1] === '"') {
+            current += '"';
+            i += 1;
+          } else {
+            inQuotes = false;
+            afterQuote = true;
+          }
         } else {
-          inQuotes = !inQuotes;
+          current += ch;
         }
-        continue;
-      }
-
-      if (ch === ',' && !inQuotes) {
-        fields.push(current);
+      } else if (ch === ',') {
+        finishField();
+      } else if (ch === '\r' || ch === '\n') {
+        finishRecord();
+        if (ch === '\r' && source[i + 1] === '\n') i += 1;
+      } else if (ch === '"') {
+        if (afterQuote || current.trim()) throw new Error('Invalid CSV quote');
         current = '';
+        inQuotes = true;
+      } else if (afterQuote) {
+        if (!/\s/.test(ch)) throw new Error('Invalid CSV after quote');
       } else {
         current += ch;
       }
     }
-    fields.push(current);
-    return fields.map((field) => field.trim());
+    if (inQuotes) throw new Error('Unclosed CSV quote');
+    finishRecord();
+    return rows;
   };
 
   const normalizeCsvRows = (rawRows) => {
@@ -2147,7 +2284,7 @@ document.addEventListener('DOMContentLoaded', () => {
   };
 
   const parseBulkCsv = () => {
-    const sourceText = sanitizeTemplateValue(els.bulkCsvText.value);
+    const sourceText = String(els.bulkCsvText.value || '').trim();
     if (!sourceText) {
       state.bulkRows = [];
       els.bulkSummary.textContent = t('bulk.needInput');
@@ -2157,12 +2294,17 @@ document.addEventListener('DOMContentLoaded', () => {
       return;
     }
 
-    const lines = sourceText
-      .split(/\r?\n/)
-      .map((line) => line.trim())
-      .filter((line) => line.length > 0);
-
-    const parsedRows = lines.map(parseCsvLine);
+    let parsedRows;
+    try {
+      parsedRows = parseCsvRecords(sourceText);
+    } catch (error) {
+      state.bulkRows = [];
+      els.bulkSummary.textContent = t('bulk.invalidCsv');
+      els.bulkStatus.textContent = '';
+      clearBulkPreview();
+      setBulkDownloadButtonsDisabled(true);
+      return;
+    }
     const normalized = normalizeCsvRows(parsedRows)
       .filter((row) => row.value.length <= MAX_CHARS);
 
@@ -2181,12 +2323,26 @@ document.addEventListener('DOMContentLoaded', () => {
     setBulkDownloadButtonsDisabled(false);
   };
 
+  const invalidateBulkRead = () => {
+    state.bulkLoadId += 1;
+    state.bulkRows = [];
+    clearBulkPreview();
+    els.bulkSummary.textContent = t('sidebar.bulkUnparsed');
+    els.bulkStatus.textContent = '';
+    setBulkDownloadButtonsDisabled(true);
+    return state.bulkLoadId;
+  };
+
   const readBulkCsvFile = async (file) => {
+    const loadId = invalidateBulkRead();
+    if (!file) return;
     try {
       const text = await file.text();
+      if (loadId !== state.bulkLoadId) return;
       els.bulkCsvText.value = text;
       parseBulkCsv();
     } catch (error) {
+      if (loadId !== state.bulkLoadId) return;
       console.error('CSV file read failed:', error);
       els.bulkSummary.textContent = t('bulk.fileReadFailed');
       setBulkDownloadButtonsDisabled(true);
@@ -2194,11 +2350,14 @@ document.addEventListener('DOMContentLoaded', () => {
   };
 
   const updateQR = () => {
+    state.renderReady = false;
     if (state.criticalError || !state.qr) return;
     const templateValidation = validateTemplateInput(state.currentDataType);
 
     if (!templateValidation.valid || !isValidContent()) {
       state.lastQrMatrixWidth = null;
+      state.lastQrPaddingPx = null;
+      updatePaddingDisplay();
       els.canvas.style.display = 'none';
       els.placeholder.style.display = 'block';
       els.downloadBtn.disabled = true;
@@ -2211,7 +2370,7 @@ document.addEventListener('DOMContentLoaded', () => {
     els.placeholder.style.display = 'none';
 
     try {
-      state.qr.set({
+      setQrWithSafePadding(state.qr, {
         value: els.text.value.trim(),
         size: parseInt(els.size.value, 10),
         foreground: els.fgColor.value,
@@ -2220,13 +2379,23 @@ document.addEventListener('DOMContentLoaded', () => {
         padding: parseInt(els.qrPadding.value, 10),
         level: getEffectiveEccLevel()
       });
+      els.errorMsg.style.display = 'none';
       applyLogoOverlay();
       updateFileNamePreview();
       updateQualityReport();
+      state.renderReady = true;
       els.downloadBtn.disabled = false;
     } catch (error) {
       console.error('QR update failed:', error);
+      els.canvas.style.display = 'none';
+      els.placeholder.style.display = 'block';
+      els.errorMsg.textContent = state.currentLang === 'en'
+        ? 'Could not generate a QR. Check the text for invalid characters, shorten it, lower error correction, or increase the size.'
+        : 'QRを生成できませんでした。不正な文字を確認し、内容を短くする、誤り訂正を下げる、サイズを大きくするなどをお試しください。';
+      els.errorMsg.style.display = 'block';
       state.lastQrMatrixWidth = null;
+      state.lastQrPaddingPx = null;
+      updatePaddingDisplay();
       els.downloadBtn.disabled = true;
       els.fileNamePreview.textContent = '';
       updateQualityReport();
@@ -2374,7 +2543,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   const downloadQR = async () => {
     const templateValidation = validateTemplateInput(state.currentDataType);
-    if (state.criticalError || !templateValidation.valid || !isValidContent()) return;
+    if (state.criticalError || !state.renderReady || els.downloadBtn.disabled || !templateValidation.valid || !isValidContent()) return;
 
     const format = els.exportFormat.value;
     const exportCanvas = getExportCanvas();
@@ -2421,12 +2590,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
   const createBulkQrEngine = () => {
     const canvas = document.createElement('canvas');
-    return new window.QRious({
+    const engine = new window.QRious({
       element: canvas,
       size: parseInt(els.size.value, 10),
       level: getEffectiveEccLevel(),
       padding: parseInt(els.qrPadding.value, 10)
     });
+    attachQrMetricsHook(engine);
+    return engine;
   };
 
   const wait = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
@@ -2467,7 +2638,7 @@ document.addEventListener('DOMContentLoaded', () => {
   );
 
   const buildBulkRowCanvas = (qrEngine, row, format) => {
-    qrEngine.set({
+    setQrWithSafePadding(qrEngine, {
       value: row.value,
       size: parseInt(els.size.value, 10),
       foreground: els.fgColor.value,
@@ -2541,6 +2712,7 @@ document.addEventListener('DOMContentLoaded', () => {
       return;
     }
 
+    const totalCount = state.bulkRows.length;
     const successCount = await processBulkRows({
       context,
       qrEngine,
@@ -2551,7 +2723,9 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     });
 
-    els.bulkStatus.textContent = t('bulk.saved', { count: successCount });
+    els.bulkStatus.textContent = successCount === totalCount
+      ? t('bulk.saved', { count: successCount })
+      : t('bulk.result', { count: successCount, failed: totalCount - successCount });
     els.bulkDownloadBtn.disabled = false;
   };
 
@@ -2584,7 +2758,8 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     try {
-      await processBulkRows({
+      const totalCount = state.bulkRows.length;
+      const successCount = await processBulkRows({
         context,
         qrEngine,
         delayMs: 40,
@@ -2593,11 +2768,15 @@ document.addEventListener('DOMContentLoaded', () => {
         }
       });
 
+      if (successCount === 0) throw new Error('No QR files could be generated');
       const zipBlob = await zip.generateAsync({ type: 'blob', compression: 'DEFLATE' });
       const zipName = `${sanitizePrefix(els.filePrefix.value)}_bundle.zip`;
       downloadBlob(zipBlob, zipName);
-      els.bulkStatus.textContent = t('pro.zipReady');
-      setPlanStatus(t('pro.zipReady'));
+      const status = successCount === totalCount
+        ? t('pro.zipReady')
+        : t('bulk.result', { count: successCount, failed: totalCount - successCount });
+      els.bulkStatus.textContent = status;
+      setPlanStatus(status);
     } catch (error) {
       console.error('Bulk ZIP generation failed:', error);
       els.bulkStatus.textContent = t('pro.zipFailed');
@@ -2621,11 +2800,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
   const applyPresetData = async (preset) => {
     if (!preset || typeof preset !== 'object') return;
+    const loadId = state.logoLoadId = (state.logoLoadId || 0) + 1;
 
     els.size.value = String(clamp(parseInt(preset.size, 10) || 250, 100, 1000));
     els.fgColor.value = /^#[0-9a-fA-F]{6}$/.test(preset.foreground) ? preset.foreground : DEFAULT_FOREGROUND_COLOR;
     els.bgColor.value = /^#[0-9a-fA-F]{6}$/.test(preset.background) ? preset.background : '#ffffff';
-    els.qrPadding.value = String(clamp(parseInt(preset.padding, 10) || 4, 0, 20));
+    const presetPadding = parseInt(preset.padding, 10);
+    els.qrPadding.value = String(clamp(Number.isFinite(presetPadding) ? presetPadding : 4, 0, 20));
     els.transparentBg.checked = Boolean(preset.transparentBg);
     els.eccLevel.value = ['auto', 'H', 'Q', 'M', 'L'].includes(preset.eccLevel) ? preset.eccLevel : 'auto';
     els.logoSizePercent.value = String(clamp(parseInt(preset.logoSizePercent, 10) || 14, 8, 28));
@@ -2644,6 +2825,7 @@ document.addEventListener('DOMContentLoaded', () => {
         image.onerror = () => resolve();
         image.src = preset.logoDataUrl;
       });
+      if (loadId !== state.logoLoadId || !isProPlan()) return;
       if (image.complete && image.naturalWidth > 0) {
         state.logoImage = image;
         state.logoDataUrl = preset.logoDataUrl;
@@ -2733,6 +2915,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
   const syncMobileDownloadState = () => {
     els.mobileDownloadBtn.disabled = els.downloadBtn.disabled;
+    const printButton = document.getElementById('printQrBtn');
+    if (printButton) printButton.disabled = els.downloadBtn.disabled;
+    const safety = document.getElementById('previewSafety');
+    if (safety) safety.textContent = [
+      state.lastContrastRatio < 4.5 ? t('main.contrastWarning') : '',
+      els.transparentBg.checked ? t('sidebar.transparencyWarning') : ''
+    ].filter(Boolean).join(' ');
   };
 
   const observeDownloadButtonState = () => {
@@ -3118,10 +3307,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
     els.bulkCsvFile.addEventListener('change', () => {
       const file = els.bulkCsvFile.files && els.bulkCsvFile.files[0];
-      if (!file) return;
       readBulkCsvFile(file);
     });
-    els.bulkPreviewBtn.addEventListener('click', parseBulkCsv);
+    els.bulkCsvText.addEventListener('input', () => {
+      invalidateBulkRead();
+      els.bulkSummary.textContent = t('sidebar.bulkUnparsed');
+    });
+    els.bulkPreviewBtn.addEventListener('click', () => {
+      invalidateBulkRead();
+      parseBulkCsv();
+    });
     els.bulkDownloadBtn.addEventListener('click', downloadBulkQr);
     els.bulkZipBtn.addEventListener('click', downloadBulkZip);
 
@@ -3168,6 +3363,24 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     });
 
+    document.getElementById('openLogoBtn')?.addEventListener('click', () => {
+      openSidebar();
+      const panel = els.settingsSidebar.querySelector('details[data-details-id="logo"]');
+      if (panel) { panel.open = true; panel.querySelector('summary')?.focus(); }
+    });
+    document.getElementById('printQrBtn')?.addEventListener('click', () => {
+      if (!state.renderReady || els.downloadBtn.disabled || !isValidContent()) return;
+      const output = document.getElementById('qrPrintImage');
+      // Copy exactly the successful preview, including logo. No input regeneration.
+      output.width = els.canvas.width;
+      output.height = els.canvas.height;
+      const context = output.getContext('2d');
+      if (!context) return;
+      context.fillStyle = '#ffffff';
+      context.fillRect(0, 0, output.width, output.height);
+      context.drawImage(els.canvas, 0, 0);
+      window.print();
+    });
     els.downloadBtn.addEventListener('click', downloadQR);
     bindTemplateEvents();
 

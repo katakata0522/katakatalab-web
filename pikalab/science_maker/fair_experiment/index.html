@@ -1,0 +1,135 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#fff8ed">
+  <meta name="robots" content="noindex,nofollow">
+  <meta name="description" content="PikaLabの実験探偵ラボ。おかしな実験の手がかりを見つけて、条件をそろえよう。9つの事件を調査する体験型理科ゲームです。">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'self'; form-action 'none'; frame-ancestors 'none'">
+  <title>実験探偵ラボ | PikaLab</title>
+  <link rel="canonical" href="https://katakatalab.com/pikalab/science_maker/fair_experiment/">
+  <meta property="og:url" content="https://katakatalab.com/pikalab/science_maker/fair_experiment/">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="実験探偵ラボ | PikaLab">
+  <meta property="og:description" content="PikaLabの実験探偵ラボ。おかしな実験の手がかりを見つけて、条件をそろえよう。9つの事件を調査する体験型理科ゲームです。">
+  <meta property="og:image" content="https://katakatalab.com/pikalab/pikalab_ogp_compressed.jpg">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="実験探偵ラボ | PikaLab">
+  <meta name="twitter:description" content="PikaLabの実験探偵ラボ。おかしな実験の手がかりを見つけて、条件をそろえよう。9つの事件を調査する体験型理科ゲームです。">
+  <meta name="twitter:image" content="https://katakatalab.com/pikalab/pikalab_ogp_compressed.jpg">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"実験探偵ラボ | PikaLab","url":"https://katakatalab.com/pikalab/science_maker/fair_experiment/","description":"PikaLabの実験探偵ラボ。おかしな実験の手がかりを見つけて、条件をそろえよう。9つの事件を調査する体験型理科ゲームです。","applicationCategory":"EducationalApplication","operatingSystem":"Any","isAccessibleForFree":true,"offers":{"@type":"Offer","price":"0","priceCurrency":"JPY"}}</script>
+  <link rel="stylesheet" href="./assets/style.css">
+  <script defer src="./cases.js"></script>
+  <script defer src="./app.js"></script>
+</head>
+<body>
+  <a class="skip-link" href="#investigation">調査画面へ移動</a>
+  <div class="ambient ambient--one" aria-hidden="true"></div>
+  <div class="ambient ambient--two" aria-hidden="true"></div>
+
+  <header class="site-header">
+    <div class="page-container header-inner flex items-center justify-between gap-4">
+      <a href="../../" class="brand-mark" aria-label="PikaLabのトップへ戻る">
+        <span class="brand-emblem" aria-hidden="true">
+          <svg viewBox="0 0 32 32" width="26" height="26" fill="none"><path d="M12 4h8M15 4v10L7.3 25a3 3 0 0 0 2.5 4h12.4a3 3 0 0 0 2.5-4L17 14V4" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/><path d="M9.5 22c3-2.2 5 3 8 .7 2.6-1.7 4.1-1.4 5 .2" stroke="currentColor" stroke-width="2.3" stroke-linecap="round"/><circle cx="18.5" cy="19" r="1.5" fill="currentColor"/></svg>
+        </span>
+        <span class="brand-copy"><strong>PikaLab</strong><small>デジタル研究室</small></span>
+        <span class="brand-slash" aria-hidden="true">/</span>
+        <span class="brand-current">実験探偵ラボ</span>
+      </a>
+      <div class="header-tools flex items-center gap-3">
+        <div class="header-progress" aria-live="polite"><span class="header-progress-icon" aria-hidden="true">✦</span><span>調査完了</span><strong id="completedCount">0 / 9</strong></div>
+        <button type="button" id="helpOpen" class="header-help"><span class="help-icon" aria-hidden="true">?</span><span class="help-text">あそびかた</span></button>
+      </div>
+    </div>
+  </header>
+
+  <main class="page-container">
+    <section class="hero" aria-labelledby="heroTitle">
+      <div class="hero-copy">
+        
+        
+        <h1 id="heroTitle">その実験、<br><span class="title-accent">ほんとうに</span>正しい<span class="title-question">？</span></h1>
+        <p class="hero-desc">ちょっとヘンな実験レポートが届いたよ。<br>手がかりを集めて、ナゾを解き明かそう！</p>
+        <div class="hero-buttons flex flex-wrap items-center gap-3">
+          <button type="button" id="startButton" class="action-primary"><span aria-hidden="true" class="button-spark">✦</span>事件を調査する <span class="arrow-icon" aria-hidden="true">↗</span></button>
+          
+        </div>
+      </div>
+      <div class="hero-art" aria-hidden="true">
+        <div class="art-halo art-halo--back"></div>
+        <div class="art-paper art-paper--main">
+          <span class="paper-topline"></span>
+          
+          <span class="art-hand-line one"></span><span class="art-hand-line two"></span><span class="art-hand-line three"></span>
+          <svg class="art-sprout" viewBox="0 0 165 162" fill="none">
+            <path d="M83 118c-8-21-8-41 1-63" stroke="#447C68" stroke-width="9" stroke-linecap="round"/>
+            <path d="M82 82c-30 4-47-4-52-30 27-5 47 1 52 30Z" fill="#8DBFA1" stroke="#447C68" stroke-width="3" stroke-linejoin="round"/>
+            <path d="M84 67c1-26 17-38 42-35-1 24-18 35-42 35Z" fill="#61A99C" stroke="#447C68" stroke-width="3" stroke-linejoin="round"/>
+            <path d="M56 111h55l-6 34H62l-6-34Z" fill="#DD856C" stroke="#B15E50" stroke-width="3" stroke-linejoin="round"/>
+            <path d="M59 117h49" stroke="#F9C6AF" stroke-width="3" stroke-linecap="round"/>
+            <path d="M54 110h59" stroke="#B15E50" stroke-width="6" stroke-linecap="round"/>
+            <circle cx="133" cy="23" r="4" fill="#F6BE5B"/>
+            <path d="M24 26h8m-4-4v8" stroke="#F6BE5B" stroke-width="3" stroke-linecap="round"/>
+          </svg>
+        </div>
+        <div class="art-card-note"><svg viewBox="0 0 70 68" fill="none" aria-hidden="true"><rect x="12" y="9" width="40" height="46" rx="6" stroke="#b88b49" stroke-width="4"/><path d="M21 22h22M21 33h14" stroke="#b88b49" stroke-width="3" stroke-linecap="round"/><circle cx="48" cy="48" r="12" fill="#fff3cb" stroke="#6555a4" stroke-width="4"/><path d="M56 56l10 10" stroke="#6555a4" stroke-width="5" stroke-linecap="round"/></svg></div>
+        <div class="art-magnifier"><div class="lens"><span class="lens-question">?</span><span class="lens-sheen"></span></div><div class="lens-handle"></div></div>
+        <div class="art-sticker art-sticker--left">✦</div><div class="art-sticker art-sticker--right">✳</div>
+        <div class="art-shadow"></div>
+      </div>
+    </section>
+
+    <section class="files-section" aria-labelledby="filesTitle">
+      <div class="files-head flex items-center justify-between flex-wrap gap-3">
+        <div class="files-heading"><h2 id="filesTitle" tabindex="-1">事件ファイル <span id="fileCount" class="file-count">09</span></h2></div>
+        
+      </div>
+      <div id="caseChapters" class="case-chapters" role="group" aria-label="事件のグループ"></div>
+      <div class="case-list grid grid-cols-1 md:grid-cols-3 gap-3" id="caseNavigation" role="group" aria-label="事件を選ぶ">
+
+      </div>
+    </section>
+
+    <section id="investigation" class="investigation" aria-labelledby="currentCaseTitle" tabindex="-1">
+      <div class="section-bar flex items-end justify-between flex-wrap gap-3">
+        <div class="section-heading"><div class="section-kicker"><span class="kicker-dot"></span> 調査中<span id="caseOrdinal"> / 事件 01</span></div><h2 id="currentCaseTitle">植物のひみつ</h2><p id="caseDescription">光のちがいが育ち方に関係するか、調べたいんだって。</p></div>
+        <div class="case-counter" id="stageCounter">手がかり 1 / 3</div>
+      </div>
+      <div class="workbench grid grid-cols-1 lg:grid-cols-2 gap-0" id="workbench">
+        <div class="scene-panel" aria-label="2つの実験条件を比較する図と記録">
+          <div class="scene-header flex items-center justify-between gap-2"><span class="scene-label"><span class="scene-dot" aria-hidden="true"></span> 実験 AとBを比べよう</span></div>
+          <div class="experiment-stage" id="sceneArt"><noscript>このゲームを遊ぶにはJavaScriptを有効にしてください。</noscript></div>
+          <div id="observationList" class="comparison-board" aria-label="実験AとBの条件の比較"></div>
+          <div class="scene-caption">※ 図は実験計画のイメージ。結果はまだわかりません。</div>
+        </div>
+        <div class="task-panel" id="taskPanel">
+          <div id="taskHead" class="task-head flex items-center justify-between gap-4"><div class="step-stamp">STEP <span id="stepNumber">01</span> <span class="step-of">/ 03</span></div><div id="stepDots" class="step-dots flex items-center gap-1" aria-label="ステップ進行状況"><span class="active"></span><span></span><span></span></div></div>
+          <div id="activeTask">
+            <div class="question-copy"><p class="question-kicker" id="stepEyebrow">まずは手がかりを探そう</p><h3 id="questionTitle">おかしいところは、どこ？</h3><p id="questionDetail">2つの実験をよく見比べてみよう。</p></div>
+            <fieldset class="choices-fieldset"><legend class="sr-only" id="choiceLegend">答えをひとつ選んでください</legend><div id="choiceGroup" class="choice-group flex flex-col gap-3"></div></fieldset>
+            <div id="feedback" class="feedback" role="status" aria-live="polite" hidden></div>
+            <div id="hintBox" class="hint-box" hidden><span aria-hidden="true">💡</span><span id="hintCopy"></span></div>
+            <div class="task-actions"><button type="button" id="submitButton" class="action-primary action-submit" disabled>これで調査する <span aria-hidden="true">→</span></button><button type="button" id="hintButton" class="hint-button"><span aria-hidden="true">✳</span> ヒントをみる</button></div>
+            
+          </div>
+          <div id="completionPanel" class="completion-panel" hidden tabindex="-1">
+            <div class="complete-burst" aria-hidden="true"><div class="complete-seal"><strong>解決!</strong></div></div>
+            <h3 id="completeTitle">事件、解決！</h3><p id="completeText"></p>
+            <div class="complete-learning"><strong>✎ 今日の発見</strong><p id="completeLearning"></p></div>
+            <div class="complete-actions"><button type="button" id="nextCaseButton" class="action-primary">つぎの事件へ <span aria-hidden="true">→</span></button><button type="button" id="replayButton" class="replay-button">この事件をもう一度</button></div>
+          </div>
+        </div>
+      </div>
+      <div class="below-workbench"><button type="button" id="resetCaseButton">↺ この事件をはじめから</button></div>
+    </section>
+
+    <section class="learning-strip" aria-label="実験の3つの考え方"><div><h2>実験のコツは、3つだけ。</h2><p><strong>変える条件</strong>を決めて、ほかの条件を<strong>そろえる</strong>。最後に<strong>結果を測る</strong>。</p></div></section>
+  </main>
+
+  <footer class="page-footer"><div class="page-container flex items-center justify-between gap-3 flex-wrap"><span><strong>PikaLab</strong> <span aria-hidden="true">✳</span> 遊びながら、ひらめこう。</span><span>広告なし・外部への学習データ送信なし / © KatakataLab</span></div></footer>
+
+  <dialog id="helpDialog" class="help-dialog" aria-labelledby="helpTitle"><div class="dialog-top flex justify-between items-center gap-2"><button type="button" id="helpClose" class="close-dialog" aria-label="閉じる">×</button></div><h2 id="helpTitle">実験探偵のあそびかた</h2><ol><li><span>01</span><div><strong>2つの実験を見くらべる</strong><p>実験AとBの絵と条件表を見比べよう。</p></div></li><li><span>02</span><div><strong>おかしい条件を直す</strong><p>何を調べたいかに合わせて条件をそろえるよ。</p></div></li><li><span>03</span><div><strong>結果の調べ方や、言えることを考える</strong><p>ヒントを使いながら、最後の判断まで進もう。</p></div></li></ol><p class="dialog-note">このゲームは実験の計画を考えるものです。表示内容は模式図と仮の設定です。熱や道具を使う実験を実際に試すときは保護者と相談してください。解決済みの記録だけ、この端末に保存します。</p><button type="button" id="clearProgress" class="clear-progress">この端末の解決済み記録を消す</button><button type="button" id="helpStart" class="action-primary dialog-button">わかった！ 調査へ <span aria-hidden="true">→</span></button></dialog>
+</body>
+</html>

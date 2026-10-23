@@ -1209,3 +1209,14 @@ canvas { max-width: 100%; height: auto; display: none; }
     scroll-behavior: auto !important;
   }
 }
+
+/* Single QR is the primary flow. Print excludes forms and bulk output. */
+#qrPrintArea { display: none; }
+#colorDetails { margin-block: 1rem; }
+#colorDetails .setting-item { margin-block: 1rem; }
+.action-area .row-actions { justify-content: center; flex-wrap: wrap; }
+@media print {
+  body > * { display: none !important; }
+  body > #qrPrintArea { display: block !important; background: white !important; }
+  #qrPrintImage { display: block; max-width: 100%; height: auto; margin: 1cm auto; }
+}

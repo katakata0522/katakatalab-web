@@ -376,8 +376,15 @@ test('E2Eテスト構成ファイルが存在する', () => {
   assert.equal(fs.existsSync(path.join(ROOT, 'tests/e2e/qrcode-lab.spec.mjs')), true);
   const pkg = JSON.parse(read('package.json'));
   assert.equal(typeof pkg.scripts['test:e2e'], 'string');
-  assert.equal(typeof pkg.scripts['check:prod'], 'string');
-  assert.equal(typeof pkg.scripts['license:admin'], 'string');
+  assert.equal(typeof pkg.scripts['test:quality-browser'], 'string');
+  for (const script of Object.values(pkg.scripts)) {
+    assert.doesNotMatch(script, /production\//, '公開QAはPrivate運用スクリプトを呼びません');
+  }
+  const nodeTestFiles = pkg.scripts.test.match(/tests\/[^\s]+\.test\.(?:js|cjs|mjs)/g) || [];
+  assert.ok(nodeTestFiles.length > 0, 'Nodeテストの入口が必要です');
+  for (const testFile of nodeTestFiles) {
+    assert.equal(fs.existsSync(path.join(ROOT, testFile)), true, `${testFile} が公開ソースにありません`);
+  }
 });
 
 test('pro-plan はFAQ一括開閉ボタンを持つ', () => {
@@ -431,6 +438,21 @@ test('Pro ライセンスはAPI未設定時にローカル判定で有効化し�
   assert.match(script, /if \(!canUseLocalLicenseFallback\(\)\) \{/);
   assert.match(script, /return \{ valid: false, reason: 'unconfigured', source: 'none' \};/);
   assert.match(script, /valid:\s*VALID_LICENSE_PATTERN\.test\(licenseKey\)/);
+});
+
+test('Pro ライセンスは再検証前に保存済みPro状態を復元せず、APIのboolean trueだけを有効扱いする', () => {
+  const script = read('script.js');
+  assert.match(script, /!runtimeConfig\.licenseApiUrl\s*&&\s*runtimeConfig\.allowLocalLicenseFallback/);
+  assert.match(script, /payload\.valid === true/);
+  assert.doesNotMatch(script, /valid:\s*Boolean\(payload && payload\.valid\)/);
+});
+
+test('Pro ライセンスの通信失敗ではキーを削除せず、strictVerificationに従う', () => {
+  const script = read('script.js');
+  assert.match(script, /state\.licenseKey = raw;/);
+  assert.match(script, /if \(state\.runtimeConfig\.strictVerification\) \{/);
+  assert.match(script, /サーバーへ到達できないだけでは保存済みキーを削除しない/);
+  assert.match(script, /runtimeConfig\.strictVerification === false/);
 });
 
 test('ローカル同梱の Pro 用ライブラリが存在する', () => {

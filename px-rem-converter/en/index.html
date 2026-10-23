@@ -49,7 +49,7 @@
     <div class="root-setting">
       <label for="rootBase">Root font size:</label>
       <div class="root-input-group">
-        <input type="number" id="rootBase" value="16" min="1" max="100" inputmode="decimal" aria-label="Root font size">
+        <input type="number" id="rootBase" value="16" min="1" max="100" inputmode="decimal" aria-label="Root font size" aria-describedby="rootError"><p id="rootError" class="helper-text" role="alert" hidden>Enter a base greater than zero within the calculable range.</p>
         <span class="unit">px</span>
         <div class="root-presets" role="group" aria-label="Common root sizes">
           <button type="button" class="btn-root-preset is-active" data-root="16" aria-label="Set root to 16 px" aria-pressed="true">16</button>
@@ -115,11 +115,13 @@
     </div>
     <p class="copy-hint">Copy includes common sizes only, not every row in the table.</p>
     
+    <textarea id="manualCopyCode" readonly hidden rows="14" aria-label="Code for manual copying" spellcheck="false" style="width:100%;box-sizing:border-box"></textarea>
+
     <div class="custom-add-container">
 
       <label for="customPxInput">Add a size to the reference table:</label>
       <div class="add-input-group">
-        <input type="number" id="customPxInput" placeholder="24" min="1" max="500" inputmode="numeric" aria-label="Pixel value to add">
+        <input type="number" id="customPxInput" placeholder="24" min="1" max="500" inputmode="decimal" aria-label="Pixel value to add" step="any">
         <span class="unit">px</span>
         <button type="button" id="addSizeBtn" class="btn-primary-sm">Add to table</button>
         <button type="button" id="resetSizesBtn" class="btn-secondary-sm" title="Reset the reference table" aria-label="Restore default reference sizes">↩ Reset</button>

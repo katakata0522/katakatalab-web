@@ -107,8 +107,11 @@ const Storage = {
     save(data) {
         try {
             localStorage.setItem('scienceMakerData_v1', JSON.stringify(data));
+            return true;
         } catch (e) {
             console.warn('LocalStorageへの保存に失敗しました:', e);
+            showToast('この端末に保存できませんでした。入力内容を控えてからページを閉じてください。', 'error');
+            return false;
         }
     },
     load() {
@@ -298,7 +301,7 @@ function getPlanState() {
 
 function savePlanState() {
     if (state.selectedTopicId) {
-        Storage.save(getPlanState());
+        return Storage.save(getPlanState());
     }
 }
 
@@ -338,7 +341,15 @@ function loadPlanState(data) {
         currentDate.textContent = state.createdAtDate;
     }
 
+    notifyPlanLoaded();
     return true;
+}
+
+// 操作方法や保存の成否にかかわらず、表示中の計画と結果欄を同期する。
+function notifyPlanLoaded() {
+    if (typeof document !== 'undefined' && typeof document.dispatchEvent === 'function') {
+        document.dispatchEvent(new Event('science-maker:plan-loaded'));
+    }
 }
 
 const COUNTER_LIMITS = Object.freeze({
@@ -571,6 +582,12 @@ function selectTopic(id) {
         return;
     }
 
+    // 同じテーマを開き直す操作では、編集中の計画を初期化しない。
+    if (state.selectedTopicId === id) {
+        switchStep('step-plan');
+        return;
+    }
+
     state.selectedTopicId = id;
     state.createdAtDate = new Date().toLocaleDateString('ja-JP');
 
@@ -591,6 +608,7 @@ function selectTopic(id) {
 
     syncPrintElements();
     savePlanState();
+    notifyPlanLoaded();
 
     switchStep('step-plan');
     showToast(`「${topic.title}」を選択しました`, 'success');
@@ -1019,6 +1037,7 @@ function setupStorageEventListener() {
                 const data = JSON.parse(e.newValue);
                 if (data && typeof data === 'object') {
                     const activeId = document.activeElement ? document.activeElement.id : null;
+                    const topicChanged = state.selectedTopicId !== data.topicId;
                     state.selectedTopicId = data.topicId;
                     state.createdAtDate = data.createdAt || state.createdAtDate;
 
@@ -1052,6 +1071,7 @@ function setupStorageEventListener() {
                     const topicsData = getTopicsData();
                     const topic = topicsData.find(t => t.id === data.topicId);
                     renderSafetyNotes(topic);
+                    if (topicChanged) notifyPlanLoaded();
                 }
             } catch (err) {
                 console.error('Failed to parse storage update:', err);

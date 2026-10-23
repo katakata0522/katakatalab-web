@@ -818,3 +818,19 @@ body.dark-mode .badge-security {
   border-color: rgba(96, 165, 250, 0.4) !important;
 }
 
+
+/* Both editors and results remain side-by-side at every viewport size. */
+.two-pane, .split-view { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+.two-pane > .pane, .split-view > .pane { min-width: 0; overflow: hidden; }
+.pane-header, .pane-actions { flex-wrap: wrap; }
+.diff-content { overflow-x: auto; }
+.code-mode .diff-content, .code-mode .diff-line-content { white-space: pre; word-break: normal; overflow-wrap: normal; }
+.code-mode .diff-line { min-height: 1.7em; }
+.diff-placeholder { opacity: .35; }
+#manualCopyDiff { width: 100%; min-height: 8rem; box-sizing: border-box; }
+@media(max-width: 768px) {
+  .two-pane, .split-view { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 6px; }
+  .pane-header { padding: 8px 5px; }
+  .diff-line-num { min-width: 2em; width: 2em; }
+  .result-actions { flex-wrap: wrap; }
+}

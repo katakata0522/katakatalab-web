@@ -20,34 +20,16 @@
         }
     }
 
+    // 固定カタログごとに一度だけ絞る。共有Dataは常にフルカタログのまま。
+    const defaultPools = new WeakMap();
     function defaultPool(entries) {
-        return Roles.getDefaultQuizPool(entries);
+        if (!defaultPools.has(entries)) defaultPools.set(entries, Roles.getDefaultQuizPool(entries));
+        return defaultPools.get(entries);
     }
 
-    function withTemporaryDefaultPools(callback) {
-        const original = {
-            lr: Data.KANJI_LR,
-            ud: Data.KANJI_UD,
-            all: Data.KANJI_ALL
-        };
-
-        const lr = defaultPool(original.lr);
-        const ud = defaultPool(original.ud);
-        Data.KANJI_LR = lr;
-        Data.KANJI_UD = ud;
-        Data.KANJI_ALL = [...lr, ...ud];
-
-        try {
-            return callback();
-        } finally {
-            Data.KANJI_LR = original.lr;
-            Data.KANJI_UD = original.ud;
-            Data.KANJI_ALL = original.all;
-        }
-    }
-
-    function withQuizExposure(callback) {
-        return quizExposure === 'full' ? callback() : withTemporaryDefaultPools(callback);
+    function getPool(mode, exposure = quizExposure) {
+        const entries = mode === 'lr' ? Data.KANJI_LR : mode === 'ud' ? Data.KANJI_UD : Data.KANJI_ALL;
+        return exposure === 'full' ? entries : defaultPool(entries);
     }
 
     function getCounts() {
@@ -103,7 +85,7 @@
             App.quiz.startCourse = function (courseId, ...rest) {
                 // 「全問」は名前どおりフルカタログ。その他は deep を通常出題から外す。
                 quizExposure = courseId === 'all' ? 'full' : 'default';
-                return withQuizExposure(() => originalStartCourse(courseId, ...rest));
+                return originalStartCourse(courseId, ...rest);
             };
         }
 
@@ -111,22 +93,7 @@
             const originalStartDaily = App.daily.startDailyChallenge.bind(App.daily);
             App.daily.startDailyChallenge = function (...args) {
                 quizExposure = 'default';
-                return withQuizExposure(() => originalStartDaily(...args));
-            };
-        }
-
-        if (App.daily?.getDailyQuizzes) {
-            const originalDaily = App.daily.getDailyQuizzes.bind(App.daily);
-            App.daily.getDailyQuizzes = function (...args) {
-                return withTemporaryDefaultPools(() => originalDaily(...args));
-            };
-        }
-
-        // 問題プールだけでなく、2問目以降の選択肢候補も同じ露出範囲にする。
-        if (App.ui?.renderQuizContent) {
-            const originalRenderQuizContent = App.ui.renderQuizContent.bind(App.ui);
-            App.ui.renderQuizContent = function (...args) {
-                return withQuizExposure(() => originalRenderQuizContent(...args));
+                return originalStartDaily(...args);
             };
         }
 
@@ -148,6 +115,7 @@
 
     window.KanjiLabExposure = Object.freeze({
         defaultPool,
+        getPool,
         getDefaultCounts: function () {
             return {
                 lr: defaultPool(Data.KANJI_LR).length,

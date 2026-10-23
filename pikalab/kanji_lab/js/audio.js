@@ -27,7 +27,7 @@
      * @param {number} startTime 開始時刻 (秒)
      * @param {number} duration 音の長さ (秒)
      */
-    function playNote(ctx, masterGain, freq, startTime, duration) {
+    function playNote(ctx, masterGain, freq, startTime, duration, onEnded) {
         const osc = ctx.createOscillator();
         const envGain = ctx.createGain();
         osc.type = 'triangle';
@@ -36,30 +36,37 @@
         envGain.gain.exponentialRampToValueAtTime(0.001, startTime + duration);
         osc.connect(envGain);
         envGain.connect(masterGain);
+        osc.onended = function () {
+            osc.disconnect();
+            envGain.disconnect();
+            osc.onended = null;
+            onEnded();
+        };
         osc.start(startTime);
         osc.stop(startTime + duration + 0.05);
     }
 
+    // ラボのミュート選択を、共有設定の読み込みで書き換えない。
+    let sharedMuted = false;
     let syncVolume = 1.0;
+    let lastProfile;
     function syncSettings() {
         try {
             const stored = localStorage.getItem('wonder_school_profile_v2');
+            if (stored === lastProfile) return;
+            lastProfile = stored;
+            const data = stored ? JSON.parse(stored) : null;
+            sharedMuted = false;
+            syncVolume = 1.0;
             if (stored) {
-                const data = JSON.parse(stored);
-                if (data.isMuted !== undefined) {
-                    isMuted = !!data.isMuted;
-                }
-                if (data.volumeDb !== undefined) {
-                    const db = data.volumeDb;
-                    if (db <= -40) {
-                        isMuted = true;
-                        syncVolume = 0;
-                    } else {
-                        syncVolume = Math.pow(10, db / 40);
-                    }
-                }
+                if (!data || typeof data !== 'object' || Array.isArray(data)) return;
+                sharedMuted = !!data.isMuted;
+                // ポータルの profile.js と同じ -40〜0 dB の保存範囲を守る。
+                const db = Number.isFinite(data.volumeDb) ? Math.max(-40, Math.min(0, data.volumeDb)) : -20;
+                syncVolume = db <= -40 ? 0 : Math.pow(10, db / 40);
             }
         } catch (e) {
+            lastProfile = undefined;
             console.warn('Failed to sync settings in KanjiLabAudio:', e);
         }
     }
@@ -74,15 +81,21 @@
         stagger = stagger || 0;
         try {
             syncSettings();
-            if (isMuted) return;
+            if (isMuted || sharedMuted || syncVolume === 0) return;
             var ctx = getCtx();
-            if (ctx.state === 'suspended') ctx.resume();
+            if (ctx.state === 'suspended') {
+                const resumed = ctx.resume();
+                if (resumed?.catch) resumed.catch(error => console.warn('Audio resume error:', error));
+            }
             var masterGain = ctx.createGain();
             masterGain.gain.value = 0.35 * syncVolume;
             masterGain.connect(ctx.destination);
             var now = ctx.currentTime;
+            let remaining = freqs.length;
             freqs.forEach(function (freq, i) {
-                playNote(ctx, masterGain, freq, now + i * stagger, duration);
+                playNote(ctx, masterGain, freq, now + i * stagger, duration, function () {
+                    if (--remaining === 0) masterGain.disconnect();
+                });
             });
         } catch (e) {
             console.warn('Audio play error:', e);
@@ -108,7 +121,6 @@
         },
 
         playSound: function (type) {
-            if (isMuted) return;
             if (type === 'select') {
                 playChord([NOTE.C5], 0.09);
             } else if (type === 'combine') {
@@ -154,7 +166,7 @@
         });
     }
 
-    loadScript('./js/roles.js?v=20260831', 'data-kanji-roles-script', 'Kanji Lab exposure roles failed to load; full catalog remains available.')
-        .then(() => loadScript('./js/ux.js?v=20260831', 'data-kanji-ux-script', 'Kanji Lab UX layer failed to load; core game remains available.'))
-        .then(() => loadScript('./js/exposure.js?v=20260831', 'data-kanji-exposure-script', 'Kanji Lab exposure policy failed to load; full catalog remains available.'));
+    loadScript('./js/roles.js?v=20261003kanji1', 'data-kanji-roles-script', 'Kanji Lab exposure roles failed to load; full catalog remains available.')
+        .then(() => loadScript('./js/ux.js?v=20261003kanji1', 'data-kanji-ux-script', 'Kanji Lab UX layer failed to load; core game remains available.'))
+        .then(() => loadScript('./js/exposure.js?v=20261003kanji1', 'data-kanji-exposure-script', 'Kanji Lab exposure policy failed to load; full catalog remains available.'));
 })();

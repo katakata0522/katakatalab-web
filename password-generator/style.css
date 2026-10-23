@@ -1304,3 +1304,6 @@ body.dark-mode .pwd-item:hover {
 }
 
 
+
+/* Recovery is discoverable only when legacy storage exists. */
+.pwd-tab-btn[hidden] { display: none !important; }
