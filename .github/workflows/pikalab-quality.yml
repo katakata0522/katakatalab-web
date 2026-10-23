@@ -96,6 +96,8 @@ jobs:
 
       - name: Prepare required command-line tools
         run: |
+          git config --global --add safe.directory "$GITHUB_WORKSPACE"
+          test "$(git rev-parse --is-inside-work-tree)" = true
           if ! ( command -v python3 >/dev/null ); then
             apt-get update
             apt-get install -y --no-install-recommends python3
@@ -224,6 +226,8 @@ jobs:
 
       - name: Prepare required command-line tools
         run: |
+          git config --global --add safe.directory "$GITHUB_WORKSPACE"
+          test "$(git rev-parse --is-inside-work-tree)" = true
           if ! ( command -v python3 >/dev/null ); then
             apt-get update
             apt-get install -y --no-install-recommends python3
@@ -435,6 +439,8 @@ jobs:
 
       - name: Prepare required command-line tools
         run: |
+          git config --global --add safe.directory "$GITHUB_WORKSPACE"
+          test "$(git rev-parse --is-inside-work-tree)" = true
           if ! ( command -v python3 >/dev/null ); then
             apt-get update
             apt-get install -y --no-install-recommends python3
@@ -499,6 +505,8 @@ jobs:
 
       - name: Prepare required command-line tools
         run: |
+          git config --global --add safe.directory "$GITHUB_WORKSPACE"
+          test "$(git rev-parse --is-inside-work-tree)" = true
           if ! ( command -v python3 >/dev/null ); then
             apt-get update
             apt-get install -y --no-install-recommends python3
@@ -563,6 +571,8 @@ jobs:
 
       - name: Prepare required command-line tools
         run: |
+          git config --global --add safe.directory "$GITHUB_WORKSPACE"
+          test "$(git rev-parse --is-inside-work-tree)" = true
           if ! ( command -v python3 >/dev/null ); then
             apt-get update
             apt-get install -y --no-install-recommends python3
@@ -627,6 +637,8 @@ jobs:
 
       - name: Prepare required command-line tools
         run: |
+          git config --global --add safe.directory "$GITHUB_WORKSPACE"
+          test "$(git rev-parse --is-inside-work-tree)" = true
           if ! ( command -v python3 >/dev/null && command -v pdftoppm >/dev/null && command -v pdftotext >/dev/null ); then
             apt-get update
             apt-get install -y --no-install-recommends python3 poppler-utils
@@ -690,6 +702,8 @@ jobs:
           persist-credentials: false
       - name: Prepare required command-line tools
         run: |
+          git config --global --add safe.directory "$GITHUB_WORKSPACE"
+          test "$(git rev-parse --is-inside-work-tree)" = true
           if ! ( command -v python3 >/dev/null && command -v pdftoppm >/dev/null && command -v pdftotext >/dev/null ); then
             apt-get update
             apt-get install -y --no-install-recommends python3 poppler-utils
