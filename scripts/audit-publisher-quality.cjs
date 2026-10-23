@@ -15,8 +15,6 @@ const AD_ENABLED_PATHS = new Set([
   '/guides/px-rem-guide.html',
   '/guides/password-guide.html',
   '/guides/codestudio-guide.html',
-  '/guides/qr-guide.html',
-  '/guides/discount-guide.html',
 ]);
 
 const AD_FREE_PATHS = [
@@ -29,7 +27,7 @@ const AD_FREE_PATHS = [
   /^\/guides\/en(?:\/|$)/,
   /^\/guides\/it-basics(?:\/|$)/,
   /^\/(?:who-is-katakata|about-katakatalab)\.html$/,
-  /^\/guides\/(?:sns-image-size-guide|password-storage-guide|css-size-scale-guide)\.html$/,
+  /^\/guides\/(?:sns-image-size-guide|password-storage-guide|css-size-scale-guide|qr-guide|discount-guide)\.html$/,
   /^\/emphasis-lines\/guide\.html$/,
   /^\/qrcode\/guides\.html$/,
   /^\/(?:404\.html|contact\.html|privacy\.html|terms\.html|sitemap\.html|offline\.html|ambition\.html|note-selection\.html|updates\.html)$/,
