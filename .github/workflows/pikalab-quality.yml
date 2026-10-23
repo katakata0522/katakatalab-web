@@ -22,6 +22,7 @@ on:
       - ".github/scripts/pikalab-ci-scope.cjs"
       - ".github/scripts/pikalab-ci-scope.test.cjs"
       - ".github/scripts/pikalab-e2e-inputs.cjs"
+      - ".github/scripts/verify-playwright-runtime.cjs"
       - ".htaccess"
       - "sitemap.xml"
       - ".github/scripts/sync_quest_board_csp.py"

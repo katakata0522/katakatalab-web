@@ -140,6 +140,15 @@ test('共有・未知・削除・設定・共通検証器の変更は全E2Eへ�
     }
 });
 
+test('共有ブラウザ準備だけの変更でもPR検査と全ラボの検証を起動する', () => {
+    const file = '.github/scripts/verify-playwright-runtime.cjs';
+    const trigger = readWorkflow().split('  pull_request:\n')[1].split('  workflow_dispatch:')[0];
+    assert.ok(trigger.includes(`      - "${file}"`), '共有準備の単独変更もPR検査の起動対象に含める');
+    const scope = classifyChanges([file]);
+    assert.equal(scope.full, true);
+    for (const key of Object.keys(LABS)) assert.equal(scope[key], true, key);
+});
+
 test('空の差分、手動実行、視覚維持ラベルは全検証する', () => {
     assert.equal(classifyChanges([]).full, true);
     assert.equal(classifyChanges(null).full, true);
