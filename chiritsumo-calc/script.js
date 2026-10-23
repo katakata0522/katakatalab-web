@@ -410,7 +410,7 @@
         const custom = Boolean(item.custom);
         const icon = typeof item.icon === 'string' ? item.icon : (custom ? '✨' : '💸');
 
-        if (typeof item.amount !== 'number' || !VALID_FREQS.has(item.freq) || typeof item.name !== 'string') {
+        if (typeof item.amount !== 'number' || amount !== item.amount || name !== item.name || id !== item.id || active !== item.active || custom !== item.custom || icon !== item.icon || !VALID_FREQS.has(item.freq) || typeof item.name !== 'string') {
           isCorrupted = true;
         }
 
@@ -420,7 +420,7 @@
       }
     }
 
-    return { items: validated.slice(0, 30), isCorrupted };
+    return { items: validated.slice(0, 30), isCorrupted: isCorrupted || validated.length > 30 };
   }
 
   /* ==========================================================================
@@ -503,7 +503,9 @@
      LocalStorage ヘルパー（自己修復・v1からのマイグレーション）
      ========================================================================== */
 
+  let storageReadBlocked = false;
   function loadExpenses() {
+    storageReadBlocked = false;
     try {
       let saved = localStorage.getItem(STORAGE_KEY);
       // 旧キーからのマイグレーション
@@ -527,8 +529,8 @@
         try {
           parsed = JSON.parse(saved);
         } catch (jsonErr) {
-          console.warn('Corrupt JSON in chiritsumo storage, auto-repairing:', jsonErr);
-          try { localStorage.removeItem(STORAGE_KEY); } catch (e) {}
+          console.warn('Corrupt JSON in chiritsumo storage; preserving original:', jsonErr);
+          storageReadBlocked = true;
           return JSON.parse(JSON.stringify(DEFAULT_EXPENSES));
         }
 
@@ -543,16 +545,23 @@
             return clamped;
           }
         }
+        storageReadBlocked = true;
       }
-    } catch (e) {}
+    } catch (e) { storageReadBlocked = true; }
     return JSON.parse(JSON.stringify(DEFAULT_EXPENSES));
   }
 
   function saveExpenses() {
+    const status = typeof document !== 'undefined' ? document.getElementById('expenseStorageStatus') : null;
     try {
+      if (storageReadBlocked) throw new Error('保存データを読み取れないため、元の内容を保護しています。');
       localStorage.setItem(STORAGE_KEY, JSON.stringify(State.expenses));
+      if (status) { status.textContent = ''; status.hidden = true; }
+      return true;
     } catch (e) {
+      if (status) { status.hidden = false; status.textContent = storageReadBlocked ? '保存データを読み取れないため上書きを止めています。表示中の変更は未保存です。' : '変更を保存できませんでした。この画面の内容を控えてから、次の操作で保存を再試行してください。'; }
       console.warn('LocalStorage save failed:', e);
+      return false;
     }
   }
 
@@ -783,6 +792,7 @@
       let animFrameId = null;
 
       function animateValue(obj, targetEnd, duration) {
+        if (animFrameId !== null) { cancelAnimationFrame(animFrameId); animFrameId = null; }
         if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
           obj.textContent = targetEnd.toLocaleString();
           currentAnimValue = targetEnd;
@@ -818,6 +828,7 @@
 
       // 計算実行
       function recalculate() {
+        clearCopyFeedback();
         const monthlyTotal = calculateTotalMonthly(State.expenses);
         const dailyTotal = Math.round(monthlyTotal / DAYS_PER_MONTH);
 
@@ -1070,18 +1081,18 @@
       // リセットボタン
       DOM.resetDefaultsBtn.addEventListener('click', () => {
         if (confirm('出費の選択と金額を初期状態に戻しますか？')) {
-          try { localStorage.removeItem(STORAGE_KEY); } catch (e) {}
           State.expenses = JSON.parse(JSON.stringify(DEFAULT_EXPENSES));
+          const saved = saveExpenses();
           renderExpenseGrid();
           recalculate();
-          announceA11y('出費設定を初期状態にリセットしました');
+          announceA11y(saved ? '出費設定を初期状態にリセットしました' : '画面の設定を初期状態に戻しましたが、保存できていません');
         }
       });
 
       // シェアデータ生成
       function getShareData() {
         const periodLabel = DOM.summaryPeriodLabel.textContent;
-        const amountStr = DOM.summaryAmount.textContent;
+        const amountStr = State.previousDisplayAmount.toLocaleString();
         const unlocked = REWARDS.filter(r => (State.previousDisplayAmount >= r.cost));
         const bestReward = unlocked.length > 0 ? unlocked[unlocked.length - 1].name : null;
 
@@ -1102,48 +1113,60 @@ ${periodLabel}で【¥${amountStr}】浮くことが判明！✨
         return { title: 'チリツモ逆算シミュレーター', text, url };
       }
 
-      function fallbackCopy(text) {
-        const ta = document.createElement('textarea');
-        ta.value = text;
-        ta.style.position = 'fixed';
-        ta.style.opacity = '0';
-        document.body.appendChild(ta);
-        ta.select();
-        try {
-          document.execCommand('copy');
-          showCopied();
-        } catch (e) {}
-        document.body.removeChild(ta);
+      let copyRevision = 0;
+      let copyFeedbackTimer = null;
+      const copyOriginalLabel = DOM.copyBtn.innerHTML;
+      function clearCopyFeedback() {
+        copyRevision++;
+        if (copyFeedbackTimer !== null) clearTimeout(copyFeedbackTimer);
+        DOM.copyBtn.innerHTML = copyOriginalLabel;
+        const field = document.getElementById('manualCopyResult');
+        if (field) { field.hidden = true; field.value = ''; }
       }
-
+      function fallbackCopy(text, revision = copyRevision) {
+        if (revision !== copyRevision) return;
+        const ta = document.createElement('textarea');
+        let copied = false;
+        try {
+          ta.value = text; ta.style.position = 'fixed'; ta.style.opacity = '0';
+          document.body.appendChild(ta); ta.select();
+          copied = document.execCommand('copy') === true;
+        } catch (e) {} finally { ta.remove(); }
+        if (revision !== copyRevision) return;
+        if (copied) showCopied();
+        else {
+          const field = document.getElementById('manualCopyResult');
+          if (field) { field.hidden = false; field.value = text; field.focus(); field.select(); }
+          announceA11y('コピーできませんでした。選択された内容を手動でコピーしてください');
+        }
+      }
       function showCopied() {
-        const orig = DOM.copyBtn.innerHTML;
+        if (copyFeedbackTimer !== null) clearTimeout(copyFeedbackTimer);
         DOM.copyBtn.innerHTML = '<span aria-hidden="true">✅</span> コピーしました！';
         announceA11y('結果をクリップボードにコピーしました');
-        setTimeout(() => { DOM.copyBtn.innerHTML = orig; }, FEEDBACK_DURATION_MS);
+        copyFeedbackTimer = setTimeout(() => { DOM.copyBtn.innerHTML = copyOriginalLabel; copyFeedbackTimer = null; }, FEEDBACK_DURATION_MS);
       }
-
-      DOM.copyBtn.addEventListener('click', () => {
+      DOM.copyBtn.addEventListener('click', async () => {
+        clearCopyFeedback();
+        const revision = copyRevision;
         const { text, url } = getShareData();
         const full = `${text}\n${url}`;
-        if (navigator.clipboard && window.isSecureContext) {
-          navigator.clipboard.writeText(full).then(() => showCopied()).catch(() => fallbackCopy(full));
-        } else {
-          fallbackCopy(full);
-        }
+        try {
+          if (!navigator.clipboard || !window.isSecureContext) { fallbackCopy(full, revision); return; }
+          await navigator.clipboard.writeText(full);
+          if (revision === copyRevision) showCopied();
+        } catch (e) { fallbackCopy(full, revision); }
       });
-
-      DOM.nativeShareBtn.addEventListener('click', () => {
+      DOM.nativeShareBtn.addEventListener('click', async () => {
+        clearCopyFeedback();
+        const revision = copyRevision;
         const { title, text, url } = getShareData();
-        if (navigator.share) {
-          navigator.share({ title, text, url }).catch((err) => {
-            // AbortErrorはユーザーが自発的に閉じた正常動作
-            if (err && err.name === 'AbortError') return;
-            // その他エラー時はクリップボードコピーへフォールバック
-            fallbackCopy(`${text}\n${url}`);
-          });
-        } else {
-          fallbackCopy(`${text}\n${url}`);
+        try {
+          if (!navigator.share) { fallbackCopy(`${text}\n${url}`, revision); return; }
+          await navigator.share({ title, text, url });
+        } catch (err) {
+          if (err && err.name === 'AbortError') return;
+          fallbackCopy(`${text}\n${url}`, revision);
         }
       });
 
@@ -1158,6 +1181,7 @@ ${periodLabel}で【¥${amountStr}】浮くことが判明！✨
       });
 
       // 初回初期化
+      if (storageReadBlocked) { const status = document.getElementById('expenseStorageStatus'); if (status) { status.hidden = false; status.textContent = '保存データを読み取れないため、元の内容を保護しています。表示中の初期設定は保存されていません。'; } }
       renderExpenseGrid();
       recalculate();
     });

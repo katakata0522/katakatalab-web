@@ -241,7 +241,7 @@
         '「相手の機嫌は相手の課題」とアドラー心理学的に線引きすること'
       ];
       uncontrollable = [
-        '相手が過去に言った言葉（過去の事事実を変えられない）',
+        '相手が過去に言った言葉（過去の事実を変えられない）',
         '相手があなたのことを頭の中でどう解釈・評価するか',
         '相手の機嫌や性格を変えようとすること'
       ];
@@ -442,7 +442,9 @@
    * 旧キーからの自動マイグレーションと破損修復を行う。
    * @returns {HistoryEntry[]}
    */
+  let historyReadBlocked = false;
   function getSafeHistory() {
+    historyReadBlocked = false;
     try {
       let raw = localStorage.getItem(STORAGE_KEY);
       // 旧バージョン（v1）キーからの自動マイグレーション
@@ -465,13 +467,13 @@
       try {
         parsed = JSON.parse(raw);
       } catch (parseErr) {
-        console.warn('Corrupt JSON in moyamoya history, auto-repairing:', parseErr);
-        try { localStorage.removeItem(STORAGE_KEY); } catch (e) {}
+        console.warn('Corrupt JSON in moyamoya history; preserving original:', parseErr);
+        historyReadBlocked = true;
         return [];
       }
 
       if (!Array.isArray(parsed)) {
-        try { localStorage.removeItem(STORAGE_KEY); } catch (e) {}
+        historyReadBlocked = true;
         return [];
       }
 
@@ -484,6 +486,7 @@
 
       return validEntries;
     } catch (e) {
+      historyReadBlocked = true;
       return [];
     }
   }
@@ -579,6 +582,9 @@
       DOM.presetChips.addEventListener('click', (e) => {
         const chip = e.target.closest('.chip-btn');
         if (!chip) return;
+        const candidate = DOM.moyamoyaText.value.trim();
+        const addition = chip.dataset.text;
+        if (candidate && !candidate.includes(addition) && `${candidate}\nまた、${addition}`.length > MAX_INPUT_LENGTH) { announceA11y('1000文字を超えるため追加できません。入力内容は変更していません'); return; }
 
         DOM.presetChips.querySelectorAll('.chip-btn').forEach(c => {
           c.classList.remove('active');
@@ -596,6 +602,8 @@
         }
         const newLen = DOM.moyamoyaText.value.length;
         DOM.charCount.textContent = `${newLen}文字`;
+        DOM.charCount.classList.toggle('char-count-max', newLen >= CHAR_COUNT_MAX_THRESHOLD);
+        DOM.charCount.classList.toggle('char-count-warn', newLen >= CHAR_COUNT_WARN_THRESHOLD && newLen < CHAR_COUNT_MAX_THRESHOLD);
         DOM.moyamoyaText.focus();
       });
 
@@ -628,7 +636,8 @@
             playChime();
           }
           const currentAction = ACTION_DATABASE[State.currentActionIndex]?.action || '最小の一歩';
-          saveHistory(DOM.moyamoyaText.value.trim() || '漠然としたモヤモヤ', `[即行動] ${currentAction}`);
+          const saved = saveHistory(DOM.moyamoyaText.value.trim() || '漠然としたモヤモヤ', `[即行動] ${currentAction}`);
+          document.getElementById('actNowSaveStatus').textContent = saved ? '結果は履歴に保存されました。' : '結果を履歴に保存できませんでした。必要な内容を控えてください。';
           if (DOM.actNowCompleteBanner) {
             DOM.actNowCompleteBanner.classList.remove('hidden');
             DOM.actNowCompleteBanner.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
@@ -665,9 +674,13 @@
       }
 
       // 4. アクション描画
+      let actionRenderTimer = null;
       function renderAction() {
+        invalidateCopy();
+        if (actionRenderTimer !== null) clearTimeout(actionRenderTimer);
         DOM.selectedActionCard.classList.add('fade-switch');
-        setTimeout(() => {
+        actionRenderTimer = setTimeout(() => {
+          actionRenderTimer = null;
           const item = ACTION_DATABASE[State.currentActionIndex];
           DOM.actionIcon.textContent = item.icon;
           DOM.actionText.textContent = item.action;
@@ -678,6 +691,7 @@
 
       // 5. 「仕分ける」ボタン
       DOM.sortBtn.addEventListener('click', () => {
+        resetTimerSession();
         primeAudio();
         const rawText = sanitizeInput(DOM.moyamoyaText.value).trim();
         const { controllable, uncontrollable, note } = analyzeMoyamoya(rawText);
@@ -786,7 +800,7 @@
         State.timer.intervalId = setInterval(tickTimer, TIMER_TICK_INTERVAL_MS);
       });
 
-      DOM.resetTimerBtn.addEventListener('click', () => {
+      function resetTimerSession() {
         if (State.timer.intervalId) {
           clearInterval(State.timer.intervalId);
           State.timer.intervalId = null;
@@ -803,8 +817,8 @@
         DOM.startTimerBtn.style.background = 'var(--c-green)';
         DOM.resetTimerBtn.classList.add('hidden');
         DOM.timerMessage.textContent = '「あれこれ考えず、この2分だけ目の前のこと（または呼吸）に集中しましょう」';
-        announceA11y('タイマーをリセットしました');
-      });
+      }
+      DOM.resetTimerBtn.addEventListener('click', () => { resetTimerSession(); announceA11y('タイマーをリセットしました'); });
 
       // タブ復帰時のタイマー即時同期（バックグラウンドスロットリング対策）
       document.addEventListener('visibilitychange', () => {
@@ -887,33 +901,45 @@
       }
 
       // 8. コピー & シェア
-      function copyTextSecure(text, btn) {
-        if (navigator.clipboard && window.isSecureContext) {
-          navigator.clipboard.writeText(text).then(() => showCopiedFeedback(btn)).catch(() => fallbackCopy(text, btn));
-        } else {
-          fallbackCopy(text, btn);
+      let copyRevision = 0, copyTimer = null;
+      const copyOriginal = DOM.copyResultBtn.innerHTML;
+      function invalidateCopy() {
+        copyRevision++;
+        if (copyTimer !== null) clearTimeout(copyTimer);
+        DOM.copyResultBtn.innerHTML = copyOriginal;
+        const field = document.getElementById('manualCopyResult');
+        if (field) { field.hidden = true; field.value = ''; }
+      }
+      async function copyTextSecure(text, btn) {
+        invalidateCopy();
+        const revision = copyRevision;
+        try {
+          if (!navigator.clipboard || !window.isSecureContext) { fallbackCopy(text, btn, revision); return; }
+          await navigator.clipboard.writeText(text);
+          if (revision === copyRevision) showCopiedFeedback(btn);
+        } catch (err) { if (revision === copyRevision) fallbackCopy(text, btn, revision); }
+      }
+      function fallbackCopy(text, btn, revision = copyRevision) {
+        if (revision !== copyRevision) return;
+        const ta = document.createElement('textarea');
+        let copied = false;
+        try {
+          ta.value = text; ta.style.position = 'fixed'; ta.style.opacity = '0';
+          document.body.appendChild(ta); ta.select();
+          copied = document.execCommand('copy') === true;
+        } catch (err) {} finally { ta.remove(); }
+        if (copied) showCopiedFeedback(btn);
+        else {
+          const field = document.getElementById('manualCopyResult');
+          if (field) { field.hidden = false; field.value = text; field.focus(); field.select(); }
+          announceA11y('コピーできませんでした。選択された結果を手動でコピーしてください');
         }
       }
-
-      function fallbackCopy(text, btn) {
-        const ta = document.createElement('textarea');
-        ta.value = text;
-        ta.style.position = 'fixed';
-        ta.style.opacity = '0';
-        document.body.appendChild(ta);
-        ta.select();
-        try {
-          document.execCommand('copy');
-          showCopiedFeedback(btn);
-        } catch (err) {}
-        document.body.removeChild(ta);
-      }
-
       function showCopiedFeedback(btn) {
-        const originalText = btn.innerHTML;
+        if (copyTimer !== null) clearTimeout(copyTimer);
         btn.innerHTML = '<span aria-hidden="true">✅</span> コピーしました！';
         announceA11y('結果をクリップボードにコピーしました');
-        setTimeout(() => { btn.innerHTML = originalText; }, FEEDBACK_DURATION_MS);
+        copyTimer = setTimeout(() => { btn.innerHTML = copyOriginal; copyTimer = null; }, FEEDBACK_DURATION_MS);
       }
 
       DOM.copyResultBtn.addEventListener('click', () => {
@@ -922,7 +948,7 @@
 ・${State.currentControllable.join('\n・')}
 
 今すぐできる2分の一歩：
-${DOM.actionText.textContent}
+${ACTION_DATABASE[State.currentActionIndex].action}
 
 （KatakataLab モヤモヤ仕分け機）
 https://katakatalab.com/moyamoya-sorter/`;
@@ -932,7 +958,7 @@ https://katakatalab.com/moyamoya-sorter/`;
 
       DOM.shareXBtn.addEventListener('click', () => {
         const tweetText = encodeURIComponent(`頭のモヤモヤを整理して、今できる「2分の一歩」を決めました！
-👉「${DOM.actionText.textContent}」
+👉「${ACTION_DATABASE[State.currentActionIndex].action}」
 
 全部を今日解決しなくていい。小さな一歩で100点満点🌱
 #モヤモヤ仕分け機 #KatakataLab`);
@@ -942,6 +968,10 @@ https://katakatalab.com/moyamoya-sorter/`;
       });
 
       DOM.retryBtn.addEventListener('click', () => {
+        resetTimerSession();
+        invalidateCopy();
+        if (actionRenderTimer !== null) { clearTimeout(actionRenderTimer); actionRenderTimer = null; }
+        DOM.selectedActionCard.classList.remove('fade-switch');
         stopConfetti();
         DOM.moyamoyaText.value = '';
         DOM.charCount.textContent = '0文字';
@@ -956,79 +986,69 @@ https://katakatalab.com/moyamoya-sorter/`;
       });
 
       // 9. 履歴管理（QuotaExceededError自己回復 & DocumentFragment描画）
+      function historyStatus(message) {
+        const status = document.getElementById('historyStorageStatus');
+        status.textContent = message; status.hidden = !message;
+      }
       function saveHistory(text, actionName) {
         try {
           const history = getSafeHistory();
+          if (historyReadBlocked) throw new Error('Unreadable history');
           const cleanText = sanitizeInput(text);
           const shortText = cleanText.slice(0, HISTORY_SNIPPET_MAX_LEN) + (cleanText.length > HISTORY_SNIPPET_MAX_LEN ? '…' : '');
           const cleanAction = sanitizeInput(actionName);
-          if (history.length > 0 && history[0].text === shortText && history[0].action === cleanAction) {
-            return;
-          }
-          const newEntry = {
-            id: Date.now(),
-            text: shortText,
-            action: cleanAction,
-            date: new Date().toLocaleDateString('ja-JP', { month: 'numeric', day: 'numeric', hour: '2-digit', minute: '2-digit' })
-          };
-          history.unshift(newEntry);
-          const clamped = history.slice(0, MAX_HISTORY_ENTRIES);
-
-          try {
-            localStorage.setItem(STORAGE_KEY, JSON.stringify(clamped));
-          } catch (quotaErr) {
-            console.warn('LocalStorage quota exceeded in saveHistory, attempting eviction:', quotaErr);
-            try {
-              if (clamped.length > 1) {
-                clamped.pop();
-                localStorage.setItem(STORAGE_KEY, JSON.stringify(clamped));
-              }
-            } catch (retryErr) {}
-          }
-          renderHistory();
+          if (history.length > 0 && history[0].text === shortText && history[0].action === cleanAction) return true;
+          let id = Date.now();
+          while (history.some(item => item.id === id)) id++;
+          history.unshift({ id, text: shortText, action: cleanAction, date: new Date().toLocaleDateString('ja-JP', { month: 'numeric', day: 'numeric', hour: '2-digit', minute: '2-digit' }) });
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(history.slice(0, MAX_HISTORY_ENTRIES)));
+          historyStatus(''); renderHistory(); return true;
         } catch (e) {
-          console.warn('LocalStorage save failed:', e);
-          renderHistory();
+          historyStatus('履歴を保存できませんでした。既存の保存内容はそのままです。必要な結果を控えてから再試行してください。');
+          return false;
         }
       }
-
-      function deleteHistoryItem(id) {
+      function deleteHistoryItem(id, index) {
         try {
-          let history = getSafeHistory();
-          history = history.filter(item => item.id !== id);
+          const history = getSafeHistory();
+          if (historyReadBlocked) throw new Error('Unreadable history');
+          const target = Number.isInteger(index) && history[index]?.id === id ? index : history.findIndex(item => item.id === id);
+          if (target < 0) return;
+          history.splice(target, 1);
           localStorage.setItem(STORAGE_KEY, JSON.stringify(history));
-          renderHistory();
-          announceA11y('履歴項目を削除しました');
-        } catch (e) {}
+          historyStatus(''); renderHistory(); announceA11y('履歴項目を削除しました');
+        } catch (e) { historyStatus('履歴を削除できませんでした。保存内容を確認してから再試行してください。'); }
       }
-
       DOM.clearHistoryBtn.addEventListener('click', () => {
         if (confirm('保存されているモヤモヤ履歴をすべて削除しますか？')) {
-          try { localStorage.removeItem(STORAGE_KEY); } catch (e) {}
-          renderHistory();
-          announceA11y('すべてのモヤモヤ履歴を削除しました');
+          try {
+            localStorage.removeItem(OLD_STORAGE_KEY);
+            localStorage.removeItem(STORAGE_KEY);
+            historyReadBlocked = false;
+            historyStatus(''); renderHistory(); announceA11y('すべてのモヤモヤ履歴を削除しました');
+          } catch (e) { historyStatus('履歴をすべて削除できませんでした。残っている内容を確認し、再試行してください。'); announceA11y('履歴の削除に失敗しました'); }
         }
       });
-
       DOM.historyList.addEventListener('click', (e) => {
         const delBtn = e.target.closest('.history-del-btn');
         if (!delBtn) return;
-        deleteHistoryItem(Number(delBtn.dataset.id));
+        deleteHistoryItem(Number(delBtn.dataset.id), Number(delBtn.dataset.index));
       });
 
       function renderHistory() {
         try {
           const history = getSafeHistory();
+          if (historyReadBlocked) historyStatus('保存された履歴を読み取れないため、元の内容を保護しています。新しい結果の保存は停止中です。');
           if (history.length === 0) {
             DOM.historyList.innerHTML = '<div style="font-size: 0.85rem; color: var(--c-text-light);">まだ記録はありません。仕分けを実行するとここに表示されます。</div>';
-            DOM.clearHistoryBtn.classList.add('hidden');
+            DOM.clearHistoryBtn.classList.toggle('hidden', !historyReadBlocked);
             return;
           }
           DOM.clearHistoryBtn.classList.remove('hidden');
           DOM.historyList.innerHTML = '';
 
           const frag = document.createDocumentFragment();
-          history.forEach(item => {
+          history.forEach((item, index) => {
             const div = document.createElement('div');
             div.className = 'history-item';
             div.setAttribute('role', 'listitem');
@@ -1052,6 +1072,7 @@ https://katakatalab.com/moyamoya-sorter/`;
             delBtn.className = 'history-del-btn';
             delBtn.title = 'この記録を削除';
             delBtn.dataset.id = String(item.id);
+            delBtn.dataset.index = String(index);
             delBtn.setAttribute('aria-label', `${item.text} の記録を削除`);
             delBtn.textContent = '✕';
 

@@ -36,12 +36,14 @@ const AspectRatioLogic = (() => {
 
   function dimensionFromWidth(width, ratioW, ratioH) {
     if (![width, ratioW, ratioH].every(isPositiveNumber)) return null;
-    return Math.round(width * (ratioH / ratioW));
+    const result = Math.round(width * (ratioH / ratioW));
+    return Number.isSafeInteger(result) && result > 0 ? result : null;
   }
 
   function dimensionFromHeight(height, ratioW, ratioH) {
     if (![height, ratioW, ratioH].every(isPositiveNumber)) return null;
-    return Math.round(height * (ratioW / ratioH));
+    const result = Math.round(height * (ratioW / ratioH));
+    return Number.isSafeInteger(result) && result > 0 ? result : null;
   }
 
   function ratioFromDimensions(width, height) {
@@ -49,7 +51,7 @@ const AspectRatioLogic = (() => {
 
     const normalizedWidth = Math.round(width);
     const normalizedHeight = Math.round(height);
-    if (normalizedWidth <= 0 || normalizedHeight <= 0) return null;
+    if (![normalizedWidth, normalizedHeight].every(Number.isSafeInteger) || normalizedWidth <= 0 || normalizedHeight <= 0) return null;
 
     const common = gcd(normalizedWidth, normalizedHeight);
     if (common <= 0) return null;
@@ -167,7 +169,9 @@ if (typeof document !== 'undefined') {
       snippetRatioVal: document.getElementById('snippetRatioVal'),
       snippetDimsVal: document.getElementById('snippetDimsVal'),
       badgeCssRatio: document.getElementById('badgeCssRatio'),
-      badgeDims: document.getElementById('badgeDims')
+      badgeDims: document.getElementById('badgeDims'),
+      status: document.getElementById('calculationStatus'),
+      manualCopy: document.getElementById('manualAspectCopy')
     };
 
     if (!els.ratioW || !els.ratioH || !els.width || !els.height || !els.previewBox) {
@@ -178,19 +182,36 @@ if (typeof document !== 'undefined') {
     let currentDevice = 'monitor';
     let isRatioLocked = true;
     let resizeTimer = 0;
+    let copyGeneration = 0;
+    let copyTimer = 0;
 
     function isValidInput(value) {
       return Number.isFinite(value) && value > 0;
     }
 
-    function validate(value, element) {
-      if (isValidInput(value)) {
-        element.classList.remove('input-error');
-        return true;
-      }
+    function setStatus(message) {
+      if (els.status) els.status.textContent = message;
+    }
 
-      if (element.value !== '') element.classList.add('input-error');
-      return false;
+    function validate(value, element) {
+      const isDimension = element === els.width || element === els.height;
+      const valid = isValidInput(value) && (!isDimension || Number.isSafeInteger(value));
+      element.classList.toggle('input-error', !valid);
+      element.setAttribute('aria-invalid', String(!valid));
+      return valid;
+    }
+
+    function normalizeDimension(element) {
+      const value = Number(element.value);
+      if (Number.isFinite(value) && value > 0) element.value = Math.round(value);
+    }
+
+    function validState() {
+      const values = [els.ratioW, els.ratioH, els.width, els.height].map(el => Number(el.value));
+      const valid = [els.ratioW, els.ratioH, els.width, els.height]
+        .map((el, i) => validate(values[i], el)).every(Boolean);
+      const ratio = values[0] / values[1];
+      return valid && Number.isFinite(ratio) && ratio > 0;
     }
 
     function updateRatioModeUi() {
@@ -204,7 +225,7 @@ if (typeof document !== 'undefined') {
       if (els.ratioModeHelp) {
         els.ratioModeHelp.textContent = isRatioLocked
           ? t('片方のサイズを変えると、比率を保ってもう片方を自動計算します。', 'Changing one dimension recalculates the other while preserving the ratio.')
-          : t('幅と高さを自由に入力すると、その2つから比率を逆算します。', 'Enter width and height freely to detect their ratio.');
+          : t('幅と高さは整数pxに丸め、その2つから比率を逆算します。', 'Dimensions are rounded to whole pixels before detecting their ratio.');
       }
     }
 
@@ -223,7 +244,10 @@ if (typeof document !== 'undefined') {
 
     function setDeviceFrame(device) {
       currentDevice = device;
-      els.deviceBtns.forEach((button) => button.classList.remove('active'));
+      els.deviceBtns.forEach((button) => {
+        button.classList.remove('active');
+        button.setAttribute('aria-pressed', String(button.dataset.device === device));
+      });
       const activeBtn = Array.from(els.deviceBtns).find((button) => button.dataset.device === device);
       if (activeBtn) activeBtn.classList.add('active');
 
@@ -239,16 +263,16 @@ if (typeof document !== 'undefined') {
 
       const ratioW = parseFloat(els.ratioW.value);
       const ratioH = parseFloat(els.ratioH.value);
-      let width = parseFloat(els.width.value);
+      const width = Number(els.width.value);
 
       if (!isValidInput(ratioW) || !isValidInput(ratioH)) {
+        updatePreview();
         isUpdating = false;
         return;
       }
 
-      if (!isValidInput(width)) width = 1920;
       const newHeight = AspectRatioLogic.dimensionFromWidth(width, ratioW, ratioH);
-      if (newHeight !== null) els.height.value = newHeight;
+      els.height.value = newHeight === null ? '' : newHeight;
 
       updatePreview();
       isUpdating = false;
@@ -262,6 +286,7 @@ if (typeof document !== 'undefined') {
         const ratioW = parseFloat(els.ratioW.value);
         const ratioH = parseFloat(els.ratioH.value);
         if (!isValidInput(ratioW) || !isValidInput(ratioH)) {
+          updatePreview();
           isUpdating = false;
           return;
         }
@@ -270,13 +295,13 @@ if (typeof document !== 'undefined') {
           const width = parseFloat(els.width.value);
           if (validate(width, els.width)) {
             const nextHeight = AspectRatioLogic.dimensionFromWidth(width, ratioW, ratioH);
-            if (nextHeight !== null) els.height.value = nextHeight;
+            els.height.value = nextHeight === null ? '' : nextHeight;
           }
         } else {
           const height = parseFloat(els.height.value);
           if (validate(height, els.height)) {
             const nextWidth = AspectRatioLogic.dimensionFromHeight(height, ratioW, ratioH);
-            if (nextWidth !== null) els.width.value = nextWidth;
+            els.width.value = nextWidth === null ? '' : nextWidth;
           }
         }
       } else {
@@ -304,18 +329,41 @@ if (typeof document !== 'undefined') {
     }
 
     function calcRatioFromSize() {
+      normalizeDimension(els.width);
+      normalizeDimension(els.height);
       const width = parseFloat(els.width.value);
       const height = parseFloat(els.height.value);
 
       if (validate(width, els.width) && validate(height, els.height)) {
         applyRatioFromDimensions(width, height);
-        updatePreview();
       }
+      updatePreview();
     }
 
     function updatePreview() {
-      const ratioW = parseFloat(els.ratioW.value) || 16;
-      const ratioH = parseFloat(els.ratioH.value) || 9;
+      if (els.manualCopy) { els.manualCopy.hidden = true; els.manualCopy.value = ''; }
+      copyGeneration += 1;
+      window.clearTimeout(copyTimer);
+      [els.badgeCssRatio, els.badgeDims].forEach(badge => {
+        if (badge) { badge.textContent = t('📋 コピー', '📋 Copy'); badge.style.color = ''; }
+      });
+      const valid = validState();
+      [els.copyCssRatio, els.copyDims].forEach(button => { if (button) button.disabled = !valid; });
+      if (!valid) {
+        setStatus(t('正の比率と、1以上の安全な整数pxを入力してください。計算できない値はコピーできません。', 'Enter a positive ratio and safe whole-pixel dimensions of at least 1. Invalid results cannot be copied.'));
+        els.infoRatio.textContent = '—';
+        els.boxDims.textContent = '—';
+        if (els.snippetRatioVal) els.snippetRatioVal.textContent = '—';
+        if (els.snippetDimsVal) els.snippetDimsVal.textContent = '—';
+        els.previewBox.style.visibility = 'hidden';
+        if (els.advisorArea) els.advisorArea.classList.add('hidden');
+        els.presetBtns.forEach(button => { button.classList.remove('active'); button.setAttribute('aria-pressed', 'false'); });
+        return;
+      }
+      setStatus('');
+      els.previewBox.style.visibility = '';
+      const ratioW = Number(els.ratioW.value);
+      const ratioH = Number(els.ratioH.value);
       const width = els.width.value || 0;
       const height = els.height.value || 0;
       const targetRatio = ratioW / ratioH;
@@ -326,6 +374,7 @@ if (typeof document !== 'undefined') {
         const buttonRatio = buttonW / buttonH;
         const relativeDifference = Math.abs(buttonRatio - targetRatio) / buttonRatio;
         button.classList.toggle('active', relativeDifference < 0.001);
+        button.setAttribute('aria-pressed', String(relativeDifference < 0.001));
       });
 
       if (ratioW > 0 && ratioH > 0) {
@@ -353,8 +402,8 @@ if (typeof document !== 'undefined') {
       const boxRect = els.previewBox.getBoundingClientRect();
       els.boxDims.style.opacity = boxRect.width < 70 || boxRect.height < 45 ? '0' : '1';
 
-      const displayW = Number.isInteger(ratioW) ? ratioW : ratioW.toFixed(3);
-      const displayH = Number.isInteger(ratioH) ? ratioH : ratioH.toFixed(3);
+      const displayW = String(ratioW);
+      const displayH = String(ratioH);
       els.infoRatio.textContent = `${displayW} : ${displayH}`;
 
       if (els.snippetRatioVal) els.snippetRatioVal.textContent = `${displayW} / ${displayH}`;
@@ -404,9 +453,10 @@ if (typeof document !== 'undefined') {
         updateFromRatio();
       }));
 
-      [els.width, els.height].forEach((element) => element.addEventListener('input', (event) => {
-        updateFromSize(event.target.id);
-      }));
+      [els.width, els.height].forEach((element) => {
+        element.addEventListener('input', (event) => updateFromSize(event.target.id));
+        element.addEventListener('blur', () => { normalizeDimension(element); updateFromSize(element.id); });
+      });
 
       els.presetBtns.forEach((button) => {
         button.addEventListener('click', () => {
@@ -450,36 +500,47 @@ if (typeof document !== 'undefined') {
         button.addEventListener('click', () => setDeviceFrame(button.dataset.device));
       });
 
-      function copyWithFeedback(badge, text) {
-        if (!navigator.clipboard || !navigator.clipboard.writeText) return;
-        navigator.clipboard.writeText(text).then(() => {
+      async function copyWithFeedback(badge, text) {
+        if (!validState()) { updatePreview(); return; }
+        const generation = ++copyGeneration;
+        if (els.manualCopy) { els.manualCopy.hidden = true; els.manualCopy.value = ''; }
+        window.clearTimeout(copyTimer);
+        try {
+          if (!navigator.clipboard || !navigator.clipboard.writeText) throw new Error('Clipboard unavailable');
+          await navigator.clipboard.writeText(text);
+          if (generation !== copyGeneration) return;
+          setStatus(t('コピーしました。', 'Copied.'));
           if (badge) {
-            const original = badge.textContent;
-            badge.textContent = '✓ コピー済';
+            badge.textContent = t('✓ コピー済', '✓ Copied');
             badge.style.color = '#10b981';
-            setTimeout(() => {
-              badge.textContent = original;
+            copyTimer = window.setTimeout(() => {
+              if (generation !== copyGeneration) return;
+              badge.textContent = t('📋 コピー', '📋 Copy');
               badge.style.color = '';
             }, 1500);
           }
-        }).catch(() => {});
+        } catch (_) {
+          if (generation !== copyGeneration) return;
+          setStatus(t('コピーできませんでした。下の選択済みテキストを手動でコピーしてください。', 'Copy failed. Copy the selected text below manually.'));
+          if (els.manualCopy) {
+            els.manualCopy.value = text;
+            els.manualCopy.hidden = false;
+            els.manualCopy.focus();
+            els.manualCopy.select();
+          }
+        }
       }
 
       if (els.copyCssRatio) {
         els.copyCssRatio.addEventListener('click', () => {
-          const ratioW = parseFloat(els.ratioW.value) || 16;
-          const ratioH = parseFloat(els.ratioH.value) || 9;
-          const displayW = Number.isInteger(ratioW) ? ratioW : ratioW.toFixed(3);
-          const displayH = Number.isInteger(ratioH) ? ratioH : ratioH.toFixed(3);
-          copyWithFeedback(els.badgeCssRatio, `aspect-ratio: ${displayW} / ${displayH};`);
+          if (!validState()) { updatePreview(); return; }
+          copyWithFeedback(els.badgeCssRatio, `aspect-ratio: ${Number(els.ratioW.value)} / ${Number(els.ratioH.value)};`);
         });
       }
-
       if (els.copyDims) {
         els.copyDims.addEventListener('click', () => {
-          const width = els.width.value || 0;
-          const height = els.height.value || 0;
-          copyWithFeedback(els.badgeDims, `${width} × ${height}`);
+          if (!validState()) { updatePreview(); return; }
+          copyWithFeedback(els.badgeDims, `${Number(els.width.value)} × ${Number(els.height.value)}`);
         });
       }
 
@@ -487,8 +548,9 @@ if (typeof document !== 'undefined') {
       els.ratioH.value = 9;
       els.width.value = 1920;
       els.height.value = 1080;
+      els.inputs.forEach(input => input.setAttribute('aria-describedby', 'calculationStatus'));
       updateRatioModeUi();
-      updatePreview();
+      setDeviceFrame(currentDevice);
     }
 
     window.addEventListener('resize', () => {

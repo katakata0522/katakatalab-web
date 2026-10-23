@@ -21,6 +21,7 @@
   <meta property="og:url" content="https://katakatalab.com/ogp-simulator/en/">
   <meta property="og:site_name" content="KatakataLab">
   <meta property="og:image" content="https://katakatalab.com/ogp-simulator/ogp.png">
+  <meta property="og:image:alt" content="OGP Simulator preview graphic">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:image" content="https://katakatalab.com/ogp-simulator/ogp.png">
 
@@ -69,7 +70,8 @@
   <div class="two-column-layout">
     
     <section class="config-panel" aria-label="Share metadata inputs">
-      <div class="input-group">
+      <p id="mockCountHelp" class="app-desc">Counts use UTF-16 code units (an emoji may count as 2 or more). 40 and 80 are mock guidelines, not platform limits.</p>
+        <div class="input-group">
         <label class="group-label" for="imageInput">OG Image <small>(share image)</small></label>
         <div class="file-upload-area" id="dropZone" tabindex="0" role="button" aria-label="Upload image">
           <input type="file" id="imageInput" accept="image/*" class="file-input" tabindex="-1">
@@ -82,6 +84,8 @@
             <button type="button" id="removeImageBtn" class="btn-icon-remove" title="Remove" aria-label="Remove image">×</button>
           </div>
         </div>
+        <p class="app-desc">Checks cover image type, file size (up to 10 MiB), decoding and a wide-card ratio guideline. Required resolution, platform acceptance, public URLs, OG tags and caches are not checked. Inputs stay on this page and are cleared by reload or reset.</p>
+        <p id="imageLoadStatus" role="status" aria-live="polite" aria-atomic="true"></p>
         <div id="ratioWarning" class="warning-msg" role="alert" style="display:none;"></div>
       </div>
 
@@ -90,7 +94,7 @@
           <label for="ogTitle" class="group-label">OG Title</label>
           <span id="countTitle" class="char-count">0 / 40</span>
         </div>
-        <input type="text" id="ogTitle" class="input-text" placeholder="Enter the page title">
+        <input type="text" id="ogTitle" aria-describedby="mockCountHelp" class="input-text" placeholder="Enter the page title">
       </div>
 
       <div class="input-group">
@@ -98,7 +102,7 @@
           <label for="ogDesc" class="group-label">OG Description</label>
           <span id="countDesc" class="char-count">0 / 80</span>
         </div>
-        <textarea id="ogDesc" class="input-text" rows="3" placeholder="Enter the page description"></textarea>
+        <textarea id="ogDesc" aria-describedby="mockCountHelp" class="input-text" rows="3" placeholder="Enter the page description"></textarea>
       </div>
 
       <div class="input-group">
@@ -123,7 +127,7 @@
         </div>
         <div class="theme-toggle-wrapper" title="Toggle dark mode">
           <label class="toggle-switch-theme">
-            <input type="checkbox" id="previewThemeToggle">
+            <input type="checkbox" id="previewThemeToggle" aria-label="Show this mock in dark mode">
             <span class="slider round"></span>
             <span class="theme-icon icon-sun">☀️</span>
             <span class="theme-icon icon-moon">🌙</span>

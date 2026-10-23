@@ -127,7 +127,8 @@ export class TaskDetailPanel {
 
   _render() {
     if (!this.listEl || !this.currentBody) return;
-    const subs = this.currentBody.subTasks ?? [];
+    const body = this.currentBody;
+    const subs = body.subTasks ?? [];
 
     // 進捗表示
     const total = subs.length;
@@ -162,6 +163,7 @@ export class TaskDetailPanel {
       chk.setAttribute('aria-label', task.done ? 'チェックを外す' : 'チェックする');
       chk.textContent = task.done ? '✓' : '';
       chk.addEventListener('click', () => {
+        if (this.currentBody !== body || !body.subTasks.includes(task)) return;
         task.done = !task.done;
         this._render();
         this.onChanged?.();
@@ -178,7 +180,10 @@ export class TaskDetailPanel {
       del.setAttribute('aria-label', '削除');
       del.textContent = '×';
       del.addEventListener('click', () => {
-        this.currentBody.subTasks = this.currentBody.subTasks.filter(t => t.id !== task.id);
+        if (this.currentBody !== body) return;
+        const index = body.subTasks.indexOf(task);
+        if (index === -1) return;
+        body.subTasks.splice(index, 1);
         this._render();
         this.onChanged?.();
       });

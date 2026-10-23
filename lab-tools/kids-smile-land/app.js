@@ -25,36 +25,44 @@
 
     // --- DATA STORE 安全ロード (LocalStorage 破損時のクラッシュを完全ガード) ---
 
+    let storageReadBlocked = false;
     function safeLoadJSON(key, defaultValue) {
         try {
             const item = localStorage.getItem(key);
-            if (!item) return defaultValue;
+            if (item === null) return defaultValue;
             const parsed = JSON.parse(item);
             const normalize = (value, fallback) => {
+                if (value === undefined) return fallback;
                 if (Array.isArray(fallback)) {
-                    if (!Array.isArray(value)) return [];
+                    if (!Array.isArray(value)) throw new Error('Invalid stored list');
+                    const valid = key === 'smile_placed_stickers'
+                        ? sticker => sticker && typeof sticker.id === 'string' && typeof sticker.emoji === 'string' && Number.isFinite(sticker.x) && Number.isFinite(sticker.y)
+                        : sticker => typeof sticker === 'string' && sticker.length > 0;
+                    if (!value.every(valid)) throw new Error('Invalid stored list item');
                     if (key === 'smile_placed_stickers') return value.filter(sticker =>
                         sticker && typeof sticker.id === 'string' && typeof sticker.emoji === 'string' &&
                         Number.isFinite(sticker.x) && Number.isFinite(sticker.y));
                     return value.filter(sticker => typeof sticker === 'string' && sticker.length > 0);
                 }
                 if (fallback && typeof fallback === 'object') {
-                    const object = value && typeof value === 'object' && !Array.isArray(value) ? value : {};
+                    if (!value || typeof value !== 'object' || Array.isArray(value)) throw new Error('Invalid stored object');
+                    const object = value;
                     return Object.fromEntries(Object.entries(fallback).map(([name, initial]) => [name, normalize(object[name], initial)]));
                 }
-                if (typeof fallback === 'number') return Number.isSafeInteger(value) && value >= 0 ? value : fallback;
-                if (typeof fallback === 'boolean') return typeof value === 'boolean' ? value : fallback;
+                if (typeof fallback === 'number') {
+                    if (!Number.isSafeInteger(value) || value < 0) throw new Error('Invalid stored number');
+                    return value;
+                }
+                if (typeof fallback === 'boolean') {
+                    if (typeof value !== 'boolean') throw new Error('Invalid stored boolean');
+                    return value;
+                }
                 return typeof value === typeof fallback ? value : fallback;
             };
             return normalize(parsed, defaultValue);
         } catch (e) {
             console.error(`LocalStorage parse error for key "${key}":`, e);
-            // 破損しているデータを検知した場合はデフォルト値で上書き自己修復
-            try {
-                localStorage.setItem(key, JSON.stringify(defaultValue));
-            } catch (saveError) {
-                console.error("LocalStorage save error during recovery:", saveError);
-            }
+            storageReadBlocked = true;
             return defaultValue;
         }
     }
@@ -633,6 +641,7 @@
         activityTimers.clear();
         pendingNextActivity = null;
         rewardPointerToken = null;
+        missionRewardPending = false;
         const modal = document.getElementById('modal-sticker');
         if (modal) modal.classList.add('hidden');
     }
@@ -714,6 +723,7 @@
 
     function saveStickers() {
         try {
+            if (storageReadBlocked) throw new Error('Stored data could not be restored; original data retained.');
             localStorage.setItem('smile_stickers', JSON.stringify(myStickers));
             localStorage.setItem('smile_placed_stickers', JSON.stringify(placedStickers));
             localStorage.setItem('smile_selected_bg', selectedBg);
@@ -726,6 +736,7 @@
 
     function saveSettings() {
         try {
+            if (storageReadBlocked) throw new Error('Stored data could not be restored; original data retained.');
             localStorage.setItem('smile_level', smileLevel);
             localStorage.setItem('smile_timer_limit', smileTimerLimit);
             localStorage.setItem('smile_voice_volume', smileVoiceVolume);
@@ -1315,6 +1326,7 @@
 
 
     // --- TAB 5: カードえあわせ (神経衰弱) ---
+    let matchRoundGeneration = 0;
     let matchCards = [];
     let firstSelectedCard = null;
     let secondSelectedCard = null;
@@ -1325,6 +1337,7 @@
     const matchAnimals = ['🐶', '🐈', '🐼', '🐰', '🦁', '🐘', '🐸', '🍉'];
 
     function initMatchGame() {
+        matchRoundGeneration++;
         matchedPairsCount = 0;
         const pairsEl = document.getElementById('match-pairs');
         if (pairsEl) pairsEl.textContent = matchedPairsCount;
@@ -1383,7 +1396,7 @@
     }
 
     function handleMatchCardTap(card) {
-        if (!canMatchTap || card === firstSelectedCard || card.classList.contains('matched') || card.classList.contains('open')) return;
+        if (currentTab !== 'match' || !matchCards.includes(card) || !canMatchTap || card === firstSelectedCard || card.classList.contains('matched') || card.classList.contains('open')) return;
         initAudio();
 
         // カードをオープン
@@ -1399,14 +1412,16 @@
             secondSelectedCard = card;
             canMatchTap = false;
 
+            const round = matchRoundGeneration;
             // 判定
             if (firstSelectedCard.dataset.emoji === secondSelectedCard.dataset.emoji) {
                 // ペア成立 (成功ステータス：エメラルド)
-                setTimeout(() => {
+                scheduleActivity(() => {
+                    if (round !== matchRoundGeneration) return;
                     firstSelectedCard.classList.add('matched');
                     secondSelectedCard.classList.add('matched');
-                    firstSelectedCard.className = "bg-emerald-50 text-emerald-800 rounded-2xl flex items-center justify-center text-3xl md:text-4xl border-2 border-emerald-300 select-none relative aspect-square opacity-70";
-                    secondSelectedCard.className = "bg-emerald-50 text-emerald-800 rounded-2xl flex items-center justify-center text-3xl md:text-4xl border-2 border-emerald-300 select-none relative aspect-square opacity-70";
+                    firstSelectedCard.className = "bg-emerald-50 text-emerald-800 rounded-2xl flex items-center justify-center text-3xl md:text-4xl border-2 border-emerald-300 select-none relative aspect-square opacity-70 matched";
+                    secondSelectedCard.className = "bg-emerald-50 text-emerald-800 rounded-2xl flex items-center justify-center text-3xl md:text-4xl border-2 border-emerald-300 select-none relative aspect-square opacity-70 matched";
                     
                     matchedPairsCount++;
                     const pairsEl = document.getElementById('match-pairs');
@@ -1435,7 +1450,8 @@
                 }, 600);
             } else {
                 // はずれ、戻す
-                setTimeout(() => {
+                scheduleActivity(() => {
+                    if (round !== matchRoundGeneration) return;
                     firstSelectedCard.className = "btn-puni shadow-blue-100 bg-blue-500 hover:bg-blue-600 rounded-2xl flex items-center justify-center text-white text-3xl md:text-4xl font-bold border-2 border-white select-none relative aspect-square";
                     firstSelectedCard.innerHTML = `<span class="absolute text-white/50 text-2xl">❓</span>`;
                     secondSelectedCard.className = "btn-puni shadow-blue-100 bg-blue-500 hover:bg-blue-600 rounded-2xl flex items-center justify-center text-white text-3xl md:text-4xl font-bold border-2 border-white select-none relative aspect-square";
@@ -1575,8 +1591,11 @@
         }
     }
 
+    let otoateGeneration = 0;
     // おとあてゲーム開始
     function startOtoateGame() {
+        const generation = ++otoateGeneration;
+        const epoch = soundEpoch;
         initAudio();
         isOtoateMode = true;
         activeSongKey = 'free';
@@ -1597,12 +1616,15 @@
 
         updateNavigator('momo', "おとあてゲーム スタート！ いまから ならすおとを あててみてね！");
         
-        setTimeout(() => {
-            playMokkinNote(scaleFreqs[currentOtoateTargetNote]);
+        const targetNote = currentOtoateTargetNote;
+        scheduleActivity(() => {
+            if (generation !== otoateGeneration || epoch !== soundEpoch || !isOtoateMode) return;
+            playMokkinNote(scaleFreqs[targetNote]);
         }, 1800);
     }
 
     function exitOtoateMode() {
+        otoateGeneration++;
         isOtoateMode = false;
         const otoateText = document.getElementById('xylo-otoate-text');
         if (otoateText) otoateText.classList.add('hidden');
@@ -1907,28 +1929,21 @@
 
 
     // --- アチーブメント/ミッション実績システム ---
+    let missionRewardPending = false;
     function checkAndTriggerMissions() {
-        let updated = false;
-
-        // 1. はじめてのおえかき
-        if (!smileMissions.drawFirst && smileStats.plays.draw > 0) {
-            smileMissions.drawFirst = true;
-            updated = true;
-        }
-
-        // 2. かずかぞえ10問せいかい
-        if (!smileMissions.count10 && Number(smileStats.count_corrects || 0) >= 10) {
-            smileMissions.count10 = true;
-            updated = true;
-        }
-
-        if (updated) {
+        if (missionRewardPending) return;
+        const completed = [];
+        if (!smileMissions.drawFirst && smileStats.plays.draw > 0) completed.push('drawFirst');
+        if (!smileMissions.count10 && Number(smileStats.count_corrects || 0) >= 10) completed.push('count10');
+        if (!completed.length) return;
+        missionRewardPending = true;
+        scheduleActivity(() => {
+            missionRewardPending = false;
+            completed.forEach(key => { smileMissions[key] = true; });
             saveSettings();
-            setTimeout(() => {
-                updateNavigator('momo', "おめでとう！がんばりミッションをクリアしたよ！シールをプレゼント！🌟");
-                grantRewardSticker();
-            }, 1000);
-        }
+            updateNavigator('momo', "おめでとう！がんばりミッションをクリアしたよ！シールをプレゼント！🌟");
+            grantRewardSticker();
+        }, 1000);
     }
 
 
@@ -2110,7 +2125,7 @@
         const inputEl = document.getElementById('parent-answer');
         const rawVal = inputEl ? inputEl.value : "";
         const normalized = normalizeNum(rawVal);
-        const val = parseInt(normalized, 10);
+        const val = /^\+?\d+$/.test(normalized) ? Number(normalized) : NaN;
 
         if (!isNaN(val) && val === parentAuthAnswer) {
             const unlockSleep = isSleepUnlockFlow;
@@ -2123,6 +2138,7 @@
                 // Sleep cancels pending next-question jobs; start one fresh round.
                 if (currentTab === 'count') startCountQuiz();
                 else if (currentTab === 'quiz') startQuizGame();
+                else if (currentTab === 'match') initMatchGame();
                 updateNavigator('momo', "おかえりなさい！また いっしょに あそおうね！");
             } else {
                 const settingsModal = document.getElementById('modal-parent-settings');
@@ -2301,8 +2317,11 @@
                     }
                 }
                 keysToRemove.forEach(key => localStorage.removeItem(key));
+                storageReadBlocked = false;
             } catch (e) {
                 console.error("Failed to clear app localStorage:", e);
+                showToast("この端末のデータを初期化できませんでした。");
+                return;
             }
             myStickers = [];
             placedStickers = [];
