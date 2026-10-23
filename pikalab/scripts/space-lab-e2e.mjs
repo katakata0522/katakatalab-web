@@ -164,7 +164,15 @@ async function ready(current, url = candidateUrl, { reload = false } = {}) {
     assert.equal(response.status(), 200);
     await current.page.waitForFunction(() => document.querySelector('#loading-overlay')?.classList.contains('hidden'), null, { timeout: 22_000 });
     await current.page.waitForFunction(() => document.querySelectorAll('#a11y-container button').length === 9 && document.querySelectorAll('#minimap-markers button').length === 9);
-    await current.page.evaluate(() => document.fonts.ready);
+    await current.page.evaluate(async () => {
+        await document.fonts.ready;
+        // 使用文字のサブセット読込と再レイアウト完了後に基準版と比較する。
+        // fonts.readyだけでは、直前に表示した見出しのswapが次フレームへ残る。
+        const anchors = document.querySelectorAll('header, header h1, header a, header button');
+        await Promise.all([...anchors].map(node => document.fonts.load(getComputedStyle(node).font, node.textContent || ' ')));
+        await document.fonts.ready;
+        await new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+    });
 }
 async function runCase(name, work, options = {}, viewport = VIEWPORTS[1]) {
     const record = { name, viewport, theme: options.theme || 'light', status: 'passed' }, began = Date.now(); let current;
