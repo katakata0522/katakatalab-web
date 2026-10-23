@@ -63,21 +63,31 @@ def fixture_bytes(spec):
     return b'\x89PNG\r\n\x1a\n'+chunk(b'IHDR',struct.pack('>IIBBBBB',w,h,8,2,0,0,0))+chunk(b'IDAT',zlib.compress(pixels))+chunk(b'IEND',b'')
 
 
-def materialize(root,entry):
+def materialize(root,entry,reuse_root=None):
     target=safe_target(root,entry['path'])
     if entry.get('ci_fixture'):
         data=fixture_bytes(entry['ci_fixture'])
     elif target.exists() and hashlib.sha256(target.read_bytes()).hexdigest()==entry['sha256']:
         return
     else:
-        for attempt in range(3):
-            try:
-                data=published_bytes(entry)
-                break
-            except (OSError,http.client.HTTPException) as error:
-                if getattr(connections,'https',None):connections.https.close();connections.https=None
-                if attempt==2:raise RuntimeError('Published dependency unavailable: '+entry['path']) from error
-                time.sleep(2*(attempt+1))
+        data=None
+        # 同じジョブで準備済みの別checkoutだけを再利用する。比較元の契約で再照合し、
+        # 異なる版・破損・欠損は従来どおり匿名取得する。run間のキャッシュは作らない。
+        if reuse_root is not None:
+            source=safe_target(reuse_root,entry['path'])
+            if source.is_file():
+                candidate=source.read_bytes()
+                if len(candidate)==entry['bytes'] and hashlib.sha256(candidate).hexdigest()==entry['sha256']:
+                    data=candidate
+        if data is None:
+            for attempt in range(3):
+                try:
+                    data=published_bytes(entry)
+                    break
+                except (OSError,http.client.HTTPException) as error:
+                    if getattr(connections,'https',None):connections.https.close();connections.https=None
+                    if attempt==2:raise RuntimeError('Published dependency unavailable: '+entry['path']) from error
+                    time.sleep(2*(attempt+1))
         if len(data)!=entry['bytes'] or hashlib.sha256(data).hexdigest()!=entry['sha256']:
             raise ValueError('Published dependency changed: '+entry['path'])
     target.parent.mkdir(parents=True,exist_ok=True)
@@ -87,10 +97,12 @@ def materialize(root,entry):
 def main():
     parser=argparse.ArgumentParser()
     parser.add_argument('--root',type=Path,default=Path('.'))
+    parser.add_argument('--reuse-root',type=Path,help='同じCIジョブで準備済みのcheckout。各素材を対象manifestのサイズとSHA-256で再照合する')
     options=parser.parse_args()
     root=options.root.resolve()
+    reuse_root=options.reuse_root.resolve() if options.reuse_root else None
     spec=json.loads((root/'qa/published-dependencies.json').read_text(encoding='utf8'))
-    with ThreadPoolExecutor(max_workers=3) as pool:list(pool.map(lambda entry:materialize(root,entry),spec['files']))
+    with ThreadPoolExecutor(max_workers=3) as pool:list(pool.map(lambda entry:materialize(root,entry,reuse_root),spec['files']))
     # Test fixtures contain only already-public response headers; actual Apache
     # routing, directory/auth rules and PHP configuration remain private.
     for entry in spec.get('server_fixtures',[]):

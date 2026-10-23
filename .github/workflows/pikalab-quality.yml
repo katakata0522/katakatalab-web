@@ -216,17 +216,18 @@ jobs:
       - name: Prepare CI dependencies without publishing media
         run: python3 scripts/public-qa/prepare.py
 
-      - name: Checkout PikaLab visual baseline
-        if: env.PIKALAB_COMPARE_BASELINE == 'true'
+      # 同じPR基点を一度だけ準備し、総合比較と各ラボの比較で共有する。
+      - name: Checkout shared layout baseline
+        if: "${{ env.PIKALAB_COMPARE_BASELINE == 'true' || (github.event_name == 'pull_request' && (needs.scope.outputs.rhythm == 'true' || needs.scope.outputs.manabi == 'true' || needs.scope.outputs.speed_reader == 'true' || needs.scope.outputs.typing_dojo == 'true' || needs.scope.outputs.kotowaza == 'true' || needs.scope.outputs.fraction == 'true')) }}"
         uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
         with:
           ref: ${{ github.event.pull_request.base.sha || github.event.repository.default_branch }}
           path: .pikalab-baseline
           persist-credentials: false
 
-      - name: Prepare CI dependencies without publishing media
-        if: env.PIKALAB_COMPARE_BASELINE == 'true'
-        run: python3 scripts/public-qa/prepare.py --root .pikalab-baseline
+      - name: Prepare verified baseline dependencies from this job
+        if: "${{ env.PIKALAB_COMPARE_BASELINE == 'true' || (github.event_name == 'pull_request' && (needs.scope.outputs.rhythm == 'true' || needs.scope.outputs.manabi == 'true' || needs.scope.outputs.speed_reader == 'true' || needs.scope.outputs.typing_dojo == 'true' || needs.scope.outputs.kotowaza == 'true' || needs.scope.outputs.fraction == 'true')) }}"
+        run: python3 scripts/public-qa/prepare.py --root .pikalab-baseline --reuse-root .
 
       - name: Setup Node.js
         uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6.5.0
@@ -255,13 +256,15 @@ jobs:
             exit 1
           fi
 
-      - name: Build exact baseline for visual preservation
-        if: env.PIKALAB_COMPARE_BASELINE == 'true'
+      - name: Install shared baseline dependencies
+        if: "${{ env.PIKALAB_COMPARE_BASELINE == 'true' || (github.event_name == 'pull_request' && (needs.scope.outputs.rhythm == 'true' || needs.scope.outputs.manabi == 'true' || needs.scope.outputs.speed_reader == 'true' || needs.scope.outputs.typing_dojo == 'true' || needs.scope.outputs.kotowaza == 'true' || needs.scope.outputs.fraction == 'true')) }}"
         working-directory: .pikalab-baseline/pikalab
-        run: |
-          set -euo pipefail
-          npm ci --prefer-offline --no-audit --no-fund
-          npm run build:all
+        run: npm ci --prefer-offline --no-audit --no-fund
+
+      - name: Build shared baseline for visual and learning checks
+        if: "${{ env.PIKALAB_COMPARE_BASELINE == 'true' || (github.event_name == 'pull_request' && (needs.scope.outputs.manabi == 'true' || needs.scope.outputs.speed_reader == 'true' || needs.scope.outputs.typing_dojo == 'true' || needs.scope.outputs.kotowaza == 'true' || needs.scope.outputs.fraction == 'true')) }}"
+        working-directory: .pikalab-baseline/pikalab
+        run: npm run build:all
 
       - name: Verify PikaLab build output
         id: verified_build
@@ -338,60 +341,23 @@ jobs:
           VISUAL_CANDIDATE_SHA="$(git rev-parse HEAD)" \
             node pikalab/scripts/visual-preservation.mjs .pikalab-baseline/pikalab/dist pikalab/dist
 
-      - name: Checkout Rhythm Lab layout baseline
-        if: "${{ !cancelled() && (success() || env.PIKALAB_COLLECT_ALL_FAILURES == 'true') && steps.verified_build.outcome == 'success' && steps.browser_setup.outcome == 'success' && needs.scope.result == 'success' && github.event_name == 'pull_request' && needs.scope.outputs.rhythm == 'true' }}"
-        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
-        with:
-          ref: ${{ github.event.pull_request.base.sha }}
-          path: .rhythm-baseline
-          persist-credentials: false
-
-      - name: Prepare CI dependencies without publishing media
-        if: "${{ !cancelled() && (success() || env.PIKALAB_COLLECT_ALL_FAILURES == 'true') && steps.verified_build.outcome == 'success' && steps.browser_setup.outcome == 'success' && needs.scope.result == 'success' && github.event_name == 'pull_request' && needs.scope.outputs.rhythm == 'true' }}"
-        run: python3 scripts/public-qa/prepare.py --root .rhythm-baseline
-
-      - name: Install Rhythm Lab baseline dependencies
-        if: "${{ !cancelled() && (success() || env.PIKALAB_COLLECT_ALL_FAILURES == 'true') && steps.verified_build.outcome == 'success' && steps.browser_setup.outcome == 'success' && needs.scope.result == 'success' && github.event_name == 'pull_request' && needs.scope.outputs.rhythm == 'true' }}"
-        working-directory: .rhythm-baseline/pikalab
-        run: npm ci --prefer-offline --no-audit --no-fund
-
       - name: Run Rhythm Lab browser E2E
         if: "${{ !cancelled() && (success() || env.PIKALAB_COLLECT_ALL_FAILURES == 'true') && steps.verified_build.outcome == 'success' && steps.browser_setup.outcome == 'success' && needs.scope.result == 'success' && needs.scope.outputs.rhythm == 'true' }}"
         run: |
           set -euo pipefail
           cd pikalab
-          if [ -d ../.rhythm-baseline/pikalab ]; then
-            export RHYTHM_BASELINE_ROOT=../.rhythm-baseline/pikalab
+          if [ "${{ github.event_name }}" = pull_request ] && [ -d ../.pikalab-baseline/pikalab ]; then
+            export RHYTHM_BASELINE_ROOT=../.pikalab-baseline/pikalab
           fi
           npm run test:rhythm-e2e
-
-      - name: Checkout Manabi Land layout baseline
-        if: "${{ !cancelled() && (success() || env.PIKALAB_COLLECT_ALL_FAILURES == 'true') && steps.verified_build.outcome == 'success' && steps.browser_setup.outcome == 'success' && needs.scope.result == 'success' && github.event_name == 'pull_request' && (needs.scope.outputs.manabi == 'true' || needs.scope.outputs.speed_reader == 'true' || needs.scope.outputs.typing_dojo == 'true' || needs.scope.outputs.kotowaza == 'true' || needs.scope.outputs.fraction == 'true') }}"
-        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
-        with:
-          ref: ${{ github.event.pull_request.base.sha }}
-          path: .manabi-baseline
-          persist-credentials: false
-
-      - name: Prepare CI dependencies without publishing media
-        if: "${{ !cancelled() && (success() || env.PIKALAB_COLLECT_ALL_FAILURES == 'true') && steps.verified_build.outcome == 'success' && steps.browser_setup.outcome == 'success' && needs.scope.result == 'success' && github.event_name == 'pull_request' && (needs.scope.outputs.manabi == 'true' || needs.scope.outputs.speed_reader == 'true' || needs.scope.outputs.typing_dojo == 'true' || needs.scope.outputs.kotowaza == 'true' || needs.scope.outputs.fraction == 'true') }}"
-        run: python3 scripts/public-qa/prepare.py --root .manabi-baseline
-
-      - name: Build Manabi Land layout baseline
-        if: "${{ !cancelled() && (success() || env.PIKALAB_COLLECT_ALL_FAILURES == 'true') && steps.verified_build.outcome == 'success' && steps.browser_setup.outcome == 'success' && needs.scope.result == 'success' && github.event_name == 'pull_request' && (needs.scope.outputs.manabi == 'true' || needs.scope.outputs.speed_reader == 'true' || needs.scope.outputs.typing_dojo == 'true' || needs.scope.outputs.kotowaza == 'true' || needs.scope.outputs.fraction == 'true') }}"
-        working-directory: .manabi-baseline/pikalab
-        run: |
-          set -euo pipefail
-          npm ci --prefer-offline --no-audit --no-fund
-          npm run build:all
 
       - name: Run Manabi Land browser E2E
         if: "${{ !cancelled() && (success() || env.PIKALAB_COLLECT_ALL_FAILURES == 'true') && steps.verified_build.outcome == 'success' && steps.browser_setup.outcome == 'success' && needs.scope.result == 'success' && needs.scope.outputs.manabi == 'true' }}"
         run: |
           set -euo pipefail
           cd pikalab
-          if [ -d ../.manabi-baseline/pikalab ]; then
-            export MANABI_BASELINE_ROOT=../.manabi-baseline/pikalab/dist
+          if [ "${{ github.event_name }}" = pull_request ] && [ -d ../.pikalab-baseline/pikalab ]; then
+            export MANABI_BASELINE_ROOT=../.pikalab-baseline/pikalab/dist
           fi
           npm run test:manabi-e2e
 
@@ -401,8 +367,8 @@ jobs:
           set -euo pipefail
           cd pikalab
           # 同じPR基点から構築済みの成果物を再利用し、追加の全体ビルドを避ける。
-          if [ -d ../.manabi-baseline/pikalab/dist ]; then
-            export SPEED_READER_BASELINE_ROOT=../.manabi-baseline/pikalab/dist
+          if [ "${{ github.event_name }}" = pull_request ] && [ -d ../.pikalab-baseline/pikalab/dist ]; then
+            export SPEED_READER_BASELINE_ROOT=../.pikalab-baseline/pikalab/dist
           fi
           npm run test:speed-reader-e2e
 
@@ -412,8 +378,8 @@ jobs:
           set -euo pipefail
           cd pikalab
           # 同じPR基点の構築済み成果物を使用する。
-          if [ -d ../.manabi-baseline/pikalab/dist ]; then
-            export TYPING_DOJO_BASELINE_ROOT=../.manabi-baseline/pikalab/dist
+          if [ "${{ github.event_name }}" = pull_request ] && [ -d ../.pikalab-baseline/pikalab/dist ]; then
+            export TYPING_DOJO_BASELINE_ROOT=../.pikalab-baseline/pikalab/dist
           fi
           npm run test:typing-dojo-e2e
 
@@ -423,8 +389,8 @@ jobs:
           set -euo pipefail
           cd pikalab
           # 既存の同一PR基点ビルドを再利用する。
-          if [ -d ../.manabi-baseline/pikalab/dist ]; then
-            export KOTOWAZA_QUIZ_BASELINE_ROOT=../.manabi-baseline/pikalab/dist
+          if [ "${{ github.event_name }}" = pull_request ] && [ -d ../.pikalab-baseline/pikalab/dist ]; then
+            export KOTOWAZA_QUIZ_BASELINE_ROOT=../.pikalab-baseline/pikalab/dist
           fi
           npm run test:kotowaza-quiz-e2e
 
@@ -434,8 +400,8 @@ jobs:
           set -euo pipefail
           cd pikalab
           # 同じPR基点から構築済みの公開成果物を比較する。
-          if [ -d ../.manabi-baseline/pikalab/dist ]; then
-            export FRACTION_LAB_BASELINE_ROOT=../.manabi-baseline/pikalab/dist
+          if [ "${{ github.event_name }}" = pull_request ] && [ -d ../.pikalab-baseline/pikalab/dist ]; then
+            export FRACTION_LAB_BASELINE_ROOT=../.pikalab-baseline/pikalab/dist
           fi
           npm run test:fraction-e2e
 
@@ -470,7 +436,7 @@ jobs:
           persist-credentials: false
 
       - name: Prepare CI dependencies without publishing media
-        run: python3 scripts/public-qa/prepare.py --root .space-baseline
+        run: python3 scripts/public-qa/prepare.py --root .space-baseline --reuse-root .
 
       - name: Setup Node.js
         uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6.5.0
@@ -532,7 +498,7 @@ jobs:
           persist-credentials: false
 
       - name: Prepare CI dependencies without publishing media
-        run: python3 scripts/public-qa/prepare.py --root .focus-baseline
+        run: python3 scripts/public-qa/prepare.py --root .focus-baseline --reuse-root .
 
       - name: Setup Node.js
         uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6.5.0
@@ -594,7 +560,7 @@ jobs:
           persist-credentials: false
 
       - name: Prepare CI dependencies without publishing media
-        run: python3 scripts/public-qa/prepare.py --root .paper-baseline
+        run: python3 scripts/public-qa/prepare.py --root .paper-baseline --reuse-root .
 
       - name: Setup Node.js
         uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6.5.0
@@ -656,7 +622,7 @@ jobs:
           persist-credentials: false
 
       - name: Prepare CI dependencies without publishing media
-        run: python3 scripts/public-qa/prepare.py --root .quest-baseline
+        run: python3 scripts/public-qa/prepare.py --root .quest-baseline --reuse-root .
 
       - name: Setup Node.js
         uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6.5.0
@@ -716,7 +682,7 @@ jobs:
           path: .book-baseline
           persist-credentials: false
       - name: Prepare CI dependencies without publishing media
-        run: python3 scripts/public-qa/prepare.py --root .book-baseline
+        run: python3 scripts/public-qa/prepare.py --root .book-baseline --reuse-root .
       - name: Setup Node.js
         uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6.5.0
         with:
