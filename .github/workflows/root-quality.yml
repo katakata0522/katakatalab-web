@@ -12,11 +12,19 @@ concurrency:
   # Draft通知と手動検証を、配信用main検証・実PR検証から分離する。
   group: public-root-${{ github.event_name }}-${{ github.ref }}-${{ (github.event_name == 'workflow_dispatch' || (github.event_name == 'pull_request' && github.event.pull_request.draft)) && github.run_id || 'active' }}
   cancel-in-progress: true
+defaults:
+  run:
+    shell: bash
+
 jobs:
   quality:
     name: ${{ (github.event_name != 'pull_request' || !github.event.pull_request.draft) && 'quality' || 'Draft quality' }}
     if: ${{ github.event_name != 'pull_request' || !github.event.pull_request.draft }}
     runs-on: ubuntu-latest
+    # package-lockのPlaywrightと同版。ブラウザ・font・OS依存は公式の固定イメージで準備する。
+    container:
+      image: mcr.microsoft.com/playwright:v1.60.0-noble@sha256:9bd26ad900bb5e0f4dee75839e957a89ae89c2b7ab1e76050e559790e946b948
+      options: --ipc=host
     timeout-minutes: 15
     steps:
       - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803
@@ -25,6 +33,12 @@ jobs:
       - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38
         with:
           node-version: '22'
+      - name: Prepare required command-line tools
+        run: |
+          if ! ( command -v python3 >/dev/null ); then
+            apt-get update
+            apt-get install -y --no-install-recommends python3
+          fi
       - name: Prepare published media as ephemeral CI dependencies
         run: python3 scripts/public-qa/prepare.py
       - name: Product contracts and isolated Node tests
@@ -39,7 +53,7 @@ jobs:
       - name: Install locked browser tools
         run: |
           npm ci --ignore-scripts --no-audit --no-fund
-          npx playwright install --with-deps chromium --only-shell
+          node .github/scripts/verify-playwright-runtime.cjs
       - name: Existing public tools and education privacy browser checks
         env:
           NODE_PATH: ${{ github.workspace }}/node_modules

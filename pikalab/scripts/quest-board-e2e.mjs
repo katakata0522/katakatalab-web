@@ -661,7 +661,8 @@ async function shareSuite() {
     for (const [name, q] of invalid) await runCase(`invalid-share-${name}-preserves-storage`, async (page, record) => {
         assert.equal(await page.locator('#share-import-modal').isVisible(), false); assert.equal(new URL(page.url()).searchParams.has('q'), false);
         assert.equal(await readSaved(page), saved); assert.match(await text(page, '#toast-container'), /共有データを読み込めません/); await assertQuest(page, JSON.parse(saved)); record.input = name;
-    }, { storage: { [KEY]: saved }, url: `${candidateUrl}?q=${encodeURIComponent(q)}`, expectedConsole: [/デシリアライズ失敗/] });
+    // 外部フォント待機中も起動時toastの有効時間を固定し、表示そのものを検証する。
+    }, { clock: true, storage: { [KEY]: saved }, url: `${candidateUrl}?q=${encodeURIComponent(q)}`, expectedConsole: [/デシリアライズ失敗/] });
     await runCase('duplicate-shared-query-is-rejected', async page => {
         assert.equal(await page.locator('#share-import-modal').isVisible(), false); assert.equal(await readSaved(page), saved); assert.equal(new URL(page.url()).searchParams.has('q'), false);
     }, { storage: { [KEY]: saved }, url: `${candidateUrl}?q=${encodeQuest(incoming)}&q=${encodeQuest(incoming)}` });
