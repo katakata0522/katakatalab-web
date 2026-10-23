@@ -6,6 +6,22 @@ html {
     scroll-padding-top: 0;
 }
 
+/* 英語版は操作画面の後に説明文が続く。説明文で編集領域を押し潰さない。 */
+body.english-tool--emphasis-lines {
+    height: auto;
+    min-height: 100dvh;
+    overflow: auto;
+}
+
+body.english-tool--emphasis-lines > main {
+    flex: 0 0 auto;
+    height: max(620px, calc(100dvh - 160px));
+}
+
+.english-tool--emphasis-lines .english-tool-bar a {
+    color: #213047;
+}
+
 .sr-only {
     position: absolute;
     width: 1px;

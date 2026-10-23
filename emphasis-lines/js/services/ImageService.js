@@ -1,10 +1,12 @@
-import { MAX_IMAGE_SIZE } from '../constants.js?v=20260613-2';
+import { MAX_IMAGE_SIZE } from '../constants.js?v=20261010-1';
 
 /**
  * ImageService - 画像の読み込みとリサイズ処理を担当
  * UIManagerから分離された画像処理ロジック
  */
 export class ImageService {
+    static MAX_UPLOAD_BYTES = 20 * 1024 * 1024;
+
     /**
      * ファイルから画像を読み込み、必要に応じてリサイズする
      * @param {File} file - 読み込むファイル
@@ -12,7 +14,13 @@ export class ImageService {
      */
     static async loadImage(file) {
         if (!file) {
-            throw new Error('No file provided');
+            throw new Error('画像ファイルを選択してください');
+        }
+        if (!['image/png', 'image/jpeg'].includes(file.type)) {
+            throw new Error('PNGまたはJPEG形式の画像を選択してください');
+        }
+        if (!Number.isSafeInteger(file.size) || file.size <= 0 || file.size > this.MAX_UPLOAD_BYTES) {
+            throw new Error('画像は20MB以下のファイルを選択してください');
         }
 
         // 1. FileをDataURLとして読み込む
@@ -70,21 +78,20 @@ export class ImageService {
     static async resizeImage(img) {
         let w = img.width;
         let h = img.height;
-        const ratio = w / h;
-
-        if (w > h) {
-            w = MAX_IMAGE_SIZE;
-            h = MAX_IMAGE_SIZE / ratio;
-        } else {
-            h = MAX_IMAGE_SIZE;
-            w = MAX_IMAGE_SIZE * ratio;
+        if (!Number.isFinite(w) || !Number.isFinite(h) || w < 1 || h < 1) {
+            throw new Error('画像の縦横サイズが不正です');
         }
+        const scale = Math.min(1, MAX_IMAGE_SIZE / Math.max(w, h));
+        w = Math.max(1, Math.round(w * scale));
+        h = Math.max(1, Math.round(h * scale));
 
         // 一時キャンバスでリサイズ
         const tempCanvas = document.createElement('canvas');
         tempCanvas.width = w;
         tempCanvas.height = h;
-        tempCanvas.getContext('2d').drawImage(img, 0, 0, w, h);
+        const ctx = tempCanvas.getContext('2d');
+        if (!ctx) throw new Error('画像のリサイズに失敗しました');
+        ctx.drawImage(img, 0, 0, w, h);
 
         // 新しいImageオブジェクトを作成
         const resizedImg = await this.#loadImageFromDataURL(
@@ -107,10 +114,10 @@ export class ImageService {
      * @returns {{width: number, height: number} | null}
      */
     static parseCanvasPreset(preset) {
-        const parts = preset.split('x').map(Number);
-        if (parts.length === 2 && parts[0] && parts[1]) {
-            return { width: parts[0], height: parts[1] };
-        }
-        return null;
+        if (typeof preset !== 'string' || !/^\d{1,4}x\d{1,4}$/i.test(preset)) return null;
+        const [width, height] = preset.toLowerCase().split('x').map(Number);
+        if (!Number.isSafeInteger(width) || !Number.isSafeInteger(height)
+            || width < 1 || height < 1 || width > 4096 || height > 4096) return null;
+        return { width, height };
     }
 }
