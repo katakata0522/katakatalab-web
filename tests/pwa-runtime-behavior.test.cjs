@@ -125,3 +125,14 @@ test('root PWAはキャッシュされた旧共通ローダーを返さず、教
   }
 });
 
+test('個別アプリの同名内部モジュールは必須資産としてオフラインでも読める', async () => {
+  const app = runtime('emphasis-lines/sw.js', { network: pending });
+  await app.install();
+  const url = new URL('./js/utils/analytics.js', app.scope).href;
+  assert.ok(app.installs[0].some(request => request.url === url));
+  const cached = response('internal-app-module');
+  app.entries.set(url, cached);
+  assert.equal(await app.fetch('./js/utils/analytics.js?v=current', { mode: 'cors', destination: 'script' }), cached);
+  assert.equal(app.fetches.length, 0);
+});
+

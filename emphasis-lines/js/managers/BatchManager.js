@@ -1,6 +1,6 @@
-import { store } from '../state.js?v=20260613-2';
-import { PRESETS } from '../constants.js?v=20260613-2';
-import { Random } from '../utils/random.js?v=20260613-2';
+import { store } from '../state.js?v=20261010-1';
+import { PRESETS } from '../constants.js?v=20261010-1';
+import { Random } from '../utils/random.js?v=20261010-1';
 
 // テーマ定義 (売れる素材パッケージ)
 const THEMES = {
@@ -84,7 +84,7 @@ export class BatchManager {
      * バッチ生成を実行
      * @param {Object} options
      */
-    async generate(options) {
+    async generate(options = {}) {
         const {
             count = 10,
             themeKey = null,
@@ -92,91 +92,116 @@ export class BatchManager {
             height = 2160
         } = options;
 
-        const results = [];
-        const originalState = store.getState();
-        this.history = [];
-
-        this.lineCanvas.width = width;
-        this.lineCanvas.height = height;
-        this.bgCanvas.width = width;
-        this.bgCanvas.height = height;
-
-        const theme = THEMES[themeKey];
-
-        for (let i = 0; i < count; i++) {
-            let params, type, color, seed;
-            let attempts = 0;
-            const maxAttempts = 10;
-
-            do {
-                seed = Date.now() + i + attempts;
-                this.rng.setSeed(seed);
-
-                if (theme) {
-                    type = theme.base;
-                    const colorIndex = Math.floor(this.rng.next() * theme.params.colors.length);
-                    color = theme.params.colors[colorIndex];
-
-                    const p = theme.params;
-                    params = {
-                        ...PRESETS[type],
-                        count: Math.floor(this.rng.range(p.count[0], p.count[1])),
-                        width: this.rng.range(p.width[0], p.width[1]),
-                        minLen: this.rng.range(p.minLen[0], p.minLen[1]),
-                        maxLen: this.rng.range(p.maxLen[0], p.maxLen[1]),
-                        randomness: p.randomness ? this.rng.range(p.randomness[0], p.randomness[1]) : PRESETS[type].randomness,
-                        taper: p.taper ? this.rng.range(p.taper[0], p.taper[1]) : PRESETS[type].taper,
-                        color,
-                        whiteBorder: color === '#000000' || color === '#0000FF' || color === '#4B0082'
-                    };
-                } else {
-                    const types = ['basic', 'manga', 'radial', 'speed'];
-                    const colors = ['#000000', '#FF0000', '#0000FF', '#FFFF00', '#FFFFFF'];
-                    type = types[Math.floor(this.rng.next() * types.length)];
-                    color = colors[Math.floor(this.rng.next() * colors.length)];
-                    params = {
-                        ...PRESETS[type],
-                        count: Math.floor(this.rng.range(30, 150)),
-                        width: this.rng.range(1.0, 8.0),
-                        minLen: this.rng.range(10, 40),
-                        maxLen: this.rng.range(60, 100),
-                        color,
-                        whiteBorder: color === '#000000'
-                    };
-                }
-
-                attempts++;
-            } while (this.#isDuplicate(params) && attempts < maxAttempts);
-
-            this.#addToHistory(params);
-
-            const tempState = {
-                ...originalState,
-                type,
-                imgWidth: width,
-                imgHeight: height,
-                centerX: 0.5,
-                centerY: 0.5,
-                seed,
-                params
-            };
-
-            this.renderer.render(tempState);
-
-            const blob = await this.#canvasToBlob(this.lineCanvas);
-            results.push(blob);
-
-            if (this.onProgress) this.onProgress(i + 1, count);
+        // A broken or overly large batch must never erase the current work.
+        if (this.isGenerating) throw new Error('一括生成はすでに実行中です');
+        if (!Number.isSafeInteger(count) || count < 1 || count > 50) {
+            throw new RangeError('生成枚数は1〜50枚で指定してください');
+        }
+        if (![width, height].every(v => Number.isSafeInteger(v) && v > 0 && v <= 4096)
+            || width * height > 4096 * 4096) {
+            throw new RangeError('出力サイズは最大4096×4096pxです');
         }
 
-        // 復元
-        store.setState({ imgWidth: originalState.imgWidth, imgHeight: originalState.imgHeight });
-        this.lineCanvas.width = originalState.imgWidth;
-        this.lineCanvas.height = originalState.imgHeight;
-        this.bgCanvas.width = originalState.imgWidth;
-        this.bgCanvas.height = originalState.imgHeight;
+        const results = [];
+        const originalState = store.getState();
+        const seedBase = Date.now();
+        this.isGenerating = true;
+        this.history = [];
 
-        return results;
+        try {
+            this.lineCanvas.width = width;
+            this.lineCanvas.height = height;
+            this.bgCanvas.width = width;
+            this.bgCanvas.height = height;
+    
+            const theme = THEMES[themeKey];
+    
+            for (let i = 0; i < count; i++) {
+                let params, type, color, seed;
+                let attempts = 0;
+                const maxAttempts = 10;
+    
+                do {
+                    seed = seedBase + i * maxAttempts + attempts;
+                    this.rng.setSeed(seed);
+    
+                    if (theme) {
+                        type = theme.base;
+                        const colorIndex = Math.floor(this.rng.next() * theme.params.colors.length);
+                        color = theme.params.colors[colorIndex];
+    
+                        const p = theme.params;
+                        params = {
+                            ...PRESETS[type],
+                            count: Math.floor(this.rng.range(p.count[0], p.count[1])),
+                            width: this.rng.range(p.width[0], p.width[1]),
+                            minLen: this.rng.range(p.minLen[0], p.minLen[1]),
+                            maxLen: this.rng.range(p.maxLen[0], p.maxLen[1]),
+                            randomness: p.randomness ? this.rng.range(p.randomness[0], p.randomness[1]) : PRESETS[type].randomness,
+                            taper: p.taper ? this.rng.range(p.taper[0], p.taper[1]) : PRESETS[type].taper,
+                            color,
+                            whiteBorder: color === '#000000' || color === '#0000FF' || color === '#4B0082'
+                        };
+                    } else {
+                        const types = ['basic', 'manga', 'radial', 'speed'];
+                        const colors = ['#000000', '#FF0000', '#0000FF', '#FFFF00', '#FFFFFF'];
+                        type = types[Math.floor(this.rng.next() * types.length)];
+                        color = colors[Math.floor(this.rng.next() * colors.length)];
+                        params = {
+                            ...PRESETS[type],
+                            count: Math.floor(this.rng.range(30, 150)),
+                            width: this.rng.range(1.0, 8.0),
+                            minLen: this.rng.range(10, 40),
+                            maxLen: this.rng.range(60, 100),
+                            color,
+                            whiteBorder: color === '#000000'
+                        };
+                    }
+    
+                    attempts++;
+                } while (this.#isDuplicate(params) && attempts < maxAttempts);
+    
+                this.#addToHistory(params);
+    
+                const tempState = {
+                    ...originalState,
+                    type,
+                    imgWidth: width,
+                    imgHeight: height,
+                    centerX: 0.5,
+                    centerY: 0.5,
+                    seed,
+                    params
+                };
+    
+                this.renderer.render(tempState);
+    
+                const blob = await this.#canvasToBlob(this.lineCanvas);
+                results.push(blob);
+    
+                if (this.onProgress) this.onProgress(i + 1, count);
+            }
+
+            return results;
+        } finally {
+            // Canvas resizing clears its pixels. Always restore *and redraw*
+            // after success, serialization failure, or render exceptions.
+            try {
+                const state = store.getState();
+                this.lineCanvas.width = state.imgWidth;
+                this.lineCanvas.height = state.imgHeight;
+                this.bgCanvas.width = state.imgWidth;
+                this.bgCanvas.height = state.imgHeight;
+                if (state.mode === 'composite') {
+                    this.renderer.drawPlaceholder(state);
+                } else {
+                    this.renderer.ctxBg.clearRect(0, 0, state.imgWidth, state.imgHeight);
+                }
+                this.renderer.render(state);
+            } finally {
+                this.isGenerating = false;
+            }
+        }
     }
 
     /**
@@ -217,7 +242,7 @@ export class BatchManager {
         return new Promise((resolve, reject) => {
             const script = document.createElement('script');
             script.src = 'https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js';
-            script.integrity = 'sha512-XMVd28F1oH/O71fzwBnV7HoI/lNv1Fzj0bFcEX/W1pVdIYF3R9VS1Z1M4q4zXcR73MCh+JnFCojhB1CR7+Aqw==';
+            script.integrity = 'sha512-XMVd28F1oH/O71fzwBnV7HucLxVwtxf26XV8P4wPk26EDxuGZ91N8bsOttmnomcCD3CS5ZMRL50H0GgOHvegtg==';
             script.crossOrigin = 'anonymous';
 
             const timeout = setTimeout(() => {
@@ -242,9 +267,9 @@ export class BatchManager {
      * 生成した画像をZIPでダウンロード
      */
     async downloadAsZip(options, zipName = 'emphasis_lines_pack') {
-        const blobs = await this.generate(options);
-
+        // Fail before expensive 4K generation when offline ZIP dependency is missing.
         await this.#loadJSZip();
+        const blobs = await this.generate(options);
 
         const zip = new window.JSZip();
         const folder = zip.folder('emphasis_lines');

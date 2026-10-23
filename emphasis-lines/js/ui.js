@@ -1,9 +1,9 @@
-import { store } from './state.js?v=20260613-2';
-import { BatchManager } from './managers/BatchManager.js?v=20260613-2';
-import { ImageService } from './services/ImageService.js?v=20260613-2';
-import { ExportService } from './services/ExportService.js?v=20260613-2';
-import { AnalyticsManager } from './utils/analytics.js?v=20260613-2';
-import { TOAST_DURATION_MS, DEBOUNCE_RESIZE_MS, ZOOM_MIN, ZOOM_MAX, ZOOM_STEP } from './constants.js?v=20260613-2';
+import { store } from './state.js?v=20261010-1';
+import { BatchManager } from './managers/BatchManager.js?v=20261010-1';
+import { ImageService } from './services/ImageService.js?v=20261010-1';
+import { ExportService } from './services/ExportService.js?v=20261010-1';
+import { AnalyticsManager } from './utils/analytics.js?v=20261010-1';
+import { TOAST_DURATION_MS, DEBOUNCE_RESIZE_MS, ZOOM_MIN, ZOOM_MAX, ZOOM_STEP } from './constants.js?v=20261010-1';
 
 /**
  * CSS class constants for button states
@@ -21,6 +21,9 @@ export class UIManager {
         this._sliderTooltip = null; // ツールチップ要素
         this._pinchStartDist = 0;  // ピンチズーム初期距離
         this._historyCaptureActive = false;
+        const uploadLabel = document.getElementById('imageUploadLabel');
+        this._emptyUploadText = uploadLabel?.querySelector('.text-sm')?.textContent;
+        this._emptyUploadHint = uploadLabel?.querySelector('.text-xs')?.textContent;
 
         this.#setupEventListeners();
         this.#subscribeToStore();
@@ -131,16 +134,29 @@ export class UIManager {
      */
     #subscribeToStore() {
         store.subscribe((state, changedKeys) => {
-            const renderKeys = ['params', 'type', 'snapshot', 'seed', 'centerX', 'centerY'];
+            const layoutKeys = ['image', 'imgWidth', 'imgHeight', 'mode', 'snapshot'];
+            if (changedKeys.some(k => layoutKeys.includes(k))) {
+                let sizeChanged = false;
+                for (const canvas of [this.renderer.lineCanvas, this.renderer.bgCanvas]) {
+                    if (canvas.width !== state.imgWidth) { canvas.width = state.imgWidth; sizeChanged = true; }
+                    if (canvas.height !== state.imgHeight) { canvas.height = state.imgHeight; sizeChanged = true; }
+                }
+                this.els.canvasWrapper.style.width = `${state.imgWidth}px`;
+                this.els.canvasWrapper.style.height = `${state.imgHeight}px`;
+                this.#syncModeUI(state);
+                if (sizeChanged) this.centerView();
+                // 元に戻す・やり直すでも画像選択欄を実際の状態へ合わせる。
+                if (state.image) this.#updateUploadLabelSuccess(state.imgWidth, state.imgHeight);
+                else this.#updateUploadLabelEmpty();
+            }
+            const renderKeys = ['params', 'type', 'seed', 'centerX', 'centerY', ...layoutKeys];
             if (changedKeys.some(k => renderKeys.includes(k))) {
                 this.updateInputValues(state);
-                requestAnimationFrame(() => this.renderer.render(state));
+                // 連続操作で古い描画予約が新しい画像を上書きしないようにする。
+                requestAnimationFrame(() => this.renderer.render(store.getState()));
             }
             if (changedKeys.includes('history')) {
                 this.#updateHistoryUI();
-            }
-            if (changedKeys.includes('mode')) {
-                this.#updateButtonGroupUI('.mode-btn', 'mode', state.mode);
             }
         });
     }
@@ -439,6 +455,9 @@ export class UIManager {
                 this.isDragging = false;
             }
         });
+        const stopDragging = () => { this.isDragging = false; };
+        lineCanvas.addEventListener('pointercancel', stopDragging);
+        lineCanvas.addEventListener('lostpointercapture', stopDragging);
     }
 
     /**
@@ -517,6 +536,25 @@ export class UIManager {
      */
     #handleModeChange(mode) {
         store.setState({ mode }, true);
+    }
+
+    #syncModeUI(state) {
+        const { mode } = state;
+        this.#updateButtonGroupUI('.mode-btn', 'mode', mode);
+        const preset = document.getElementById('canvasPreset');
+        if (preset) {
+            preset.querySelector('option[data-current-size]')?.remove();
+            const size = `${state.imgWidth}x${state.imgHeight}`;
+            if (![...preset.options].some(option => option.value === size)) {
+                const option = document.createElement('option');
+                option.value = size;
+                option.textContent = `${state.imgWidth} x ${state.imgHeight} (${document.documentElement.lang === 'en' ? 'Current size' : '現在のサイズ'})`;
+                option.disabled = true;
+                option.dataset.currentSize = 'true';
+                preset.appendChild(option);
+            }
+            preset.value = size;
+        }
 
         const canvasSizeGroup = document.getElementById('canvasSizeGroup');
         if (canvasSizeGroup) {
@@ -524,13 +562,11 @@ export class UIManager {
         }
 
         if (mode === 'composite') {
-            this.renderer.drawPlaceholder(store.getState());
+            this.renderer.drawPlaceholder(state);
         } else {
             const { width, height } = this.renderer.bgCanvas;
             this.renderer.ctxBg.clearRect(0, 0, width, height);
         }
-
-        this.renderer.render(store.getState());
 
         // Update mode description
         const modeDesc = document.getElementById('modeDesc');
@@ -562,6 +598,8 @@ export class UIManager {
      */
     updateInputValues(state) {
         const { params } = state;
+        this.updateTypeUI(state.type);
+        this.#updatePresetColorSelection(params.color);
         Object.entries(this.els.inputs).forEach(([key, input]) => {
             if (!input) return;
 
@@ -639,16 +677,6 @@ export class UIManager {
      */
     #resizeCanvas(w, h) {
         store.setState({ imgWidth: w, imgHeight: h }, true);
-
-        this.renderer.bgCanvas.width = w;
-        this.renderer.bgCanvas.height = h;
-        this.renderer.lineCanvas.width = w;
-        this.renderer.lineCanvas.height = h;
-        this.els.canvasWrapper.style.width = `${w}px`;
-        this.els.canvasWrapper.style.height = `${h}px`;
-
-        this.renderer.ctxBg.clearRect(0, 0, w, h);
-        this.renderer.render(store.getState());
         this.centerView();
     }
 
@@ -761,16 +789,6 @@ export class UIManager {
             mode: 'composite'
         }, true);
 
-        this.renderer.bgCanvas.width = w;
-        this.renderer.bgCanvas.height = h;
-        this.renderer.lineCanvas.width = w;
-        this.renderer.lineCanvas.height = h;
-        this.els.canvasWrapper.style.width = `${w}px`;
-        this.els.canvasWrapper.style.height = `${h}px`;
-
-        this.#updateButtonGroupUI('.mode-btn', 'mode', 'composite');
-        this.renderer.drawPlaceholder(store.getState());
-        this.renderer.render(store.getState());
         this.centerView();
 
         this.#updateUploadLabelSuccess(w, h);
@@ -800,6 +818,26 @@ export class UIManager {
         }
         if (subTextEl) {
             subTextEl.textContent = 'クリックで別の画像に変更';
+            subTextEl.className = 'text-xs text-gray-500 mt-1';
+        }
+    }
+
+    #updateUploadLabelEmpty() {
+        const label = document.getElementById('imageUploadLabel');
+        if (!label) return;
+        label.classList.remove('border-green-500', 'bg-green-900', 'border-red-500', 'bg-red-900');
+        label.classList.add('border-blue-500', 'bg-blue-900');
+        const icon = label.querySelector('i');
+        const text = label.querySelector('.text-sm');
+        const hint = label.querySelector('.text-xs');
+        if (icon) icon.className = 'ph ph-image text-2xl text-blue-400 mb-1';
+        if (text) {
+            text.textContent = this._emptyUploadText;
+            text.className = 'text-sm font-medium text-blue-300';
+        }
+        if (hint) {
+            hint.textContent = this._emptyUploadHint;
+            hint.className = 'text-xs text-gray-500 mt-1';
         }
     }
 
@@ -849,6 +887,7 @@ export class UIManager {
      */
     async #exportImage() {
         const state = store.getState();
+        this.renderer.render(state);
 
         const success = await ExportService.exportImage({
             lineCanvas: this.renderer.lineCanvas,
@@ -875,6 +914,7 @@ export class UIManager {
      */
     #exportSVG() {
         const state = store.getState();
+        this.renderer.render(state);
 
         const success = ExportService.exportSVG({
             lineCanvas: this.renderer.lineCanvas,
@@ -901,7 +941,7 @@ export class UIManager {
      */
     #updatePresetColorSelection(selectedColor) {
         document.querySelectorAll('.color-preset').forEach(btn => {
-            const isSelected = btn.dataset.color === selectedColor;
+            const isSelected = btn.dataset.color?.toLowerCase() === selectedColor?.toLowerCase();
             btn.classList.toggle('active', isSelected);
             btn.classList.toggle('border-gray-600', !isSelected);
         });

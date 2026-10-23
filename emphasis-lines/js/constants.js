@@ -11,7 +11,7 @@ export const DEBOUNCE_RESIZE_MS = 100;
 export const ZOOM_MIN = 0.1;
 export const ZOOM_MAX = 4.0;
 export const ZOOM_STEP = 0.1;
-export const ASSET_VERSION = '20260613-2';
+export const ASSET_VERSION = '20261010-1';
 
 export const PRESETS = {
     basic: {

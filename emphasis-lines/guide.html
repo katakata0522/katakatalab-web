@@ -32,8 +32,8 @@
         href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+JP:wght@400;500;700&display=swap"
         rel="stylesheet">
 
-    <link href="css/tailwind.built.css?v=20260613-2" rel="stylesheet">
-    <link href="css/style.css?v=20260824-responsive" rel="stylesheet">
+    <link href="css/tailwind.built.css?v=20261010-1" rel="stylesheet">
+    <link href="css/style.css?v=20261010-responsive" rel="stylesheet">
     <link href="css/phosphor/regular/style.css?v=2.1.1" rel="stylesheet">
     <link href="css/phosphor/bold/style.css?v=2.1.1" rel="stylesheet">
     <link href="css/phosphor/fill/style.css?v=2.1.1" rel="stylesheet">
@@ -65,7 +65,7 @@
                 "name": "どんな画像形式で出力できますか？",
                 "acceptedAnswer": {
                     "@type": "Answer",
-                    "text": "PNGまたはSVG形式で出力できます。背景画像との合成モードと、透過背景の線素材のみモードの2種類から選べます。"
+                    "text": "PNGまたはSVG形式で出力できます。PNG保存は、背景画像との合成または透過背景の線素材のみを選べます。SVG保存は線のPNGを埋め込んだ形式で、背景画像は含みません。"
                 }
             },
             {
@@ -73,7 +73,7 @@
                 "name": "集中線と放射線の違いは何ですか？",
                 "acceptedAnswer": {
                     "@type": "Answer",
-                    "text": "汎用・手書き・放射は、中心から外へ伸びる線の見た目の差です。斜線は一定方向の速度線です。中心へ向かう専用モードと外へ広がる専用モードの二系統ではありません。"
+                    "text": "汎用・手書き・放射は、中心から外へ伸びる線の見た目の差です。斜線は一定方向の速度線です。中心へ向かう専用モードと外へ広がる専用モードの二系統ではありません。キャンバスをクリックすると中心を動かせます。"
                 }
             },
             {
@@ -81,7 +81,7 @@
                 "name": "SVGでも保存できますか？",
                 "acceptedAnswer": {
                     "@type": "Answer",
-                    "text": "はい、PNG保存に加えてSVG保存にも対応しています。SVG内には現在の線キャンバスが画像として埋め込まれるため、見た目を保ったまま保存できます。"
+                    "text": "はい。ただし、SVGの中身は現在の線キャンバスのPNG画像です。背景画像は含まれず、線をパスとして編集することもできません。拡大しても画像の解像度は上がりません。"
                 }
             }
         ]
@@ -169,7 +169,7 @@
                             どんな画像形式で出力できますか？
                             <i class="ph ph-caret-down"></i>
                         </summary>
-                        <p>PNGまたはSVG形式で出力できます。背景画像との合成モードと、透過背景の線素材のみモードの2種類から選べます。</p>
+                        <p>PNGまたはSVG形式で出力できます。PNG保存は、背景画像との合成または透過背景の線素材のみを選べます。SVG保存は線のPNGを埋め込んだ形式で、背景画像は含みません。</p>
                     </details>
                     <details>
                         <summary>
@@ -183,7 +183,7 @@
                             SVGでも保存できますか？
                             <i class="ph ph-caret-down"></i>
                         </summary>
-                        <p>はい、PNG保存に加えてSVG保存にも対応しています。SVG内には現在の線キャンバスが画像として埋め込まれるため、見た目を保ったまま保存できます。</p>
+                        <p>はい。ただし、SVGの中身は現在の線キャンバスのPNG画像です。背景画像は含まれず、線をパスとして編集することもできません。拡大しても画像の解像度は上がりません。</p>
                     </details>
                 </div>
 
@@ -221,7 +221,7 @@
                     <div class="landing-feature-card">
                         <div class="feature-icon" style="font-size: 2rem;">④</div>
                         <h3>画像を保存</h3>
-                        <p>青い「PNG保存」ボタンまたは「SVG」ボタンで保存できます。Ctrl+SではPNG形式でダウンロードされます。</p>
+                        <p>背景ごと保存するときは、合成画像モードで青い「PNG保存」ボタンを押します。「SVG」は線のPNGだけを埋め込んで保存します。Ctrl+SではPNG形式でダウンロードされます。</p>
                     </div>
                 </div>
 
@@ -243,7 +243,7 @@
                         <div style="background: rgba(55, 65, 81, 0.5); border-radius: 0.5rem; padding: 1rem;">
                             <strong style="color: #60a5fa;">線素材のみモード</strong>
                             <p style="color: #9ca3af; font-size: 0.875rem; margin-top: 0.25rem;">
-                                「出力モード」を「線素材のみ」に切り替えると、背景が透明なPNGとして出力。必要に応じてSVG保存も使えます。</p>
+                                「出力モード」を「線素材のみ」にして「PNG保存」を押すと、背景が透明な線素材を作れます。保存したPNGを画像編集ソフトに読み込み、写真やイラストの上のレイヤーに重ねて使います。</p>
                         </div>
                     </div>
                 </div>

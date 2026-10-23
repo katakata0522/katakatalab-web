@@ -72,8 +72,8 @@
         href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+JP:wght@400;500;700&display=swap"
         rel="stylesheet">
 
-    <link href="css/tailwind.built.css?v=20260613-2" rel="stylesheet">
-    <link href="css/style.css?v=20260824-responsive" rel="stylesheet">
+    <link href="css/tailwind.built.css?v=20261010-1" rel="stylesheet">
+    <link href="css/style.css?v=20261010-responsive" rel="stylesheet">
     <link href="css/phosphor/regular/style.css?v=2.1.1" rel="stylesheet">
     <link href="css/phosphor/bold/style.css?v=2.1.1" rel="stylesheet">
     <link href="css/phosphor/fill/style.css?v=2.1.1" rel="stylesheet">
@@ -202,7 +202,7 @@
                             class="upload-label block w-full border-2 border-dashed border-blue-500 hover:border-blue-400 rounded-lg p-4 text-center cursor-pointer transition-all bg-blue-900 bg-opacity-20 hover:bg-opacity-30">
                             <i class="ph ph-image text-2xl text-blue-400 mb-1"></i>
                             <div class="text-sm font-medium text-blue-300">Choose an image (optional)</div>
-                            <div class="text-xs text-gray-500 mt-1">JPEG or PNG — or create a line-only asset</div>
+                            <div class="text-xs text-gray-500 mt-1">PNG or JPEG (up to 20 MB each). You can also create lines without an image.</div>
                             <input type="file" id="fileInput" accept="image/png, image/jpeg" class="hidden">
                         </label>
                     </div>
@@ -464,13 +464,13 @@
                     </button>
                     <button type="button" id="btnExportSVG"
                         class="bg-gray-700 hover:bg-gray-600 text-white font-bold py-3 px-3 rounded-lg shadow transform active:scale-95 transition-all flex items-center justify-center gap-1 text-sm"
-                        title="Save as SVG">
+                        title="Save an SVG containing a PNG of the lines. The background image is not included.">
                         <i class="ph-bold ph-file-svg"></i>
                         <span>SVG</span>
                     </button>
                 </div>
                 <div class="text-[10px] text-center text-gray-500 mt-2">
-                    Images are processed locally in your browser and are not uploaded.
+                    Images are processed locally in your browser and are not uploaded. Click the canvas to move the center. SVG embeds a PNG of the lines only.
                 </div>
 
 
@@ -571,7 +571,7 @@
                             </p>
                             <p class="text-xs leading-relaxed text-gray-400">
                                 <strong class="text-yellow-400">⚠️ Restrictions</strong><br>
-                                Do not redistribute the tool or resell a substantially unchanged collection of generated assets.
+                                Do not redistribute the tool or resell the generated images themselves, including in asset packs.
                             </p>
                             </div>
                         </section>
@@ -642,11 +642,11 @@
       <h3>Practical workflow</h3>
       <ol><li>Choose Composite image to place lines over a JPEG or PNG, or Lines only to create a transparent asset.</li>
 <li>Select Basic, Hand-drawn, Radial, or Speed, then adjust line count, width, center, aperture, and randomness.</li>
-<li>Inspect the result at the intended crop and export PNG or SVG. Keep important faces and text clear of dense lines.</li></ol>
+<li>Check the intended crop, then save a PNG. For a reusable overlay, choose Lines only and place the transparent PNG above your artwork in an image editor. Keep faces and text clear of dense lines.</li></ol>
     </section>
     <section>
       <h3>Accuracy and limitations</h3>
-      <p>The result is generated with HTML Canvas, so very large exports depend on available device memory. Browser previews may look slightly different after another editor resizes or compresses the image. Generated assets may be used commercially without attribution, but the tool itself and unmodified asset packs may not be redistributed.</p>
+      <p>PNG follows the selected output mode. SVG embeds a PNG of the lines only; it does not include the background image, add resolution, or provide editable vector paths. Large exports depend on device memory, and resizing or compression in another editor can alter their appearance. You may use generated images commercially without attribution. Do not redistribute the tool or resell the generated images themselves, including in asset packs.</p>
     </section>
     <section>
       <h3>Privacy and data handling</h3>
@@ -667,7 +667,7 @@
   <a href="https://katakatalab.com/terms.html">Terms (Japanese)</a>
 </footer>
 
-    <script type="module" src="js/app.js?v=20260613-2"></script>
+    <script type="module" src="js/app.js?v=20261010-1"></script>
   <script src="/international/english-runtime.js" defer></script>
 </body>
 
