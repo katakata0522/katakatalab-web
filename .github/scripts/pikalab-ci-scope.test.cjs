@@ -372,7 +372,7 @@ test('Eduplay browserのCI絞込はnpm test内の並列性と全体検証を維�
 
 test('baselineの教育監査モジュールはビルド前に必ず取得する', () => {
     const workflow = readWorkflow();
-    const baselines = ['pikalab', 'manabi', 'space', 'focus', 'paper', 'quest', 'book'];
+    const baselines = ['pikalab', 'space', 'focus', 'paper', 'quest', 'book'];
     for (const name of baselines) {
         const marker = '          path: .' + name + '-baseline\n';
         assert.equal(workflow.split(marker).length, 2, name + ' baseline checkout must exist exactly once');
@@ -381,6 +381,46 @@ test('baselineの教育監査モジュールはビルド前に必ず取得する
         assert.ok(workflow.includes('prepare.py --root .' + name + '-baseline'), name + ': baseline media must be prepared before build');
     }
     assert.doesNotMatch(workflow, /sparse-checkout:/);
+});
+
+test('比較元を共有してもPR・手動・pushの必要なsource/buildと全ラボ比較を維持する', () => {
+    const body = workflowJobs(readWorkflow()).validate;
+    const step = name => body.split('      - name: ' + name + '\n')[1].split('      - name:')[0];
+    const condition = name => step(name).match(/if: "\$\{\{ (.*?) \}\}"/)[1];
+    const checkout = condition('Checkout shared layout baseline');
+    const prepare = condition('Prepare verified baseline dependencies from this job');
+    const install = condition('Install shared baseline dependencies');
+    const build = condition('Build shared baseline for visual and learning checks');
+    const labs = ['rhythm', 'manabi', 'speed_reader', 'typing_dojo', 'kotowaza', 'fraction'];
+    for (const event_name of ['pull_request', 'push', 'workflow_dispatch']) {
+        for (const visual of ['true', 'false']) {
+            for (let mask = 0; mask < 64; mask++) {
+                const outputs = Object.fromEntries(labs.map((name, i) => [name, (mask >> i) & 1 ? 'true' : 'false']));
+                const context = { github: { event_name }, env: { PIKALAB_COMPARE_BASELINE: visual }, needs: { scope: { outputs } } };
+                const learning = event_name === 'pull_request' && labs.slice(1).some(name => outputs[name] === 'true');
+                const rhythm = event_name === 'pull_request' && outputs.rhythm === 'true';
+                const requiresBuild = visual === 'true' || learning;
+                const requiresSource = requiresBuild || rhythm;
+                for (const expression of [checkout, prepare, install]) assert.equal(evaluate(expression, context), requiresSource);
+                assert.equal(evaluate(build, context), requiresBuild);
+            }
+        }
+    }
+    assert.match(step('Checkout shared layout baseline'), /ref: \$\{\{ github\.event\.pull_request\.base\.sha \|\| github\.event\.repository\.default_branch \}\}/);
+    assert.doesNotMatch(body, /path: \.(?:rhythm|manabi)-baseline/);
+    const consumers = {
+        'Run Rhythm Lab browser E2E': 'RHYTHM_BASELINE_ROOT=../.pikalab-baseline/pikalab',
+        'Run Manabi Land browser E2E': 'MANABI_BASELINE_ROOT=../.pikalab-baseline/pikalab/dist',
+        'Run Speed Reader browser E2E': 'SPEED_READER_BASELINE_ROOT=../.pikalab-baseline/pikalab/dist',
+        'Run Typing Dojo browser E2E': 'TYPING_DOJO_BASELINE_ROOT=../.pikalab-baseline/pikalab/dist',
+        'Run Kotowaza Quiz browser E2E': 'KOTOWAZA_QUIZ_BASELINE_ROOT=../.pikalab-baseline/pikalab/dist',
+        'Run Fraction Lab browser E2E': 'FRACTION_LAB_BASELINE_ROOT=../.pikalab-baseline/pikalab/dist',
+    };
+    for (const [name, binding] of Object.entries(consumers)) {
+        const consumer = step(name);
+        assert.ok(consumer.includes(binding), name + ': separate baseline remains bound');
+        assert.ok(consumer.includes('[ "${{ github.event_name }}" = pull_request ]'), name + ': manual/push comparison activation stays unchanged');
+    }
 });
 
 test('Kanji専用検証は同じ宣言から選択・package実行へ反映される', () => {
