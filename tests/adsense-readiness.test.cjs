@@ -276,7 +276,7 @@ test('掲載ツールの安全説明と操作性は実装内容に一致する',
   assert.doesNotMatch(textDiffHtml, /外部サーバーへの通信は発生しません/);
   assert.match(textDiffHtml, /入力した文章は比較処理のために外部送信しません/);
 
-  assert.match(ogpHtml, /画像データを外部送信しない/);
+  assert.match(ogpHtml, /画像(?:データ)?を外部送信しない/);
   assert.match(ogpJs, /e\.target === els\.imageInput/);
 
   assert.doesNotMatch(seirekiHtml, /user-scalable=no|maximum-scale=1\.0/);

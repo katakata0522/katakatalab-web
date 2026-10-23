@@ -52,7 +52,7 @@
     <div class="root-setting">
       <label for="rootBase">基準サイズ (Root HTML):</label>
       <div class="root-input-group">
-        <input type="number" id="rootBase" value="16" min="1" max="100" inputmode="decimal" aria-label="基準サイズ (Root HTML)" aria-describedby="rootError"><p id="rootError" class="helper-text" role="alert" hidden>基準は0より大きい、計算可能な範囲の数値を入力してください。</p>
+        <input type="number" id="rootBase" value="16" step="any" inputmode="decimal" aria-label="基準サイズ (Root HTML)" aria-describedby="rootError"><p id="rootError" class="helper-text" role="alert" hidden>基準は0より大きい、計算可能な範囲の数値を入力してください。</p>
         <span class="unit">px</span>
         <div class="root-presets" role="group" aria-label="よく使う基準">
           <button type="button" class="btn-root-preset is-active" data-root="16" aria-label="基準を16pxにする" aria-pressed="true">16</button>
@@ -92,12 +92,13 @@
     <h2 class="sub-title">見た目の確認</h2>
     <div class="preview-box">
       <div id="previewRoot" class="preview-root">
-        <p id="previewText" class="preview-content" contenteditable="true" title="クリックしてテキストを自由に変更できます">あのイーハトーヴォ的のすきとおった風、夏でも底に冷たさをもつ青いそら... (編集可能)</p>
+        <p id="previewText" role="textbox" aria-multiline="true" aria-label="編集できるプレビューテキスト" class="preview-content" contenteditable="true" title="クリックしてテキストを自由に変更できます">あのイーハトーヴォ的のすきとおった風、夏でも底に冷たさをもつ青いそら... (編集可能)</p>
       </div>
       <div class="preview-info">
         表示中: <span id="infoPx">16px</span> / <span id="infoRem">1rem</span>
       </div>
     </div>
+    <p id="previewLimitNotice" class="helper-text" role="status" aria-live="polite" hidden></p>
     <p class="preview-note">プレビュー箱の文字サイズはこのページの基準値です。本文は箱を擬似ルートにした rem 相当（親基準の em）で見せています。本物の rem は文書の html を見ます。これはこのページの基準値での見た目です。OSの文字サイズ変更そのものではありません。</p>
   </section>
 
@@ -116,7 +117,7 @@
         </button>
       </div>
     </div>
-    <p class="copy-hint">コピーは主要サイズのみ（早見表の全行ではありません）</p>
+    <p class="copy-hint">コピーには現在の早見表の全行を含みます（追加したサイズも含む）。</p>
     
     <textarea id="manualCopyCode" readonly hidden rows="14" aria-label="手動コピー用コード" spellcheck="false" style="width:100%;box-sizing:border-box"></textarea>
 
@@ -132,13 +133,17 @@
       <p id="listMessage" class="list-message" role="status" hidden></p>
     </div>
 
+    <p class="helper-text">換算はREMを小数第4位、PXを小数第2位まで丸めます。極小値は0になる場合があり、精密計算用ではありません。数値の基準は0より大きい計算可能な値を受け付けます。文字プレビューと表のサンプルは1〜300pxに制限します。</p>
+    <p class="helper-text">プレビュー文字と早見表は、このブラウザーに保存して次回復元します。保存できない場合や保存データが壊れている場合は、この画面だけに反映し、元の保存データを上書きしません。</p>
+    <p class="helper-text">Tailwind出力はfontSize設定の部分スニペットで、完成した設定ファイルではありません。プロジェクトのTailwindバージョンと設定方式に合わせて組み込んでください。</p>
     <div class="table-container">
       <table class="conversion-table">
         <thead>
           <tr>
-            <th>PX</th>
-            <th>REM</th>
-            <th>Preview</th>
+            <th scope="col">PX</th>
+            <th scope="col">REM</th>
+            <th scope="col">Preview</th>
+          <th scope="col">操作</th>
           </tr>
         </thead>
         <tbody id="tableBody">
@@ -168,7 +173,7 @@
         px は「お皿」に近い絶対指定です。ブラウザの文字サイズ設定を変えても、指定した px はその設定には追従しません。ページのズームでは伸びます。「お皿のサイズは絶対に変わらない」わけではありません。
       </p>
       <p style="margin-bottom: 0;">
-        rem は「盛り付け」に近い相対指定です。ルート（html）の font-size を見るので、ユーザーが文字を大きくしていると一緒に伸びます。画面幅のレスポンシブ（メディアクエリ）とは別の話です。動かしたくないものは px、文字サイズ設定に合わせて伸びてほしいものは rem。
+        rem は「盛り付け」に近い相対指定です。ルート（html）の font-size を見るので、ルートがユーザーの文字サイズ設定に追従する設計なら一緒に伸びます。ルートを固定pxにすると、その追従は保証されません。画面幅のレスポンシブ（メディアクエリ）とは別の話です。動かしたくないものは px、文字サイズ設定に合わせて伸びてほしいものは rem。
       </p>
     </div>
 
@@ -189,7 +194,7 @@
           <tr style="border-bottom: 1px solid var(--c-glass-border, rgba(255,255,255,0.1));">
             <td style="padding: 12px; font-weight: 700;">本文・見出しの文字</td>
             <td style="padding: 12px; color: var(--c-primary, #FF7675); font-weight: 800;">REM</td>
-            <td style="padding: 12px;">ルートの font-size（ユーザーの文字サイズ設定）に追従して読みやすさを保つため。</td>
+            <td style="padding: 12px;">ルートの font-size に追従するため。ユーザー設定への追従には、ルート自身もその設定に合わせる設計が必要です。</td>
           </tr>
           <tr style="border-bottom: 1px solid var(--c-glass-border, rgba(255,255,255,0.1));">
             <td style="padding: 12px; font-weight: 700;">余白(Margin / Padding)</td>
@@ -199,7 +204,7 @@
           <tr style="border-bottom: 1px solid var(--c-glass-border, rgba(255,255,255,0.1));">
             <td style="padding: 12px; font-weight: 700;">行間 (line-height)</td>
             <td style="padding: 12px; font-weight: 800;">単位なし（例: 1.5）</td>
-            <td style="padding: 12px;">親の font-size に対する倍率になります。原則すべて rem にはしません。</td>
+            <td style="padding: 12px;">その要素自身の font-size に対する倍率になります。原則すべて rem にはしません。</td>
           </tr>
           <tr style="border-bottom: 1px solid var(--c-glass-border, rgba(255,255,255,0.1));">
             <td style="padding: 12px; font-weight: 700;">1px / 2px の罫線（ボーダー）</td>
@@ -254,9 +259,9 @@
                 よく使う px を入力して「リストに追加」できます。不要な行は × で削除、↩ リセットで初期リストに戻せます。行の px をクリックすると、上の変換欄とプレビューにセットされます。
             </p>
 
-            <h4 style="color: var(--c-primary, #FF7675); margin-top: 1.5rem; font-weight: 800; font-size: 1.05rem; margin-bottom: 0.5rem;">コードコピーは主要サイズのみ</h4>
+            <h4 style="color: var(--c-primary, #FF7675); margin-top: 1.5rem; font-weight: 800; font-size: 1.05rem; margin-bottom: 0.5rem;">コードコピーは現在の早見表の全行</h4>
             <p>
-                「コードをコピー」に含まれるのは 10 / 12 / 14 / 16 / 18 / 20 / 24 / 28 / 32 / 40 / 48 / 64px です。早見表に足した行や、表にある 8px・11px などは含まれません。
+                「コードをコピー」には、現在の早見表の全行が含まれます。追加した行や8px・11pxなども対象で、削除した行は含まれません。
             </p>
         </div>
     </details>

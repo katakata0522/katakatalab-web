@@ -133,7 +133,7 @@
       <p id="customSave">-</p>
       <div class="memo-fields">
         <label>店名（任意）<input type="text" id="memoShop" maxlength="100" autocomplete="off"></label>
-        <label>日付<input type="date" id="memoDate"></label>
+        <label>日付<input type="date" id="memoDate" aria-describedby="memoStatus"></label>
       </div>
       <button type="button" id="btnCartCustom" class="btn-add-cart" disabled>買物メモに追加</button>
       <p id="memoStatus" role="status" aria-live="polite"></p>
@@ -179,6 +179,7 @@
     </div>
   </section>
 
+  <textarea id="manualCopyAmount" readonly hidden aria-label="手動コピー用の金額"></textarea>
   <div id="toast" class="toast" role="alert">COPIED!</div>
 
   <article class="article-content">
@@ -187,7 +188,7 @@
     
     <div class="feature-box">
       <h3>💡 クイック使い方とポイント</h3>
-      <p>金額を入力するだけで割引後の価格を一括計算します。タイムセールなどの「レジにてさらに〇〇%OFF」の重ね割や、買物メモでの合計額メモにも対応。計算はすべてブラウザ内で完結し、外部サーバーへ送信しません。</p>
+      <p>金額を入力するだけで割引後の価格を一括計算します。タイムセールなどの「レジにてさらに〇〇%OFF」の重ね割や、買物メモでの合計額メモにも対応。このツールの計算処理はブラウザ内で行い、金額・買物メモを送信する処理は設けていません。</p>
       <div style="display: flex; justify-content: space-between; align-items: center; gap: 1rem; flex-wrap: wrap; margin-top: 0.75rem;">
         <div>
           <strong style="color: var(--c-primary, #f59e0b);">📘 あわせて読みたい実践ガイド:</strong>
@@ -275,7 +276,7 @@
         <p>A. 割引後の価格からさらに指定のパーセントを引く計算です。例えば「50%OFFの商品が、レジでさらに10%OFF」の場合、単純な60%OFF（400円）ではなく、500円の10%引きで「450円」となります。</p>
 
         <h4>Q. 入力した金額や買い物メモは外部に送信されますか？</h4>
-        <p>A. いいえ。すべての計算はブラウザ内だけで処理され、外部サーバーへ送信されることはありません。</p>
+        <p>A. いいえ。このツールの計算処理はブラウザ内で行い、金額・買物メモを送信する処理は設けていません。</p>
       </div>
     </details>
   </article>

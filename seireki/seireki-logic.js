@@ -28,17 +28,19 @@ const SeirekiLogic = (() => {
   function parseWesternYear(raw) {
     const digits = String(raw ?? '')
       .replace(/[０-９]/g, (digit) => String.fromCharCode(digit.charCodeAt(0) - 0xFEE0))
-      .replace(/[^0-9]/g, '');
-    if (digits.length < 4) return null;
-    const year = Number.parseInt(digits.slice(0, 4), 10);
-    return Number.isInteger(year) ? year : null;
+      .trim().replace(/年$/, '').trim();
+    if (!/^\d{4}$/.test(digits)) return null;
+    return Number(digits);
   }
 
   function warekiToWestern(eraName, eraYear) {
     const era = ERAS.find((item) => item.name === eraName);
     const yearInEra = Number(eraYear);
     if (!era || !Number.isInteger(yearInEra) || yearInEra < 1) return null;
-    return era.start + yearInEra - 1;
+    const western = era.start + yearInEra - 1;
+    const newer = ERAS[ERAS.indexOf(era) - 1];
+    if (newer && western > newer.start) return null;
+    return western;
   }
 
   function formatEraYear(eraName, eraYear) {
@@ -150,7 +152,7 @@ const SeirekiLogic = (() => {
     if (kazueAge === upcoming.mae) return { kind: '前厄', hon: upcoming.hon };
     if (kazueAge === upcoming.hon) return { kind: '本厄', hon: upcoming.hon };
     if (kazueAge === upcoming.ato) return { kind: '後厄', hon: upcoming.hon };
-    return { kind: '次', hon: upcoming.hon, yearsLater: upcoming.mae - kazueAge };
+    return { kind: '次', hon: upcoming.hon, yearsLater: upcoming.hon - kazueAge };
   }
 
   return {

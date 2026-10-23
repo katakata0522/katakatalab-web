@@ -216,7 +216,7 @@
           <h4 class="act-now-title">今すぐ画面を閉じて、最初の一歩へ！</h4>
           <p class="act-now-text">
             「あれこれ悩むのを一旦やめて、目の前の小さな1つに手を付ける」と決めた瞬間、脳のストレスは大きく和らいでいます。<br>
-            結果は履歴に保存されました。深呼吸して、いってらっしゃい！応援しています！
+            <span id="actNowSaveStatus"></span>深呼吸して、いってらっしゃい！応援しています！
           </p>
           <div class="act-now-actions">
             <button type="button" id="actNowDoneBtn" class="primary-btn-mini">閉じる・作業に戻る</button>
@@ -325,7 +325,9 @@
         <a href="../contact.html" style="color: inherit; text-decoration: none;">お問い合わせ</a>
       </div>
     </footer>
-  </main>
+  <p id="historyStorageStatus" role="status" hidden></p>
+<textarea id="manualCopyResult" readonly hidden aria-label="手動コピー用の結果"></textarea>
+</main>
 
   <!-- 構造化データ（Schema.org） -->
   <script type="application/ld+json">
