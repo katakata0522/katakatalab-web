@@ -728,3 +728,7 @@ body.dark-mode .faq-section {
   border-color: rgba(255, 255, 255, 0.08) !important;
 }
 
+
+
+/* Preserve visible keyboard focus on expandable explanations and the editable sample. */
+summary:focus-visible, #previewText:focus-visible { outline: 2px solid currentColor; outline-offset: 3px; }

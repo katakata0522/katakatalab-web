@@ -49,7 +49,7 @@
     <div class="root-setting">
       <label for="rootBase">Root font size:</label>
       <div class="root-input-group">
-        <input type="number" id="rootBase" value="16" min="1" max="100" inputmode="decimal" aria-label="Root font size" aria-describedby="rootError"><p id="rootError" class="helper-text" role="alert" hidden>Enter a base greater than zero within the calculable range.</p>
+        <input type="number" id="rootBase" value="16" step="any" inputmode="decimal" aria-label="Root font size" aria-describedby="rootError"><p id="rootError" class="helper-text" role="alert" hidden>Enter a base greater than zero within the calculable range.</p>
         <span class="unit">px</span>
         <div class="root-presets" role="group" aria-label="Common root sizes">
           <button type="button" class="btn-root-preset is-active" data-root="16" aria-label="Set root to 16 px" aria-pressed="true">16</button>
@@ -89,12 +89,13 @@
     <h2 class="sub-title">Size preview</h2>
     <div class="preview-box">
       <div id="previewRoot" class="preview-root">
-        <p id="previewText" class="preview-content" contenteditable="true" title="Click to edit the preview text">Preview text: edit this sentence to test the selected size and readability.</p>
+        <p id="previewText" role="textbox" aria-multiline="true" aria-label="Editable preview text" class="preview-content" contenteditable="true" title="Click to edit the preview text">Preview text: edit this sentence to test the selected size and readability.</p>
       </div>
       <div class="preview-info">
         Current size: <span id="infoPx">16px</span> / <span id="infoRem">1rem</span>
       </div>
     </div>
+    <p id="previewLimitNotice" class="helper-text" role="status" aria-live="polite" hidden></p>
     <p class="preview-note">The preview box uses this page’s root size. The sample text uses em against that box, as a rem-like demo. Real rem looks at the document html. This shows size at this page’s root value. It is not the same as changing the OS text size.</p>
   </section>
 
@@ -113,7 +114,7 @@
         </button>
       </div>
     </div>
-    <p class="copy-hint">Copy includes common sizes only, not every row in the table.</p>
+    <p class="copy-hint">Copy includes every row currently in the reference table, including custom sizes.</p>
     
     <textarea id="manualCopyCode" readonly hidden rows="14" aria-label="Code for manual copying" spellcheck="false" style="width:100%;box-sizing:border-box"></textarea>
 
@@ -129,13 +130,17 @@
       <p id="listMessage" class="list-message" role="status" hidden></p>
     </div>
 
+    <p class="helper-text">Conversions round REM to 4 decimal places and PX to 2. Very small values may become zero; this is not a precision calculator. Any positive calculable root is accepted. Font previews and table samples are bounded to 1–300px.</p>
+    <p class="helper-text">Preview text and the reference table are saved in this browser and restored next time. If storage is unavailable or stored data is invalid, changes stay on this screen and previous saved data is not overwritten.</p>
+    <p class="helper-text">Tailwind output is a partial fontSize configuration snippet, not a complete config file. Integrate it according to your project’s Tailwind version and configuration approach.</p>
     <div class="table-container">
       <table class="conversion-table">
         <thead>
           <tr>
-            <th>PX</th>
-            <th>REM</th>
-            <th>Preview</th>
+            <th scope="col">PX</th>
+            <th scope="col">REM</th>
+            <th scope="col">Preview</th>
+          <th scope="col">Actions</th>
           </tr>
         </thead>
         <tbody id="tableBody">
@@ -148,7 +153,7 @@
     <header>
       <p><strong>Created by Katakata</strong> · Last reviewed <time datetime="2026-07-16">July 16, 2026</time></p>
       <h2 id="english-guide-title">How to use PX to REM Converter</h2>
-      <p>REM units scale from the document root and are useful for type and spacing systems that respect user settings. This converter handles both directions, makes the root size explicit, and turns selected values into reusable CSS, SCSS, or class snippets.</p>
+      <p>REM units scale from the document root. They follow user font-size preferences only when the root itself follows those preferences; a fixed-pixel root does not guarantee this. This converter handles both directions, makes the root size explicit, and turns selected values into reusable CSS, SCSS, or class snippets.</p>
     </header>
     <section>
       <h3>Practical workflow</h3>

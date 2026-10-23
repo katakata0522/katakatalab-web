@@ -946,3 +946,7 @@ body.dark-mode .input-hint {
 
 
 
+
+/* Keep keyboard focus visible without changing the selected theme. */
+.toggle-switch-theme input:focus-visible + .slider { outline: 2px solid currentColor; outline-offset: 4px; }
+.tab-btn:focus-visible, #dropZone:focus-visible, #removeImageBtn:focus-visible { outline: 2px solid currentColor; outline-offset: 3px; }
