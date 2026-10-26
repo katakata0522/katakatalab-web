@@ -248,13 +248,24 @@ async function main() {
         encodings.push(bytes.toString('base64'));
       }
       assert.equal(new Set(encodings).size, 3, '一括PNGが重複しています');
-      const alpha = await page.evaluate(async encoded => {
+      const coverage = await page.evaluate(async encoded => {
         const image = new Image(); image.src = 'data:image/png;base64,' + encoded; await image.decode();
         const c = document.createElement('canvas'); c.width = image.width; c.height = image.height;
-        c.getContext('2d').drawImage(image, 0, 0);
-        return c.getContext('2d').getImageData(image.width / 2, image.height / 2, 1, 1).data[3];
+        const ctx = c.getContext('2d');
+        ctx.drawImage(image, 0, 0);
+        const data = ctx.getImageData(0, 0, image.width, image.height).data;
+        let transparent = 0;
+        let opaque = 0;
+        // 放射状の線は中心を塗りつぶす。背景の透明さは、線が通らない画素で見る。
+        for (let i = 3; i < data.length; i += 160) {
+          if (data[i] === 0) transparent += 1;
+          else opaque += 1;
+        }
+        return { transparent, opaque };
       }, encodings[0]);
-      assert.equal(alpha, 0); assert.deepEqual(await snapshot(page), before);
+      assert.ok(coverage.transparent > 0, '背景が透明ではありません');
+      assert.ok(coverage.opaque > 0, '線が描かれていません');
+      assert.deepEqual(await snapshot(page), before);
       await checkPng(page, (await download(page, '#btnExport')).bytes);
     }));
 
