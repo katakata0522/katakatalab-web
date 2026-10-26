@@ -1,0 +1,916 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>同人即売会の頒布価格・釣銭・損益 | KatakataLab</title>
+  <meta name="description" content="部数と印刷費から、黒字になる部数と当日の釣銭枚数をブラウザだけで計算します。見本を除いた販売数、締切の目安、メロンとBOOTHの手取りも出します。">
+  <link rel="canonical" href="https://katakatalab.com/doujin-calc/">
+  <meta name="robots" content="index, follow">
+  <meta property="og:title" content="同人即売会の頒布価格・釣銭・損益">
+  <meta property="og:description" content="部数と印刷費から、黒字になる部数と当日の釣銭枚数をブラウザだけで計算します。">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://katakatalab.com/doujin-calc/">
+  <meta property="og:site_name" content="KatakataLab">
+  <meta property="og:image" content="https://katakatalab.com/ogp.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:image" content="https://katakatalab.com/ogp.png">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%236366f1'/><text y='.9em' x='50%' text-anchor='middle' font-size='70'>📚</text></svg>">
+  <link rel="manifest" href="./manifest.json">
+  <meta name="theme-color" content="#6366f1">
+
+  <!-- Google Fonts: Noto Sans JP -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&display=swap" rel="stylesheet">
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['"Noto Sans JP"', 'sans-serif'],
+          }
+        }
+      }
+    }
+  </script>
+
+  <!-- Lucide Icons CDN -->
+  <script src="./js/lucide.min.js"></script>
+
+  <!-- Custom Stylesheet -->
+  <link rel="stylesheet" href="./css/style.css">
+
+  <!-- JSON-LD 構造化マークアップ (WebApplication & FAQPage) -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "同人即売会 頒布価格＆お釣り・損益シミュレーター Pro",
+    "url": "https://katakatalab.com/doujin-calc/",
+    "description": "同人サークルのための頒布価格、損益分岐点、お釣り快適度、釣銭準備枚数、マルチレジカウンター、税務棚卸計算ツール。",
+    "applicationCategory": "BusinessApplication",
+    "operatingSystem": "All",
+    "offers": {
+      "@type": "Offer",
+      "price": "0",
+      "priceCurrency": "JPY"
+    }
+  }
+  </script>
+</head>
+<body class="min-h-screen bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-100 flex flex-col justify-between transition-colors duration-200 pb-16 sm:pb-0">
+
+  <!-- 印刷用ヘッダー (画面上は非表示、印刷時のみ表示) -->
+  <div id="print-header" class="hidden">
+    <h1 class="text-xl font-black text-slate-900">同人即売会 頒布計画書 ＆ 釣銭準備シート</h1>
+    <p class="text-xs text-slate-600 mt-1">コミケ・COMITIA・即売会当日用 計画メモ</p>
+  </div>
+
+  <!-- ヘッダー -->
+  <header class="bg-white dark:bg-slate-900/90 border-b border-slate-200 dark:border-slate-800 sticky top-0 z-30 shadow-sm backdrop-blur">
+    <div class="max-w-5xl mx-auto px-4 py-3 flex items-center justify-between">
+      <div class="flex items-center gap-2.5">
+        <div class="w-9 h-9 bg-gradient-to-br from-indigo-600 to-purple-600 rounded-xl flex items-center justify-center text-white shadow-md">
+          <i data-lucide="book-open" class="w-5 h-5"></i>
+        </div>
+        <div>
+          <h1 class="text-sm sm:text-base font-black text-slate-900 dark:text-white leading-tight">同人即売会 頒布価格＆お釣りシミュレーター <span class="text-xs bg-indigo-100 dark:bg-indigo-950 text-indigo-700 dark:text-indigo-300 px-1.5 py-0.5 rounded font-black">Pro</span></h1>
+          <p class="text-[10px] text-slate-500 dark:text-slate-400 font-medium">コミケ・COMITIA・赤ブー・M3・ゲーム即売会・アンソロ対応</p>
+        </div>
+      </div>
+
+      <div class="flex items-center gap-2">
+        <button id="btn-print-page" type="button" class="text-xs font-bold text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white px-2.5 py-1.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 flex items-center gap-1 transition-all" title="A4印刷またはPDF保存">
+          <i data-lucide="printer" class="w-3.5 h-3.5"></i>
+          <span class="hidden sm:inline">印刷 / PDF</span>
+        </button>
+
+        <button id="btn-reset-all" type="button" class="text-xs font-bold text-slate-500 dark:text-slate-400 hover:text-rose-600 px-2.5 py-1.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 hover:bg-rose-50 dark:hover:bg-rose-950/40 flex items-center gap-1 transition-colors" title="全設定を初期化">
+          <i data-lucide="rotate-ccw" class="w-3.5 h-3.5"></i>
+          <span class="hidden sm:inline">リセット</span>
+        </button>
+
+        <button id="btn-theme-toggle" class="p-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 transition-all" title="ダークモード切替" aria-label="テーマ切替">
+          <i data-lucide="moon" id="icon-theme" class="w-4 h-4"></i>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- セキュリティ・プライバシー安全宣言バナー -->
+  <div class="bg-indigo-50/80 dark:bg-indigo-950/40 border-b border-indigo-100 dark:border-indigo-900/50 py-1.5 px-4 text-center">
+    <div class="max-w-5xl mx-auto flex items-center justify-center gap-2 text-[11px] font-bold text-indigo-800 dark:text-indigo-300">
+      <i data-lucide="shield-check" class="w-3.5 h-3.5 text-indigo-600 dark:text-indigo-400"></i>
+      <span>完全ローカル完結: 入力された部数や原価データは外部サーバーへ一切送信されず、端末内でのみ安全に保存・計算されます</span>
+    </div>
+  </div>
+
+  <!-- メインコンテンツ -->
+  <main class="max-w-5xl mx-auto px-4 py-5 w-full flex-1">
+    
+    <!-- 1. クイックプリセット選択バー -->
+    <div class="mb-5">
+      <label class="text-xs font-black text-slate-600 dark:text-slate-400 mb-2 flex items-center gap-1.5">
+        <span class="w-2 h-2 rounded-full bg-indigo-600"></span>
+        <span>ジャンル別クイックプリセット（ワンタップで相場を自動入力）</span>
+      </label>
+      <div class="grid grid-cols-2 sm:grid-cols-5 gap-2" id="preset-buttons-container"></div>
+    </div>
+
+    <!-- 2. コスト・部数入力カード -->
+    <div class="bg-white dark:bg-slate-800/90 rounded-3xl p-5 sm:p-6 border border-slate-200 dark:border-slate-700 custom-shadow mb-6" id="section-inputs">
+      
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-5 mb-5">
+        
+        <!-- 左列: 持ち込み部数 ＆ 非売枠 -->
+        <div>
+          <div class="flex justify-between items-center mb-1.5">
+            <label for="input-copies" class="text-xs font-black text-slate-700 dark:text-slate-300 flex items-center gap-1.5">
+              <span class="w-2 h-2 rounded-full bg-indigo-600"></span>
+              <span>持ち込み部数 (総刷り部数)</span>
+            </label>
+            <span class="text-[11px] text-indigo-600 dark:text-indigo-400 font-bold" id="label-sale-copies">販売可能: 98部</span>
+          </div>
+
+          <div class="flex items-center gap-2">
+            <button type="button" id="btn-copies-minus" class="w-12 h-12 rounded-2xl bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200 font-black text-lg flex items-center justify-center touch-target transition-all">-10</button>
+            <div class="relative flex-1">
+              <input 
+                type="text" 
+                id="input-copies" 
+                inputmode="numeric" 
+                value="100" 
+                class="w-full text-center py-2.5 text-2xl font-black text-slate-900 dark:text-white bg-slate-50 dark:bg-slate-900/60 border border-slate-300 dark:border-slate-600 rounded-2xl focus:bg-white dark:focus:bg-slate-900 focus:border-indigo-600 focus:ring-4 focus:ring-indigo-100 dark:focus:ring-indigo-900/40 outline-none transition-all touch-target"
+              >
+              <span class="absolute right-3 top-1/2 -translate-y-1/2 text-xs font-bold text-slate-400 pointer-events-none">部</span>
+            </div>
+            <button type="button" id="btn-copies-plus" class="w-12 h-12 rounded-2xl bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200 font-black text-lg flex items-center justify-center touch-target transition-all">+10</button>
+          </div>
+
+          <!-- 非売枠設定 -->
+          <div class="mt-2.5 flex items-center justify-between text-xs text-slate-500 dark:text-slate-400 bg-slate-50 dark:bg-slate-900/60 p-2.5 rounded-2xl border border-slate-200/60 dark:border-slate-700/60">
+            <span class="flex items-center gap-1">
+              <i data-lucide="bookmark" class="w-3.5 h-3.5 text-slate-400"></i>
+              <span>見本誌提出 ＆ スケブ用 (基本2部)</span>
+            </span>
+            <div class="flex items-center gap-1">
+              <input type="text" id="input-non-sale" inputmode="numeric" value="2" class="w-12 text-center py-1 text-xs font-bold bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-600 rounded-lg outline-none text-slate-900 dark:text-white">
+              <span class="text-[11px] font-bold text-slate-600 dark:text-slate-400">部</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- 右列: 製造・印刷コスト（総額/単価 双方向連動 ＆ 締切割引） -->
+        <div>
+          <div class="flex justify-between items-center mb-1.5">
+            <label class="text-xs font-black text-slate-700 dark:text-slate-300 flex items-center gap-1.5">
+              <span class="w-2 h-2 rounded-full bg-indigo-600"></span>
+              <span>製造・印刷コスト</span>
+            </label>
+            
+            <!-- 総額/単価 タブ -->
+            <div class="bg-slate-200 dark:bg-slate-800 p-0.5 rounded-lg flex text-[10px] font-bold">
+              <button type="button" id="tab-cost-total" class="px-2 py-0.5 rounded-md bg-white dark:bg-slate-700 text-indigo-700 dark:text-indigo-300 shadow-sm transition-all">総額入力</button>
+              <button type="button" id="tab-cost-unit" class="px-2 py-0.5 rounded-md text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-all">1部単価入力</button>
+            </div>
+          </div>
+
+          <!-- 総額入力フィールド -->
+          <div id="cost-total-wrapper" class="relative">
+            <span class="absolute left-3.5 top-1/2 -translate-y-1/2 text-lg font-black text-slate-400">¥</span>
+            <input 
+              type="text" 
+              id="input-cost-total" 
+              inputmode="numeric" 
+              value="35000" 
+              placeholder="35000" 
+              class="w-full pl-8 pr-4 py-2.5 text-2xl font-black text-slate-900 dark:text-white bg-slate-50 dark:bg-slate-900/60 border border-slate-300 dark:border-slate-600 rounded-2xl focus:bg-white dark:focus:bg-slate-900 focus:border-indigo-600 focus:ring-4 focus:ring-indigo-100 dark:focus:ring-indigo-900/40 outline-none transition-all touch-target"
+            >
+          </div>
+
+          <!-- 単価入力フィールド（初期非表示） -->
+          <div id="cost-unit-wrapper" class="relative hidden">
+            <span class="absolute left-3.5 top-1/2 -translate-y-1/2 text-lg font-black text-slate-400">¥</span>
+            <input 
+              type="text" 
+              id="input-cost-unit" 
+              inputmode="numeric" 
+              value="350" 
+              placeholder="350" 
+              class="w-full pl-8 pr-4 py-2.5 text-2xl font-black text-slate-900 dark:text-white bg-slate-50 dark:bg-slate-900/60 border border-slate-300 dark:border-slate-600 rounded-2xl focus:bg-white dark:focus:bg-slate-900 focus:border-indigo-600 focus:ring-4 focus:ring-indigo-100 dark:focus:ring-indigo-900/40 outline-none transition-all touch-target"
+            >
+          </div>
+
+          <!-- 印刷所締切シミュレーター ＆ 1部原価 -->
+          <div class="mt-2.5 grid grid-cols-2 gap-2">
+            <div class="flex items-center justify-between text-xs bg-slate-50 dark:bg-slate-900/60 p-2 rounded-2xl border border-slate-200/60 dark:border-slate-700/60">
+              <span class="text-[11px] text-slate-500">締切プラン:</span>
+              <select id="select-deadline" class="text-xs font-bold bg-transparent text-indigo-700 dark:text-indigo-300 outline-none">
+                <option value="early30">超早割の目安 (-30%)</option>
+                <option value="early15">早割の目安 (-15%)</option>
+                <option value="normal" selected>通常締切 (±0%)</option>
+                <option value="late20">直前割増の目安 (+20%)</option>
+                <option value="late40">特急割増の目安 (+40%)</option>
+              </select>
+            </div>
+
+            <div class="flex items-center justify-between text-xs text-slate-500 dark:text-slate-400 bg-slate-50 dark:bg-slate-900/60 p-2 rounded-2xl border border-slate-200/60 dark:border-slate-700/60">
+              <span class="text-[11px]">1部実質原価:</span>
+              <span class="font-black text-slate-800 dark:text-white" id="label-unit-cost">¥350 / 部</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- 固定費・ノベルティ・合同誌謝礼・キャッシュレス（アコーディオン） -->
+      <div class="border-t border-slate-100 dark:border-slate-700/80 pt-4">
+        <button id="btn-toggle-options" type="button" class="text-xs font-bold text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white flex items-center justify-between w-full">
+          <span class="flex items-center gap-1.5">
+            <i data-lucide="sliders" class="w-3.5 h-3.5 text-indigo-600 dark:text-indigo-400"></i>
+            <span>詳細オプション（スペース参加費・送料・ノベルティ制作費・合同誌献本＆原稿料・キャッシュレス）</span>
+          </span>
+          <i data-lucide="chevron-down" id="icon-options-arrow" class="w-4 h-4 transition-transform text-slate-400"></i>
+        </button>
+
+        <div id="panel-options" class="hidden mt-4 pt-3 border-t border-dashed border-slate-200 dark:border-slate-700 space-y-4">
+          
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+            <div>
+              <label for="input-fixed-fee" class="text-[11px] font-bold text-slate-600 dark:text-slate-400 block mb-1">スペース参加費</label>
+              <div class="relative">
+                <span class="absolute left-3 top-1/2 -translate-y-1/2 text-xs font-bold text-slate-400">¥</span>
+                <input type="text" id="input-fixed-fee" inputmode="numeric" value="7000" placeholder="7000" class="w-full pl-7 pr-3 py-2 text-sm font-bold text-slate-800 dark:text-white bg-slate-50 dark:bg-slate-900/60 border border-slate-300 dark:border-slate-600 rounded-xl outline-none">
+              </div>
+            </div>
+
+            <div>
+              <label for="input-shipping-fee" class="text-[11px] font-bold text-slate-600 dark:text-slate-400 block mb-1">搬入・返送送料 (往復等)</label>
+              <div class="relative">
+                <span class="absolute left-3 top-1/2 -translate-y-1/2 text-xs font-bold text-slate-400">¥</span>
+                <input type="text" id="input-shipping-fee" inputmode="numeric" value="2500" placeholder="2500" class="w-full pl-7 pr-3 py-2 text-sm font-bold text-slate-800 dark:text-white bg-slate-50 dark:bg-slate-900/60 border border-slate-300 dark:border-slate-600 rounded-xl outline-none">
+              </div>
+            </div>
+
+            <div>
+              <label for="input-other-fee" class="text-[11px] font-bold text-slate-600 dark:text-slate-400 block mb-1">ポスター・設営備品・外注費</label>
+              <div class="relative">
+                <span class="absolute left-3 top-1/2 -translate-y-1/2 text-xs font-bold text-slate-400">¥</span>
+                <input type="text" id="input-other-fee" inputmode="numeric" value="0" placeholder="0" class="w-full pl-7 pr-3 py-2 text-sm font-bold text-slate-800 dark:text-white bg-slate-50 dark:bg-slate-900/60 border border-slate-300 dark:border-slate-600 rounded-xl outline-none">
+              </div>
+            </div>
+
+            <!-- ノベルティ制作費 -->
+            <div>
+              <label for="input-novelty-unit" class="text-[11px] font-bold text-slate-600 dark:text-slate-400 block mb-1">先着ノベルティ単価 (円)</label>
+              <div class="relative">
+                <span class="absolute left-3 top-1/2 -translate-y-1/2 text-xs font-bold text-slate-400">¥</span>
+                <input type="text" id="input-novelty-unit" inputmode="numeric" value="0" placeholder="例: 50" class="w-full pl-7 pr-3 py-2 text-sm font-bold text-slate-800 dark:text-white bg-slate-50 dark:bg-slate-900/60 border border-slate-300 dark:border-slate-600 rounded-xl outline-none">
+              </div>
+            </div>
+
+            <div>
+              <label for="input-novelty-copies" class="text-[11px] font-bold text-slate-600 dark:text-slate-400 block mb-1">ノベルティ作成数 (個/部)</label>
+              <input type="text" id="input-novelty-copies" inputmode="numeric" value="0" placeholder="例: 100" class="w-full px-3 py-2 text-sm font-bold text-slate-800 dark:text-white bg-slate-50 dark:bg-slate-900/60 border border-slate-300 dark:border-slate-600 rounded-xl outline-none">
+            </div>
+
+            <!-- 合同誌執筆者数（献本数連動） -->
+            <div>
+              <label for="input-antho-members" class="text-[11px] font-bold text-slate-600 dark:text-slate-400 block mb-1">合同誌 執筆者人数 (献本数)</label>
+              <input type="text" id="input-antho-members" inputmode="numeric" value="0" placeholder="例: 10" class="w-full px-3 py-2 text-sm font-bold text-slate-800 dark:text-white bg-slate-50 dark:bg-slate-900/60 border border-slate-300 dark:border-slate-600 rounded-xl outline-none">
+            </div>
+
+            <!-- 合同誌原稿料 -->
+            <div>
+              <label for="input-antho-page-fee" class="text-[11px] font-bold text-slate-600 dark:text-slate-400 block mb-1">合同誌 謝礼・原稿料 (総額)</label>
+              <div class="relative">
+                <span class="absolute left-3 top-1/2 -translate-y-1/2 text-xs font-bold text-slate-400">¥</span>
+                <input type="text" id="input-antho-page-fee" inputmode="numeric" value="0" placeholder="例: 20000" class="w-full pl-7 pr-3 py-2 text-sm font-bold text-slate-800 dark:text-white bg-slate-50 dark:bg-slate-900/60 border border-slate-300 dark:border-slate-600 rounded-xl outline-none">
+              </div>
+            </div>
+          </div>
+          <p class="text-[10px] text-slate-400 leading-relaxed">締切の％は印刷所の見積ではありません。参加費の初期値7,000円に、C109のCircle.ms手数料1,000円は入っていません。印刷費の実額は印刷所の料金表が正です。例: <a href="https://www.nikko-pc.com/" class="underline" target="_blank" rel="noopener noreferrer">同人誌印刷所 日光企画</a>（紹介料は入っていません）。</p>
+
+          <!-- キャッシュレス決済設定 -->
+          <div class="p-3.5 bg-indigo-50/60 dark:bg-indigo-950/40 rounded-2xl border border-indigo-100 dark:border-indigo-900/60 space-y-2.5">
+            <div class="flex items-center justify-between">
+              <div class="flex items-center gap-2">
+                <i data-lucide="credit-card" class="w-4 h-4 text-indigo-600 dark:text-indigo-400"></i>
+                <span class="text-xs font-black text-slate-800 dark:text-slate-200">キャッシュレス決済（Square / Airペイ等）併用</span>
+                <span class="text-[10px] font-bold text-indigo-700 dark:text-indigo-300 bg-indigo-100 dark:bg-indigo-900 px-1.5 py-0.5 rounded">仮に 3.24%</span>
+              </div>
+              <label class="relative inline-flex items-center cursor-pointer">
+                <input type="checkbox" id="toggle-cashless" class="sr-only peer">
+                <div class="w-9 h-5 bg-slate-300 peer-focus:outline-none rounded-full peer dark:bg-slate-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-indigo-600"></div>
+              </label>
+            </div>
+
+            <div id="cashless-ratio-container" class="hidden pt-2 border-t border-indigo-100/80 dark:border-indigo-900/60 flex items-center gap-3">
+              <span class="text-[11px] font-bold text-slate-600 dark:text-slate-400 whitespace-nowrap">キャッシュレス利用率予測:</span>
+              <input type="range" id="range-cashless-ratio" min="0" max="100" value="30" step="5" class="flex-1 accent-indigo-600">
+              <span class="text-xs font-black text-indigo-700 dark:text-indigo-300 w-12 text-right" id="label-cashless-ratio">30%</span>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+
+    <!-- 3. 頒布価格リアルタイム比較カード（4並び） -->
+    <div class="mb-6" id="section-prices">
+      <div class="flex items-center justify-between mb-3">
+        <h2 class="text-xs font-black text-slate-600 dark:text-slate-400 uppercase tracking-wider flex items-center gap-1.5">
+          <i data-lucide="tag" class="w-4 h-4 text-indigo-600 dark:text-indigo-400"></i>
+          <span>頒布価格別 お釣り快適度＆損益比較（4プラン）</span>
+        </h2>
+        <span class="text-[11px] font-bold text-slate-400">※ 総コスト: <strong id="label-total-cost" class="text-slate-800 dark:text-white">¥44,500</strong></span>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5" id="price-cards-grid">
+        
+        <!-- カード1: 500円 -->
+        <div class="price-card bg-white dark:bg-slate-800 rounded-3xl p-4 border-2 border-slate-200 dark:border-slate-700 custom-shadow transition-all relative flex flex-col justify-between" data-price="500">
+          <div>
+            <div class="flex items-center justify-between pb-2 border-b border-slate-100 dark:border-slate-700/60">
+              <span class="text-xs font-black text-slate-500 dark:text-slate-400">ワンコイン</span>
+              <span class="text-xs font-bold text-emerald-600 bg-emerald-50 dark:bg-emerald-950/60 dark:text-emerald-400 px-2 py-0.5 rounded-full">★★★★★ 最高</span>
+            </div>
+            <div class="my-3 text-center">
+              <div class="text-2xl font-black text-slate-900 dark:text-white">¥500</div>
+              <div class="text-[10px] text-slate-400 mt-0.5">500円玉/千円札のみ・最速会計</div>
+            </div>
+            <div class="bg-slate-50 dark:bg-slate-900/60 rounded-2xl p-2.5 text-xs space-y-1.5 text-slate-600 dark:text-slate-300">
+              <div class="flex justify-between">
+                <span class="text-slate-400 text-[11px]">黒字化ライン</span>
+                <span class="font-black text-slate-800 dark:text-white card-breakeven">89部</span>
+              </div>
+              <div class="flex justify-between">
+                <span class="text-slate-400 text-[11px]">完売時純利益</span>
+                <span class="font-black text-emerald-600 dark:text-emerald-400 card-max-profit">+¥4,500</span>
+              </div>
+              <div class="flex justify-between text-[10px] text-slate-400 pt-1 border-t border-slate-200/60 dark:border-slate-700/60">
+                <span>手残り単価</span>
+                <span class="font-bold card-net-price">¥500</span>
+              </div>
+            </div>
+          </div>
+          <div class="mt-3 text-center">
+            <span class="text-[10px] font-bold text-emerald-700 dark:text-emerald-300 bg-emerald-50 dark:bg-emerald-950/60 px-2 py-1 rounded-lg block">お釣り準備が最もラク</span>
+          </div>
+        </div>
+
+        <!-- カード2: 700円 -->
+        <div class="price-card bg-white dark:bg-slate-800 rounded-3xl p-4 border-2 border-slate-200 dark:border-slate-700 custom-shadow transition-all relative flex flex-col justify-between" data-price="700">
+          <div>
+            <div class="flex items-center justify-between pb-2 border-b border-slate-100 dark:border-slate-700/60">
+              <span class="text-xs font-black text-slate-500 dark:text-slate-400">相場価格</span>
+              <span class="text-xs font-bold text-amber-600 bg-amber-50 dark:bg-amber-950/60 dark:text-amber-400 px-2 py-0.5 rounded-full">★★★☆☆ 注意</span>
+            </div>
+            <div class="my-3 text-center">
+              <div class="text-2xl font-black text-slate-900 dark:text-white">¥700</div>
+              <div class="text-[10px] text-slate-400 mt-0.5">千円札で300円お釣り(100円玉×3)</div>
+            </div>
+            <div class="bg-slate-50 dark:bg-slate-900/60 rounded-2xl p-2.5 text-xs space-y-1.5 text-slate-600 dark:text-slate-300">
+              <div class="flex justify-between">
+                <span class="text-slate-400 text-[11px]">黒字化ライン</span>
+                <span class="font-black text-slate-800 dark:text-white card-breakeven">64部</span>
+              </div>
+              <div class="flex justify-between">
+                <span class="text-slate-400 text-[11px]">完売時純利益</span>
+                <span class="font-black text-emerald-600 dark:text-emerald-400 card-max-profit">+¥24,100</span>
+              </div>
+              <div class="flex justify-between text-[10px] text-slate-400 pt-1 border-t border-slate-200/60 dark:border-slate-700/60">
+                <span>手残り単価</span>
+                <span class="font-bold card-net-price">¥700</span>
+              </div>
+            </div>
+          </div>
+          <div class="mt-3 text-center">
+            <span class="text-[10px] font-bold text-amber-700 dark:text-amber-300 bg-amber-50 dark:bg-amber-950/60 px-2 py-1 rounded-lg block">100円玉が大量に必要</span>
+          </div>
+        </div>
+
+        <!-- カード3: 1,000円 -->
+        <div class="price-card bg-white dark:bg-slate-800 rounded-3xl p-4 border-2 border-slate-200 dark:border-slate-700 custom-shadow transition-all relative flex flex-col justify-between" data-price="1000">
+          <div>
+            <div class="flex items-center justify-between pb-2 border-b border-slate-100 dark:border-slate-700/60">
+              <span class="text-xs font-black text-slate-500 dark:text-slate-400">ジャスト千円</span>
+              <span class="text-xs font-bold text-emerald-600 bg-emerald-50 dark:bg-emerald-950/60 dark:text-emerald-400 px-2 py-0.5 rounded-full">★★★★★ 最速</span>
+            </div>
+            <div class="my-3 text-center">
+              <div class="text-2xl font-black text-slate-900 dark:text-white">¥1,000</div>
+              <div class="text-[10px] text-slate-400 mt-0.5">千円札直渡しでお釣りゼロ！</div>
+            </div>
+            <div class="bg-slate-50 dark:bg-slate-900/60 rounded-2xl p-2.5 text-xs space-y-1.5 text-slate-600 dark:text-slate-300">
+              <div class="flex justify-between">
+                <span class="text-slate-400 text-[11px]">黒字化ライン</span>
+                <span class="font-black text-slate-800 dark:text-white card-breakeven">45部</span>
+              </div>
+              <div class="flex justify-between">
+                <span class="text-slate-400 text-[11px]">完売時純利益</span>
+                <span class="font-black text-emerald-600 dark:text-emerald-400 card-max-profit">+¥53,500</span>
+              </div>
+              <div class="flex justify-between text-[10px] text-slate-400 pt-1 border-t border-slate-200/60 dark:border-slate-700/60">
+                <span>手残り単価</span>
+                <span class="font-bold card-net-price">¥1,000</span>
+              </div>
+            </div>
+          </div>
+          <div class="mt-3 text-center">
+            <span class="text-[10px] font-bold text-emerald-700 dark:text-emerald-300 bg-emerald-50 dark:bg-emerald-950/60 px-2 py-1 rounded-lg block">会計速度No.1・5千円札も対応容易</span>
+          </div>
+        </div>
+
+        <!-- カード4: 自由入力カスタム価格 -->
+        <div class="price-card active-card bg-white dark:bg-slate-800 rounded-3xl p-4 border-2 border-indigo-600 custom-shadow transition-all relative flex flex-col justify-between" id="card-custom" data-price="800">
+          <div class="absolute -top-3 left-1/2 -translate-x-1/2 bg-indigo-600 text-white text-[10px] font-black px-2.5 py-0.5 rounded-full shadow-sm">
+            カスタム指定中
+          </div>
+          <div>
+            <div class="flex items-center justify-between pb-2 border-b border-slate-100 dark:border-slate-700/60">
+              <span class="text-xs font-black text-indigo-700 dark:text-indigo-300">自由設定価格</span>
+              <span id="custom-comfort-badge" class="text-xs font-bold text-amber-600 bg-amber-50 dark:bg-amber-950/60 dark:text-amber-400 px-2 py-0.5 rounded-full">★★★☆☆ 注意</span>
+            </div>
+            
+            <div class="my-2 text-center">
+              <div class="relative max-w-[140px] mx-auto">
+                <span class="absolute left-2.5 top-1/2 -translate-y-1/2 text-sm font-bold text-slate-400">¥</span>
+                <input 
+                  type="text" 
+                  id="input-custom-price" 
+                  inputmode="numeric" 
+                  value="800" 
+                  class="w-full pl-6 pr-2 py-1.5 text-xl font-black text-center text-slate-900 dark:text-white bg-indigo-50/50 dark:bg-indigo-950/40 border border-indigo-200 dark:border-indigo-800 rounded-xl focus:bg-white dark:focus:bg-slate-900 focus:border-indigo-600 outline-none"
+                >
+              </div>
+              <div class="text-[10px] text-slate-400 mt-1" id="custom-comfort-desc">千円札で200円お釣り(100円玉×2)</div>
+              <div id="cost-warning-badge" class="hidden mt-1 text-[10px] font-bold text-rose-600 bg-rose-50 dark:bg-rose-950/50 dark:text-rose-400 px-2 py-0.5 rounded"></div>
+              <div id="beginner-promo-badge" class="hidden mt-1 text-[10px] font-bold text-indigo-600 bg-indigo-50 dark:bg-indigo-950/50 dark:text-indigo-300 px-2 py-0.5 rounded"></div>
+            </div>
+
+            <div class="bg-slate-50 dark:bg-slate-900/60 rounded-2xl p-2.5 text-xs space-y-1.5 text-slate-600 dark:text-slate-300">
+              <div class="flex justify-between">
+                <span class="text-slate-400 text-[11px]">黒字化ライン</span>
+                <span class="font-black text-slate-800 dark:text-white" id="custom-breakeven">56部</span>
+              </div>
+              <div class="flex justify-between">
+                <span class="text-slate-400 text-[11px]">完売時純利益</span>
+                <span class="font-black text-emerald-600 dark:text-emerald-400" id="custom-max-profit">+¥33,900</span>
+              </div>
+              <div class="flex justify-between text-[10px] text-slate-400 pt-1 border-t border-slate-200/60 dark:border-slate-700/60">
+                <span id="custom-profit-per-book">1部手残り: ¥346</span>
+                <span class="font-bold" id="custom-net-price">¥800</span>
+              </div>
+            </div>
+          </div>
+          <div class="mt-3 text-center">
+            <span class="text-[10px] font-bold text-indigo-700 dark:text-indigo-300 bg-indigo-50 dark:bg-indigo-950/60 px-2 py-1 rounded-lg block">シミュレーション連動中</span>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- 4. 現場マルチ商品レジカウンター（キーボードショートカット対応） -->
+    <div class="bg-gradient-to-br from-indigo-900 to-slate-900 text-white rounded-3xl p-5 sm:p-6 shadow-xl mb-6" id="section-counter">
+      <div class="flex items-center justify-between mb-4">
+        <div class="flex items-center gap-2">
+          <div class="w-8 h-8 rounded-xl bg-indigo-500/20 text-indigo-400 flex items-center justify-center border border-indigo-400/30">
+            <i data-lucide="calculator" class="w-4 h-4"></i>
+          </div>
+          <div>
+            <h3 class="text-sm font-black">📱 即売会現場用 マルチ商品レジカウンター</h3>
+            <p class="text-[10px] text-indigo-200">[1]〜[4]。セットは新刊在庫を1部使います。セット1,500円・既刊500円・グッズ800円は固定です</p>
+          </div>
+        </div>
+        <button id="btn-counter-reset" type="button" class="text-[10px] font-bold text-indigo-300 hover:text-white px-2.5 py-1 rounded-lg border border-indigo-700 bg-indigo-800/40">
+          全リセット
+        </button>
+      </div>
+
+      <!-- サマリーバー -->
+      <div class="grid grid-cols-3 gap-3 mb-4 text-center">
+        <div class="p-3 bg-white/10 rounded-2xl backdrop-blur">
+          <span class="text-[10px] text-indigo-200 block mb-0.5">総頒布数 (新刊+セット)</span>
+          <span class="text-2xl font-black text-emerald-400" id="label-live-counter-total-sold">0 部</span>
+        </div>
+        <div class="p-3 bg-white/10 rounded-2xl backdrop-blur">
+          <span class="text-[10px] text-indigo-200 block mb-0.5">新刊 残部数</span>
+          <span class="text-2xl font-black text-amber-300" id="label-live-counter-remaining">新刊残り 98 部</span>
+        </div>
+        <div class="p-3 bg-white/10 rounded-2xl backdrop-blur">
+          <span class="text-[10px] text-indigo-200 block mb-0.5">現在売上合計</span>
+          <span class="text-2xl font-black text-white" id="label-live-counter-sales">¥0</span>
+        </div>
+      </div>
+
+      <!-- 4種商品ボタングリッド -->
+      <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
+        
+        <button type="button" id="btn-sell-newbook" class="p-3 bg-indigo-600/80 hover:bg-indigo-600 active:scale-95 text-left rounded-2xl border border-indigo-400/30 transition-all touch-target flex flex-col justify-between group">
+          <div class="flex items-center justify-between w-full">
+            <span class="text-xs font-black flex items-center gap-1">
+              <span>📘 新刊</span>
+              <kbd class="text-[9px] bg-indigo-900/80 text-indigo-200 px-1 rounded font-mono">[1]</kbd>
+            </span>
+            <span class="text-xs font-bold text-emerald-300" id="counter-val-newbook">0 冊</span>
+          </div>
+          <div class="text-[11px] text-indigo-200 mt-2 font-bold group-hover:text-white">+1冊 売れた！</div>
+        </button>
+
+        <button type="button" id="btn-sell-set" class="p-3 bg-purple-600/80 hover:bg-purple-600 active:scale-95 text-left rounded-2xl border border-purple-400/30 transition-all touch-target flex flex-col justify-between group">
+          <div class="flex items-center justify-between w-full">
+            <span class="text-xs font-black flex items-center gap-1">
+              <span>🎁 セット (¥1,500)</span>
+              <kbd class="text-[9px] bg-purple-900/80 text-purple-200 px-1 rounded font-mono">[2]</kbd>
+            </span>
+            <span class="text-xs font-bold text-amber-300" id="counter-val-set">0 組</span>
+          </div>
+          <div class="text-[11px] text-purple-200 mt-2 font-bold group-hover:text-white">+1組 セット売上！</div>
+        </button>
+
+        <button type="button" id="btn-sell-backnumber" class="p-3 bg-slate-700/80 hover:bg-slate-700 active:scale-95 text-left rounded-2xl border border-slate-600 transition-all touch-target flex flex-col justify-between group">
+          <div class="flex items-center justify-between w-full">
+            <span class="text-xs font-black flex items-center gap-1">
+              <span>📗 既刊 (¥500)</span>
+              <kbd class="text-[9px] bg-slate-900/80 text-slate-300 px-1 rounded font-mono">[3]</kbd>
+            </span>
+            <span class="text-xs font-bold text-slate-200" id="counter-val-backnumber">0 冊</span>
+          </div>
+          <div class="text-[11px] text-slate-300 mt-2 font-bold group-hover:text-white">+1冊 既刊売上！</div>
+        </button>
+
+        <button type="button" id="btn-sell-goods" class="p-3 bg-amber-700/80 hover:bg-amber-700 active:scale-95 text-left rounded-2xl border border-amber-500/40 transition-all touch-target flex flex-col justify-between group">
+          <div class="flex items-center justify-between w-full">
+            <span class="text-xs font-black flex items-center gap-1">
+              <span>✨ グッズ (¥800)</span>
+              <kbd class="text-[9px] bg-amber-950 text-amber-200 px-1 rounded font-mono">[4]</kbd>
+            </span>
+            <span class="text-xs font-bold text-amber-200" id="counter-val-goods">0 個</span>
+          </div>
+          <div class="text-[11px] text-amber-300 mt-2 font-bold group-hover:text-white">+1個 グッズ売上！</div>
+        </button>
+
+      </div>
+    </div>
+
+    <!-- 5. 消化率スライダー ＆ 税務（棚卸資産）リアルタイムメーター -->
+    <div class="bg-white dark:bg-slate-800/90 rounded-3xl p-5 sm:p-6 border border-slate-200 dark:border-slate-700 custom-shadow mb-6" id="section-progress">
+      
+      <div class="flex items-center justify-between mb-3">
+        <div class="flex items-center gap-2">
+          <div class="w-8 h-8 rounded-xl bg-purple-100 dark:bg-purple-950 text-purple-600 dark:text-purple-400 flex items-center justify-center">
+            <i data-lucide="trending-up" class="w-4 h-4"></i>
+          </div>
+          <div>
+            <h3 class="text-sm font-black text-slate-900 dark:text-white">即売会 当日消化率シミュレーション</h3>
+            <p class="text-[10px] text-slate-500 dark:text-slate-400">売上部数に応じた現在の収支・利益・売れ残り在庫金額をリアルタイム判定</p>
+          </div>
+        </div>
+        <div class="text-right">
+          <span class="text-lg font-black text-indigo-600 dark:text-indigo-400" id="label-sold-percent">70% 消化</span>
+          <span class="text-xs text-slate-400 block font-bold" id="label-sold-copies">69部 完売 / 残り29部</span>
+        </div>
+      </div>
+
+      <!-- スライダー -->
+      <div class="mb-4">
+        <input type="range" id="range-sold-percent" min="0" max="100" value="70" step="5" class="w-full h-2.5 bg-slate-200 dark:bg-slate-700 rounded-lg appearance-none cursor-pointer accent-indigo-600">
+        <div class="flex justify-between text-[10px] font-bold text-slate-400 mt-1">
+          <span>0% (大爆死)</span>
+          <span id="label-slider-breakeven">56部 (損益分岐)</span>
+          <span>100% (完全完売！)</span>
+        </div>
+      </div>
+
+      <!-- リアルタイム収支メーター -->
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-3 border-t border-slate-100 dark:border-slate-700/60">
+        
+        <div class="p-3 bg-slate-50 dark:bg-slate-900/60 rounded-2xl border border-slate-200/60 dark:border-slate-700/60">
+          <span class="text-[10px] font-bold text-slate-400 block mb-0.5">現在売上高</span>
+          <span class="text-xl font-black text-slate-800 dark:text-white" id="metric-current-sales">¥55,200</span>
+        </div>
+
+        <div class="p-3 bg-slate-50 dark:bg-slate-900/60 rounded-2xl border border-slate-200/60 dark:border-slate-700/60">
+          <span class="text-[10px] font-bold text-slate-400 block mb-0.5">現在純収支 (売上 - 総コスト)</span>
+          <span class="text-xl font-black text-emerald-600 dark:text-emerald-400" id="metric-current-profit">+¥10,700</span>
+        </div>
+
+        <!-- 税務上の注意（売れ残り在庫の経費否認・棚卸資産額） -->
+        <div class="p-3 bg-amber-50/70 dark:bg-amber-950/30 rounded-2xl border border-amber-200 dark:border-amber-900/50">
+          <div class="flex items-center justify-between mb-0.5">
+            <span class="text-[10px] font-black text-amber-800 dark:text-amber-300 flex items-center gap-1">
+              <i data-lucide="alert-triangle" class="w-3 h-3 text-amber-600 dark:text-amber-400"></i>
+              <span>販売残りの印刷原価</span>
+            </span>
+          </div>
+          <span class="text-xl font-black text-amber-900 dark:text-amber-200" id="metric-inventory-value">¥10,850</span>
+          <p class="text-[9px] text-amber-700 dark:text-amber-400 mt-0.5 leading-tight">※ 販売残り×印刷単価だけ。見本・参加費・送料は含みません。税務の棚卸そのものではありません</p>
+        </div>
+
+      </div>
+
+    </div>
+
+    <!-- 6. 当日の釣銭準備枚数ジェネレーター（規模別モード付） ＆ 書店委託手残り -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-5 mb-6" id="section-change">
+      
+      <!-- 左列: 釣銭準備枚数チェックリスト -->
+      <div class="bg-white dark:bg-slate-800/90 rounded-3xl p-5 border border-slate-200 dark:border-slate-700 custom-shadow flex flex-col justify-between">
+        <div>
+          <div class="flex items-center justify-between mb-2">
+            <div class="flex items-center gap-2">
+              <div class="w-7 h-7 rounded-lg bg-emerald-100 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-400 flex items-center justify-center">
+                <i data-lucide="coins" class="w-4 h-4"></i>
+              </div>
+              <div>
+                <h3 class="text-xs font-black text-slate-900 dark:text-white">現場特化 釣銭準備ジェネレーター</h3>
+                <p class="text-[10px] text-slate-400">1万円札直撃にも耐える安心バッファ算出</p>
+              </div>
+            </div>
+            <span class="text-xs font-black text-emerald-700 dark:text-emerald-400" id="label-change-total">準備総額: ¥25,000</span>
+          </div>
+
+          <!-- 釣銭規模モード切替 -->
+          <div class="mb-3 p-2 bg-slate-50 dark:bg-slate-900/60 rounded-xl border border-slate-200/60 dark:border-slate-700/60 flex items-center justify-between text-xs">
+            <span class="text-[11px] font-bold text-slate-600 dark:text-slate-400">サークル規模:</span>
+            <select id="select-change-mode" class="text-xs font-bold bg-transparent text-indigo-700 dark:text-indigo-300 outline-none">
+              <option value="beginner">島中・初心者モード (〜50部 / 1万円目安)</option>
+              <option value="standard" selected>標準モード (100〜200部)</option>
+              <option value="wall">大手・壁サークル列耐性モード (300部〜)</option>
+            </select>
+          </div>
+
+          <div class="space-y-2 text-xs">
+            <div class="p-2.5 bg-slate-50 dark:bg-slate-900/60 rounded-2xl flex items-center justify-between">
+              <div class="flex items-center gap-2">
+                <span class="w-6 h-6 rounded-lg bg-blue-100 dark:bg-blue-950 text-blue-700 dark:text-blue-300 font-black text-[10px] flex items-center justify-center">千</span>
+                <div>
+                  <span class="font-bold text-slate-800 dark:text-slate-200">1,000円札</span>
+                  <span class="text-[10px] text-slate-400 block">1万円札・5千円札お釣り対策</span>
+                </div>
+              </div>
+              <span class="font-black text-slate-900 dark:text-white text-sm" id="change-1000">15枚 (¥15,000)</span>
+            </div>
+
+            <div class="p-2.5 bg-slate-50 dark:bg-slate-900/60 rounded-2xl flex items-center justify-between">
+              <div class="flex items-center gap-2">
+                <span class="w-6 h-6 rounded-lg bg-amber-100 dark:bg-amber-950 text-amber-700 dark:text-amber-300 font-black text-[10px] flex items-center justify-center">500</span>
+                <div>
+                  <span class="font-bold text-slate-800 dark:text-slate-200">500円玉</span>
+                  <span class="text-[10px] text-slate-400 block">千円札で500円頒布時の必須釣銭</span>
+                </div>
+              </div>
+              <span class="font-black text-slate-900 dark:text-white text-sm" id="change-500">10枚 (¥5,000)</span>
+            </div>
+
+            <div class="p-2.5 bg-slate-50 dark:bg-slate-900/60 rounded-2xl flex items-center justify-between">
+              <div class="flex items-center gap-2">
+                <span class="w-6 h-6 rounded-lg bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300 font-black text-[10px] flex items-center justify-center">100</span>
+                <div>
+                  <span class="font-bold text-slate-800 dark:text-slate-200">100円玉</span>
+                  <span class="text-[10px] text-slate-400 block">700円/800円等の端数お釣り用</span>
+                </div>
+              </div>
+              <span class="font-black text-slate-900 dark:text-white text-sm" id="change-100">50枚 (¥5,000)</span>
+            </div>
+
+            <div id="row-change-50" class="hidden p-2.5 bg-slate-50 dark:bg-slate-900/60 rounded-2xl flex items-center justify-between">
+              <div class="flex items-center gap-2">
+                <span class="w-6 h-6 rounded-lg bg-sky-100 dark:bg-sky-950 text-sky-700 dark:text-sky-300 font-black text-[10px] flex items-center justify-center">50</span>
+                <div>
+                  <span class="font-bold text-slate-800 dark:text-slate-200">50円玉</span>
+                  <span class="text-[10px] text-slate-400 block">50円単位の頒布価格用</span>
+                </div>
+              </div>
+              <span class="font-black text-slate-900 dark:text-white text-sm" id="change-50">0枚 (¥0)</span>
+            </div>
+
+            <div id="row-change-10" class="hidden p-2.5 bg-slate-50 dark:bg-slate-900/60 rounded-2xl flex items-center justify-between">
+              <div class="flex items-center gap-2">
+                <span class="w-6 h-6 rounded-lg bg-orange-100 dark:bg-orange-950 text-orange-700 dark:text-orange-300 font-black text-[10px] flex items-center justify-center">10</span>
+                <div>
+                  <span class="font-bold text-slate-800 dark:text-slate-200">10円玉</span>
+                  <span class="text-[10px] text-slate-400 block">10円単位の端数お釣り用</span>
+                </div>
+              </div>
+              <span class="font-black text-slate-900 dark:text-white text-sm" id="change-10">0枚 (¥0)</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="mt-3 pt-2 border-t border-slate-100 dark:border-slate-700/60 flex items-center justify-between">
+          <span class="text-[10px] text-slate-400">💡 50枚区切りコインケース収納目安</span>
+          <button id="btn-copy-bank-memo" type="button" class="text-[10px] font-bold text-indigo-600 dark:text-indigo-400 hover:underline flex items-center gap-1">
+            <i data-lucide="copy" class="w-3 h-3"></i> 銀行両替メモをコピー
+          </button>
+        </div>
+      </div>
+
+      <!-- 右列: 書店委託 ＆ BOOTH手残りシミュレーター -->
+      <div class="bg-white dark:bg-slate-800/90 rounded-3xl p-5 border border-slate-200 dark:border-slate-700 custom-shadow flex flex-col justify-between">
+        <div>
+          <div class="flex items-center gap-2 mb-3">
+            <div class="w-7 h-7 rounded-lg bg-rose-100 dark:bg-rose-950 text-rose-700 dark:text-rose-400 flex items-center justify-center">
+              <i data-lucide="package" class="w-4 h-4"></i>
+            </div>
+            <div>
+              <h3 class="text-xs font-black text-slate-900 dark:text-white">書店委託 ＆ BOOTH 手残り比較</h3>
+              <p class="text-[10px] text-slate-400">イベント後の残部数を委託販売した場合の実質手残り</p>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-2 gap-2.5 text-xs">
+            <div class="p-3 rounded-2xl bg-slate-50 dark:bg-slate-900/60 border border-slate-200/60 dark:border-slate-700/60">
+              <div class="font-bold text-slate-800 dark:text-slate-200 mb-1">メロン（店頭の30%）</div>
+              <div class="text-lg font-black text-indigo-600 dark:text-indigo-400" id="melon-net-price">¥536</div>
+              <div class="text-[10px] text-slate-500 dark:text-slate-400 mt-0.5" id="melon-margin">手残り利益: ¥186</div>
+            </div>
+
+            <div class="p-3 rounded-2xl bg-slate-50 dark:bg-slate-900/60 border border-slate-200/60 dark:border-slate-700/60">
+              <div class="font-bold text-slate-800 dark:text-slate-200 mb-1">BOOTH（5.6%切上+45円）</div>
+              <div class="text-lg font-black text-emerald-600 dark:text-emerald-400" id="booth-net-price">¥733</div>
+              <div class="text-[10px] text-slate-500 dark:text-slate-400 mt-0.5" id="booth-margin">手残り利益: ¥383</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="mt-3 pt-2 border-t border-slate-100 dark:border-slate-700/60 text-[10px] text-slate-400 text-center">
+          ※ いまの頒布価格を店頭価格にした場合。メロンの純額は税抜で、消費税分は別です。BOOTHは送料0円のとき。自宅発送は送料にも5.6%が乗ります。参加費は引いていません
+        </div>
+      </div>
+
+    </div>
+
+    <!-- 7. 当日持ち物チェックリスト ＆ お品書き・アンソロジー精算メモ -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-5 mb-6">
+      
+      <!-- 左列: サークル設営・持ち物チェックリスト -->
+      <div class="bg-white dark:bg-slate-800/90 rounded-3xl p-5 border border-slate-200 dark:border-slate-700 custom-shadow">
+        <div class="flex items-center justify-between mb-3">
+          <div class="flex items-center gap-2">
+            <div class="w-7 h-7 rounded-lg bg-amber-100 dark:bg-amber-950 text-amber-700 dark:text-amber-400 flex items-center justify-center">
+              <i data-lucide="check-square" class="w-4 h-4"></i>
+            </div>
+            <div>
+              <h3 class="text-xs font-black text-slate-900 dark:text-white">サークル設営・当日持ち物チェック</h3>
+              <p class="text-[10px] text-slate-400">チェック状態は自動で保存されます</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="space-y-1.5 max-h-52 overflow-y-auto pr-1" id="checklist-container"></div>
+      </div>
+
+      <!-- 右列: お品書き・アンソロジー精算メモ -->
+      <div class="bg-white dark:bg-slate-800/90 rounded-3xl p-5 border border-slate-200 dark:border-slate-700 custom-shadow flex flex-col justify-between">
+        <div>
+          <div class="flex items-center justify-between mb-3">
+            <div class="flex items-center gap-2">
+              <div class="w-7 h-7 rounded-lg bg-indigo-100 dark:bg-indigo-950 text-indigo-700 dark:text-indigo-300 flex items-center justify-center">
+                <i data-lucide="clipboard-check" class="w-4 h-4"></i>
+              </div>
+              <div>
+                <h3 class="text-xs font-black text-slate-900 dark:text-white">お品書きPOP ＆ アンソロ精算書</h3>
+                <p class="text-[10px] text-slate-400">X告知や執筆者への精算書にそのまま使える</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="relative">
+            <textarea id="textarea-menu-memo" readonly class="w-full h-28 p-3 text-xs font-mono text-slate-800 dark:text-slate-200 bg-slate-50 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-700 rounded-2xl resize-none outline-none leading-relaxed select-all"></textarea>
+          </div>
+        </div>
+
+        <div class="mt-3 grid grid-cols-2 gap-2">
+          <button type="button" id="btn-copy-menu" class="py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-black text-xs flex items-center justify-center gap-1 transition-all shadow-md active:scale-95">
+            <i data-lucide="copy" class="w-3.5 h-3.5"></i>
+            <span>お品書きメモ コピー</span>
+          </button>
+
+          <button type="button" id="btn-copy-antho-report" class="py-2.5 rounded-xl bg-purple-600 hover:bg-purple-700 text-white font-black text-xs flex items-center justify-center gap-1 transition-all shadow-md active:scale-95">
+            <i data-lucide="users" class="w-3.5 h-3.5"></i>
+            <span>合同誌精算書 コピー</span>
+          </button>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- 8. おすすめ即売会備品紹介（アフィリエイト連携コンポーネント） -->
+    <section class="bg-white dark:bg-slate-800/90 rounded-3xl p-5 sm:p-6 border border-slate-200 dark:border-slate-700 custom-shadow mb-6">
+      <div class="flex items-center justify-between mb-4">
+        <div class="flex items-center gap-2">
+          <div class="w-8 h-8 rounded-xl bg-amber-100 dark:bg-amber-950 text-amber-700 dark:text-amber-400 flex items-center justify-center">
+            <i data-lucide="shopping-bag" class="w-4 h-4"></i>
+          </div>
+          <div>
+            <h3 class="text-sm font-black text-slate-900 dark:text-white">即売会の必需品！おすすめサークル備品セレクション</h3>
+            <p class="text-[11px] text-slate-500 dark:text-slate-400">お釣りミス防止・設営時短・キャッシュレス対応</p>
+          </div>
+        </div>
+        <span class="text-[10px] text-slate-400 bg-slate-100 dark:bg-slate-700 px-2 py-0.5 rounded font-bold">PR</span>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-3" id="supplies-grid-container"></div>
+    </section>
+
+    <!-- 9. よくある質問 (FAQ) -->
+    <section class="bg-white dark:bg-slate-800/90 rounded-3xl p-5 sm:p-6 border border-slate-200 dark:border-slate-700 custom-shadow mb-6">
+      <div class="flex items-center gap-2 mb-4">
+        <div class="w-8 h-8 rounded-xl bg-indigo-100 dark:bg-indigo-950 text-indigo-600 dark:text-indigo-400 flex items-center justify-center">
+          <i data-lucide="help-circle" class="w-4 h-4"></i>
+        </div>
+        <div>
+          <h3 class="text-sm font-black text-slate-900 dark:text-white">よくある質問 (FAQ)</h3>
+          <p class="text-[10px] text-slate-500 dark:text-slate-400">即売会の価格設定・お釣り・確定申告の疑問を解決</p>
+        </div>
+      </div>
+
+      <div class="space-y-2.5" id="faq-accordion-container"></div>
+    </section>
+
+  </main>
+
+  <!-- スマホ用フローティング クイックジャンプバー -->
+  <div class="sm:hidden fixed bottom-0 left-0 right-0 z-40 bg-white/95 dark:bg-slate-900/95 border-t border-slate-200 dark:border-slate-800 px-4 py-2 flex items-center justify-around backdrop-blur text-[10px] font-bold">
+    <a href="#section-inputs" class="flex flex-col items-center gap-0.5 text-slate-500 dark:text-slate-400 hover:text-indigo-600">
+      <i data-lucide="edit-3" class="w-4 h-4"></i>
+      <span>部数・原価</span>
+    </a>
+    <a href="#section-prices" class="flex flex-col items-center gap-0.5 text-slate-500 dark:text-slate-400 hover:text-indigo-600">
+      <i data-lucide="tag" class="w-4 h-4"></i>
+      <span>価格比較</span>
+    </a>
+    <a href="#section-counter" class="flex flex-col items-center gap-0.5 text-emerald-600 dark:text-emerald-400">
+      <i data-lucide="calculator" class="w-4 h-4"></i>
+      <span>マルチレジ</span>
+    </a>
+    <a href="#section-change" class="flex flex-col items-center gap-0.5 text-slate-500 dark:text-slate-400 hover:text-indigo-600">
+      <i data-lucide="coins" class="w-4 h-4"></i>
+      <span>釣銭準備</span>
+    </a>
+  </div>
+
+  <!-- 法務・税務モーダル -->
+  <div id="modal-legal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-sm p-4" role="dialog" aria-modal="true" aria-labelledby="modal-legal-title">
+    <div class="bg-white dark:bg-slate-800 rounded-3xl max-w-2xl w-full max-h-[85vh] flex flex-col shadow-2xl border border-slate-200 dark:border-slate-700 overflow-hidden">
+      <div class="p-4 sm:p-5 border-b border-slate-200 dark:border-slate-700 flex items-center justify-between">
+        <h2 id="modal-legal-title" class="text-base font-black text-slate-900 dark:text-white">ガイド ＆ 規約</h2>
+        <button id="btn-close-legal-modal" class="p-1.5 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-500 transition-colors" aria-label="閉じる">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+      <div id="modal-legal-body" class="p-5 overflow-y-auto flex-1 text-slate-700 dark:text-slate-300"></div>
+      <div class="p-4 border-t border-slate-200 dark:border-slate-700 text-right bg-slate-50 dark:bg-slate-900/40">
+        <button onclick="document.getElementById('modal-legal').classList.add('hidden')" class="px-5 py-2 bg-slate-900 dark:bg-slate-700 text-white rounded-xl text-xs font-bold hover:bg-slate-800 transition-colors">閉じる</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- フッター -->
+  <footer class="bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800 py-6 text-center text-xs text-slate-400 dark:text-slate-500">
+    <div class="max-w-5xl mx-auto px-4 space-y-3">
+      <div class="flex items-center justify-center gap-3 text-xs font-bold text-slate-600 dark:text-slate-400 flex-wrap">
+        <a href="#terms" id="link-terms" class="hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors">利用規約・免責事項</a>
+        <span>•</span>
+        <a href="#privacy" id="link-privacy" class="hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors">プライバシーポリシー</a>
+        <span>•</span>
+        <a href="#tax-guide" id="link-tax-guide" class="hover:text-amber-600 dark:hover:text-amber-400 transition-colors">💡 同人サークル税務ガイド</a>
+        <span>•</span>
+        <a href="#cashless-guide" id="link-cashless-guide" class="hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors">💳 キャッシュレス導入ガイド</a>
+        <span>•</span>
+        <a href="../" class="hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors">KatakataLab</a>
+        <span>•</span>
+        <a href="../contact.html" class="hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors">お問い合わせ</a>
+        <span>•</span>
+        <a href="../privacy.html" class="hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors">サイトのプライバシー</a>
+      </div>
+
+      <p class="text-slate-500 dark:text-slate-400 font-medium text-[11px]">※ 本ツールは同人サークルの頒布計画・損益計算・税務管理を支援する個人開発シミュレーターです。</p>
+      <p class="text-[10px]">確定申告や税務処理の詳細については、必ず所轄の税務署または税理士等の専門家へご相談ください。</p>
+      <p class="text-[10px] text-slate-400 pt-1">© 2026 同人即売会 頒布価格＆お釣りシミュレーター Pro by かたかた</p>
+    </div>
+  </footer>
+
+  <!-- アプリケーションモジュール読み込み -->
+  <script type="module" src="./js/app.js"></script>
+
+  <!-- Service Worker 登録 -->
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./sw.js').catch(err => {
+          console.log('SW registration skipped:', err);
+        });
+      });
+    }
+  </script>
+</body>
+</html>

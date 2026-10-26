@@ -108,6 +108,7 @@ const PROJECT_ICONS = {
   'kirarin-play-park': '🎡',
   'site-hub': '🌐',
   'usagi-app': '🐰',
+  'doujin-calc': '📚',
   'emphasis-lines': '💥',
   'screenshot-crop': '✂️',
 };

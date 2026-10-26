@@ -16,6 +16,7 @@
     ['/moyamoya-sorter/', 'moyamoya-sorter'],
     ['/discount-calc/', 'discount-calc'],
     ['/emphasis-lines/', 'emphasis-lines'],
+    ['/doujin-calc/', 'doujin-calc'],
     ['/font-lab/', 'font-lab'],
     ['/ogp-simulator/', 'ogp-simulator'],
     ['/password-generator/', 'password-generator'],

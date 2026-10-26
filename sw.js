@@ -1,4 +1,4 @@
-const CACHE_NAME = 'katakatalab-v20';
+const CACHE_NAME = 'katakatalab-v16';
 const CACHE_PREFIX = 'katakatalab-';
 const ASSETS = [
     './',
@@ -30,5 +30,5 @@ self.PwaRuntime.configure({
   // 利用中の旧版を維持し、対象画面を閉じた後に更新を有効化する。
   autoUpdate: false,
   cacheName: CACHE_NAME, cachePrefix: CACHE_PREFIX, assets: ASSETS,
-  fallbackAsset: './offline.html', excludedPaths: ["/asobi-pocket/","/schedule-gen/","/composer/","/pikalab/","/screenshot-crop/","/qrcode/","/password-generator/","/emphasis-lines/","/lab-tools/gravity-todo/","/lab-tools/kids-smile-land/"],
+  fallbackAsset: './offline.html', excludedPaths: ["/asobi-pocket/","/schedule-gen/","/composer/","/pikalab/","/screenshot-crop/","/qrcode/","/password-generator/","/emphasis-lines/","/doujin-calc/","/lab-tools/gravity-todo/","/lab-tools/kids-smile-land/"],
 });
