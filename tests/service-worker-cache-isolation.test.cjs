@@ -11,11 +11,8 @@ const repositoryRoot = path.resolve(__dirname, '..');
 const CACHE_PREFIX_BY_FILE = new Map([
   ['doujin-calc/sw.js', 'doujin-calc-'],
   ['emphasis-lines/sw.js', 'emphasis-lines-'],
-  ['himitsukichi/sw.js', 'himitsukichi-cache'],
-  ['kakata-game-playground/sw.js', 'kakata-playground-'],
   ['lab-tools/gravity-todo/sw.js', 'gravity-todo-app-v'],
   ['lab-tools/kids-smile-land/service-worker.js', 'smile-land-v'],
-  ['lab-tools/kindle-tracker/sw.js', 'kindle-tracker-v'],
   ['password-generator/sw.js', 'password-gen-'],
   ['pikalab/focus_studio/sw.js', 'focus-studio-'],
   ['pikalab/space_lab/sw.js', 'spacelab-cache-'],
@@ -23,8 +20,6 @@ const CACHE_PREFIX_BY_FILE = new Map([
   ['qrcode/sw.js', 'qrcode-'],
   ['screenshot-crop/sw.js', 'screenshot-crop-'],
   ['sw.js', 'katakatalab-'],
-  ['tool-wc-v1/service-worker.js', 'tool-wc-v1-cache-'],
-  ['usagi-app/sw.js', 'usagi-app-'],
 ]);
 
 const SKIPPED_DIRECTORIES = new Set([

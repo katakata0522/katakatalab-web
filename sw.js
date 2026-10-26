@@ -1,4 +1,4 @@
-const CACHE_NAME = 'katakatalab-v16';
+const CACHE_NAME = 'katakatalab-v20';
 const CACHE_PREFIX = 'katakatalab-';
 const ASSETS = [
     './',

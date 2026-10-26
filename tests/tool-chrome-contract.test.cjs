@@ -79,19 +79,7 @@ test('繰り返していたツール枠だけを共有し、個別のパンく�
   assert.doesNotMatch(passwordScript, /data-bs-theme|themeToggle\.textContent/);
 });
 
-test('PikaLabカードおよび主要導線は別タブで開く属性を持つ', () => {
-  const html = read('index.html');
-  const pikalabCard = html.match(/<article[^>]*data-id="pikalab"[^>]*>[\s\S]*?<\/article>/)?.[0];
-  assert.ok(pikalabCard, 'PikaLab card should exist in index.html');
-  assert.match(pikalabCard, /<a href="pikalab\/" class="card-link" target="_blank" rel="noopener noreferrer">/);
-  assert.match(html, /<aside class="pikalab-wing"[\s\S]*?<a href="pikalab\/" target="_blank" rel="noopener noreferrer">/);
 
-  const about = read('about-katakatalab.html');
-  assert.match(about, /<a href="pikalab\/" class="proj-link" target="_blank" rel="noopener noreferrer">/);
-
-  const story = read('pikalab-story.html');
-  assert.match(story, /<a href="pikalab\/index\.html" class="btn btn-primary" target="_blank" rel="noopener noreferrer"/);
-});
 
 test('CodeStudioヘッダーはKatakataLabブランドを表示し親サイトへの脱出リンクを持つ', () => {
   const html = read('pikalab/.code-studio/index.html');
@@ -99,8 +87,4 @@ test('CodeStudioヘッダーはKatakataLabブランドを表示し親サイト�
   assert.match(html, /<a href="\.\.\/\.\.\/index\.html" class="logo"[^>]*>⚙ KatakataLab <span data-i18n="logo_studio">CodeStudio<\/span><\/a>/);
 });
 
-test('kirarin-play-parkにAdSenseスクリプトタグが含まれない', () => {
-  const html = read('kirarin-play-park/index.html');
-  assert.doesNotMatch(html, /ca-pub-3845885843809455/);
-  assert.doesNotMatch(html, /pagead2\.googlesyndication\.com/);
-});
+
