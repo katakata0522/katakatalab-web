@@ -1,0 +1,16 @@
+{
+  "name": "同人即売会 頒布価格＆お釣り・損益最適化シミュレーター Pro",
+  "short_name": "同人シミュレーター",
+  "description": "同人サークルの頒布価格、お釣り快適度、損益分岐点、釣銭枚数を瞬時に計算するオフライン対応ツール",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#6366f1",
+  "icons": [
+    {
+      "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%236366f1'/><text y='.9em' x='50%' text-anchor='middle' font-size='70'>📚</text></svg>",
+      "sizes": "192x192 512x512",
+      "type": "image/svg+xml"
+    }
+  ]
+}
