@@ -13,11 +13,11 @@ const STATIC_ASSETS = [
   './css/style.css',
   './js/config.js',
   './js/toast.js',
-  './js/calculator.js',
+  './js/calculator.js?v=20261027-1',
   './js/legal-tax-data.js',
   './js/state.js',
-  './js/renderer.js',
-  './js/app.js',
+  './js/renderer.js?v=20261027-1',
+  './js/app.js?v=20261027-1',
   './js/lucide.min.js'
 ];
 

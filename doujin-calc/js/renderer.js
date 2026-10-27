@@ -4,7 +4,7 @@
  */
 
 import { DOUJIN_CONFIG } from './config.js';
-import { DoujinCalculator } from './calculator.js';
+import { DoujinCalculator } from './calculator.js?v=20261027-1';
 
 function escapeHtml(value) {
   return String(value).replace(/[&<>"']/g, (ch) => ({

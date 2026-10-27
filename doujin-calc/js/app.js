@@ -5,8 +5,8 @@
 
 import { DOUJIN_CONFIG } from './config.js';
 import { StateStore, withSyncedCost } from './state.js';
-import { UIRenderer } from './renderer.js';
-import { DoujinCalculator } from './calculator.js';
+import { UIRenderer } from './renderer.js?v=20261027-1';
+import { DoujinCalculator } from './calculator.js?v=20261027-1';
 import { LEGAL_TAX_DATA } from './legal-tax-data.js';
 import { Toast } from './toast.js';
 

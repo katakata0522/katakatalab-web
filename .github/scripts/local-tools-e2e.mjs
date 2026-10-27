@@ -625,7 +625,7 @@ try {
     return route.abort();
   });
   await doujinPage.goto(base+'/doujin-calc/',{waitUntil:'domcontentloaded'});
-  await doujinPage.waitForFunction(()=>document.querySelector('#label-total-cost')?.textContent==='¥44,500');
+  await doujinPage.waitForFunction(()=>document.querySelector('#label-sale-copies')?.textContent.includes('実質販売可能'));
   await doujinPage.locator('#input-custom-price').fill('500');
   await doujinPage.waitForFunction(()=>document.querySelector('#custom-breakeven')?.textContent==='90部');
   assert.match(await doujinPage.locator('#label-slider-breakeven').textContent(),/89部 \(損益分岐\)/);

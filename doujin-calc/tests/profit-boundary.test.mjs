@@ -1,5 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import { readFileSync } from 'node:fs';
 import { DoujinCalculator as calculator } from '../js/calculator.js';
 import { UIRenderer } from '../js/renderer.js';
 
@@ -78,4 +79,19 @@ test('1円未満の価格には釣銭額や両替メモを提示しない', () =
   assert.match(calculator.formatPaymentChange(899.5), /1円単位の整数/);
   assert.match(calculator.generateBankMemo(change), /計算できません/);
   assert.doesNotMatch(calculator.generateBankMemo(change), /両替合計/);
+});
+
+test('更新した計算モジュールをオフライン用キャッシュにも同じURLで登録する', () => {
+  const read = file => readFileSync(new URL(file, import.meta.url), 'utf8');
+  const html = read('../index.html');
+  const app = read('../js/app.js');
+  const renderer = read('../js/renderer.js');
+  const worker = read('../sw.js');
+  const appUrl = html.match(/src="(\.\/js\/app\.js\?v=[^"]+)"/)[1];
+  const rendererUrl = app.match(/from '(\.\/renderer\.js\?v=[^']+)'/)[1];
+  const calculatorUrl = app.match(/from '(\.\/calculator\.js\?v=[^']+)'/)[1];
+  assert.ok(renderer.includes(`from '${calculatorUrl}'`));
+  for (const url of [appUrl, `./js/${rendererUrl.slice(2)}`, `./js/${calculatorUrl.slice(2)}`]) {
+    assert.ok(worker.includes(`'${url}'`), `オフライン用キャッシュに ${url} が必要です`);
+  }
 });
