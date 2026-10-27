@@ -613,6 +613,39 @@ await shortPage.screenshot({path:path.join(artifactDir,'screenshot-crop-short-de
 await shortPage.close();
 console.log(JSON.stringify({screenshotCropShortViewport:'PASS',shortScreenQuickDock:'PASS',simpleUi:'PASS',width:1024,height:600}));
 
+// 実画面で損益ゼロと黒字の境界、1円単位の釣銭を確認する。
+const doujinPage=await browser.newPage({viewport:{width:390,height:850}});
+try {
+  const doujinErrors=[];
+  doujinPage.on('pageerror',error=>doujinErrors.push(error.message));
+  await doujinPage.route('**/*',route=>{
+    const url=route.request().url();
+    if(url.startsWith(base)) return route.continue();
+    if(url.includes('cdn.tailwindcss.com')) return route.fulfill({contentType:'text/javascript',body:'window.tailwind={config:{}};'});
+    return route.abort();
+  });
+  await doujinPage.goto(base+'/doujin-calc/',{waitUntil:'domcontentloaded'});
+  await doujinPage.waitForFunction(()=>document.querySelector('#label-sale-copies')?.textContent.includes('実質販売可能'));
+  await doujinPage.locator('#input-custom-price').fill('500');
+  await doujinPage.waitForFunction(()=>document.querySelector('#custom-breakeven')?.textContent==='90部');
+  assert.match(await doujinPage.locator('#label-slider-breakeven').textContent(),/89部 \(損益分岐\)/);
+  assert.match(await doujinPage.locator('#textarea-menu-memo').inputValue(),/黒字化ライン: 90部で黒字化/);
+  await doujinPage.locator('#input-custom-price').fill('899');
+  await doujinPage.waitForFunction(()=>document.querySelector('#change-1')?.textContent.startsWith('40枚'));
+  assert.equal(await doujinPage.locator('#row-change-1').evaluate(el=>el.classList.contains('hidden')),false);
+  assert.match(await doujinPage.locator('#custom-comfort-desc').textContent(),/1円玉×1/);
+  assert.match(await doujinPage.locator('#textarea-menu-memo').inputValue(),/1円玉40枚/);
+  await doujinPage.locator('#input-custom-price').fill('895');
+  await doujinPage.waitForFunction(()=>document.querySelector('#change-5')?.textContent.startsWith('40枚'));
+  assert.equal(await doujinPage.locator('#row-change-5').evaluate(el=>el.classList.contains('hidden')),false);
+  await doujinPage.locator('#input-custom-price').fill('899.5');
+  assert.equal(await doujinPage.locator('#input-custom-price').getAttribute('aria-invalid'),'true');
+  assert.match(await doujinPage.locator('#label-change-total').textContent(),/1円単位/);
+  assert.match(await doujinPage.locator('#textarea-menu-memo').inputValue(),/1円単位の整数/);
+  assert.deepEqual(doujinErrors,[]);
+  console.log(JSON.stringify({doujinProfitBoundary:'PASS',doujinSmallChange:'PASS',doujinInvalidPrice:'PASS'}));
+} finally { await doujinPage.close(); }
+
 const analyticsPage=await browser.newPage({viewport:{width:390,height:850}});
 await analyticsPage.route('**/*googletagmanager.com/**',route=>route.abort());
 await analyticsPage.route('**/*google-analytics.com/**',route=>route.abort());

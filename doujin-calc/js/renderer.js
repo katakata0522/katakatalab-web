@@ -4,7 +4,7 @@
  */
 
 import { DOUJIN_CONFIG } from './config.js';
-import { DoujinCalculator } from './calculator.js';
+import { DoujinCalculator } from './calculator.js?v=20261027-1';
 
 function escapeHtml(value) {
   return String(value).replace(/[&<>"']/g, (ch) => ({
@@ -97,6 +97,10 @@ export class UIRenderer {
       change50: document.getElementById('change-50'),
       rowChange10: document.getElementById('row-change-10'),
       change10: document.getElementById('change-10'),
+      rowChange5: document.getElementById('row-change-5'),
+      change5: document.getElementById('change-5'),
+      rowChange1: document.getElementById('row-change-1'),
+      change1: document.getElementById('change-1'),
       btnCopyBankMemo: document.getElementById('btn-copy-bank-memo'),
 
       // 現場マルチレジカウンター
@@ -291,8 +295,8 @@ export class UIRenderer {
 
       const beEl = card.querySelector('.card-breakeven');
       if (beEl) {
-        beEl.textContent = this.formatBreakeven(plan);
-        beEl.className = `font-black card-breakeven ${plan.hasNetPrice && plan.breakevenReachable ? 'text-slate-800 dark:text-white' : 'text-rose-600 dark:text-rose-400'}`;
+        beEl.textContent = this.formatProfitThreshold(plan);
+        beEl.className = `font-black card-breakeven ${plan.hasNetPrice && plan.profitReachable ? 'text-slate-800 dark:text-white' : 'text-rose-600 dark:text-rose-400'}`;
       }
       
       const profitEl = card.querySelector('.card-max-profit');
@@ -314,9 +318,10 @@ export class UIRenderer {
       this.dom.customComfortBadge.className = `text-xs font-bold px-2 py-0.5 rounded-full ${customPlan.comfort.badgeClass}`;
     }
     if (this.dom.customComfortDesc) this.dom.customComfortDesc.textContent = customPlan.comfort.desc;
+    if (this.dom.inputCustomPrice) this.dom.inputCustomPrice.setAttribute('aria-invalid', String(!Number.isSafeInteger(state.customPrice)));
     if (this.dom.customBreakeven) {
-      this.dom.customBreakeven.textContent = this.formatBreakeven(customPlan);
-      this.dom.customBreakeven.className = `font-black ${customPlan.hasNetPrice && customPlan.breakevenReachable ? 'text-slate-800 dark:text-white' : 'text-rose-600 dark:text-rose-400'}`;
+      this.dom.customBreakeven.textContent = this.formatProfitThreshold(customPlan);
+      this.dom.customBreakeven.className = `font-black ${customPlan.hasNetPrice && customPlan.profitReachable ? 'text-slate-800 dark:text-white' : 'text-rose-600 dark:text-rose-400'}`;
     }
     if (this.dom.customMaxProfit) {
       this.dom.customMaxProfit.textContent = `${customPlan.maxProfit >= 0 ? '+' : ''}¥${customPlan.maxProfit.toLocaleString()}`;
@@ -358,14 +363,18 @@ export class UIRenderer {
 
     // 釣銭準備計算
     const changeData = DoujinCalculator.calculateChange(state.customPrice, baseCosts.N_sale, state.changeMode);
-    if (this.dom.labelChangeTotal) this.dom.labelChangeTotal.textContent = `準備総額: ¥${changeData.totalAmount.toLocaleString()}`;
-    if (this.dom.change1000) this.dom.change1000.textContent = `${changeData.bills1000Count}枚 (¥${changeData.bills1000Amount.toLocaleString()})`;
-    if (this.dom.change500) this.dom.change500.textContent = `${changeData.coins500Count}枚 (¥${changeData.coins500Amount.toLocaleString()}) [${changeData.rolls500}本分]`;
-    if (this.dom.change100) this.dom.change100.textContent = `${changeData.coins100Count}枚 (¥${changeData.coins100Amount.toLocaleString()}) [${changeData.rolls100}本分]`;
+    if (this.dom.labelChangeTotal) this.dom.labelChangeTotal.textContent = changeData.validPrice ? `準備総額: ¥${changeData.totalAmount.toLocaleString()}` : '価格は1円単位で入力';
+    if (this.dom.change1000) this.dom.change1000.textContent = changeData.validPrice ? `${changeData.bills1000Count}枚 (¥${changeData.bills1000Amount.toLocaleString()})` : '—';
+    if (this.dom.change500) this.dom.change500.textContent = changeData.validPrice ? `${changeData.coins500Count}枚 (¥${changeData.coins500Amount.toLocaleString()}) [${changeData.rolls500}本分]` : '—';
+    if (this.dom.change100) this.dom.change100.textContent = changeData.validPrice ? `${changeData.coins100Count}枚 (¥${changeData.coins100Amount.toLocaleString()}) [${changeData.rolls100}本分]` : '—';
     if (this.dom.rowChange50) this.dom.rowChange50.classList.toggle('hidden', changeData.coins50Count <= 0);
     if (this.dom.change50) this.dom.change50.textContent = `${changeData.coins50Count}枚 (¥${changeData.coins50Amount.toLocaleString()}) [${changeData.rolls50}本分]`;
     if (this.dom.rowChange10) this.dom.rowChange10.classList.toggle('hidden', changeData.coins10Count <= 0);
     if (this.dom.change10) this.dom.change10.textContent = `${changeData.coins10Count}枚 (¥${changeData.coins10Amount.toLocaleString()}) [${changeData.rolls10}本分]`;
+    if (this.dom.rowChange5) this.dom.rowChange5.classList.toggle('hidden', changeData.coins5Count <= 0);
+    if (this.dom.change5) this.dom.change5.textContent = `${changeData.coins5Count}枚 (¥${changeData.coins5Amount.toLocaleString()}) [${changeData.rolls5}本分]`;
+    if (this.dom.rowChange1) this.dom.rowChange1.classList.toggle('hidden', changeData.coins1Count <= 0);
+    if (this.dom.change1) this.dom.change1.textContent = `${changeData.coins1Count}枚 (¥${changeData.coins1Amount.toLocaleString()}) [${changeData.rolls1}本分]`;
 
     // 委託販売手残り
     const consign = DoujinCalculator.calculateConsignment(state.customPrice, baseCosts);
@@ -399,9 +408,9 @@ export class UIRenderer {
     if (window.lucide) window.lucide.createIcons();
   }
 
-  formatBreakeven(plan) {
+  formatProfitThreshold(plan) {
     if (!plan.hasNetPrice) return '黒字化しない';
-    if (!plan.breakevenReachable) return `${plan.breakevenCopies.toLocaleString()}部必要`;
-    return `${plan.breakevenCopies.toLocaleString()}部`;
+    if (!plan.profitReachable) return `${plan.profitCopies.toLocaleString()}部必要`;
+    return `${plan.profitCopies.toLocaleString()}部`;
   }
 }

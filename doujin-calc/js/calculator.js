@@ -24,10 +24,15 @@ export class DoujinCalculator {
     const n50 = Math.floor(rest / 50);
     rest -= n50 * 50;
     const n10 = Math.floor(rest / 10);
-    return { pay, change, n500, n100, n50, n10 };
+    rest -= n10 * 10;
+    const n5 = Math.floor(rest / 5);
+    rest -= n5 * 5;
+    const n1 = Math.floor(rest);
+    return { pay, change, n500, n100, n50, n10, n5, n1 };
   }
 
   static formatPaymentChange(price) {
+    if (!Number.isSafeInteger(price)) return '価格は1円単位の整数で入力してください';
     const parts = this.paymentChange(price);
     if (parts.change === 0) return '千円単位ぴったり。額面どおり預ければお釣りなし';
     const coins = [];
@@ -35,18 +40,20 @@ export class DoujinCalculator {
     if (parts.n100) coins.push(`100円玉×${parts.n100}`);
     if (parts.n50) coins.push(`50円玉×${parts.n50}`);
     if (parts.n10) coins.push(`10円玉×${parts.n10}`);
+    if (parts.n5) coins.push(`5円玉×${parts.n5}`);
+    if (parts.n1) coins.push(`1円玉×${parts.n1}`);
     const coinText = coins.length ? `（${coins.join('、')}）` : '';
     return `${parts.pay.toLocaleString()}円お預かりで${parts.change.toLocaleString()}円お釣り${coinText}`;
   }
 
   static evaluateComfort(price) {
-    if (price <= 0 || isNaN(price)) {
+    if (price <= 0 || !Number.isSafeInteger(price)) {
       return {
         stars: '---',
         level: 0,
         text: '判定不能',
         badgeClass: 'text-slate-400 bg-slate-100 dark:bg-slate-800 dark:text-slate-500',
-        desc: '価格を入力してください'
+        desc: '価格は1円単位の整数で入力してください'
       };
     }
 
@@ -152,12 +159,24 @@ export class DoujinCalculator {
   /**
    * 単一価格プランの損益計算
    */
+  static minimumCopiesForRevenue(targetYen, netPrice) {
+    if (targetYen <= 0) return 0;
+    // 売上表示と同じ円単位の四捨五入を使い、境界の浮動小数点誤差も補正する。
+    let copies = Math.max(0, Math.ceil((targetYen - 0.5) / netPrice));
+    if (!Number.isSafeInteger(copies)) return copies;
+    if (copies > 0 && Math.round(netPrice * (copies - 1)) >= targetYen) copies--;
+    if (Math.round(netPrice * copies) < targetYen) copies++;
+    return copies;
+  }
+
   static calculatePlan(price, baseCosts) {
     const p = Math.max(0, price || 0);
     const netP = p * baseCosts.cashlessFactor;
     const hasNetPrice = netP > 0;
-    const breakevenCopies = hasNetPrice ? Math.ceil(baseCosts.totalCost / netP) : 0;
-    const breakevenReachable = hasNetPrice && baseCosts.N_sale > 0 && breakevenCopies <= baseCosts.N_sale;
+    const breakevenCopies = hasNetPrice ? this.minimumCopiesForRevenue(Math.ceil(baseCosts.totalCost), netP) : 0;
+    const profitCopies = hasNetPrice ? this.minimumCopiesForRevenue(Math.floor(baseCosts.totalCost) + 1, netP) : 0;
+    const breakevenReachable = hasNetPrice && breakevenCopies <= baseCosts.N_sale;
+    const profitReachable = hasNetPrice && profitCopies <= baseCosts.N_sale;
     const maxSales = Math.round(netP * baseCosts.N_sale);
     const maxProfit = maxSales - baseCosts.totalCost;
     const profitPerBook = baseCosts.N_sale > 0 ? Math.round(netP - (baseCosts.totalCost / baseCosts.N_sale)) : 0;
@@ -171,6 +190,8 @@ export class DoujinCalculator {
       hasNetPrice,
       breakevenCopies,
       breakevenReachable,
+      profitCopies,
+      profitReachable,
       maxSales,
       maxProfit,
       profitPerBook,
@@ -211,7 +232,9 @@ export class DoujinCalculator {
    * 規模別釣銭計算
    */
   static calculateChange(customPrice, saleCopies, changeMode = 'standard') {
-    const p = Math.max(0, customPrice || 0);
+    const inputPrice = Math.max(0, customPrice || 0);
+    const validPrice = Number.isSafeInteger(inputPrice);
+    const p = validPrice ? inputPrice : 0;
     const N_sale = Math.max(0, saleCopies || 0);
     const modeConfig = DOUJIN_CONFIG.CHANGE_MODES[changeMode] || DOUJIN_CONFIG.CHANGE_MODES.standard;
 
@@ -219,7 +242,9 @@ export class DoujinCalculator {
     let coins500Count = 0;
     let coins50Count = 0;
     let coins10Count = 0;
-    let bills1000Count = Math.max(modeConfig.bills1000Min, Math.ceil(N_sale * modeConfig.baseMultiplier));
+    let coins5Count = 0;
+    let coins1Count = 0;
+    let bills1000Count = validPrice ? Math.max(modeConfig.bills1000Min, Math.ceil(N_sale * modeConfig.baseMultiplier)) : 0;
     const wall = changeMode === 'wall';
     const changeYen = (p > 0 && p % 1000 !== 0) ? (1000 - (p % 1000)) : 0;
     const ratioSmall = wall ? 0.6 : 0.4;
@@ -252,11 +277,17 @@ export class DoujinCalculator {
       const per50 = Math.floor(rest / 50);
       rest -= per50 * 50;
       const per10 = Math.floor(rest / 10);
+      rest -= per10 * 10;
+      const per5 = Math.floor(rest / 5);
+      rest -= per5 * 5;
+      const per1 = Math.floor(rest);
       const scale = (per, ratio) => (per > 0 ? Math.ceil(N_sale * ratio * per) : 0);
       coins500Count = scale(per500, wall ? 0.4 : 0.25);
       coins100Count = scale(per100, ratioSmall);
       coins50Count = scale(per50, ratioSmall);
       coins10Count = scale(per10, ratioSmall);
+      coins5Count = scale(per5, ratioSmall);
+      coins1Count = scale(per1, ratioSmall);
     }
 
     if (changeMode === 'beginner') {
@@ -265,16 +296,21 @@ export class DoujinCalculator {
       coins100Count = Math.min(40, coins100Count);
       coins50Count = Math.min(20, coins50Count);
       coins10Count = Math.min(20, coins10Count);
+      coins5Count = Math.min(20, coins5Count);
+      coins1Count = Math.min(20, coins1Count);
     }
 
-    const totalAmount = (bills1000Count * 1000) + (coins500Count * 500) + (coins100Count * 100) + (coins50Count * 50) + (coins10Count * 10);
+    const totalAmount = (bills1000Count * 1000) + (coins500Count * 500) + (coins100Count * 100) + (coins50Count * 50) + (coins10Count * 10) + (coins5Count * 5) + coins1Count;
     const rolls100 = Math.ceil(coins100Count / 50);
     const rolls500 = Math.ceil(coins500Count / 50);
     const rolls50 = Math.ceil(coins50Count / 50);
     const rolls10 = Math.ceil(coins10Count / 50);
+    const rolls5 = Math.ceil(coins5Count / 50);
+    const rolls1 = Math.ceil(coins1Count / 50);
 
     return {
       changeMode,
+      validPrice,
       modeName: modeConfig.name,
       bills1000Count,
       bills1000Amount: bills1000Count * 1000,
@@ -290,6 +326,12 @@ export class DoujinCalculator {
       coins10Count,
       coins10Amount: coins10Count * 10,
       rolls10,
+      coins5Count,
+      coins5Amount: coins5Count * 5,
+      rolls5,
+      coins1Count,
+      coins1Amount: coins1Count,
+      rolls1,
       totalAmount
     };
   }
@@ -330,7 +372,7 @@ export class DoujinCalculator {
       `■ 総支出: ¥${baseCosts.totalCost.toLocaleString()} (印刷費: ¥${baseCosts.manufacturingCost.toLocaleString()} / 参加費・送料: ¥${baseCosts.fixedTotal.toLocaleString()})`,
       `■ 執筆者謝礼総額: ¥${(state.anthoPageFee || 0).toLocaleString()} (1人あたり約: ¥${feePerMember.toLocaleString()})`,
       `■ 完売時想定純利益: ${customPlan.maxProfit >= 0 ? '+' : ''}¥${customPlan.maxProfit.toLocaleString()}`,
-      members > 0 && customPlan.maxProfit > 0 ? `■ 1人あたり利益分配目安: ¥${profitPerMember.toLocaleString()}` : `■ 主催者収支目安: ${customPlan.maxProfit >= 0 ? '黒字' : '赤字'}`,
+      members > 0 && customPlan.maxProfit > 0 ? `■ 1人あたり利益分配目安: ¥${profitPerMember.toLocaleString()}` : `■ 主催者収支目安: ${customPlan.maxProfit > 0 ? '黒字' : customPlan.maxProfit < 0 ? '赤字' : '収支±0円'}`,
       this.breakevenNote(customPlan, baseCosts.N_sale, members)
     ].join('\n');
   }
@@ -346,10 +388,11 @@ export class DoujinCalculator {
       return '※ この頒布価格では黒字化しません。';
     }
     const gift = members > 0 ? `献本${members}部を除くと、` : '';
-    return `※ ${gift}黒字化には${customPlan.breakevenCopies.toLocaleString()}部が必要です。販売枠${saleCopies.toLocaleString()}部では届きません。`;
+    return `※ ${gift}損益分岐には${customPlan.breakevenCopies.toLocaleString()}部が必要です。販売枠${saleCopies.toLocaleString()}部では届きません。`;
   }
 
   static formatChangeList(changeData) {
+    if (changeData.validPrice === false) return '価格は1円単位の整数で入力してください';
     const parts = [
       `千円札${changeData.bills1000Count}枚`,
       `500円玉${changeData.coins500Count}枚`,
@@ -357,6 +400,8 @@ export class DoujinCalculator {
     ];
     if (changeData.coins50Count > 0) parts.push(`50円玉${changeData.coins50Count}枚`);
     if (changeData.coins10Count > 0) parts.push(`10円玉${changeData.coins10Count}枚`);
+    if (changeData.coins5Count > 0) parts.push(`5円玉${changeData.coins5Count}枚`);
+    if (changeData.coins1Count > 0) parts.push(`1円玉${changeData.coins1Count}枚`);
     return parts.join(' / ');
   }
 
@@ -364,6 +409,7 @@ export class DoujinCalculator {
    * 銀行窓口に出す両替メモ
    */
   static generateBankMemo(changeData) {
+    if (changeData.validPrice === false) return '価格は1円単位の整数で入力してください。釣銭枚数は計算できません。';
     const lines = [
       '【銀行両替メモ】',
       `■ モード: ${changeData.modeName}`,
@@ -376,6 +422,12 @@ export class DoujinCalculator {
     }
     if (changeData.coins10Count > 0) {
       lines.push(`■ 10円玉: ${changeData.coins10Count}枚（¥${changeData.coins10Amount.toLocaleString()}）${changeData.rolls10 ? ` / ${changeData.rolls10}本` : ''}`);
+    }
+    if (changeData.coins5Count > 0) {
+      lines.push(`■ 5円玉: ${changeData.coins5Count}枚（¥${changeData.coins5Amount.toLocaleString()}）${changeData.rolls5 ? ` / ${changeData.rolls5}本` : ''}`);
+    }
+    if (changeData.coins1Count > 0) {
+      lines.push(`■ 1円玉: ${changeData.coins1Count}枚（¥${changeData.coins1Amount.toLocaleString()}）${changeData.rolls1 ? ` / ${changeData.rolls1}本` : ''}`);
     }
     lines.push(`■ 両替合計: ¥${changeData.totalAmount.toLocaleString()}`);
     lines.push('※ 窓口で、この内訳のまま両替をお願いします。');
@@ -390,11 +442,13 @@ export class DoujinCalculator {
       `【新刊/作品情報】`,
       `■ 頒布価格: ¥${customPlan.price.toLocaleString()} (${customPlan.comfort.text})`,
       `■ 持ち込み部数: ${baseCosts.N}部 (販売枠: ${baseCosts.N_sale}部 / 見本・献本: ${baseCosts.N_non_sale}部)`,
-      customPlan.hasNetPrice && customPlan.breakevenReachable
-        ? `■ 損益分岐ライン: ${customPlan.breakevenCopies}部完売で黒字化 (1部手残り: ¥${customPlan.profitPerBook.toLocaleString()})`
-        : `■ 損益分岐ライン: ${this.breakevenNote(customPlan, baseCosts.N_sale).replace(/^※ /, '')} (1部手残り: ¥${customPlan.profitPerBook.toLocaleString()})`,
+      customPlan.hasNetPrice
+        ? `■ 黒字化ライン: ${customPlan.profitCopies.toLocaleString()}部${customPlan.profitReachable ? 'で黒字化' : `必要（販売枠${baseCosts.N_sale.toLocaleString()}部では届きません）`} (1部手残り: ¥${customPlan.profitPerBook.toLocaleString()})`
+        : `■ 黒字化ライン: この頒布価格では黒字化しません (1部手残り: ¥${customPlan.profitPerBook.toLocaleString()})`,
       `■ 完売時想定利益: ${customPlan.maxProfit >= 0 ? '+' : ''}¥${customPlan.maxProfit.toLocaleString()} (利益率: ${customPlan.profitMargin}%)`,
-      `■ 当日推奨釣銭 (${changeData.modeName}): ${this.formatChangeList(changeData)} (合計¥${changeData.totalAmount.toLocaleString()})`,
+      changeData.validPrice === false
+        ? `■ 当日推奨釣銭: ${this.formatChangeList(changeData)}`
+        : `■ 当日推奨釣銭 (${changeData.modeName}): ${this.formatChangeList(changeData)} (合計¥${changeData.totalAmount.toLocaleString()})`,
       state.isCashless ? `■ キャッシュレスは仮に手数料${(DOUJIN_CONFIG.CASHLESS_FEE_RATE * 100).toFixed(2)}%で計算` : `■ お会計: 現金決済のみ`
     ].join('\n');
   }
