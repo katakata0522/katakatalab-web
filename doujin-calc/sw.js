@@ -4,7 +4,7 @@
  */
 
 const CACHE_PREFIX = 'doujin-calc-';
-const CACHE_NAME = 'doujin-calc-v1.5.2';
+const CACHE_NAME = 'doujin-calc-v1.5.3';
 
 const STATIC_ASSETS = [
   './',
