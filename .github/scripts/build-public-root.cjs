@@ -20,7 +20,7 @@ const PUBLIC_ROOT_FILES = Object.freeze([
 ]);
 
 const PUBLIC_DIRECTORIES = Object.freeze([
-  'aspect-ratio-calc', 'chiritsumo-calc', 'moyamoya-sorter', 'discount-calc', 'emphasis-lines', 'en', 'font-lab', 'guides',
+  'aspect-ratio-calc', 'chiritsumo-calc', 'moyamoya-sorter', 'discount-calc', 'doujin-calc', 'emphasis-lines', 'en', 'font-lab', 'guides',
   'international', 'ogp-simulator', 'password-generator', 'privacy', 'px-rem-converter', 'screenshot-crop',
   'lab-tools/gravity-todo', 'lab-tools/kids-smile-land', 'qrcode', 'seireki', 'text-diff',
 ]);

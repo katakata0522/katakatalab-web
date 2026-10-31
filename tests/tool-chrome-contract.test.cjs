@@ -43,7 +43,7 @@ test('構造化データは同じ主体を二重定義せず、画面のnoteと�
   assert.equal(organization.logo.url, 'https://katakatalab.com/icon.svg');
   assert.match(html, /href="https:\/\/note\.com\/cozy_snipe6552"/);
   const tools = graph.find((node) => node['@type'] === 'ItemList').itemListElement;
-  assert.equal(tools.length, 9);
+  assert.equal(tools.length, 10);
   assert.ok(tools.some((item) => item.url === 'https://katakatalab.com/screenshot-crop/'));
 });
 

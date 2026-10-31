@@ -157,6 +157,26 @@
     }
   },
   {
+    "id": "doujin-calc",
+    "group": "primary",
+    "category": "tool",
+    "shelf": "tool",
+    "featured": false,
+    "url": "doujin-calc/",
+    "detail": "部数と印刷費から、黒字になる部数と当日の釣銭枚数を出します。見本を除いた販売数、締切の目安、メロンとBOOTHの手取りも計算します。",
+    "tagText": "ツール",
+    "tagClass": "tag-tool",
+    "targetBadge": "💼 実用向け",
+    "statusBadge": "NEW",
+    "title": "同人の価格と釣銭",
+    "text": "頒布価格、黒字になる部数、当日の千円札と硬貨の枚数をブラウザで計算。",
+    "aliases": ["同人", "コミケ", "頒布価格", "釣銭", "損益分岐", "同人誌", "即売会"],
+    "actions": {
+      "mainText": "計算する →",
+      "detail": true
+    }
+  },
+  {
     "id": "qrcode",
     "group": "primary",
     "category": "tool",
