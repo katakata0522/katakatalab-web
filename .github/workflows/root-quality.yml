@@ -9,7 +9,7 @@ on:
 permissions:
   contents: read
 concurrency:
-  # Draft通知と手動検証を、配信用main検証・実PR検証から分離する。
+  # 通知・手動検証は、進行中のmain/PR検証と取消境界を分ける。
   group: public-root-${{ github.event_name }}-${{ github.ref }}-${{ (github.event_name == 'workflow_dispatch' || (github.event_name == 'pull_request' && github.event.pull_request.draft)) && github.run_id || 'active' }}
   cancel-in-progress: true
 defaults:
