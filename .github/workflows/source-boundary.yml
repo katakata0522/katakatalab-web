@@ -8,7 +8,8 @@ on:
 permissions:
   contents: read
 concurrency:
-  group: source-boundary-${{ github.ref }}
+  # 配信用mainのpush検査を手動検証で取り消さない。
+  group: source-boundary-${{ github.event_name }}-${{ github.ref }}-${{ github.event_name == 'workflow_dispatch' && github.run_id || 'active' }}
   cancel-in-progress: true
 jobs:
   boundary:
