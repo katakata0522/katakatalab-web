@@ -50,6 +50,9 @@
     "vitest": "^4.1.8"
   },
   "overrides": {
-    "ejs": "6.0.1"
+    "ejs": "6.0.1",
+    "workbox-build": {
+      "glob": "14.0.3"
+    }
   }
 }

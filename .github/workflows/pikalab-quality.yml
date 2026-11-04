@@ -3,35 +3,7 @@ name: Public PikaLab Quality Check
 on:
   push:
     branches: [main]
-  pull_request:
-    types:
-      - opened
-      - synchronize
-      - reopened
-      - ready_for_review
-      - converted_to_draft
-    paths:
-      - "pikalab/**"
-      - "qa/**"
-      - "scripts/public-qa/**"
-      - "scripts/education-no-tracking.cjs"
-      - "education-sw-privacy.js"
-      - ".github/scripts/education-privacy-e2e.cjs"
-      - ".github/scripts/copy-code-studio-reachable.cjs"
-      - ".github/scripts/validate_pikalab.py"
-      - ".github/scripts/pikalab-ci-scope.cjs"
-      - ".github/scripts/pikalab-ci-scope.test.cjs"
-      - ".github/scripts/pikalab-e2e-inputs.cjs"
-      - ".github/scripts/verify-playwright-runtime.cjs"
-      - ".github/scripts/resolve-ci-baseline.cjs"
-      - ".github/scripts/resolve-ci-baseline.test.cjs"
-      - ".htaccess"
-      - "sitemap.xml"
-      - ".github/scripts/sync_quest_board_csp.py"
-      - ".github/scripts/verify_color_lab_deploy.py"
-      - ".github/scripts/verify_pikalab_production.py"
-      - ".github/workflows/deploy.yml"
-      - ".github/workflows/pikalab-quality.yml"
+  workflow_call:
   workflow_dispatch:
     inputs:
       visual_preservation:
@@ -110,7 +82,7 @@ jobs:
         run: python3 scripts/public-qa/prepare.py
 
       - name: Test conservative E2E selection
-        run: node --test .github/scripts/pikalab-ci-scope.test.cjs .github/scripts/resolve-ci-baseline.test.cjs
+        run: node --test .github/scripts/pikalab-ci-scope.test.cjs .github/scripts/resolve-ci-baseline.test.cjs .github/scripts/public-pr-gate.test.cjs
       - name: Resolve immutable layout baseline
         id: baseline
         run: node .github/scripts/resolve-ci-baseline.cjs
@@ -126,7 +98,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6.5.0
         with:
-          node-version: "20"
+          node-version-file: ".node-version"
           cache: "npm"
           cache-dependency-path: "pikalab/package-lock.json"
 
@@ -259,7 +231,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6.5.0
         with:
-          node-version: "20"
+          node-version-file: ".node-version"
           cache: "npm"
           cache-dependency-path: "pikalab/package-lock.json"
 
@@ -469,7 +441,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6.5.0
         with:
-          node-version: "20"
+          node-version-file: ".node-version"
           cache: npm
           cache-dependency-path: pikalab/package-lock.json
       - name: Build actual candidate and baseline
@@ -535,7 +507,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6.5.0
         with:
-          node-version: "20"
+          node-version-file: ".node-version"
           cache: npm
           cache-dependency-path: pikalab/package-lock.json
       - name: Build actual candidate and baseline
@@ -601,7 +573,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6.5.0
         with:
-          node-version: "20"
+          node-version-file: ".node-version"
           cache: npm
           cache-dependency-path: pikalab/package-lock.json
       - name: Build actual candidate and baseline
@@ -667,7 +639,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6.5.0
         with:
-          node-version: "20"
+          node-version-file: ".node-version"
           cache: npm
           cache-dependency-path: pikalab/package-lock.json
       - name: Build actual candidate and baseline
@@ -729,7 +701,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6.5.0
         with:
-          node-version: "20"
+          node-version-file: ".node-version"
           cache: npm
           cache-dependency-path: pikalab/package-lock.json
       - name: Build actual candidate and baseline
@@ -753,3 +725,20 @@ jobs:
           set -euo pipefail
           cd pikalab
           BOOK_REPORT_BASELINE_ROOT=../.book-baseline/pikalab/dist npm run test:book-e2e
+
+  completion:
+    if: ${{ always() }}
+    needs: [scope, validate, space-browser, focus-browser, paper-browser, quest-browser, book-browser]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38
+        with:
+          node-version-file: .node-version
+      - name: Reject failed or unexpectedly skipped PikaLab checks
+        env:
+          NEEDS_JSON: ${{ toJSON(needs) }}
+        run: node .github/scripts/public-pr-gate.cjs pikalab

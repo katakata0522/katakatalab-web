@@ -1,0 +1,64 @@
+name: Public pull request gate
+on:
+  pull_request:
+    types: [opened, reopened, synchronize, ready_for_review, converted_to_draft]
+permissions:
+  contents: read
+concurrency:
+  group: public-pr-${{ github.ref }}-${{ github.event.pull_request.draft && github.run_id || 'active' }}
+  cancel-in-progress: true
+jobs:
+  scope:
+    if: ${{ !github.event.pull_request.draft }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    outputs:
+      root: ${{ steps.scope.outputs.root }}
+      pikalab: ${{ steps.scope.outputs.pikalab }}
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38
+        with:
+          node-version-file: .node-version
+      - name: Test selection and failure propagation
+        run: node --test .github/scripts/public-pr-gate.test.cjs
+      - name: Select required workflows from the entire PR
+        id: scope
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+        run: node .github/scripts/public-pr-gate.cjs select
+  root:
+    needs: scope
+    if: ${{ needs.scope.outputs.root == 'true' }}
+    uses: ./.github/workflows/root-quality.yml
+  pikalab:
+    needs: scope
+    if: ${{ needs.scope.outputs.pikalab == 'true' }}
+    uses: ./.github/workflows/pikalab-quality.yml
+  identity:
+    uses: ./.github/workflows/commit-privacy.yml
+  boundary:
+    uses: ./.github/workflows/source-boundary.yml
+  dependencies:
+    uses: ./.github/workflows/dependency-audit.yml
+  gate:
+    name: ${{ github.event.pull_request.draft && 'Draft public-pr-gate' || 'public-pr-gate' }}
+    if: ${{ always() }}
+    needs: [scope, root, pikalab, identity, boundary, dependencies]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38
+        with:
+          node-version-file: .node-version
+      - name: Require all selected checks to succeed
+        env:
+          NEEDS_JSON: ${{ toJSON(needs) }}
+          IS_DRAFT: ${{ github.event.pull_request.draft }}
+        run: node .github/scripts/public-pr-gate.cjs verify

@@ -142,8 +142,10 @@ test('共有・未知・削除・設定・共通検証器の変更は全E2Eへ�
 
 test('共有ブラウザ準備だけの変更でもPR検査と全ラボの検証を起動する', () => {
     const file = '.github/scripts/verify-playwright-runtime.cjs';
-    const trigger = readWorkflow().split('  pull_request:\n')[1].split('  workflow_dispatch:')[0];
-    assert.ok(trigger.includes(`      - "${file}"`), '共有準備の単独変更もPR検査の起動対象に含める');
+    assert.equal(require('./public-pr-gate.cjs').selectWorkflows([file]).pikalab, true);
+    assert.match(readWorkflow(), /^  workflow_call:/m, 'PR統合ゲートから同じコミットの検証を呼ぶ');
+    const gate = require('node:fs').readFileSync(join(__dirname, '../workflows/public-pr-gate.yml'), 'utf8');
+    assert.match(gate, /uses: \.\/\.github\/workflows\/pikalab-quality\.yml/);
     const scope = classifyChanges([file]);
     assert.equal(scope.full, true);
     for (const key of Object.keys(LABS)) assert.equal(scope[key], true, key);
@@ -286,7 +288,7 @@ test('通常PRは先行ブラウザ失敗後に停止し、全件診断は続行
 
 test('ビルドと成果物検証を先に済ませ、必要なブラウザとPDF依存の準備後に検証する', () => {
     const jobs = workflowJobs(readWorkflow());
-    for (const [name, body] of Object.entries(jobs)) {
+    for (const [name, body] of Object.entries(jobs).filter(([, body]) => body.includes('    container:'))) {
         const steps = [...body.matchAll(/      - name: (.*?)\n([\s\S]*?)(?=      - name:|$(?![\s\S]))/g)];
         const indexOfCommand = command => steps.findIndex(([, , step]) => step.includes(command));
         const build = indexOfCommand('npm run build:all');
@@ -403,14 +405,13 @@ test('全比較ジョブは単一の不変baselineを共有し、単独PikaLab�
     const refs = [...workflow.matchAll(/ref: (.*)/g)].map(match => match[1]);
     assert.equal(refs.length, 6);
     for (const ref of refs) assert.equal(ref, '${{ needs.scope.outputs.baseline_sha }}');
-    for (const [name, body] of Object.entries(jobs).filter(([name]) => name !== 'scope')) {
+    for (const [name, body] of Object.entries(jobs).filter(([name, body]) => name !== 'scope' && body.includes('    container:'))) {
         const commands = [...body.matchAll(/run: (python3 scripts\/public-qa\/prepare\.py[^\n]*)/g)].map(match => match[1]);
         assert.equal(commands.length, 2, name);
         for (const command of commands) assert.ok(command.endsWith('--area pikalab'), name);
     }
-    const trigger = workflow.split('  pull_request:\n')[1].split('  workflow_dispatch:')[0];
     for (const file of ['.github/scripts/resolve-ci-baseline.cjs', '.github/scripts/resolve-ci-baseline.test.cjs']) {
-        assert.ok(trigger.includes(`      - "${file}"`));
+        assert.equal(require('./public-pr-gate.cjs').selectWorkflows([file]).pikalab, true);
         assert.equal(classifyChanges([file]).full, true);
     }
 });
