@@ -20,7 +20,8 @@ jobs:
   quality:
     name: ${{ (github.event_name != 'pull_request' || !github.event.pull_request.draft) && 'quality' || 'Draft quality' }}
     if: ${{ github.event_name != 'pull_request' || !github.event.pull_request.draft }}
-    runs-on: ubuntu-latest
+    # Playwright 1.60.0のheadless shellが対応するOSを使用する。
+    runs-on: ubuntu-24.04
     # package-lockのPlaywrightと同版。ブラウザ・font・OS依存は公式の固定イメージで準備する。
     container:
       image: mcr.microsoft.com/playwright:v1.60.0-noble@sha256:9bd26ad900bb5e0f4dee75839e957a89ae89c2b7ab1e76050e559790e946b948
