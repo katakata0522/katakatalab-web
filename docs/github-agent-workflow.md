@@ -120,6 +120,8 @@ GitHub公式資料:
 
 ## 6. 実行環境と依存監査
 
+画面変更のローカル検証では、候補版の操作確認と旧版との比較を区別します。Speed Readerの比較には、PR基点の固定SHAから別にビルドした出力を`SPEED_READER_BASELINE_ROOT`で渡します。未指定の実行や`baselineComparison`が`skipped`の結果を、旧版との比較成功として報告しません。意図した追加UIは個別の操作・配置契約で確認し、それ以外の文言・配置・スタイルの検査は維持します。
+
 PublicのRoot・PikaLab検証は`.node-version`のNode.js 24 LTSを使用します。Privateの配信用実行環境も同じLTSへ揃え、元の素材・設定を組み立てたビルドで確認します。ブラウザーは別の契約で、lockと公式コンテナーのPlaywright版を一致させます。
 
 `npm run audit:dependencies`はRootとPikaLabのlockを現在の勧告と照合します。未知の警告は重大度を問わず停止し、通信・解析失敗を合格へ代替しません。

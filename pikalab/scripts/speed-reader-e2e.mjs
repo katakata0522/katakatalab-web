@@ -298,18 +298,41 @@ async function layoutSnapshot(page) {
                     selected: element.getAttribute('aria-selected'), checked: element.getAttribute('aria-checked'), hidden: element.hidden || false },
                 value: element instanceof HTMLInputElement || element instanceof HTMLTextAreaElement ? element.value : null }];
         });
+        const home = document.querySelector('#pikalab-home-link');
+        const homeNavigation = home ? {
+            key: key(home), text: normalize(home.innerText),
+            beforeText: normalize(home.nextElementSibling.innerText), parentKey: key(home.parentElement),
+            addedWidth: round(home.getBoundingClientRect().width + parseFloat(getComputedStyle(home.parentElement).columnGap))
+        } : null;
         return { viewport: { width: innerWidth, height: innerHeight }, width: document.documentElement.scrollWidth,
-            height: document.documentElement.scrollHeight, text: normalize(document.body.innerText), nodes };
+            height: document.documentElement.scrollHeight, text: normalize(document.body.innerText), nodes, homeNavigation };
     });
 }
 
 function compareLayout(actual, expected, name) {
-    assert.equal(actual.text, expected.text, `${name}: 表示文言を維持する`);
+    let previousText = expected.text;
+    let comparedNodes = actual.nodes;
+    if (!expected.homeNavigation && actual.homeNavigation) {
+        // 今回追加した導線だけを差分として検証する。既存本文・ボタン・配置の許容値は広げない。
+        const home = actual.homeNavigation;
+        assert.equal(home.text, '←', `${name}: 追加した戻る矢印`);
+        assert.equal(previousText.split(home.beforeText).length, 2, `${name}: 既存の保護者ボタンの前へ一度だけ追加する`);
+        previousText = previousText.replace(home.beforeText, `${home.text} ${home.beforeText}`);
+        const addedKeys = [home.key, `${home.key}>span:nth-of-type(1)`];
+        assert.deepEqual(actual.nodes.filter(node => addedKeys.includes(node.key)).map(node => node.key), addedKeys,
+            `${name}: 意図したリンクと矢印だけを追加する`);
+        comparedNodes = actual.nodes.filter(node => !addedKeys.includes(node.key)).map(node => {
+            if (node.key !== home.parentKey) return node;
+            // リンク幅と既存gap分だけ、右寄せの操作コンテナーが左へ伸びる。
+            return { ...node, box: { ...node.box, x: node.box.x + home.addedWidth, width: node.box.width - home.addedWidth } };
+        });
+    }
+    assert.equal(actual.text, previousText, `${name}: 表示文言を維持する`);
     assert.equal(actual.width, expected.width, `${name}: ページ幅を維持する`);
     assert.ok(Math.abs(actual.height - expected.height) <= 1, `${name}: ページ高を維持する`);
-    assert.deepEqual(actual.nodes.map(node => node.key), expected.nodes.map(node => node.key), `${name}: 表示要素を維持する`);
-    for (let index = 0; index < actual.nodes.length; index++) {
-        const received = actual.nodes[index];
+    assert.deepEqual(comparedNodes.map(node => node.key), expected.nodes.map(node => node.key), `${name}: 表示要素を維持する`);
+    for (let index = 0; index < comparedNodes.length; index++) {
+        const received = comparedNodes[index];
         const previous = expected.nodes[index];
         assert.deepEqual(received.style, previous.style, `${name}: ${received.key} の計算済みスタイル`);
         assert.deepEqual(received.semantics, previous.semantics, `${name}: ${received.key} の操作上の意味`);
@@ -320,6 +343,7 @@ function compareLayout(actual, expected, name) {
                 `${name}: ${received.key} ${property}: ${previous.box[property]} → ${received.box[property]}`);
         }
     }
+    return comparedNodes.length;
 }
 
 async function layoutSuite() {
@@ -343,11 +367,12 @@ async function layoutSuite() {
                     const expected = baseline ? await layoutSnapshot(baseline.page) : null;
                     await writeFile(path.join(artifactDir, `${label}-geometry.json`), `${JSON.stringify({ candidate: actual, baseline: expected }, null, 2)}\n`);
                     await screenshot(page, `${label}-candidate`);
+                    let comparedElements = 0;
                     if (baseline) {
                         await screenshot(baseline.page, `${label}-baseline`);
-                        compareLayout(actual, expected, label);
+                        comparedElements = compareLayout(actual, expected, label);
                     }
-                    record.states.push({ state, measuredElements: actual.nodes.length, comparedElements: baseline ? actual.nodes.length : 0 });
+                    record.states.push({ state, measuredElements: actual.nodes.length, comparedElements });
                 }
                 if (baseline) {
                     assert.deepEqual(baseline.errors, [], '基準版の起動エラーがない');
