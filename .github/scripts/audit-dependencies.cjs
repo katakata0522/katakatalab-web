@@ -27,7 +27,13 @@ function classifyAudit(report, lock) {
         if (ancestors.has(name) || !Object.hasOwn(REVIEWED, name) || !Object.hasOwn(findings, name)) return false;
         const finding = findings[name];
         if (finding.severity !== 'low' || !Array.isArray(finding.via) || !finding.via.length
-            || lock?.packages?.[`node_modules/${name}`]?.version !== REVIEWED[name]) return false;
+            || !Array.isArray(finding.nodes) || !finding.nodes.length) return false;
+        // npmは同名依存を集約するため、入れ子を含む全実体の版を検査する。
+        if (!finding.nodes.every(node => typeof node === 'string'
+            && !node.includes('\\') && !node.includes(':')
+            && !node.split('/').some(part => !part || part === '.' || part === '..')
+            && (node === `node_modules/${name}` || node.endsWith(`/node_modules/${name}`))
+            && lock?.packages?.[node]?.version === REVIEWED[name])) return false;
         const next = new Set([...ancestors, name]);
         return finding.via.every(item => typeof item === 'string'
             ? withdrawnOnly(item, next)

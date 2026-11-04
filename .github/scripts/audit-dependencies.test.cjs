@@ -6,10 +6,10 @@ const record = { cveMetadata: { cveId: 'CVE-2026-93753', state: 'REJECTED' } };
 const lock = { packages: Object.fromEntries(Object.entries(REVIEWED).map(([name, version]) => [`node_modules/${name}`, { version }])) };
 function report() {
     return { auditReportVersion: 2, metadata: { vulnerabilities: { total: 4 } }, vulnerabilities: {
-        deepmerge: { severity: 'low', via: [{ name: 'deepmerge', url: WITHDRAWN, severity: 'low' }] },
-        '@rollup/plugin-node-resolve': { severity: 'low', via: ['deepmerge'] },
-        'workbox-build': { severity: 'low', via: ['@rollup/plugin-node-resolve'] },
-        'vite-plugin-pwa': { severity: 'low', via: ['workbox-build'] },
+        deepmerge: { severity: 'low', nodes: ['node_modules/deepmerge'], via: [{ name: 'deepmerge', url: WITHDRAWN, severity: 'low' }] },
+        '@rollup/plugin-node-resolve': { severity: 'low', nodes: ['node_modules/@rollup/plugin-node-resolve'], via: ['deepmerge'] },
+        'workbox-build': { severity: 'low', nodes: ['node_modules/workbox-build'], via: ['@rollup/plugin-node-resolve'] },
+        'vite-plugin-pwa': { severity: 'low', nodes: ['node_modules/vite-plugin-pwa'], via: ['workbox-build'] },
     } };
 }
 test('警告なしは追加のCVE通信を必要としない', () => {
@@ -44,6 +44,27 @@ test('低重大度でも未知の警告、伝播先の欠損、循環を拒否�
     for (const via of [[], ['missing'], ['deepmerge']]) {
         const invalid = report();
         invalid.vulnerabilities.deepmerge.via = via;
+        assert.throws(() => reviewAudit(invalid, lock, record));
+    }
+});
+
+test('npmが同名依存を集約しても、全ての入れ子実体を確認する', () => {
+    const audit = report();
+    const nestedLock = structuredClone(lock);
+    const nested = 'node_modules/workbox-build/node_modules/deepmerge';
+    audit.vulnerabilities.deepmerge.nodes.push(nested);
+    nestedLock.packages[nested] = { version: REVIEWED.deepmerge };
+    assert.equal(reviewAudit(audit, nestedLock, record).length, 4);
+    for (const version of ['4.2.2', '99.0.0', undefined]) {
+        nestedLock.packages[nested].version = version;
+        assert.throws(() => reviewAudit(audit, nestedLock, record));
+    }
+    delete nestedLock.packages[nested];
+    assert.throws(() => reviewAudit(audit, nestedLock, record));
+    for (const nodes of [undefined, [], ['../node_modules/deepmerge'], ['C:/node_modules/deepmerge'],
+        ['node_modules/other'], [null]]) {
+        const invalid = report();
+        invalid.vulnerabilities.deepmerge.nodes = nodes;
         assert.throws(() => reviewAudit(invalid, lock, record));
     }
 });
