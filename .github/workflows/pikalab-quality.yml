@@ -23,6 +23,8 @@ on:
       - ".github/scripts/pikalab-ci-scope.test.cjs"
       - ".github/scripts/pikalab-e2e-inputs.cjs"
       - ".github/scripts/verify-playwright-runtime.cjs"
+      - ".github/scripts/resolve-ci-baseline.cjs"
+      - ".github/scripts/resolve-ci-baseline.test.cjs"
       - ".htaccess"
       - "sitemap.xml"
       - ".github/scripts/sync_quest_board_csp.py"
@@ -72,6 +74,7 @@ jobs:
       options: --ipc=host
     timeout-minutes: 15
     outputs:
+      baseline_sha: ${{ steps.baseline.outputs.sha }}
       full: ${{ steps.scope.outputs.full }}
       deepsea: ${{ steps.scope.outputs.deepsea }}
       color: ${{ steps.scope.outputs.color }}
@@ -107,7 +110,11 @@ jobs:
         run: python3 scripts/public-qa/prepare.py
 
       - name: Test conservative E2E selection
-        run: node --test .github/scripts/pikalab-ci-scope.test.cjs
+        run: node --test .github/scripts/pikalab-ci-scope.test.cjs .github/scripts/resolve-ci-baseline.test.cjs
+      - name: Resolve immutable layout baseline
+        id: baseline
+        run: node .github/scripts/resolve-ci-baseline.cjs
+
       - name: Select affected PikaLab browser checks
         id: scope
         env:
@@ -218,7 +225,7 @@ jobs:
       - name: Require successful E2E scope selection
         env:
           SCOPE_RESULT: ${{ needs.scope.result }}
-        run: test "$SCOPE_RESULT" = success
+        run: node -e "if (process.env.SCOPE_RESULT !== 'success') process.exit(1)"
 
       - name: Checkout code
         uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
@@ -234,20 +241,20 @@ jobs:
             apt-get install -y --no-install-recommends python3
           fi
       - name: Prepare CI dependencies without publishing media
-        run: python3 scripts/public-qa/prepare.py
+        run: python3 scripts/public-qa/prepare.py --area pikalab
 
       # 同じPR基点を一度だけ準備し、総合比較と各ラボの比較で共有する。
       - name: Checkout shared layout baseline
         if: "${{ env.PIKALAB_COMPARE_BASELINE == 'true' || (github.event_name == 'pull_request' && (needs.scope.outputs.rhythm == 'true' || needs.scope.outputs.manabi == 'true' || needs.scope.outputs.speed_reader == 'true' || needs.scope.outputs.typing_dojo == 'true' || needs.scope.outputs.kotowaza == 'true' || needs.scope.outputs.fraction == 'true')) }}"
         uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
         with:
-          ref: ${{ github.event.pull_request.base.sha || github.event.repository.default_branch }}
+          ref: ${{ needs.scope.outputs.baseline_sha }}
           path: .pikalab-baseline
           persist-credentials: false
 
       - name: Prepare verified baseline dependencies from this job
         if: "${{ env.PIKALAB_COMPARE_BASELINE == 'true' || (github.event_name == 'pull_request' && (needs.scope.outputs.rhythm == 'true' || needs.scope.outputs.manabi == 'true' || needs.scope.outputs.speed_reader == 'true' || needs.scope.outputs.typing_dojo == 'true' || needs.scope.outputs.kotowaza == 'true' || needs.scope.outputs.fraction == 'true')) }}"
-        run: python3 scripts/public-qa/prepare.py --root .pikalab-baseline --reuse-root .
+        run: python3 scripts/public-qa/prepare.py --root .pikalab-baseline --reuse-root . --area pikalab
 
       - name: Setup Node.js
         uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6.5.0
@@ -447,17 +454,17 @@ jobs:
             apt-get install -y --no-install-recommends python3
           fi
       - name: Prepare CI dependencies without publishing media
-        run: python3 scripts/public-qa/prepare.py
+        run: python3 scripts/public-qa/prepare.py --area pikalab
 
       - name: Checkout Space Lab baseline
         uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
         with:
-          ref: ${{ github.event.pull_request.base.sha || github.event.repository.default_branch }}
+          ref: ${{ needs.scope.outputs.baseline_sha }}
           path: .space-baseline
           persist-credentials: false
 
       - name: Prepare CI dependencies without publishing media
-        run: python3 scripts/public-qa/prepare.py --root .space-baseline --reuse-root .
+        run: python3 scripts/public-qa/prepare.py --root .space-baseline --reuse-root . --area pikalab
 
       - name: Setup Node.js
         uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6.5.0
@@ -513,17 +520,17 @@ jobs:
             apt-get install -y --no-install-recommends python3
           fi
       - name: Prepare CI dependencies without publishing media
-        run: python3 scripts/public-qa/prepare.py
+        run: python3 scripts/public-qa/prepare.py --area pikalab
 
       - name: Checkout Focus Studio baseline
         uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
         with:
-          ref: ${{ github.event.pull_request.base.sha || github.event.repository.default_branch }}
+          ref: ${{ needs.scope.outputs.baseline_sha }}
           path: .focus-baseline
           persist-credentials: false
 
       - name: Prepare CI dependencies without publishing media
-        run: python3 scripts/public-qa/prepare.py --root .focus-baseline --reuse-root .
+        run: python3 scripts/public-qa/prepare.py --root .focus-baseline --reuse-root . --area pikalab
 
       - name: Setup Node.js
         uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6.5.0
@@ -579,17 +586,17 @@ jobs:
             apt-get install -y --no-install-recommends python3
           fi
       - name: Prepare CI dependencies without publishing media
-        run: python3 scripts/public-qa/prepare.py
+        run: python3 scripts/public-qa/prepare.py --area pikalab
 
       - name: Checkout Paper Gen baseline
         uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
         with:
-          ref: ${{ github.event.pull_request.base.sha || github.event.repository.default_branch }}
+          ref: ${{ needs.scope.outputs.baseline_sha }}
           path: .paper-baseline
           persist-credentials: false
 
       - name: Prepare CI dependencies without publishing media
-        run: python3 scripts/public-qa/prepare.py --root .paper-baseline --reuse-root .
+        run: python3 scripts/public-qa/prepare.py --root .paper-baseline --reuse-root . --area pikalab
 
       - name: Setup Node.js
         uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6.5.0
@@ -645,17 +652,17 @@ jobs:
             apt-get install -y --no-install-recommends python3 poppler-utils
           fi
       - name: Prepare CI dependencies without publishing media
-        run: python3 scripts/public-qa/prepare.py
+        run: python3 scripts/public-qa/prepare.py --area pikalab
 
       - name: Checkout Quest Board baseline
         uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
         with:
-          ref: ${{ github.event.pull_request.base.sha || github.event.repository.default_branch }}
+          ref: ${{ needs.scope.outputs.baseline_sha }}
           path: .quest-baseline
           persist-credentials: false
 
       - name: Prepare CI dependencies without publishing media
-        run: python3 scripts/public-qa/prepare.py --root .quest-baseline --reuse-root .
+        run: python3 scripts/public-qa/prepare.py --root .quest-baseline --reuse-root . --area pikalab
 
       - name: Setup Node.js
         uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6.5.0
@@ -710,15 +717,15 @@ jobs:
             apt-get install -y --no-install-recommends python3 poppler-utils
           fi
       - name: Prepare CI dependencies without publishing media
-        run: python3 scripts/public-qa/prepare.py
+        run: python3 scripts/public-qa/prepare.py --area pikalab
       - name: Checkout Book Report baseline
         uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
         with:
-          ref: ${{ github.event.pull_request.base.sha || github.event.repository.default_branch }}
+          ref: ${{ needs.scope.outputs.baseline_sha }}
           path: .book-baseline
           persist-credentials: false
       - name: Prepare CI dependencies without publishing media
-        run: python3 scripts/public-qa/prepare.py --root .book-baseline --reuse-root .
+        run: python3 scripts/public-qa/prepare.py --root .book-baseline --reuse-root . --area pikalab
       - name: Setup Node.js
         uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6.5.0
         with:

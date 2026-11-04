@@ -233,11 +233,10 @@ test('共通検証の失敗は全ラボE2Eの起動を止め、必須validateに
     assert.equal((workflow.match(/^          npm test$/gm) || []).length, 1, '全単体テストは一度だけ実行する');
     assert.match(jobs.validate, /needs: scope/);
     assert.match(jobs.validate, /!cancelled\(\)/, '上流失敗をskip成功にせず必須名へ伝える');
-    const gate = jobs.validate.match(/run: (test "\$SCOPE_RESULT" = success)/)[1];
+    const gate = jobs.validate.match(/run: node -e "([^"\n]+)"/)[1];
     for (const result of ['success', 'failure', 'cancelled', 'skipped']) {
         const { spawnSync } = require('node:child_process');
-        const shell = process.platform === 'win32' ? join(process.env.ProgramFiles, 'Git/bin/bash.exe') : 'bash';
-        const actual = spawnSync(shell, ['-c', gate], { env: { ...process.env, SCOPE_RESULT: result } });
+        const actual = spawnSync(process.execPath, ['-e', gate], { env: { ...process.env, SCOPE_RESULT: result } });
         assert.ifError(actual.error);
         assert.equal(actual.status === 0, result === 'success');
     }
@@ -394,6 +393,28 @@ test('baselineの教育監査モジュールはビルド前に必ず取得する
     assert.doesNotMatch(workflow, /sparse-checkout:/);
 });
 
+test('全比較ジョブは単一の不変baselineを共有し、単独PikaLab検証へRoot素材を持ち込まない', () => {
+    const workflow = readWorkflow();
+    const jobs = workflowJobs(workflow);
+    assert.match(jobs.scope, /baseline_sha: \$\{\{ steps\.baseline\.outputs\.sha \}\}/);
+    assert.equal((jobs.scope.match(/run: node \.github\/scripts\/resolve-ci-baseline\.cjs/g) || []).length, 1);
+    assert.match(jobs.scope, /run: python3 scripts\/public-qa\/prepare\.py\n/,
+        'Rootとの教育プライバシー統合検証は全素材を準備する');
+    const refs = [...workflow.matchAll(/ref: (.*)/g)].map(match => match[1]);
+    assert.equal(refs.length, 6);
+    for (const ref of refs) assert.equal(ref, '${{ needs.scope.outputs.baseline_sha }}');
+    for (const [name, body] of Object.entries(jobs).filter(([name]) => name !== 'scope')) {
+        const commands = [...body.matchAll(/run: (python3 scripts\/public-qa\/prepare\.py[^\n]*)/g)].map(match => match[1]);
+        assert.equal(commands.length, 2, name);
+        for (const command of commands) assert.ok(command.endsWith('--area pikalab'), name);
+    }
+    const trigger = workflow.split('  pull_request:\n')[1].split('  workflow_dispatch:')[0];
+    for (const file of ['.github/scripts/resolve-ci-baseline.cjs', '.github/scripts/resolve-ci-baseline.test.cjs']) {
+        assert.ok(trigger.includes(`      - "${file}"`));
+        assert.equal(classifyChanges([file]).full, true);
+    }
+});
+
 test('比較元を共有してもPR・手動・pushの必要なsource/buildと全ラボ比較を維持する', () => {
     const body = workflowJobs(readWorkflow()).validate;
     const step = name => body.split('      - name: ' + name + '\n')[1].split('      - name:')[0];
@@ -417,7 +438,7 @@ test('比較元を共有してもPR・手動・pushの必要なsource/buildと�
             }
         }
     }
-    assert.match(step('Checkout shared layout baseline'), /ref: \$\{\{ github\.event\.pull_request\.base\.sha \|\| github\.event\.repository\.default_branch \}\}/);
+    assert.match(step('Checkout shared layout baseline'), /ref: \$\{\{ needs\.scope\.outputs\.baseline_sha \}\}/);
     assert.doesNotMatch(body, /path: \.(?:rhythm|manabi)-baseline/);
     const consumers = {
         'Run Rhythm Lab browser E2E': 'RHYTHM_BASELINE_ROOT=../.pikalab-baseline/pikalab',
@@ -511,7 +532,7 @@ test('Bookの基点・Draft条件・証跡先は実際のPRとE2E実行先に対
             }
         }
     }
-    assert.ok(job.includes('ref: ${{ github.event.pull_request.base.sha || github.event.repository.default_branch }}'));
+    assert.ok(job.includes('ref: ${{ needs.scope.outputs.baseline_sha }}'));
     assert.ok(job.includes('BOOK_REPORT_BASELINE_ROOT=../.book-baseline/pikalab/dist npm run test:book-e2e'));
     assert.doesNotMatch(job, /actions\/upload-artifact@/);
     const e2e = require('node:fs').readFileSync(join(__dirname, '../../pikalab/scripts/book-report-e2e.mjs'), 'utf8');
