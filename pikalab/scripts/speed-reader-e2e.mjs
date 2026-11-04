@@ -581,6 +581,19 @@ async function reachabilitySuite() {
 }
 
 async function navigationSuite() {
+    for (const viewport of VIEWPORTS) {
+        await runCase(`pikalab-return-link-${viewport.width}x${viewport.height}`, async page => {
+            const link = page.getByRole('link', { name: 'PikaLabへ戻る', exact: true });
+            assert.equal(await link.isVisible(), true, '全画面幅でPikaLabへの導線を表示する');
+            const box = await link.boundingBox();
+            assert.ok(box.width >= 44 && box.height >= 44, 'タッチ領域は44px以上にする');
+            assert.ok(box.x >= 0 && box.x + box.width <= viewport.width, '導線を画面内へ収める');
+            const destination = new URL('../', candidateUrl).href;
+            await link.focus();
+            await Promise.all([page.waitForURL(destination), page.keyboard.press('Enter')]);
+            assert.equal(new URL(page.url()).pathname, '/', 'キー操作でPikaLabの入口へ戻れる');
+        }, {}, viewport);
+    }
     await runCase('tabs-categories-and-radio-keyboard', async page => {
         await custom(page);
         const first = await readerText(page);

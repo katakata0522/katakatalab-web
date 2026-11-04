@@ -2,9 +2,7 @@ name: Public Web Root Quality Check
 on:
   push:
     branches: [main]
-  pull_request:
-    types: [opened, reopened, synchronize, ready_for_review]
-    paths-ignore: ["pikalab/**", "**.md"]
+  workflow_call:
   workflow_dispatch:
 permissions:
   contents: read
@@ -33,7 +31,7 @@ jobs:
           persist-credentials: false
       - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38
         with:
-          node-version: '22'
+          node-version-file: ".node-version"
       - name: Prepare required command-line tools
         run: |
           git config --global --add safe.directory "$GITHUB_WORKSPACE"

@@ -1,6 +1,9 @@
 {
   "name": "katakatalab-web-qa",
   "private": true,
+  "scripts": {
+    "audit:dependencies": "node .github/scripts/audit-dependencies.cjs"
+  },
   "devDependencies": {
     "playwright": "1.60.0"
   }

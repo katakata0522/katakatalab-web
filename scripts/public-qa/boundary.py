@@ -18,6 +18,9 @@ for name in files:
   if re.search(r'secrets\.|pull_request_target|workflow_run|id-token:\s*write|contents:\s*write|actions/upload-artifact@|rsync|ssh-agent',text):errors.append(name+': privileged operation')
   if not re.search(r'contents:\s*read',text):errors.append(name+': missing read-only permissions')
   for action in re.findall(r'uses:\s*([^\s#]+)',text):
+   # Local reusable workflows are pinned to the caller's exact commit by GitHub.
+   local=re.fullmatch(r'\./\.github/workflows/[\w-]+\.ya?ml',action)
+   if local and action[2:] in files:continue
    if not re.fullmatch(r'[\w.-]+/[\w./-]+@[a-f0-9]{40}',action):errors.append(name+': unpinned action')
 if errors:raise SystemExit('Public source boundary rejected: '+json.dumps(errors))
 print(f'Public source boundary passed: {len(files)} tracked files; no private configuration, media, backend, credentials or privileged workflow.')

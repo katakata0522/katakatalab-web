@@ -68,6 +68,25 @@ body.theme-night .lib-card:hover {
    Glass Panel Effect
    ========================================================================== */
 
+.home-link {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 44px;
+    min-height: 44px;
+    border-radius: 12px;
+}
+
+.home-link:focus-visible {
+    outline: 2px solid #0f766e;
+    outline-offset: 3px;
+}
+
+.home-link-arrow {
+    font-size: 22px;
+    font-weight: 700;
+}
+
 .glass-panel {
     background: rgba(255, 255, 255, 0.95);
     backdrop-filter: blur(12px);

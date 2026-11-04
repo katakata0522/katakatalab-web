@@ -117,3 +117,21 @@ GitHub公式資料:
 
 - [コミットメールの設定](https://docs.github.com/en/account-and-profile/how-tos/email-preferences/setting-your-commit-email-address)
 - [REST APIのコミット作成とauthor/committer](https://docs.github.com/en/rest/git/commits#create-a-commit)
+
+## 6. 実行環境と依存監査
+
+PublicのRoot・PikaLab検証は`.node-version`のNode.js 24 LTSを使用します。Privateの配信用実行環境も同じLTSへ揃え、元の素材・設定を組み立てたビルドで確認します。ブラウザーは別の契約で、lockと公式コンテナーのPlaywright版を一致させます。
+
+`npm run audit:dependencies`はRootとPikaLabのlockを現在の勧告と照合します。未知の警告は重大度を問わず停止し、通信・解析失敗を合格へ代替しません。
+
+2026年11月5日に確認したdeepmergeのGHSA-gcqx-w48m-w2h4は、npmには残っていますが、[公式CVE記録](https://github.com/CVEProject/cvelistV5/blob/790fe3b1147c6f11580e9b00b18abcf2c7534af4/cves/2026/93xxx/CVE-2026-93753.json)で11月2日に却下されています。確認したnode-resolveの使用箇所も、初期化時の固定設定だけの複製です。
+監査はこの通知と確認済み4依存の版だけを区別し、毎回公式CVEの現在状態を取得して`REJECTED`であることを確かめます。同じ依存の新勧告・重大度変更・版変更・CVEの再公開は自動承認しません。警告そのものを0件と表示したり、旧PWAへ強制変更したりしません。
+
+## 7. 通常PRの統合チェック
+
+通常PRは`public-pr-gate`で、必要なRoot/PikaLab検証、公開名義、公開境界、依存監査の実際の成功を確認します。文書のみなど、差分から対象外と確定できた品質検証だけを省略します。変更を取得できない場合は両方を実行し、対象を確定できない出力は合格にしません。
+
+PikaLab内でも`completion`が、共有検証と選択された全ラボの成功を確認します。必要なジョブのfailure・cancelled・予期しないskippedは失敗です。
+Draftは軽量の安全検査と`Draft public-pr-gate`通知を使い、通常ゲートの成功と区別します。Readyへの移行で通常検証を開始します。
+
+PRの検査は同じコミットの再利用workflowを呼び、別の定義を重複実行しません。mainのpush検査は、Privateの公開ソース固定を検証する独立のRoot・PikaLab・公開境界・依存監査を保ちます。GitHub側の保護設定は、実際の通常ゲート成功を確認した後に別途適用します。

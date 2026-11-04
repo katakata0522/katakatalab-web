@@ -1,7 +1,6 @@
 name: New commit email privacy
 on:
-  pull_request:
-    types: [opened, reopened, synchronize, ready_for_review]
+  workflow_call:
 permissions:
   contents: read
 jobs:
