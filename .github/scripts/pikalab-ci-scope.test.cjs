@@ -140,6 +140,15 @@ test('共有・未知・削除・設定・共通検証器の変更は全E2Eへ�
     }
 });
 
+test('共有ブラウザ準備だけの変更でもPR検査と全ラボの検証を起動する', () => {
+    const file = '.github/scripts/verify-playwright-runtime.cjs';
+    const trigger = readWorkflow().split('  pull_request:\n')[1].split('  workflow_dispatch:')[0];
+    assert.ok(trigger.includes(`      - "${file}"`), '共有準備の単独変更もPR検査の起動対象に含める');
+    const scope = classifyChanges([file]);
+    assert.equal(scope.full, true);
+    for (const key of Object.keys(LABS)) assert.equal(scope[key], true, key);
+});
+
 test('空の差分、手動実行、視覚維持ラベルは全検証する', () => {
     assert.equal(classifyChanges([]).full, true);
     assert.equal(classifyChanges(null).full, true);
@@ -224,11 +233,10 @@ test('共通検証の失敗は全ラボE2Eの起動を止め、必須validateに
     assert.equal((workflow.match(/^          npm test$/gm) || []).length, 1, '全単体テストは一度だけ実行する');
     assert.match(jobs.validate, /needs: scope/);
     assert.match(jobs.validate, /!cancelled\(\)/, '上流失敗をskip成功にせず必須名へ伝える');
-    const gate = jobs.validate.match(/run: (test "\$SCOPE_RESULT" = success)/)[1];
+    const gate = jobs.validate.match(/run: node -e "([^"\n]+)"/)[1];
     for (const result of ['success', 'failure', 'cancelled', 'skipped']) {
         const { spawnSync } = require('node:child_process');
-        const shell = process.platform === 'win32' ? join(process.env.ProgramFiles, 'Git/bin/bash.exe') : 'bash';
-        const actual = spawnSync(shell, ['-c', gate], { env: { ...process.env, SCOPE_RESULT: result } });
+        const actual = spawnSync(process.execPath, ['-e', gate], { env: { ...process.env, SCOPE_RESULT: result } });
         assert.ifError(actual.error);
         assert.equal(actual.status === 0, result === 'success');
     }
@@ -283,13 +291,15 @@ test('ビルドと成果物検証を先に済ませ、必要なブラウザとPD
         const indexOfCommand = command => steps.findIndex(([, , step]) => step.includes(command));
         const build = indexOfCommand('npm run build:all');
         const verify = indexOfCommand('npm run verify:build');
-        const cache = indexOfCommand('path: ~/.cache/ms-playwright');
-        const install = indexOfCommand('npx playwright install-deps chromium');
-        assert.ok(build >= 0 && verify >= build && cache > verify && install > cache, name);
+        const install = indexOfCommand('node ../.github/scripts/verify-playwright-runtime.cjs');
+        assert.ok(build >= 0 && verify >= build && install > verify, name);
         const installation = steps[install][2];
-        assert.match(installation, /if \[ "\$\{\{ steps\.[\w-]+\.outputs\.cache-hit \}\}" != ["']true["'] \]; then\n\s+npx playwright install chromium\n\s+fi/,
-            `${name}: OS依存は毎回準備し、ブラウザ本体は完全一致キャッシュだけで省く`);
-        assert.equal(installation.includes('sudo apt-get install -y poppler-utils'), ['quest-browser', 'book-browser'].includes(name));
+        assert.match(body, /image: mcr\.microsoft\.com\/playwright:v1\.60\.0-noble@sha256:[a-f0-9]{64}/,
+            `${name}: ブラウザ・font・OS依存を含む公式イメージを版とdigestで固定する`);
+        assert.doesNotMatch(installation, /playwright install|cache-hit/, '異版の取得やキャッシュへ暗黙に切り替えない');
+        const tools = indexOfCommand('command -v python3');
+        assert.ok(tools >= 0 && tools < build, `${name}: Pythonは素材準備前に必要`);
+        assert.equal(steps[tools][2].includes('poppler-utils'), ['quest-browser', 'book-browser'].includes(name));
         const browserChecks = steps.filter(([, , step]) => /npm run (?:verify:code-studio-security|guard:visual|test:[\w-]+-e2e)|RUN_PIKALAB_TOP_BROWSER=1/.test(step));
         assert.ok(browserChecks.length > 0, name);
         for (const check of browserChecks) assert.ok(steps.indexOf(check) > install, `${name}: ${check[1]}`);
@@ -383,6 +393,28 @@ test('baselineの教育監査モジュールはビルド前に必ず取得する
     assert.doesNotMatch(workflow, /sparse-checkout:/);
 });
 
+test('全比較ジョブは単一の不変baselineを共有し、単独PikaLab検証へRoot素材を持ち込まない', () => {
+    const workflow = readWorkflow();
+    const jobs = workflowJobs(workflow);
+    assert.match(jobs.scope, /baseline_sha: \$\{\{ steps\.baseline\.outputs\.sha \}\}/);
+    assert.equal((jobs.scope.match(/run: node \.github\/scripts\/resolve-ci-baseline\.cjs/g) || []).length, 1);
+    assert.match(jobs.scope, /run: python3 scripts\/public-qa\/prepare\.py\n/,
+        'Rootとの教育プライバシー統合検証は全素材を準備する');
+    const refs = [...workflow.matchAll(/ref: (.*)/g)].map(match => match[1]);
+    assert.equal(refs.length, 6);
+    for (const ref of refs) assert.equal(ref, '${{ needs.scope.outputs.baseline_sha }}');
+    for (const [name, body] of Object.entries(jobs).filter(([name]) => name !== 'scope')) {
+        const commands = [...body.matchAll(/run: (python3 scripts\/public-qa\/prepare\.py[^\n]*)/g)].map(match => match[1]);
+        assert.equal(commands.length, 2, name);
+        for (const command of commands) assert.ok(command.endsWith('--area pikalab'), name);
+    }
+    const trigger = workflow.split('  pull_request:\n')[1].split('  workflow_dispatch:')[0];
+    for (const file of ['.github/scripts/resolve-ci-baseline.cjs', '.github/scripts/resolve-ci-baseline.test.cjs']) {
+        assert.ok(trigger.includes(`      - "${file}"`));
+        assert.equal(classifyChanges([file]).full, true);
+    }
+});
+
 test('比較元を共有してもPR・手動・pushの必要なsource/buildと全ラボ比較を維持する', () => {
     const body = workflowJobs(readWorkflow()).validate;
     const step = name => body.split('      - name: ' + name + '\n')[1].split('      - name:')[0];
@@ -406,7 +438,7 @@ test('比較元を共有してもPR・手動・pushの必要なsource/buildと�
             }
         }
     }
-    assert.match(step('Checkout shared layout baseline'), /ref: \$\{\{ github\.event\.pull_request\.base\.sha \|\| github\.event\.repository\.default_branch \}\}/);
+    assert.match(step('Checkout shared layout baseline'), /ref: \$\{\{ needs\.scope\.outputs\.baseline_sha \}\}/);
     assert.doesNotMatch(body, /path: \.(?:rhythm|manabi)-baseline/);
     const consumers = {
         'Run Rhythm Lab browser E2E': 'RHYTHM_BASELINE_ROOT=../.pikalab-baseline/pikalab',
@@ -500,7 +532,7 @@ test('Bookの基点・Draft条件・証跡先は実際のPRとE2E実行先に対
             }
         }
     }
-    assert.ok(job.includes('ref: ${{ github.event.pull_request.base.sha || github.event.repository.default_branch }}'));
+    assert.ok(job.includes('ref: ${{ needs.scope.outputs.baseline_sha }}'));
     assert.ok(job.includes('BOOK_REPORT_BASELINE_ROOT=../.book-baseline/pikalab/dist npm run test:book-e2e'));
     assert.doesNotMatch(job, /actions\/upload-artifact@/);
     const e2e = require('node:fs').readFileSync(join(__dirname, '../../pikalab/scripts/book-report-e2e.mjs'), 'utf8');

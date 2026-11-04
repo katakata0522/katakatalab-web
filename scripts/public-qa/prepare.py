@@ -94,22 +94,28 @@ def materialize(root,entry,reuse_root=None):
     target.write_bytes(data)
 
 
+def selected_entries(entries,area):
+    return [entry for entry in entries if area=='all' or entry['path'].startswith('pikalab/')]
+
+
 def main():
     parser=argparse.ArgumentParser()
     parser.add_argument('--root',type=Path,default=Path('.'))
     parser.add_argument('--reuse-root',type=Path,help='同じCIジョブで準備済みのcheckout。各素材を対象manifestのサイズとSHA-256で再照合する')
+    parser.add_argument('--area',choices=('all','pikalab'),default='all',help='単独PikaLab検証は無関係なRoot素材を取得しない。Rootとの統合検証はallを使用する')
     options=parser.parse_args()
     root=options.root.resolve()
     reuse_root=options.reuse_root.resolve() if options.reuse_root else None
     spec=json.loads((root/'qa/published-dependencies.json').read_text(encoding='utf8'))
-    with ThreadPoolExecutor(max_workers=3) as pool:list(pool.map(lambda entry:materialize(root,entry,reuse_root),spec['files']))
+    entries=selected_entries(spec['files'],options.area)
+    with ThreadPoolExecutor(max_workers=3) as pool:list(pool.map(lambda entry:materialize(root,entry,reuse_root),entries))
     # Test fixtures contain only already-public response headers; actual Apache
     # routing, directory/auth rules and PHP configuration remain private.
-    for entry in spec.get('server_fixtures',[]):
+    for entry in selected_entries(spec.get('server_fixtures',[]),options.area):
         target=safe_target(root,entry['path'])
         target.parent.mkdir(parents=True,exist_ok=True)
         target.write_text('# CI fixture only. Never deploy this file.\n'+entry['content'],encoding='utf8')
-    print(f"Prepared {len(spec['files'])} CI dependencies; {sum(bool(x.get('ci_fixture')) for x in spec['files'])} explicitly synthetic decorative fixtures. Private release overlay required.")
+    print(f"Prepared {len(entries)} CI dependencies (area={options.area}); {sum(bool(x.get('ci_fixture')) for x in entries)} explicitly synthetic decorative fixtures. Private release overlay required.")
 
 
 if __name__=='__main__':main()

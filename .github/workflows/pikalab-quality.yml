@@ -22,6 +22,9 @@ on:
       - ".github/scripts/pikalab-ci-scope.cjs"
       - ".github/scripts/pikalab-ci-scope.test.cjs"
       - ".github/scripts/pikalab-e2e-inputs.cjs"
+      - ".github/scripts/verify-playwright-runtime.cjs"
+      - ".github/scripts/resolve-ci-baseline.cjs"
+      - ".github/scripts/resolve-ci-baseline.test.cjs"
       - ".htaccess"
       - "sitemap.xml"
       - ".github/scripts/sync_quest_board_csp.py"
@@ -46,7 +49,8 @@ permissions:
   contents: read
 
 concurrency:
-  group: pikalab-quality-${{ github.ref }}
+  # Draft通知と明示的な診断は、配信用main検証や進行中のPR検証を取り消さない。
+  group: pikalab-quality-${{ github.event_name }}-${{ github.ref }}-${{ (github.event_name == 'workflow_dispatch' || (github.event_name == 'pull_request' && github.event.pull_request.draft)) && github.run_id || 'active' }}
   cancel-in-progress: true
 
 env:
@@ -54,13 +58,23 @@ env:
   # 通常PRはジョブ内の最初の失敗で後続検証を止める。診断・全画面比較は失敗を集める。
   PIKALAB_COLLECT_ALL_FAILURES: ${{ (github.event_name == 'workflow_dispatch' && inputs.collect_all_failures) || (github.event_name == 'workflow_dispatch' && inputs.visual_preservation) || contains(github.event.pull_request.labels.*.name, 'pikalab-visual-preservation') }}
 
+defaults:
+  run:
+    shell: bash
+
 jobs:
   scope:
+    name: ${{ (github.event_name != 'pull_request' || !github.event.pull_request.draft) && 'scope' || 'Draft scope' }}
     # 共通検証を一度通してから、変更対象の重いE2Eを起動する。
     if: "${{ github.event_name != 'pull_request' || !github.event.pull_request.draft }}"
     runs-on: ubuntu-latest
+    # package-lockのPlaywrightと同版。ブラウザ・font・OS依存は公式の固定イメージで準備する。
+    container:
+      image: mcr.microsoft.com/playwright:v1.60.0-noble@sha256:9bd26ad900bb5e0f4dee75839e957a89ae89c2b7ab1e76050e559790e946b948
+      options: --ipc=host
     timeout-minutes: 15
     outputs:
+      baseline_sha: ${{ steps.baseline.outputs.sha }}
       full: ${{ steps.scope.outputs.full }}
       deepsea: ${{ steps.scope.outputs.deepsea }}
       color: ${{ steps.scope.outputs.color }}
@@ -84,11 +98,23 @@ jobs:
           persist-credentials: false
           fetch-depth: 2
 
+      - name: Prepare required command-line tools
+        run: |
+          git config --global --add safe.directory "$GITHUB_WORKSPACE"
+          test "$(git rev-parse --is-inside-work-tree)" = true
+          if ! ( command -v python3 >/dev/null ); then
+            apt-get update
+            apt-get install -y --no-install-recommends python3
+          fi
       - name: Prepare CI dependencies without publishing media
         run: python3 scripts/public-qa/prepare.py
 
       - name: Test conservative E2E selection
-        run: node --test .github/scripts/pikalab-ci-scope.test.cjs
+        run: node --test .github/scripts/pikalab-ci-scope.test.cjs .github/scripts/resolve-ci-baseline.test.cjs
+      - name: Resolve immutable layout baseline
+        id: baseline
+        run: node .github/scripts/resolve-ci-baseline.cjs
+
       - name: Select affected PikaLab browser checks
         id: scope
         env:
@@ -151,23 +177,11 @@ jobs:
           cd pikalab
           npm run verify:build
 
-      - name: Cache Playwright browsers
-        id: cache-playwright
-        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
-        with:
-          path: ~/.cache/ms-playwright
-          key: playwright-${{ runner.os }}-${{ hashFiles('pikalab/package-lock.json') }}
-          restore-keys: |
-            playwright-${{ runner.os }}-
-
       - name: Install Playwright Chromium
         run: |
           set -euo pipefail
           cd pikalab
-          npx playwright install-deps chromium
-          if [ "${{ steps.cache-playwright.outputs.cache-hit }}" != "true" ]; then
-            npx playwright install chromium
-          fi
+          node ../.github/scripts/verify-playwright-runtime.cjs
 
       - name: Verify Code Studio browser security
         run: |
@@ -197,37 +211,50 @@ jobs:
 
 
   validate:
+    name: ${{ (github.event_name != 'pull_request' || !github.event.pull_request.draft) && 'validate' || 'Draft validate' }}
     needs: scope
     # PR品質検証はmain反映後に重ねて実行しない。Draft中の更新もrunnerを起動しない。
     if: "${{ !cancelled() && (github.event_name != 'pull_request' || !github.event.pull_request.draft) }}"
     runs-on: ubuntu-latest
+    # package-lockのPlaywrightと同版。ブラウザ・font・OS依存は公式の固定イメージで準備する。
+    container:
+      image: mcr.microsoft.com/playwright:v1.60.0-noble@sha256:9bd26ad900bb5e0f4dee75839e957a89ae89c2b7ab1e76050e559790e946b948
+      options: --ipc=host
     timeout-minutes: 25
     steps:
       - name: Require successful E2E scope selection
         env:
           SCOPE_RESULT: ${{ needs.scope.result }}
-        run: test "$SCOPE_RESULT" = success
+        run: node -e "if (process.env.SCOPE_RESULT !== 'success') process.exit(1)"
 
       - name: Checkout code
         uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
         with:
           persist-credentials: false
 
+      - name: Prepare required command-line tools
+        run: |
+          git config --global --add safe.directory "$GITHUB_WORKSPACE"
+          test "$(git rev-parse --is-inside-work-tree)" = true
+          if ! ( command -v python3 >/dev/null ); then
+            apt-get update
+            apt-get install -y --no-install-recommends python3
+          fi
       - name: Prepare CI dependencies without publishing media
-        run: python3 scripts/public-qa/prepare.py
+        run: python3 scripts/public-qa/prepare.py --area pikalab
 
       # 同じPR基点を一度だけ準備し、総合比較と各ラボの比較で共有する。
       - name: Checkout shared layout baseline
         if: "${{ env.PIKALAB_COMPARE_BASELINE == 'true' || (github.event_name == 'pull_request' && (needs.scope.outputs.rhythm == 'true' || needs.scope.outputs.manabi == 'true' || needs.scope.outputs.speed_reader == 'true' || needs.scope.outputs.typing_dojo == 'true' || needs.scope.outputs.kotowaza == 'true' || needs.scope.outputs.fraction == 'true')) }}"
         uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
         with:
-          ref: ${{ github.event.pull_request.base.sha || github.event.repository.default_branch }}
+          ref: ${{ needs.scope.outputs.baseline_sha }}
           path: .pikalab-baseline
           persist-credentials: false
 
       - name: Prepare verified baseline dependencies from this job
         if: "${{ env.PIKALAB_COMPARE_BASELINE == 'true' || (github.event_name == 'pull_request' && (needs.scope.outputs.rhythm == 'true' || needs.scope.outputs.manabi == 'true' || needs.scope.outputs.speed_reader == 'true' || needs.scope.outputs.typing_dojo == 'true' || needs.scope.outputs.kotowaza == 'true' || needs.scope.outputs.fraction == 'true')) }}"
-        run: python3 scripts/public-qa/prepare.py --root .pikalab-baseline --reuse-root .
+        run: python3 scripts/public-qa/prepare.py --root .pikalab-baseline --reuse-root . --area pikalab
 
       - name: Setup Node.js
         uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6.5.0
@@ -273,24 +300,12 @@ jobs:
           cd pikalab
           npm run verify:build
 
-      - name: Cache Playwright browsers
-        id: cache-playwright
-        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
-        with:
-          path: ~/.cache/ms-playwright
-          key: playwright-${{ runner.os }}-${{ hashFiles('pikalab/package-lock.json') }}
-          restore-keys: |
-            playwright-${{ runner.os }}-
-
       - name: Install Playwright Chromium
         id: browser_setup
         run: |
           set -euo pipefail
           cd pikalab
-          npx playwright install-deps chromium
-          if [ "${{ steps.cache-playwright.outputs.cache-hit }}" != "true" ]; then
-            npx playwright install chromium
-          fi
+          node ../.github/scripts/verify-playwright-runtime.cjs
 
       - name: Verify PikaLab top page browser behavior
         if: "${{ !cancelled() && (success() || env.PIKALAB_COLLECT_ALL_FAILURES == 'true') && steps.verified_build.outcome == 'success' && steps.browser_setup.outcome == 'success' && needs.scope.result == 'success' }}"
@@ -414,10 +429,15 @@ jobs:
 
 
   space-browser:
+    name: ${{ (github.event_name != 'pull_request' || !github.event.pull_request.draft) && 'space-browser' || 'Draft space-browser' }}
     needs: scope
     # 共有変更では必ず実行し、ラボ内だけの変更は該当E2Eを実行する。
     if: "${{ (github.event_name != 'pull_request' || !github.event.pull_request.draft) && needs.scope.outputs.space == 'true' }}"
     runs-on: ubuntu-latest
+    # package-lockのPlaywrightと同版。ブラウザ・font・OS依存は公式の固定イメージで準備する。
+    container:
+      image: mcr.microsoft.com/playwright:v1.60.0-noble@sha256:9bd26ad900bb5e0f4dee75839e957a89ae89c2b7ab1e76050e559790e946b948
+      options: --ipc=host
     timeout-minutes: 20
     steps:
       - name: Checkout code
@@ -425,18 +445,26 @@ jobs:
         with:
           persist-credentials: false
 
+      - name: Prepare required command-line tools
+        run: |
+          git config --global --add safe.directory "$GITHUB_WORKSPACE"
+          test "$(git rev-parse --is-inside-work-tree)" = true
+          if ! ( command -v python3 >/dev/null ); then
+            apt-get update
+            apt-get install -y --no-install-recommends python3
+          fi
       - name: Prepare CI dependencies without publishing media
-        run: python3 scripts/public-qa/prepare.py
+        run: python3 scripts/public-qa/prepare.py --area pikalab
 
       - name: Checkout Space Lab baseline
         uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
         with:
-          ref: ${{ github.event.pull_request.base.sha || github.event.repository.default_branch }}
+          ref: ${{ needs.scope.outputs.baseline_sha }}
           path: .space-baseline
           persist-credentials: false
 
       - name: Prepare CI dependencies without publishing media
-        run: python3 scripts/public-qa/prepare.py --root .space-baseline --reuse-root .
+        run: python3 scripts/public-qa/prepare.py --root .space-baseline --reuse-root . --area pikalab
 
       - name: Setup Node.js
         uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6.5.0
@@ -455,20 +483,11 @@ jobs:
           cd ../.space-baseline/pikalab
           npm ci --prefer-offline --no-audit --no-fund
           npm run build:all
-      - name: Cache Playwright browsers
-        id: space-browsers
-        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
-        with:
-          path: ~/.cache/ms-playwright
-          key: playwright-${{ runner.os }}-${{ hashFiles('pikalab/package-lock.json') }}
       - name: Install browser check dependencies
         run: |
           set -euo pipefail
           cd pikalab
-          npx playwright install-deps chromium
-          if [ "${{ steps.space-browsers.outputs.cache-hit }}" != 'true' ]; then
-            npx playwright install chromium
-          fi
+          node ../.github/scripts/verify-playwright-runtime.cjs
       - name: Run Space Lab browser E2E
         run: |
           set -euo pipefail
@@ -476,10 +495,15 @@ jobs:
           SPACE_LAB_BASELINE_ROOT=../.space-baseline/pikalab/dist npm run test:space-e2e
 
   focus-browser:
+    name: ${{ (github.event_name != 'pull_request' || !github.event.pull_request.draft) && 'focus-browser' || 'Draft focus-browser' }}
     needs: scope
     # 共有変更では必ず実行し、ラボ内だけの変更は該当E2Eを実行する。
     if: "${{ (github.event_name != 'pull_request' || !github.event.pull_request.draft) && needs.scope.outputs.focus == 'true' }}"
     runs-on: ubuntu-latest
+    # package-lockのPlaywrightと同版。ブラウザ・font・OS依存は公式の固定イメージで準備する。
+    container:
+      image: mcr.microsoft.com/playwright:v1.60.0-noble@sha256:9bd26ad900bb5e0f4dee75839e957a89ae89c2b7ab1e76050e559790e946b948
+      options: --ipc=host
     timeout-minutes: 20
     steps:
       - name: Checkout code
@@ -487,18 +511,26 @@ jobs:
         with:
           persist-credentials: false
 
+      - name: Prepare required command-line tools
+        run: |
+          git config --global --add safe.directory "$GITHUB_WORKSPACE"
+          test "$(git rev-parse --is-inside-work-tree)" = true
+          if ! ( command -v python3 >/dev/null ); then
+            apt-get update
+            apt-get install -y --no-install-recommends python3
+          fi
       - name: Prepare CI dependencies without publishing media
-        run: python3 scripts/public-qa/prepare.py
+        run: python3 scripts/public-qa/prepare.py --area pikalab
 
       - name: Checkout Focus Studio baseline
         uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
         with:
-          ref: ${{ github.event.pull_request.base.sha || github.event.repository.default_branch }}
+          ref: ${{ needs.scope.outputs.baseline_sha }}
           path: .focus-baseline
           persist-credentials: false
 
       - name: Prepare CI dependencies without publishing media
-        run: python3 scripts/public-qa/prepare.py --root .focus-baseline --reuse-root .
+        run: python3 scripts/public-qa/prepare.py --root .focus-baseline --reuse-root . --area pikalab
 
       - name: Setup Node.js
         uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6.5.0
@@ -517,20 +549,11 @@ jobs:
           cd ../.focus-baseline/pikalab
           npm ci --prefer-offline --no-audit --no-fund
           npm run build:all
-      - name: Cache Playwright browsers
-        id: focus-browsers
-        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
-        with:
-          path: ~/.cache/ms-playwright
-          key: playwright-${{ runner.os }}-${{ hashFiles('pikalab/package-lock.json') }}
       - name: Install browser check dependencies
         run: |
           set -euo pipefail
           cd pikalab
-          npx playwright install-deps chromium
-          if [ "${{ steps.focus-browsers.outputs.cache-hit }}" != 'true' ]; then
-            npx playwright install chromium
-          fi
+          node ../.github/scripts/verify-playwright-runtime.cjs
       - name: Run Focus Studio browser E2E
         run: |
           set -euo pipefail
@@ -538,10 +561,15 @@ jobs:
           FOCUS_STUDIO_BASELINE_ROOT=../.focus-baseline/pikalab/dist npm run test:focus-deep-e2e
 
   paper-browser:
+    name: ${{ (github.event_name != 'pull_request' || !github.event.pull_request.draft) && 'paper-browser' || 'Draft paper-browser' }}
     needs: scope
     # 共有変更では必ず実行し、ラボ内だけの変更は該当E2Eを実行する。
     if: "${{ (github.event_name != 'pull_request' || !github.event.pull_request.draft) && needs.scope.outputs.paper == 'true' }}"
     runs-on: ubuntu-latest
+    # package-lockのPlaywrightと同版。ブラウザ・font・OS依存は公式の固定イメージで準備する。
+    container:
+      image: mcr.microsoft.com/playwright:v1.60.0-noble@sha256:9bd26ad900bb5e0f4dee75839e957a89ae89c2b7ab1e76050e559790e946b948
+      options: --ipc=host
     timeout-minutes: 20
     steps:
       - name: Checkout code
@@ -549,18 +577,26 @@ jobs:
         with:
           persist-credentials: false
 
+      - name: Prepare required command-line tools
+        run: |
+          git config --global --add safe.directory "$GITHUB_WORKSPACE"
+          test "$(git rev-parse --is-inside-work-tree)" = true
+          if ! ( command -v python3 >/dev/null ); then
+            apt-get update
+            apt-get install -y --no-install-recommends python3
+          fi
       - name: Prepare CI dependencies without publishing media
-        run: python3 scripts/public-qa/prepare.py
+        run: python3 scripts/public-qa/prepare.py --area pikalab
 
       - name: Checkout Paper Gen baseline
         uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
         with:
-          ref: ${{ github.event.pull_request.base.sha || github.event.repository.default_branch }}
+          ref: ${{ needs.scope.outputs.baseline_sha }}
           path: .paper-baseline
           persist-credentials: false
 
       - name: Prepare CI dependencies without publishing media
-        run: python3 scripts/public-qa/prepare.py --root .paper-baseline --reuse-root .
+        run: python3 scripts/public-qa/prepare.py --root .paper-baseline --reuse-root . --area pikalab
 
       - name: Setup Node.js
         uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6.5.0
@@ -579,20 +615,11 @@ jobs:
           cd ../.paper-baseline/pikalab
           npm ci --prefer-offline --no-audit --no-fund
           npm run build:all
-      - name: Cache Playwright browsers
-        id: paper-browsers
-        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
-        with:
-          path: ~/.cache/ms-playwright
-          key: playwright-${{ runner.os }}-${{ hashFiles('pikalab/package-lock.json') }}
       - name: Install browser check dependencies
         run: |
           set -euo pipefail
           cd pikalab
-          npx playwright install-deps chromium
-          if [ "${{ steps.paper-browsers.outputs.cache-hit }}" != 'true' ]; then
-            npx playwright install chromium
-          fi
+          node ../.github/scripts/verify-playwright-runtime.cjs
       - name: Run Paper Gen browser E2E
         run: |
           set -euo pipefail
@@ -600,10 +627,15 @@ jobs:
           PAPER_GEN_BASELINE_ROOT=../.paper-baseline/pikalab/dist npm run test:paper-e2e
 
   quest-browser:
+    name: ${{ (github.event_name != 'pull_request' || !github.event.pull_request.draft) && 'quest-browser' || 'Draft quest-browser' }}
     needs: scope
     # 共有変更では必ず実行し、ラボ内だけの変更は該当E2Eを実行する。
     if: "${{ (github.event_name != 'pull_request' || !github.event.pull_request.draft) && needs.scope.outputs.quest == 'true' }}"
     runs-on: ubuntu-latest
+    # package-lockのPlaywrightと同版。ブラウザ・font・OS依存は公式の固定イメージで準備する。
+    container:
+      image: mcr.microsoft.com/playwright:v1.60.0-noble@sha256:9bd26ad900bb5e0f4dee75839e957a89ae89c2b7ab1e76050e559790e946b948
+      options: --ipc=host
     timeout-minutes: 20
     steps:
       - name: Checkout code
@@ -611,18 +643,26 @@ jobs:
         with:
           persist-credentials: false
 
+      - name: Prepare required command-line tools
+        run: |
+          git config --global --add safe.directory "$GITHUB_WORKSPACE"
+          test "$(git rev-parse --is-inside-work-tree)" = true
+          if ! ( command -v python3 >/dev/null && command -v pdftoppm >/dev/null && command -v pdftotext >/dev/null ); then
+            apt-get update
+            apt-get install -y --no-install-recommends python3 poppler-utils
+          fi
       - name: Prepare CI dependencies without publishing media
-        run: python3 scripts/public-qa/prepare.py
+        run: python3 scripts/public-qa/prepare.py --area pikalab
 
       - name: Checkout Quest Board baseline
         uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
         with:
-          ref: ${{ github.event.pull_request.base.sha || github.event.repository.default_branch }}
+          ref: ${{ needs.scope.outputs.baseline_sha }}
           path: .quest-baseline
           persist-credentials: false
 
       - name: Prepare CI dependencies without publishing media
-        run: python3 scripts/public-qa/prepare.py --root .quest-baseline --reuse-root .
+        run: python3 scripts/public-qa/prepare.py --root .quest-baseline --reuse-root . --area pikalab
 
       - name: Setup Node.js
         uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6.5.0
@@ -641,21 +681,11 @@ jobs:
           cd ../.quest-baseline/pikalab
           npm ci --prefer-offline --no-audit --no-fund
           npm run build:all
-      - name: Cache Playwright browsers
-        id: quest-browsers
-        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
-        with:
-          path: ~/.cache/ms-playwright
-          key: playwright-${{ runner.os }}-${{ hashFiles('pikalab/package-lock.json') }}
       - name: Install browser check dependencies
         run: |
           set -euo pipefail
           cd pikalab
-          npx playwright install-deps chromium
-          sudo apt-get install -y poppler-utils
-          if [ "${{ steps.quest-browsers.outputs.cache-hit }}" != 'true' ]; then
-            npx playwright install chromium
-          fi
+          node ../.github/scripts/verify-playwright-runtime.cjs
       - name: Run Quest Board browser E2E
         run: |
           set -euo pipefail
@@ -663,26 +693,39 @@ jobs:
           QUEST_BOARD_BASELINE_ROOT=../.quest-baseline/pikalab/dist npm run test:quest-e2e
 
   book-browser:
+    name: ${{ (github.event_name != 'pull_request' || !github.event.pull_request.draft) && 'book-browser' || 'Draft book-browser' }}
     needs: scope
     # 共有変更では必ず実行し、ラボ内だけの変更は該当E2Eを実行する。
     if: "${{ (github.event_name != 'pull_request' || !github.event.pull_request.draft) && needs.scope.outputs.book == 'true' }}"
     runs-on: ubuntu-latest
+    # package-lockのPlaywrightと同版。ブラウザ・font・OS依存は公式の固定イメージで準備する。
+    container:
+      image: mcr.microsoft.com/playwright:v1.60.0-noble@sha256:9bd26ad900bb5e0f4dee75839e957a89ae89c2b7ab1e76050e559790e946b948
+      options: --ipc=host
     timeout-minutes: 20
     steps:
       - name: Checkout code
         uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
         with:
           persist-credentials: false
+      - name: Prepare required command-line tools
+        run: |
+          git config --global --add safe.directory "$GITHUB_WORKSPACE"
+          test "$(git rev-parse --is-inside-work-tree)" = true
+          if ! ( command -v python3 >/dev/null && command -v pdftoppm >/dev/null && command -v pdftotext >/dev/null ); then
+            apt-get update
+            apt-get install -y --no-install-recommends python3 poppler-utils
+          fi
       - name: Prepare CI dependencies without publishing media
-        run: python3 scripts/public-qa/prepare.py
+        run: python3 scripts/public-qa/prepare.py --area pikalab
       - name: Checkout Book Report baseline
         uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
         with:
-          ref: ${{ github.event.pull_request.base.sha || github.event.repository.default_branch }}
+          ref: ${{ needs.scope.outputs.baseline_sha }}
           path: .book-baseline
           persist-credentials: false
       - name: Prepare CI dependencies without publishing media
-        run: python3 scripts/public-qa/prepare.py --root .book-baseline --reuse-root .
+        run: python3 scripts/public-qa/prepare.py --root .book-baseline --reuse-root . --area pikalab
       - name: Setup Node.js
         uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6.5.0
         with:
@@ -700,21 +743,11 @@ jobs:
           cd ../.book-baseline/pikalab
           npm ci --prefer-offline --no-audit --no-fund
           npm run build:all
-      - name: Cache Playwright browsers
-        id: book-browsers
-        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
-        with:
-          path: ~/.cache/ms-playwright
-          key: playwright-${{ runner.os }}-${{ hashFiles('pikalab/package-lock.json') }}
       - name: Install browser check dependencies
         run: |
           set -euo pipefail
           cd pikalab
-          npx playwright install-deps chromium
-          sudo apt-get install -y poppler-utils
-          if [ "${{ steps.book-browsers.outputs.cache-hit }}" != 'true' ]; then
-            npx playwright install chromium
-          fi
+          node ../.github/scripts/verify-playwright-runtime.cjs
       - name: Run Book Report browser E2E
         run: |
           set -euo pipefail

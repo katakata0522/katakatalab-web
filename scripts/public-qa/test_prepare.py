@@ -119,6 +119,37 @@ class DependencyReuse(unittest.TestCase):
         self.assertEqual((self.baseline / '.htaccess').read_text(),
                          '# CI fixture only. Never deploy this file.\n# baseline fixture\n')
 
+    def test_pikalab_area_never_requests_unrelated_root_media(self):
+        required = self.entry(b'lab bytes', 'pikalab/vendor/required.js')
+        unrelated = self.entry(b'root bytes', 'discount-calc/ogp.png')
+        manifest = {'files': [unrelated, required], 'server_fixtures': [
+            {'path': '.htaccess', 'content': '# root'},
+            {'path': 'pikalab/.htaccess', 'content': '# lab'}]}
+        self.put(self.baseline, 'qa/published-dependencies.json', json.dumps(manifest).encode())
+        def fetch(entry):
+            self.assertEqual(entry['path'], required['path'], 'Root取得障害をPikaLabへ持ち込まない')
+            return b'lab bytes'
+        with patch.object(sys, 'argv', ['prepare.py', '--root', str(self.baseline), '--area', 'pikalab']):
+            with patch.object(prepare, 'published_bytes', side_effect=fetch):
+                prepare.main()
+        self.assertEqual((self.baseline / required['path']).read_bytes(), b'lab bytes')
+        self.assertFalse((self.baseline / unrelated['path']).exists())
+        self.assertFalse((self.baseline / '.htaccess').exists())
+        self.assertIn('# lab', (self.baseline / 'pikalab/.htaccess').read_text())
+
+    def test_area_selection_keeps_all_pikalab_entries_and_all_default_inputs(self):
+        entries = [self.entry(b'a', path) for path in [
+            'pikalab/vendor/a.js', 'pikalab/images/b.png', 'pikalab/.htaccess',
+            'pikalab-other/a.js', 'ogp.png']]
+        self.assertEqual(prepare.selected_entries(entries, 'all'), entries)
+        self.assertEqual(prepare.selected_entries(entries, 'pikalab'), entries[:3])
+
+    def test_pikalab_selection_keeps_required_asset_integrity_failure(self):
+        entry = self.entry(b'required', 'pikalab/vendor/required.js')
+        with patch.object(prepare, 'published_bytes', return_value=b'wrong'):
+            with self.assertRaisesRegex(ValueError, 'Published dependency changed'):
+                prepare.materialize(self.baseline, prepare.selected_entries([entry], 'pikalab')[0])
+
 
 if __name__ == '__main__':
     unittest.main()
