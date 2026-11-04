@@ -12,10 +12,12 @@ Dot・Muse・Codexなどから作業するときは、作業場所、権限、�
 git rev-parse --show-toplevel
 git remote get-url origin
 git status --short --branch
+git rev-parse --is-shallow-repository
 ```
 
 originが上記の公開リポジトリであることを確認します。別リポジトリのoriginを書き換えて流用しません。
 未コミット変更や未共有コミットがある場合は保持し、別のworktreeまたは新しいcloneで今回の変更を分離します。
+履歴が浅い場合（最後のコマンドが`true`）は、公開先のoriginを確認してから`git fetch --unshallow --no-tags origin main`で必要な履歴を取得します。浅い履歴のままメール検査を省略しません。
 
 クラウド側では、利用者のパソコンのパスは通常そのまま使えません。
 Gitが利用でき、現在の環境に作業フォルダーがなければ、許可された作業領域で次を実行します。
