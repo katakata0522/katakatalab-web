@@ -469,5 +469,30 @@
       "mainText": "画像を整える →",
       "detail": true
     }
+  },
+  {
+    "id": "higedanfan",
+    "group": "secondary",
+    "category": "tool",
+    "shelf": "tool",
+    "featured": false,
+    "url": "higedanfan/",
+    "detail": "Official髭男dismの非公式ファンサイト。曲別の出典から音域・BPM・演奏時間を確かめ、自分のセットリストを作れます。",
+    "tagText": "音楽",
+    "tagClass": "tag-tool",
+    "targetBadge": "音楽ファン向け",
+    "title": "115万キロのファンノート",
+    "text": "髭男の86曲を調べてマイセトリを作る。検定クイズ・聖地マップ・歴代ツアーの記録も。",
+    "aliases": [
+      "髭男",
+      "ヒゲダン",
+      "Official髭男dism",
+      "セトリ",
+      "音域"
+    ],
+    "actions": {
+      "mainText": "ファンノートを開く →",
+      "detail": true
+    }
   }
 ]
