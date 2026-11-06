@@ -2,7 +2,7 @@
 
 公開先：https://katakatalab.com/higedanfan/
 
-楽曲データとアプリの編集元は [higedanfan](https://github.com/katakata0522/higedanfan)。この版のソースは [e5144d5](https://github.com/katakata0522/higedanfan/tree/e5144d565c1fd843238ea40a2a25b742042c4a27)。Node.js 24 で npm ci、npm run lint、node --import tsx --test src/utils/fanLogic.test.ts、npm run build の順に実行する。
+楽曲データとアプリの編集元は [higedanfan](https://github.com/katakata0522/higedanfan)。この版のソースは [b1493d4](https://github.com/katakata0522/higedanfan/tree/b1493d465a1dc53b68d2cae41f2c9c0d2e0732b8)。Node.js 24 で npm ci、npm run lint、npm test、npm run build の順に実行する。
 
 生成された index.html、assets 内の JS と CSS、third-party-licenses.txt を higedanfan/ に入れる。未使用の旧バンドルを残さない。画像素材・開発用設定・API キーは必要ない。ファンノートのカードはCSSで描画する。
 
