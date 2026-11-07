@@ -78,6 +78,16 @@
       }
     },
     {
+      "path": "higedanfan/song-art/mixed-nuts-editorial.png",
+      "sha256": "dc696bea6c4df0245371278e34cdbc922011d271e8399eac840451b11ac85a44",
+      "bytes": 2082990,
+      "ci_fixture": {
+        "format": "png",
+        "width": 1254,
+        "height": 1254
+      }
+    },
+    {
       "path": "icon-192.png",
       "sha256": "3c050189473a7c285802e35f0931bcdcbc70c9b89704ff1d775f638a91d428ca",
       "bytes": 7703,
