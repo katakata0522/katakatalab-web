@@ -38,6 +38,46 @@
       "url": "https://katakatalab.com/favicon.ico"
     },
     {
+      "path": "higedanfan/hige-mark-32.png",
+      "sha256": "85824132bb1e22f4e0c20f3d64b66f91718924355bd5ba000304fa9386f4e2d1",
+      "bytes": 2082,
+      "ci_fixture": {
+        "format": "png",
+        "width": 32,
+        "height": 32
+      }
+    },
+    {
+      "path": "higedanfan/hige-mark.svg",
+      "sha256": "08b500f5692a0d03cb7f2e73b8e638a125ffc76059fb9cab3e02b7fb247fc15e",
+      "bytes": 579,
+      "ci_fixture": {
+        "format": "svg",
+        "width": 64,
+        "height": 64
+      }
+    },
+    {
+      "path": "higedanfan/hige-touch-180.png",
+      "sha256": "ab4555424d50add82919f1fa1db5706592438d7142c9febe668f142d0fceb973",
+      "bytes": 12069,
+      "ci_fixture": {
+        "format": "png",
+        "width": 180,
+        "height": 180
+      }
+    },
+    {
+      "path": "higedanfan/social-cover.png",
+      "sha256": "1376c29142ae09b2eba235aa3d809c6f23ac6f53595195f3ccd6ba98dfd925ee",
+      "bytes": 244185,
+      "ci_fixture": {
+        "format": "png",
+        "width": 1200,
+        "height": 630
+      }
+    },
+    {
       "path": "icon-192.png",
       "sha256": "3c050189473a7c285802e35f0931bcdcbc70c9b89704ff1d775f638a91d428ca",
       "bytes": 7703,
