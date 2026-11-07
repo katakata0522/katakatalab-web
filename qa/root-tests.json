@@ -23,6 +23,7 @@
   "tests/gravity-todo-quality.test.cjs",
   "tests/international-seo.test.cjs",
   "tests/kids-smile-land-quality.test.cjs",
+  "tests/kids-smile-storage-read-guard.test.cjs",
   "tests/maintenance-aspect.test.cjs",
   "tests/maintenance-batch4-gravity.test.cjs",
   "tests/maintenance-batch4-kids.test.cjs",
