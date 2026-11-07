@@ -1,7 +1,8 @@
 'use strict';
 const { test } = require('node:test');
 const assert = require('node:assert/strict');
-const { selectWorkflows, verifyGate, verifyPikaResults } = require('./public-pr-gate.cjs');
+const { selectWorkflows, onlyHigedanfanSitemapChanged, onlyHigedanfanDependenciesChanged,
+    verifyGate, verifyPikaResults } = require('./public-pr-gate.cjs');
 const { readFileSync } = require('node:fs');
 const { join } = require('node:path');
 const workflow = name => readFileSync(join(__dirname, `../workflows/${name}.yml`), 'utf8');
@@ -26,6 +27,31 @@ test('RootとPikaLabと共有環境の変更を別々に選択する', () => {
         assert.deepEqual(selectWorkflows([file]), { root: true, pikalab: true }, file);
     }
     assert.deepEqual(selectWorkflows(['qrcode/script.js', 'pikalab/speed_reader/style.css']), { root: true, pikalab: true });
+});
+
+test('ヒゲダンだけのサイトマップと素材台帳はPikaLabを起動しない', () => {
+    const sitemapBefore = '<urlset>\n  <url><loc>https://katakatalab.com/pikalab/</loc></url>\n</urlset>\n';
+    const sitemapAfter = sitemapBefore.replace('</urlset>',
+        '  <url><loc>https://katakatalab.com/higedanfan/songs/pretender/</loc></url>\n</urlset>');
+    const manifestBefore = JSON.stringify({ purpose: 'CI', files: [{ path: 'pikalab/icon.png', sha256: 'old' }] });
+    const manifestAfter = JSON.stringify({ purpose: 'CI', files: [
+        { path: 'pikalab/icon.png', sha256: 'old' }, { path: 'higedanfan/song-art/pretender.png', sha256: 'new' }] });
+    const shared = { sitemapBefore, sitemapAfter, manifestBefore, manifestAfter };
+    assert.equal(onlyHigedanfanSitemapChanged(sitemapBefore, sitemapAfter), true);
+    assert.equal(onlyHigedanfanDependenciesChanged(manifestBefore, manifestAfter), true);
+    assert.deepEqual(selectWorkflows(['higedanfan/songs/pretender/index.html', 'sitemap.xml',
+        'qa/published-dependencies.json'], shared), { root: true, pikalab: false });
+    assert.deepEqual(selectWorkflows(['pikalab/index.html', 'sitemap.xml'], shared), { root: true, pikalab: true });
+});
+
+test('共通ファイルに他サイトの変更や比較不能な値があればPikaLabを検証する', () => {
+    const sitemap = '<urlset>\n  <url><loc>https://katakatalab.com/pikalab/</loc></url>\n</urlset>\n';
+    assert.equal(onlyHigedanfanSitemapChanged(sitemap, sitemap.replace('pikalab/', 'pikalab/new/')), false);
+    assert.equal(onlyHigedanfanSitemapChanged(sitemap, sitemap.replace('pikalab/', 'higedanfan/')), false);
+    const manifest = JSON.stringify({ files: [{ path: 'pikalab/icon.png', sha256: 'old' }] });
+    assert.equal(onlyHigedanfanDependenciesChanged(manifest, manifest.replace('old', 'new')), false);
+    assert.equal(onlyHigedanfanDependenciesChanged(manifest, 'broken'), false);
+    assert.deepEqual(selectWorkflows(['sitemap.xml', 'qa/published-dependencies.json']), { root: true, pikalab: true });
 });
 
 test('変更を確定できない場合や不正パスは両方を検証する', () => {
@@ -102,8 +128,18 @@ test('mainの独立した検証とPikaLab全ラボの集約を維持する', () 
     for (const name of ['root-quality', 'pikalab-quality', 'source-boundary', 'dependency-audit']) {
         assert.match(workflow(name), /push:\n\s+branches: \[main\]/);
     }
-    const completion = workflow('pikalab-quality').split('\n  completion:\n')[1];
-    assert.match(completion, /needs: \[scope, validate, space-browser, focus-browser, paper-browser, quest-browser, book-browser\]/);
-    assert.match(completion, /if: \$\{\{ always\(\) \}\}/);
+    const pika = workflow('pikalab-quality');
+    const relevance = pika.split('\n  relevance:\n')[1].split('\n  scope:\n')[0];
+    assert.match(relevance, /fetch-depth: 0/);
+    assert.match(relevance, /github\.event\.before/);
+    assert.match(relevance, /run: node \.github\/scripts\/public-pr-gate\.cjs select/);
+    const scope = pika.split('\n  scope:\n')[1].split('\n  validate:\n')[0];
+    assert.match(scope, /needs: relevance/);
+    assert.match(scope, /needs\.relevance\.outputs\.pikalab == 'true'/);
+    const validate = pika.split('\n  validate:\n')[1].split('\n  space-browser:\n')[0];
+    assert.match(validate, /needs\.scope\.result == 'success'/);
+    const completion = pika.split('\n  completion:\n')[1];
+    assert.match(completion, /needs: \[relevance, scope, validate, space-browser, focus-browser, paper-browser, quest-browser, book-browser\]/);
+    assert.match(completion, /if: \$\{\{ always\(\) && needs\.relevance\.result == 'success' && needs\.relevance\.outputs\.pikalab == 'true' \}\}/);
     assert.match(completion, /run: node \.github\/scripts\/public-pr-gate\.cjs pikalab/);
 });

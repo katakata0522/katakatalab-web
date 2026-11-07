@@ -136,4 +136,6 @@ PublicのRoot・PikaLab検証は`.node-version`のNode.js 24 LTSを使用しま�
 PikaLab内でも`completion`が、共有検証と選択された全ラボの成功を確認します。必要なジョブのfailure・cancelled・予期しないskippedは失敗です。
 Draftは軽量の安全検査と`Draft public-pr-gate`通知を使い、通常ゲートの成功と区別します。Readyへの移行で通常検証を開始します。
 
-PRの検査は同じコミットの再利用workflowを呼び、別の定義を重複実行しません。mainのpush検査は、Privateの公開ソース固定を検証する独立のRoot・PikaLab・公開境界・依存監査を保ちます。GitHub側の保護設定は、実際の通常ゲート成功を確認した後に別途適用します。
+PRの検査は同じコミットの再利用workflowを呼び、別の定義を重複実行しません。ヒゲダンサイトのURLだけを追加したsitemap.xmlと、ヒゲダン素材だけを変更した依存台帳は、内容を前後のコミットで照合してPikaLabの対象外とします。比較できない場合や他サイトにも変更がある場合はPikaLabを検証します。
+
+mainのpush検査は、Privateの公開ソース固定を検証する独立のRoot・PikaLab・公開境界・依存監査を保ちます。PikaLabのworkflowはmainでも変更範囲を判定し、対象外なら軽い判定ジョブの成功で完了します。PikaLabに関係する変更は従来の検証を実行します。GitHub側の保護設定は、実際の通常ゲート成功を確認した後に別途適用します。

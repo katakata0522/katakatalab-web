@@ -1,21 +1,65 @@
 'use strict';
 
 const { appendFileSync } = require('node:fs');
+const { execFileSync } = require('node:child_process');
+const { isDeepStrictEqual } = require('node:util');
 const { readChanges } = require('./pikalab-ci-scope.cjs');
 
 const PIKA_SHARED = new Set(['.node-version', '.htaccess', 'sitemap.xml',
     'education-sw-privacy.js', 'scripts/education-no-tracking.cjs']);
 const PIKA_PREFIXES = ['pikalab/', 'qa/', 'scripts/public-qa/', '.github/'];
 
-function selectWorkflows(files) {
+function onlyHigedanfanSitemapChanged(before, after) {
+    if (typeof before !== 'string' || typeof after !== 'string') return false;
+    const strip = xml => xml.replace(/^\s*<url><loc>https:\/\/katakatalab\.com\/higedanfan\/(?:songs\/[a-z0-9-]+\/)?<\/loc><\/url>[ \t]*\r?\n/gm, '');
+    return strip(before) === strip(after);
+}
+
+function onlyHigedanfanDependenciesChanged(before, after) {
+    try {
+        const oldManifest = JSON.parse(before);
+        const newManifest = JSON.parse(after);
+        if (!Array.isArray(oldManifest.files) || !Array.isArray(newManifest.files)) return false;
+        const withoutSite = manifest => ({ ...manifest,
+            files: manifest.files.filter(entry => typeof entry?.path !== 'string' || !entry.path.startsWith('higedanfan/')) });
+        return isDeepStrictEqual(withoutSite(oldManifest), withoutSite(newManifest));
+    } catch {
+        return false;
+    }
+}
+
+function selectWorkflows(files, shared = {}) {
     if (!Array.isArray(files) || !files.length || files.some(file => typeof file !== 'string'
         || file.includes('\\') || file.includes(':') || file.split('/').some(part => !part || part === '.' || part === '..'))) {
         return { root: true, pikalab: true };
     }
     return {
         root: files.some(file => !file.startsWith('pikalab/') && !file.endsWith('.md')),
-        pikalab: files.some(file => PIKA_SHARED.has(file) || PIKA_PREFIXES.some(prefix => file.startsWith(prefix))),
+        pikalab: files.some(file => {
+            if (file === 'sitemap.xml' && onlyHigedanfanSitemapChanged(shared.sitemapBefore, shared.sitemapAfter)) return false;
+            if (file === 'qa/published-dependencies.json'
+                && onlyHigedanfanDependenciesChanged(shared.manifestBefore, shared.manifestAfter)) return false;
+            return PIKA_SHARED.has(file) || PIKA_PREFIXES.some(prefix => file.startsWith(prefix));
+        }),
     };
+}
+
+function readRevisionFile(revision, path) {
+    return execFileSync('git', ['show', `${revision}:${path}`], { encoding: 'utf8', maxBuffer: 8 * 1024 * 1024 });
+}
+
+function selectFromRevision(baseSha) {
+    const files = readChanges(baseSha);
+    const shared = {};
+    if (files.includes('sitemap.xml')) {
+        shared.sitemapBefore = readRevisionFile(baseSha, 'sitemap.xml');
+        shared.sitemapAfter = readRevisionFile('HEAD', 'sitemap.xml');
+    }
+    if (files.includes('qa/published-dependencies.json')) {
+        shared.manifestBefore = readRevisionFile(baseSha, 'qa/published-dependencies.json');
+        shared.manifestAfter = readRevisionFile('HEAD', 'qa/published-dependencies.json');
+    }
+    return selectWorkflows(files, shared);
 }
 
 function requireResult(needs, job, expected) {
@@ -51,7 +95,7 @@ function verifyGate(needs, { draft = false } = {}) {
 function run(mode) {
     if (mode === 'select') {
         let scope;
-        try { scope = selectWorkflows(readChanges(process.env.BASE_SHA)); }
+        try { scope = selectFromRevision(process.env.BASE_SHA); }
         catch { scope = { root: true, pikalab: true }; }
         if (!process.env.GITHUB_OUTPUT) throw new Error('CI出力先がありません');
         appendFileSync(process.env.GITHUB_OUTPUT, Object.entries(scope).map(([key, value]) => `${key}=${value}\n`).join(''));
@@ -66,7 +110,8 @@ function run(mode) {
     }
 }
 
-module.exports = { selectWorkflows, verifyGate, verifyPikaResults };
+module.exports = { selectWorkflows, onlyHigedanfanSitemapChanged,
+    onlyHigedanfanDependenciesChanged, verifyGate, verifyPikaResults };
 if (require.main === module) {
     try { run(process.argv[2]); }
     catch (error) { console.error(error.message); process.exitCode = 1; }
