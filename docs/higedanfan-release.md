@@ -2,9 +2,9 @@
 
 公開先：https://katakatalab.com/higedanfan/
 
-楽曲データとアプリの編集元は [higedanfan](https://github.com/katakata0522/higedanfan)。この版のソースは [24b6dab](https://github.com/katakata0522/higedanfan/tree/24b6dab7e7af96cd1d7c140079c3aad9e95156b0)。Node.js 24 で npm ci、npm run lint、npm test、npm run build の順に実行する。
+楽曲データとアプリの編集元は [higedanfan](https://github.com/katakata0522/higedanfan)。この版のソースは [8ee8515](https://github.com/katakata0522/higedanfan/tree/8ee85152f625cd5cdd8846477301f7b5e9fe7420)。Node.js 24 で npm ci、npm run lint、npm test、npm run build の順に実行する。
 
-生成された index.html、`songs/<楽曲ID>/index.html`、assets 内の JS と CSS、third-party-licenses.txt を higedanfan/ に入れる。未使用の旧バンドルを残さない。開発用設定・API キーは含めない。現在の独立ページはミックスナッツ、Pretender、Subtitle、Cry Babyの4曲。
+生成された index.html、`songs/<楽曲ID>/index.html`、assets 内の JS と CSS、third-party-licenses.txt を higedanfan/ に入れる。未使用の旧バンドルを残さない。開発用設定・API キーは含めない。現在の独立ページは全90曲。4曲の個別原稿と、確認済みデータから組み立てた86曲の概要に共通テンプレートを適用する。
 
 タブ・ホーム画面のアイコンと共有画像は、編集元の `brand/` にあるオリジナルの4ファイルを使用する。Publicでは実画像をGitに含めず、`qa/published-dependencies.json` にサイズ・SHA-256とCI用の代替画像を登録する。本番ではPrivateの `higedanfan/` に置いた実画像を `privateOverlay` のSHA-256と照合して配信する。
 
