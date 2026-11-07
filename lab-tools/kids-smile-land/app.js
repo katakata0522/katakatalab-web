@@ -73,6 +73,7 @@
             return allowedValues.includes(value) ? value : defaultValue;
         } catch (e) {
             console.error(`LocalStorage option read error for key "${key}":`, e);
+            storageReadBlocked = true;
             return defaultValue;
         }
     }
@@ -87,6 +88,7 @@
             return Math.min(maxValue, Math.max(minValue, value));
         } catch (e) {
             console.error(`LocalStorage number read error for key "${key}":`, e);
+            storageReadBlocked = true;
             return defaultValue;
         }
     }
@@ -98,6 +100,7 @@
             return value.slice(0, maxLength);
         } catch (e) {
             console.error(`LocalStorage text read error for key "${key}":`, e);
+            storageReadBlocked = true;
             return defaultValue;
         }
     }
