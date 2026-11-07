@@ -78,6 +78,16 @@
       }
     },
     {
+      "path": "higedanfan/song-art/cry-baby-editorial.png",
+      "sha256": "b845a08d13647054577455219638580d98ab63a7270c5a903df8d29527cd8984",
+      "bytes": 706886,
+      "ci_fixture": {
+        "format": "png",
+        "width": 640,
+        "height": 640
+      }
+    },
+    {
       "path": "higedanfan/song-art/mixed-nuts-editorial.png",
       "sha256": "dc696bea6c4df0245371278e34cdbc922011d271e8399eac840451b11ac85a44",
       "bytes": 2082990,
@@ -85,6 +95,26 @@
         "format": "png",
         "width": 1254,
         "height": 1254
+      }
+    },
+    {
+      "path": "higedanfan/song-art/pretender-editorial.png",
+      "sha256": "73d528672ae1536012c865e22ba71a0bfa8bdd51ca8b13885e83f602480b232d",
+      "bytes": 669210,
+      "ci_fixture": {
+        "format": "png",
+        "width": 640,
+        "height": 640
+      }
+    },
+    {
+      "path": "higedanfan/song-art/subtitle-editorial.png",
+      "sha256": "48e8c3656a485e4e3f9191a91dcbed05332fa4aa3c319a4230f4d8f530ecb47c",
+      "bytes": 734742,
+      "ci_fixture": {
+        "format": "png",
+        "width": 640,
+        "height": 640
       }
     },
     {
