@@ -39,8 +39,8 @@
     },
     {
       "path": "higedanfan/hige-mark-32.png",
-      "sha256": "85824132bb1e22f4e0c20f3d64b66f91718924355bd5ba000304fa9386f4e2d1",
-      "bytes": 2082,
+      "sha256": "21cd698c3574483ca7f10186affb64bac8ed4863d38220c17735ba968cccc552",
+      "bytes": 743,
       "ci_fixture": {
         "format": "png",
         "width": 32,
@@ -49,8 +49,8 @@
     },
     {
       "path": "higedanfan/hige-mark.svg",
-      "sha256": "08b500f5692a0d03cb7f2e73b8e638a125ffc76059fb9cab3e02b7fb247fc15e",
-      "bytes": 579,
+      "sha256": "34b8cc755a7e31c340549a71a8216e61ed395b301d0fd9858c2305c9ddfa2f05",
+      "bytes": 358,
       "ci_fixture": {
         "format": "svg",
         "width": 64,
@@ -59,8 +59,8 @@
     },
     {
       "path": "higedanfan/hige-touch-180.png",
-      "sha256": "ab4555424d50add82919f1fa1db5706592438d7142c9febe668f142d0fceb973",
-      "bytes": 12069,
+      "sha256": "cd4d0cac56014a301c03362d6854ad78ecfbf4694724da446ef8e827dddc012d",
+      "bytes": 3545,
       "ci_fixture": {
         "format": "png",
         "width": 180,
@@ -69,8 +69,8 @@
     },
     {
       "path": "higedanfan/social-cover.png",
-      "sha256": "1376c29142ae09b2eba235aa3d809c6f23ac6f53595195f3ccd6ba98dfd925ee",
-      "bytes": 244185,
+      "sha256": "8d2a973029fad08f45d4410384a7fa007b18ffe88283cecd14090227467ce16e",
+      "bytes": 243195,
       "ci_fixture": {
         "format": "png",
         "width": 1200,
