@@ -35,10 +35,30 @@ defaults:
     shell: bash
 
 jobs:
+  relevance:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    outputs:
+      pikalab: ${{ steps.select.outputs.pikalab }}
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38
+        with:
+          node-version-file: .node-version
+      - name: Select PikaLab relevance from the whole change
+        id: select
+        env:
+          BASE_SHA: ${{ github.event_name == 'push' && github.event.before || github.event.pull_request.base.sha }}
+        run: node .github/scripts/public-pr-gate.cjs select
+
   scope:
     name: ${{ (github.event_name != 'pull_request' || !github.event.pull_request.draft) && 'scope' || 'Draft scope' }}
     # 共通検証を一度通してから、変更対象の重いE2Eを起動する。
-    if: "${{ github.event_name != 'pull_request' || !github.event.pull_request.draft }}"
+    needs: relevance
+    if: "${{ needs.relevance.outputs.pikalab == 'true' && (github.event_name != 'pull_request' || !github.event.pull_request.draft) }}"
     runs-on: ubuntu-latest
     # package-lockのPlaywrightと同版。ブラウザ・font・OS依存は公式の固定イメージで準備する。
     container:
@@ -186,7 +206,7 @@ jobs:
     name: ${{ (github.event_name != 'pull_request' || !github.event.pull_request.draft) && 'validate' || 'Draft validate' }}
     needs: scope
     # PR品質検証はmain反映後に重ねて実行しない。Draft中の更新もrunnerを起動しない。
-    if: "${{ !cancelled() && (github.event_name != 'pull_request' || !github.event.pull_request.draft) }}"
+    if: "${{ !cancelled() && needs.scope.result == 'success' && (github.event_name != 'pull_request' || !github.event.pull_request.draft) }}"
     runs-on: ubuntu-latest
     # package-lockのPlaywrightと同版。ブラウザ・font・OS依存は公式の固定イメージで準備する。
     container:
@@ -727,8 +747,8 @@ jobs:
           BOOK_REPORT_BASELINE_ROOT=../.book-baseline/pikalab/dist npm run test:book-e2e
 
   completion:
-    if: ${{ always() }}
-    needs: [scope, validate, space-browser, focus-browser, paper-browser, quest-browser, book-browser]
+    if: ${{ always() && needs.relevance.result == 'success' && needs.relevance.outputs.pikalab == 'true' }}
+    needs: [relevance, scope, validate, space-browser, focus-browser, paper-browser, quest-browser, book-browser]
     runs-on: ubuntu-24.04
     timeout-minutes: 5
     steps:

@@ -38,6 +38,86 @@
       "url": "https://katakatalab.com/favicon.ico"
     },
     {
+      "path": "higedanfan/hige-mark-32.png",
+      "sha256": "21cd698c3574483ca7f10186affb64bac8ed4863d38220c17735ba968cccc552",
+      "bytes": 743,
+      "ci_fixture": {
+        "format": "png",
+        "width": 32,
+        "height": 32
+      }
+    },
+    {
+      "path": "higedanfan/hige-mark.svg",
+      "sha256": "34b8cc755a7e31c340549a71a8216e61ed395b301d0fd9858c2305c9ddfa2f05",
+      "bytes": 358,
+      "ci_fixture": {
+        "format": "svg",
+        "width": 64,
+        "height": 64
+      }
+    },
+    {
+      "path": "higedanfan/hige-touch-180.png",
+      "sha256": "cd4d0cac56014a301c03362d6854ad78ecfbf4694724da446ef8e827dddc012d",
+      "bytes": 3545,
+      "ci_fixture": {
+        "format": "png",
+        "width": 180,
+        "height": 180
+      }
+    },
+    {
+      "path": "higedanfan/social-cover.png",
+      "sha256": "8d2a973029fad08f45d4410384a7fa007b18ffe88283cecd14090227467ce16e",
+      "bytes": 243195,
+      "ci_fixture": {
+        "format": "png",
+        "width": 1200,
+        "height": 630
+      }
+    },
+    {
+      "path": "higedanfan/song-art/cry-baby-editorial.png",
+      "sha256": "b845a08d13647054577455219638580d98ab63a7270c5a903df8d29527cd8984",
+      "bytes": 706886,
+      "ci_fixture": {
+        "format": "png",
+        "width": 640,
+        "height": 640
+      }
+    },
+    {
+      "path": "higedanfan/song-art/mixed-nuts-editorial.png",
+      "sha256": "dc696bea6c4df0245371278e34cdbc922011d271e8399eac840451b11ac85a44",
+      "bytes": 2082990,
+      "ci_fixture": {
+        "format": "png",
+        "width": 1254,
+        "height": 1254
+      }
+    },
+    {
+      "path": "higedanfan/song-art/pretender-editorial.png",
+      "sha256": "73d528672ae1536012c865e22ba71a0bfa8bdd51ca8b13885e83f602480b232d",
+      "bytes": 669210,
+      "ci_fixture": {
+        "format": "png",
+        "width": 640,
+        "height": 640
+      }
+    },
+    {
+      "path": "higedanfan/song-art/subtitle-editorial.png",
+      "sha256": "48e8c3656a485e4e3f9191a91dcbed05332fa4aa3c319a4230f4d8f530ecb47c",
+      "bytes": 734742,
+      "ci_fixture": {
+        "format": "png",
+        "width": 640,
+        "height": 640
+      }
+    },
+    {
       "path": "icon-192.png",
       "sha256": "3c050189473a7c285802e35f0931bcdcbc70c9b89704ff1d775f638a91d428ca",
       "bytes": 7703,

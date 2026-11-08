@@ -103,7 +103,11 @@ test('index.htmlの起動先と正規ディレクトリURLは同じ先読みを�
 });
 test('ルートPWAは個別アプリの画面とAPI通信に介入しない', async () => {
   const app = runtime('sw.js');
-  for (const url of ['pikalab/', 'qrcode/', 'password-generator/', 'screenshot-crop/', 'lab-tools/gravity-todo/']) assert.equal(await app.fetch(url), undefined);
+  for (const url of ['pikalab/', 'qrcode/', 'password-generator/', 'screenshot-crop/', 'lab-tools/gravity-todo/', 'higedanfan', 'higedanfan/']) assert.equal(await app.fetch(url), undefined);
+  app.entries.set(new URL('/higedanfan/', app.scope).href, response('outdated fan page'));
+  assert.equal(await app.fetch('/higedanfan/?fresh=1'), undefined);
+  assert.equal(await app.fetch('/higedanfan/assets/app.js', { mode: 'cors', destination: 'script' }), undefined);
+  assert.equal(app.fetches.length, 0);
   assert.equal(await app.fetch('/api/data', { destination: '', mode: 'cors' }), undefined);
 });
 test('動的資産の異なるquery版を同じcacheへ混ぜない', async () => {
