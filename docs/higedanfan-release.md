@@ -2,7 +2,7 @@
 
 公開先：https://katakatalab.com/higedanfan/
 
-楽曲データとアプリの編集元は [higedanfan](https://github.com/katakata0522/higedanfan)。この版のソースは [59704b5](https://github.com/katakata0522/higedanfan/tree/59704b5c11bd333d9f431c76916f5204d3652382)。Node.js 24 で npm ci、npm run lint、npm test、npm run build の順に実行する。
+楽曲データとアプリの編集元は [higedanfan](https://github.com/katakata0522/higedanfan)。この版のソースは [ffa5484](https://github.com/katakata0522/higedanfan/tree/ffa5484ca9b740b2130708c050e06565cf2435ac)。Node.js 24 で npm ci、npm run lint、npm test、npm run build の順に実行する。
 
 生成された index.html、`songs/<楽曲ID>/index.html`、assets 内の JS と CSS、third-party-licenses.txt を higedanfan/ に入れる。未使用の旧バンドルを残さない。開発用設定・API キーは含めない。現在の独立ページは全90曲。5曲の個別原稿と、確認済みデータから組み立てた85曲の概要に共通テンプレートを適用する。
 
