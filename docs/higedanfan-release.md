@@ -2,7 +2,7 @@
 
 公開先：https://katakatalab.com/higedanfan/
 
-楽曲データとアプリの編集元は [higedanfan](https://github.com/katakata0522/higedanfan)。この版のソースは [d5e340f](https://github.com/katakata0522/higedanfan/tree/d5e340fef6623a2268a26ab04903d84371cd1d3e)。Node.js 24 で npm ci、npm run lint、npm test、npm run build の順に実行する。
+楽曲データとアプリの編集元は [higedanfan](https://github.com/katakata0522/higedanfan)。この版のソースは [f12d8bb](https://github.com/katakata0522/higedanfan/tree/f12d8bb0986fe13fa1ff8e608d2efc3a058fd717)。Node.js 24 で npm ci、npm run lint、npm test、npm run build の順に実行する。
 
 生成された index.html、`songs/<楽曲ID>/index.html`、assets 内の JS と CSS、third-party-licenses.txt を higedanfan/ に入れる。未使用の旧バンドルを残さない。開発用設定・API キーは含めない。現在の独立ページは全90曲。5曲の個別原稿と、確認済みデータから組み立てた85曲の概要に共通テンプレートを適用する。
 
@@ -11,6 +11,8 @@
 楽曲ページの画像欄は全曲共通の正方形の仮枠で、画像は読み込まない。既存の挿絵素材は同じ素材経路で保管し、後から画像を使う場合に備えてPrivateの照合契約を維持する。
 
 マイセトリの追加は、通常の保存を待つ間、同じタブのセッションストレージにも記録する。再読み込み後は既存の保存データと照合し、別タブで削除・初期化された曲を古い操作で戻さない。
+
+テンポは資料によって拍の数え方や数値が異なるため「約」を付ける。曲別の採用値・別表記と照合状況は、編集元の `docs/bpm-audit-2026-11-08.md` に記録する。
 
 公開ビルドではファンサイトの全HTMLを共通アクセス解析の注入対象から外す。プライバシーポリシーと一致させるため、解析コードが混入した場合はビルドを止める。
 
