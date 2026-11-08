@@ -2,13 +2,13 @@
 
 公開先：https://katakatalab.com/higedanfan/
 
-楽曲データとアプリの編集元は [higedanfan](https://github.com/katakata0522/higedanfan)。この版のソースは [7c8b390](https://github.com/katakata0522/higedanfan/tree/7c8b390266012f5970916c9e11b1b238c21d7cb5)。Node.js 24 で npm ci、npm run lint、npm test、npm run build の順に実行する。
+楽曲データとアプリの編集元は [higedanfan](https://github.com/katakata0522/higedanfan)。この版のソースは [59704b5](https://github.com/katakata0522/higedanfan/tree/59704b5c11bd333d9f431c76916f5204d3652382)。Node.js 24 で npm ci、npm run lint、npm test、npm run build の順に実行する。
 
 生成された index.html、`songs/<楽曲ID>/index.html`、assets 内の JS と CSS、third-party-licenses.txt を higedanfan/ に入れる。未使用の旧バンドルを残さない。開発用設定・API キーは含めない。現在の独立ページは全90曲。5曲の個別原稿と、確認済みデータから組み立てた85曲の概要に共通テンプレートを適用する。
 
 タブ・ホーム画面のアイコンと共有画像は、編集元の `brand/` にあるオリジナルの4ファイルを使用する。Publicでは実画像をGitに含めず、`qa/published-dependencies.json` にサイズ・SHA-256とCI用の代替画像を登録する。本番ではPrivateの `higedanfan/` に置いた実画像を `privateOverlay` のSHA-256と照合して配信する。
 
-楽曲ページの挿絵 `brand/song-art/<楽曲ID>-editorial.png` も同じ素材経路で `higedanfan/song-art/` に配置する。PublicのCIでは代替画像を使用し、本番では元画像のSHA-256を照合する。挿絵は当サイト制作のイメージ画像であり、公式ジャケットではない。
+楽曲ページの画像欄は全曲共通の正方形の仮枠で、画像は読み込まない。既存の挿絵素材は同じ素材経路で保管し、後から画像を使う場合に備えてPrivateの照合契約を維持する。
 
 公開ビルドではファンサイトの全HTMLを共通アクセス解析の注入対象から外す。プライバシーポリシーと一致させるため、解析コードが混入した場合はビルドを止める。
 
