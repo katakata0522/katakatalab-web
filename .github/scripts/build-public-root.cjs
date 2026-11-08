@@ -10,6 +10,9 @@ const GA4_MEASUREMENT_ID = 'G-FYFPS7L9X9';
 const ANALYTICS_SCRIPT_PATH = '/analytics.js';
 const ANALYTICS_SCRIPT_TAG = `    <script defer src="${ANALYTICS_SCRIPT_PATH}"></script>\n`;
 
+// ファンサイトはアクセス解析を使わないと案内している。
+const isFanNotePage = relativePath => relativePath.replaceAll('\\', '/').startsWith('higedanfan/');
+
 const PUBLIC_ROOT_FILES = Object.freeze([
   '.htaccess', '.user.ini', '404.html', 'about-katakatalab.html', 'ads.txt',
   'ambition.html', 'analytics.js', 'education-sw-privacy.js', 'contact.html', 'favicon.ico', 'favicon.svg', 'gear.html', 'icon.svg',
@@ -156,6 +159,11 @@ function ensureAnalyticsCoverage(publicRoot = outputRoot) {
       if (forbidden.length) throw new Error(`教育ページに広告・解析コードが混入しました: ${relative}: ${forbidden.join('、')}`);
       continue;
     }
+    if (isFanNotePage(relative)) {
+      const forbidden = findTrackingSignals(originalHtml);
+      if (forbidden.length) throw new Error(`ファンサイトに広告・解析コードが混入しました: ${relative}: ${forbidden.join('、')}`);
+      continue;
+    }
     let html = stripLegacyAnalytics(originalHtml);
     if (html !== originalHtml) legacyRemoved += 1;
 
@@ -203,6 +211,10 @@ function validateAnalyticsCoverage(publicRoot = outputRoot) {
 
     if (isEducationPage(relative)) {
       if (loaderCount !== 0) findings.push(`${relative}: educational page must not load analytics.js`);
+      const forbidden = findTrackingSignals(html);
+      if (forbidden.length) findings.push(`${relative}: ${forbidden.join('、')}`);
+    } else if (isFanNotePage(relative)) {
+      if (loaderCount !== 0) findings.push(`${relative}: fan site must not load analytics.js`);
       const forbidden = findTrackingSignals(html);
       if (forbidden.length) findings.push(`${relative}: ${forbidden.join('、')}`);
     } else if (loaderCount !== 1) {

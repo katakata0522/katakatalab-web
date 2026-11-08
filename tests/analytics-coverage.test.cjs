@@ -102,6 +102,33 @@ test('幼児向けページには共通Analyticsを注入せず、混入時は�
   }
 });
 
+test('ファンサイトのトップと曲ページには解析を注入しない', () => {
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), 'katakatalab-fan-no-ga4-'));
+  try {
+    const fanDir = path.join(root, 'higedanfan');
+    const songDir = path.join(fanDir, 'songs', 'white-noise');
+    fs.mkdirSync(songDir, { recursive: true });
+    const fanPage = path.join(fanDir, 'index.html');
+    const songPage = path.join(songDir, 'index.html');
+    const normalPage = path.join(root, 'index.html');
+    for (const file of [fanPage, songPage, normalPage]) {
+      fs.writeFileSync(file, '<!doctype html><html><head></head><body></body></html>');
+    }
+
+    assert.deepEqual(ensureAnalyticsCoverage(root), { checked: 3, injected: 1, existing: 0, legacyRemoved: 0 });
+    for (const file of [fanPage, songPage]) assert.doesNotMatch(fs.readFileSync(file, 'utf8'), /analytics\.js|googletagmanager/);
+    assert.match(fs.readFileSync(normalPage, 'utf8'), /analytics\.js/);
+    assert.doesNotThrow(() => validateAnalyticsCoverage(root));
+
+    fs.writeFileSync(songPage, '<!doctype html><html><head><script src="/analytics.js"></script></head></html>');
+    assert.throws(() => ensureAnalyticsCoverage(root), /ファンサイトに広告・解析コード/);
+    assert.throws(() => validateAnalyticsCoverage(root), /fan site must not load analytics/);
+  } finally {
+    assert.equal(path.dirname(path.resolve(root)), path.resolve(os.tmpdir()));
+    fs.rmSync(root, { recursive: true, force: true });
+  }
+});
+
 
 
 test('共通Analyticsは分類・ツール操作・内部回遊をPIIなしで計測する', () => {
