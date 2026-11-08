@@ -2,7 +2,9 @@
 
 公開先：https://katakatalab.com/higedanfan/
 
-楽曲データとアプリの編集元は [higedanfan](https://github.com/katakata0522/higedanfan)。この版のソースは [aa0d7b2](https://github.com/katakata0522/higedanfan/tree/aa0d7b20d6325d975580ce92f4b9a09233972d16)。Node.js 24 で npm ci、npm run lint、npm test、npm run build の順に実行する。
+楽曲データとアプリの編集元は [higedanfan](https://github.com/katakata0522/higedanfan)。この版のソースは [a6eeb13](https://github.com/katakata0522/higedanfan/tree/a6eeb134ace294a78ddb353ee5cb14af403bb126)。Node.js 24 で npm ci、npm run lint、npm test、npm run build の順に実行する。
+
+聖地マップは場所とバンドのつながりで絞り込み、複数の分類に属する場所はそれぞれに表示する。広域しか確認できない撮影地は地図の範囲を明示し、訪問案内をしない場所には地図や訪問記録を表示しない。
 
 生成された index.html、`songs/<楽曲ID>/index.html`、assets 内の JS と CSS、third-party-licenses.txt を higedanfan/ に入れる。未使用の旧バンドルを残さない。開発用設定・API キーは含めない。現在の独立ページは全90曲で、それぞれの紹介文に共通テンプレートを適用する。
 
