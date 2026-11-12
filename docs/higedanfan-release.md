@@ -2,7 +2,7 @@
 
 公開先：https://katakatalab.com/higedanfan/
 
-楽曲データとアプリの編集元は [higedanfan](https://github.com/katakata0522/higedanfan)。この版のソースは [a6eeb13](https://github.com/katakata0522/higedanfan/tree/a6eeb134ace294a78ddb353ee5cb14af403bb126)。Node.js 24 で npm ci、npm run lint、npm test、npm run build の順に実行する。
+楽曲データとアプリの編集元は [higedanfan](https://github.com/katakata0522/higedanfan)。この版のソースは [302c9e6](https://github.com/katakata0522/higedanfan/tree/302c9e601d0a40ca3c288f228309e0a3d768de93)。Node.js 24 で npm ci、npm run lint、npm test、npm run build の順に実行する。
 
 聖地マップは場所とバンドのつながりで絞り込み、複数の分類に属する場所はそれぞれに表示する。広域しか確認できない撮影地は地図の範囲を明示し、訪問案内をしない場所には地図や訪問記録を表示しない。
 
@@ -19,3 +19,5 @@
 公開ビルドではファンサイトの全HTMLを共通アクセス解析の注入対象から外す。プライバシーポリシーと一致させるため、解析コードが混入した場合はビルドを止める。
 
 トップの入口は projects.json が正本。変更後に node scripts/build-project-cards.cjs で index.html を再生成する。配信時は通常の Private pin 手順に従う。
+
+マイソング診断の結果は、おすすめの曲名と大きなYouTubeプレビューから表示する。回答の変更は末尾の閉じた「条件を変えて探す」にまとめ、再診断とコーナー移動も結果より後に置く。結果表示時は曲名へフォーカスとスクロールを合わせる。
