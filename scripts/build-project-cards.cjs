@@ -109,6 +109,7 @@ const PROJECT_ICONS = {
   'site-hub': '🌐',
   'usagi-app': '🐰',
   'doujin-calc': '📚',
+  'motion-atlas': '🎞️',
   'emphasis-lines': '💥',
   'screenshot-crop': '✂️',
 };

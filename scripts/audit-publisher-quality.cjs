@@ -22,7 +22,7 @@ const AD_FREE_PATHS = [
   /^\/pikalab(?:\/|$)/,
   /^\/en(?:\/|$)/,
   /^\/lab-tools(?:\/|$)/,
-  /^\/(?:aspect-ratio-calc|chiritsumo-calc|moyamoya-sorter|screenshot-crop|discount-calc|emphasis-lines|font-lab|ogp-simulator|password-generator|px-rem-converter|qrcode|seireki|text-diff)\/$/,
+  /^\/(?:aspect-ratio-calc|chiritsumo-calc|moyamoya-sorter|motion-atlas|screenshot-crop|discount-calc|emphasis-lines|font-lab|ogp-simulator|password-generator|px-rem-converter|qrcode|seireki|text-diff)\/$/,
   /^\/(?:aspect-ratio-calc|emphasis-lines|font-lab|ogp-simulator|px-rem-converter|qrcode|text-diff)\/en(?:\/|$)/,
   /^\/guides\/en(?:\/|$)/,
   /^\/guides\/it-basics(?:\/|$)/,

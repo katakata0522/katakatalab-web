@@ -35,6 +35,7 @@ self.PwaRuntime.configure({
     "/asobi-pocket/", "/schedule-gen/", "/composer/", "/pikalab/",
     "/higedanfan", "/screenshot-crop/", "/qrcode/",
     "/password-generator/", "/emphasis-lines/", "/doujin-calc/",
+    "/motion-atlas/",
     "/lab-tools/gravity-todo/", "/lab-tools/kids-smile-land/",
   ],
 });

@@ -157,6 +157,26 @@
     }
   },
   {
+    "id": "motion-atlas",
+    "group": "primary",
+    "category": "tool",
+    "shelf": "tool",
+    "featured": false,
+    "url": "motion-atlas/",
+    "detail": "WebアニメーションやUIの置き方・動きの仕組みを全100パターン収録。再生・スロー再生・種明かし図解で確認し、AIへの指示文やHTML+CSS／Tailwindコードをそのままコピーして使える図鑑。",
+    "tagText": "ツール",
+    "tagClass": "tag-tool",
+    "targetBadge": "💼 実用向け",
+    "statusBadge": "NEW",
+    "title": "動きの仕組み図鑑",
+    "text": "UIの動き方・作り方を100種収録。スロー再生・図解とAI指示・コードをコピペ可能！",
+    "aliases": ["動きの仕組み図鑑", "Motion Atlas", "アニメーション", "CSSアニメーション", "Tailwind", "UIモーション", "トランジション", "AIプロンプト"],
+    "actions": {
+      "mainText": "開く →",
+      "detail": true
+    }
+  },
+  {
     "id": "doujin-calc",
     "group": "primary",
     "category": "tool",

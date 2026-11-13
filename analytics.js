@@ -18,6 +18,7 @@
     ['/emphasis-lines/', 'emphasis-lines'],
     ['/doujin-calc/', 'doujin-calc'],
     ['/font-lab/', 'font-lab'],
+    ['/motion-atlas/', 'motion-atlas'],
     ['/ogp-simulator/', 'ogp-simulator'],
     ['/password-generator/', 'password-generator'],
     ['/px-rem-converter/', 'px-rem-converter'],
