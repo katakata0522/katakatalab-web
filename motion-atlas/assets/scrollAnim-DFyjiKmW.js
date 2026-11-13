@@ -1,0 +1,1 @@
+function e(e,t,n,r){let i=e.scrollTop,a=performance.now(),o=0,s=!1,c=l=>{if(s)return;let u=Math.min(1,(l-a)/Math.max(120,n)),d=u<.5?4*u*u*u:1-(-2*u+2)**3/2;e.scrollTop=i+(t-i)*d,u<1?o=window.requestAnimationFrame(c):r?.()};return o=window.requestAnimationFrame(c),()=>{s=!0,window.cancelAnimationFrame(o)}}export{e as t};
