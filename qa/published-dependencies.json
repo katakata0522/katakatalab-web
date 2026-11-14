@@ -38,6 +38,16 @@
       "url": "https://katakatalab.com/favicon.ico"
     },
     {
+      "path": "higedanfan/badges/listen-on-apple-music-ja.svg",
+      "sha256": "c00682c1c510754b6e689268e4fd4027a1e1a54e76128d12af961270af5202b3",
+      "bytes": 11517,
+      "ci_fixture": {
+        "format": "svg",
+        "width": 140,
+        "height": 40
+      }
+    },
+    {
       "path": "higedanfan/hige-mark-32.png",
       "sha256": "21cd698c3574483ca7f10186affb64bac8ed4863d38220c17735ba968cccc552",
       "bytes": 743,
