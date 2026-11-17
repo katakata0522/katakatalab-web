@@ -117,6 +117,20 @@ GitHubのメール非公開設定だけを根拠に、すべてのAPI・外部�
 変更を含むコミットSHA、PR、最新HEADのCI、マージ結果を確認します。
 CIはチェック名だけでなく対象SHA、通常実行とDraft通知、成功・未実行・中断を区別します。過去のHEADの成功を新しい差分の検証済みとは数えません。
 Public側のマージは本番配信の完了ではありません。本番反映は既存のPrivate側の正規経路で確認します。
+
+### Public統合後の自動公開
+
+サイトの修正を本番まで反映する依頼では、Publicのmainへの統合後、その完全なSHAに対するRoot・PikaLab・公開境界・依存監査の4系統のmain push検証成功を確認します。PR側の成功だけで配信を起動しません。確認後、現在の環境で利用できる既存認証でPrivateの自動公開を起動します。
+
+```sh
+gh workflow run public-source-promotion.yml --repo katakata0522/KatakataLab --ref main
+```
+
+この処理はPrivate側に固定SHAだけの公開更新PRを作成し、Privateの必須3系統の検証成功後に既存の保護ルールを守って統合し、Xserver配信と公開SHAの照合まで進めます。Public CIにPrivate用のトークンやSecretsを追加せず、Publicの通常CIは読み取り専用のまま維持します。通常経路での起動漏れは6時間ごとのPrivate定期実行で回収します。
+
+最初のpromotion実行が「Private検証待ち」でも作業を完了扱いにせず、後続の `Public source promotion` と `Deploy KatakataLab to Xserver` の結果を確認します。最新Public SHAとPrivateの固定SHAに加え、RootとPikaLab両方の `public-source-version.txt` が対象SHAと一致することを確認し、画面・挙動を変更した場合は該当URLも確認します。
+
+Private CIや配信が失敗した場合は実ログから原因を確認し、検査の削除・保護の緩和・原本ハッシュの自動更新で通さないでください。素材・設定・公開範囲の追加や変更は自動pin更新の対象外です。既存のPrivate照合契約を通常PRで確認する必要があります。詳細はPrivateの `docs/PUBLIC_SOURCE_SPLIT.md` を参照します。Privateの読み書き認証がない環境では、自動化を起動できたと報告しません。
 アプリの画面・動作を変えた場合は、対象URLでの実機確認まで区別して報告します。
 
 認証の継続利用は、今回の実pushとリモートSHAを確認した後、認証を設定し直さず別のタスクでも送信できたかで判断します。同じタスクの別シェルで成功しただけでは、別タスクやクラウドでも使えると報告しません。再利用するクラウド環境は[公式の環境手順](https://learn.chatgpt.com/docs/environments/cloud-environments)に沿って準備し、公開後の新しいタスクでも確認します。
