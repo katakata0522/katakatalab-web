@@ -120,15 +120,17 @@ Public側のマージは本番配信の完了ではありません。本番反�
 
 ### Public統合後の自動公開
 
-サイトの修正を本番まで反映する依頼では、Publicのmainへの統合後、その完全なSHAに対するRoot・PikaLab・公開境界・依存監査の4系統のmain push検証成功を確認します。PR側の成功だけで配信を起動しません。確認後、現在の環境で利用できる既存認証でPrivateの自動公開を起動します。
+サイトの修正を本番まで反映する依頼では、Publicのmainへの統合後、その完全なSHAに対するRoot・PikaLab・公開境界・依存監査の4系統のmain push検証成功を確認します。PR側の成功だけで配信を起動しません。確認後、Privateの作業場所で、AIが利用できる既存の所有者接続から次の一括コマンドを実行します。`PUBLIC_MAIN_SHA`を検証した40桁SHAへ置き換えます。
 
 ```sh
-gh workflow run public-source-promotion.yml --repo katakata0522/KatakataLab --ref main
+python3 .github/scripts/public-source-promotion-driver.py --public-sha PUBLIC_MAIN_SHA
 ```
 
-この処理はPrivate側に固定SHAだけの公開更新PRを作成し、Privateの必須3系統の検証成功後に既存の保護ルールを守って統合し、Xserver配信と公開SHAの照合まで進めます。Public CIにPrivate用のトークンやSecretsを追加せず、Publicの通常CIは読み取り専用のまま維持します。通常経路での起動漏れは6時間ごとのPrivate定期実行で回収します。
+この処理はPrivate側に固定SHAだけの公開更新PRを作成します。GitHubがbot作成PRのworkflow実行を承認待ちにするため、専用PR・固定SHAだけの差分・最新head・対応する3つの検証workflowを照合してから、AIの所有者接続で実行を承認します。Privateの必須3系統とGitHubの保護条件が揃った後に自動統合し、Xserver配信と公開SHAの照合まで進めます。Public CIは読み取り専用のままで、Private用のトークンやSecretsを追加しません。
 
-最初のpromotion実行が「Private検証待ち」でも作業を完了扱いにせず、後続の `Public source promotion` と `Deploy KatakataLab to Xserver` の結果を確認します。最新Public SHAとPrivateの固定SHAに加え、RootとPikaLab両方の `public-source-version.txt` が対象SHAと一致することを確認し、画面・挙動を変更した場合は該当URLも確認します。
+`GITHUB_TOKEN`で起動したCIの完了通知だけでは継続しない場合があるため、一括コマンドが状態を確認して必要な再開を明示dispatchします。6時間ごとのPrivate定期実行は起動漏れを回収しますが、bot workflow承認を省くものではありません。低レベルの `gh workflow run public-source-promotion.yml --repo katakata0522/KatakataLab --ref main` だけで本番まで完了したと扱わず、一括コマンドを最後まで実行してください。[GitHub公式のGITHUB_TOKENの仕様](https://docs.github.com/en/actions/concepts/security/github_token)も参照します。
+
+最初のpromotion実行が「Private検証待ち」でも作業を完了扱いにせず、一括コマンドの正常終了と `Public source promotion`・`Deploy KatakataLab to Xserver` の結果を確認します。最新Public SHAとPrivateの固定SHAに加え、RootとPikaLab両方の `public-source-version.txt` が対象SHAと一致することを確認し、画面・挙動を変更した場合は該当URLも確認します。
 
 Private CIや配信が失敗した場合は実ログから原因を確認し、検査の削除・保護の緩和・原本ハッシュの自動更新で通さないでください。素材・設定・公開範囲の追加や変更は自動pin更新の対象外です。既存のPrivate照合契約を通常PRで確認する必要があります。詳細はPrivateの `docs/PUBLIC_SOURCE_SPLIT.md` を参照します。Privateの読み書き認証がない環境では、自動化を起動できたと報告しません。
 アプリの画面・動作を変えた場合は、対象URLでの実機確認まで区別して報告します。
