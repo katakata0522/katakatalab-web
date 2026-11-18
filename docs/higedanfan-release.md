@@ -2,7 +2,7 @@
 
 公開先：https://katakatalab.com/higedanfan/
 
-楽曲データとアプリの編集元は [higedanfan](https://github.com/katakata0522/higedanfan)。この版のソースは [f809a6a](https://github.com/katakata0522/higedanfan/tree/f809a6a45403709f81b14091aaa6954be119e137)。Node.js 24 で npm ci、npm run lint、npm test、npm run build の順に実行する。
+楽曲データとアプリの編集元は [higedanfan](https://github.com/katakata0522/higedanfan)。この版のソースは [b6afc98](https://github.com/katakata0522/higedanfan/tree/b6afc98216a5bd11a3fb42b81faa7cbf8b38e6c2)。Node.js 24 で npm ci、npm run lint、npm test、npm run build の順に実行する。
 
 聖地マップは場所とバンドのつながりで絞り込み、複数の分類に属する場所はそれぞれに表示する。広域しか確認できない撮影地は地図の範囲を明示し、訪問案内をしない場所には地図や訪問記録を表示しない。
 
@@ -41,3 +41,5 @@
 2026-11-16の公開同期では、歴代ツアー記録の内蔵セトリ展開・曲名検索・MYセトリ化、主要8コーナーの独立静的HTML（`/higedanfan/discography/` 等）と固有SEOメタデータ・CSP対応、`ConfirmDialog` による確認操作とフォーカス制御、`QuizSection` 初期チャンク分割、音域・BPM・楽曲情報の出典照合修正（`115man-kilo` 別表記194 BPM・`50%` 曲調調整）を反映した。あわせて初期読み込み時の文字フラッシュ（FOUC）防止と二重「約」修正、楽曲ページタイトル左の赤い縦線除去、音域比較表の全90曲表示＆ソート列幅固定、楽曲ガイドの24曲ごとのページ切り替えにも対応した。
 
 2026-11-17の公開同期では、全コーナー・情報ページのヘッダー余白と装飾タグ（`付箋一覧へ戻る`・リード文・楽曲ガイドのカード説明/演奏時間行など）を削って本文がすぐ視界に入る設計へ整理し、サイト全体の専門用語・固い表現を自然な日本語（`配信シングル`・`配信日`・`CD発売日`・`演奏時間`・`参考値なし`・`曲のページを見る`・`音域の参照元`・`王道セトリを入れる` 等）へ統一し、320px幅でも未計測音域表示が収まるよう調整した。
+
+2026-11-18の公開同期では、`pushState`／`popstate` 対応と `<link rel="canonical">` / `og:url` 同期、トップ付箋やメニュー等のセマンティック `<a>` 化、PC幅メニュードロワーの2列フッター収納化を反映した。また聖地マップカード下部の関連曲リンク化、初期空セトリ＋`M01⇄EN1` バッジ切替＋13曲以上の2列ライブポスター出力、今日の1曲診断のスロー曲判定・単文コピー統一、不要チャンク削除と遅延分割を実施した。
