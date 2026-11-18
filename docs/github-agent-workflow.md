@@ -117,6 +117,20 @@ GitHubのメール非公開設定だけを根拠に、すべてのAPI・外部�
 変更を含むコミットSHA、PR、最新HEADのCI、マージ結果を確認します。
 CIはチェック名だけでなく対象SHA、通常実行とDraft通知、成功・未実行・中断を区別します。過去のHEADの成功を新しい差分の検証済みとは数えません。
 Public側のマージは本番配信の完了ではありません。本番反映は既存のPrivate側の正規経路で確認します。
+
+### Public統合後の自動公開
+
+サイトの修正を本番まで反映する依頼では、Publicのmainへの統合後、その完全なSHAに対するRoot・PikaLab・公開境界・依存監査の4系統のmain push検証成功を確認します。PR側の成功だけで配信を起動しません。確認後、現在の環境で利用できる既存認証でPrivateの自動公開を起動します。
+
+```sh
+gh workflow run public-source-promotion.yml --repo katakata0522/KatakataLab --ref main
+```
+
+この処理はPrivate側に固定SHAだけの公開更新PRを作成し、Privateの必須3系統の検証成功後に既存の保護ルールを守って統合し、Xserver配信と公開SHAの照合まで進めます。Public CIにPrivate用のトークンやSecretsを追加せず、Publicの通常CIは読み取り専用のまま維持します。通常経路での起動漏れは6時間ごとのPrivate定期実行で回収します。
+
+最初のpromotion実行が「Private検証待ち」でも作業を完了扱いにせず、後続の `Public source promotion` と `Deploy KatakataLab to Xserver` の結果を確認します。最新Public SHAとPrivateの固定SHAに加え、RootとPikaLab両方の `public-source-version.txt` が対象SHAと一致することを確認し、画面・挙動を変更した場合は該当URLも確認します。
+
+Private CIや配信が失敗した場合は実ログから原因を確認し、検査の削除・保護の緩和・原本ハッシュの自動更新で通さないでください。素材・設定・公開範囲の追加や変更は自動pin更新の対象外です。既存のPrivate照合契約を通常PRで確認する必要があります。詳細はPrivateの `docs/PUBLIC_SOURCE_SPLIT.md` を参照します。Privateの読み書き認証がない環境では、自動化を起動できたと報告しません。
 アプリの画面・動作を変えた場合は、対象URLでの実機確認まで区別して報告します。
 
 認証の継続利用は、今回の実pushとリモートSHAを確認した後、認証を設定し直さず別のタスクでも送信できたかで判断します。同じタスクの別シェルで成功しただけでは、別タスクやクラウドでも使えると報告しません。再利用するクラウド環境は[公式の環境手順](https://learn.chatgpt.com/docs/environments/cloud-environments)に沿って準備し、公開後の新しいタスクでも確認します。
@@ -136,6 +150,26 @@ PublicのRoot・PikaLab検証は`.node-version`のNode.js 24 LTSを使用しま�
 
 2026年11月5日に確認したdeepmergeのGHSA-gcqx-w48m-w2h4は、npmには残っていますが、[公式CVE記録](https://github.com/CVEProject/cvelistV5/blob/790fe3b1147c6f11580e9b00b18abcf2c7534af4/cves/2026/93xxx/CVE-2026-93753.json)で11月2日に却下されています。確認したnode-resolveの使用箇所も、初期化時の固定設定だけの複製です。
 監査はこの通知と確認済み4依存の版だけを区別し、毎回公式CVEの現在状態を取得して`REJECTED`であることを確かめます。同じ依存の新勧告・重大度変更・版変更・CVEの再公開は自動承認しません。警告そのものを0件と表示したり、旧PWAへ強制変更したりしません。
+
+### picomatchの限定補修
+
+2026年11月18日時点で、[GHSA-fc5q-39xc-vjpf](https://github.com/advisories/GHSA-fc5q-39xc-vjpf)は有効で、npmのpicomatch最新版4.0.7を含む既存版に公式の修正版はありません。反復extglobが曖昧な正規表現を生成し、ファイル判定で処理時間が急増する問題です。このリポジトリでは依存版を変更せず、`scripts/picomatch-hardening.cjs`で問題のある反復だけをリテラルとして扱う補修を適用します。通常の括弧と後置の反復・nobraceの量指定子による同等表現も検査します。通常のglob・安全な反復・Vitestの省略可能な拡張子判定は維持します。
+
+対象は名前付きのpicomatchだけでなく、Rollup・Playwright内包版を含む15ファイル・21個のparserです。`config/picomatch-hardening.json`はRoot/PikaLab両方のlockと補修前後のコードのSHA-256を固定します。未知・欠損のコピー、未確認のコード、lockの変更、補修の不一致を検出した場合は上書きせず停止します。
+
+```sh
+npm ci --ignore-scripts --no-audit --no-fund
+npm ci --prefix pikalab --ignore-scripts --no-audit --no-fund
+node scripts/picomatch-hardening.cjs --apply --all
+PICOMATCH_REQUIRE_INSTALLED=true node --test .github/scripts/picomatch-hardening.test.cjs
+npm run audit:dependencies
+```
+
+最後の環境変数設定例はbash用です。PowerShellでは先に`$env:PICOMATCH_REQUIRE_INSTALLED='true'`を設定します。依存監査CIはこの実コピー検査と時間制限付きの攻撃回帰検査を必須実行します。npmの警告件数はそのまま記録し、この勧告だけを「固定コードの補修済み」と区別します。新規勧告・重大度・範囲・通知IDの変更や、適用証拠を確認できない状態は停止します。
+
+PikaLabのbuild・typecheck・test・dev・previewと直接のtest:vitestは開始時に補修を照合し、PublicブラウザーCIはPlaywrightを読み込む前に適用します。Private配信も公開ソースのprebuildで同じ補修を適用し、素材・サーバー設定の原本ハッシュ照合は維持します。個別のNodeスクリプトや依存CLIを直接実行する場合も、その前に上記の補修を実行してください。node_modulesを再インストールすると補修も再適用が必要です。
+
+上流CVEの撤回や公式修正版の公開を意味する対応ではありません。依存を更新するときは、公式勧告・公開版・全内包コピー・通常動作を再調査し、補修契約を通常PRで更新するか、公式修正を検証したうえで補修を撤去します。新しいハッシュを機械的に採用して監査を通さないでください。
 
 ## 7. 通常PRの統合チェック
 

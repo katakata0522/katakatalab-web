@@ -17,6 +17,14 @@ jobs:
       - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38
         with:
           node-version-file: .node-version
+      - name: Install locked dependencies without lifecycle scripts
+        run: |
+          npm ci --ignore-scripts --no-audit --no-fund
+          npm ci --prefix pikalab --ignore-scripts --no-audit --no-fund
+      - name: Apply and test the pinned parser backport
+        run: |
+          node scripts/picomatch-hardening.cjs --apply --all
+          PICOMATCH_REQUIRE_INSTALLED=true node --test .github/scripts/picomatch-hardening.test.cjs
       - name: Test advisory classification
         run: node --test .github/scripts/audit-dependencies.test.cjs
       - name: Audit Root and PikaLab locks against current advisories
