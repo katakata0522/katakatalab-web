@@ -151,6 +151,26 @@ PublicのRoot・PikaLab検証は`.node-version`のNode.js 24 LTSを使用しま�
 2026年11月5日に確認したdeepmergeのGHSA-gcqx-w48m-w2h4は、npmには残っていますが、[公式CVE記録](https://github.com/CVEProject/cvelistV5/blob/790fe3b1147c6f11580e9b00b18abcf2c7534af4/cves/2026/93xxx/CVE-2026-93753.json)で11月2日に却下されています。確認したnode-resolveの使用箇所も、初期化時の固定設定だけの複製です。
 監査はこの通知と確認済み4依存の版だけを区別し、毎回公式CVEの現在状態を取得して`REJECTED`であることを確かめます。同じ依存の新勧告・重大度変更・版変更・CVEの再公開は自動承認しません。警告そのものを0件と表示したり、旧PWAへ強制変更したりしません。
 
+### picomatchの限定補修
+
+2026年11月18日時点で、[GHSA-fc5q-39xc-vjpf](https://github.com/advisories/GHSA-fc5q-39xc-vjpf)は有効で、npmのpicomatch最新版4.0.7を含む既存版に公式の修正版はありません。反復extglobが曖昧な正規表現を生成し、ファイル判定で処理時間が急増する問題です。このリポジトリでは依存版を変更せず、`scripts/picomatch-hardening.cjs`で問題のある反復だけをリテラルとして扱う補修を適用します。通常の括弧と後置の反復・nobraceの量指定子による同等表現も検査します。通常のglob・安全な反復・Vitestの省略可能な拡張子判定は維持します。
+
+対象は名前付きのpicomatchだけでなく、Rollup・Playwright内包版を含む15ファイル・21個のparserです。`config/picomatch-hardening.json`はRoot/PikaLab両方のlockと補修前後のコードのSHA-256を固定します。未知・欠損のコピー、未確認のコード、lockの変更、補修の不一致を検出した場合は上書きせず停止します。
+
+```sh
+npm ci --ignore-scripts --no-audit --no-fund
+npm ci --prefix pikalab --ignore-scripts --no-audit --no-fund
+node scripts/picomatch-hardening.cjs --apply --all
+PICOMATCH_REQUIRE_INSTALLED=true node --test .github/scripts/picomatch-hardening.test.cjs
+npm run audit:dependencies
+```
+
+最後の環境変数設定例はbash用です。PowerShellでは先に`$env:PICOMATCH_REQUIRE_INSTALLED='true'`を設定します。依存監査CIはこの実コピー検査と時間制限付きの攻撃回帰検査を必須実行します。npmの警告件数はそのまま記録し、この勧告だけを「固定コードの補修済み」と区別します。新規勧告・重大度・範囲・通知IDの変更や、適用証拠を確認できない状態は停止します。
+
+PikaLabのbuild・typecheck・test・dev・previewと直接のtest:vitestは開始時に補修を照合し、PublicブラウザーCIはPlaywrightを読み込む前に適用します。Private配信も公開ソースのprebuildで同じ補修を適用し、素材・サーバー設定の原本ハッシュ照合は維持します。個別のNodeスクリプトや依存CLIを直接実行する場合も、その前に上記の補修を実行してください。node_modulesを再インストールすると補修も再適用が必要です。
+
+上流CVEの撤回や公式修正版の公開を意味する対応ではありません。依存を更新するときは、公式勧告・公開版・全内包コピー・通常動作を再調査し、補修契約を通常PRで更新するか、公式修正を検証したうえで補修を撤去します。新しいハッシュを機械的に採用して監査を通さないでください。
+
 ## 7. 通常PRの統合チェック
 
 通常PRは`public-pr-gate`で、必要なRoot/PikaLab検証、公開名義、公開境界、依存監査の実際の成功を確認します。文書のみなど、差分から対象外と確定できた品質検証だけを省略します。変更を取得できない場合は両方を実行し、対象を確定できない出力は合格にしません。
