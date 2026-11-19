@@ -129,15 +129,9 @@ export default defineConfig({
         clientsClaim: true,
         // 複数ページ構成なので、各ラボへの遷移をトップHTMLへ置き換えない
         navigateFallback: null,
+        // 外部フォントはブラウザーのstyle-src・font-srcとHTTPキャッシュに任せる。
+        // Workerのfetchは本番のconnect-src 'self'により外部へ接続できない。
         runtimeCaching: [
-          {
-            urlPattern: /^https:\/\/fonts\.(?:googleapis|gstatic)\.com\/.*/i,
-            handler: 'CacheFirst',
-            options: {
-              cacheName: 'pikalab-google-fonts-cache',
-              expiration: { maxEntries: 10, maxAgeSeconds: 60 * 60 * 24 * 365 }
-            }
-          },
           {
             urlPattern: ({ url }) => url.origin === self.location.origin && url.href.startsWith(self.registration.scope) && /\.(?:png|jpg|jpeg|svg|webp)$/i.test(url.pathname),
             handler: 'CacheFirst',
