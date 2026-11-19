@@ -48,6 +48,36 @@
       }
     },
     {
+      "path": "higedanfan/hige-icon-192.png",
+      "sha256": "d8d0b434b16b59540c4481ed650b391b2d33d886b983d45df8450c795aea503d",
+      "bytes": 6840,
+      "ci_fixture": {
+        "format": "png",
+        "width": 192,
+        "height": 192
+      }
+    },
+    {
+      "path": "higedanfan/hige-icon-512.png",
+      "sha256": "09f184b56d1e013a4befa1aa8da836ad43c71b92dc978e7f0fe5f8cb566fbc6c",
+      "bytes": 15789,
+      "ci_fixture": {
+        "format": "png",
+        "width": 512,
+        "height": 512
+      }
+    },
+    {
+      "path": "higedanfan/hige-icon-maskable-512.png",
+      "sha256": "2fd25eeccc5970cfaa50ef4ff33b5b254335fdb2bbfa19f4ab1fa6cc050fe3f4",
+      "bytes": 8875,
+      "ci_fixture": {
+        "format": "png",
+        "width": 512,
+        "height": 512
+      }
+    },
+    {
       "path": "higedanfan/hige-mark-32.png",
       "sha256": "21cd698c3574483ca7f10186affb64bac8ed4863d38220c17735ba968cccc552",
       "bytes": 743,
