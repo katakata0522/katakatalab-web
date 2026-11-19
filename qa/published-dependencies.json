@@ -779,7 +779,8 @@
       "path": "pikalab/.code-studio/index.html",
       "sha256": "a5e394a303e996274546c9c3e9c05051890d8fa04cbabb58d19d9a928273f5b2",
       "bytes": 55194,
-      "url": "https://katakatalab.com/pikalab/code-studio/index.html"
+      "url": "https://katakatalab.com/pikalab/code-studio/qa-source/index-a5e394a303e996274546c9c3e9c05051890d8fa04cbabb58d19d9a928273f5b2.bin",
+      "fallback_url": "https://katakatalab.com/pikalab/code-studio/index.html"
     },
     {
       "path": "pikalab/.kotoba/ogp.png",

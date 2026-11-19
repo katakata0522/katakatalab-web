@@ -1,5 +1,6 @@
 const test = require('node:test');
 const assert = require('node:assert/strict');
+const crypto = require('node:crypto');
 const fs = require('node:fs');
 const os = require('node:os');
 const path = require('node:path');
@@ -63,6 +64,22 @@ test('原本と既存URLを保って配信グラフを版付きURLへ出力し�
         }
         const html = fs.readFileSync(path.join(root, 'index.html'), 'utf8');
         assert.ok(html.includes(`./${result.directory}/${path.basename(result.mainModule)}`));
+        const originalIndex = revision.originals.get('index.html');
+        const originalHash = crypto.createHash('sha256').update(originalIndex).digest('hex');
+        assert.equal(result.archivePath, `qa-source/index-${originalHash}.bin`);
+        const manifest = JSON.parse(fs.readFileSync(path.join(projectRoot, '../qa/published-dependencies.json'), 'utf8'));
+        const indexContract = manifest.files.find(entry => entry.path === 'pikalab/.code-studio/index.html');
+        assert.equal(indexContract.url, `https://katakatalab.com/pikalab/code-studio/${result.archivePath}`);
+        assert.equal(indexContract.bytes, originalIndex.length);
+        assert.equal(indexContract.sha256, originalHash);
+        const archive = path.join(root, result.archivePath);
+        assert.ok(fs.readFileSync(archive).equals(originalIndex), '次回QAの取得元は原本と1byteも違わない');
+        fs.appendFileSync(archive, '\n');
+        assert.throws(() => finalizeCodeStudioBuild(build, { checkOnly: true }), /QA用HTML原本が一致/);
+        assert.throws(() => finalizeCodeStudioBuild(build), /QA用HTML原本が一致/);
+        fs.rmSync(archive);
+        assert.throws(() => finalizeCodeStudioBuild(build, { checkOnly: true }), /QA用HTML原本がありません/);
+        finalizeCodeStudioBuild(build);
         const revisedModule = path.join(root, result.directory, path.basename(result.mainModule));
         fs.appendFileSync(revisedModule, '\n/* unexpected modification */');
         assert.throws(() => finalizeCodeStudioBuild(build, { checkOnly: true }), /配信資産が一致/);

@@ -64,7 +64,11 @@ function prepareCodeStudioRevision(projectRoot) {
         }
         originals.set(relative, bytes);
     }
-    const originalHtml = originals.get('index.html').toString('utf8');
+    const originalIndex = originals.get('index.html');
+    const originalHtml = originalIndex.toString('utf8');
+    // 次回のPublic QAも同じ入力を得られるよう、既に公開済みのHTML原本だけを保管する。
+    // 配信ページとして実行させないため、内容のhashを付けた.binを使う。
+    const archivePath = `qa-source/index-${sha256(originalIndex)}.bin`;
     const modules = [...originalHtml.matchAll(/<script\b[^>]*type="module"[^>]*src="\.\/(assets\/[^"/]+\.js)"[^>]*>/g)];
     if (modules.length !== 1) throw new Error('Code Studioのメインモジュールを一意に解決できません');
     const mainModule = modules[0][1];
@@ -77,7 +81,7 @@ function prepareCodeStudioRevision(projectRoot) {
     }
     // 言語モジュールがメインモジュール名をimportするため、グラフ全体を同じ版のURLへ移す。
     const directory = `assets-ui-${digest.digest('hex').slice(0, 20)}`;
-    return { originals, assets, mainModule, directory, html: html.replaceAll('./assets/', `./${directory}/`) };
+    return { originals, assets, mainModule, directory, archivePath, html: html.replaceAll('./assets/', `./${directory}/`) };
 }
 
 function finalizeCodeStudioBuild(buildRoot, { projectRoot = path.resolve(__dirname, '..'), checkOnly = false } = {}) {
@@ -100,6 +104,17 @@ function finalizeCodeStudioBuild(buildRoot, { projectRoot = path.resolve(__dirna
     if (currentHtml !== revision.originals.get('index.html').toString('utf8') && currentHtml !== revision.html) {
         throw new Error('Code Studioの配信HTMLに未確認の変更があります');
     }
+    const archive = path.join(root, revision.archivePath);
+    const originalIndex = revision.originals.get('index.html');
+    if (fs.existsSync(archive) && !fs.readFileSync(archive).equals(originalIndex)) {
+        throw new Error('Code StudioのQA用HTML原本が一致しません');
+    }
+    if (checkOnly) {
+        if (!fs.existsSync(archive)) throw new Error('Code StudioのQA用HTML原本がありません');
+    } else {
+        fs.mkdirSync(path.dirname(archive), { recursive: true });
+        fs.writeFileSync(archive, originalIndex);
+    }
     for (const [name, bytes] of revision.assets) {
         const target = path.join(root, name.replace(/^assets\//, `${revision.directory}/`));
         if (checkOnly) {
@@ -114,7 +129,7 @@ function finalizeCodeStudioBuild(buildRoot, { projectRoot = path.resolve(__dirna
     } else {
         fs.writeFileSync(index, revision.html);
     }
-    return { directory: revision.directory, mainModule: revision.mainModule, assetCount: revision.assets.size };
+    return { directory: revision.directory, mainModule: revision.mainModule, assetCount: revision.assets.size, archivePath: revision.archivePath };
 }
 
 module.exports = { fixTranslationMarkup, fixHtmlControls, prepareCodeStudioRevision, finalizeCodeStudioBuild };

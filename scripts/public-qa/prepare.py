@@ -20,6 +20,11 @@ import zlib
 
 connections=threading.local()
 
+
+class PublishedDependencyNotFound(ValueError):
+    """Only a checked published URL returning HTTP 404 permits a legacy URL."""
+
+
 def published_bytes(entry):
     url=entry['url']
     for redirect in range(4):
@@ -37,6 +42,8 @@ def published_bytes(entry):
             url=urllib.parse.urljoin(url,location);continue
         if response.status in (408,429,500,502,503,504):
             response.read();raise OSError('Temporary published site HTTP '+str(response.status))
+        if response.status==404:
+            response.read();raise PublishedDependencyNotFound('Published dependency HTTP 404: '+entry['path'])
         if response.status!=200:
             response.read();raise ValueError('Published dependency HTTP '+str(response.status)+': '+entry['path'])
         return response.read(entry['bytes']+1)
@@ -82,7 +89,14 @@ def materialize(root,entry,reuse_root=None):
         if data is None:
             for attempt in range(3):
                 try:
-                    data=published_bytes(entry)
+                    try:
+                        data=published_bytes(entry)
+                    except PublishedDependencyNotFound:
+                        # 配信前だけ存在しない原本保存URLは、明示された旧URLへ戻れる。
+                        # 改変・他のHTTP失敗・取得境界違反では切り替えず、同じ原本契約を守る。
+                        if not entry.get('fallback_url'):
+                            raise
+                        data=published_bytes({**entry, 'url':entry['fallback_url']})
                     break
                 except (OSError,http.client.HTTPException) as error:
                     if getattr(connections,'https',None):connections.https.close();connections.https=None

@@ -33,6 +33,123 @@ class DependencyReuse(unittest.TestCase):
         target.write_bytes(body)
         return target
 
+    def archived_entry(self, body):
+        entry = self.entry(body, 'pikalab/.code-studio/index.html')
+        entry['url'] = ('https://katakatalab.com/pikalab/code-studio/qa-source/index-'
+                        + entry['sha256'] + '.bin')
+        entry['fallback_url'] = 'https://katakatalab.com/pikalab/code-studio/index.html'
+        return entry
+
+    def test_missing_archive_uses_legacy_url_under_the_same_original_contract(self):
+        body = b'pinned original HTML'
+        entry = self.archived_entry(body)
+        with patch.object(prepare, 'published_bytes', side_effect=[
+                prepare.PublishedDependencyNotFound('HTTP 404'), body]) as fetch:
+            prepare.materialize(self.baseline, entry)
+        self.assertEqual(fetch.call_args_list[0].args, (entry,))
+        self.assertEqual(fetch.call_args_list[1].args, ({**entry, 'url': entry['fallback_url']},))
+        self.assertEqual(fetch.call_count, 2)
+        self.assertEqual((self.baseline / entry['path']).read_bytes(), body)
+
+    def test_published_archive_never_requests_the_changed_live_page(self):
+        body = b'pinned original HTML'
+        entry = self.archived_entry(body)
+        with patch.object(prepare, 'published_bytes', return_value=body) as fetch:
+            prepare.materialize(self.baseline, entry)
+        fetch.assert_called_once_with(entry)
+        self.assertEqual((self.baseline / entry['path']).read_bytes(), body)
+
+    def test_bad_archive_is_rejected_without_legacy_fallback(self):
+        body = b'pinned original HTML'
+        entry = self.archived_entry(body)
+        for bad_body in (b'x' * len(body), body + b'changed'):
+            with self.subTest(bad_body=bad_body):
+                with patch.object(prepare, 'published_bytes', return_value=bad_body) as fetch:
+                    with self.assertRaisesRegex(ValueError, 'Published dependency changed'):
+                        prepare.materialize(self.baseline, entry)
+                fetch.assert_called_once_with(entry)
+                self.assertFalse((self.baseline / entry['path']).exists())
+
+    def test_missing_archive_does_not_allow_changed_legacy_bytes(self):
+        body = b'pinned original HTML'
+        entry = self.archived_entry(body)
+        with patch.object(prepare, 'published_bytes', side_effect=[
+                prepare.PublishedDependencyNotFound('HTTP 404'), b'x' * len(body)]) as fetch:
+            with self.assertRaisesRegex(ValueError, 'Published dependency changed'):
+                prepare.materialize(self.baseline, entry)
+        self.assertEqual(fetch.call_count, 2)
+        self.assertFalse((self.baseline / entry['path']).exists())
+
+    def test_only_http_404_permits_archive_fallback(self):
+        entry = self.archived_entry(b'pinned original HTML')
+        for status in (403, 410, 500):
+            with self.subTest(status=status):
+                response = type('Response', (), {'status': status, 'read': lambda *_: b''})()
+                connection = type('Connection', (), {
+                    'request': lambda *_args, **_kwargs: None,
+                    'getresponse': lambda _: response,
+                    'close': lambda _: None
+                })()
+                with patch.object(prepare.connections, 'https', connection, create=True):
+                    with patch.object(prepare.http.client, 'HTTPSConnection', return_value=connection):
+                        with patch.object(prepare.time, 'sleep'):
+                            with patch.object(prepare, 'published_bytes', wraps=prepare.published_bytes) as fetch:
+                                with self.assertRaises((ValueError, RuntimeError)):
+                                    prepare.materialize(self.baseline, entry)
+                self.assertTrue(fetch.call_count >= 1)
+                self.assertTrue(all(call.args[0]['url'] == entry['url'] for call in fetch.call_args_list))
+                self.assertFalse((self.baseline / entry['path']).exists())
+
+    def test_http_404_is_distinguished_and_consumed(self):
+        class Response:
+            status = 404
+            consumed = False
+
+            def read(self):
+                self.consumed = True
+                return b'not found'
+
+        response = Response()
+        connection = type('Connection', (), {
+            'request': lambda *_args, **_kwargs: None,
+            'getresponse': lambda _: response
+        })()
+        with patch.object(prepare.connections, 'https', connection, create=True):
+            with self.assertRaises(prepare.PublishedDependencyNotFound):
+                prepare.published_bytes(self.archived_entry(b'pinned original HTML'))
+        self.assertTrue(response.consumed)
+
+    def test_legacy_url_keeps_the_existing_anonymous_origin_boundary(self):
+        entry = self.archived_entry(b'pinned original HTML')
+        actual_fetch = prepare.published_bytes
+        for url in ('http://katakatalab.com/original.bin', 'https://example.com/original.bin',
+                    'https://katakatalab.com/original.bin?token=example',
+                    'https://katakatalab.com/original.bin#fragment'):
+            with self.subTest(url=url):
+                entry['fallback_url'] = url
+
+                def fetch(candidate):
+                    if candidate['url'] == entry['url']:
+                        raise prepare.PublishedDependencyNotFound('HTTP 404')
+                    return actual_fetch(candidate)
+
+                with patch.object(prepare, 'published_bytes', side_effect=fetch):
+                    with patch.object(prepare.http.client, 'HTTPSConnection') as connection:
+                        with self.assertRaisesRegex(ValueError, 'Only anonymous published site dependencies'):
+                            prepare.materialize(self.baseline, entry)
+                connection.assert_not_called()
+                self.assertFalse((self.baseline / entry['path']).exists())
+
+    def test_matching_archive_entry_reuses_verified_local_bytes_without_network(self):
+        body = b'pinned original HTML'
+        entry = self.archived_entry(body)
+        self.put(self.candidate, entry['path'], body)
+        with patch.object(prepare, 'published_bytes') as fetch:
+            prepare.materialize(self.baseline, entry, self.candidate)
+            prepare.materialize(self.baseline, entry)
+        fetch.assert_not_called()
+        self.assertEqual((self.baseline / entry['path']).read_bytes(), body)
+
     def test_matching_candidate_is_reused_without_network_and_not_modified(self):
         body = b'published bytes'
         entry = self.entry(body)
