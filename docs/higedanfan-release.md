@@ -2,7 +2,7 @@
 
 公開先：https://katakatalab.com/higedanfan/
 
-楽曲データとアプリの編集元は [higedanfan](https://github.com/katakata0522/higedanfan)。この版のソースは [3d80615](https://github.com/katakata0522/higedanfan/tree/3d806154d2daba515e37e597a2490add5aada0f8)。Node.js 24 で npm ci、npm run lint、npm test、npm run build の順に実行する。
+楽曲データとアプリの編集元は [higedanfan](https://github.com/katakata0522/higedanfan)。この版のソースは [b2adfef](https://github.com/katakata0522/higedanfan/tree/b2adfef555a2ebafdf89aaf204eb8fcebcd9ae0e)。Node.js 24 で npm ci、npm run lint、npm test、npm run build の順に実行する。
 
 聖地マップは場所とバンドのつながりで絞り込み、複数の分類に属する場所はそれぞれに表示する。広域しか確認できない撮影地は地図の範囲を明示し、訪問案内をしない場所には地図や訪問記録を表示しない。
 
@@ -44,4 +44,4 @@
 
 2026-11-18の公開同期では、`pushState`／`popstate` 対応と `<link rel="canonical">` / `og:url` 同期、トップ付箋やメニュー等のセマンティック `<a>` 化、PC幅メニュードロワーの2列フッター収納化を反映した。また聖地マップカード下部の関連曲リンク化、初期空セトリ＋`M01⇄EN1` バッジ切替＋13曲以上の2列ライブポスター出力、今日の1曲診断のスロー曲判定・単文コピー統一、不要チャンク削除と遅延分割を実施した。
 
-2026-11-19の公開同期では、スキップボタン・Escape・オーバーレイの操作でイントロをすぐに閉じるようにした。アプリとマイセトリの読み込み中は画面に案内を表示する。
+2026-11-19の公開同期では、スキップボタン・Escape・オーバーレイの操作でイントロをすぐに閉じるようにした。アプリとマイセトリの読み込み中は画面に案内を表示する。続く同日の反映（b2adfef）では、音域一覧の配信日一本化と裏声未設定の傍線（`—`）統一、聖地巡礼マップ・歴代ツアー・楽曲ガイドの操作整理、検定セット別記録、複数マイセトリ保存、および「マイノート」（全115スタンプ・5×4/4×5表示・未獲得★特別称号の条件秘匿・ランク・5角形バランスグラフ・非技術者向け「ファイルに保存」表記）を反映した。
