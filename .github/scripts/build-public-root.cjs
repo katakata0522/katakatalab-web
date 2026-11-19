@@ -342,10 +342,28 @@ function stampRuntimeWorkers(publicRoot = outputRoot) {
   });
 }
 
-function buildPublicRoot() {
+function resolvePublicDirectories(additionalDirectories = []) {
+  if (!Array.isArray(additionalDirectories)) throw new TypeError('追加する公開ディレクトリは配列で指定してください');
+  const directories = [...PUBLIC_DIRECTORIES];
+  const reserved = new Set([...FORBIDDEN_PUBLIC_ENTRIES, ...FORBIDDEN_NESTED_DIRECTORIES,
+    'config', 'qa', 'pikalab', 'public-build', ...PUBLIC_ROOT_FILES,
+    ...PUBLIC_DIRECTORIES.map(entry => entry.split('/')[0]),
+    ...RETIRED_PUBLIC_DIRECTORIES.map(entry => entry.split('/')[0])]);
+  for (const name of additionalDirectories) {
+    if (typeof name !== 'string' || !/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(name) || reserved.has(name)) {
+      throw new Error(`追加の公開ディレクトリが不正または重複しています: ${name}`);
+    }
+    reserved.add(name);
+    directories.push(name);
+  }
+  return directories;
+}
+
+function buildPublicRoot(additionalDirectories = []) {
+  const directories = resolvePublicDirectories(additionalDirectories);
   if (fs.existsSync(outputRoot)) fs.rmSync(outputRoot, { recursive: true, force: true });
   fs.mkdirSync(outputRoot, { recursive: true });
-  [...PUBLIC_ROOT_FILES, ...PUBLIC_DIRECTORIES].forEach(copyEntry);
+  [...PUBLIC_ROOT_FILES, ...directories].forEach(copyEntry);
   // 英語ページはレビュー済みのチェックイン済みHTMLを正本として、そのまま公開成果物へコピーする。
   // ビルド時の再生成で確認済みUIや文言を古いテンプレートへ巻き戻さない。
   validateOutput();
@@ -358,7 +376,7 @@ function buildPublicRoot() {
   if (educationAudit.errors.length) throw new Error(educationAudit.errors.join('\n'));
   // コピー・解析ローダー挿入後の最終成果物で公開必須ページを確認する。
   verifyReleaseReadyPrivacy(outputRoot);
-  console.log(`公開成果物を作成しました: files=${PUBLIC_ROOT_FILES.length}, directories=${PUBLIC_DIRECTORIES.length}, analytics=${analyticsCoverage.checked}, injected=${analyticsCoverage.injected}, existing=${analyticsCoverage.existing}, legacyRemoved=${analyticsCoverage.legacyRemoved}`);
+  console.log(`公開成果物を作成しました: files=${PUBLIC_ROOT_FILES.length}, directories=${directories.length}, analytics=${analyticsCoverage.checked}, injected=${analyticsCoverage.injected}, existing=${analyticsCoverage.existing}, legacyRemoved=${analyticsCoverage.legacyRemoved}`);
 }
 
 if (require.main === module) buildPublicRoot();
@@ -371,6 +389,7 @@ module.exports = {
   ANALYTICS_SCRIPT_PATH,
   GA4_MEASUREMENT_ID,
   buildPublicRoot,
+  resolvePublicDirectories,
   ensureAnalyticsCoverage,
   isForbiddenNestedFile,
   isPublicRootSourcePath,
