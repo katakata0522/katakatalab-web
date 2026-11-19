@@ -253,6 +253,30 @@ test('権利確認中の画像をPublic成果物へアップロードしない',
     assert.doesNotMatch(readWorkflow(), /actions\/upload-artifact@/);
 });
 
+test('全件と差分のどちらでも、選んだブラウザー検査をちょうど一度ずつ実行する', () => {
+    const validate = workflowJobs(readWorkflow()).validate;
+    assert.match(validate, /fail-fast: false/);
+    const selection = validate.match(/group: \$\{\{ (.*?) \}\}/)[1];
+    const groups = full => evaluate(selection, { needs: { scope: { outputs: { full } } }, fromJSON: JSON.parse });
+    assert.deepEqual(groups('true'), ['site', 'practice']);
+    assert.deepEqual(groups('false'), ['all']);
+    const steps = [...validate.matchAll(/      - name: (.*?)\n        if: "\$\{\{ (.*?) \}\}"/g)]
+        .filter(([, , condition]) => condition.includes('steps.browser_setup.outcome'));
+    const context = { success: () => true, cancelled: () => false, github: { event_name: 'pull_request' },
+        steps: { verified_build: { outcome: 'success' }, browser_setup: { outcome: 'success' } },
+        env: { PIKALAB_COLLECT_ALL_FAILURES: 'false', PIKALAB_COMPARE_BASELINE: 'true' },
+        needs: { scope: { result: 'success', outputs: Object.fromEntries(Object.keys(LABS).map(key => [key, 'true'])) } } };
+    const used = new Set();
+    for (const [, name, condition] of steps) {
+        for (const full of ['true', 'false']) {
+            const running = groups(full).filter(group => evaluate(condition, { ...context, matrix: { group } }));
+            assert.equal(running.length, 1, name);
+            used.add(running[0]);
+        }
+    }
+    assert.deepEqual([...used].sort(), ['all', 'practice', 'site']);
+});
+
 test('通常PRは先行ブラウザ失敗後に停止し、全件診断は続行し、中断・未検証build・ブラウザ準備失敗は起動しない', () => {
     const workflow = readWorkflow();
     const validate = workflow.split('  validate:\n')[1].split('  space-browser:\n')[0];
@@ -269,7 +293,7 @@ test('通常PRは先行ブラウザ失敗後に停止し、全件診断は続行
         for (const diagnostic of [false, true]) {
             for (const priorStatus of ['success', 'failure', 'cancelled']) {
                 for (const { build, scope, browser } of prerequisites) {
-                    const context = { success: () => priorStatus === 'success', cancelled: () => priorStatus === 'cancelled',
+                    const context = { matrix: { group: 'all' }, success: () => priorStatus === 'success', cancelled: () => priorStatus === 'cancelled',
                         steps: { verified_build: { outcome: build }, browser_setup: { outcome: browser } },
                         needs: { scope: { result: scope, outputs: allOutputs } },
                         env: { PIKALAB_COLLECT_ALL_FAILURES: String(diagnostic), PIKALAB_COMPARE_BASELINE: 'true' },
@@ -301,13 +325,15 @@ test('ビルドと成果物検証を先に済ませ、必要なブラウザとPD
         assert.doesNotMatch(installation, /playwright install|cache-hit/, '異版の取得やキャッシュへ暗黙に切り替えない');
         const tools = indexOfCommand('command -v python3');
         assert.ok(tools >= 0 && tools < build, `${name}: Pythonは素材準備前に必要`);
-        assert.equal(steps[tools][2].includes('poppler-utils'), ['quest-browser', 'book-browser'].includes(name));
+        assert.equal(steps[tools][2].includes('bash .github/scripts/install-pikalab-pdf-tools.sh'), ['quest-browser', 'book-browser'].includes(name));
         const browserChecks = steps.filter(([, , step]) => /npm run (?:verify:code-studio-security|guard:visual|test:[\w-]+-e2e)|RUN_PIKALAB_TOP_BROWSER=1/.test(step));
         assert.ok(browserChecks.length > 0, name);
         for (const check of browserChecks) assert.ok(steps.indexOf(check) > install, `${name}: ${check[1]}`);
     }
     const commonUnit = jobs.scope.match(/      - name: Run all PikaLab tests\n([\s\S]*?)(?=      - name:|$)/)[1];
     assert.doesNotMatch(commonUnit, /if:/, '共通準備・セキュリティ失敗後は既定のsuccess条件で単体テストを起動しない');
+    const pdfTools = require('node:fs').readFileSync(join(__dirname, 'install-pikalab-pdf-tools.sh'), 'utf8');
+    assert.match(pdfTools, /install -y --no-install-recommends python3 poppler-utils/);
 });
 
 test('全件診断は明示的な手動指定または全画面比較のときだけ有効になる', () => {
@@ -479,7 +505,7 @@ test('Kanjiはscope内の共通検証成功と自身の選択を必要とし、�
     const expression = step.match(/if: "\$\{\{ (.*?) \}\}"/)[1];
     for (const selected of ['true', 'false', '']) {
         for (const result of ['success', 'failure', 'cancelled', 'skipped']) {
-            const context = { success: () => true, cancelled: () => false,
+            const context = { matrix: { group: 'all' }, success: () => true, cancelled: () => false,
                 steps: { verified_build: { outcome: 'success' }, browser_setup: { outcome: 'success' } },
                 needs: { scope: { result, outputs: { kanji: selected } } },
                 env: { PIKALAB_COLLECT_ALL_FAILURES: 'false' } };
