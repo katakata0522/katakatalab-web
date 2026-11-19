@@ -11,6 +11,7 @@ const repositoryRoot = path.resolve(__dirname, '..');
 const CACHE_PREFIX_BY_FILE = new Map([
   ['doujin-calc/sw.js', 'doujin-calc-'],
   ['emphasis-lines/sw.js', 'emphasis-lines-'],
+  ['higedanfan/sw.js', 'higedanfan-pwa-'],
   ['lab-tools/gravity-todo/sw.js', 'gravity-todo-app-v'],
   ['lab-tools/kids-smile-land/service-worker.js', 'smile-land-v'],
   ['password-generator/sw.js', 'password-gen-'],
