@@ -1,4 +1,4 @@
-import { MAX_IMAGE_SIZE } from '../constants.js?v=20261010-1';
+import { MAX_IMAGE_SIZE } from '../constants.js?v=20261119-review';
 
 /**
  * ImageService - 画像の読み込みとリサイズ処理を担当

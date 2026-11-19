@@ -835,6 +835,14 @@ body.dark-mode .pikalab-wing {
   position: relative;
   overflow: hidden;
 }
+.card-body {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  width: 100%;
+  min-width: 0;
+}
+
 body.dark-mode .card {
   background: rgba(28, 37, 65, 0.92);
   border-color: rgba(255, 255, 255, 0.08);

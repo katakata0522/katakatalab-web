@@ -109,7 +109,7 @@ test('index.html は現行タイトルと canonical / manifest / PWA スクリ�
   assert.match(html, /<link rel="manifest" href="manifest\.webmanifest">/);
   assert.match(html, /<link rel="icon" href="assets\/icon-192\.png" type="image\/png">/);
   assert.match(html, /<link rel="stylesheet" href="style\.css\?v=[^"]+">/);
-  assert.match(html, /<script src="js\/pwa\.js" defer><\/script>/);
+  assert.match(html, /<script src="js\/pwa\.js(?:\?v=[a-zA-Z0-9_-]+)?" defer><\/script>/);
   assert.match(html, /<script src="js\/pro-config\.js" defer><\/script>/);
   assert.match(html, /<script src="vendor\/qrious\.min\.js" defer><\/script>/);
   assert.match(html, /<script src="script\.js\?v=[^"]+" defer><\/script>/);

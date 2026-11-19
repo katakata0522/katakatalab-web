@@ -29,6 +29,12 @@ document.addEventListener('DOMContentLoaded', () => {
   const hintBar   = document.getElementById('hint-bar');
   const hintClose = document.getElementById('hint-close');
   let hintDismissed = false;
+  if (hintBar && typeof ResizeObserver === 'function') {
+    const hintObserver = new ResizeObserver(() => {
+      document.documentElement.style.setProperty('--hint-height', `${hintBar.offsetHeight}px`);
+    });
+    hintObserver.observe(hintBar);
+  }
 
   function hideHint() {
     if (!hintBar || hintDismissed) return;

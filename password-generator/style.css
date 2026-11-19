@@ -1229,7 +1229,7 @@ body.dark-mode .pwd-item:hover {
     align-items: center !important;
     flex-wrap: nowrap !important;
   }
-  #history-btn, #copy-all-btn {
+  #history-btn, #visibility-all-btn, #copy-all-btn {
     font-size: 0.72rem !important;
     white-space: nowrap !important;
   }
@@ -1307,3 +1307,15 @@ body.dark-mode .pwd-item:hover {
 
 /* Recovery is discoverable only when legacy storage exists. */
 .pwd-tab-btn[hidden] { display: none !important; }
+
+.pwd-result-header .btn-link {
+  background: transparent;
+  border: none;
+  border-radius: var(--radius-btn);
+  padding: 0.35rem 0.5rem;
+  color: var(--c-primary);
+  font: inherit;
+  font-weight: 700;
+  white-space: nowrap;
+  cursor: pointer;
+}

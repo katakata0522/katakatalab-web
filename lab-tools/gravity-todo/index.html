@@ -36,7 +36,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;700&family=Noto+Sans+JP:wght@700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css?v=20260824-responsive">
+  <link rel="stylesheet" href="style.css?v=20261119-review">
 
   <script src="vendor/matter.min.js"></script>
 </head>
@@ -50,7 +50,7 @@
   <div id="hint-bar" class="hint-bar" role="status" aria-live="polite">
     <span class="hint-icon">💡</span>
     <span class="hint-text">下の一覧で <strong>詳細</strong> <strong>完了</strong> <strong>削除</strong>。ブロックはドラッグ、ダブルクリックで詳細、長押しで爆破。</span>
-    <button id="hint-close" class="hint-close" aria-label="閉じる">✕</button>
+    <button id="hint-close" class="hint-close" aria-label="閉じる"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg></button>
   </div>
 
   <main id="ui-layer">
@@ -62,10 +62,10 @@
           </div>
           <div class="header-controls">
             <button id="install-btn" class="icon-btn hidden" aria-label="アプリをインストール" title="アプリをインストール">📱</button>
-            <button id="rearrange-btn" class="icon-btn" aria-label="ブロックを落として整列" title="ブロックを落として整列" disabled aria-disabled="true">↧</button>
+            <button id="rearrange-btn" class="icon-btn" aria-label="ブロックを落として整列" title="ブロックを落として整列" disabled aria-disabled="true"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v13m-5-5 5 5 5-5M5 21h14"/></svg></button>
             <button id="bgm-btn" class="icon-btn" aria-label="BGM ON/OFF" title="BGM ON/OFF">🎵</button>
             <button id="sfx-mute-btn" class="icon-btn" aria-label="効果音 ON/OFF" title="効果音 ON/OFF" aria-pressed="false">🔇</button>
-            <button id="settings-btn" class="icon-btn" aria-label="カラー設定" aria-expanded="false" aria-controls="settings-panel">⚙</button>
+            <button id="settings-btn" class="icon-btn" aria-label="カラー設定" aria-expanded="false" aria-controls="settings-panel"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 17h16M8 4v6m8 4v6"/></svg></button>
             <button id="nuke-btn" class="hidden">全爆破</button>
           </div>
         </div>
@@ -76,7 +76,7 @@
           <strong id="task-count">0</strong>
           <span class="status-label" style="margin-left:0.8rem; color:var(--text-dim);">今日の爆破数</span>
           <strong id="destroy-count" style="color:var(--accent-color);">0</strong>
-          <button id="share-btn" class="icon-btn" aria-label="Xでシェア" title="破壊スコアをXでシェア" style="margin-left:auto; font-family:sans-serif; font-size:1.1rem; padding: 0 4px;">𝕏</button>
+          <button id="share-btn" class="icon-btn" aria-label="Xでシェア" title="破壊スコアをXでシェア" style="margin-left:auto; font-family:sans-serif; font-size:1.1rem; padding: 0 4px;">X</button>
         </div>
 
         <div id="undo-snackbar" class="history-controls" role="status" aria-live="polite">
@@ -116,9 +116,10 @@
           <p class="task-console-kicker">TODAY'S DROP</p>
           <h2 class="task-console-title">落として、片づける</h2>
         </div>
-        <span id="task-summary" class="task-summary">0件</span>
       </div>
 
+      <details id="task-list-panel" class="task-list-panel">
+        <summary>タスク一覧 <span id="task-summary" class="task-summary">0件</span></summary>
       <p class="task-guide">ブロックで遊びながら、下の一覧から普通のTodoとして操作できます。</p>
 
       <details class="tool-guide">
@@ -132,6 +133,7 @@
 
       <div id="task-list" class="task-list hidden" aria-label="タスク一覧"></div>
       <p id="task-empty-state" class="task-empty-state">まず1件DROP。タスクは重力ブロックになり、一覧から詳細・完了・削除できます。</p>
+      </details>
 
       <div class="input-container">
         <!-- 追加: カラーラベル選択 -->
@@ -200,7 +202,7 @@
           <span class="detail-progress-track"><span id="detail-progress-fill"></span></span>
         </div>
         <button id="detail-explode-btn" class="detail-explode-btn" aria-label="爆破">💥 爆破</button>
-        <button id="detail-close-btn" class="detail-close-btn" aria-label="閉じる">✕</button>
+        <button id="detail-close-btn" class="detail-close-btn" aria-label="閉じる"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg></button>
       </div>
     </div>
     <ul id="detail-list" class="detail-list"></ul>

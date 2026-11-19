@@ -43,7 +43,7 @@
   <script src="./js/lucide.min.js"></script>
 
   <!-- Custom Stylesheet -->
-  <link rel="stylesheet" href="./css/style.css">
+  <link rel="stylesheet" href="./css/style.css?v=20261119-review">
 
   <!-- JSON-LD 構造化マークアップ (WebApplication & FAQPage) -->
   <script type="application/ld+json">
@@ -79,6 +79,7 @@
           <i data-lucide="book-open" class="w-5 h-5"></i>
         </div>
         <div>
+          <a href="../" class="lab-home-link">KatakataLab に戻る</a>
           <h1 class="text-sm sm:text-base font-black text-slate-900 dark:text-white leading-tight">同人即売会 頒布価格＆お釣りシミュレーター <span class="text-xs bg-indigo-100 dark:bg-indigo-950 text-indigo-700 dark:text-indigo-300 px-1.5 py-0.5 rounded font-black">Pro</span></h1>
           <p class="text-[10px] text-slate-500 dark:text-slate-400 font-medium">コミケ・COMITIA・赤ブー・M3・ゲーム即売会・アンソロ対応</p>
         </div>
@@ -463,9 +464,9 @@
                 <span class="text-slate-400 text-[11px]">完売時純利益</span>
                 <span class="font-black text-emerald-600 dark:text-emerald-400" id="custom-max-profit">+¥33,900</span>
               </div>
-              <div class="flex justify-between text-[10px] text-slate-400 pt-1 border-t border-slate-200/60 dark:border-slate-700/60">
-                <span id="custom-profit-per-book">1部手残り: ¥346</span>
-                <span class="font-bold" id="custom-net-price">¥800</span>
+              <div class="custom-price-summary flex justify-between text-[10px] text-slate-400 pt-1 border-t border-slate-200/60 dark:border-slate-700/60">
+                <span id="custom-profit-per-book">1部利益: ¥346</span>
+                <span class="font-bold" id="custom-net-price">頒布価格: ¥800</span>
               </div>
             </div>
           </div>
@@ -513,6 +514,7 @@
       <!-- 4種商品ボタングリッド -->
       <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
         
+        <div class="counter-product">
         <button type="button" id="btn-sell-newbook" class="p-3 bg-indigo-600/80 hover:bg-indigo-600 active:scale-95 text-left rounded-2xl border border-indigo-400/30 transition-all touch-target flex flex-col justify-between group">
           <div class="flex items-center justify-between w-full">
             <span class="text-xs font-black flex items-center gap-1">
@@ -523,7 +525,10 @@
           </div>
           <div class="text-[11px] text-indigo-200 mt-2 font-bold group-hover:text-white">+1冊 売れた！</div>
         </button>
+          <button type="button" id="btn-undo-newbook" class="counter-undo" aria-label="新刊の売上を1冊取り消す" disabled>−1冊 取り消し</button>
+        </div>
 
+        <div class="counter-product">
         <button type="button" id="btn-sell-set" class="p-3 bg-purple-600/80 hover:bg-purple-600 active:scale-95 text-left rounded-2xl border border-purple-400/30 transition-all touch-target flex flex-col justify-between group">
           <div class="flex items-center justify-between w-full">
             <span class="text-xs font-black flex items-center gap-1">
@@ -534,7 +539,10 @@
           </div>
           <div class="text-[11px] text-purple-200 mt-2 font-bold group-hover:text-white">+1組 セット売上！</div>
         </button>
+          <button type="button" id="btn-undo-set" class="counter-undo" aria-label="セットの売上を1組取り消す" disabled>−1組 取り消し</button>
+        </div>
 
+        <div class="counter-product">
         <button type="button" id="btn-sell-backnumber" class="p-3 bg-slate-700/80 hover:bg-slate-700 active:scale-95 text-left rounded-2xl border border-slate-600 transition-all touch-target flex flex-col justify-between group">
           <div class="flex items-center justify-between w-full">
             <span class="text-xs font-black flex items-center gap-1">
@@ -545,7 +553,10 @@
           </div>
           <div class="text-[11px] text-slate-300 mt-2 font-bold group-hover:text-white">+1冊 既刊売上！</div>
         </button>
+          <button type="button" id="btn-undo-backnumber" class="counter-undo" aria-label="既刊の売上を1冊取り消す" disabled>−1冊 取り消し</button>
+        </div>
 
+        <div class="counter-product">
         <button type="button" id="btn-sell-goods" class="p-3 bg-amber-700/80 hover:bg-amber-700 active:scale-95 text-left rounded-2xl border border-amber-500/40 transition-all touch-target flex flex-col justify-between group">
           <div class="flex items-center justify-between w-full">
             <span class="text-xs font-black flex items-center gap-1">
@@ -556,6 +567,8 @@
           </div>
           <div class="text-[11px] text-amber-300 mt-2 font-bold group-hover:text-white">+1個 グッズ売上！</div>
         </button>
+          <button type="button" id="btn-undo-goods" class="counter-undo" aria-label="グッズの売上を1個取り消す" disabled>−1個 取り消し</button>
+        </div>
 
       </div>
     </div>
@@ -916,7 +929,7 @@
   </footer>
 
   <!-- アプリケーションモジュール読み込み -->
-  <script type="module" src="./js/app.js?v=20261027-1"></script>
+  <script type="module" src="./js/app.js?v=20261119-review"></script>
 
   <!-- Service Worker 登録 -->
   <script>

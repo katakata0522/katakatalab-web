@@ -62,6 +62,22 @@ test('保護者向けAmazonリンクが残っていても教育エリアでは�
   }
 });
 
+test('版付きCodeStudioでも既知のTypeScript説明文だけを許容し、原本が変われば送信処理を拒否する', () => {
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), 'educational-code-studio-'));
+  try {
+    writeFixture(root, 'pikalab/index.html', '<main>PikaLab</main>');
+    writeFixture(root, 'lab-tools/kids-smile-land/index.html', '<main>Kids</main>');
+    const relative = 'pikalab/code-studio/assets-ui-0123456789abcdef0123/ts.worker-B0J26iPs.js';
+    const original = fs.readFileSync(path.resolve(__dirname, '../pikalab/.code-studio/assets/ts.worker-B0J26iPs.js'));
+    writeFixture(root, relative, original);
+    assert.deepEqual(auditEducationFiles({ root }).errors, []);
+    fs.appendFileSync(path.join(root, relative), '\n/* changed byte */');
+    assert.match(auditEducationFiles({ root }).errors.join('\n'), /解析イベント送信/);
+  } finally {
+    fs.rmSync(root, { recursive: true, force: true });
+  }
+});
+
 
 
 

@@ -193,3 +193,7 @@ body {
     #recommended-games + .grid .card-attraction { padding: 1rem .5rem; }
 }
 #all-games > summary { cursor: pointer; padding: 1rem .25rem; }
+
+.game-label-part { display: inline-block; white-space: nowrap; }
+.kids-footer-links { display: flex; flex-wrap: wrap; justify-content: center; gap: .5rem 1rem; }
+.kids-footer-links a { display: inline-block; }

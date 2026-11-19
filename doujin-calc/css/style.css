@@ -37,6 +37,26 @@ button, input, select, textarea, a {
   min-height: 44px;
 }
 
+.counter-product { display: flex; flex-direction: column; gap: 0.4rem; min-width: 0; }
+.counter-product > button:first-child { flex: 1; width: 100%; }
+.counter-undo {
+  min-height: 44px;
+  padding: 0.4rem 0.6rem;
+  border: 1px solid #64748b;
+  border-radius: 0.75rem;
+  background: transparent;
+  color: #e2e8f0;
+  font: inherit;
+  font-size: 0.75rem;
+  cursor: pointer;
+}
+.counter-undo:hover:not(:disabled) { background: #334155; }
+.counter-undo:disabled { opacity: 0.45; cursor: default; }
+.counter-undo:focus-visible { outline: 2px solid #c7d2fe; outline-offset: 2px; }
+.custom-price-summary { flex-wrap: wrap; gap: 0.25rem 0.5rem; }
+.lab-home-link { display: inline-block; margin-bottom: 0.2rem; color: #475569; font-size: 0.75rem; text-decoration: underline; text-underline-offset: 3px; }
+.dark .lab-home-link { color: #cbd5e1; }
+
 /* Custom Shadows & Cards */
 .custom-shadow {
   box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.05), 0 2px 6px -1px rgba(0, 0, 0, 0.03);

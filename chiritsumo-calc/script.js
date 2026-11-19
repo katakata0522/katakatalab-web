@@ -1031,6 +1031,15 @@
       DOM.stickyJumpBtn.addEventListener('click', () => {
         document.getElementById('rewardSection').scrollIntoView({ behavior: 'smooth' });
       });
+      // Once rewards are on screen, the jump bar no longer needs to cover them.
+      if (typeof IntersectionObserver === 'function') {
+        const rewardSection = document.getElementById('rewardSection');
+        const inset = Math.ceil(DOM.stickySummaryBar.getBoundingClientRect().height);
+        const rewardObserver = new IntersectionObserver(([entry]) => {
+          DOM.stickySummaryBar.hidden = entry.isIntersecting || entry.boundingClientRect.top < 0;
+        }, { rootMargin: `0px 0px -${inset}px 0px` });
+        rewardObserver.observe(rewardSection);
+      }
 
       // カスタム追加
       DOM.toggleCustomBtn.addEventListener('click', () => {

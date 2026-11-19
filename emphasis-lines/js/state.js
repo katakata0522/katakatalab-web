@@ -1,4 +1,4 @@
-import { PRESETS, DEFAULT_CANVAS_WIDTH, DEFAULT_CANVAS_HEIGHT } from './constants.js?v=20261010-1';
+import { PRESETS, DEFAULT_CANVAS_WIDTH, DEFAULT_CANVAS_HEIGHT } from './constants.js?v=20261119-review';
 
 export class Store {
     constructor() {

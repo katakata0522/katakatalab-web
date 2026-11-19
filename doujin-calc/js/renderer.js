@@ -115,6 +115,10 @@ export class UIRenderer {
       btnSellSet: document.getElementById('btn-sell-set'),
       btnSellBackNumber: document.getElementById('btn-sell-backnumber'),
       btnSellGoods: document.getElementById('btn-sell-goods'),
+      btnUndoNewBook: document.getElementById('btn-undo-newbook'),
+      btnUndoSet: document.getElementById('btn-undo-set'),
+      btnUndoBackNumber: document.getElementById('btn-undo-backnumber'),
+      btnUndoGoods: document.getElementById('btn-undo-goods'),
       btnCounterReset: document.getElementById('btn-counter-reset'),
 
       // お品書きメモ ＆ アンソロジー精算書
@@ -327,9 +331,9 @@ export class UIRenderer {
       this.dom.customMaxProfit.textContent = `${customPlan.maxProfit >= 0 ? '+' : ''}¥${customPlan.maxProfit.toLocaleString()}`;
       this.dom.customMaxProfit.className = `font-black ${customPlan.maxProfit >= 0 ? 'text-emerald-600 dark:text-emerald-400' : 'text-rose-600 dark:text-rose-400'}`;
     }
-    if (this.dom.customProfitPerBook) this.dom.customProfitPerBook.textContent = `1部手残り: ¥${customPlan.profitPerBook.toLocaleString()}`;
+    if (this.dom.customProfitPerBook) this.dom.customProfitPerBook.textContent = `1部利益: ¥${customPlan.profitPerBook.toLocaleString()}`;
     if (this.dom.customNetPrice) {
-      this.dom.customNetPrice.textContent = state.isCashless ? `実質 ¥${customPlan.netPrice.toLocaleString()}` : `¥${state.customPrice.toLocaleString()}`;
+      this.dom.customNetPrice.textContent = state.isCashless ? `手数料差引後: ¥${customPlan.netPrice.toLocaleString()}` : `頒布価格: ¥${state.customPrice.toLocaleString()}`;
     }
 
     // 初心者向け宣伝投資バッジ
@@ -399,6 +403,12 @@ export class UIRenderer {
     if (this.dom.counterValSet) this.dom.counterValSet.textContent = `${multiCounter.set} 組`;
     if (this.dom.counterValBackNumber) this.dom.counterValBackNumber.textContent = `${multiCounter.backNumber} 冊`;
     if (this.dom.counterValGoods) this.dom.counterValGoods.textContent = `${multiCounter.goods} 個`;
+    for (const [button, key] of [
+      [this.dom.btnUndoNewBook, 'newBook'], [this.dom.btnUndoSet, 'set'],
+      [this.dom.btnUndoBackNumber, 'backNumber'], [this.dom.btnUndoGoods, 'goods']
+    ]) {
+      if (button) button.disabled = multiCounter[key] === 0;
+    }
 
     // お品書きメモ生成
     if (this.dom.textareaMenuMemo) {

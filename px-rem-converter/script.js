@@ -48,7 +48,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
   function updateCopyLabel() {
-    els.copyBtn.textContent = pageLang === 'en' ? `Copy this list as code (${customSizes.length})` : `この一覧をコードでコピー（${customSizes.length}件）`;
+    els.copyBtn.textContent = pageLang === 'en' ? `Copy code (${customSizes.length})` : `コードをコピー（${customSizes.length}件）`;
     els.copyBtn.disabled = !customSizes.length || !Number.isFinite(getRoot());
   }
 

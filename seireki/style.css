@@ -200,6 +200,7 @@ body.dark-mode .seireki-tab-btn:hover {
   flex-direction: column;
   gap: 1.5rem;
   width: 100%;
+  min-width: 0;
 }
 
 /* タブコンテンツ制御 */
@@ -324,6 +325,8 @@ body.dark-mode .seireki-tab-btn:hover {
 }
 
 .seireki-eto {
+  display: inline-block;
+  white-space: nowrap;
   font-size: 0.5em;
   color: var(--c-primary);
   vertical-align: middle;
@@ -493,7 +496,7 @@ body.dark-mode .seireki-clear-btn {
 /* 早見表テーブルのスクロール固定化 */
 .seireki-table-container {
   max-height: 410px;
-  overflow-y: auto;
+  overflow: auto;
   border-radius: var(--radius-md);
   border: 1px solid var(--c-glass-border);
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.02);
@@ -502,7 +505,8 @@ body.dark-mode .seireki-clear-btn {
 
 .seireki-table {
   width: 100%;
-  border-collapse: collapse;
+  border-collapse: separate;
+  border-spacing: 0;
   text-align: center;
 }
 
@@ -511,7 +515,10 @@ body.dark-mode .seireki-clear-btn {
   padding: 0.85rem 0.65rem;
   border-bottom: 1px solid var(--c-glass-border);
   font-size: 0.92rem;
+  white-space: nowrap;
 }
+
+.seireki-table th:nth-child(3) { white-space: normal; word-break: keep-all; }
 
 .seireki-table th {
   background-color: var(--c-bg);

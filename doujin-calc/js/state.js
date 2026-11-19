@@ -5,6 +5,15 @@
 
 import { DOUJIN_CONFIG } from './config.js';
 
+const COUNTER_KEYS = ['newBook', 'set', 'backNumber', 'goods'];
+
+export function normalizeMultiCounter(raw) {
+  return Object.fromEntries(COUNTER_KEYS.map(key => {
+    const value = Number(raw?.[key]);
+    return [key, Number.isSafeInteger(value) && value >= 0 ? value : 0];
+  }));
+}
+
 export function defaultDoujinState() {
   return {
     copies: 100,
@@ -158,9 +167,9 @@ export class StateStore {
   loadMultiCounter() {
     try {
       const saved = localStorage.getItem(this.counterKey);
-      return saved ? JSON.parse(saved) : { newBook: 0, set: 0, backNumber: 0, goods: 0 };
+      return normalizeMultiCounter(saved ? JSON.parse(saved) : null);
     } catch (e) {
-      return { newBook: 0, set: 0, backNumber: 0, goods: 0 };
+      return normalizeMultiCounter(null);
     }
   }
 
@@ -200,8 +209,16 @@ export class StateStore {
   }
 
   setCounter(partial) {
-    this.multiCounter = { ...this.multiCounter, ...partial };
+    this.multiCounter = normalizeMultiCounter({ ...this.multiCounter, ...partial });
     this.notify();
+  }
+
+  adjustCounter(key, delta) {
+    if (!COUNTER_KEYS.includes(key) || ![1, -1].includes(delta)) return false;
+    const next = Math.max(0, this.multiCounter[key] + delta);
+    if (!Number.isSafeInteger(next) || next === this.multiCounter[key]) return false;
+    this.setCounter({ [key]: next });
+    return true;
   }
 
   resetCounter() {
