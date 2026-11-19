@@ -1,6 +1,7 @@
 # GitHub連携の作業手順
 
 対象の公開ソースは https://github.com/katakata0522/katakatalab-web です。
+公開QAと配信が使うNodeは `.node-version` にパッチまで固定します。「Node LTS update check」が毎週、公式配布済みの同じLTS系列を確認します。更新候補が出たら担当AIが作業ブランチで `python scripts/public-qa/node_runtime.py --update` を実行し、通常のPR検証・公開手順を使います。週次確認に失敗した場合は、ログの更新候補と配布元の通信エラーを区別してください。
 Dot・Muse・Codexなどから作業するときは、作業場所、権限、認証、コミット名義を別々に確認します。
 別環境のフォルダーが見つからないことや、ツールに名義入力欄がないことだけでは、GitHubの権限不足とは判断できません。
 
