@@ -2,7 +2,7 @@
 
 公開先：https://katakatalab.com/higedanfan/
 
-楽曲データとアプリの編集元は [higedanfan](https://github.com/katakata0522/higedanfan)。この版のソースは [6023cda](https://github.com/katakata0522/higedanfan/tree/6023cda2fdc44d2b5cf204200216241eea9e0fe2)。Node.js 24 で npm ci、npm run lint、npm test、npm run build の順に実行する。
+楽曲データとアプリの編集元は [higedanfan](https://github.com/katakata0522/higedanfan)。この版のソースは [841207b](https://github.com/katakata0522/higedanfan/tree/841207ba529215309576f35bbb26006f7e871ecc)。Node.js 24 で npm ci、npm run lint、npm test、npm run build の順に実行する。
 
 聖地マップは場所とバンドのつながりで絞り込み、複数の分類に属する場所はそれぞれに表示する。広域しか確認できない撮影地は地図の範囲を明示し、訪問案内をしない場所には地図や訪問記録を表示しない。
 
