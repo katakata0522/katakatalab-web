@@ -2,11 +2,11 @@
 
 公開先：https://katakatalab.com/higedanfan/
 
-楽曲データとアプリの編集元は [higedanfan](https://github.com/katakata0522/higedanfan)。この版のソースは [b6afc98](https://github.com/katakata0522/higedanfan/tree/b6afc98216a5bd11a3fb42b81faa7cbf8b38e6c2)。Node.js 24 で npm ci、npm run lint、npm test、npm run build の順に実行する。
+楽曲データとアプリの編集元は [higedanfan](https://github.com/katakata0522/higedanfan)。この版のソースは [3d80615](https://github.com/katakata0522/higedanfan/tree/3d806154d2daba515e37e597a2490add5aada0f8)。Node.js 24 で npm ci、npm run lint、npm test、npm run build の順に実行する。
 
 聖地マップは場所とバンドのつながりで絞り込み、複数の分類に属する場所はそれぞれに表示する。広域しか確認できない撮影地は地図の範囲を明示し、訪問案内をしない場所には地図や訪問記録を表示しない。
 
-生成された index.html、`songs/<楽曲ID>/index.html`、assets 内の JS と CSS、third-party-licenses.txt を higedanfan/ に入れる。未使用の旧バンドルを残さない。開発用設定・API キーは含めない。現在の独立ページは全90曲で、それぞれの紹介文に共通テンプレートを適用する。
+生成された index.html、`songs/<楽曲ID>/index.html`、assets 内の JS と CSS、third-party-licenses.txt を higedanfan/ に入れる。既存のハッシュ付きアセットは、開いているタブからの遅延読み込みに備えて保持する。開発用設定・API キーは含めない。現在の独立ページは全90曲で、それぞれの紹介文に共通テンプレートを適用する。
 
 タブ・ホーム画面のアイコン・共有画像（オリジナルの4ファイル）および Apple Music 公式バッジ SVG（`badges/listen-on-apple-music-ja.svg`）は、編集元の `brand/` にあるファイルを使用する。Publicでは実画像・SVGをGitに含めず、`qa/published-dependencies.json` にサイズ・SHA-256とCI用の代替画像を登録する。本番ではPrivateの `higedanfan/` に置いた実ファイルを `privateOverlay` のSHA-256と照合して配信する。
 
@@ -43,3 +43,5 @@
 2026-11-17の公開同期では、全コーナー・情報ページのヘッダー余白と装飾タグ（`付箋一覧へ戻る`・リード文・楽曲ガイドのカード説明/演奏時間行など）を削って本文がすぐ視界に入る設計へ整理し、サイト全体の専門用語・固い表現を自然な日本語（`配信シングル`・`配信日`・`CD発売日`・`演奏時間`・`参考値なし`・`曲のページを見る`・`音域の参照元`・`王道セトリを入れる` 等）へ統一し、320px幅でも未計測音域表示が収まるよう調整した。
 
 2026-11-18の公開同期では、`pushState`／`popstate` 対応と `<link rel="canonical">` / `og:url` 同期、トップ付箋やメニュー等のセマンティック `<a>` 化、PC幅メニュードロワーの2列フッター収納化を反映した。また聖地マップカード下部の関連曲リンク化、初期空セトリ＋`M01⇄EN1` バッジ切替＋13曲以上の2列ライブポスター出力、今日の1曲診断のスロー曲判定・単文コピー統一、不要チャンク削除と遅延分割を実施した。
+
+2026-11-19の公開同期では、スキップボタン・Escape・オーバーレイの操作でイントロをすぐに閉じるようにした。アプリとマイセトリの読み込み中は画面に案内を表示する。
