@@ -563,7 +563,7 @@ if (!given) {
         await page.locator('#task-input').fill('履歴ボタン検証');
         await page.locator('#task-input').press('Enter');
         const taskList = page.locator('#task-list-panel');
-        const taskListSummary = taskList.locator('summary');
+        const taskListSummary = page.locator('#task-list-panel > summary');
         assert.equal(await taskList.evaluate(panel => panel.open), false);
         await taskListSummary.click();
         const task = page.locator('.task-list-item').filter({hasText:'履歴ボタン検証'});
