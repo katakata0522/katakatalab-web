@@ -338,16 +338,20 @@ function initAvatarSelector() {
  * オフライン・オンライン検知の初期化
  */
 function initNetworkStatusMonitoring() {
-    if (!navigator.onLine) {
-        showToast('オフラインですが、すでにダウンロードされた機能はそのまま遊べます！', 'warning');
-    }
+    // onLine は端末の接続の目安であり、サイトへの通信可否ではない。
+    // 初回表示では警告せず、閲覧中の状態変化だけを一度ずつ案内する。
+    let connectionNoticeShown = false;
 
     window.addEventListener('offline', () => {
-        showToast('オフラインになりました。ダウンロード済みの機能はそのまま遊べます！', 'warning');
+        if (connectionNoticeShown) return;
+        connectionNoticeShown = true;
+        showToast('通信が不安定な可能性があります。ページを開けない場合は、接続を確認してください。', 'warning');
     });
 
     window.addEventListener('online', () => {
-        showToast('ネットワークに接続されました！', 'success');
+        if (!connectionNoticeShown) return;
+        connectionNoticeShown = false;
+        showToast('接続状態が変わりました。開けなかったページは、もう一度試してください。', 'info');
     });
 }
 

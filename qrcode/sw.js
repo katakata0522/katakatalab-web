@@ -1,7 +1,7 @@
 'use strict';
 
 const CACHE_PREFIX = 'qrcode-';
-const STATIC_CACHE = 'qrcode-static-v29';
+const STATIC_CACHE = 'qrcode-static-v30';
 const RUNTIME_CACHE = 'qrcode-runtime-v1';
 
 const STATIC_ASSETS = [
@@ -19,7 +19,7 @@ const STATIC_ASSETS = [
   './lp-beauty.html',
   './lp-events.html',
   './style.css',
-  './style.css?v=20260824-responsive',
+  './style.css?v=20261119-review',
   './content.css',
   './script.js',
   './script.js?v=20260504a',
@@ -27,6 +27,7 @@ const STATIC_ASSETS = [
   './vendor/jszip.min.js',
   './vendor/jspdf.umd.min.js',
   './js/pwa.js',
+  './js/pwa.js?v=20261119-review',
   './js/pro-config.js',
   './js/details-ui.js',
   './manifest.webmanifest',

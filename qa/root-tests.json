@@ -21,6 +21,7 @@
   "tests/font-lab-maintenance-batch3.test.cjs",
   "tests/gravity-persist-policy.test.cjs",
   "tests/gravity-todo-quality.test.cjs",
+  "tests/gravity-visible-floor.test.cjs",
   "tests/international-seo.test.cjs",
   "tests/kids-smile-land-quality.test.cjs",
   "tests/kids-smile-storage-read-guard.test.cjs",

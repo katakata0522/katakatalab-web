@@ -972,6 +972,7 @@ body.dark-mode .cross-promo-btn { color: #a5b4fc; }
   justify-content: space-between;
   gap: 0.75rem;
 }
+.sticky-summary-bar[hidden] { display: none; }
 .sticky-bar-info {
   display: flex;
   align-items: center;

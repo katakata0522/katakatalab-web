@@ -215,7 +215,7 @@ function createCardElement(app) {
     }
 
     const gradeTagHtml = app.gradeTag 
-        ? `<div class="absolute top-3 right-3 bg-white/90 backdrop-blur text-slate-600 text-[10px] font-black px-2.5 py-1 rounded-lg border border-slate-200">${app.gradeTag}</div>`
+        ? `<div data-surface="chip" class="app-grade-badge absolute top-3 right-3 bg-white/90 backdrop-blur text-slate-600 text-[10px] font-black px-2.5 py-1 rounded-lg border border-slate-200">${app.gradeTag}</div>`
         : '';
 
     card.innerHTML = `

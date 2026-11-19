@@ -134,6 +134,11 @@ export class PhysicsEngine {
 
     this.resizeHandler = this.debounce(() => this.handleResize(), 200);
     window.addEventListener('resize', this.resizeHandler);
+    const taskConsole = document.querySelector('.task-console');
+    if (taskConsole && typeof ResizeObserver === 'function') {
+      this.consoleObserver = new ResizeObserver(() => this.rebuildFloor());
+      this.consoleObserver.observe(taskConsole);
+    }
     document.addEventListener('visibilitychange', () => {
       if (document.visibilityState === 'hidden') void this.persistTasks();
     });
@@ -142,11 +147,11 @@ export class PhysicsEngine {
     });
   }
 
-  // ---------- 床Y座標をフォーム上端から動的取得 ----------
+  // Blocks must settle above the entire control panel, including an open list.
   getFloorY() {
-    const inputEl = document.querySelector('.input-container');
-    if (!inputEl) return this.height - 200;
-    return inputEl.getBoundingClientRect().top;
+    const taskConsole = document.querySelector('.task-console');
+    if (!taskConsole) return this.height - 200;
+    return Math.max(80, Math.min(this.height, taskConsole.getBoundingClientRect().top) - 12);
   }
 
   createWorldBounds() {
@@ -183,6 +188,14 @@ export class PhysicsEngine {
     this.leftWall  = bounds.leftWall;
     this.rightWall = bounds.rightWall;
     this.Composite.add(this.world, [this.ground, this.leftWall, this.rightWall]);
+    const floorY = this.getFloorY();
+    for (const body of this.getTaskBodies()) {
+      const overlap = body.bounds.max.y - floorY;
+      if (overlap > 0) {
+        this.Body.setPosition(body, { x: body.position.x, y: body.position.y - overlap - 2 });
+        this.Body.setVelocity(body, { x: body.velocity.x, y: Math.min(0, body.velocity.y) });
+      }
+    }
   }
 
   // --- ブロックプロパティの計算ヘルパー ---
@@ -704,6 +717,7 @@ export class PhysicsEngine {
 
   destroy() {
     window.removeEventListener('resize', this.resizeHandler);
+    this.consoleObserver?.disconnect();
     clearInterval(this.autoSaveIntervalId);
     this.nukeTimeoutIds.forEach(id => clearTimeout(id));
     this.gyroManager.destroy();

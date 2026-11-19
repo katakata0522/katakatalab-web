@@ -1249,7 +1249,6 @@ input:focus-visible {
 
 .faq-section details {
   border-top: 1px solid var(--line);
-  padding: 16px 0;
 }
 
 .faq-section details:last-child {
@@ -1257,13 +1256,14 @@ input:focus-visible {
 }
 
 .faq-section summary {
+  padding: 16px 0;
   cursor: pointer;
   font-weight: 850;
   line-height: 1.5;
 }
 
 .faq-section details p {
-  margin: 12px 0 0;
+  margin: 0 0 16px;
   color: var(--muted);
   line-height: 1.8;
   font-size: .87rem;

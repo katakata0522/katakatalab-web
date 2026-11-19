@@ -562,6 +562,10 @@ if (!given) {
         await page.waitForFunction(() => document.querySelector('#task-count').textContent === '3');
         await page.locator('#task-input').fill('履歴ボタン検証');
         await page.locator('#task-input').press('Enter');
+        const taskList = page.locator('#task-list-panel');
+        const taskListSummary = page.locator('#task-list-panel > summary');
+        assert.equal(await taskList.evaluate(panel => panel.open), false);
+        await taskListSummary.click();
         const task = page.locator('.task-list-item').filter({hasText:'履歴ボタン検証'});
         await task.locator('[data-action="destroy"]').click();
         await page.locator('#undo-btn').click();
@@ -570,8 +574,10 @@ if (!given) {
         await task.waitFor({state:'detached'});
         await page.locator('#undo-btn').click();
         await task.waitFor({state:'visible'});
-          await page.locator('#save-status').waitFor({state:'hidden'});
+        await page.locator('#save-status').waitFor({state:'hidden'});
         await page.reload({waitUntil:'domcontentloaded'});
+        assert.equal(await taskList.evaluate(panel => panel.open), false);
+        await taskListSummary.click();
         await task.waitFor({state:'visible'});
         assert.equal(await page.locator('#task-count').textContent(), '1', 'デモを保存せず実タスクだけ復元');
       }

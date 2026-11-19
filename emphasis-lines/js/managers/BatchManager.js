@@ -1,6 +1,6 @@
-import { store } from '../state.js?v=20261010-1';
-import { PRESETS } from '../constants.js?v=20261010-1';
-import { Random } from '../utils/random.js?v=20261010-1';
+import { store } from '../state.js?v=20261119-review';
+import { PRESETS } from '../constants.js?v=20261119-review';
+import { Random } from '../utils/random.js?v=20261119-review';
 
 // テーマ定義 (売れる素材パッケージ)
 const THEMES = {

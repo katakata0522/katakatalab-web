@@ -310,6 +310,21 @@ body {
 }
 .btn-secondary:active { transform: translateY(1px); }
 
+#copyCssBtn { flex-shrink: 0; white-space: nowrap; }
+.btn-secondary-sm {
+  background: var(--card-bg);
+  color: var(--text-main);
+  border: 1px solid var(--border-color);
+  padding: 8px 16px;
+  border-radius: 6px;
+  font: inherit;
+  font-size: 0.85rem;
+  font-weight: bold;
+  cursor: pointer;
+}
+.btn-secondary-sm:hover { border-color: var(--primary-color); }
+.btn-secondary-sm:focus-visible { outline: 2px solid var(--primary-color); outline-offset: 2px; }
+
 .table-container {
   max-height: 400px;
   overflow: auto;
@@ -466,6 +481,7 @@ body {
 }
 .add-input-group {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   gap: 8px;
 }

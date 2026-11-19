@@ -1,6 +1,6 @@
 // Service Worker for Password Gen
 const CACHE_PREFIX = 'password-gen-';
-const CACHE_NAME = 'password-gen-v22';
+const CACHE_NAME = 'password-gen-v23';
 const RUNTIME_CACHE = 'password-gen-runtime-v5';
 const ASSETS = [
     './',

@@ -14,6 +14,8 @@
   --c-surface: #18243d;
   --c-text-main: #f8fafc;
   --c-text-sub: #d5dee8;
+  --c-text: var(--c-text-main);
+  --c-text-light: var(--c-text-sub);
   --c-border: rgba(255, 255, 255, 0.12);
   --c-input-bg: #0d1830;
   --c-preview-bg: #101d36;
@@ -549,6 +551,9 @@ body.sidebar-open .sidebar-backdrop {
 }
 .pro-feature-tag::after {
   content: "PRO";
+  flex: 0 0 auto;
+  white-space: nowrap;
+  align-self: flex-start;
   font-size: 0.74rem;
   font-weight: 900;
   letter-spacing: 0.05em;

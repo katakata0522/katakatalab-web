@@ -700,8 +700,8 @@
         State.currentUncontrollable = uncontrollable;
 
         DOM.personalizedNote.innerHTML = note;
-        DOM.controllableList.innerHTML = controllable.map(item => `<li><span style="color: var(--c-green); font-weight: bold;" aria-hidden="true">✔</span> <span>${escapeHtml(item)}</span></li>`).join('');
-        DOM.uncontrollableList.innerHTML = uncontrollable.map(item => `<li><span style="color: var(--c-text-muted); font-weight: bold;" aria-hidden="true">✕</span> <span>${escapeHtml(item)}</span></li>`).join('');
+        DOM.controllableList.innerHTML = controllable.map(item => `<li><svg class="split-list-icon split-list-icon--controllable" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12 4 4L19 6"/></svg><span>${escapeHtml(item)}</span></li>`).join('');
+        DOM.uncontrollableList.innerHTML = uncontrollable.map(item => `<li><svg class="split-list-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg><span>${escapeHtml(item)}</span></li>`).join('');
 
         State.currentActionIndex = Math.floor(Math.random() * ACTION_DATABASE.length);
         renderAction();

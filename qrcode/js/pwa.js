@@ -10,8 +10,9 @@
     return;
   }
 
-  const locale = String(navigator.language || '').toLowerCase();
-  const copy = locale.startsWith('ja')
+  const getCopy = () => {
+    const locale = String(document.documentElement.lang || navigator.language || 'ja').toLowerCase();
+    return locale.startsWith('ja')
     ? {
       message: '新しいバージョンがあります。',
       update: '更新する',
@@ -22,6 +23,7 @@
       update: 'Update',
       close: 'Close'
     };
+  };
   let promptShown = false;
 
   const injectPromptStyle = () => {
@@ -84,6 +86,7 @@
     }
     promptShown = true;
     injectPromptStyle();
+    const copy = getCopy();
 
     const toast = document.createElement('div');
     toast.className = 'pwa-update-toast';

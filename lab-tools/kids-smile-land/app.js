@@ -698,7 +698,7 @@
             updateNavigator('momo', "ひらがなを タップして、おしゃべり してみてね！");
             recordPlay('hiragana');
         } else if (tabId === 'count') {
-            updateNavigator('pan', "くだものたちは いくつあるかな？ かぞえてね！");
+            updateNavigator('pan', "えが いくつあるかな？ かぞえてね！");
             startCountQuiz();
             recordPlay('count');
         } else if (tabId === 'draw') {

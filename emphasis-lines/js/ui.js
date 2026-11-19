@@ -1,9 +1,9 @@
-import { store } from './state.js?v=20261010-1';
-import { BatchManager } from './managers/BatchManager.js?v=20261010-1';
-import { ImageService } from './services/ImageService.js?v=20261010-1';
-import { ExportService } from './services/ExportService.js?v=20261010-1';
-import { AnalyticsManager } from './utils/analytics.js?v=20261010-1';
-import { TOAST_DURATION_MS, DEBOUNCE_RESIZE_MS, ZOOM_MIN, ZOOM_MAX, ZOOM_STEP } from './constants.js?v=20261010-1';
+import { store } from './state.js?v=20261119-review';
+import { BatchManager } from './managers/BatchManager.js?v=20261119-review';
+import { ImageService } from './services/ImageService.js?v=20261119-review';
+import { ExportService } from './services/ExportService.js?v=20261119-review';
+import { AnalyticsManager } from './utils/analytics.js?v=20261119-review';
+import { TOAST_DURATION_MS, DEBOUNCE_RESIZE_MS, ZOOM_MIN, ZOOM_MAX, ZOOM_STEP } from './constants.js?v=20261119-review';
 
 /**
  * CSS class constants for button states
@@ -339,6 +339,19 @@ export class UIManager {
             const isHidden = this.els.groupAdvanced.classList.toggle('hidden');
             this.els.iconAdvanced.classList.toggle('rotate-180');
             this.els.toggleAdvanced.setAttribute('aria-expanded', !isHidden);
+            if (!isHidden) {
+                requestAnimationFrame(() => {
+                    if (this.els.groupAdvanced.classList.contains('hidden')) return;
+                    const panel = document.getElementById('panelContent');
+                    if (!panel) return;
+                    const top = panel.scrollTop + this.els.toggleAdvanced.getBoundingClientRect().top
+                        - panel.getBoundingClientRect().top - 12;
+                    panel.scrollTo({
+                        top: Math.max(0, top),
+                        behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth'
+                    });
+                });
+            }
         });
 
         // Regenerate Button

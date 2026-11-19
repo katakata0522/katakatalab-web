@@ -27,7 +27,7 @@
   <meta name="twitter:image" content="https://katakatalab.com/discount-calc/ogp.png">
 
   <link rel="icon" href="/favicon.ico">
-  <link rel="stylesheet" href="style.css?v=20260824-responsive">
+  <link rel="stylesheet" href="style.css?v=20261119-review">
     <link rel="stylesheet" href="../tool-chrome.css?v=source">
 </head>
 <body>
@@ -86,7 +86,7 @@
         <label><input type="radio" name="taxType" value="included" checked aria-label="税込価格から計算"><span>元は税込</span></label>
         <label><input type="radio" name="taxType" value="excluded" aria-label="税抜価格から計算"><span>元は税抜</span></label>
       </div>
-      <div class="segment-control" id="taxRateGroup" role="radiogroup" aria-label="税率（税抜のとき）">
+      <div class="segment-control" id="taxRateGroup" role="radiogroup" aria-label="税率（税抜のとき）" hidden>
         <label><input type="radio" name="taxRate" value="1.10" checked aria-label="消費税率10%" disabled><span>10%</span></label>
         <label><input type="radio" name="taxRate" value="1.08" aria-label="消費税率8%" disabled><span>8%</span></label>
         <label><input type="radio" name="taxRate" value="1.00" aria-label="消費税率0%(税無)" disabled><span>税無</span></label>
@@ -341,7 +341,7 @@
 ]
 </script>
 
-<script src="script.js" defer></script>
+<script src="script.js?v=20261119-review" defer></script>
 
 <script>
 // 個別manifestの入口からも、親PWAの同じ配信版を利用する。

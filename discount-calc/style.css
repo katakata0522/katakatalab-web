@@ -133,11 +133,9 @@ button, input { font: inherit; }
   transition: background-color 0.3s, border-color 0.3s;
 }
 
-/* Sticky Header */
+/* Keep the selected payment and discount rows unobstructed while scrolling. */
 .calc-controls {
-  position: sticky;
-  top: 0;
-  z-index: 20;
+  position: relative;
   padding: 18px;
   margin-bottom: 20px;
   background: rgba(255, 255, 255, 0.85);
@@ -150,11 +148,6 @@ button, input { font: inherit; }
   .calc-controls {
     background: rgba(30, 41, 59, 0.85);
   }
-}
-
-.calc-controls.is-scrolled {
-  border-color: rgba(245, 158, 11, 0.35);
-  box-shadow: 0 15px 30px -10px rgba(217, 119, 6, 0.12);
 }
 
 .price-input-wrapper {
@@ -268,6 +261,7 @@ button, input { font: inherit; }
 .segment-control + .segment-control {
   grid-template-columns: repeat(2, 1fr);
 }
+.segment-control[hidden] { display: none; }
 
 .segment-control input {
   position: absolute;

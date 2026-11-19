@@ -8,8 +8,7 @@ document.addEventListener('DOMContentLoaded', () => {
       PRICE_MAX: 999999999, // 9桁
       RATE_MAX: 100,
       RATE_MIN: 0
-    },
-    SCROLL_THRESHOLD: 10
+    }
   };
 
   /**
@@ -73,7 +72,6 @@ document.addEventListener('DOMContentLoaded', () => {
     taxRateRadios: document.querySelectorAll('input[name="taxRate"]'),
     taxTypeRadios: document.querySelectorAll('input[name="taxType"]'),
     extraToggle: document.getElementById('extraToggle'),
-    stickyHeader: document.getElementById('stickyHeader'),
     quickBtns: document.querySelectorAll('.quick-add-buttons button'),
 
     // カート用のDOM要素
@@ -278,22 +276,6 @@ document.addEventListener('DOMContentLoaded', () => {
       input.addEventListener('focus', function() { this.select(); });
     });
 
-    // --- Scroll Performance ---
-    let ticking = false;
-    window.addEventListener('scroll', () => {
-      if (!ticking) {
-        window.requestAnimationFrame(() => {
-          if (window.scrollY > CONFIG.SCROLL_THRESHOLD) {
-            els.stickyHeader.classList.add('is-scrolled');
-          } else {
-            els.stickyHeader.classList.remove('is-scrolled');
-          }
-          ticking = false;
-        });
-        ticking = true;
-      }
-    }, { passive: true });
-
     els.cartClearBtn.addEventListener('click', () => {
       if (!state.cart.length || !confirm('この端末の買物メモをすべて削除しますか？')) return;
       state.cart = [];
@@ -442,7 +424,10 @@ document.addEventListener('DOMContentLoaded', () => {
       radio.disabled = !excluded;
     });
     const group = document.getElementById('taxRateGroup');
-    if (group) group.classList.toggle('is-disabled', !excluded);
+    if (group) {
+      group.hidden = !excluded;
+      group.classList.toggle('is-disabled', !excluded);
+    }
     if (els.taxHelp) {
       els.taxHelp.textContent = excluded
         ? '税抜額に、選んだ税率を掛けて支払額を出します。'
