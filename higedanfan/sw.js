@@ -1,7 +1,7 @@
 'use strict';
-const CACHE_NAME = "higedanfan-pwa-7f7c9caf098ec73f";
+const CACHE_NAME = "higedanfan-pwa-1610cddfbb63bd6e";
 const CACHE_PREFIX = "higedanfan-pwa-";
-const CORE_ASSETS = ["/higedanfan/","/higedanfan/manifest.webmanifest","/higedanfan/fonts/kiwi-maru-medium-c8f08bbe.woff2","/higedanfan/fonts/noto-sans-jp-b515a988.woff2","/higedanfan/hige-mark.svg?v=34b8cc7","/higedanfan/hige-icon-192.png","/higedanfan/hige-icon-512.png","/higedanfan/hige-touch-180.png?v=cd4d0ca","/higedanfan/assets/jsx-runtime-Wy9s6hX0.js","/higedanfan/assets/tempoReviewStatus-Br_63qV_.js","/higedanfan/assets/setlist-DgX7Pegt.js","/higedanfan/assets/fanRecordStorage-DwLGTTnY.js","/higedanfan/assets/createLucideIcon-DPZJ1Jnu.js","/higedanfan/assets/quizSessionClear-BF_6_TB4.js","/higedanfan/assets/preload-helper-n-VOc96v.js","/higedanfan/assets/map-pin-B0pQNHVL.js","/higedanfan/assets/KurunIntroOverlay-hkzEI2iF.js","/higedanfan/assets/main-3YLj9ina.js","/higedanfan/assets/main-CpHp2fFb.css"];
+const CORE_ASSETS = ["/higedanfan/","/higedanfan/manifest.webmanifest","/higedanfan/fonts/kiwi-maru-medium-c8f08bbe.woff2","/higedanfan/fonts/noto-sans-jp-b515a988.woff2","/higedanfan/hige-mark.svg?v=34b8cc7","/higedanfan/hige-icon-192.png","/higedanfan/hige-icon-512.png","/higedanfan/hige-touch-180.png?v=cd4d0ca","/higedanfan/assets/jsx-runtime-Wy9s6hX0.js","/higedanfan/assets/tempoReviewStatus-Br_63qV_.js","/higedanfan/assets/setlist-DgX7Pegt.js","/higedanfan/assets/fanRecordStorage-DwLGTTnY.js","/higedanfan/assets/createLucideIcon-DPZJ1Jnu.js","/higedanfan/assets/quizSessionClear-BF_6_TB4.js","/higedanfan/assets/preload-helper-Rv01yyKe.js","/higedanfan/assets/map-pin-CfDyA5ZN.js","/higedanfan/assets/KurunIntroOverlay-hkzEI2iF.js","/higedanfan/assets/main-CPCqOqG6.js","/higedanfan/assets/main-DnQ3L4Rp.css"];
 const MAX_RUNTIME_ENTRIES = 80;
 const NETWORK_TIMEOUT_MS = 4500;
 
