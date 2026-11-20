@@ -1,7 +1,7 @@
 'use strict';
-const CACHE_NAME = "higedanfan-pwa-3fe307cc06690adf";
+const CACHE_NAME = "higedanfan-pwa-198b5c2a51d2e338";
 const CACHE_PREFIX = "higedanfan-pwa-";
-const CORE_ASSETS = ["/higedanfan/","/higedanfan/manifest.webmanifest","/higedanfan/hige-mark.svg?v=34b8cc7","/higedanfan/hige-icon-192.png","/higedanfan/hige-icon-512.png","/higedanfan/hige-touch-180.png?v=cd4d0ca","/higedanfan/assets/jsx-runtime-Wy9s6hX0.js","/higedanfan/assets/tempoReviewStatus-DWs9orua.js","/higedanfan/assets/setlist-6l_b2j7W.js","/higedanfan/assets/fanRecordStorage-CTYraWyi.js","/higedanfan/assets/x-CcCbOfAa.js","/higedanfan/assets/quizSessionClear-Dru8PPjj.js","/higedanfan/assets/preload-helper-BUVF9W3q.js","/higedanfan/assets/sacredSpotAreas-C8J2E0cl.js","/higedanfan/assets/KurunIntroOverlay-hkzEI2iF.js","/higedanfan/assets/main-CbKOUHR_.js","/higedanfan/assets/main-DOAp68oX.css"];
+const CORE_ASSETS = ["/higedanfan/","/higedanfan/manifest.webmanifest","/higedanfan/hige-mark.svg?v=34b8cc7","/higedanfan/hige-icon-192.png","/higedanfan/hige-icon-512.png","/higedanfan/hige-touch-180.png?v=cd4d0ca","/higedanfan/assets/jsx-runtime-Wy9s6hX0.js","/higedanfan/assets/tempoReviewStatus-Br_63qV_.js","/higedanfan/assets/setlist-yzqVZZH8.js","/higedanfan/assets/fanRecordStorage-BHRj6FOX.js","/higedanfan/assets/x-CcCbOfAa.js","/higedanfan/assets/quizSessionClear-BNXGu9Kp.js","/higedanfan/assets/preload-helper-DtLqTMjb.js","/higedanfan/assets/map-pin-CFLTWIGB.js","/higedanfan/assets/KurunIntroOverlay-hkzEI2iF.js","/higedanfan/assets/main-BNXbZOW8.js","/higedanfan/assets/main-B5qnQg9E.css"];
 const MAX_RUNTIME_ENTRIES = 80;
 const NETWORK_TIMEOUT_MS = 4500;
 
