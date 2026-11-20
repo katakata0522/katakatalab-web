@@ -141,7 +141,16 @@ function renderCard(project) {
           <p class="card-text">${escapeHtml(project.text)}</p>
           ${guideLinks}
           <div class="card-actions">
-            <a href="${escapeHtml(project.url)}" class="card-link"${project.newTab || (/^https?:\/\//i.test(project.url) && !project.url.includes('katakatalab.com')) ? ' target="_blank" rel="noopener noreferrer"' : ''}>${escapeHtml(project.actions.mainText)}</a>
+            <a href="${escapeHtml(project.url)}" class="card-link"${project.newTab || (/^https?:\/\//i.test(project.url) && !project.url.includes('katakatalab.com')) ? ' target="_blank" rel="noopener noreferrer"' : ''}>
+              <span class="card-action-label">${escapeHtml(project.actions.mainText)}</span>
+              <div class="project-row">
+                <span class="project-row-icon" aria-hidden="true">${icon}</span>
+                <div>
+                  <h3 class="project-row-name">${escapeHtml(project.title)}</h3>
+                  <p class="project-row-purpose">${escapeHtml(project.shortText || project.text)}</p>
+                </div>
+              </div>
+            </a>
             ${project.actions.detail ? '<button type="button" class="card-detail-btn">詳しく見る</button>' : ''}
           </div>
         </div>
