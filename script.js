@@ -2,6 +2,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     let allProjects = [];
     let searchInput; // スコープを広げてキーボードショートカットでの ReferenceError を防止
+    const projectControls = document.getElementById('projects-controls');
     const projectFilterState = window.KatakataProjectFilterState;
     const projectHistory = window.KatakataProjectHistory;
 
@@ -577,21 +578,24 @@ document.addEventListener('DOMContentLoaded', () => {
     const debouncedFilter = debounce(filterProjects, 150);
 
     function initProjects() {
-        // フィルタボタン設定（即時反映）
         const filterBtns = document.querySelectorAll('.shelf-nav-btn');
-        const initialState = projectFilterState
-            ? projectFilterState.readProjectFilterState(window.location.search)
-            : { filter: 'all', query: '' };
-        const initialFilterBtn = Array.from(filterBtns).find(btn => btn.getAttribute('data-filter') === initialState.filter);
-        if (initialFilterBtn) {
-            filterBtns.forEach(btn => btn.classList.toggle('active', btn === initialFilterBtn));
-        }
-
-        // 共有URLから初期状態を復元する
         searchInput = document.getElementById('project-search');
-        if (searchInput) searchInput.value = initialState.query;
 
-        filterProjects({ syncUrl: false });
+        function restoreFiltersFromUrl() {
+            const state = projectFilterState
+                ? projectFilterState.readProjectFilterState(window.location.search)
+                : { filter: 'all', query: '' };
+            filterBtns.forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.filter === state.filter);
+            });
+            if (searchInput) searchInput.value = state.query;
+            if (projectControls && (state.query || state.filter !== 'all')) {
+                projectControls.open = true;
+            }
+            filterProjects({ syncUrl: false });
+        }
+        restoreFiltersFromUrl();
+        window.addEventListener('popstate', restoreFiltersFromUrl);
 
         if (filterBtns.length > 0) {
             filterBtns.forEach(btn => {
@@ -638,15 +642,6 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         }
 
-        window.addEventListener('popstate', () => {
-            if (!projectFilterState) return;
-            const state = projectFilterState.readProjectFilterState(window.location.search);
-            filterBtns.forEach(btn => {
-                btn.classList.toggle('active', btn.getAttribute('data-filter') === state.filter);
-            });
-            if (searchInput) searchInput.value = state.query;
-            filterProjects({ syncUrl: false });
-        });
     }
 
     // 初期HTMLのカードをフォールバック用データとして読み取る
@@ -1135,6 +1130,7 @@ document.addEventListener('DOMContentLoaded', () => {
         // / : Focus Search
         if (e.key === '/' && searchInput && document.activeElement !== searchInput) {
             e.preventDefault();
+            if (projectControls) projectControls.open = true;
             searchInput.focus();
         }
 
@@ -1163,9 +1159,10 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // 初期化時とリサイズ時にのみDOMプロパティを読み込みキャッシュを更新
+    // 表示幅やアコーディオンの高さが変わったら位置を測り直す
     updateSectionDimensions();
     window.addEventListener('resize', debounce(updateSectionDimensions, 200));
+    projectControls?.addEventListener('toggle', updateSectionDimensions);
 
     function onScroll() {
         const scrollY = window.pageYOffset || document.documentElement.scrollTop;
