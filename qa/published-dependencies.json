@@ -78,6 +78,30 @@
       }
     },
     {
+      "path": "higedanfan/fonts/OFL-kiwi-maru-medium.txt",
+      "sha256": "07ceae7a6e3294cbbd0fdf6e35226550566a1cce9fd226d0f8a57f3d34c664fe",
+      "bytes": 4399,
+      "url": "https://katakatalab.com/higedanfan/fonts/OFL-kiwi-maru-medium.txt"
+    },
+    {
+      "path": "higedanfan/fonts/OFL-noto-sans-jp.txt",
+      "sha256": "1c05c68c34f9708415aada51f17e1b0092d2cea709bf4a94cd38114f9e73d7d9",
+      "bytes": 4388,
+      "url": "https://katakatalab.com/higedanfan/fonts/OFL-noto-sans-jp.txt"
+    },
+    {
+      "path": "higedanfan/fonts/kiwi-maru-medium-c8f08bbe.woff2",
+      "sha256": "c8f08bbe85d215b367e92c6f2e6f98c38ed50298ef51e4b6bbbe236923f187bd",
+      "bytes": 139376,
+      "url": "https://katakatalab.com/higedanfan/fonts/kiwi-maru-medium-c8f08bbe.woff2"
+    },
+    {
+      "path": "higedanfan/fonts/noto-sans-jp-b515a988.woff2",
+      "sha256": "b515a988691f86b6de3ad8affdd31982ca916a4c094a6e2c4a8565ea40cefc85",
+      "bytes": 237472,
+      "url": "https://katakatalab.com/higedanfan/fonts/noto-sans-jp-b515a988.woff2"
+    },
+    {
       "path": "higedanfan/hige-mark-32.png",
       "sha256": "21cd698c3574483ca7f10186affb64bac8ed4863d38220c17735ba968cccc552",
       "bytes": 743,
