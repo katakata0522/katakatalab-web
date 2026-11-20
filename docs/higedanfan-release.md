@@ -2,7 +2,9 @@
 
 公開先：https://katakatalab.com/higedanfan/
 
-楽曲データとアプリの編集元は [higedanfan](https://github.com/katakata0522/higedanfan)。この版のソースは [7e75231](https://github.com/katakata0522/higedanfan/tree/7e7523123c6cf8a4ef3e4b2db728445773154261)。Node.js 24 で npm ci、npm run lint、npm test、npm run build の順に実行する。
+楽曲データとアプリの編集元は [higedanfan](https://github.com/katakata0522/higedanfan)。この版のソースは [1fbae25](https://github.com/katakata0522/higedanfan/tree/1fbae25a7b7c6dbf6da973dd13b37bbfe09abd3c)。Node.js 24 で npm ci、npm run lint、npm test、npm run build の順に実行する。
+
+2026年11月20日の更新で、「スパイファミリー」「サイレント」などの読み方や略称からタイアップ曲を探せるようにした。聖地巡礼マップから曲を読んで戻ると、同じ絞り込み条件で元の場所が表示される。検定では回答後に正解を文字で示す。キーボードの「本文へ移動」と楽曲ガイドのページ切り替えでは、読み進める位置にフォーカスが移る。
 
 聖地マップは場所とバンドのつながりで絞り込み、複数の分類に属する場所はそれぞれに表示する。広域しか確認できない撮影地は地図の範囲を明示し、訪問案内をしない場所には地図や訪問記録を表示しない。
 
