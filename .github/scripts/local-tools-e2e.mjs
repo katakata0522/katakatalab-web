@@ -656,14 +656,32 @@ const analyticsPage=await browser.newPage({viewport:{width:390,height:850}});
 await analyticsPage.route('**/*googletagmanager.com/**',route=>route.abort());
 await analyticsPage.route('**/*google-analytics.com/**',route=>route.abort());
 await analyticsPage.goto(base+'/',{waitUntil:'domcontentloaded'});
+const finder=analyticsPage.locator('#projects-controls');
+const finderSummary=finder.locator('summary');
+const projectSearch=finder.locator('#project-search');
+assert.equal(await projectSearch.isVisible(),false);
+assert.equal(await analyticsPage.locator('#projects-grid .card').first().isVisible(),true);
+await finderSummary.click();
+assert.equal(await projectSearch.isVisible(),true);
+assert.equal(await finder.locator('.shelf-nav-btn').count(),4);
+assert.equal(await finder.locator('#recent-projects').count(),1);
+await finderSummary.press('Enter');
+assert.equal(await projectSearch.isVisible(),false);
+await analyticsPage.keyboard.press('/');
+assert.equal(await projectSearch.evaluate(input=>document.activeElement===input),true);
 const privateSearch='送信禁止テスト検索語';
-await analyticsPage.locator('#project-search').fill(privateSearch);
+await projectSearch.fill(privateSearch);
 await analyticsPage.waitForTimeout(900);
 assert.equal(analyticsPage.url().includes('q='),false);
 assert.equal(analyticsPage.url().includes('tool_q='),false);
 const searchEvents=await analyticsPage.evaluate(()=>window.dataLayer.map(entry=>Array.from(entry)).filter(entry=>entry[0]==='event'));
 assert.ok(searchEvents.some(entry=>entry[1]==='site_search'&&entry[2]?.search_length>0));
 assert.equal(JSON.stringify(searchEvents).includes(privateSearch),false);
+
+await analyticsPage.goto(base+'/?shelf=tool&tool_q=QR#projects',{waitUntil:'domcontentloaded'});
+assert.equal(await projectSearch.isVisible(),true);
+assert.equal(await projectSearch.inputValue(),'QR');
+assert.equal(await finder.locator('[data-filter="tool"]').getAttribute('aria-pressed'),'true');
 
 await analyticsPage.goto(base+'/guides/tool-selection-guide.html',{waitUntil:'domcontentloaded'});
 await analyticsPage.evaluate(()=>{

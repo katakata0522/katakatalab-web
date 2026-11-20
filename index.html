@@ -167,7 +167,7 @@
     </noscript>
 
     <link rel="icon" href="icon.svg" type="image/svg+xml">
-    <link rel="stylesheet" href="style.css?v=20260824-responsive">
+    <link rel="stylesheet" href="style.css?v=20261120-content-finder">
 
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#FF7675">
@@ -332,9 +332,6 @@
                     <p class="hero-subtitle" id="hero-subtitle">
                         個人クリエイター「かたかた」の実験場。日常に役立つツールも、学べるアプリも、あなたの人生を豊かにする読みものも。思いついた好奇心から少しずつ育てています。主要ツールの基本機能は登録不要で、ブラウザからすぐ使えます。
                     </p>
-                    <div class="hero-actions">
-                        <a href="#projects" class="btn btn-primary">🧰 ツールを探す</a>
-                    </div>
                 </div>
                 <div class="hero-visual">
                     <div class="hero-orb hero-orb--1" aria-hidden="true"></div>
@@ -356,40 +353,40 @@
         <!-- ツール一覧（ヒーロー直下） -->
         <section id="projects" class="section projects-section section-band-tools" aria-labelledby="projects-title">
             <div class="container">
-                <h2 id="projects-title" class="section-title">すぐ使えるツール</h2>
-                <p class="section-desc">ブラウザ内で完結。絞り込みや検索ですぐ見つかります。</p>
+                <h2 id="projects-title" class="visually-hidden">コンテンツ一覧</h2>
+                <details class="projects-controls" id="projects-controls">
+                    <summary>コンテンツを探す</summary>
+                    <div class="projects-controls-body">
+                        <div class="shelf-nav-wrapper">
+                            <nav class="shelf-nav" aria-label="ツールの種類で絞り込む">
+                                <button type="button" class="shelf-nav-btn active" data-filter="all" aria-pressed="true">🌐 すべて</button>
+                                <button type="button" class="shelf-nav-btn" data-filter="tool" aria-pressed="false">💼 実用ツール</button>
+                                <button type="button" class="shelf-nav-btn" data-filter="learning" aria-pressed="false">🎓 学習ラボ</button>
+                                <button type="button" class="shelf-nav-btn" data-filter="story" aria-pressed="false">📖 読みもの</button>
+                            </nav>
+                        </div>
 
-                <div class="projects-controls" id="projects-controls">
-                <div class="shelf-nav-wrapper">
-                    <nav class="shelf-nav" aria-label="ツールの種類で絞り込む">
-                        <button type="button" class="shelf-nav-btn active" data-filter="all" aria-pressed="true">🌐 すべて</button>
-                        <button type="button" class="shelf-nav-btn" data-filter="tool" aria-pressed="false">💼 実用ツール</button>
-                        <button type="button" class="shelf-nav-btn" data-filter="learning" aria-pressed="false">🎓 学習ラボ</button>
-                        <button type="button" class="shelf-nav-btn" data-filter="story" aria-pressed="false">📖 読みもの</button>
-                    </nav>
-                </div>
+                        <div class="search-box-container">
+                            <span class="search-icon" aria-hidden="true">🔍</span>
+                            <input type="search" id="project-search" class="search-input" placeholder="QR / パスワード / 比率" aria-label="ツールを検索" aria-describedby="project-filter-status" aria-keyshortcuts="/" title="スラッシュ(/)キーでも検索欄に移動できます" maxlength="80" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+                            <kbd class="search-kbd" title="キーボードの / キー">/</kbd>
+                            <button type="button" id="search-clear" class="search-clear-btn" aria-label="検索をクリア" hidden>×</button>
+                        </div>
 
-                <div class="search-box-container">
-                    <span class="search-icon" aria-hidden="true">🔍</span>
-                    <input type="search" id="project-search" class="search-input" placeholder="QR / パスワード / 比率" aria-label="ツールを検索" aria-describedby="project-filter-status" aria-keyshortcuts="/" title="スラッシュ(/)キーでも検索欄に移動できます" maxlength="80" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
-                    <kbd class="search-kbd" title="キーボードの / キー">/</kbd>
-                    <button type="button" id="search-clear" class="search-clear-btn" aria-label="検索をクリア" hidden>×</button>
-                </div>
-                </div>
+                        <div id="project-share-row" class="search-share-row" hidden>
+                            <button type="button" id="project-share" class="search-share-btn" aria-label="現在の絞り込み結果を共有">🔗 絞り込みを共有</button>
+                            <span id="project-share-status" class="visually-hidden" role="status" aria-live="polite"></span>
+                        </div>
 
-                <div id="project-share-row" class="search-share-row" hidden>
-                    <button type="button" id="project-share" class="search-share-btn" aria-label="現在の絞り込み結果を共有">🔗 絞り込みを共有</button>
-                    <span id="project-share-status" class="visually-hidden" role="status" aria-live="polite"></span>
-                </div>
-
-                <!-- D11: 最近使ったものを一覧の手前に -->
-                <section id="recent-projects" class="recent-projects recent-projects--promoted" hidden aria-labelledby="recent-projects-title">
-                    <div class="recent-projects-header">
-                        <h3 id="recent-projects-title">最近使ったもの</h3>
-                        <button type="button" id="recent-projects-clear" class="recent-clear-btn">履歴を消去</button>
+                        <section id="recent-projects" class="recent-projects recent-projects--promoted" hidden aria-labelledby="recent-projects-title">
+                            <div class="recent-projects-header">
+                                <h3 id="recent-projects-title">最近使ったもの</h3>
+                                <button type="button" id="recent-projects-clear" class="recent-clear-btn">履歴を消去</button>
+                            </div>
+                            <div id="recent-projects-list" class="recent-projects-list"></div>
+                        </section>
                     </div>
-                    <div id="recent-projects-list" class="recent-projects-list"></div>
-                </section>
+                </details>
 
                 <h3 class="projects-subhead projects-subhead--tool" id="primary-projects-title">実用ツール</h3>
                 <div class="projects-grid" id="projects-grid">
@@ -1199,7 +1196,7 @@
 
     <script src="project-filter-state.js?v=20260716-2"></script>
     <script src="project-history.js?v=20260716-2"></script>
-    <script src="script.js?v=20260817-newtab"></script>
+    <script src="script.js?v=20261120-content-finder"></script>
 </body>
 
 </html>
