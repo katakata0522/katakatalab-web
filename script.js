@@ -306,6 +306,11 @@ document.addEventListener('DOMContentLoaded', () => {
         return true;
     }
 
+    // カードを書き換えた後も、初期HTMLと同じ作品アイコンを使う。
+    const projectIcons = new Map(Array.from(document.querySelectorAll('[data-project-card="static"]'), card => [
+        card.dataset.id, card.querySelector('.card-title-icon')?.textContent,
+    ]));
+
     function renderProjectCard(p) {
         const isFeatured = p.featured;
         const url = p.url || '';
@@ -343,7 +348,16 @@ document.addEventListener('DOMContentLoaded', () => {
                         </div>
                     ` : ''}
                     <div class="card-actions">
-                        <a href="${escapeHTML(url)}" class="card-link"${shouldOpenProjectInNewTab(url) ? ' target="_blank" rel="noopener noreferrer"' : ''}>使う →</a>
+                        <a href="${escapeHTML(url)}" class="card-link"${shouldOpenProjectInNewTab(url) ? ' target="_blank" rel="noopener noreferrer"' : ''}>
+                            <span class="card-action-label">使う →</span>
+                            <div class="project-row">
+                                <span class="project-row-icon" aria-hidden="true">${escapeHTML(projectIcons.get(p.id) || '🧪')}</span>
+                                <div>
+                                    <h3 class="project-row-name">${escapeHTML(p.rowTitle || p.title)}</h3>
+                                    <p class="project-row-purpose">${escapeHTML(p.shortText || p.text)}</p>
+                                </div>
+                            </div>
+                        </a>
                         ${p.actions.detail ? '<button type="button" class="card-detail-btn">詳しく見る</button>' : ''}
                     </div>
                 </div>
@@ -662,6 +676,8 @@ document.addEventListener('DOMContentLoaded', () => {
             statusBadge: card.querySelector('.badge-new')?.textContent.trim() || '',
             title: card.querySelector('.card-title')?.textContent.trim() || '',
             text: card.querySelector('.card-text')?.textContent.trim() || '',
+            rowTitle: card.querySelector('.project-row-name')?.textContent.trim(),
+            shortText: card.querySelector('.project-row-purpose')?.textContent.trim(),
             aliases: (() => {
                 try {
                     const aliases = JSON.parse(card.getAttribute('data-aliases') || '[]');
