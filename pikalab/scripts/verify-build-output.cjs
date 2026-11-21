@@ -220,6 +220,16 @@ function verifyBuildOutput(buildRoot, options = {}) {
     for (const htmlFile of htmlFiles) {
         const relative = path.relative(root, htmlFile).replaceAll('\\', '/');
         const html = fs.readFileSync(htmlFile, 'utf8');
+        if (relative.startsWith('articles/')) {
+            const articlePolicy = '<meta http-equiv="Content-Security-Policy" content="script-src \'self\'; script-src-attr \'none\'">';
+            if (!html.includes(articlePolicy)) errors.push(relative + ': 記事用のスクリプト制限がありません');
+            for (const [tag] of html.matchAll(/<script\b[^>]*>/gi)) {
+                if (!getAttribute(tag, 'src') && getAttribute(tag, 'type').toLowerCase() !== 'application/ld+json') {
+                    errors.push(relative + ': インラインスクリプトが残っています');
+                }
+            }
+            if (/<[a-z][^>]*\son[a-z]+\s*=/i.test(html)) errors.push(relative + ': インラインイベント属性が残っています');
+        }
         const links = html.match(/<link\b[^>]*>/gi) || [];
         const directReferences = collectResourceReferences(html);
         const runtimeReferences = collectTransitiveScriptReferences(root, htmlFile, directReferences, scriptReferences);
@@ -282,7 +292,7 @@ if (require.main === module) {
         const requiredHtmlPaths = requiredPublicHtmlPathsFromSource(projectRoot);
         const result = verifyBuildOutput(buildRoot, {
             requiredHtmlPaths,
-            requiredFilePaths: ['.htaccess', 'manifest.webmanifest', 'robots.txt', 'sitemap.xml']
+            requiredFilePaths: ['.htaccess', 'manifest.webmanifest', 'robots.txt', 'sitemap.xml', 'pikalab_ogp_compressed.jpg']
         });
         console.log(`ビルド出力検査: HTML ${result.htmlFiles}件 / 公開契約 ${result.requiredHtmlFiles}件 OK`);
     } catch (error) {

@@ -25,6 +25,27 @@ test('ビルド後のルートmanifestとローカルアイコン参照を検証
     assert.equal(result.htmlFiles, 2);
 });
 
+test('記事では構造化データと同一サイトのスクリプトを使い、インラインイベントを検出する', () => {
+    const root = makeBuildFixture();
+    try {
+        const articles = path.join(root, 'articles');
+        const article = path.join(articles, 'index.html');
+        fs.mkdirSync(articles);
+        fs.writeFileSync(path.join(articles, 'ui.js'), '');
+        const policy = '<meta http-equiv="Content-Security-Policy" content="script-src \'self\'; script-src-attr \'none\'">';
+        fs.writeFileSync(article, policy + '<script type="application/ld+json">{}</script><script src="./ui.js"></script>');
+        assert.doesNotThrow(() => verifyBuildOutput(root));
+        fs.appendFileSync(article, '<link rel="stylesheet" onload="this.media=\'all\'">');
+        assert.throws(() => verifyBuildOutput(root), /インラインイベント属性/);
+        fs.writeFileSync(article, policy + '<script>document.title="PikaLab"</script>');
+        assert.throws(() => verifyBuildOutput(root), /インラインスクリプト/);
+        fs.writeFileSync(article, '<title>PikaLab</title>');
+        assert.throws(() => verifyBuildOutput(root), /記事用のスクリプト制限/);
+    } finally {
+        fs.rmSync(root, { recursive: true, force: true });
+    }
+});
+
 test('必須ページと配信ファイルが不足している場合は失敗する', () => {
     const root = makeBuildFixture();
     assert.throws(

@@ -2,6 +2,7 @@
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
+    <meta http-equiv="Content-Security-Policy" content="script-src 'self'; script-src-attr 'none'">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ケアレスミスが多いのは、落ち着きがないからですか？ | PikaLab 読みもの広場</title>
     <meta name="description" content="計算ミスや読み飛ばしが直らないのは注意力の不足ではなくワーキングメモリの限界です。気合いで見直しを迫るのではなく、脳の負担を減らす仕組みを研究から考えます。">
@@ -29,7 +30,7 @@
     <link rel="stylesheet" href="./style.css">
 </head>
 <body class="min-h-screen text-slate-800 antialiased font-sans text-palt bg-slate-50/50">
-    <script>try{var p=localStorage.getItem('wonder_school_profile_v2');if(p&&JSON.parse(p).darkMode)document.body.classList.add('theme-night');}catch(e){}</script>
+    <script src="./article-appearance.js"></script>
     
     <!-- Header -->
     <header class="premium-header sticky top-0 z-50 px-5 py-3 md:px-8 md:py-4 flex items-center justify-between transition-all bg-white/90 backdrop-blur-md border-b border-slate-100">
@@ -140,7 +141,7 @@
 </ol>
 <p>ケアレスミスをするということは、少なくとも「問題を解こうとして最後まで進んだ」ということです。</p>
 <p>それは決して怠けていたわけではありません。</p>
-<p>PikaLab のツール（フォーカススタジオや用紙ジェネレーターなど）も、子どもの認知的負荷を減らすために余計な装飾を削ぎ落としています。</p>
+<p>PikaLab のツール（<a href="../focus_studio/" class="text-sky-600 hover:text-sky-500 font-bold underline">フォーカススタジオ</a>や<a href="../paper_gen/" class="text-sky-600 hover:text-sky-500 font-bold underline">用紙ジェネレーター</a>など）も、子どもの認知的負荷を減らすために余計な装飾を削ぎ落としています。</p>
 <p>見やすいマス目の方眼紙を使うだけで、桁のズレが防げることもあります。</p>
 <p>気合いで解決しようとせず、小さな仕組みで子どもを助けてあげること。</p>
 <p>その視点があるだけで、テストの答案を見る親子の空気はぐっと穏やかになるはずです。</p>

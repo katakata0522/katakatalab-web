@@ -26,6 +26,9 @@ function pikalabLearningEvolution() {
       // 外部フォントが応答しなくても、ラボの起動を止めない。
       html = html.replace(/<link\b[^>]*>/gi, tag => {
         if (!/href=["']https:\/\/fonts\.googleapis\.com\//i.test(tag) || !/rel=["']stylesheet["']/i.test(tag)) return tag;
+        if (normalizeHtmlPath(context).includes('/articles/')) {
+          return tag.replace(/\s*\/?\>$/, ' media="print" data-article-font>');
+        }
         return tag.replace(/\s*\/?\>$/, ' media="print" onload="this.media=\'all\'">');
       });
       const tags = [];

@@ -20,17 +20,19 @@ function makeFixture() {
   fs.writeFileSync(path.join(build, 'color_lab', 'index.html'), '<!doctype html><title>Color Lab</title>');
   fs.writeFileSync(path.join(build, 'code-studio', 'index.html'), '<!doctype html><title>Code Studio</title>');
   fs.writeFileSync(path.join(project, '.htaccess'), 'Options -Indexes\n');
+  fs.writeFileSync(path.join(project, 'pikalab_ogp_compressed.jpg'), Buffer.from([0xff, 0xd8, 0xff, 0xd9]));
   fs.mkdirSync(path.join(project, '.kotoba', 'assets'), { recursive: true });
   fs.writeFileSync(path.join(project, '.kotoba', 'index.html'), '<!doctype html><title>Kotoba</title>');
   fs.writeFileSync(path.join(project, '.kotoba', 'assets', 'app.js'), 'console.log("kotoba")');
   return { project, build };
 }
 
-test('distへ.htaccessとKotobaをまとめて配信可能な成果物にする', () => {
+test('distに.htaccess、固定URLの共有画像、Kotobaを配置する', () => {
   const { project, build } = makeFixture();
   try {
     finalizeDeployOutput(project, build);
     assert.equal(fs.readFileSync(path.join(build, '.htaccess'), 'utf8'), 'Options -Indexes\n');
+    assert.deepEqual(fs.readFileSync(path.join(build, 'pikalab_ogp_compressed.jpg')), fs.readFileSync(path.join(project, 'pikalab_ogp_compressed.jpg')));
     assert.match(fs.readFileSync(path.join(build, 'kotoba', 'index.html'), 'utf8'), /Kotoba/);
     assert.equal(fs.readFileSync(path.join(build, 'kotoba', 'assets', 'app.js'), 'utf8'), 'console.log("kotoba")');
     for (const relativePath of REQUIRED_DEPLOY_ENTRYPOINTS) {
