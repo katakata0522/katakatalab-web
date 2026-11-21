@@ -1,7 +1,10 @@
-// 本文の描画前にポータルで選んだテーマを反映する。
+// 記事で選んだテーマを優先し、初回だけポータルの設定を引き継ぐ。
 try {
-    const profile = localStorage.getItem('wonder_school_profile_v2');
-    if (profile && JSON.parse(profile)?.darkMode) document.body.classList.add('theme-night');
+    const preference = localStorage.getItem('pikalab-dark-mode');
+    const darkMode = preference === null
+        ? JSON.parse(localStorage.getItem('wonder_school_profile_v2'))?.darkMode
+        : preference === 'true';
+    if (darkMode) document.body.classList.add('dark-mode');
 } catch {
     // ストレージを利用できない場合や古い設定が壊れている場合は標準テーマで表示する。
 }
