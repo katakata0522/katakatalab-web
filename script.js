@@ -306,10 +306,8 @@ document.addEventListener('DOMContentLoaded', () => {
         return true;
     }
 
-    // カードを書き換えた後も、初期HTMLと同じ作品アイコンを使う。
-    const projectIcons = new Map(Array.from(document.querySelectorAll('[data-project-card="static"]'), card => [
-        card.dataset.id, card.querySelector('.card-title-icon')?.textContent,
-    ]));
+    const mobileCardWidth = window.matchMedia?.('(max-width: 768px)');
+    const detailedCardView = document.getElementById('project-detailed-view');
 
     function renderProjectCard(p) {
         const isFeatured = p.featured;
@@ -320,9 +318,13 @@ document.addEventListener('DOMContentLoaded', () => {
         const guideAttr = guide ? `data-guide="${escapeHTML(guide)}"` : '';
         const storyAttr = story ? `data-story="${escapeHTML(story)}"` : '';
         const aliasesAttr = `data-aliases="${escapeHTML(JSON.stringify(Array.isArray(p.aliases) ? p.aliases : []))}"`;
+        const id = escapeHTML(p.id);
+        const note = p.mobileNote || [];
+        const external = new URL(url, 'https://katakatalab.com/').origin !== 'https://katakatalab.com';
+        const mobileOrder = Number.isInteger(p.mobileOrder) ? ` style="--mobile-order:${p.mobileOrder}"` : '';
 
         return `
-            <article class="card ${isFeatured ? 'card--featured' : ''}"
+            <article class="card ${isFeatured ? 'card--featured' : ''}"${mobileOrder}
                      data-id="${escapeHTML(p.id)}"
                      data-group="${escapeHTML(p.group || 'primary')}"
                      data-category="${escapeHTML(p.category)}"
@@ -350,17 +352,17 @@ document.addEventListener('DOMContentLoaded', () => {
                     <div class="card-actions">
                         <a href="${escapeHTML(url)}" class="card-link"${shouldOpenProjectInNewTab(url) ? ' target="_blank" rel="noopener noreferrer"' : ''}>
                             <span class="card-action-label">使う →</span>
-                            <div class="project-row">
-                                <span class="project-row-icon" aria-hidden="true">${escapeHTML(projectIcons.get(p.id) || '🧪')}</span>
-                                <div>
-                                    <h3 class="project-row-name">${escapeHTML(p.rowTitle || p.title)}</h3>
-                                    <p class="project-row-purpose">${escapeHTML(p.shortText || p.text)}</p>
-                                </div>
-                            </div>
                         </a>
                         ${p.actions.detail ? '<button type="button" class="card-detail-btn">詳しく見る</button>' : ''}
                     </div>
                 </div>
+                <a class="card-link project-row" href="${escapeHTML(url)}"${external ? ' target="_blank" rel="noopener noreferrer"' : ''}
+                   aria-labelledby="row-name-${id} row-action-${id}" aria-describedby="row-purpose-${id}${note.length ? ' row-note-' + id : ''}">
+                    <h3 class="project-row-name" id="row-name-${id}">${escapeHTML(p.rowTitle || p.title)}</h3>
+                    <p class="project-row-purpose" id="row-purpose-${id}">${escapeHTML(p.shortText || p.text)}</p>
+                    ${note.length ? `<p class="project-row-note" id="row-note-${id}">${note.map(phrase => `<span>${escapeHTML(phrase)}</span>`).join('')}</p>` : ''}
+                    <span class="project-row-cta" id="row-action-${id}"><span class="project-row-action">${escapeHTML(p.mobileAction || '作品ページへ')}</span>${external ? '（別タブ）' : ''}<span aria-hidden="true">→</span></span>
+                </a>
             </article>
         `;
     }
@@ -404,6 +406,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const primaryProjects = filtered.filter(p => (p.group || 'primary') === 'primary' || p.group === 'other');
         const secondaryItems = filtered.filter(p => p.group === 'secondary');
+        if (mobileCardWidth?.matches && !detailedCardView?.checked) {
+            primaryProjects.sort((a, b) => (a.mobileOrder ?? Infinity) - (b.mobileOrder ?? Infinity));
+        }
 
         primaryGrid.innerHTML = primaryProjects.map(renderProjectCard).join('');
         secondaryGrid.innerHTML = secondaryItems.map(renderProjectCard).join('');
@@ -611,6 +616,16 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         restoreFiltersFromUrl();
         window.addEventListener('popstate', restoreFiltersFromUrl);
+        const refreshCardLayout = () => {
+            const focusedId = document.activeElement?.closest?.('.projects-grid .card')?.dataset.id;
+            filterProjects({ syncUrl: false });
+            if (focusedId) {
+                const card = document.querySelector(`.projects-grid [data-id="${CSS.escape(focusedId)}"]`);
+                Array.from(card?.querySelectorAll('.card-link') || []).find(link => link.getClientRects().length)?.focus({ preventScroll: true });
+            }
+        };
+        mobileCardWidth?.addEventListener?.('change', refreshCardLayout);
+        detailedCardView?.addEventListener('change', refreshCardLayout);
 
         if (filterBtns.length > 0) {
             filterBtns.forEach(btn => {
@@ -679,6 +694,9 @@ document.addEventListener('DOMContentLoaded', () => {
             text: card.querySelector('.card-text')?.textContent.trim() || '',
             rowTitle: card.querySelector('.project-row-name')?.textContent.trim(),
             shortText: card.querySelector('.project-row-purpose')?.textContent.trim(),
+            mobileAction: card.querySelector('.project-row-action')?.textContent.trim(),
+            mobileNote: Array.from(card.querySelectorAll('.project-row-note > span'), phrase => phrase.textContent),
+            mobileOrder: Number(card.style.getPropertyValue('--mobile-order')) || undefined,
             aliases: (() => {
                 try {
                     const aliases = JSON.parse(card.getAttribute('data-aliases') || '[]');

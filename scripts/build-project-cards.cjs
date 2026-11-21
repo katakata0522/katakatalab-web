@@ -31,6 +31,13 @@ function validateProject(project, index) {
     throw new Error(`${project.id} の shelf は learning / tool / story のいずれかにしてください`);
   }
   if (!project.actions.mainText) throw new Error(`${project.id} の actions.mainText がありません`);
+  if (project.mobileOrder !== undefined && (!Number.isInteger(project.mobileOrder) || project.mobileOrder < 1)) {
+    throw new Error(`${project.id} の mobileOrder は正の整数にしてください`);
+  }
+  if (project.mobileNote !== undefined && (!Array.isArray(project.mobileNote)
+    || project.mobileNote.some(phrase => typeof phrase !== 'string' || !phrase.trim()))) {
+    throw new Error(`${project.id} の mobileNote は説明文の配列にしてください`);
+  }
   if (project.aliases !== undefined) {
     if (!Array.isArray(project.aliases) || project.aliases.length > 16) {
       throw new Error(`${project.id} のaliasesは16件以内の配列にしてください`);
@@ -121,9 +128,13 @@ function renderCard(project) {
   const guideAttr = project.guide ? ` data-guide="${escapeHtml(project.guide)}"` : '';
   const aliasesAttr = ` data-aliases="${escapeHtml(JSON.stringify(project.aliases || []))}"`;
   const icon = PROJECT_ICONS[project.id] || '🧪';
+  const id = escapeHtml(project.id);
+  const note = project.mobileNote || [];
+  const external = new URL(project.url, 'https://katakatalab.com/').origin !== 'https://katakatalab.com';
+  const mobileOrder = Number.isInteger(project.mobileOrder) ? ` style="--mobile-order:${project.mobileOrder}"` : '';
 
   return `<article class="card${project.featured ? ' card--featured' : ''}"
-             data-project-card="static"
+             data-project-card="static"${mobileOrder}
              data-id="${escapeHtml(project.id)}"
              data-group="${escapeHtml(project.group)}"
              data-category="${escapeHtml(project.category)}"
@@ -143,17 +154,17 @@ function renderCard(project) {
           <div class="card-actions">
             <a href="${escapeHtml(project.url)}" class="card-link"${project.newTab || (/^https?:\/\//i.test(project.url) && !project.url.includes('katakatalab.com')) ? ' target="_blank" rel="noopener noreferrer"' : ''}>
               <span class="card-action-label">${escapeHtml(project.actions.mainText)}</span>
-              <div class="project-row">
-                <span class="project-row-icon" aria-hidden="true">${icon}</span>
-                <div>
-                  <h3 class="project-row-name">${escapeHtml(project.title)}</h3>
-                  <p class="project-row-purpose">${escapeHtml(project.shortText || project.text)}</p>
-                </div>
-              </div>
             </a>
             ${project.actions.detail ? '<button type="button" class="card-detail-btn">詳しく見る</button>' : ''}
           </div>
         </div>
+        <a class="card-link project-row" href="${escapeHtml(project.url)}"${external ? ' target="_blank" rel="noopener noreferrer"' : ''}
+           aria-labelledby="row-name-${id} row-action-${id}" aria-describedby="row-purpose-${id}${note.length ? ' row-note-' + id : ''}">
+          <h3 class="project-row-name" id="row-name-${id}">${escapeHtml(project.title)}</h3>
+          <p class="project-row-purpose" id="row-purpose-${id}">${escapeHtml(project.shortText || project.text)}</p>
+          ${note.length ? `<p class="project-row-note" id="row-note-${id}">${note.map(phrase => `<span>${escapeHtml(phrase)}</span>`).join('')}</p>` : ''}
+          <span class="project-row-cta" id="row-action-${id}"><span class="project-row-action">${escapeHtml(project.mobileAction || '作品ページへ')}</span>${external ? '（別タブ）' : ''}<span aria-hidden="true">→</span></span>
+        </a>
       </article>`.replace(/[ \t]+$/gm, '');
 }
 

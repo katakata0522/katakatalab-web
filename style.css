@@ -2941,84 +2941,100 @@ body.dark-mode .projects-subhead--other { color: #ffd27a; }
   }
   .project-view-option input { width: 1.15rem; height: 1.15rem; }
 
+  #projects {
+    --row-border: #c6deee;
+    --row-action-bg: #fff3f0;
+    --row-action-border: #e6aaa6;
+    --row-action-text: #8a3439;
+  }
+  body.dark-mode #projects {
+    --row-border: #455d79;
+    --row-action-bg: #392a36;
+    --row-action-border: #9b666b;
+    --row-action-text: #ffd2d1;
+  }
   #projects:not(:has(#project-detailed-view:checked)) {
     .secondary-projects { padding: 0; border: 0; background: transparent; }
-    .projects-grid:not(:empty) {
-      --row-divider: color-mix(in srgb, var(--c-text) 18%, var(--c-surface));
+    .projects-grid {
       grid-template-columns: minmax(0, 1fr);
-      gap: 0;
-      border: 1px solid var(--row-divider);
-      border-radius: var(--radius-md);
-      overflow: hidden;
-      background: var(--c-surface);
+      gap: 9px;
+      reading-flow: grid-rows;
     }
     .card {
       display: block;
       padding: 0;
-      border: 0;
-      border-radius: 0;
-      background: transparent;
+      border: 1px solid var(--row-border);
+      border-radius: var(--radius-md);
+      background: var(--c-surface);
       box-shadow: none;
       backdrop-filter: none;
       -webkit-backdrop-filter: none;
       opacity: 1;
       transform: none;
     }
-    .card + .card { border-top: 1px solid var(--row-divider); }
-    .card::before,
-    .card-body:has(.project-row) > :not(.card-actions),
-    .card-actions:has(.project-row) > .card-detail-btn,
-    .card-action-label { display: none; }
-    .card-link:has(.project-row) {
-      display: block;
-      min-width: 0;
-      padding: 0;
-      border-radius: 0;
+    /* 初期HTMLでも、作品データの同期後と同じ順に表示する。 */
+    .card[data-project-card="static"] { order: var(--mobile-order, 100); }
+    .card::before { width: 4px; background: var(--grad-tool); pointer-events: none; }
+    .card-body, .card-visual, .project-row::after { display: none; }
+    .project-row {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr);
+      justify-content: normal;
+      width: 100%;
+      padding: 11px 16px 11px 19px;
+      border-radius: inherit;
       background: transparent;
       box-shadow: none;
       transform: none;
       text-align: start;
     }
-    .card-link:has(.project-row)::after { content: none; }
-    .card-link:has(.project-row):focus-visible { outline-offset: -3px; }
-    .project-row {
-      display: grid;
-      grid-template-columns: 2rem minmax(0, 1fr) 0.6rem;
-      align-items: center;
-      gap: 0.7rem;
-      min-height: 68px;
-      padding: 0.65rem 0.85rem;
+    .project-row-name {
       color: var(--c-text);
-    }
-    .project-row-icon {
-      display: grid;
-      place-items: center;
-      height: 2rem;
-      border-radius: 0.6rem;
-      background: rgba(var(--card-theme-rgb, 116, 185, 255), 0.15);
-      font-size: 1.1rem;
-    }
-    .project-row-name { font-size: 1rem; line-height: 1.4; overflow-wrap: anywhere; }
-    .project-row-purpose {
-      margin-top: 0.15rem;
-      color: var(--c-text-light);
-      font-size: 0.85rem;
-      font-weight: 400;
-      line-height: 1.45;
+      font: 700 1.125rem/1.4 var(--font-display);
       overflow-wrap: anywhere;
     }
-    .project-row::after {
-      content: "";
-      width: 0.45rem;
-      height: 0.45rem;
-      border: solid var(--c-text-light);
-      border-width: 1.5px 1.5px 0 0;
-      transform: rotate(45deg);
+    .project-row-purpose, .project-row-note {
+      color: var(--c-text-light);
+      font-size: .875rem;
+      font-weight: 400;
+      line-height: 1.5;
+      overflow-wrap: anywhere;
     }
-    .card-link:is(:hover, :focus-visible, :active) .project-row {
-      background: rgba(var(--card-theme-rgb, 116, 185, 255), 0.12);
+    .project-row-purpose { margin-top: 2px; }
+    .project-row-note { margin-top: 2px; }
+    .project-row-note span { display: inline-block; max-width: 100%; vertical-align: top; }
+    .project-row-cta {
+      display: inline-flex;
+      align-items: center;
+      justify-self: start;
+      gap: .45rem;
+      min-height: 30px;
+      margin-top: 7px;
+      padding: 4px 12px;
+      border: 1px solid var(--row-action-border);
+      border-radius: 999px;
+      background: var(--row-action-bg);
+      color: var(--row-action-text);
+      font: 700 .8125rem/1.3 var(--font-base);
     }
+    .project-row-cta [aria-hidden] { font: 1.2em/1 Arial, sans-serif; }
+    .project-row:has(.project-row-note) {
+      padding: 15px 17px 14px 20px;
+      .project-row-name { font-size: 1.25rem; }
+      .project-row-purpose { margin-top: 3px; }
+      .project-row-cta {
+        min-height: 34px;
+        margin-top: 9px;
+        padding: 6px 15px;
+        background: #ff8680;
+        border-color: #ff8680;
+        color: #492326;
+      }
+    }
+    .project-row:focus-visible { outline: 3px solid #3983b9; outline-offset: -3px; }
+    .project-row:is(:hover, :focus-visible) .project-row-action { text-decoration: underline; text-underline-offset: 3px; }
   }
+  body:has(.bottom-nav-link[href="#projects"].active) #scroll-top { display: none; }
 }
 
 /* D10: 0件時のガイド導線 */
