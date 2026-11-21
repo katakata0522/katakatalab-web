@@ -2,7 +2,9 @@
 
 公開先：https://katakatalab.com/higedanfan/
 
-楽曲データとアプリの編集元は [higedanfan](https://github.com/katakata0522/higedanfan)。この版のソースは [c59f164](https://github.com/katakata0522/higedanfan/tree/c59f164a8e01465d78a37a1242ecadb49063add2)。Node.js 24 で npm ci、npm run lint、npm test、npm run build の順に実行する。
+楽曲データとアプリの編集元は [higedanfan](https://github.com/katakata0522/higedanfan)。この版のソースは [524c2d0](https://github.com/katakata0522/higedanfan/tree/524c2d0d55485bf082c540b6e6368ba0402134fa)。Node.js 24 で npm ci、npm run lint、npm test、npm run build の順に実行する。
+
+2026年11月21日の反映（524c2d0）では、本番CSP厳格化・ストレージおよびバックアップ検証強化・外部リンクおよび埋め込み動画の安全性強化・検索キャッシュとデータ分割による軽量化・PWAオフライン楽曲フォールバックおよびセトリ画像出力の文字扱い修正を反映した。あわせて、補助文字色のコントラスト改善、丸文字の合成太字抑止、スマホ入力欄の16px化、360px未満ヘッダーのアイコン調整（アイコン付きマイノート＋アイコンメニュー）、モーダルの `overscroll-behavior: contain` 統一とドラッグ誤閉じ防止、マイノートの右上閉じるボタン拡大（44×44px）と右下ボタン整理、楽曲ページの重複出典・重複表記の整理を行った。
 
 2026年11月20日の反映（c59f164）では、楽曲ガイドと音域表の裏声最高における未設定表記を傍線（`—`）へ復元し、音域比較表の固定曲名列と隣接列の視認性・余白を整えた。また、すでに曲が入った保存済みセトリが存在する状態で楽曲ガイドや今日の1曲診断から曲を追加するときは、元のセトリを保存したまま新しい作業用セトリを自動作成して連続追加・解除（`+ セトリに追加` ⇄ `✓ 追加済み`）できるよう保護し、MYセトリ画像作成以外のシェアUIおよび「セットリストをテキストでコピー」ボタンを一時非表示化（内部コードは保持）した。
 
