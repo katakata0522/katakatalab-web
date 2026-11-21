@@ -39,6 +39,8 @@ test('記事では構造化データと同一サイトのスクリプトを使�
         assert.throws(() => verifyBuildOutput(root), /インラインイベント属性/);
         fs.writeFileSync(article, policy + '<script>document.title="PikaLab"</script>');
         assert.throws(() => verifyBuildOutput(root), /インラインスクリプト/);
+        fs.writeFileSync(article, policy + '<script src="//cdn.example.org/ui.js"></script>');
+        assert.throws(() => verifyBuildOutput(root), /同一サイトから配信/);
         fs.writeFileSync(article, '<title>PikaLab</title>');
         assert.throws(() => verifyBuildOutput(root), /記事用のスクリプト制限/);
     } finally {

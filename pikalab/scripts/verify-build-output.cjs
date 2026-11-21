@@ -223,8 +223,12 @@ function verifyBuildOutput(buildRoot, options = {}) {
         if (relative.startsWith('articles/')) {
             const articlePolicy = '<meta http-equiv="Content-Security-Policy" content="script-src \'self\'; script-src-attr \'none\'">';
             if (!html.includes(articlePolicy)) errors.push(relative + ': 記事用のスクリプト制限がありません');
+            const articleUrl = new URL(relative, 'https://katakatalab.com/pikalab/');
             for (const [tag] of html.matchAll(/<script\b[^>]*>/gi)) {
-                if (!getAttribute(tag, 'src') && getAttribute(tag, 'type').toLowerCase() !== 'application/ld+json') {
+                const src = getAttribute(tag, 'src');
+                if (src && new URL(src, articleUrl).origin !== articleUrl.origin) {
+                    errors.push(relative + ': 記事のスクリプトは同一サイトから配信してください (' + src + ')');
+                } else if (!src && getAttribute(tag, 'type').toLowerCase() !== 'application/ld+json') {
                     errors.push(relative + ': インラインスクリプトが残っています');
                 }
             }
