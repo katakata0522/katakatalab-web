@@ -1819,8 +1819,12 @@ class SpeedReaderApp {
 
             const preview = document.createElement('p');
             preview.className = 'text-sm text-slate-400 font-mono line-clamp-2';
-            const previewText = data.text.length > 40 ? `${data.text.substring(0, 40)}...` : data.text;
-            preview.textContent = previewText;
+            // 本文・再生用のルビは保持し、カードの抜粋だけを読みやすくする。
+            const plainText = splitRubyParts(typeof data.text === 'string' ? data.text : '')
+                .map(part => part.ruby ? part.base : part.text).join('');
+            const previewCharacters = this.splitDisplayCharacters(plainText);
+            preview.textContent = previewCharacters.slice(0, 40).join('')
+                + (previewCharacters.length > 40 ? '...' : '');
 
             btn.appendChild(badge);
             btn.appendChild(title);
