@@ -391,6 +391,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         const filtered = allProjects.filter(p => {
+            if (p.group === 'other' && !searchText) return false;
             const matchesFilter = (activeFilter === 'all' || p.shelf === activeFilter);
             
             const corpus = projectFilterState
@@ -401,7 +402,7 @@ document.addEventListener('DOMContentLoaded', () => {
             return matchesFilter && matchesSearch;
         });
 
-        const primaryProjects = filtered.filter(p => (p.group || 'primary') === 'primary');
+        const primaryProjects = filtered.filter(p => (p.group || 'primary') === 'primary' || p.group === 'other');
         const secondaryItems = filtered.filter(p => p.group === 'secondary');
 
         primaryGrid.innerHTML = primaryProjects.map(renderProjectCard).join('');
@@ -570,7 +571,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const clearButton = document.getElementById('recent-projects-clear');
 
         document.addEventListener('click', (event) => {
-            const link = event.target.closest('.card-link, .search-suggestion-link, .recent-project-link');
+            const link = event.target.closest('.card-link, .search-suggestion-link, .recent-project-link, .other-project-link');
             if (!link) return;
             const card = link.closest('[data-id]');
             const projectId = card?.getAttribute('data-id') || link.getAttribute('data-project-id');
@@ -717,6 +718,7 @@ document.addEventListener('DOMContentLoaded', () => {
         initProjectShare();
         initProjectHistory();
         renderRecentProjects();
+        window.addEventListener('pageshow', renderRecentProjects);
 
         fetch(getProjectDataUrl())
             .then(response => {
@@ -734,6 +736,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 const status = document.getElementById('project-data-status');
                 if (status) status.hidden = false;
             });
+    } else if (document.querySelector('.other-project-list')) {
+        initProjectHistory();
     }
 
     // --- A2: ヒーロー「もっと読む」（モバイルでサブを折りたたみ） ---

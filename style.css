@@ -780,6 +780,24 @@ body.dark-mode .pikalab-wing {
 
 .projects-grid--secondary .card--featured { grid-column: auto; }
 
+.other-projects-entry { margin: 1rem 0; text-align: center; }
+.other-projects-page { max-width: 48rem; padding-block: calc(var(--header-height) + 1rem) 3rem; }
+.other-projects-page h1 { margin: .75rem 0 1rem; }
+.other-project-list { list-style: none; padding: 0; display: grid; gap: .5rem; }
+.other-project-link {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: .85rem;
+  padding: .85rem 1rem;
+  color: var(--c-text);
+  background: var(--c-surface);
+  border: 1px solid var(--c-text-light);
+  border-radius: var(--radius-md);
+}
+.other-project-link small { display: block; color: var(--c-text-light); }
+.other-project-link:hover strong, .other-project-link:focus-visible strong { text-decoration: underline; }
+
 .project-data-status {
   margin: 1rem 0 0;
   color: var(--c-text-light);

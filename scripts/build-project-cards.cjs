@@ -4,7 +4,7 @@ const path = require('node:path');
 const rootDir = path.resolve(__dirname, '..');
 const projectsPath = path.join(rootDir, 'projects.json');
 const indexPath = path.join(rootDir, 'index.html');
-const VALID_GROUPS = new Set(['primary', 'secondary']);
+const VALID_GROUPS = new Set(['primary', 'secondary', 'other']);
 const VALID_SHELVES = new Set(['learning', 'tool', 'story']);
 
 function escapeHtml(value) {
@@ -25,7 +25,7 @@ function validateProject(project, index) {
     throw new Error(`${project.id} の id は小文字英数字とハイフンだけにしてください`);
   }
   if (!VALID_GROUPS.has(project.group)) {
-    throw new Error(`${project.id} の group は primary または secondary にしてください`);
+    throw new Error(`${project.id} の group は primary / secondary / other のいずれかにしてください`);
   }
   if (!VALID_SHELVES.has(project.shelf)) {
     throw new Error(`${project.id} の shelf は learning / tool / story のいずれかにしてください`);
@@ -161,12 +161,31 @@ function replaceGeneratedBlock(html, name, content) {
   const start = `<!-- PROJECT_CARDS_${name}_START -->`;
   const end = `<!-- PROJECT_CARDS_${name}_END -->`;
   const pattern = new RegExp(`${start}[\\s\\S]*?${end}`);
-  if (!pattern.test(html)) throw new Error(`${name} 用の生成マーカーが index.html にありません`);
+  if (!pattern.test(html)) throw new Error(`${name} 用の生成マーカーがありません`);
   return html.replace(pattern, `${start}\n                    ${content}\n                    ${end}`);
 }
 
 function normalizeNewlines(value) {
   return String(value).replace(/\r\n/g, '\n');
+}
+
+function renderOtherProject(project) {
+  return `<li>
+                      <a href="${escapeHtml(project.url)}" class="other-project-link" data-project-id="${escapeHtml(project.id)}">
+                        <span aria-hidden="true">${PROJECT_ICONS[project.id] || '🧪'}</span>
+                        <span><strong>${escapeHtml(project.title)}</strong><small>${escapeHtml(project.shortText || project.text)}</small></span>
+                        <span aria-hidden="true">→</span>
+                      </a>
+                    </li>`;
+}
+
+function writeGeneratedBlocks(filePath, blocks) {
+  const rawSource = fs.readFileSync(filePath, 'utf8');
+  const source = normalizeNewlines(rawSource);
+  let html = source;
+  for (const [name, content] of blocks) html = replaceGeneratedBlock(html, name, content);
+  if (html === source) return;
+  fs.writeFileSync(filePath, rawSource.includes('\r\n') ? html.replace(/\n/g, '\r\n') : html);
 }
 
 function buildProjectCards() {
@@ -177,19 +196,11 @@ function buildProjectCards() {
   const secondary = projects.filter((project) => project.group === 'secondary').map(renderCard).join('\n                    ');
   if (!primary || !secondary) throw new Error('primary と secondary の両方に作品が必要です');
 
-  const rawSource = fs.readFileSync(indexPath, 'utf8');
-  const source = normalizeNewlines(rawSource);
-  const html = replaceGeneratedBlock(replaceGeneratedBlock(source, 'PRIMARY', primary), 'SECONDARY', secondary);
-  if (normalizeNewlines(html) === normalizeNewlines(source)) {
-    console.log(`トップページのカードは既に ${projects.length} 件と一致しています`);
-    return;
-  }
-  const newline = rawSource.includes('\r\n') ? '\r\n' : '\n';
-  const output = newline === '\n' ? html : html.replace(/\n/g, '\r\n');
-  fs.writeFileSync(indexPath, output);
-  console.log(`トップページへ ${projects.length} 件の静的カードを反映しました`);
+  const other = projects.filter((project) => project.group === 'other').map(renderOtherProject).join('\n                    ');
+  writeGeneratedBlocks(indexPath, [['PRIMARY', primary], ['SECONDARY', secondary]]);
+  writeGeneratedBlocks(path.join(rootDir, 'other-projects.html'), [['OTHER', other]]);
 }
 
 if (require.main === module) buildProjectCards();
 
-module.exports = { buildProjectCards, renderCard, validateProject, validateProjects, validatePublicUrl };
+module.exports = { buildProjectCards, renderCard, renderOtherProject, validateProject, validateProjects, validatePublicUrl };

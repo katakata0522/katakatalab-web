@@ -16,7 +16,7 @@ const isFanNotePage = relativePath => relativePath.replaceAll('\\', '/').startsW
 const PUBLIC_ROOT_FILES = Object.freeze([
   '.htaccess', '.user.ini', '404.html', 'about-katakatalab.html', 'ads.txt',
   'ambition.html', 'analytics.js', 'education-sw-privacy.js', 'contact.html', 'favicon.ico', 'favicon.svg', 'gear.html', 'icon.svg',
-  'index.html', 'icon-192.png', 'icon-512.png', 'manifest.json', 'note-selection.html', 'offline.html', 'ogp.png', 'project-filter-state.js', 'project-history.js',
+  'index.html', 'icon-192.png', 'icon-512.png', 'manifest.json', 'note-selection.html', 'offline.html', 'ogp.png', 'other-projects.html', 'project-filter-state.js', 'project-history.js',
   'ogp.svg', 'pikalab_screenshot.jpg', 'privacy.html', 'projects.json', 'robots.txt',
   'pwa-runtime.js', 'script.js', 'sitemap.html', 'sitemap.xml', 'style.css', 'sw.js', 'terms.html', 'tool-chrome.css',
   'updates.html', 'who-is-katakata.html',

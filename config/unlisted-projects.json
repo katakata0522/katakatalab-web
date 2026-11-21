@@ -1,0 +1,80 @@
+[
+  {
+    "id": "moyamoya-sorter",
+    "group": "secondary",
+    "category": "tool",
+    "shelf": "tool",
+    "featured": true,
+    "url": "moyamoya-sorter/",
+    "detail": "やることが多すぎて動けない時や不安な時に。頭のモヤモヤを「変えられること」と「手放していいこと」に仕分け、2分でできる最小の一歩を導く行動整理ツール。",
+    "tagText": "メンタル",
+    "tagClass": "tag-tool",
+    "targetBadge": "👪 全員向け",
+    "statusBadge": "NEW",
+    "title": "モヤモヤ仕分け機",
+    "shortText": "悩みを整理して、次の一歩を決める",
+    "text": "頭の中のモヤモヤを整理して、今すぐできる「2分の一歩」を決めるツール。",
+    "aliases": [
+      "モヤモヤ仕分け機",
+      "モヤモヤ",
+      "不安解消",
+      "タスク整理",
+      "メンタルケア",
+      "2分タイマー",
+      "スモールステップ"
+    ],
+    "actions": {
+      "mainText": "仕分ける →",
+      "detail": true
+    }
+  },
+  {
+    "id": "chiritsumo-calc",
+    "group": "secondary",
+    "category": "tool",
+    "shelf": "tool",
+    "featured": true,
+    "url": "chiritsumo-calc/",
+    "detail": "カフェ代、コンビニのついで買い、使っていないサブスク…日々のチリツモ出費を見直したお金が、温泉旅行や海外旅などのご褒美体験に化ける未来価値を逆算するシミュレーター。",
+    "tagText": "家計",
+    "tagClass": "tag-tool",
+    "targetBadge": "💼 実用向け",
+    "statusBadge": "NEW",
+    "title": "チリツモ逆算シミュレーター",
+    "shortText": "小さな出費が積もるといくらかを見る",
+    "text": "我慢する節約をやめて、日々の小さな出費をご褒美体験に楽しく逆算！",
+    "aliases": [
+      "チリツモ",
+      "チリツモ逆算",
+      "節約シミュレーター",
+      "ラテマネー",
+      "固定費見直し",
+      "サブスク解約",
+      "家計簿"
+    ],
+    "actions": {
+      "mainText": "逆算する →",
+      "detail": true
+    }
+  },
+  {
+    "id": "gear",
+    "group": "secondary",
+    "category": "gear",
+    "shelf": "story",
+    "featured": false,
+    "url": "gear.html",
+    "detail": "個人開発者が実際に使って良かったキーボードやパソコンなどの機材・ガジェットを、開発を楽しくする工夫や選んだ本音とともに紹介。",
+    "tagText": "環境",
+    "tagClass": "tag-gear",
+    "targetBadge": "💼 実用向け",
+    "title": "制作デスクと機材メモ",
+    "shortText": "制作に使うデスクや機材を見る",
+    "text": "気になる機材や、制作環境をもっと楽しくする道具のメモ。",
+    "aliases": ["ガジェット", "機材", "デスク", "開発環境", "desk gear"],
+    "actions": {
+      "mainText": "使う →",
+      "detail": true
+    }
+  }
+]
