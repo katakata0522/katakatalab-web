@@ -183,9 +183,10 @@ function normalizeNewlines(value) {
 function renderOtherProject(project) {
   return `<li>
                       <a href="${escapeHtml(project.url)}" class="other-project-link" data-project-id="${escapeHtml(project.id)}">
-                        <span aria-hidden="true">${PROJECT_ICONS[project.id] || '🧪'}</span>
-                        <span><strong>${escapeHtml(project.title)}</strong><small>${escapeHtml(project.shortText || project.text)}</small></span>
-                        <span aria-hidden="true">→</span>
+                        <span class="other-project-icon" aria-hidden="true">${PROJECT_ICONS[project.id] || '🧪'}</span>
+                        <strong class="other-project-title">${escapeHtml(project.title)}</strong>
+                        <span class="other-project-description">${escapeHtml(project.shortText || project.text)}</span>
+                        <span class="other-project-open" aria-hidden="true">開く <span>→</span></span>
                       </a>
                     </li>`;
 }
