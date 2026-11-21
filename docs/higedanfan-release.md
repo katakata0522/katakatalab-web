@@ -2,6 +2,8 @@
 
 公開先：https://katakatalab.com/higedanfan/
 
+> **直接配信への分離（2026年11月〜）**: 現在 `higedanfan` は公開用リポジトリ `katakatalab-web` へ成果物をコピーせず、`higedanfan` の検証済みビルドから運用用 `KatakataLab`（`.github/workflows/deploy-higedanfan.yml`）経由で直接 Xserver `/higedanfan/` へ配信しています。`katakatalab-web` 側ではトップページ掲載カード（`projects.json` / `index.html`）および `robots.txt` / `sw.js` 除外設定のみを管理します。
+
 楽曲データとアプリの編集元は [higedanfan](https://github.com/katakata0522/higedanfan)。この版のソースは [524c2d0](https://github.com/katakata0522/higedanfan/tree/524c2d0d55485bf082c540b6e6368ba0402134fa)。Node.js 24 で npm ci、npm run lint、npm test、npm run build の順に実行する。
 
 2026年11月21日の反映（524c2d0）では、本番CSP厳格化・ストレージおよびバックアップ検証強化・外部リンクおよび埋め込み動画の安全性強化・検索キャッシュとデータ分割による軽量化・PWAオフライン楽曲フォールバックおよびセトリ画像出力の文字扱い修正を反映した。あわせて、補助文字色のコントラスト改善、丸文字の合成太字抑止、スマホ入力欄の16px化、360px未満ヘッダーのアイコン調整（アイコン付きマイノート＋アイコンメニュー）、モーダルの `overscroll-behavior: contain` 統一とドラッグ誤閉じ防止、マイノートの右上閉じるボタン拡大（44×44px）と右下ボタン整理、楽曲ページの重複出典・重複表記の整理を行った。

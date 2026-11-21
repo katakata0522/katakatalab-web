@@ -8,6 +8,25 @@ const { readChanges } = require('./pikalab-ci-scope.cjs');
 const PIKA_SHARED = new Set(['.node-version', '.htaccess', 'sitemap.xml',
     'education-sw-privacy.js', 'scripts/education-no-tracking.cjs']);
 const PIKA_PREFIXES = ['pikalab/', 'qa/', 'scripts/public-qa/', '.github/'];
+const ROOT_ONLY_GITHUB_FILES = new Set([
+    '.github/scripts/local-tools-e2e.mjs',
+    '.github/scripts/pwa-update-e2e.mjs',
+    '.github/workflows/root-quality.yml',
+]);
+const PIKALAB_ONLY_GITHUB_FILES = new Set([
+    '.github/workflows/pikalab-quality.yml',
+    '.github/scripts/pikalab-ci-scope.cjs',
+    '.github/scripts/pikalab-ci-scope.test.cjs',
+    '.github/scripts/pikalab-e2e-inputs.cjs',
+    '.github/scripts/validate_pikalab.py',
+    '.github/scripts/copy-code-studio-reachable.cjs',
+    '.github/scripts/install-pikalab-pdf-tools.sh',
+    '.github/scripts/sync_quest_board_csp.py',
+    '.github/scripts/verify_color_lab_deploy.py',
+    '.github/scripts/verify_pikalab_production.py',
+    '.github/scripts/resolve-ci-baseline.cjs',
+    '.github/scripts/resolve-ci-baseline.test.cjs',
+]);
 
 function onlyHigedanfanSitemapChanged(before, after) {
     if (typeof before !== 'string' || typeof after !== 'string') return false;
@@ -34,8 +53,10 @@ function selectWorkflows(files, shared = {}) {
         return { root: true, pikalab: true };
     }
     return {
-        root: files.some(file => !file.startsWith('pikalab/') && !file.endsWith('.md')),
+        root: files.some(file => !file.startsWith('pikalab/') && !file.endsWith('.md')
+            && !PIKALAB_ONLY_GITHUB_FILES.has(file)),
         pikalab: files.some(file => {
+            if (ROOT_ONLY_GITHUB_FILES.has(file)) return false;
             if (file === 'sitemap.xml' && onlyHigedanfanSitemapChanged(shared.sitemapBefore, shared.sitemapAfter)) return false;
             if (file === 'qa/published-dependencies.json'
                 && onlyHigedanfanDependenciesChanged(shared.manifestBefore, shared.manifestAfter)) return false;
