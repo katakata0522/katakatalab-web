@@ -35,6 +35,7 @@ const AD_FREE_PATHS = [
 ];
 const EXTERNAL_MANAGED_PATH_PREFIXES = Object.freeze([
   '/asobi-pocket/',
+  '/higedanfan/',
 ]);
 const SCAN_EXCLUDED_DIRECTORIES = new Set([
   '.git', 'node_modules', 'dist', 'tests', 'production', 'test-results',
