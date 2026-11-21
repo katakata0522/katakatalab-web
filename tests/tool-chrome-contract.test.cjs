@@ -17,9 +17,13 @@ test('トップのカードは projects.json の生成結果と一致する', ()
   validateProjects(projects);
   const html = read('index.html').replace(/\r\n/g, '\n');
 
+  const recommended = projects.filter(project => project.recommendationOrder)
+    .sort((a, b) => a.recommendationOrder - b.recommendationOrder);
+  assert.deepEqual(recommended.map(project => project.id), ['motion-atlas', 'pikalab', 'playpoint', 'higedanfan', 'qrcode']);
+  assert.equal(cardBlock(html, 'recommended'), recommended.map(renderCard).join('\n                    '));
   for (const group of ['primary', 'secondary']) {
     const generated = projects
-      .filter((project) => project.group === group)
+      .filter((project) => project.group === group && !project.recommendationOrder)
       .map((project) => renderCard(project))
       .join('\n                    ');
     assert.equal(cardBlock(html, group), generated);

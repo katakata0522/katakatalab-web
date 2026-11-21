@@ -31,6 +31,9 @@ function validateProject(project, index) {
     throw new Error(`${project.id} の shelf は learning / tool / story のいずれかにしてください`);
   }
   if (!project.actions.mainText) throw new Error(`${project.id} の actions.mainText がありません`);
+  if (project.recommendationOrder !== undefined && (
+    project.group === 'other' || !Number.isInteger(project.recommendationOrder) || project.recommendationOrder < 1
+  )) throw new Error(`${project.id} の recommendationOrder はトップ掲載作品の正の整数にしてください`);
   if (project.mobileOrder !== undefined && (!Number.isInteger(project.mobileOrder) || project.mobileOrder < 1)) {
     throw new Error(`${project.id} の mobileOrder は正の整数にしてください`);
   }
@@ -78,10 +81,15 @@ function validatePublicUrl(value, label) {
 function validateProjects(projects) {
   if (!Array.isArray(projects) || projects.length === 0) throw new Error('projects.json が空です');
   const ids = new Set();
+  const recommendationOrders = new Set();
   projects.forEach((project, index) => {
     validateProject(project, index);
     if (ids.has(project.id)) throw new Error(`${project.id} のidが重複しています`);
     ids.add(project.id);
+    if (project.recommendationOrder) {
+      if (recommendationOrders.has(project.recommendationOrder)) throw new Error('おすすめの掲載順が重複しています');
+      recommendationOrders.add(project.recommendationOrder);
+    }
   });
   return projects;
 }
@@ -132,9 +140,15 @@ function renderCard(project) {
   const note = project.mobileNote || [];
   const external = new URL(project.url, 'https://katakatalab.com/').origin !== 'https://katakatalab.com';
   const mobileOrder = Number.isInteger(project.mobileOrder) ? ` style="--mobile-order:${project.mobileOrder}"` : '';
+  const recommendation = project.recommendationOrder ? ` data-recommendation-order="${project.recommendationOrder}"` : '';
+  const desktopNewTab = project.newTab || external;
+  const tabLabel = desktopNewTab ? ' <span class="card-action-target">（別タブ）</span>' : '';
+  const desktopAction = project.recommendationOrder
+    ? `${escapeHtml(project.mobileAction || '作品ページへ')}${tabLabel} →`
+    : escapeHtml(project.actions.mainText);
 
   return `<article class="card${project.featured ? ' card--featured' : ''}"
-             data-project-card="static"${mobileOrder}
+             data-project-card="static"${mobileOrder}${recommendation}
              data-id="${escapeHtml(project.id)}"
              data-group="${escapeHtml(project.group)}"
              data-category="${escapeHtml(project.category)}"
@@ -152,8 +166,8 @@ function renderCard(project) {
           <p class="card-text">${escapeHtml(project.text)}</p>
           ${guideLinks}
           <div class="card-actions">
-            <a href="${escapeHtml(project.url)}" class="card-link"${project.newTab || (/^https?:\/\//i.test(project.url) && !project.url.includes('katakatalab.com')) ? ' target="_blank" rel="noopener noreferrer"' : ''}>
-              <span class="card-action-label">${escapeHtml(project.actions.mainText)}</span>
+            <a href="${escapeHtml(project.url)}" class="card-link"${desktopNewTab ? ' target="_blank" rel="noopener noreferrer"' : ''}>
+              <span class="card-action-label">${desktopAction}</span>
             </a>
             ${project.actions.detail ? '<button type="button" class="card-detail-btn">詳しく見る</button>' : ''}
           </div>
@@ -204,12 +218,14 @@ function buildProjectCards() {
   const projects = JSON.parse(fs.readFileSync(projectsPath, 'utf8'));
   validateProjects(projects);
 
-  const primary = projects.filter((project) => project.group === 'primary').map(renderCard).join('\n                    ');
-  const secondary = projects.filter((project) => project.group === 'secondary').map(renderCard).join('\n                    ');
+  const recommended = projects.filter(project => project.recommendationOrder)
+    .sort((a, b) => a.recommendationOrder - b.recommendationOrder).map(renderCard).join('\n                    ');
+  const primary = projects.filter(project => project.group === 'primary' && !project.recommendationOrder).map(renderCard).join('\n                    ');
+  const secondary = projects.filter(project => project.group === 'secondary' && !project.recommendationOrder).map(renderCard).join('\n                    ');
   if (!primary || !secondary) throw new Error('primary と secondary の両方に作品が必要です');
 
   const other = projects.filter((project) => project.group === 'other').map(renderOtherProject).join('\n                    ');
-  writeGeneratedBlocks(indexPath, [['PRIMARY', primary], ['SECONDARY', secondary]]);
+  writeGeneratedBlocks(indexPath, [['RECOMMENDED', recommended], ['PRIMARY', primary], ['SECONDARY', secondary]]);
   writeGeneratedBlocks(path.join(rootDir, 'other-projects.html'), [['OTHER', other]]);
 }
 

@@ -316,14 +316,15 @@ test('追加コンテンツは具体性と更新責任を示す', () => {
   assert.doesNotMatch(sitemapHtml, /全ページ一覧/);
 });
 
-test('PikaLabはトップで見つけられるが実用ツールと区分されている', () => {
+test('PikaLabはおすすめで見つけられ、絞り込みでは学習ラボに属する', () => {
   const html = readFile('index.html');
 
   const pikalabIndex = html.indexOf('data-id="pikalab"');
-  const qrIndex = html.indexOf('data-id="qrcode"');
+  const recommendedIndex = html.indexOf('id="recommended-projects"');
+  const practicalIndex = html.indexOf('id="primary-projects-title"');
 
-  assert.ok(pikalabIndex >= 0, 'PikaLab をトップの作品棚に表示してください');
-  assert.ok(qrIndex < pikalabIndex, '実用ツールをPikaLabより先に説明してください');
+  assert.ok(recommendedIndex >= 0 && recommendedIndex < pikalabIndex && pikalabIndex < practicalIndex);
+  assert.match(html, /data-id="pikalab"\s+data-group="secondary"\s+data-category="education"\s+data-shelf="learning"/);
   assert.match(html, /実用ツールとは目的が違うものです/);
   assert.doesNotMatch(html, /ひみつきち|ゲーム遊び場|きらりん/);
 });

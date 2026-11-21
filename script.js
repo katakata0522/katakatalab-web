@@ -321,6 +321,12 @@ document.addEventListener('DOMContentLoaded', () => {
         const id = escapeHTML(p.id);
         const note = p.mobileNote || [];
         const external = new URL(url, 'https://katakatalab.com/').origin !== 'https://katakatalab.com';
+        const recommended = Boolean(p.recommendationOrder);
+        const desktopNewTab = recommended ? Boolean(p.newTab || external) : shouldOpenProjectInNewTab(url);
+        const tabLabel = desktopNewTab ? ' <span class="card-action-target">（別タブ）</span>' : '';
+        const desktopAction = recommended
+            ? `${escapeHTML(p.mobileAction || '作品ページへ')}${tabLabel} →`
+            : '使う →';
         const mobileOrder = Number.isInteger(p.mobileOrder) ? ` style="--mobile-order:${p.mobileOrder}"` : '';
 
         return `
@@ -343,15 +349,15 @@ document.addEventListener('DOMContentLoaded', () => {
                     </div>
                     <h3 class="card-title">${escapeHTML(p.title)}</h3>
                     <p class="card-text">${escapeHTML(p.text)}</p>
-                    ${p.guideLinks ? `
+                    ${!recommended && p.guideLinks?.length ? `
                         <div class="card-guide-links">
                             <span class="guide-label">クイックガイド:</span>
                             ${p.guideLinks.map(link => `<a href="${escapeHTML(link.url)}" class="guide-badge-link" target="_blank" rel="noopener noreferrer">${escapeHTML(link.text)}</a>`).join('')}
                         </div>
                     ` : ''}
                     <div class="card-actions">
-                        <a href="${escapeHTML(url)}" class="card-link"${shouldOpenProjectInNewTab(url) ? ' target="_blank" rel="noopener noreferrer"' : ''}>
-                            <span class="card-action-label">使う →</span>
+                        <a href="${escapeHTML(url)}" class="card-link"${desktopNewTab ? ' target="_blank" rel="noopener noreferrer"' : ''}>
+                            <span class="card-action-label">${desktopAction}</span>
                         </a>
                         ${p.actions.detail ? '<button type="button" class="card-detail-btn">詳しく見る</button>' : ''}
                     </div>
@@ -370,6 +376,7 @@ document.addEventListener('DOMContentLoaded', () => {
     function filterProjects({ syncUrl = true } = {}) {
         const primaryGrid = document.getElementById('projects-grid');
         const secondaryGrid = document.getElementById('secondary-projects-grid');
+        const recommendedGrid = document.getElementById('recommended-projects-grid');
         const primaryTitle = document.getElementById('primary-projects-title');
         const secondaryProjects = document.getElementById('secondary-projects');
         const searchInput = document.getElementById('project-search');
@@ -404,8 +411,15 @@ document.addEventListener('DOMContentLoaded', () => {
             return matchesFilter && matchesSearch;
         });
 
-        const primaryProjects = filtered.filter(p => (p.group || 'primary') === 'primary' || p.group === 'other');
-        const secondaryItems = filtered.filter(p => p.group === 'secondary');
+        const remaining = recommendedGrid ? filtered.filter(p => !p.recommendationOrder) : filtered;
+        const primaryProjects = remaining.filter(p => (p.group || 'primary') === 'primary' || p.group === 'other');
+        const secondaryItems = remaining.filter(p => p.group === 'secondary');
+        if (recommendedGrid) {
+            const recommendedItems = filtered.filter(p => p.recommendationOrder)
+                .sort((a, b) => a.recommendationOrder - b.recommendationOrder);
+            recommendedGrid.innerHTML = recommendedItems.map(renderProjectCard).join('');
+            document.getElementById('recommended-projects').hidden = recommendedItems.length === 0;
+        }
         if (mobileCardWidth?.matches && !detailedCardView?.checked) {
             primaryProjects.sort((a, b) => (a.mobileOrder ?? Infinity) - (b.mobileOrder ?? Infinity));
         }
@@ -686,11 +700,13 @@ document.addEventListener('DOMContentLoaded', () => {
             guide: card.dataset.guide || '',
             detail: card.dataset.detail || '',
             featured: card.classList.contains('card--featured'),
+            recommendationOrder: Number(card.dataset.recommendationOrder) || undefined,
+            newTab: card.querySelector('.card-body .card-link')?.target === '_blank',
             tagText: card.querySelector('.card-tag')?.textContent.trim() || '',
             tagClass: Array.from(card.querySelector('.card-tag')?.classList || []).find(name => name.startsWith('tag-')) || '',
             targetBadge: card.querySelector('.badge-target')?.textContent.trim() || '',
             statusBadge: card.querySelector('.badge-new')?.textContent.trim() || '',
-            title: card.querySelector('.card-title')?.textContent.trim() || '',
+            title: (card.querySelector('.project-row-name') || card.querySelector('.card-title'))?.textContent.trim() || '',
             text: card.querySelector('.card-text')?.textContent.trim() || '',
             rowTitle: card.querySelector('.project-row-name')?.textContent.trim(),
             shortText: card.querySelector('.project-row-purpose')?.textContent.trim(),
@@ -1071,14 +1087,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 // カード全体のクリッカブル化（詳しく見るボタンや個別リンク以外のカード表面をクリックしたときはツールへ直行）
                 const card = e.target.closest('.card');
                 if (card && !e.target.closest('a') && !e.target.closest('button')) {
-                    const mainLink = card.querySelector('.card-link');
-                    if (mainLink && mainLink.href) {
-                        if (mainLink.target === '_blank') {
-                            window.open(mainLink.href, '_blank', 'noopener,noreferrer');
-                        } else {
-                            window.location.href = mainLink.href;
-                        }
-                    }
+                    const mainLink = [...card.querySelectorAll('.card-link')].find(link => link.getClientRects().length);
+                    mainLink?.click();
                 }
             }));
         }
