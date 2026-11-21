@@ -1,7 +1,7 @@
 'use strict';
-const CACHE_NAME = "higedanfan-pwa-1610cddfbb63bd6e";
+const CACHE_NAME = "higedanfan-pwa-0f1f82d6fef58008";
 const CACHE_PREFIX = "higedanfan-pwa-";
-const CORE_ASSETS = ["/higedanfan/","/higedanfan/manifest.webmanifest","/higedanfan/fonts/kiwi-maru-medium-c8f08bbe.woff2","/higedanfan/fonts/noto-sans-jp-b515a988.woff2","/higedanfan/hige-mark.svg?v=34b8cc7","/higedanfan/hige-icon-192.png","/higedanfan/hige-icon-512.png","/higedanfan/hige-touch-180.png?v=cd4d0ca","/higedanfan/assets/jsx-runtime-Wy9s6hX0.js","/higedanfan/assets/tempoReviewStatus-Br_63qV_.js","/higedanfan/assets/setlist-DgX7Pegt.js","/higedanfan/assets/fanRecordStorage-DwLGTTnY.js","/higedanfan/assets/createLucideIcon-DPZJ1Jnu.js","/higedanfan/assets/quizSessionClear-BF_6_TB4.js","/higedanfan/assets/preload-helper-Rv01yyKe.js","/higedanfan/assets/map-pin-CfDyA5ZN.js","/higedanfan/assets/KurunIntroOverlay-hkzEI2iF.js","/higedanfan/assets/main-CPCqOqG6.js","/higedanfan/assets/main-DnQ3L4Rp.css"];
+const CORE_ASSETS = ["/higedanfan/","/higedanfan/manifest.webmanifest","/higedanfan/fonts/kiwi-maru-medium-c8f08bbe.woff2","/higedanfan/fonts/noto-sans-jp-b515a988.woff2","/higedanfan/hige-mark.svg?v=34b8cc7","/higedanfan/hige-icon-192.png","/higedanfan/hige-icon-512.png","/higedanfan/hige-touch-180.png?v=cd4d0ca","/higedanfan/assets/jsx-runtime-Wy9s6hX0.js","/higedanfan/assets/fullCatalogSongs-hHs-GJMq.js","/higedanfan/assets/userInput-BwoUvDVp.js","/higedanfan/assets/createLucideIcon-DPZJ1Jnu.js","/higedanfan/assets/browserStorage-ow4MwRZv.js","/higedanfan/assets/tempoReviewStatus-T7ShLE7f.js","/higedanfan/assets/setlist-Bow5LYXW.js","/higedanfan/assets/fanRecordStorage-8_YV1pVs.js","/higedanfan/assets/quizSessionClear-BZmfyM0K.js","/higedanfan/assets/quickAddSession-DtYNpkEq.js","/higedanfan/assets/sacredSpotAreas-Bsz1C79v.js","/higedanfan/assets/kurunIntroState-D-YzXMj-.js","/higedanfan/assets/songReadings-BIPB_cSa.js","/higedanfan/assets/savedSetlists-Bcl9xU7g.js","/higedanfan/assets/main-BuKpphCO.js","/higedanfan/assets/main-BPBSGZSZ.css"];
 const MAX_RUNTIME_ENTRIES = 80;
 const NETWORK_TIMEOUT_MS = 4500;
 
@@ -36,8 +36,17 @@ function cacheKeyFor(request) {
 
 function offlineFallbackResponse() {
   return new Response(
-    '<!doctype html><html lang="ja"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>オフライン｜115万キロのファンノート</title><body style="margin:0;padding:24px;font-family:sans-serif;background:#faf6eb;color:#253331;"><main style="max-width:480px;margin:40px auto;background:#fffdf8;border:1px solid #dfd7c7;border-radius:16px;padding:24px;"><h1 style="font-size:20px;margin:0 0 12px;">通信に接続できません</h1><p style="font-size:14px;line-height:1.7;margin:0 0 16px;">電波のよい場所で再読み込みすると、最新のページを開けます。</p><button type="button" onclick="location.reload()" style="padding:10px 18px;border-radius:10px;border:none;background:#253331;color:#faf6eb;font-size:14px;cursor:pointer;">再読み込み</button></main></body></html>',
-    { status: 503, headers: { 'Content-Type': 'text/html; charset=utf-8' } },
+    '<!doctype html><html lang="ja"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>オフライン｜115万キロのファンノート</title><body style="margin:0;padding:24px;font-family:sans-serif;background:#faf6eb;color:#253331;"><main style="max-width:480px;margin:40px auto;background:#fffdf8;border:1px solid #dfd7c7;border-radius:16px;padding:24px;"><h1 style="font-size:20px;margin:0 0 12px;">通信に接続できません</h1><p style="font-size:14px;line-height:1.7;margin:0 0 16px;">電波のよい場所で再読み込みすると、最新のページを開けます。</p><a href="" style="display:inline-block;text-decoration:none;padding:10px 18px;border-radius:10px;border:none;background:#253331;color:#faf6eb;font-size:14px;cursor:pointer;">再読み込み</a></main></body></html>',
+    {
+      status: 503,
+      headers: {
+        'Content-Type': 'text/html; charset=utf-8',
+        'Cache-Control': 'no-store',
+        'Content-Security-Policy': "default-src 'none'; style-src 'unsafe-inline'; base-uri 'none'",
+        'Referrer-Policy': 'no-referrer',
+        'X-Content-Type-Options': 'nosniff',
+      },
+    },
   );
 }
 
@@ -51,8 +60,20 @@ async function fetchBounded(request) {
   }
 }
 
-async function storeSafely(cache, key, response) {
-  if (!cache || !response || !response.ok || response.type !== 'basic') return;
+function expectedContentTypeMatches(urlPathname, isNavigation, response) {
+  const ct = (response.headers.get('Content-Type') || '').toLowerCase();
+  if (!ct) return true;
+  if (isNavigation) return ct.includes('text/html');
+  if (urlPathname.endsWith('.js')) return ct.includes('javascript');
+  if (urlPathname.endsWith('.css')) return ct.includes('text/css');
+  return true;
+}
+
+async function storeSafely(cache, key, response, urlPathname, isNavigation) {
+  if (!cache || !response || response.status !== 200 || response.type !== 'basic' || response.redirected) return;
+  const cacheControl = response.headers.get('Cache-Control') || '';
+  if (/no-store/i.test(cacheControl)) return;
+  if (!expectedContentTypeMatches(urlPathname, isNavigation, response)) return;
   try {
     await cache.put(key, response.clone());
     const keys = await cache.keys();
@@ -111,11 +132,15 @@ self.addEventListener('fetch', event => {
         const cached = await cache.match(key).catch(() => undefined);
         if (cached) return cached;
       }
-      const response = await fetch(request);
-      if (cache) {
-        event.waitUntil(storeSafely(cache, key, response));
+      try {
+        const response = await fetchBounded(request);
+        if (cache) {
+          event.waitUntil(storeSafely(cache, key, response, url.pathname, false));
+        }
+        return response;
+      } catch {
+        return Response.error();
       }
-      return response;
     })());
     return;
   }
@@ -128,14 +153,14 @@ self.addEventListener('fetch', event => {
         throw new Error('Server error during navigation');
       }
       if (cache) {
-        event.waitUntil(storeSafely(cache, key, response));
+        event.waitUntil(storeSafely(cache, key, response, url.pathname, isNavigation));
       }
       return response;
     } catch {
       if (cache) {
         const cached = await cache.match(key).catch(() => undefined);
         if (cached) return cached;
-        if (isNavigation) {
+        if (isNavigation && !url.pathname.startsWith('/higedanfan/songs/')) {
           const homeCached = await cache.match(canonicalUrl('/higedanfan/').href).catch(() => undefined);
           if (homeCached) return homeCached;
         }
