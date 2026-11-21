@@ -3,8 +3,8 @@
  * 同人即売会シミュレーター UIレンダリング ＆ DOMコントローラー
  */
 
-import { DOUJIN_CONFIG } from './config.js';
-import { DoujinCalculator } from './calculator.js?v=20261027-1';
+import { DOUJIN_CONFIG } from './config.js?v=20261121-tools';
+import { DoujinCalculator } from './calculator.js?v=20261121-tools';
 
 function escapeHtml(value) {
   return String(value).replace(/[&<>"']/g, (ch) => ({
@@ -107,6 +107,9 @@ export class UIRenderer {
       labelLiveCounterTotalSold: document.getElementById('label-live-counter-total-sold'),
       labelLiveCounterRemaining: document.getElementById('label-live-counter-remaining'),
       labelLiveCounterSales: document.getElementById('label-live-counter-sales'),
+      counterMigrationNote: document.getElementById('counter-migration-note'),
+      counterError: document.getElementById('counter-error'),
+      priceError: document.getElementById('price-error'),
       counterValNewBook: document.getElementById('counter-val-newbook'),
       counterValSet: document.getElementById('counter-val-set'),
       counterValBackNumber: document.getElementById('counter-val-backnumber'),
@@ -218,7 +221,7 @@ export class UIRenderer {
     `).join('');
   }
 
-  syncFormValues(state) {
+  syncFormValues(state, invalidPrice = null) {
     if (this.dom.inputCopies && document.activeElement !== this.dom.inputCopies) {
       this.dom.inputCopies.value = state.copies;
     }
@@ -265,12 +268,12 @@ export class UIRenderer {
     }
 
     if (this.dom.inputCustomPrice && document.activeElement !== this.dom.inputCustomPrice) {
-      this.dom.inputCustomPrice.value = state.customPrice;
+      this.dom.inputCustomPrice.value = invalidPrice ?? state.customPrice;
     }
     if (this.dom.rangeSoldPercent) this.dom.rangeSoldPercent.value = state.soldPercent;
   }
 
-  updateCalculations(state, multiCounter) {
+  updateCalculations(state, multiCounter, store) {
     const baseCosts = DoujinCalculator.calculateCosts(state);
 
     if (this.dom.labelSaleCopies) {
@@ -295,6 +298,7 @@ export class UIRenderer {
     DOUJIN_CONFIG.FIXED_PRICES.forEach(price => {
       const card = document.querySelector(`.price-card[data-price="${price}"]`);
       if (!card) return;
+      card.querySelector('.choose-price')?.setAttribute('aria-pressed', String(state.customPrice === price));
       const plan = DoujinCalculator.calculatePlan(price, baseCosts);
 
       const beEl = card.querySelector('.card-breakeven');
@@ -322,7 +326,6 @@ export class UIRenderer {
       this.dom.customComfortBadge.className = `text-xs font-bold px-2 py-0.5 rounded-full ${customPlan.comfort.badgeClass}`;
     }
     if (this.dom.customComfortDesc) this.dom.customComfortDesc.textContent = customPlan.comfort.desc;
-    if (this.dom.inputCustomPrice) this.dom.inputCustomPrice.setAttribute('aria-invalid', String(!Number.isSafeInteger(state.customPrice)));
     if (this.dom.customBreakeven) {
       this.dom.customBreakeven.textContent = this.formatProfitThreshold(customPlan);
       this.dom.customBreakeven.className = `font-black ${customPlan.hasNetPrice && customPlan.profitReachable ? 'text-slate-800 dark:text-white' : 'text-rose-600 dark:text-rose-400'}`;
@@ -366,7 +369,7 @@ export class UIRenderer {
     if (this.dom.metricInventoryValue) this.dom.metricInventoryValue.textContent = `¥${soldMetrics.inventoryValue.toLocaleString()}`;
 
     // 釣銭準備計算
-    const changeData = DoujinCalculator.calculateChange(state.customPrice, baseCosts.N_sale, state.changeMode);
+    const changeData = DoujinCalculator.calculateChange(store.registerPrice, baseCosts.N_sale, state.changeMode);
     if (this.dom.labelChangeTotal) this.dom.labelChangeTotal.textContent = changeData.validPrice ? `準備総額: ¥${changeData.totalAmount.toLocaleString()}` : '価格は1円単位で入力';
     if (this.dom.change1000) this.dom.change1000.textContent = changeData.validPrice ? `${changeData.bills1000Count}枚 (¥${changeData.bills1000Amount.toLocaleString()})` : '—';
     if (this.dom.change500) this.dom.change500.textContent = changeData.validPrice ? `${changeData.coins500Count}枚 (¥${changeData.coins500Amount.toLocaleString()}) [${changeData.rolls500}本分]` : '—';
@@ -390,11 +393,26 @@ export class UIRenderer {
     // 現場マルチレジカウンター更新
     const soldBooksCount = multiCounter.newBook + multiCounter.set;
     const remaining = Math.max(0, baseCosts.N_sale - soldBooksCount);
-    const totalSales = (multiCounter.newBook * state.customPrice) +
+    const totalSales = store.newBookRevenue +
                        (multiCounter.set * 1500) +
                        (multiCounter.backNumber * 500) +
                        (multiCounter.goods * 800);
 
+    const invalidPrice = store.registerPrice === null;
+    this.dom.inputCustomPrice?.setAttribute('aria-invalid', String(invalidPrice));
+    if (this.dom.priceError) this.dom.priceError.hidden = !invalidPrice;
+    for (const button of [this.dom.btnCopyBankMemo, this.dom.btnCopyMenu, this.dom.btnCopyAnthoReport]) {
+      if (button) button.disabled = invalidPrice;
+    }
+    if (this.dom.counterError) this.dom.counterError.textContent = store.counterError;
+    if (this.dom.btnSellNewBook) this.dom.btnSellNewBook.disabled = remaining <= 0 || invalidPrice;
+    if (this.dom.btnSellSet) this.dom.btnSellSet.disabled = remaining <= 0;
+    if (this.dom.counterMigrationNote) {
+      const firstSale = store.newBookSales[0];
+      this.dom.counterMigrationNote.hidden = !firstSale?.estimated;
+      this.dom.counterMigrationNote.textContent = firstSale?.estimated
+        ? `旧データの新刊${firstSale.count}冊は販売時の単価記録がないため、1冊${firstSale.price.toLocaleString()}円として合計しています。` : '';
+    }
     if (this.dom.labelLiveCounterTotalSold) this.dom.labelLiveCounterTotalSold.textContent = `${soldBooksCount} 部`;
     if (this.dom.labelLiveCounterRemaining) this.dom.labelLiveCounterRemaining.textContent = `新刊残り ${remaining} 部`;
     if (this.dom.labelLiveCounterSales) this.dom.labelLiveCounterSales.textContent = `¥${totalSales.toLocaleString()}`;
@@ -412,7 +430,8 @@ export class UIRenderer {
 
     // お品書きメモ生成
     if (this.dom.textareaMenuMemo) {
-      this.dom.textareaMenuMemo.value = DoujinCalculator.generateMenuMemo(state, baseCosts, customPlan, changeData);
+      this.dom.textareaMenuMemo.value = invalidPrice ? DoujinCalculator.formatChangeList(changeData)
+        : DoujinCalculator.generateMenuMemo(state, baseCosts, customPlan, changeData);
     }
 
     if (window.lucide) window.lucide.createIcons();

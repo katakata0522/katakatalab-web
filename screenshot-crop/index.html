@@ -33,7 +33,7 @@
   <link rel="icon" href="./pwa-icon.svg" type="image/svg+xml">
   <link rel="icon" href="/favicon.ico" sizes="any">
   <link rel="apple-touch-icon" href="./pwa-icon.svg">
-  <link rel="stylesheet" href="./style.css?v=20261119-faq-target">
+  <link rel="stylesheet" href="./style.css?v=20261121-edge-preview">
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
@@ -327,6 +327,10 @@
                   <h3 id="manual-setting-title">1px単位で微調整</h3>
                 </div>
                 <p class="range-help">選択中の辺だけ調整できます。画像上の黄色いバーを直接動かすこともできます。</p>
+                <figure class="manual-edge-preview">
+                  <figcaption>調整中の境界 <span id="manualEdgeLabel"></span></figcaption>
+                  <canvas id="manualEdgeCanvas" width="320" height="64" aria-hidden="true"></canvas>
+                </figure>
                 <div class="range-list">
                   <label class="range-row" for="cropTop">
                     <span>上 <output id="cropTopValue">0px</output></span>
@@ -431,7 +435,7 @@
   <script src="./image.js?v=20261005-v1-hide" defer></script>
   <script src="./preview.js?v=20261002-v31-mobile-density" defer></script>
   <script src="./zip.js?v=20261002-v31-mobile-density" defer></script>
-  <script src="./script.js?v=20261008-v2-save-feedback" defer></script>
-  <script src="./pwa.js?v=20261002-v31-mobile-density" defer></script>
+  <script src="./script.js?v=20261121-edge-preview" defer></script>
+  <script src="./pwa.js?v=20261121-update-prompt" defer></script>
 </body>
 </html>

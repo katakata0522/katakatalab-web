@@ -237,7 +237,7 @@ test('script.js は厳格モードと初期化防御を持つ', () => {
   assert.match(script, /focusTemplateField/);
   assert.match(script, /syncMobileDownloadState/);
   assert.match(script, /observeDownloadButtonState/);
-  assert.match(script, /openGenerateOptionsPanel/);
+  assert.match(script, /els\.dataType\.focus\(/);
   assert.match(script, /sidebar-open/);
   assert.match(script, /const I18N =/);
   assert.match(script, /setLanguage/);

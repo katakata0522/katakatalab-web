@@ -2,6 +2,20 @@ const test=require('node:test'),assert=require('node:assert/strict'),path=requir
 const {boot}=require('./helpers/maintenance-batch3/seireki-harness.cjs');
 const L=require(path.join(process.env.SOURCE_ROOT||path.resolve(__dirname,'..'),'seireki/seireki-logic.js'));
 const invalid=b=>{assert.equal(b.es.copyBtn.disabled,true);assert.equal(b.es.copyAllResumeBtn.disabled,true);assert.equal(b.out().copyVisible,false);assert.doesNotMatch(b.out().result,/2000年.*生まれ/);};
+test('元号を指定した月日は矛盾を知らせ、西暦入力では月日に合わせて元号とコピーが更新される', () => {
+  const form = boot();
+  form.set('eraName', '平成', 'change');
+  form.set('eraYear', '31');
+  form.set('birthMonth', 12, 'change');
+  form.set('birthDay', 1, 'change');
+  invalid(form);
+  form.set('inputYear', 2019);
+  assert.equal(form.out().era, '令和');
+  form.set('birthMonth', 4, 'change');
+  assert.equal(form.out().era, '平成');
+  form.es.copyBtn.fire('click');
+  assert.match(form.writes[0], /2019年（平成31年）/);
+});
 for(const value of ['0000','-2000','2000.5','2e3','20000'])test(`western invalid input clears old result: ${value}`,()=>{const b=boot();b.set('inputYear',2000);b.set('inputYear',value);invalid(b);b.es.copyBtn.fire('click');assert.equal(b.writes.length,0);});
 for(const value of ['',0])test(`wareki ${JSON.stringify(value)} clears old western result`,()=>{const b=boot();b.set('inputYear',2000);b.set('eraYear',value);invalid(b);assert.equal(b.es.inputYear.value,'');});
 for(const [era,last] of [['明治',45],['大正',15],['昭和',64],['平成',31]])test(`${era} final year accepted and next refused`,()=>{assert.equal(typeof L.warekiToWestern(era,last),'number');assert.equal(L.warekiToWestern(era,last+1),null);const b=boot();b.set('inputYear',2000);b.set('eraName',era,'change');b.set('eraYear',last+1);invalid(b);});

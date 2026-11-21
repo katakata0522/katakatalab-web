@@ -30,7 +30,7 @@
   <meta name="twitter:description" content="Create QR codes for URLs, Wi-Fi, email, phone, social profiles, and contacts, check contrast and quiet zone quality, then save the result from your browser.">
   <meta name="twitter:image" content="https://katakatalab.com/qrcode/ogp.png">
 
-  <link rel="stylesheet" href="style.css?v=20261119-review">
+  <link rel="stylesheet" href="style.css?v=20261121-tools">
   <link rel="stylesheet" href="/international/english-shell.css?v=20260805-lab">
     <link rel="stylesheet" href="../../tool-chrome.css?v=source">
 </head>
@@ -198,6 +198,7 @@
             </div>
           </div>
             <textarea id="qrText" class="input-text" placeholder="https://katakatalab.com" rows="4" spellcheck="false"></textarea>
+            <a class="preview-jump" href="#qr-preview" data-i18n="main.previewJump">View preview</a>
             <p id="errorMsg" class="error-text" role="alert" style="display:none;" data-i18n="main.errorTooLong">⚠️ Too many characters (Max 1000)</p>
           </div>
 
@@ -265,7 +266,7 @@
           </div>
         </section>
 
-        <section class="preview-panel" aria-label="Preview">
+        <section id="qr-preview" tabindex="-1" class="preview-panel" aria-label="Preview">
           <div class="preview-card">
             <div class="canvas-container">
               <div id="loadingIndicator" class="loading-overlay" style="display:none;">
@@ -601,7 +602,7 @@
 <script src="js/pwa.js?v=20261119-review" defer></script>
 <script src="js/pro-config.js" defer></script>
 <script src="vendor/qrious.min.js" defer></script>
-<script src="script.js?v=20260504a" defer></script>
+<script src="script.js?v=20261121-tools" defer></script>
 <script src="js/details-ui.js" defer></script>
   <script src="/international/english-runtime.js" defer></script>
 <div id="qrPrintArea" aria-hidden="true"><canvas id="qrPrintImage" aria-label="QR"></canvas></div>

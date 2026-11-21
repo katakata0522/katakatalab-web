@@ -387,7 +387,9 @@ body {
 
 /* スマホ対応 */
 @media (max-width: 600px) {
-  .tool-wrapper { padding: 20px; }
+  .tool-wrapper { padding: 20px; display: flex; flex-direction: column; }
+  .tool-header { order: -2; }
+  .converter-panel { order: -1; }
   .converter-panel { flex-direction: column; gap: 10px; padding: 20px; }
   .exchange-icon { transform: rotate(90deg); }
   .tool-header { flex-direction: column; gap: 15px; }
@@ -405,9 +407,16 @@ body {
     flex: 1 1 180px;
     min-width: 0;
   }
-  .conversion-table {
-    min-width: 420px;
-  }
+  .cheatsheet-area .conversion-table { table-layout: fixed; }
+  .cheatsheet-area .conversion-table th,
+  .cheatsheet-area .conversion-table td { padding: 6px 3px; overflow-wrap: anywhere; }
+  .cheatsheet-area .conversion-table th:first-child { width: 23%; }
+  .cheatsheet-area .conversion-table th:nth-child(2) { width: 32%; }
+  .cheatsheet-area .conversion-table th:last-child { width: 46px; }
+  .cheatsheet-area .clickable-row-cell,
+  .cheatsheet-area .btn-delete-size { min-height: 44px; }
+  .cheatsheet-area .btn-delete-size { width: 100%; }
+  .cheatsheet-area .clickable-row-cell { max-width: 100%; overflow-wrap: anywhere; }
 }
 
 /* =========================================

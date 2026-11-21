@@ -1225,3 +1225,9 @@ canvas { max-width: 100%; height: auto; display: none; }
   body > #qrPrintArea { display: block !important; background: white !important; }
   #qrPrintImage { display: block; max-width: 100%; height: auto; margin: 1cm auto; }
 }
+
+.preview-jump { display: none; }
+@media (max-width: 768px) {
+  .preview-jump { display: inline-flex; align-items: center; min-height: 44px; color: var(--text-main, inherit); text-decoration: underline; }
+  #qr-preview { scroll-margin-block-start: 12px; }
+}

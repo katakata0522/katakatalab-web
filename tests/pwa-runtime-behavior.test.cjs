@@ -14,9 +14,13 @@ function runtime(file, { entries = new Map(), network = async () => response('fr
   const handlers = new Map(), background = [], installs = [], fetches = [];
   let skipWaiting = 0;
   const cache = { match: async key => entries.get(typeof key === 'string' ? key : key.url),
-    addAll: async requests => { installs.push(requests); if (installFailure) throw new Error('install failed'); },
+    addAll: async requests => {
+      installs.push(requests);
+      if (installFailure) throw new Error('install failed');
+      for (const request of requests) entries.set(request.url, response(request.url));
+    },
     put: async (key, value) => { await put(); entries.set(key, value); },
-    keys: async () => [...entries.keys()].map(url => new Request(url)), delete: async key => entries.delete(key.url) };
+    keys: async () => [...entries.keys()].map(url => new Request(url)), delete: async key => entries.delete(typeof key === 'string' ? key : key.url) };
   const context = { URL, Request, Response, Set, AbortController,
     setTimeout: fastTimeout ? callback => setImmediate(callback) : setTimeout,
     clearTimeout: fastTimeout ? clearImmediate : clearTimeout,
@@ -117,6 +121,27 @@ test('動的資産の異なるquery版を同じcacheへ混ぜない', async () =
   assert.equal((await app.fetch('./dynamic.js?v=new', { destination: 'script', mode: 'cors' })).label, 'fresh');
 });
 
+test('対象のSWはバージョン付きCSS/JSで更新し、オフラインでは従来のキーでも同じ内容を返す', async () => {
+  for (const file of ['sw.js', 'qrcode/sw.js', 'password-generator/sw.js']) {
+    const app = runtime(file, { network: pending });
+    const directory = file === 'sw.js' ? 'discount-calc/' : '';
+    for (const asset of ['style.css', 'script.js']) {
+      app.entries.set(new URL(directory + asset, app.scope).href, response('stale-cdn'));
+    }
+    await app.install();
+    for (const [asset, destination] of [['style.css', 'style'], ['script.js', 'script']]) {
+      const bare = new URL(directory + asset, app.scope).href;
+      const version = app.installs[0].find(request => new URL(request.url).pathname === new URL(bare).pathname);
+      assert.ok(new URL(version.url).searchParams.get('v'), file + ' ' + asset);
+      assert.equal(app.entries.has(version.url), false);
+      assert.equal(app.entries.get(bare).label, version.url);
+      assert.equal((await app.fetch(version.url, { mode: 'cors', destination })).label, version.url);
+      assert.equal((await app.fetch(bare, { mode: 'cors', destination })).label, version.url);
+    }
+    assert.equal(app.fetches.length, 0);
+  }
+});
+
 test('root PWAはキャッシュされた旧共通ローダーを返さず、教育PWAは空の応答で実行を止める', async () => {
   const normal = runtime('sw.js');
   normal.entries.set('https://katakatalab.com/analytics.js', response('stale-analytics'));
@@ -133,7 +158,8 @@ test('個別アプリの同名内部モジュールは必須資産としてオ�
   const app = runtime('emphasis-lines/sw.js', { network: pending });
   await app.install();
   const url = new URL('./js/utils/analytics.js', app.scope).href;
-  assert.ok(app.installs[0].some(request => request.url === url));
+  assert.ok(app.installs[0].some(request => new URL(request.url).pathname === new URL(url).pathname));
+  assert.ok(app.entries.has(url));
   const cached = response('internal-app-module');
   app.entries.set(url, cached);
   assert.equal(await app.fetch('./js/utils/analytics.js?v=current', { mode: 'cors', destination: 'script' }), cached);

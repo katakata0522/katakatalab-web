@@ -26,7 +26,7 @@
   <meta name="twitter:image" content="https://katakatalab.com/ogp-simulator/ogp.png">
 
   <link rel="icon" href="/favicon.ico">
-  <link rel="stylesheet" href="style.css?v=20261119-review">
+  <link rel="stylesheet" href="style.css?v=20261121-tools">
   <link rel="stylesheet" href="/international/english-shell.css?v=20260805-lab">
     <link rel="stylesheet" href="../../tool-chrome.css?v=source">
 </head>
@@ -111,11 +111,12 @@
       </div>
 
       <div class="actions">
+        <a class="panel-jump" href="#share-preview">View preview</a>
         <button type="button" id="resetBtn" class="btn-text">Reset All</button>
       </div>
     </section>
 
-    <section class="preview-panel sticky-container" aria-label="Preview">
+    <section id="share-preview" tabindex="-1" class="preview-panel sticky-container" aria-label="Preview">
       <div class="preview-controls">
         <div class="preview-tabs-scroll">
           <div class="preview-tabs">
@@ -135,6 +136,7 @@
         </div>
       </div>
 
+      <a class="panel-jump" href="#ogTitle">Back to title</a>
       <div id="previewCanvas" class="preview-canvas theme-light">
         
         <!-- X (Large) Feed Mock -->
@@ -332,7 +334,7 @@
 }
   </script>
 
-<script src="script.js" defer></script>
+<script src="script.js?v=20261121-tools" defer></script>
   <script src="/international/english-runtime.js" defer></script>
 </body>
 </html>

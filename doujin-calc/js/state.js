@@ -3,7 +3,8 @@
  * 同人即売会シミュレーター 状態管理 & 永続化ストア
  */
 
-import { DOUJIN_CONFIG } from './config.js';
+import { DOUJIN_CONFIG } from './config.js?v=20261121-tools';
+import { DoujinCalculator } from './calculator.js?v=20261121-tools';
 
 const COUNTER_KEYS = ['newBook', 'set', 'backNumber', 'goods'];
 
@@ -71,7 +72,22 @@ export class StateStore {
     this.listeners = new Set();
     this.state = this.loadInitialState();
     this.checklist = this.loadChecklist();
-    this.multiCounter = this.loadMultiCounter();
+    this.invalidPrice = null;
+    this.counterError = '';
+    this.refreshCounter();
+    if (this.needsCounterMigration) {
+      void this.withCounterLock(() => {
+        this.refreshCounter(true);
+        if (this.needsCounterMigration) this.saveCounter();
+        return true;
+      });
+    }
+    window.addEventListener?.('storage', event => {
+      if (event.key === this.counterKey || event.key === null) {
+        this.refreshCounter();
+        this.render();
+      }
+    });
   }
 
   subscribe(listener) {
@@ -81,6 +97,10 @@ export class StateStore {
 
   notify() {
     this.saveState();
+    this.render();
+  }
+
+  render() {
     this.listeners.forEach(fn => fn(this.state, this.multiCounter, this.checklist));
   }
 
@@ -158,26 +178,47 @@ export class StateStore {
   loadChecklist() {
     try {
       const saved = localStorage.getItem(this.checklistKey);
-      return saved ? JSON.parse(saved) : DOUJIN_CONFIG.DEFAULT_CHECKLIST;
+      return saved ? JSON.parse(saved) : DOUJIN_CONFIG.DEFAULT_CHECKLIST.map(item => ({ ...item }));
     } catch (e) {
-      return DOUJIN_CONFIG.DEFAULT_CHECKLIST;
+      return DOUJIN_CONFIG.DEFAULT_CHECKLIST.map(item => ({ ...item }));
     }
   }
 
-  loadMultiCounter() {
+  refreshCounter(strict = false) {
+    let saved;
     try {
-      const saved = localStorage.getItem(this.counterKey);
-      return normalizeMultiCounter(saved ? JSON.parse(saved) : null);
-    } catch (e) {
-      return normalizeMultiCounter(null);
+      saved = localStorage.getItem(this.counterKey);
+    } catch (error) {
+      if (strict) throw error;
+      if (this.multiCounter) return;
     }
+    let raw = null;
+    try { raw = saved ? JSON.parse(saved) : null; } catch {}
+    this.multiCounter = normalizeMultiCounter(raw);
+    this.newBookSales = [];
+    this.needsCounterMigration = false;
+    if (!this.multiCounter.newBook) return;
+    const sales = raw.newBookSales;
+    if (Array.isArray(sales) && sales.every(sale => Number.isFinite(sale?.price) && sale.price >= 0 && Number.isSafeInteger(sale.count) && sale.count > 0)
+        && sales.reduce((sum, sale) => sum + sale.count, 0) === this.multiCounter.newBook) {
+      this.newBookSales = sales;
+      return;
+    }
+    // Older counters recorded quantities only. A shared planner URL may carry
+    // another price; value the legacy quantity at the last price on this device.
+    let price = defaultDoujinState().customPrice;
+    try {
+      const savedPlan = JSON.parse(localStorage.getItem(this.storageKey));
+      if (savedPlan?.customPrice != null) price = this.sanitizeNumber(savedPlan.customPrice, price, 0);
+    } catch {}
+    this.newBookSales = [{ price, count: this.multiCounter.newBook, estimated: true }];
+    this.needsCounterMigration = true;
   }
 
   saveState() {
     try {
       localStorage.setItem(this.storageKey, JSON.stringify(this.state));
       localStorage.setItem(this.checklistKey, JSON.stringify(this.checklist));
-      localStorage.setItem(this.counterKey, JSON.stringify(this.multiCounter));
     } catch (e) {}
 
     const params = new URLSearchParams({
@@ -203,27 +244,106 @@ export class StateStore {
     window.history.replaceState(null, '', `${window.location.pathname}?${params.toString()}`);
   }
 
+  setCustomPriceInput(raw) {
+    const digits = raw.normalize('NFKC').trim();
+    if (/^(?:\d+|\d{1,3}(?:,\d{3})+)$/.test(digits)) {
+      const amount = Number(digits.replaceAll(',', ''));
+      if (Number.isSafeInteger(amount)) {
+        this.setState({ customPrice: amount });
+        return;
+      }
+    }
+    this.invalidPrice = raw;
+    this.render();
+  }
+
   setState(partial) {
+    if ('customPrice' in partial) this.invalidPrice = null;
     this.state = { ...this.state, ...partial };
     this.notify();
   }
 
-  setCounter(partial) {
-    this.multiCounter = normalizeMultiCounter({ ...this.multiCounter, ...partial });
-    this.notify();
+  saveCounter() {
+    localStorage.setItem(this.counterKey, JSON.stringify({ ...this.multiCounter, newBookSales: this.newBookSales }));
+    this.needsCounterMigration = false;
+  }
+
+  withCounterLock(operation) {
+    const run = () => {
+      const previousCounts = this.multiCounter;
+      const previousSales = this.newBookSales;
+      try {
+        this.counterError = '';
+        return operation();
+      } catch {
+        // A rejected storage write did not register the sale. Keep the confirmed
+        // ledger and allow the user to retry without silently losing extra sales.
+        this.multiCounter = previousCounts;
+        this.newBookSales = previousSales;
+        this.counterError = 'レジを保存できませんでした。記録を確認して、もう一度操作してください。';
+        this.render();
+        return false;
+      }
+    };
+    const locks = window.navigator?.locks;
+    if (!locks) return run();
+    return locks.request(this.counterKey, run).catch(() => {
+      this.counterError = 'レジを開けませんでした。もう一度操作してください。';
+      this.render();
+      return false;
+    });
+  }
+
+  get newBookRevenue() {
+    return this.newBookSales.reduce((sum, sale) => sum + sale.price * sale.count, 0);
+  }
+
+  get registerPrice() {
+    const price = this.state.customPrice;
+    return this.invalidPrice === null && Number.isSafeInteger(price) && price >= 0 ? price : null;
   }
 
   adjustCounter(key, delta) {
     if (!COUNTER_KEYS.includes(key) || ![1, -1].includes(delta)) return false;
-    const next = Math.max(0, this.multiCounter[key] + delta);
-    if (!Number.isSafeInteger(next) || next === this.multiCounter[key]) return false;
-    this.setCounter({ [key]: next });
-    return true;
+    const price = this.registerPrice;
+    return this.withCounterLock(() => {
+      this.refreshCounter(true);
+      if (delta > 0 && (key === 'newBook' || key === 'set')
+          && this.multiCounter.newBook + this.multiCounter.set >= DoujinCalculator.calculateCosts(this.state).N_sale) return false;
+      const next = Math.max(0, this.multiCounter[key] + delta);
+      if (!Number.isSafeInteger(next) || next === this.multiCounter[key]) return false;
+      if (key === 'newBook' && delta > 0 && price === null) return false;
+      if (key === 'newBook') {
+        const last = this.newBookSales.at(-1);
+        if (delta < 0) {
+          if (--last.count === 0) this.newBookSales.pop();
+        } else if (last?.price === price && !last.estimated) {
+          last.count++;
+        } else {
+          this.newBookSales.push({ price, count: 1 });
+        }
+      }
+      this.multiCounter[key] = next;
+      this.saveCounter();
+      this.render();
+      return true;
+    });
   }
 
-  resetCounter() {
-    this.multiCounter = { newBook: 0, set: 0, backNumber: 0, goods: 0 };
-    this.notify();
+  resetCounter(resetPlan = false) {
+    return this.withCounterLock(() => {
+      this.refreshCounter(true);
+      this.newBookSales = [];
+      this.multiCounter = normalizeMultiCounter(null);
+      this.saveCounter();
+      if (resetPlan) {
+        this.invalidPrice = null;
+        this.state = defaultDoujinState();
+        this.saveState();
+      }
+      this.render();
+      return true;
+    });
   }
 
   toggleChecklistItem(idx) {
@@ -234,7 +354,6 @@ export class StateStore {
   }
 
   resetAll() {
-    this.state = defaultDoujinState();
-    this.resetCounter();
+    return this.resetCounter(true);
   }
 }

@@ -559,14 +559,18 @@ if (!given) {
       assert.ok((await page.locator('body').textContent()).trim().length > 20);
       if (app === '/lab-tools/gravity-todo/') {
         // Canvasより上の常設ボタンを実クリックし、pointer-events継承の回帰を検出する。
-        await page.waitForFunction(() => document.querySelector('#task-count').textContent === '3');
+        await page.locator('body.app-ready').waitFor();
+        assert.equal(await page.locator('#task-count').textContent(), '0', '初回の見本を自分のタスクに数えない');
         await page.locator('#task-input').fill('履歴ボタン検証');
+        await page.locator('#task-form button:not(:disabled)').waitFor();
         await page.locator('#task-input').press('Enter');
         const taskList = page.locator('#task-list-panel');
         const taskListSummary = page.locator('#task-list-panel > summary');
         assert.equal(await taskList.evaluate(panel => panel.open), false);
         await taskListSummary.click();
         const task = page.locator('.task-list-item').filter({hasText:'履歴ボタン検証'});
+        await task.waitFor({state:'visible'});
+        assert.equal(await page.locator('.task-list-item').count(), 1);
         await task.locator('[data-action="destroy"]').click();
         await page.locator('#undo-btn').click();
         await task.waitFor({state:'visible'});
@@ -580,6 +584,15 @@ if (!given) {
         await taskListSummary.click();
         await task.waitFor({state:'visible'});
         assert.equal(await page.locator('#task-count').textContent(), '1', 'デモを保存せず実タスクだけ復元');
+        await task.locator('[data-action="detail"]').click();
+        await page.locator('#detail-input').fill('確認');
+        await page.locator('#detail-input').press('Enter');
+        page.once('dialog', dialog => dialog.accept());
+        await page.locator('.subtask-check').click();
+        await task.waitFor({state:'detached'});
+        assert.equal(await page.locator('#task-detail-panel').evaluate(panel => panel.classList.contains('hidden')), true);
+        await page.locator('#undo-btn').click();
+        await task.waitFor({state:'visible'});
       }
       console.log(JSON.stringify({app,offlineLaunch:'PASS',stalledAnalytics:'PASS',storagePreserved:'PASS'}));
     } finally { await context.close(); }
@@ -651,6 +664,37 @@ try {
   assert.deepEqual(doujinErrors,[]);
   console.log(JSON.stringify({doujinProfitBoundary:'PASS',doujinSmallChange:'PASS',doujinInvalidPrice:'PASS'}));
 } finally { await doujinPage.close(); }
+
+for (const width of [320, 390, 1440]) {
+  const page = await browser.newPage({viewport: {width, height: 844}, hasTouch: width < 600});
+  try {
+    await page.goto(base + '/aspect-ratio-calc/');
+    const detect = page.locator('#detectBtn');
+    if (width < 600) await detect.tap();
+    else await detect.click();
+    assert.equal(await page.locator('#infoRatio').textContent(), '16 : 9');
+
+    await page.goto(base + '/seireki/');
+    const year = page.locator('#inputYear');
+    await year.focus();
+    const initialScroll = await page.evaluate(() => scrollY);
+    await year.pressSequentially('2019');
+    await page.waitForFunction(() => document.querySelector('#hayamiTable tr.is-selected-year'));
+    assert.ok(Math.abs(await page.evaluate(() => scrollY) - initialScroll) < 8);
+    assert.ok(await year.evaluate(el => el.getBoundingClientRect().bottom > 0));
+    await page.locator('#birthMonth').selectOption('4');
+    await page.locator('#birthDay').selectOption('30');
+    assert.match(await page.locator('#resultArea').textContent(), /2019年（平成31年）/);
+
+    await page.goto(base + '/px-rem-converter/');
+    const table = page.locator('.cheatsheet-area .table-container');
+    assert.ok(await table.evaluate(el => el.scrollWidth <= el.clientWidth + 1));
+    await page.locator('#pxInput').fill('24');
+    assert.equal(await page.locator('#remInput').inputValue(), '1.5');
+  } finally {
+    await page.close();
+  }
+}
 
 const analyticsPage=await browser.newPage({viewport:{width:390,height:850}});
 await analyticsPage.route('**/*googletagmanager.com/**',route=>route.abort());

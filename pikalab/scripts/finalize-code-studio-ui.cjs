@@ -19,6 +19,22 @@ const TOOLBAR_STYLE = `<style id="code-studio-review-ui">
 #editor-pane>.pane-header .pane-header-right>*{flex-shrink:0}
 #editor-pane>.pane-header .type-selector-wrap{min-width:0;max-width:100%}
 #editor-pane>.pane-header .type-select{max-width:100%}
+#mobile-open-preview {display:none}
+@media (max-width:640px) {
+  .workspace-wrapper .workspace {position:relative;flex:1 1 0;min-width:0;min-height:0;height:100%;overflow:hidden}
+  .workspace-wrapper .resizer {display:none}
+  .workspace-wrapper .editor-pane {min-width:0;max-width:100%}
+  .workspace-wrapper:not(.show-preview) .editor-pane {height:calc(100% - 96px)!important}
+  .workspace-wrapper:not(.show-preview) .preview-pane {min-width:0;width:100%!important;height:88px!important;bottom:0!important;right:0!important}
+  .workspace-wrapper:not(.show-preview) #mobile-open-preview {display:block;position:absolute;inset:0;width:100%;z-index:2;border:0;background:transparent;color:inherit;text-align:left;cursor:pointer}
+  #mobile-open-preview span {position:absolute;inset:4px auto auto 4px;background:#1e1e24;border-radius:4px;padding:4px 8px}
+  .workspace-wrapper.show-preview .editor-pane {visibility:hidden;pointer-events:none}
+  .workspace-wrapper.show-preview .preview-pane {position:absolute!important;inset:0!important;min-width:0;transform:none!important;transition:none!important}
+  .workspace-wrapper.show-preview .preview-pane>.pane-header {height:auto;flex-wrap:wrap;gap:4px;padding:4px}
+  .workspace-wrapper.show-preview .preview-pane>.pane-header>div {flex-wrap:wrap;min-width:0}
+  .workspace-wrapper .pane-header .subtab-btn {min-height:32px}
+  .workspace-wrapper.show-preview #mobile-back-to-editor {min-height:40px}
+}
 </style>`;
 
 function sha256(bytes) {
@@ -43,7 +59,16 @@ function fixHtmlControls(source) {
         html = html.replace(pattern, (_, opening, closing) => `${opening.slice(0, -1)} aria-label="閉じる">${CLOSE_ICON}${closing}`);
     }
     html = replaceOnce(html, '>⚙ KatakataLab <span', `>${GEAR_ICON} KatakataLab <span`, 'ロゴ');
+    html = replaceOnce(html, '<section class="preview-pane">', '<section class="preview-pane"><button id="mobile-open-preview" type="button"><span data-i18n="title_preview">👀 プレビュー</span></button>', 'プレビュー入口');
     return replaceOnce(html, '</head>', `${TOOLBAR_STYLE}\n</head>`, 'head');
+}
+
+function initializeMobileNavigation(source) {
+    const setup = 'window.CodeStudio.UI.setupSwipeNavigation();';
+    if (source.split(setup).length !== 3) throw new Error('Code Studioのナビゲーション初期化箇所が変わりました');
+    // プレビュー切替はDOMだけで動く。エディターの準備を待つ分岐から外し、一度だけ登録する。
+    const ready = `if (window.innerWidth <= CONFIG.MOBILE_WIDTH) document.getElementById('sidebar')?.classList.add('closed');\n        ${setup}\n        pollEditorInitialization();`;
+    return replaceOnce(source.replaceAll(setup, ''), 'pollEditorInitialization();', ready, 'エディター初期化');
 }
 
 function prepareCodeStudioRevision(projectRoot) {
@@ -74,6 +99,8 @@ function prepareCodeStudioRevision(projectRoot) {
     const mainModule = modules[0][1];
     const assets = new Map([...originals].filter(([name]) => name.startsWith('assets/')));
     assets.set(mainModule, Buffer.from(fixTranslationMarkup(assets.get(mainModule).toString('utf8'))));
+    const extension = 'assets/code-studio.js';
+    assets.set(extension, Buffer.from(initializeMobileNavigation(assets.get(extension).toString('utf8'))));
     const html = fixHtmlControls(originalHtml);
     const digest = crypto.createHash('sha256').update(html);
     for (const [name, bytes] of [...assets].sort(([a], [b]) => a.localeCompare(b))) {

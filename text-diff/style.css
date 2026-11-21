@@ -831,4 +831,8 @@ body.dark-mode .badge-security {
   .pane-header { padding: 8px 5px; }
   .diff-line-num { min-width: 2em; width: 2em; }
   .result-actions { flex-wrap: wrap; }
+  .actions { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .actions button { min-height: 44px; padding-inline: 6px; }
+  #compareBtn { grid-column: 1 / -1; }
+  .code-mode .diff-line-content { min-width: 0; white-space: pre-wrap; overflow-wrap: anywhere; }
 }

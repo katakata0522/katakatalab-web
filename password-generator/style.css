@@ -1319,3 +1319,18 @@ body.dark-mode .pwd-item:hover {
   white-space: nowrap;
   cursor: pointer;
 }
+
+.pwd-result-header { flex-wrap: wrap; }
+.pwd-result-header h2 { white-space: nowrap; flex-shrink: 0; }
+.pwd-result-header > div { flex-wrap: wrap; }
+.pwd-advanced > summary, .pwd-result-jump { display: none; }
+.pwd-result-header button:disabled { opacity: .5; cursor: default; }
+@media (max-width: 768px) {
+  .pwd-advanced > summary { display: list-item; cursor: pointer; padding-block: .7rem; }
+  .pwd-result-jump { display: inline-flex; align-items: center; min-height: 44px; }
+  #generated-passwords { scroll-margin-block: 1rem; }
+}
+@media (max-width: 400px) {
+  .breadcrumbs-tool--bar { flex-wrap: wrap; }
+  .breadcrumbs-tool__index { white-space: nowrap; }
+}

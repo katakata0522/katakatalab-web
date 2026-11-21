@@ -125,15 +125,15 @@ export const DOUJIN_CONFIG = {
 
   // サークル設営・当日持ち物チェックリスト初期マスタ
   DEFAULT_CHECKLIST: [
-    { id: 'item_money', text: '釣銭（千円札・500円玉・100円玉）＋コインケース', checked: true },
-    { id: 'item_sample', text: '見本誌提出用シール ＆ ペン', checked: true },
-    { id: 'item_menu', text: 'お品書きPOP ＆ 卓上ポスタースタンド', checked: true },
-    { id: 'item_tape', text: '養生テープ・マスキングテープ・ハサミ', checked: true },
-    { id: 'item_tablecloth', text: '敷き布（防炎クロス 90×120cm目安）', checked: true },
+    { id: 'item_money', text: '釣銭（千円札・500円玉・100円玉）＋コインケース', checked: false },
+    { id: 'item_sample', text: '見本誌提出用シール ＆ ペン', checked: false },
+    { id: 'item_menu', text: 'お品書きPOP ＆ 卓上ポスタースタンド', checked: false },
+    { id: 'item_tape', text: '養生テープ・マスキングテープ・ハサミ', checked: false },
+    { id: 'item_tablecloth', text: '敷き布（防炎クロス 90×120cm目安）', checked: false },
     { id: 'item_card_terminal', text: 'キャッシュレス決済端末 ＆ モバイルバッテリー', checked: false },
-    { id: 'item_bag', text: 'ゴミ袋・搬入用段ボール用ガムテープ', checked: true },
-    { id: 'item_pen', text: '筆記用具（油性マジック・ボールペン・メモ帳）', checked: true },
-    { id: 'item_battery', text: 'スマホ充電用モバイルバッテリー (大容量)', checked: true }
+    { id: 'item_bag', text: 'ゴミ袋・搬入用段ボール用ガムテープ', checked: false },
+    { id: 'item_pen', text: '筆記用具（油性マジック・ボールペン・メモ帳）', checked: false },
+    { id: 'item_battery', text: 'スマホ充電用モバイルバッテリー (大容量)', checked: false }
   ],
 
   // おすすめ備品セレクション

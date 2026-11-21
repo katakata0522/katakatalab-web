@@ -170,6 +170,7 @@ document.addEventListener('DOMContentLoaded', () => {
         badgeTitle: 'QR作成データは端末内で処理されます'
       },
       main: {
+        previewJump: 'プレビューを見る',
         inputLabel: '作成する内容 <small>(URL / テキスト)</small>',
         errorTooLong: '⚠️ 文字数が多すぎます (Max 1000)',
         sizeLabel: 'サイズ',
@@ -433,6 +434,7 @@ document.addEventListener('DOMContentLoaded', () => {
         badgeTitle: 'QR payload is processed only on your device'
       },
       main: {
+        previewJump: 'View preview',
         inputLabel: 'Content to encode <small>(URL / Text)</small>',
         errorTooLong: '⚠️ Too many characters (Max 1000)',
         sizeLabel: 'Size',
@@ -1034,7 +1036,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Version 40 byte-mode payload limits. QRious silently truncates overflow.
     const byteCapacity = { L: 2953, M: 2331, Q: 1663, H: 1273 }[options.level];
     if (!byteCapacity || value.length > byteCapacity) {
-      throw new Error('Content exceeds QR UTF-8 byte capacity');
+      throw new RangeError('Content exceeds QR UTF-8 byte capacity');
     }
     engine.set({ ...options, value });
     const width = engine.safeMatrixWidth;
@@ -2389,9 +2391,15 @@ document.addEventListener('DOMContentLoaded', () => {
       console.error('QR update failed:', error);
       els.canvas.style.display = 'none';
       els.placeholder.style.display = 'block';
-      els.errorMsg.textContent = state.currentLang === 'en'
-        ? 'Could not generate a QR. Check the text for invalid characters, shorten it, lower error correction, or increase the size.'
-        : 'QRを生成できませんでした。不正な文字を確認し、内容を短くする、誤り訂正を下げる、サイズを大きくするなどをお試しください。';
+      if (error instanceof RangeError) {
+        els.errorMsg.textContent = state.currentLang === 'en'
+          ? 'The data exceeds the QR code capacity. Shorten the content or lower error correction.'
+          : 'この内容はQRコードの容量を超えています。入力を短くするか、誤り訂正レベルを下げてください。';
+      } else {
+        els.errorMsg.textContent = state.currentLang === 'en'
+          ? 'Could not generate a QR. Check the content and try a larger output size.'
+          : 'QRを生成できませんでした。入力内容を確認するか、出力サイズを大きくしてお試しください。';
+      }
       els.errorMsg.style.display = 'block';
       state.lastQrMatrixWidth = null;
       state.lastQrPaddingPx = null;
@@ -2940,13 +2948,6 @@ document.addEventListener('DOMContentLoaded', () => {
     'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), summary, [tabindex]:not([tabindex="-1"])'
   )).filter((element) => element.getClientRects().length > 0);
 
-  const openGenerateOptionsPanel = () => {
-    const panel = els.settingsSidebar.querySelector('details[data-details-id="generate-options"]');
-    if (panel && !panel.open) {
-      panel.open = true;
-    }
-  };
-
   const openSidebar = () => {
     if (isSidebarOpen()) return;
 
@@ -3275,6 +3276,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const nextType = normalizeDataType(button.dataset.quickTemplate);
         els.dataType.value = nextType;
         applyDataType(nextType);
+        closeSidebar({ restoreFocus: false });
         focusTemplateField(nextType);
       });
     });
@@ -3331,9 +3333,8 @@ document.addEventListener('DOMContentLoaded', () => {
     els.openSidebarBtn.addEventListener('click', openSidebar);
     els.mobileSettingsBtn.addEventListener('click', openSidebar);
     els.mobileTemplateBtn.addEventListener('click', () => {
-      openSidebar();
-      openGenerateOptionsPanel();
-      focusTemplateField(state.currentDataType);
+      els.dataType.scrollIntoView({ block: 'center' });
+      els.dataType.focus({ preventScroll: true });
     });
     els.mobileDownloadBtn.addEventListener('click', () => {
       if (els.downloadBtn.disabled) return;

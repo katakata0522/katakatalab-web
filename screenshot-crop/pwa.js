@@ -56,6 +56,7 @@
         if (activeToast === toast) closeToast();
       }, options.autoCloseMs);
     }
+    return toast;
   }
 
   function hideInstallButton() {
@@ -127,15 +128,22 @@
   if (!secureContext) return;
 
   function showUpdatePrompt(registration) {
-    if (updatePromptShown || !registration.waiting) return;
+    const active = registration.active;
+    if (updatePromptShown || !registration.waiting || !active ||
+        navigator.serviceWorker.controller?.scriptURL !== active.scriptURL) return;
+    const promptedWorker = registration.waiting;
     updatePromptShown = true;
 
-    showToast('スクショ端カットの更新があります。', {
+    const toast = showToast('スクショ端カットの更新があります。', {
       primaryLabel: '更新する',
       secondaryLabel: '後で',
       onPrimary: () => {
         const waiting = registration.waiting;
-        if (!waiting) return;
+        if (!waiting) {
+          closeToast();
+          return;
+        }
+        if (!document.dispatchEvent(new Event('screenshot-crop-before-update', { cancelable: true }))) return;
 
         navigator.serviceWorker.addEventListener('controllerchange', () => {
           location.reload();
@@ -144,6 +152,9 @@
         waiting.postMessage({ type: 'SKIP_WAITING' });
       },
     });
+    promptedWorker.addEventListener('statechange', () => {
+      if (activeToast === toast) closeToast();
+    }, { once: true });
   }
 
   function watchForUpdates(registration) {

@@ -59,7 +59,7 @@ export class UIManager {
     const progress = this.calculateOverallProgress(taskItems);
 
     if (this.taskSummary) {
-      this.taskSummary.textContent = total === 0 ? '0件' : `${total}件 / 進捗 ${progress}%`;
+      this.taskSummary.textContent = total === 0 ? '0件' : `${total}件 / サブタスク進捗 ${progress}%`;
     }
 
     if (!this.taskList || !this.taskEmptyState) return;

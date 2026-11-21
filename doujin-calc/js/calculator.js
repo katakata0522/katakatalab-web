@@ -3,7 +3,7 @@
  * 同人即売会 頒布価格・損益・お釣り・委託・税務・アンソロジー純粋計算エンジン
  */
 
-import { DOUJIN_CONFIG } from './config.js';
+import { DOUJIN_CONFIG } from './config.js?v=20261121-tools';
 
 export class DoujinCalculator {
   // メモ化キャッシュ
@@ -232,9 +232,8 @@ export class DoujinCalculator {
    * 規模別釣銭計算
    */
   static calculateChange(customPrice, saleCopies, changeMode = 'standard') {
-    const inputPrice = Math.max(0, customPrice || 0);
-    const validPrice = Number.isSafeInteger(inputPrice);
-    const p = validPrice ? inputPrice : 0;
+    const validPrice = Number.isSafeInteger(customPrice) && customPrice >= 0;
+    const p = validPrice ? customPrice : 0;
     const N_sale = Math.max(0, saleCopies || 0);
     const modeConfig = DOUJIN_CONFIG.CHANGE_MODES[changeMode] || DOUJIN_CONFIG.CHANGE_MODES.standard;
 
