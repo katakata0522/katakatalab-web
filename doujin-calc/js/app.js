@@ -6,7 +6,7 @@
 import { DOUJIN_CONFIG } from './config.js?v=20261121-tools';
 import { StateStore, withSyncedCost } from './state.js?v=20261121-tools';
 import { UIRenderer } from './renderer.js?v=20261121-tools';
-import { DoujinCalculator } from './calculator.js?v=20261027-1';
+import { DoujinCalculator } from './calculator.js?v=20261121-tools';
 import { LEGAL_TAX_DATA } from './legal-tax-data.js';
 import { Toast } from './toast.js';
 
@@ -249,7 +249,7 @@ class DoujinApp {
     // 銀行両替メモコピー
     d.btnCopyBankMemo?.addEventListener('click', async () => {
       const baseCosts = DoujinCalculator.calculateCosts(this.store.state);
-      const changeData = DoujinCalculator.calculateChange(this.store.state.customPrice, baseCosts.N_sale, this.store.state.changeMode);
+      const changeData = DoujinCalculator.calculateChange(this.store.registerPrice, baseCosts.N_sale, this.store.state.changeMode);
       const bankMemo = DoujinCalculator.generateBankMemo(changeData);
       try {
         await navigator.clipboard.writeText(bankMemo);

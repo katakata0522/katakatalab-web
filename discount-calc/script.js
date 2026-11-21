@@ -567,7 +567,7 @@ document.addEventListener('DOMContentLoaded', () => {
         <button type="button" class="col-rate btn-select-rate" data-percent="${percent}" data-field="rate" aria-label="${percent}%を選ぶ">${percent}<span class="unit">%OFF</span></button>
         <div class="col-price" data-field="price"><span>¥</span>0</div>
         <div class="col-save-wrapper">
-          <div class="col-save" data-field="save">🉐 -0</div>
+          <div class="col-save" data-field="save">🉐 ¥0</div>
 
         </div>
       `;

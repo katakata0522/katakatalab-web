@@ -4,7 +4,7 @@
  */
 
 import { DOUJIN_CONFIG } from './config.js';
-import { DoujinCalculator } from './calculator.js?v=20261027-1';
+import { DoujinCalculator } from './calculator.js?v=20261121-tools';
 
 function escapeHtml(value) {
   return String(value).replace(/[&<>"']/g, (ch) => ({
@@ -326,7 +326,6 @@ export class UIRenderer {
       this.dom.customComfortBadge.className = `text-xs font-bold px-2 py-0.5 rounded-full ${customPlan.comfort.badgeClass}`;
     }
     if (this.dom.customComfortDesc) this.dom.customComfortDesc.textContent = customPlan.comfort.desc;
-    if (this.dom.inputCustomPrice) this.dom.inputCustomPrice.setAttribute('aria-invalid', String(!Number.isSafeInteger(state.customPrice)));
     if (this.dom.customBreakeven) {
       this.dom.customBreakeven.textContent = this.formatProfitThreshold(customPlan);
       this.dom.customBreakeven.className = `font-black ${customPlan.hasNetPrice && customPlan.profitReachable ? 'text-slate-800 dark:text-white' : 'text-rose-600 dark:text-rose-400'}`;
@@ -370,7 +369,7 @@ export class UIRenderer {
     if (this.dom.metricInventoryValue) this.dom.metricInventoryValue.textContent = `¥${soldMetrics.inventoryValue.toLocaleString()}`;
 
     // 釣銭準備計算
-    const changeData = DoujinCalculator.calculateChange(state.customPrice, baseCosts.N_sale, state.changeMode);
+    const changeData = DoujinCalculator.calculateChange(store.registerPrice, baseCosts.N_sale, state.changeMode);
     if (this.dom.labelChangeTotal) this.dom.labelChangeTotal.textContent = changeData.validPrice ? `準備総額: ¥${changeData.totalAmount.toLocaleString()}` : '価格は1円単位で入力';
     if (this.dom.change1000) this.dom.change1000.textContent = changeData.validPrice ? `${changeData.bills1000Count}枚 (¥${changeData.bills1000Amount.toLocaleString()})` : '—';
     if (this.dom.change500) this.dom.change500.textContent = changeData.validPrice ? `${changeData.coins500Count}枚 (¥${changeData.coins500Amount.toLocaleString()}) [${changeData.rolls500}本分]` : '—';
@@ -399,9 +398,12 @@ export class UIRenderer {
                        (multiCounter.backNumber * 500) +
                        (multiCounter.goods * 800);
 
-    const invalidPrice = store.invalidPrice !== null;
+    const invalidPrice = store.registerPrice === null;
     this.dom.inputCustomPrice?.setAttribute('aria-invalid', String(invalidPrice));
     if (this.dom.priceError) this.dom.priceError.hidden = !invalidPrice;
+    for (const button of [this.dom.btnCopyBankMemo, this.dom.btnCopyMenu, this.dom.btnCopyAnthoReport]) {
+      if (button) button.disabled = invalidPrice;
+    }
     if (this.dom.counterError) this.dom.counterError.textContent = store.counterError;
     if (this.dom.btnSellNewBook) this.dom.btnSellNewBook.disabled = remaining <= 0 || invalidPrice;
     if (this.dom.btnSellSet) this.dom.btnSellSet.disabled = remaining <= 0;
@@ -428,7 +430,8 @@ export class UIRenderer {
 
     // お品書きメモ生成
     if (this.dom.textareaMenuMemo) {
-      this.dom.textareaMenuMemo.value = DoujinCalculator.generateMenuMemo(state, baseCosts, customPlan, changeData);
+      this.dom.textareaMenuMemo.value = invalidPrice ? DoujinCalculator.formatChangeList(changeData)
+        : DoujinCalculator.generateMenuMemo(state, baseCosts, customPlan, changeData);
     }
 
     if (window.lucide) window.lucide.createIcons();

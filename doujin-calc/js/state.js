@@ -4,7 +4,7 @@
  */
 
 import { DOUJIN_CONFIG } from './config.js?v=20261121-tools';
-import { DoujinCalculator } from './calculator.js?v=20261027-1';
+import { DoujinCalculator } from './calculator.js?v=20261121-tools';
 
 const COUNTER_KEYS = ['newBook', 'set', 'backNumber', 'goods'];
 
@@ -298,17 +298,21 @@ export class StateStore {
     return this.newBookSales.reduce((sum, sale) => sum + sale.price * sale.count, 0);
   }
 
+  get registerPrice() {
+    const price = this.state.customPrice;
+    return this.invalidPrice === null && Number.isSafeInteger(price) && price >= 0 ? price : null;
+  }
+
   adjustCounter(key, delta) {
     if (!COUNTER_KEYS.includes(key) || ![1, -1].includes(delta)) return false;
-    const price = this.state.customPrice;
-    const valid = this.invalidPrice === null;
+    const price = this.registerPrice;
     return this.withCounterLock(() => {
       this.refreshCounter(true);
       if (delta > 0 && (key === 'newBook' || key === 'set')
           && this.multiCounter.newBook + this.multiCounter.set >= DoujinCalculator.calculateCosts(this.state).N_sale) return false;
       const next = Math.max(0, this.multiCounter[key] + delta);
       if (!Number.isSafeInteger(next) || next === this.multiCounter[key]) return false;
-      if (key === 'newBook' && delta > 0 && !valid) return false;
+      if (key === 'newBook' && delta > 0 && price === null) return false;
       if (key === 'newBook') {
         const last = this.newBookSales.at(-1);
         if (delta < 0) {

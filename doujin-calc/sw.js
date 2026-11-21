@@ -14,7 +14,7 @@ const STATIC_ASSETS = [
   './js/config.js',
   './js/config.js?v=20261121-tools',
   './js/toast.js',
-  './js/calculator.js?v=20261027-1',
+  './js/calculator.js?v=20261121-tools',
   './js/legal-tax-data.js',
   './js/state.js?v=20261121-tools',
   './js/renderer.js?v=20261121-tools',

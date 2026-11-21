@@ -17,7 +17,7 @@ function setup(savedCounter) {
   renderer.dom = Object.fromEntries([
     'labelLiveCounterTotalSold', 'labelLiveCounterRemaining', 'labelLiveCounterSales',
     'counterValNewBook', 'counterValSet', 'counterValBackNumber', 'counterValGoods',
-    'btnUndoNewBook', 'btnUndoSet', 'btnUndoBackNumber', 'btnUndoGoods'
+    'btnUndoNewBook', 'btnUndoSet', 'btnUndoBackNumber', 'btnUndoGoods', 'labelChangeTotal', 'textareaMenuMemo', 'btnCopyBankMemo'
   ].map(name => [name, {}]));
   const render = () => renderer.updateCalculations(store.state, store.multiCounter, store);
   store.subscribe(render);
@@ -133,10 +133,13 @@ test('別タブの同時販売と取消は最後の1部を共有し、販売時�
 });
 
 test('価格の入力途中と書込失敗は売上にせず、復旧時に一度だけ加算する', () => {
-  const { store } = setup();
+  const { store, dom } = setup();
   for (const draft of ['', '20x', '1.5', '-1', '2,00']) {
     store.setCustomPriceInput(draft);
     assert.equal(store.adjustCounter('newBook', 1), false);
+    assert.match(dom.labelChangeTotal.textContent, /1円単位/);
+    assert.match(dom.textareaMenuMemo.value, /1円単位の整数/);
+    assert.equal(dom.btnCopyBankMemo.disabled, true);
     assert.equal(store.newBookRevenue, 0);
   }
   store.setCustomPriceInput('１，０００');
