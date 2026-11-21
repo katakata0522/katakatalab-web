@@ -60,6 +60,8 @@ function finalizeDeployOutput(projectRoot, buildRoot) {
   assertSafeDirectoryTree(kotobaSource);
 
   fs.copyFileSync(htaccessSource, path.join(build, '.htaccess'));
+  const shareImage = 'pikalab_ogp_compressed.jpg';
+  fs.copyFileSync(path.join(project, shareImage), path.join(build, shareImage));
 
   const kotobaDestination = path.join(build, 'kotoba');
   fs.rmSync(kotobaDestination, { recursive: true, force: true });

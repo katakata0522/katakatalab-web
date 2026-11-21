@@ -2,6 +2,7 @@
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
+    <meta http-equiv="Content-Security-Policy" content="script-src 'self'; script-src-attr 'none'">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>PikaLab 読みもの広場 | かたかた研究室</title>
     <meta name="description" content="PikaLabの保護者向け読みもの一覧です。家庭学習、声かけ、読書習慣、自己調整など、子どもの学びを支える記事をまとめています。">
@@ -27,7 +28,7 @@
     <link rel="stylesheet" href="./style.css">
 </head>
 <body class="min-h-screen text-slate-900 antialiased font-sans text-palt">
-    <script>try{var p=localStorage.getItem('wonder_school_profile_v2');if(p&&JSON.parse(p).darkMode)document.body.classList.add('theme-night');}catch(e){}</script>
+    <script src="./article-appearance.js"></script>
     
     <!-- Header -->
     <header class="premium-header sticky top-0 z-50 px-4 py-2.5 md:px-8 flex items-center justify-between transition-all">

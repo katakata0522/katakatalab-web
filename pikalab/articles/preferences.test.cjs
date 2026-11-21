@@ -7,6 +7,26 @@ const vm = require('node:vm');
 const articlesRoot = __dirname;
 const preferencesPath = path.join(articlesRoot, 'preferences.js');
 
+test('初回はポータルのテーマを引き継ぎ、記事で選んだ表示を次回も優先する', () => {
+    const source = fs.readFileSync(path.join(articlesRoot, 'article-appearance.js'), 'utf8');
+    for (const [saved, profile, expected] of [
+        [null, '{"darkMode":true}', true],
+        ['false', '{"darkMode":true}', false],
+        ['true', '{"darkMode":false}', true],
+        [null, 'invalid', false],
+    ]) {
+        const classes = new Set();
+        const font = { media: 'print' };
+        const settings = new Map([['pikalab-dark-mode', saved], ['wonder_school_profile_v2', profile]]);
+        vm.runInNewContext(source, {
+            document: { body: { classList: classes }, querySelectorAll: () => [font] },
+            localStorage: { getItem: (key) => settings.get(key) },
+        });
+        assert.deepEqual([...classes], expected ? ['dark-mode'] : []);
+        assert.equal(font.media, 'all');
+    }
+});
+
 test('記事設定はlocalStorageが拒否されても読み書きを継続する', () => {
     const source = fs.readFileSync(preferencesPath, 'utf8');
     const warnings = [];
