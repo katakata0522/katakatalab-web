@@ -2932,6 +2932,7 @@ body.dark-mode .projects-subhead--other { color: #ffd27a; }
 .projects-grid--recommended .card-title {
   font-size: clamp(1.2rem, 2vw, 1.45rem);
   overflow-wrap: anywhere;
+  text-wrap: balance;
 }
 .projects-grid--recommended .badge-new { display: none; }
 .projects-grid--recommended .card-text { line-height: 1.7; }

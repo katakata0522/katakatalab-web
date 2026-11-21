@@ -3,7 +3,7 @@ const CACHE_PREFIX = 'katakatalab-';
 const ASSETS = [
     './',
     './index.html',
-    './style.css?v=20261121-recommendations',
+    './style.css?v=20261121-recommendation-titles',
     './script.js?v=20261121-recommendations',
     './project-filter-state.js',
     './project-history.js',
