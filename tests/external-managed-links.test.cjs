@@ -20,6 +20,18 @@ test('外部管理のAsobi Pocketは同一オリジンでもrepo内HTMLを要求
   assert.deepEqual(findings, []);
 });
 
+test('直接配信へ分離した115万キロのファンノートもrepo内HTMLを要求しない', () => {
+  assert.ok(EXTERNAL_MANAGED_PATH_PREFIXES.includes('/higedanfan/'));
+  assert.equal(isExternallyManagedPath('/higedanfan/'), true);
+  assert.equal(isExternallyManagedPath('/higedanfan/songs/pretender/'), true);
+
+  const findings = auditInternalLinks(
+    '<a href="higedanfan/">115万キロのファンノート</a>',
+    new URL('https://katakatalab.com/')
+  );
+  assert.deepEqual(findings, []);
+});
+
 test('通常の欠損内部リンクは引き続き検出する', () => {
   const findings = auditInternalLinks(
     '<a href="missing-publisher-audit-page/">missing</a>',

@@ -1,1 +1,0 @@
-import{t as e}from"./browserStorage-ow4MwRZv.js";var t=`higedan_intro_seen_v2`;function n(){try{e()?.setItem(t,`1`)}catch{}}function r(){try{return e()?.getItem(t)===`1`}catch{return!1}}export{r as n,n as r,t};
