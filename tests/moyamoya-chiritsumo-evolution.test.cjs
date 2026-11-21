@@ -225,23 +225,20 @@ test('chiritsumo-calc: CSS provides safe area padding, 44px touch targets, tabul
   assert.match(css, /@media\s*\(prefers-reduced-motion:\s*reduce\)/);
 });
 
-test('portal integration: tools are included in projects.json, build-project-cards, sitemap.xml, sitemap.html, and ad-free list', () => {
-  const projects = JSON.parse(read('projects.json'));
-  const ids = projects.map(p => p.id);
-  assert.ok(ids.includes('moyamoya-sorter'), 'projects.json contains moyamoya-sorter');
-  assert.ok(ids.includes('chiritsumo-calc'), 'projects.json contains chiritsumo-calc');
-
-  const buildCards = read('scripts/build-project-cards.cjs');
-  assert.match(buildCards, /'moyamoya-sorter':\s*'🌿'/);
-  assert.match(buildCards, /'chiritsumo-calc':\s*'☕'/);
-
-  const sitemapXml = read('sitemap.xml');
-  assert.match(sitemapXml, /<loc>https:\/\/katakatalab\.com\/moyamoya-sorter\/<\/loc>/);
-  assert.match(sitemapXml, /<loc>https:\/\/katakatalab\.com\/chiritsumo-calc\/<\/loc>/);
-
-  const sitemapHtml = read('sitemap.html');
-  assert.match(sitemapHtml, /href="moyamoya-sorter\/"/);
-  assert.match(sitemapHtml, /href="chiritsumo-calc\/"/);
+test('unlisted works retain their records and pages outside the catalog and sitemaps', () => {
+  const archived = JSON.parse(read('config/unlisted-projects.json'));
+  assert.deepEqual(archived.map(p => p.id).sort(), ['chiritsumo-calc', 'gear', 'moyamoya-sorter']);
+  const publicIds = JSON.parse(read('projects.json')).map(p => p.id);
+  for (const project of archived) {
+    assert.ok(project.title && project.detail && project.actions.mainText);
+    assert.ok(!publicIds.includes(project.id));
+    const page = project.url.endsWith('/') ? `${project.url}index.html` : project.url;
+    assert.match(read(page), /name="robots" content="noindex,/);
+    assert.ok(!read('sitemap.xml').includes(`<loc>https://katakatalab.com/${project.url}</loc>`));
+    for (const file of ['index.html', 'other-projects.html', 'sitemap.html']) {
+      assert.ok(!read(file).includes(`href="${project.url}"`), `${file}: ${project.id}`);
+    }
+  }
 
   const auditScript = read('scripts/audit-publisher-quality.cjs');
   assert.match(auditScript, /chiritsumo-calc/);

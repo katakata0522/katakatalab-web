@@ -12,7 +12,7 @@ const ASSETS = [
     './manifest.json',
     './terms.html',
     './privacy.html',
-    './gear.html',
+    './other-projects.html',
     './about-katakatalab.html',
     './who-is-katakata.html',
     './icon.svg',

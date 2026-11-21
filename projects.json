@@ -1,62 +1,4 @@
 [
-  {
-    "id": "moyamoya-sorter",
-    "group": "secondary",
-    "category": "tool",
-    "shelf": "tool",
-    "featured": true,
-    "url": "moyamoya-sorter/",
-    "detail": "やることが多すぎて動けない時や不安な時に。頭のモヤモヤを「変えられること」と「手放していいこと」に仕分け、2分でできる最小の一歩を導く行動整理ツール。",
-    "tagText": "メンタル",
-    "tagClass": "tag-tool",
-    "targetBadge": "👪 全員向け",
-    "statusBadge": "NEW",
-    "title": "モヤモヤ仕分け機",
-    "shortText": "悩みを整理して、次の一歩を決める",
-    "text": "頭の中のモヤモヤを整理して、今すぐできる「2分の一歩」を決めるツール。",
-    "aliases": [
-      "モヤモヤ仕分け機",
-      "モヤモヤ",
-      "不安解消",
-      "タスク整理",
-      "メンタルケア",
-      "2分タイマー",
-      "スモールステップ"
-    ],
-    "actions": {
-      "mainText": "仕分ける →",
-      "detail": true
-    }
-  },
-  {
-    "id": "chiritsumo-calc",
-    "group": "secondary",
-    "category": "tool",
-    "shelf": "tool",
-    "featured": true,
-    "url": "chiritsumo-calc/",
-    "detail": "カフェ代、コンビニのついで買い、使っていないサブスク…日々のチリツモ出費を見直したお金が、温泉旅行や海外旅などのご褒美体験に化ける未来価値を逆算するシミュレーター。",
-    "tagText": "家計",
-    "tagClass": "tag-tool",
-    "targetBadge": "💼 実用向け",
-    "statusBadge": "NEW",
-    "title": "チリツモ逆算シミュレーター",
-    "shortText": "小さな出費が積もるといくらかを見る",
-    "text": "我慢する節約をやめて、日々の小さな出費をご褒美体験に楽しく逆算！",
-    "aliases": [
-      "チリツモ",
-      "チリツモ逆算",
-      "節約シミュレーター",
-      "ラテマネー",
-      "固定費見直し",
-      "サブスク解約",
-      "家計簿"
-    ],
-    "actions": {
-      "mainText": "逆算する →",
-      "detail": true
-    }
-  },
 {
     "id": "pikalab",
     "group": "secondary",
@@ -143,27 +85,6 @@
     }
   },
   {
-    "id": "kids-smile-land",
-    "group": "secondary",
-    "category": "education",
-    "shelf": "learning",
-    "featured": false,
-    "url": "lab-tools/kids-smile-land/",
-    "detail": "ひらがな読み上げ、お絵かき、もっきん、おもちゃの音あてなどをまとめた親子向け遊び場です。初期は2〜3歳向けのかんたんで開き、4〜6歳は設定で変えられます。",
-    "tagText": "学び",
-    "tagClass": "tag-education",
-    "targetBadge": "🎓 子ども向け",
-    "statusBadge": "NEW",
-    "title": "キッズ・スマイル・ランド",
-    "shortText": "親子で文字・音・お絵かきを試す",
-    "text": "文字・音・お絵かきを親子で試す遊び場。初期はかんたん（2〜3歳）です。",
-    "aliases": ["Kids Smile Land", "キッズスマイルランド", "知育", "幼児", "ひらがな", "お絵かき"],
-    "actions": {
-      "mainText": "遊びに行く →",
-      "detail": true
-    }
-  },
-  {
     "id": "motion-atlas",
     "group": "primary",
     "category": "tool",
@@ -234,27 +155,6 @@
     }
   },
   {
-    "id": "aspect-ratio",
-    "group": "primary",
-    "category": "tool",
-    "shelf": "tool",
-    "featured": false,
-    "url": "aspect-ratio-calc/",
-    "guide": "guides/aspect-ratio-guide.html",
-    "detail": "動画編集やWebデザインで、公開先に合う縦横比と画像サイズを確認するツール。比率と片方の長さから、もう片方を自動計算します。",
-    "tagText": "ツール",
-    "tagClass": "tag-tool",
-    "targetBadge": "💼 実用向け",
-    "title": "縦横比を計算する",
-    "shortText": "画像の幅と高さから比率を出す",
-    "text": "16:9などの比率と画像サイズをすぐ計算。画像リサイズや動画編集に役立ちます。",
-    "aliases": ["アスペクト比", "縦横比", "aspect ratio", "aspect-ratio"],
-    "actions": {
-      "mainText": "使う →",
-      "detail": true
-    }
-  },
-  {
     "id": "password-generator",
     "group": "primary",
     "category": "tool",
@@ -270,27 +170,6 @@
     "shortText": "長さと文字種を選んで生成する",
     "text": "推測されにくいランダムパスワードを作成。文字種や長さを用途に合わせて設定できます。",
     "aliases": ["パスワード", "password", "password generator", "パスワードジェネレーター", "暗号化保管"],
-    "actions": {
-      "mainText": "使う →",
-      "detail": true
-    }
-  },
-  {
-    "id": "px-rem",
-    "group": "primary",
-    "category": "tool",
-    "shelf": "tool",
-    "featured": false,
-    "url": "px-rem-converter/",
-    "guide": "guides/px-rem-guide.html",
-    "detail": "スマホやPCでホームページの文字サイズが崩れないように設計する、Web制作者向けの「pxとrem」の相互変換ツール。サイズ設計の基本ガイド付き。",
-    "tagText": "ツール",
-    "tagClass": "tag-tool",
-    "targetBadge": "💼 実用向け",
-    "title": "px / rem 変換",
-    "shortText": "文字サイズをpxとremで換算する",
-    "text": "CSSのサイズ設計に役立つ、ピクセルとremの相互変換ツール。",
-    "aliases": ["px rem", "px/rem", "ピクセル レム", "CSS単位", "pixel rem"],
     "actions": {
       "mainText": "使う →",
       "detail": true
@@ -382,26 +261,6 @@
     }
   },
   {
-    "id": "ogp-simulator",
-    "group": "primary",
-    "category": "tool",
-    "shelf": "tool",
-    "featured": false,
-    "url": "ogp-simulator/",
-    "detail": "記事やWebサイトを公開する前に、X(Twitter)やFacebook、LINEでのシェア時の見え方をリアルタイムで確認・調整できるシミュレーターです。",
-    "tagText": "ツール",
-    "tagClass": "tag-tool",
-    "targetBadge": "💼 実用向け",
-    "title": "OGPシミュレーター",
-    "shortText": "SNSでシェアしたときの見え方を確認",
-    "text": "SNSでシェアした際の見え方を事前に確認。画像比率チェックやダークモード対応。",
-    "aliases": ["OGP", "OGP preview", "SNS画像", "シェア画像", "social image"],
-    "actions": {
-      "mainText": "使う →",
-      "detail": true
-    }
-  },
-  {
     "id": "discount-calc",
     "group": "primary",
     "category": "tool",
@@ -416,26 +275,6 @@
     "shortText": "セールでいくら払うか調べる",
     "text": "セールの「◯％オフ」「◯割引き」を税込で一覧表示。レジ落ちの重ね割引にも対応。",
     "aliases": ["割引", "値引き", "セール計算", "discount", "◯％オフ"],
-    "actions": {
-      "mainText": "使う →",
-      "detail": true
-    }
-  },
-  {
-    "id": "seireki",
-    "group": "primary",
-    "category": "tool",
-    "shelf": "tool",
-    "featured": false,
-    "url": "seireki/",
-    "detail": "西暦または和暦を入れて、今年迎える年齢と干支を確認できます。",
-    "tagText": "ツール",
-    "tagClass": "tag-tool",
-    "targetBadge": "💼 実用向け",
-    "title": "年齢・和暦・西暦早見表",
-    "shortText": "生まれ年から和暦と年齢を調べる",
-    "text": "西暦と和暦（令和・平成・昭和など）の相互変換と、今年迎える年齢を一覧表示。",
-    "aliases": ["西暦", "和暦", "年齢計算", "元号", "年齢", "早見表"],
     "actions": {
       "mainText": "使う →",
       "detail": true
@@ -458,26 +297,6 @@
     "aliases": ["note", "ブログ", "制作話", "読みもの", "かたかたらぼ", "KatakataLab"],
     "actions": {
       "mainText": "読みものを見る →",
-      "detail": true
-    }
-  },
-  {
-    "id": "gear",
-    "group": "secondary",
-    "category": "gear",
-    "shelf": "story",
-    "featured": false,
-    "url": "gear.html",
-    "detail": "個人開発者が実際に使って良かったキーボードやパソコンなどの機材・ガジェットを、開発を楽しくする工夫や選んだ本音とともに紹介。",
-    "tagText": "環境",
-    "tagClass": "tag-gear",
-    "targetBadge": "💼 実用向け",
-    "title": "制作デスクと機材メモ",
-    "shortText": "制作に使うデスクや機材を見る",
-    "text": "気になる機材や、制作環境をもっと楽しくする道具のメモ。",
-    "aliases": ["ガジェット", "機材", "デスク", "開発環境", "desk gear"],
-    "actions": {
-      "mainText": "使う →",
       "detail": true
     }
   },
@@ -536,6 +355,88 @@
     ],
     "actions": {
       "mainText": "ファンノートを開く →",
+      "detail": true
+    }
+  },
+  {
+    "id": "ogp-simulator",
+    "group": "other",
+    "category": "tool",
+    "shelf": "tool",
+    "featured": false,
+    "url": "ogp-simulator/",
+    "detail": "記事やWebサイトを公開する前に、X(Twitter)やFacebook、LINEでのシェア時の見え方をリアルタイムで確認・調整できるシミュレーターです。",
+    "tagText": "ツール",
+    "tagClass": "tag-tool",
+    "targetBadge": "💼 実用向け",
+    "title": "OGPシミュレーター",
+    "shortText": "SNSでシェアしたときの見え方を確認",
+    "text": "SNSでシェアした際の見え方を事前に確認。画像比率チェックやダークモード対応。",
+    "aliases": ["OGP", "OGP preview", "SNS画像", "シェア画像", "social image"],
+    "actions": {
+      "mainText": "使う →",
+      "detail": true
+    }
+  },
+  {
+    "id": "seireki",
+    "group": "other",
+    "category": "tool",
+    "shelf": "tool",
+    "featured": false,
+    "url": "seireki/",
+    "detail": "西暦または和暦を入れて、今年迎える年齢と干支を確認できます。",
+    "tagText": "ツール",
+    "tagClass": "tag-tool",
+    "targetBadge": "💼 実用向け",
+    "title": "年齢・和暦・西暦早見表",
+    "shortText": "生まれ年から和暦と年齢を調べる",
+    "text": "西暦と和暦（令和・平成・昭和など）の相互変換と、今年迎える年齢を一覧表示。",
+    "aliases": ["西暦", "和暦", "年齢計算", "元号", "年齢", "早見表"],
+    "actions": {
+      "mainText": "使う →",
+      "detail": true
+    }
+  },
+  {
+    "id": "aspect-ratio",
+    "group": "other",
+    "category": "tool",
+    "shelf": "tool",
+    "featured": false,
+    "url": "aspect-ratio-calc/",
+    "guide": "guides/aspect-ratio-guide.html",
+    "detail": "動画編集やWebデザインで、公開先に合う縦横比と画像サイズを確認するツール。比率と片方の長さから、もう片方を自動計算します。",
+    "tagText": "ツール",
+    "tagClass": "tag-tool",
+    "targetBadge": "💼 実用向け",
+    "title": "縦横比を計算する",
+    "shortText": "画像の幅と高さから比率を出す",
+    "text": "16:9などの比率と画像サイズをすぐ計算。画像リサイズや動画編集に役立ちます。",
+    "aliases": ["アスペクト比", "縦横比", "aspect ratio", "aspect-ratio"],
+    "actions": {
+      "mainText": "使う →",
+      "detail": true
+    }
+  },
+  {
+    "id": "px-rem",
+    "group": "other",
+    "category": "tool",
+    "shelf": "tool",
+    "featured": false,
+    "url": "px-rem-converter/",
+    "guide": "guides/px-rem-guide.html",
+    "detail": "スマホやPCでホームページの文字サイズが崩れないように設計する、Web制作者向けの「pxとrem」の相互変換ツール。サイズ設計の基本ガイド付き。",
+    "tagText": "ツール",
+    "tagClass": "tag-tool",
+    "targetBadge": "💼 実用向け",
+    "title": "px / rem 変換",
+    "shortText": "文字サイズをpxとremで換算する",
+    "text": "CSSのサイズ設計に役立つ、ピクセルとremの相互変換ツール。",
+    "aliases": ["px rem", "px/rem", "ピクセル レム", "CSS単位", "pixel rem"],
+    "actions": {
+      "mainText": "使う →",
       "detail": true
     }
   }

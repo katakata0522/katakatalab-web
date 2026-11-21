@@ -41,7 +41,12 @@ test('トップは静的作品棚と補足導線を操作可能な形でまと�
   assert.match(html, /data-shelf="learning"/);
   assert.match(html, /data-shelf="tool"/);
   assert.match(html, /data-shelf="story"/);
-  assert.match(html, /data-guide="guides\/aspect-ratio-guide\.html"/);
+  assert.match(html, /href="other-projects\.html"/);
+  assert.match(readFile('other-projects.html'), /href="aspect-ratio-calc\/"/);
+  assert.match(readFile('aspect-ratio-calc/index.html'), /href="\.\.\/guides\/aspect-ratio-guide\.html"/);
+  const aspectRatio = JSON.parse(readFile('projects.json')).find(project => project.id === 'aspect-ratio');
+  assert.equal(aspectRatio.group, 'other');
+  assert.equal(aspectRatio.guide, 'guides/aspect-ratio-guide.html');
   assert.match(html, /data-guide="guides\/password-guide\.html"/);
   assert.match(html, /class="btn btn-secondary modal-guide-link modal-action-link"/);
   assert.match(html, /使い方・Q&amp;A/);

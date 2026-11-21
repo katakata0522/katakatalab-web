@@ -1,7 +1,7 @@
 const test = require('node:test');
 const assert = require('node:assert/strict');
 const { read } = require('./helpers/repository.cjs');
-const { renderCard, validateProjects } = require('../scripts/build-project-cards.cjs');
+const { renderCard, renderOtherProject, validateProjects } = require('../scripts/build-project-cards.cjs');
 
 function cardBlock(html, group) {
   const name = group.toUpperCase();
@@ -24,6 +24,12 @@ test('トップのカードは projects.json の生成結果と一致する', ()
       .join('\n                    ');
     assert.equal(cardBlock(html, group), generated);
   }
+  const other = projects.filter(project => project.group === 'other');
+  assert.deepEqual(other.map(project => project.id).sort(), ['aspect-ratio', 'ogp-simulator', 'px-rem', 'seireki']);
+  assert.equal(cardBlock(read('other-projects.html').replace(/\r\n/g, '\n'), 'other'), other.map(renderOtherProject).join('\n                    '));
+  assert.match(html, /href="other-projects\.html">ほかの作品を見る/);
+  assert.doesNotMatch(html, /data-id="kids-smile-land"/);
+  assert.match(read('pikalab/index.html'), /href="\/lab-tools\/kids-smile-land\/"/);
 });
 
 test('構造化データは同じ主体を二重定義せず、画面のnoteと一致する', () => {
