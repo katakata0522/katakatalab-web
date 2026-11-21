@@ -1,13 +1,13 @@
-const CACHE_NAME = 'katakatalab-v25';
+const CACHE_NAME = 'katakatalab-v26';
 const CACHE_PREFIX = 'katakatalab-';
 const ASSETS = [
     './',
     './index.html',
-    './style.css?v=20261121-other-works',
-    './script.js',
+    './style.css?v=20261121-recommendations',
+    './script.js?v=20261121-recommendations',
     './project-filter-state.js',
     './project-history.js',
-    './projects.json',
+    './projects.json?v=20261121-recommendations',
     './offline.html',
     './manifest.json',
     './terms.html',
@@ -25,7 +25,7 @@ const ASSETS = [
 // Install Service Worker
 
 // 起動は保存済みの同じ版を優先し、通信・容量不足・他アプリ干渉を共通処理で防ぐ。
-importScripts('/pwa-runtime.js?v=20261121-tools');
+importScripts('/pwa-runtime.js?v=20261121-recommendations');
 self.PwaRuntime.configure({
   // 利用中の旧版を維持し、対象画面を閉じた後に更新を有効化する。
   autoUpdate: false,

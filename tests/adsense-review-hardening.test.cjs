@@ -18,7 +18,7 @@ test('トップは初期HTMLだけでも主題と主要ツールを説明でき�
   assert.match(html, /data-project-card="static"/);
   assert.match(html, /QRコード/);
   assert.match(html, /パスワード/);
-  assert.match(html, /href="guides\/it-basics\/"/);
+  assert.match(html, /href="guides\/tool-selection-guide\.html" class="nav-link"/);
   assert.match(html, /IT入門/);
   assert.match(html, /実用ツールとは目的が違うものです/);
 });
@@ -301,15 +301,17 @@ test('主要5ツールは入力・結果・確認範囲をページ内に記録�
   }
 });
 
-test('トップはツール優先の導線を持ちPikaLabを別枠に分ける', () => {
+test('トップではおすすめを実用ツールの上に置き、ガイドのメニューを使える', () => {
   const homepage = read('index.html');
   const guide = read('guides/tool-selection-guide.html');
 
   assert.match(homepage, /<section id="projects"[^>]*>/);
-  assert.match(homepage, /<nav id="recommended-guides" class="guide-quick"/);
+  assert.match(homepage, /id="recommended-projects"[\s\S]*id="primary-projects-title"/);
+  assert.doesNotMatch(homepage, /id="recommended-guides"/);
+  assert.match(homepage, /href="guides\/tool-selection-guide\.html" class="nav-link">ガイド</);
   assert.match(homepage, /guides\/case-studies\.html/);
   assert.match(homepage, /guides\/tool-selection-guide\.html/);
-  assert.match(homepage, /href="guides\/it-basics\/"/);
+  assert.match(guide, /href="(?:\.\.\/guides\/)?it-basics\/"/);
   assert.match(homepage, /id="secondary-projects-grid"/);
   assert.match(homepage, /data-id="pikalab"/);
   assert.match(homepage, /data-shelf="learning"/);

@@ -121,16 +121,15 @@ test('動的資産の異なるquery版を同じcacheへ混ぜない', async () =
   assert.equal((await app.fetch('./dynamic.js?v=new', { destination: 'script', mode: 'cors' })).label, 'fresh');
 });
 
-test('対象のSWはバージョン付きCSS/JSで更新し、オフラインでは従来のキーでも同じ内容を返す', async () => {
+test('対象のSWはバージョン付き資産で更新し、オフラインでは従来のキーでも同じ内容を返す', async () => {
   for (const file of ['sw.js', 'qrcode/sw.js', 'password-generator/sw.js']) {
     const app = runtime(file, { network: pending });
-    const directory = file === 'sw.js' ? 'discount-calc/' : '';
-    for (const asset of ['style.css', 'script.js']) {
-      app.entries.set(new URL(directory + asset, app.scope).href, response('stale-cdn'));
-    }
+    const assets = [['style.css', 'style'], ['script.js', 'script']];
+    if (file === 'sw.js') assets.push(['discount-calc/style.css', 'style'], ['discount-calc/script.js', 'script'], ['projects.json', '']);
+    for (const [asset] of assets) app.entries.set(new URL(asset, app.scope).href, response('stale-cdn'));
     await app.install();
-    for (const [asset, destination] of [['style.css', 'style'], ['script.js', 'script']]) {
-      const bare = new URL(directory + asset, app.scope).href;
+    for (const [asset, destination] of assets) {
+      const bare = new URL(asset, app.scope).href;
       const version = app.installs[0].find(request => new URL(request.url).pathname === new URL(bare).pathname);
       assert.ok(new URL(version.url).searchParams.get('v'), file + ' ' + asset);
       assert.equal(app.entries.has(version.url), false);

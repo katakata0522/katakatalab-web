@@ -22,7 +22,7 @@ self.PwaRuntime = {
       const url = canonicalUrl(new URL(asset, scope));
       const source = url.href;
       const versioned = versionedPrecache && url.origin === self.location.origin
-        && /\.(?:css|js)$/i.test(url.pathname) && /^\?v=[\w.-]+$/.test(url.search);
+        && /\.(?:css|js|json)$/i.test(url.pathname) && /^\?v=[\w.-]+$/.test(url.search);
       url.search = '';
       coreUrls.add(url.href);
       if (versioned) versionedSources.set(url.href, source);

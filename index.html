@@ -103,7 +103,7 @@
               "@type": "ListItem",
               "position": 3,
               "name": "QRコードを作る",
-              "url": "https://katakatalab.com/https://katakatalab.com/qrcode/"
+              "url": "https://katakatalab.com/qrcode/"
             },
             {
               "@type": "ListItem",
@@ -167,7 +167,7 @@
     </noscript>
 
     <link rel="icon" href="icon.svg" type="image/svg+xml">
-    <link rel="stylesheet" href="style.css?v=20261121-mobile-cards">
+    <link rel="stylesheet" href="style.css?v=20261121-recommendations">
 
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#FF7675">
@@ -260,7 +260,7 @@
             <nav class="nav" aria-label="主要ナビ">
                 <ul class="nav-list">
                     <li><a href="#projects" class="nav-link">ツール</a></li>
-                    <li><a href="#recommended-guides" class="nav-link">ガイド</a></li>
+                    <li><a href="guides/tool-selection-guide.html" class="nav-link">ガイド</a></li>
                     <li><a href="#about" class="nav-link">かたかた</a></li>
                     <li><a href="#updates" class="nav-link">更新</a></li>
                 </ul>
@@ -293,7 +293,7 @@
                 <ul class="mobile-nav-list">
                     <li class="mobile-nav-group-label">すぐ使う</li>
                     <li><a href="#projects" class="mobile-nav-link">🧰 ツールを探す</a></li>
-                    <li><a href="#recommended-guides" class="mobile-nav-link">📖 迷ったらガイド</a></li>
+                    <li><a href="guides/tool-selection-guide.html" class="mobile-nav-link">📖 ガイド</a></li>
                     <li><a href="note-selection.html" class="mobile-nav-link">📝 かたかたのnote</a></li>
                     <li class="mobile-nav-sep"></li>
                     <li class="mobile-nav-group-label">ラボについて</li>
@@ -386,11 +386,12 @@
                     </div>
                 </details>
 
-                <h3 class="projects-subhead projects-subhead--tool" id="primary-projects-title">実用ツール</h3>
-                <div class="projects-grid" id="projects-grid">
-                    <!-- PROJECT_CARDS_PRIMARY_START -->
+                <section class="recommended-projects" id="recommended-projects" aria-labelledby="recommended-projects-title">
+                    <h3 class="recommended-projects-title" id="recommended-projects-title">おすすめ！</h3>
+                    <div class="projects-grid projects-grid--recommended" id="recommended-projects-grid">
+                    <!-- PROJECT_CARDS_RECOMMENDED_START -->
                     <article class="card"
-             data-project-card="static" style="--mobile-order:2"
+             data-project-card="static" data-recommendation-order="1"
              data-id="motion-atlas"
              data-group="primary"
              data-category="tool"
@@ -409,7 +410,7 @@
 
           <div class="card-actions">
             <a href="motion-atlas/" class="card-link">
-              <span class="card-action-label">開く →</span>
+              <span class="card-action-label">図鑑を開く →</span>
             </a>
             <button type="button" class="card-detail-btn">詳しく見る</button>
           </div>
@@ -418,10 +419,149 @@
            aria-labelledby="row-name-motion-atlas row-action-motion-atlas" aria-describedby="row-purpose-motion-atlas row-note-motion-atlas">
           <h3 class="project-row-name" id="row-name-motion-atlas">動きの仕組み図鑑</h3>
           <p class="project-row-purpose" id="row-purpose-motion-atlas">ボタンやメニューの動きをスロー再生。</p>
-          <p class="project-row-note" id="row-note-motion-atlas"><span>気に入った動きはコードをコピーして、</span><span>自分のサイトでそのまま試せます。</span></p>
+          <p class="project-row-note" id="row-note-motion-atlas"><span>100種類の作例を見比べ、</span><span>気に入った動きのコードをコピー。</span></p>
           <span class="project-row-cta" id="row-action-motion-atlas"><span class="project-row-action">図鑑を開く</span><span aria-hidden="true">→</span></span>
         </a>
       </article>
+                    <article class="card"
+             data-project-card="static" data-recommendation-order="2"
+             data-id="pikalab"
+             data-group="secondary"
+             data-category="education"
+             data-shelf="learning"
+             data-url="pikalab/" data-aliases="[&quot;PikaLab&quot;,&quot;ピカラボ&quot;,&quot;子ども向け&quot;,&quot;学習ゲーム&quot;,&quot;ミニゲーム&quot;,&quot;教育&quot;]"
+             data-detail="名前や可愛いアバターを選び、ゲーム感覚で楽しく学べる子ども向け教育ミニゲーム集。漢字、色、リズム遊び、夏休みの自由研究などを親子で一緒に楽しめます。">
+
+        <div class="card-body">
+          <div class="card-header">
+            <div class="card-tag tag-education">学び</div>
+            <span class="badge-target font-badge">🎓 子ども向け</span>
+            <span class="badge-new">LAB</span>
+          </div>
+          <h3 class="card-title"><span class="card-title-icon" aria-hidden="true">✨</span> PikaLab</h3>
+          <p class="card-text">親子で漢字やリズムを楽しむ子ども向けの研究室。深海生物の探検や色まぜにも、広告なしで取り組めます。</p>
+
+          <div class="card-actions">
+            <a href="pikalab/" class="card-link" target="_blank" rel="noopener noreferrer">
+              <span class="card-action-label">PikaLabを開く <span class="card-action-target">（別タブ）</span> →</span>
+            </a>
+            <button type="button" class="card-detail-btn">詳しく見る</button>
+          </div>
+        </div>
+        <a class="card-link project-row" href="pikalab/"
+           aria-labelledby="row-name-pikalab row-action-pikalab" aria-describedby="row-purpose-pikalab row-note-pikalab">
+          <h3 class="project-row-name" id="row-name-pikalab">PikaLab</h3>
+          <p class="project-row-purpose" id="row-purpose-pikalab">親子で漢字やリズムのゲームを楽しむ。</p>
+          <p class="project-row-note" id="row-note-pikalab"><span>色まぜや深海探検も広告なしで。</span></p>
+          <span class="project-row-cta" id="row-action-pikalab"><span class="project-row-action">PikaLabを開く</span><span aria-hidden="true">→</span></span>
+        </a>
+      </article>
+                    <article class="card"
+             data-project-card="static" data-recommendation-order="3"
+             data-id="playpoint"
+             data-group="secondary"
+             data-category="tool"
+             data-shelf="tool"
+             data-url="https://www.playpoint-sim.com/" data-aliases="[&quot;Google Play&quot;,&quot;Google Playポイント&quot;,&quot;ポイント計算&quot;,&quot;課金計算&quot;,&quot;ステータス&quot;]"
+             data-detail="次のGoogle Playステータス（ゴールドやプラチナ等）までに必要な金額と、得られるポイントを試算できるシミュレーター。">
+
+        <div class="card-body">
+          <div class="card-header">
+            <div class="card-tag tag-tool">ツール</div>
+            <span class="badge-target font-badge">💼 実用向け</span>
+            <span class="badge-new">BEST</span>
+          </div>
+          <h3 class="card-title"><span class="card-title-icon" aria-hidden="true">🎮</span> Playポイント計算機</h3>
+          <p class="card-text">次のステータスまでに必要な金額や、得られるポイントをさっと試算できます。</p>
+
+          <div class="card-actions">
+            <a href="https://www.playpoint-sim.com/" class="card-link" target="_blank" rel="noopener noreferrer">
+              <span class="card-action-label">計算機を開く <span class="card-action-target">（別タブ）</span> →</span>
+            </a>
+            <button type="button" class="card-detail-btn">詳しく見る</button>
+          </div>
+        </div>
+        <a class="card-link project-row" href="https://www.playpoint-sim.com/" target="_blank" rel="noopener noreferrer"
+           aria-labelledby="row-name-playpoint row-action-playpoint" aria-describedby="row-purpose-playpoint row-note-playpoint">
+          <h3 class="project-row-name" id="row-name-playpoint">Playポイント計算機</h3>
+          <p class="project-row-purpose" id="row-purpose-playpoint">次のランクまでの購入額を計算する。</p>
+          <p class="project-row-note" id="row-note-playpoint"><span>購入でもらえるポイントも試算。</span></p>
+          <span class="project-row-cta" id="row-action-playpoint"><span class="project-row-action">計算機を開く</span>（別タブ）<span aria-hidden="true">→</span></span>
+        </a>
+      </article>
+                    <article class="card"
+             data-project-card="static" data-recommendation-order="4"
+             data-id="higedanfan"
+             data-group="secondary"
+             data-category="tool"
+             data-shelf="tool"
+             data-url="higedanfan/" data-aliases="[&quot;髭男&quot;,&quot;ヒゲダン&quot;,&quot;Official髭男dism&quot;,&quot;セトリ&quot;,&quot;音域&quot;]"
+             data-detail="Official髭男dismの非公式ファンサイト。曲別の出典から音域・BPM・演奏時間を確かめ、自分のセットリストを作れます。">
+
+        <div class="card-body">
+          <div class="card-header">
+            <div class="card-tag tag-tool">音楽</div>
+            <span class="badge-target font-badge">音楽ファン向け</span>
+
+          </div>
+          <h3 class="card-title"><span class="card-title-icon" aria-hidden="true">🧪</span> 115万キロのファンノート</h3>
+          <p class="card-text">曲の音域やBPMを調べて、自分のセットリストを作れます。クイズ・聖地マップ・歴代ツアーの記録も。</p>
+
+          <div class="card-actions">
+            <a href="higedanfan/" class="card-link">
+              <span class="card-action-label">ファンノートを開く →</span>
+            </a>
+            <button type="button" class="card-detail-btn">詳しく見る</button>
+          </div>
+        </div>
+        <a class="card-link project-row" href="higedanfan/"
+           aria-labelledby="row-name-higedanfan row-action-higedanfan" aria-describedby="row-purpose-higedanfan row-note-higedanfan">
+          <h3 class="project-row-name" id="row-name-higedanfan">115万キロのファンノート</h3>
+          <p class="project-row-purpose" id="row-purpose-higedanfan">ヒゲダンの曲やツアーの記録を探す。</p>
+          <p class="project-row-note" id="row-note-higedanfan"><span>曲を選んで自分だけのセトリ作り。</span><span>クイズや聖地マップも楽しめます。</span></p>
+          <span class="project-row-cta" id="row-action-higedanfan"><span class="project-row-action">ファンノートを開く</span><span aria-hidden="true">→</span></span>
+        </a>
+      </article>
+                    <article class="card"
+             data-project-card="static" data-recommendation-order="5"
+             data-id="qrcode"
+             data-group="primary"
+             data-category="tool"
+             data-shelf="tool"
+             data-url="https://katakatalab.com/qrcode/" data-guide="qrcode/guides.html" data-aliases="[&quot;QR&quot;,&quot;QR code&quot;,&quot;QRコード&quot;,&quot;二次元コード&quot;,&quot;QR作成&quot;,&quot;QR Maker Lab&quot;]"
+             data-detail="自宅のWi-Fi接続用QRや、お店のSNSリンクをその場で作成できるツール。用途別ガイドで、作成後の設定や確認ポイントまでたどれます。">
+
+        <div class="card-body">
+          <div class="card-header">
+            <div class="card-tag tag-tool">ツール</div>
+            <span class="badge-target font-badge">💼 実用向け</span>
+            <span class="badge-new">PICK</span>
+          </div>
+          <h3 class="card-title"><span class="card-title-icon" aria-hidden="true">📱</span> QRコードを作る</h3>
+          <p class="card-text">ブラウザ完結でQRコードを作成。用途別の解説ページも用意しています。</p>
+
+          <div class="card-actions">
+            <a href="https://katakatalab.com/qrcode/" class="card-link">
+              <span class="card-action-label">作成ページへ →</span>
+            </a>
+            <button type="button" class="card-detail-btn">詳しく見る</button>
+          </div>
+        </div>
+        <a class="card-link project-row" href="https://katakatalab.com/qrcode/"
+           aria-labelledby="row-name-qrcode row-action-qrcode" aria-describedby="row-purpose-qrcode row-note-qrcode">
+          <h3 class="project-row-name" id="row-name-qrcode">QRコードを作る</h3>
+          <p class="project-row-purpose" id="row-purpose-qrcode">URLやWi-Fiの接続情報をQRコードに。</p>
+          <p class="project-row-note" id="row-note-qrcode"><span>ブラウザで作って、画像で保存。</span></p>
+          <span class="project-row-cta" id="row-action-qrcode"><span class="project-row-action">作成ページへ</span><span aria-hidden="true">→</span></span>
+        </a>
+      </article>
+                    <!-- PROJECT_CARDS_RECOMMENDED_END -->
+                    </div>
+                </section>
+
+                <h3 class="projects-subhead projects-subhead--tool" id="primary-projects-title">実用ツール</h3>
+                <div class="projects-grid" id="projects-grid">
+                    <!-- PROJECT_CARDS_PRIMARY_START -->
                     <article class="card"
              data-project-card="static"
              data-id="doujin-calc"
@@ -453,39 +593,6 @@
           <p class="project-row-purpose" id="row-purpose-doujin-calc">頒布価格と当日の釣銭を計算する。</p>
 
           <span class="project-row-cta" id="row-action-doujin-calc"><span class="project-row-action">計算ページへ</span><span aria-hidden="true">→</span></span>
-        </a>
-      </article>
-                    <article class="card"
-             data-project-card="static" style="--mobile-order:3"
-             data-id="qrcode"
-             data-group="primary"
-             data-category="tool"
-             data-shelf="tool"
-             data-url="https://katakatalab.com/qrcode/" data-guide="qrcode/guides.html" data-aliases="[&quot;QR&quot;,&quot;QR code&quot;,&quot;QRコード&quot;,&quot;二次元コード&quot;,&quot;QR作成&quot;,&quot;QR Maker Lab&quot;]"
-             data-detail="自宅のWi-Fi接続用QRや、お店のSNSリンクをその場で作成できるツール。用途別ガイドで、作成後の設定や確認ポイントまでたどれます。">
-
-        <div class="card-body">
-          <div class="card-header">
-            <div class="card-tag tag-tool">ツール</div>
-            <span class="badge-target font-badge">💼 実用向け</span>
-            <span class="badge-new">PICK</span>
-          </div>
-          <h3 class="card-title"><span class="card-title-icon" aria-hidden="true">📱</span> QRコードを作る</h3>
-          <p class="card-text">ブラウザ完結でQRコードを作成。用途別の解説ページも用意しています。</p>
-
-          <div class="card-actions">
-            <a href="https://katakatalab.com/qrcode/" class="card-link">
-              <span class="card-action-label">使う →</span>
-            </a>
-            <button type="button" class="card-detail-btn">詳しく見る</button>
-          </div>
-        </div>
-        <a class="card-link project-row" href="https://katakatalab.com/qrcode/"
-           aria-labelledby="row-name-qrcode row-action-qrcode" aria-describedby="row-purpose-qrcode">
-          <h3 class="project-row-name" id="row-name-qrcode">QRコードを作る</h3>
-          <p class="project-row-purpose" id="row-purpose-qrcode">URLやWi-Fiの接続情報をQRコードに。</p>
-
-          <span class="project-row-cta" id="row-action-qrcode"><span class="project-row-action">作成ページへ</span><span aria-hidden="true">→</span></span>
         </a>
       </article>
                     <article class="card"
@@ -693,7 +800,7 @@
              data-category="tool"
              data-shelf="tool"
              data-url="screenshot-crop/" data-aliases="[&quot;スクショ端カット&quot;,&quot;スクショ トリミング&quot;,&quot;スクリーンショット&quot;,&quot;ステータスバー&quot;,&quot;ナビゲーションバー&quot;,&quot;タスクバー&quot;,&quot;画像切り抜き&quot;,&quot;プライバシー&quot;,&quot;個人情報&quot;,&quot;SNS&quot;]"
-             data-detail="SNS投稿前に、スクリーンショットの上・下・左右に残ったステータスバーやナビゲーションバー、PCのタスクバーなどを切り落とすツール。画像本体はサーバーや外部AIへ送らず、ブラウザ内で処理します。自動推定のあと、指やマウスで4辺を微調整できます。">
+             data-detail="SNS投稿前に、スクリーンショットの上・下・左右に残ったステータスバーやナビゲーションバー、PCのタスクバーなどを切り落とすツール。画像本体はサーバーや外部AIへ送らず、ブラウザ内で処理します。画像は8枚までまとめて選べます。自動推定のあと、指やマウスで4辺を微調整できます。">
 
         <div class="card-body">
           <div class="card-header">
@@ -712,10 +819,10 @@
           </div>
         </div>
         <a class="card-link project-row" href="screenshot-crop/"
-           aria-labelledby="row-name-screenshot-crop row-action-screenshot-crop" aria-describedby="row-purpose-screenshot-crop row-note-screenshot-crop">
+           aria-labelledby="row-name-screenshot-crop row-action-screenshot-crop" aria-describedby="row-purpose-screenshot-crop">
           <h3 class="project-row-name" id="row-name-screenshot-crop">スクショ端カット</h3>
           <p class="project-row-purpose" id="row-purpose-screenshot-crop">スクショの端に写った時刻や通知をカット。</p>
-          <p class="project-row-note" id="row-note-screenshot-crop"><span>投稿用の画像を8枚までまとめて選べるので、</span><span>1枚ずつ開き直す手間が省けます。</span></p>
+
           <span class="project-row-cta" id="row-action-screenshot-crop"><span class="project-row-action">切り取りページへ</span><span aria-hidden="true">→</span></span>
         </a>
       </article>
@@ -723,87 +830,11 @@
                 </div>
                 <p class="other-projects-entry"><a class="btn btn-secondary" href="other-projects.html">ほかの作品を見る <span aria-hidden="true">→</span></a></p>
 
-                <!-- 迷ったときのガイド（コンパクト3リンク） -->
-                <nav id="recommended-guides" class="guide-quick" aria-label="迷ったときのガイド" style="margin-top: 2rem;">
-                    <p class="guide-quick-label">💡 迷ったときのガイド</p>
-                    <div class="guide-quick-links">
-                        <a href="guides/case-studies.html" class="guide-quick-link">💡 実例集</a>
-                        <a href="guides/tool-selection-guide.html" class="guide-quick-link">🎯 用途から選ぶ</a>
-                        <a href="guides/it-basics/" class="guide-quick-link">📚 IT入門</a>
-                    </div>
-                </nav>
-
                 <div class="secondary-projects" id="secondary-projects">
                     <h3 class="projects-subhead projects-subhead--other" id="secondary-projects-heading">学習ラボ・読みもの・実験</h3>
                     <p class="section-desc" style="margin-bottom: 1.25rem; font-size: 0.92rem; color: var(--c-text-light);">子ども向け学習や制作記録など、実用ツールとは目的が違うものです。好奇心から生まれた実験場としてお楽しみください。</p>
                     <div class="projects-grid projects-grid--secondary" id="secondary-projects-grid">
                         <!-- PROJECT_CARDS_SECONDARY_START -->
-                    <article class="card"
-             data-project-card="static"
-             data-id="pikalab"
-             data-group="secondary"
-             data-category="education"
-             data-shelf="learning"
-             data-url="pikalab/" data-aliases="[&quot;PikaLab&quot;,&quot;ピカラボ&quot;,&quot;子ども向け&quot;,&quot;学習ゲーム&quot;,&quot;ミニゲーム&quot;,&quot;教育&quot;]"
-             data-detail="名前や可愛いアバターを選び、ゲーム感覚で楽しく学べる子ども向け教育ミニゲーム集。漢字、色、リズム遊び、夏休みの自由研究などを親子で一緒に楽しめます。">
-
-        <div class="card-body">
-          <div class="card-header">
-            <div class="card-tag tag-education">学び</div>
-            <span class="badge-target font-badge">🎓 子ども向け</span>
-            <span class="badge-new">LAB</span>
-          </div>
-          <h3 class="card-title"><span class="card-title-icon" aria-hidden="true">✨</span> PikaLab</h3>
-          <p class="card-text">遊ぶように学ぶための研究室。ミニアプリや学習の手助けをひとつの入口に集めています。</p>
-
-          <div class="card-actions">
-            <a href="pikalab/" class="card-link" target="_blank" rel="noopener noreferrer">
-              <span class="card-action-label">研究室へ行く →</span>
-            </a>
-            <button type="button" class="card-detail-btn">詳しく見る</button>
-          </div>
-        </div>
-        <a class="card-link project-row" href="pikalab/"
-           aria-labelledby="row-name-pikalab row-action-pikalab" aria-describedby="row-purpose-pikalab">
-          <h3 class="project-row-name" id="row-name-pikalab">PikaLab</h3>
-          <p class="project-row-purpose" id="row-purpose-pikalab">親子で漢字やリズムのゲームを楽しむ。</p>
-
-          <span class="project-row-cta" id="row-action-pikalab"><span class="project-row-action">PikaLabを開く</span><span aria-hidden="true">→</span></span>
-        </a>
-      </article>
-                    <article class="card"
-             data-project-card="static"
-             data-id="playpoint"
-             data-group="secondary"
-             data-category="tool"
-             data-shelf="tool"
-             data-url="https://www.playpoint-sim.com/" data-aliases="[&quot;Google Play&quot;,&quot;Google Playポイント&quot;,&quot;ポイント計算&quot;,&quot;課金計算&quot;,&quot;ステータス&quot;]"
-             data-detail="次のGoogle Playステータス（ゴールドやプラチナ等）までに必要な金額と、得られるポイントを試算できるシミュレーター。">
-
-        <div class="card-body">
-          <div class="card-header">
-            <div class="card-tag tag-tool">ツール</div>
-            <span class="badge-target font-badge">💼 実用向け</span>
-            <span class="badge-new">BEST</span>
-          </div>
-          <h3 class="card-title"><span class="card-title-icon" aria-hidden="true">🎮</span> Playポイント計算機</h3>
-          <p class="card-text">次のステータスまでに必要な金額や、得られるポイントをさっと試算できます。</p>
-
-          <div class="card-actions">
-            <a href="https://www.playpoint-sim.com/" class="card-link" target="_blank" rel="noopener noreferrer">
-              <span class="card-action-label">計算機を開く →</span>
-            </a>
-            <button type="button" class="card-detail-btn">詳しく見る</button>
-          </div>
-        </div>
-        <a class="card-link project-row" href="https://www.playpoint-sim.com/" target="_blank" rel="noopener noreferrer"
-           aria-labelledby="row-name-playpoint row-action-playpoint" aria-describedby="row-purpose-playpoint">
-          <h3 class="project-row-name" id="row-name-playpoint">Playポイント計算機</h3>
-          <p class="project-row-purpose" id="row-purpose-playpoint">次のランクまでの購入額を計算する。</p>
-
-          <span class="project-row-cta" id="row-action-playpoint"><span class="project-row-action">計算機を開く</span>（別タブ）<span aria-hidden="true">→</span></span>
-        </a>
-      </article>
                     <article class="card"
              data-project-card="static"
              data-id="asobi-pocket"
@@ -903,46 +934,9 @@
           <span class="project-row-cta" id="row-action-note"><span class="project-row-action">記事を選ぶ</span><span aria-hidden="true">→</span></span>
         </a>
       </article>
-                    <article class="card"
-             data-project-card="static"
-             data-id="higedanfan"
-             data-group="secondary"
-             data-category="tool"
-             data-shelf="tool"
-             data-url="higedanfan/" data-aliases="[&quot;髭男&quot;,&quot;ヒゲダン&quot;,&quot;Official髭男dism&quot;,&quot;セトリ&quot;,&quot;音域&quot;]"
-             data-detail="Official髭男dismの非公式ファンサイト。曲別の出典から音域・BPM・演奏時間を確かめ、自分のセットリストを作れます。">
-
-        <div class="card-body">
-          <div class="card-header">
-            <div class="card-tag tag-tool">音楽</div>
-            <span class="badge-target font-badge">音楽ファン向け</span>
-
-          </div>
-          <h3 class="card-title"><span class="card-title-icon" aria-hidden="true">🧪</span> 115万キロのファンノート</h3>
-          <p class="card-text">髭男の86曲を調べてマイセトリを作る。検定クイズ・聖地マップ・歴代ツアーの記録も。</p>
-
-          <div class="card-actions">
-            <a href="higedanfan/" class="card-link">
-              <span class="card-action-label">ファンノートを開く →</span>
-            </a>
-            <button type="button" class="card-detail-btn">詳しく見る</button>
-          </div>
-        </div>
-        <a class="card-link project-row" href="higedanfan/"
-           aria-labelledby="row-name-higedanfan row-action-higedanfan" aria-describedby="row-purpose-higedanfan">
-          <h3 class="project-row-name" id="row-name-higedanfan">115万キロのファンノート</h3>
-          <p class="project-row-purpose" id="row-purpose-higedanfan">ヒゲダンの曲やツアーの記録を探す。</p>
-
-          <span class="project-row-cta" id="row-action-higedanfan"><span class="project-row-action">ファンノートを開く</span><span aria-hidden="true">→</span></span>
-        </a>
-      </article>
                     <!-- PROJECT_CARDS_SECONDARY_END -->
                     </div>
                 </div>
-                <aside class="pikalab-wing" aria-label="子ども向け学習ラボ PikaLab">
-                    <div><strong>✨ 子ども向け学習ラボ「PikaLab」（完全広告なし）</strong><span>深海生物探検・リズム・色まぜ・漢字クイズなど、親子で安心して触って遊べる知育アプリ研究室です。</span></div>
-                    <a href="pikalab/" target="_blank" rel="noopener noreferrer">PikaLabを探検する →</a>
-                </aside>
 
                 <!-- 検索結果が0件の時のメッセージ -->
                 <div id="search-no-results" class="no-results-container" hidden>
@@ -984,7 +978,7 @@
                     </div>
                 </div>
                 <div class="lab-notes">
-                    <details class="lab-note" id="updates" open>
+                    <details class="lab-note" id="updates">
                         <summary>📢 最近の更新</summary>
                         <div class="updates-timeline" id="updates-timeline" style="background: none; border: none; box-shadow: none; backdrop-filter: none; -webkit-backdrop-filter: none; padding: 1rem 0 0 0;">
                             <div class="timeline-container">
@@ -1018,7 +1012,7 @@
                         <p>興味深い様々な話題やちょっとだけためになる情報を<span class="nobrk">noteで発信し、</span>同じように人生という名の大航海を楽しむ人たちと<span class="nobrk">関わりたいと思っています。</span></p>
                         <a href="who-is-katakata.html" class="guide-link">さらに詳しくはこちら: かたかたって誰？ →</a>
                     </details>
-                    <details class="lab-note" id="faq" open>
+                    <details class="lab-note" id="faq">
                         <summary>❓ よくある質問(FAQ)</summary>
                         <h3 class="faq-question">Q1. 料金はかかりますか？登録は必要ですか？</h3>
                         <p>A. 主要ツールは<strong>登録不要・ブラウザ上で無料</strong>です。広告は主に厚いガイドページに出します。子ども向けPikaLabは広告なしです。</p>
@@ -1107,7 +1101,7 @@
             </span>
             <span class="bottom-nav-label">ホーム</span>
         </a>
-        <a href="#recommended-guides" class="bottom-nav-link">
+        <a href="guides/tool-selection-guide.html" class="bottom-nav-link">
             <span class="bottom-nav-icon">
                 <svg viewBox="0 0 24 24" class="svg-icon" aria-hidden="true">
                     <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/>
@@ -1147,7 +1141,7 @@
 
     <script src="project-filter-state.js?v=20260716-2"></script>
     <script src="project-history.js?v=20260716-2"></script>
-    <script src="script.js?v=20261121-mobile-cards"></script>
+    <script src="script.js?v=20261121-recommendations"></script>
 </body>
 
 </html>
