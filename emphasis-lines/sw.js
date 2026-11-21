@@ -3,7 +3,7 @@
  * オフライン対応のキャッシュ戦略
  */
 
-const CACHE_NAME = 'emphasis-lines-v20261121-controls';
+const CACHE_NAME = 'emphasis-lines-v20261121-versioned-controls';
 const CACHE_PREFIX = 'emphasis-lines-';
 const ASSETS_TO_CACHE = [
     './',
@@ -30,7 +30,8 @@ const ASSETS_TO_CACHE = [
 // Install: キャッシュにアセットを格納
 
 // 起動は保存済みの同じ版を優先し、通信・容量不足・他アプリ干渉を共通処理で防ぐ。
-importScripts('/pwa-runtime.js');
+importScripts('/pwa-runtime.js?v=20261121-tools');
 self.PwaRuntime.configure({
+  versionedPrecache: true,
   cacheName: CACHE_NAME, cachePrefix: CACHE_PREFIX, assets: ASSETS_TO_CACHE,
 });

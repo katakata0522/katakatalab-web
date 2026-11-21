@@ -11,7 +11,6 @@ const STATIC_ASSETS = [
   './index.html',
   './manifest.json',
   './css/style.css?v=20261121-tools',
-  './js/config.js',
   './js/config.js?v=20261121-tools',
   './js/toast.js',
   './js/calculator.js?v=20261121-tools',

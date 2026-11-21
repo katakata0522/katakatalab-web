@@ -3,7 +3,7 @@
  * 同人即売会シミュレーター UIレンダリング ＆ DOMコントローラー
  */
 
-import { DOUJIN_CONFIG } from './config.js';
+import { DOUJIN_CONFIG } from './config.js?v=20261121-tools';
 import { DoujinCalculator } from './calculator.js?v=20261121-tools';
 
 function escapeHtml(value) {

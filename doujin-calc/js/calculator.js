@@ -3,7 +3,7 @@
  * 同人即売会 頒布価格・損益・お釣り・委託・税務・アンソロジー純粋計算エンジン
  */
 
-import { DOUJIN_CONFIG } from './config.js';
+import { DOUJIN_CONFIG } from './config.js?v=20261121-tools';
 
 export class DoujinCalculator {
   // メモ化キャッシュ

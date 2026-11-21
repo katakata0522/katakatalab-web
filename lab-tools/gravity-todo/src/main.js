@@ -1,4 +1,4 @@
-import { PhysicsEngine } from './PhysicsEngine.js';
+import { PhysicsEngine } from './PhysicsEngine.js?v=20261121-task-controls';
 import { SettingsManager } from './SettingsManager.js';
 import { normalizeTaskText } from './taskText.js';
 

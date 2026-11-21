@@ -3,7 +3,7 @@
 // 同一オリジンにある複数PWAの通信・保存障害を、各アプリの範囲内で扱う。
 self.PwaRuntime = {
   configure({ cacheName, cachePrefix, assets, fallbackAsset = './index.html',
-    excludedPaths = [], autoUpdate = true, timeoutMs = 4000 }) {
+    excludedPaths = [], autoUpdate = true, timeoutMs = 4000, versionedPrecache = false }) {
     const scope = self.registration.scope;
     const educationScope = /^\/(?:pikalab|usagi-app|kirarin-play-park|lab-tools\/kids-smile-land)(?:\/|$)/i.test(new URL(scope).pathname);
     if (educationScope) {
@@ -16,9 +16,17 @@ self.PwaRuntime = {
       if (url.pathname.endsWith('/index.html')) url.pathname = url.pathname.slice(0, -'index.html'.length);
       return url;
     };
-    const coreUrls = new Set(assets.map(asset => {
-      const url = canonicalUrl(new URL(asset, scope)); url.search = ''; return url.href;
-    }));
+    const coreUrls = new Set();
+    const versionedSources = new Map();
+    for (const asset of assets) {
+      const url = canonicalUrl(new URL(asset, scope));
+      const source = url.href;
+      const versioned = versionedPrecache && url.origin === self.location.origin
+        && /\.(?:css|js)$/i.test(url.pathname) && /^\?v=[\w.-]+$/.test(url.search);
+      url.search = '';
+      coreUrls.add(url.href);
+      if (versioned) versionedSources.set(url.href, source);
+    }
     const keyFor = request => {
       const url = canonicalUrl(new URL(request.url)); url.hash = '';
       const bare = new URL(url); bare.search = '';
@@ -65,7 +73,14 @@ self.PwaRuntime = {
     self.addEventListener('install', event => {
       event.waitUntil((async () => {
         const cache = await caches.open(cacheName);
-        await cache.addAll([...coreUrls].map(url => new Request(url, { cache: 'reload' })));
+        await cache.addAll([...coreUrls].map(url => new Request(versionedSources.get(url) || url, { cache: 'reload' })));
+        // Fetch the declared revision from the CDN, then keep the existing offline key.
+        for (const [key, source] of versionedSources) {
+          const response = await cache.match(source);
+          if (!response) throw new Error('Required versioned asset was not cached: ' + source);
+          await cache.put(key, response);
+          await cache.delete(source);
+        }
         if (autoUpdate) await self.skipWaiting();
       })());
     });

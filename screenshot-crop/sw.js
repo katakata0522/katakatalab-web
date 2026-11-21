@@ -1,7 +1,7 @@
 'use strict';
 
 const CACHE_PREFIX = 'screenshot-crop-';
-const STATIC_CACHE = 'screenshot-crop-static-20261121-edits';
+const STATIC_CACHE = 'screenshot-crop-static-20261121-versioned-shell';
 const NETWORK_TIMEOUT_MS = 4000;
 const APP_SCOPE_PATH = '/screenshot-crop/';
 
@@ -22,21 +22,19 @@ const CORE_ASSETS = [
   './pwa-icon.svg'
 ];
 
-function normalizedCacheRequest(request) {
-  const url = new URL(request.url);
-  url.search = '';
-  url.hash = '';
-  return new Request(url.href, {
-    method: 'GET',
-    credentials: 'same-origin'
-  });
-}
+// The publisher stamps STATIC_CACHE from the exact shell bytes. A fresh install
+// must request that release from the CDN as well as use a fresh local cache.
+const installedUrls = new Map(CORE_ASSETS.map(asset => {
+  const url = new URL(asset, self.registration.scope);
+  url.searchParams.set('v', STATIC_CACHE);
+  return [url.pathname, url.href];
+}));
 
 self.addEventListener('install', (event) => {
   event.waitUntil(
     caches.open(STATIC_CACHE)
-      .then((cache) => cache.addAll(CORE_ASSETS.map((asset) => new Request(
-        new URL(asset, self.location.href).href, { cache: 'reload' }
+      .then((cache) => cache.addAll([...installedUrls.values()].map((url) => new Request(
+        url, { cache: 'reload' }
       ))))
   );
 });
@@ -66,6 +64,8 @@ self.addEventListener('fetch', (event) => {
   const url = new URL(request.url);
   if (url.origin !== self.location.origin) return;
   if (!url.pathname.startsWith(APP_SCOPE_PATH)) return;
+  const installedUrl = installedUrls.get(url.pathname);
+  const cacheKey = installedUrl || request;
 
   event.respondWith((async () => {
     // A complete installed app must start without waiting for the network.
@@ -73,10 +73,10 @@ self.addEventListener('fetch', (event) => {
     let cache;
     try {
       cache = await caches.open(STATIC_CACHE);
-      const cached = await cache.match(normalizedCacheRequest(request));
+      const cached = await cache.match(cacheKey);
       if (cached) return cached;
       if (request.mode === 'navigate') {
-        const fallback = await cache.match(new URL('./index.html', self.location.href).href);
+        const fallback = await cache.match(installedUrls.get(APP_SCOPE_PATH));
         if (fallback) return fallback;
       }
     } catch {
@@ -93,13 +93,13 @@ self.addEventListener('fetch', (event) => {
         }, NETWORK_TIMEOUT_MS);
       });
       const network = await Promise.race([
-        fetch(request, { signal: controller.signal }),
+        fetch(installedUrl || request, { signal: controller.signal }),
         timeout
       ]);
       // Return the response immediately; cache writes never block rendering.
       if (network.ok && cache) {
         event.waitUntil(
-          cache.put(normalizedCacheRequest(request), network.clone()).catch(() => {})
+          cache.put(cacheKey, network.clone()).catch(() => {})
         );
       }
       return network;

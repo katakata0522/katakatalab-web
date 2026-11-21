@@ -1,11 +1,11 @@
 import { ParticleSystem } from './ParticleSystem.js';
 import { StorageManager } from './StorageManager.js';
-import { UIManager } from './UIManager.js';
+import { UIManager } from './UIManager.js?v=20261121-task-controls';
 import { TaskRenderer } from './TaskRenderer.js';
 import { InteractionManager } from './InteractionManager.js';
 import { SoundManager } from './SoundManager.js';
 import { SettingsManager } from './SettingsManager.js';
-import { TaskDetailPanel } from './TaskDetailPanel.js';
+import { TaskDetailPanel } from './TaskDetailPanel.js?v=20261121-task-controls';
 import { BGMManager } from './BGMManager.js';
 import { GyroManager } from './GyroManager.js';
 import { TimeTheme } from './TimeTheme.js';
