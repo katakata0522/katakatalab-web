@@ -656,6 +656,22 @@ const analyticsPage=await browser.newPage({viewport:{width:390,height:850}});
 await analyticsPage.route('**/*googletagmanager.com/**',route=>route.abort());
 await analyticsPage.route('**/*google-analytics.com/**',route=>route.abort());
 await analyticsPage.goto(base+'/',{waitUntil:'domcontentloaded'});
+for (const height of [667, 850]) {
+  await analyticsPage.setViewportSize({width: 390, height});
+  const layout = await analyticsPage.locator('#interactive-flask button').evaluate(button => {
+    const circle = button.getBoundingClientRect();
+    const flask = button.querySelector('.art-flask');
+    return {
+      belowIntro: circle.top >= document.querySelector('#hero-subtitle').getBoundingClientRect().bottom,
+      centerOffset: Math.abs((circle.left + circle.right - document.documentElement.clientWidth) / 2),
+      width: circle.width, height: circle.height,
+      flaskRatio: flask.offsetWidth / flask.offsetHeight,
+    };
+  });
+  assert.ok(layout.belowIntro && layout.centerOffset <= 1, `フラスコを紹介文の下中央に表示 (${height}px高)`);
+  assert.ok(layout.width >= 140 && Math.abs(layout.width - layout.height) <= 1, 'フラスコの背景は大きな正円');
+  assert.ok(layout.flaskRatio > 0.7 && layout.flaskRatio < 0.85, '丸底フラスコの縦長の形を保つ');
+}
 const finder=analyticsPage.locator('#projects-controls');
 const finderSummary=finder.locator('summary');
 const projectSearch=finder.locator('#project-search');
