@@ -43,7 +43,7 @@
   <script src="./js/lucide.min.js"></script>
 
   <!-- Custom Stylesheet -->
-  <link rel="stylesheet" href="./css/style.css?v=20261119-review">
+  <link rel="stylesheet" href="./css/style.css?v=20261121-tools">
 
   <!-- JSON-LD 構造化マークアップ (WebApplication & FAQPage) -->
   <script type="application/ld+json">
@@ -79,7 +79,7 @@
           <i data-lucide="book-open" class="w-5 h-5"></i>
         </div>
         <div>
-          <a href="../" class="lab-home-link">KatakataLab に戻る</a>
+          <a href="../#projects" class="lab-home-link">KatakataLab に戻る</a>
           <h1 class="text-sm sm:text-base font-black text-slate-900 dark:text-white leading-tight">同人即売会 頒布価格＆お釣りシミュレーター <span class="text-xs bg-indigo-100 dark:bg-indigo-950 text-indigo-700 dark:text-indigo-300 px-1.5 py-0.5 rounded font-black">Pro</span></h1>
           <p class="text-[10px] text-slate-500 dark:text-slate-400 font-medium">コミケ・COMITIA・赤ブー・M3・ゲーム即売会・アンソロ対応</p>
         </div>
@@ -337,6 +337,7 @@
         
         <!-- カード1: 500円 -->
         <div class="price-card bg-white dark:bg-slate-800 rounded-3xl p-4 border-2 border-slate-200 dark:border-slate-700 custom-shadow transition-all relative flex flex-col justify-between" data-price="500">
+          <button type="button" class="choose-price" aria-label="頒布価格を500円に設定" aria-pressed="false"></button>
           <div>
             <div class="flex items-center justify-between pb-2 border-b border-slate-100 dark:border-slate-700/60">
               <span class="text-xs font-black text-slate-500 dark:text-slate-400">ワンコイン</span>
@@ -368,6 +369,7 @@
 
         <!-- カード2: 700円 -->
         <div class="price-card bg-white dark:bg-slate-800 rounded-3xl p-4 border-2 border-slate-200 dark:border-slate-700 custom-shadow transition-all relative flex flex-col justify-between" data-price="700">
+          <button type="button" class="choose-price" aria-label="頒布価格を700円に設定" aria-pressed="false"></button>
           <div>
             <div class="flex items-center justify-between pb-2 border-b border-slate-100 dark:border-slate-700/60">
               <span class="text-xs font-black text-slate-500 dark:text-slate-400">相場価格</span>
@@ -399,6 +401,7 @@
 
         <!-- カード3: 1,000円 -->
         <div class="price-card bg-white dark:bg-slate-800 rounded-3xl p-4 border-2 border-slate-200 dark:border-slate-700 custom-shadow transition-all relative flex flex-col justify-between" data-price="1000">
+          <button type="button" class="choose-price" aria-label="頒布価格を1,000円に設定" aria-pressed="false"></button>
           <div>
             <div class="flex items-center justify-between pb-2 border-b border-slate-100 dark:border-slate-700/60">
               <span class="text-xs font-black text-slate-500 dark:text-slate-400">ジャスト千円</span>
@@ -444,12 +447,13 @@
                 <span class="absolute left-2.5 top-1/2 -translate-y-1/2 text-sm font-bold text-slate-400">¥</span>
                 <input 
                   type="text" 
-                  id="input-custom-price" 
+                  id="input-custom-price" aria-describedby="price-error"
                   inputmode="numeric" 
                   value="800" 
                   class="w-full pl-6 pr-2 py-1.5 text-xl font-black text-center text-slate-900 dark:text-white bg-indigo-50/50 dark:bg-indigo-950/40 border border-indigo-200 dark:border-indigo-800 rounded-xl focus:bg-white dark:focus:bg-slate-900 focus:border-indigo-600 outline-none"
                 >
               </div>
+              <p id="price-error" class="text-xs text-rose-600" role="alert" hidden>頒布価格は0以上の整数円で入力してください。</p>
               <div class="text-[10px] text-slate-400 mt-1" id="custom-comfort-desc">千円札で200円お釣り(100円玉×2)</div>
               <div id="cost-warning-badge" class="hidden mt-1 text-[10px] font-bold text-rose-600 bg-rose-50 dark:bg-rose-950/50 dark:text-rose-400 px-2 py-0.5 rounded"></div>
               <div id="beginner-promo-badge" class="hidden mt-1 text-[10px] font-bold text-indigo-600 bg-indigo-50 dark:bg-indigo-950/50 dark:text-indigo-300 px-2 py-0.5 rounded"></div>
@@ -511,6 +515,8 @@
         </div>
       </div>
 
+      <p id="counter-error" class="text-xs text-rose-200" role="alert"></p>
+      <p id="counter-migration-note" class="text-xs text-indigo-200 mb-3" hidden></p>
       <!-- 4種商品ボタングリッド -->
       <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
         
@@ -929,7 +935,7 @@
   </footer>
 
   <!-- アプリケーションモジュール読み込み -->
-  <script type="module" src="./js/app.js?v=20261119-review"></script>
+  <script type="module" src="./js/app.js?v=20261121-tools"></script>
 
   <!-- Service Worker 登録 -->
   <script>

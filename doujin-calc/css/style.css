@@ -138,3 +138,20 @@ button, input, select, textarea, a {
     display: grid !important;
   }
 }
+
+.choose-price {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  border: 0;
+  border-radius: inherit;
+  background: transparent;
+  cursor: pointer;
+}
+.choose-price:focus-visible { outline: 3px solid #4f46e5; outline-offset: 2px; }
+.price-card:has(.choose-price[aria-pressed="true"]) { border-color: #6366f1; }
+#select-change-mode { min-width: 0; max-width: 100%; flex: 1; }
+#btn-sell-newbook:disabled, #btn-sell-set:disabled { opacity: .55; cursor: default; }
+@media (max-width: 640px) {
+  #tab-cost-unit, #tab-cost-total { min-height: 36px; }
+}

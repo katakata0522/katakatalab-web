@@ -3,13 +3,13 @@
  * オフライン対応のキャッシュ戦略
  */
 
-const CACHE_NAME = 'emphasis-lines-v20261119-1';
+const CACHE_NAME = 'emphasis-lines-v20261121-controls';
 const CACHE_PREFIX = 'emphasis-lines-';
 const ASSETS_TO_CACHE = [
     './',
     './index.html',
     './css/tailwind.built.css?v=20261010-1',
-    './css/style.css?v=20261010-responsive',
+    './css/style.css?v=20261121-controls',
     './js/app.js?v=20261119-review',
     './js/constants.js?v=20261119-review',
     './js/state.js?v=20261119-review',

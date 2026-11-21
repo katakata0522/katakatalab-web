@@ -166,6 +166,27 @@ async function main() {
     } finally { await ctx.close(); }
   }
   try {
+    await run('キーボードで元画像を選択できる', () => withPage({}, async page => {
+      const opened = page.waitForEvent('filechooser');
+      await page.locator('a[href="guide.html"]').focus();
+      await page.keyboard.press('Tab');
+      assert.equal(await page.evaluate(() => document.activeElement.id), 'fileInput');
+      const [chooser] = await Promise.all([opened, page.keyboard.press('Enter')]);
+      await chooser.setFiles([]);
+    }));
+    await run('小さな縦画面で設定が表示され、書き出せる', () => withPage({
+      viewport: { width: 320, height: 568 }, isMobile: true, hasTouch: true,
+    }, async page => {
+      const panel = await page.locator('#panelContent').evaluate(el => [el.clientHeight, el.scrollHeight]);
+      assert.ok(panel[0] >= 240 && panel[1] <= panel[0] + 1, '設定はページ全体のスクロールで読める');
+      await page.locator('[data-mode="lines"]').tap();
+      await page.locator('#canvasPreset').selectOption('1280x720');
+      await page.locator('#toggleAdvanced').tap();
+      assert.equal(await page.locator('#toggleAdvanced').getAttribute('aria-expanded'), 'true');
+      const { bytes } = await download(page, '#btnExport');
+      assert.equal(bytes.readUInt32BE(16), 1280);
+      assert.equal(bytes.readUInt32BE(20), 720);
+    }));
     await run('画像なしPNG・透明PNG・SVGの保存内容', () => withPage({}, async page => {
       await checkPng(page, (await download(page, '#btnExport')).bytes);
       await page.locator('.mode-btn[data-mode="lines"]').click(); await settle(page);

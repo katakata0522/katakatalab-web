@@ -264,7 +264,7 @@ document.addEventListener('DOMContentLoaded', () => {
         els.customRate.value = rate;
         renderCustomRow();
         UI.triggerFlash(els.customRate);
-        UI.showToast(`${rate}%割引を適用しました`);
+        UI.showToast(canCalculate() ? `支払額 ¥${NumUtils.format(Calculator.exec(state.price, rate, state).finalPrice)}` : `${rate}%割引を適用しました`);
       });
     });
 
@@ -458,7 +458,7 @@ document.addEventListener('DOMContentLoaded', () => {
     els.cartCount.textContent = count;
     els.cartOriginalTotal.textContent = `¥${NumUtils.format(originalTotal)}`;
     els.cartFinalTotal.textContent = `¥${NumUtils.format(finalTotal)}`;
-    els.cartSaveTotal.textContent = `🉐 -¥${NumUtils.format(saveTotal)}`;
+    els.cartSaveTotal.textContent = formatSaving(saveTotal);
 
     if (count === 0) {
       els.cartDrawer.classList.add('hidden');
@@ -552,6 +552,10 @@ document.addEventListener('DOMContentLoaded', () => {
   };
 
   // チラつきを100%防止するため、リスト項目の「骨組みDOM」を初回のみ作成
+  function formatSaving(amount) {
+    return `🉐 ${amount > 0 ? '-' : ''}¥${NumUtils.format(amount)}`;
+  }
+
   function renderBaseRows() {
     const fragment = document.createDocumentFragment();
     CONFIG.DISCOUNTS.forEach(percent => {
@@ -606,7 +610,7 @@ document.addEventListener('DOMContentLoaded', () => {
       rateEl.textContent = '';
       rateEl.appendChild(document.createTextNode(formatRateLabel(percent, extra)));
       priceEl.innerHTML = `<span>¥</span>${NumUtils.format(res.finalPrice)}`;
-      saveEl.textContent = `🉐 -${NumUtils.format(res.savedAmount)}`;
+      saveEl.textContent = formatSaving(res.savedAmount);
     });
   }
 
@@ -626,7 +630,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     const res = Calculator.exec(state.price, state.customRate, state);
     els.customPrice.innerHTML = `<span>¥</span>${NumUtils.format(res.finalPrice)}`;
-    els.customSave.textContent = `🉐 -${NumUtils.format(res.savedAmount)}`;
+    els.customSave.textContent = formatSaving(res.savedAmount);
     els.customPrice.disabled = false;
     els.btnCartCustom.disabled = false;
   }

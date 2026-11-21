@@ -407,6 +407,7 @@ export class PhysicsEngine {
       return;
     }
 
+    if (this.taskDetailPanel?.currentBody === body) this.taskDetailPanel.close();
     const gentle = this.reducedEffects();
     void this.soundManager.playExplosion(gentle ? 0.15 : 0.5);
     if (!gentle) {
@@ -497,7 +498,7 @@ export class PhysicsEngine {
     if (this.isNukingAll) return;
     this.nukeTimeoutIds = [];
 
-    const bodies = this.getTaskBodies();
+    const bodies = this.getTaskBodies().filter(body => !body.isDemo);
     if (bodies.length === 0) return;
     this.isNukingAll = true;
     this.undoStack = []; this.redoStack = [];
@@ -512,6 +513,7 @@ export class PhysicsEngine {
           if (body._completionTimer != null) clearTimeout(body._completionTimer);
           if (body._floatForce) this.Events.off(this.engine, 'afterUpdate', body._floatForce);
         } catch (e) { console.warn('nukeAll: remove failed', e); return; }
+        if (this.taskDetailPanel?.currentBody === body) this.taskDetailPanel.close();
         void this.soundManager.playExplosion(0.7);
         const c = body.render.strokeStyle || '#ff3366';
         if (!this.reducedEffects()) {
@@ -550,7 +552,7 @@ export class PhysicsEngine {
 
   syncTaskList() {
     this.updateHistoryControls();
-    this.uiManager?.renderTaskList?.(this.getTaskBodies(), {
+    this.uiManager?.renderTaskList?.(this.getTaskBodies().filter(body => !body.isDemo), {
       onOpenDetail: (body) => this.taskDetailPanel.open(body),
       onComplete: (body) => this.floatAndExplode(body),
       onDestroy: (body) => this.destroyTask(body)
@@ -558,7 +560,7 @@ export class PhysicsEngine {
   }
 
   getTaskCount() {
-    return this.getTaskBodies().length;
+    return this.getTaskBodies().filter(body => !body.isDemo).length;
   }
 
   // タスクを上空から降らせて再配置する（整理ボタン用）

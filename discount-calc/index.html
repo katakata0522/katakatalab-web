@@ -27,7 +27,7 @@
   <meta name="twitter:image" content="https://katakatalab.com/discount-calc/ogp.png">
 
   <link rel="icon" href="/favicon.ico">
-  <link rel="stylesheet" href="style.css?v=20261119-review">
+  <link rel="stylesheet" href="style.css?v=20261121-tools">
     <link rel="stylesheet" href="../tool-chrome.css?v=source">
 </head>
 <body>
@@ -81,6 +81,22 @@
         <button type="button" id="resetAllBtn" class="btn-haptic" aria-label="入力・計算設定をリセット" title="価格・税率・追加割引・カスタム割引率をリセット（買物メモは保持）" style="background:rgba(239,68,68,0.12);color:#f87171;border-color:rgba(239,68,68,0.3);">↩ 入力・計算設定をリセット</button>
       </div>
     </div>
+    <div id="discount-rate-options" class="quick-rate-buttons" role="group" aria-label="よく使う割引率のショートカット">
+      <span class="quick-rate-label">⚡ よく使う割引:</span>
+      <div class="quick-rate-chips">
+        <button type="button" class="btn-rate-chip btn-haptic" data-rate="10">10%引</button>
+        <button type="button" class="btn-rate-chip btn-haptic" data-rate="20">20%引</button>
+        <button type="button" class="btn-rate-chip btn-haptic" data-rate="30">30%引</button>
+        <button type="button" class="btn-rate-chip btn-haptic" data-rate="50">半額 (50%)</button>
+      </div>
+    </div>
+    <div class="payment-summary">
+      <a id="selectedRate" href="#discount-rate-options">割引率を選ぶ</a>
+      <h2>支払額 <small id="payHeaderNote">(税込)</small></h2>
+      <output id="customPrice" class="col-price">-</output>
+      <button type="button" id="copyPriceBtn" class="btn-cart-remove" disabled>金額をコピー</button>
+      <p id="customSave">-</p>
+    </div>
     <div class="settings-grid">
       <div class="segment-control" role="radiogroup" aria-label="元値の税区分">
         <label><input type="radio" name="taxType" value="included" checked aria-label="税込価格から計算"><span>元は税込</span></label>
@@ -112,25 +128,10 @@
   </section>
 
   <section class="result-list-area">
-    <div class="quick-rate-buttons" role="group" aria-label="よく使う割引率のショートカット">
-      <span class="quick-rate-label">⚡ よく使う割引:</span>
-      <div class="quick-rate-chips">
-        <button type="button" class="btn-rate-chip btn-haptic" data-rate="10">10%引</button>
-        <button type="button" class="btn-rate-chip btn-haptic" data-rate="20">20%引</button>
-        <button type="button" class="btn-rate-chip btn-haptic" data-rate="30">30%引</button>
-        <button type="button" class="btn-rate-chip btn-haptic" data-rate="50">半額 (50%)</button>
-      </div>
-    </div>
-    
     <div class="selected-result">
       <label for="customRate">任意の割引率（0〜100%）</label>
       <input type="text" id="customRate" placeholder="例: 20" inputmode="decimal" aria-describedby="rateError">
       <p id="rateError" role="alert" hidden></p>
-      <p id="selectedRate">割引率を選ぶ</p>
-      <h2>支払額 <small id="payHeaderNote">(税込)</small></h2>
-      <output id="customPrice" class="col-price">-</output>
-      <button type="button" id="copyPriceBtn" class="btn-cart-remove" disabled>金額をコピー</button>
-      <p id="customSave">-</p>
       <div class="memo-fields">
         <label>店名（任意）<input type="text" id="memoShop" maxlength="100" autocomplete="off"></label>
         <label>日付<input type="date" id="memoDate" aria-describedby="memoStatus"></label>
@@ -341,7 +342,7 @@
 ]
 </script>
 
-<script src="script.js?v=20261119-review" defer></script>
+<script src="script.js?v=20261121-tools" defer></script>
 
 <script>
 // 個別manifestの入口からも、親PWAの同じ配信版を利用する。

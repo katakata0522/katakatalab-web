@@ -3,9 +3,9 @@
  * 同人即売会 頒布価格＆お釣り・損益最適化シミュレーター Pro メインコントローラー
  */
 
-import { DOUJIN_CONFIG } from './config.js';
-import { StateStore, withSyncedCost } from './state.js?v=20261119-review';
-import { UIRenderer } from './renderer.js?v=20261119-review';
+import { DOUJIN_CONFIG } from './config.js?v=20261121-tools';
+import { StateStore, withSyncedCost } from './state.js?v=20261121-tools';
+import { UIRenderer } from './renderer.js?v=20261121-tools';
 import { DoujinCalculator } from './calculator.js?v=20261027-1';
 import { LEGAL_TAX_DATA } from './legal-tax-data.js';
 import { Toast } from './toast.js';
@@ -21,18 +21,18 @@ class DoujinApp {
     this.initTheme();
     this.renderer.renderStaticComponents();
     this.renderer.renderChecklist(this.store.checklist);
-    this.renderer.syncFormValues(this.store.state);
+    this.renderer.syncFormValues(this.store.state, this.store.invalidPrice);
     
     // 状態変更の購読
     this.store.subscribe((state, multiCounter, checklist) => {
-      this.renderer.syncFormValues(state);
+      this.renderer.syncFormValues(state, this.store.invalidPrice);
       this.renderer.renderChecklist(checklist);
-      this.renderer.updateCalculations(state, multiCounter);
+      this.renderer.updateCalculations(state, multiCounter, this.store);
     });
 
     this.bindEvents();
     this.bindKeyboardShortcuts();
-    this.renderer.updateCalculations(this.store.state, this.store.multiCounter);
+    this.renderer.updateCalculations(this.store.state, this.store.multiCounter, this.store);
   }
 
   initTheme() {
@@ -181,7 +181,7 @@ class DoujinApp {
 
     // カスタム価格
     d.inputCustomPrice?.addEventListener('input', (e) => {
-      this.store.setState({ customPrice: this.store.sanitizeNumber(e.target.value, 0, 0) });
+      this.store.setCustomPriceInput(e.target.value);
     });
 
     // 価格カードクリック
@@ -201,20 +201,20 @@ class DoujinApp {
     });
 
     // 現場マルチレジカウンター
-    d.btnSellNewBook?.addEventListener('click', () => {
-      if (!this.store.adjustCounter('newBook', 1)) return;
+    d.btnSellNewBook?.addEventListener('click', async () => {
+      if (!await this.store.adjustCounter('newBook', 1)) return;
       Toast.show(`📘 新刊 1冊売上！ (計 ${this.store.multiCounter.newBook}冊)`);
     });
-    d.btnSellSet?.addEventListener('click', () => {
-      if (!this.store.adjustCounter('set', 1)) return;
+    d.btnSellSet?.addEventListener('click', async () => {
+      if (!await this.store.adjustCounter('set', 1)) return;
       Toast.show(`🎁 新刊セット 1組売上！ (計 ${this.store.multiCounter.set}組)`);
     });
-    d.btnSellBackNumber?.addEventListener('click', () => {
-      if (!this.store.adjustCounter('backNumber', 1)) return;
+    d.btnSellBackNumber?.addEventListener('click', async () => {
+      if (!await this.store.adjustCounter('backNumber', 1)) return;
       Toast.show(`📗 既刊 1冊売上！ (計 ${this.store.multiCounter.backNumber}冊)`);
     });
-    d.btnSellGoods?.addEventListener('click', () => {
-      if (!this.store.adjustCounter('goods', 1)) return;
+    d.btnSellGoods?.addEventListener('click', async () => {
+      if (!await this.store.adjustCounter('goods', 1)) return;
       Toast.show(`✨ グッズ 1個売上！ (計 ${this.store.multiCounter.goods}個)`);
     });
     for (const [button, key, label, unit] of [
@@ -223,14 +223,14 @@ class DoujinApp {
       [d.btnUndoBackNumber, 'backNumber', '既刊', '冊'],
       [d.btnUndoGoods, 'goods', 'グッズ', '個']
     ]) {
-      button?.addEventListener('click', () => {
-        if (this.store.adjustCounter(key, -1)) {
+      button?.addEventListener('click', async () => {
+        if (await this.store.adjustCounter(key, -1)) {
           Toast.show(`${label}を1${unit}取り消しました（計 ${this.store.multiCounter[key]}${unit}）`);
         }
       });
     }
-    d.btnCounterReset?.addEventListener('click', () => {
-      this.store.resetCounter();
+    d.btnCounterReset?.addEventListener('click', async () => {
+      if (!await this.store.resetCounter()) return;
       Toast.show('↺ レジカウンターを全リセットしました');
     });
 
@@ -305,8 +305,8 @@ class DoujinApp {
     });
 
     // 全リセット
-    d.btnResetAll?.addEventListener('click', () => {
-      this.store.resetAll();
+    d.btnResetAll?.addEventListener('click', async () => {
+      if (!await this.store.resetAll()) return;
       Toast.show('↺ 初期設定にリセットしました');
     });
   }

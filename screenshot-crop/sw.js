@@ -1,7 +1,7 @@
 'use strict';
 
 const CACHE_PREFIX = 'screenshot-crop-';
-const STATIC_CACHE = 'screenshot-crop-static-20261119-faq-target';
+const STATIC_CACHE = 'screenshot-crop-static-20261121-edits';
 const NETWORK_TIMEOUT_MS = 4000;
 const APP_SCOPE_PATH = '/screenshot-crop/';
 

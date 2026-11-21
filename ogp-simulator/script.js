@@ -125,9 +125,9 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     });
 
-    // 5. Smart Reset (Useless Standard confirm deleted for elegance!)
     els.resetBtn.addEventListener('click', () => {
-      // ユーザーの入力体験を守るため、確認なしでシュッとリセットして操作ストレスを極限まで低減！
+      if ((els.ogTitle.value || els.ogDesc.value || els.siteName.value || imagePending || currentImageData !== PLACEHOLDER_IMG)
+        && !window.confirm(t('入力した内容と選択した画像をすべて消去しますか？', 'Clear all entered text and the selected image?'))) return;
       els.ogTitle.value = '';
       els.ogDesc.value = '';
       els.siteName.value = '';

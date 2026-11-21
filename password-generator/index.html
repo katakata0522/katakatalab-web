@@ -32,7 +32,7 @@
     <link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@400;500;700;800&family=Outfit:wght@400;600;700&display=swap" rel="stylesheet">
 
     <link rel="stylesheet" href="../style.css?v=40684c3">
-    <link rel="stylesheet" href="style.css?v=20261119-review">
+    <link rel="stylesheet" href="style.css?v=20261121-tools">
     <link rel="manifest" href="manifest.json">
     <link rel="icon" href="../icon.svg" type="image/svg+xml">
     
@@ -150,7 +150,10 @@
                                     <button type="button" class="pwd-preset-btn preset-btn" data-preset="bank">🔢 数字6桁（PIN）</button>
                                 </div>
                                 <p id="generation-purpose" class="small text-muted">パスワード：利用先の条件に合わせ、サービスごとに使い回さず設定してください。</p>
+                                <a class="pwd-result-jump" href="#generated-passwords">生成結果を見る</a>
 
+                                <details class="pwd-advanced" id="generation-options" open>
+                                    <summary>文字数・文字種などの設定</summary>
                                 <div class="pwd-slider-wrapper">
                                     <div class="pwd-slider-label">
                                         <span>パスワードの長さ</span>
@@ -224,12 +227,13 @@
                                         <button id="share-btn" type="button" class="btn btn-secondary" style="flex: 1; min-height: 40px; padding: 0.5rem;">🔗 設定を共有</button>
                                     </div>
                                 </div>
+                                </details>
                             </form>
                         </div>
 
                         <!-- 右列：生成結果 -->
                         <div style="display: flex; flex-direction: column; gap: 1rem;">
-                            <div class="pwd-result-header">
+                            <div class="pwd-result-header" id="generated-passwords" tabindex="-1">
                                 <h2>📋 生成結果</h2>
                                 <div style="display: flex; gap: 1rem;">
                                     <button type="button" id="history-btn" class="btn-link" style="background:none; border:none; color:var(--c-primary); font-weight:700; cursor:pointer;" aria-label="履歴を表示">📜 履歴</button>

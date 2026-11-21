@@ -17,6 +17,16 @@ test('drop zone Enter Space still triggers uploader',()=>{for(const key of ['Ent
 test('domain-only edit protected on unload',()=>{const e=env();e.el('siteName').value='example.org';const ev=e.evt();e.win.beforeunload(ev);assert.equal(ev.prevented,true)});
 test('pending file protected on unload',()=>{const e=env();e.select();const ev=e.evt();e.win.beforeunload(ev);assert.equal(ev.prevented,true)});
 test('reset clears unload protection',()=>{const e=env();e.el('siteName').value='example.org';e.select();e.el('resetBtn').listeners.click();const ev=e.evt();e.win.beforeunload(ev);assert.equal(ev.prevented,undefined)});
+test('リセットをキャンセルすると入力と画像の読み込みを保つ',()=>{
+  const e=env();
+  e.win.confirm=()=>false;
+  e.el('ogTitle').value='作品集';
+  e.select();
+  e.el('resetBtn').listeners.click();
+  e.read(0,'IMAGE');e.decode(0);
+  assert.equal(e.el('ogTitle').value,'作品集');
+  assert.equal(src(e),'IMAGE');
+});
 test('UTF16 counters preserve documented existing contract',()=>{const e=env();for(const [s,n] of [['ASCII',5],['日本語',3],['😀',2],['e\u0301',2]]){e.el('ogTitle').value=s;e.el('ogTitle').listeners.input();assert.equal(e.el('countTitle').textContent,`${n} / 40`)}});
 test('oversize and nonimage do not mutate preview',()=>{for(const f of [{type:'text/plain',size:2},{type:'image/png',size:10485761}]){const e=env(),old=src(e);e.select(f);assert.equal(e.readers.length,0);assert.equal(src(e),old);assert.equal(e.alerts.length,1)}});
 test('HTML-looking title stays textContent',()=>{const e=env();e.el('ogTitle').value='<img src=x onerror=alert(1)>';e.el('ogTitle').listeners.input();assert.equal(e.lists['.meta-title'][0].textContent,e.el('ogTitle').value)});

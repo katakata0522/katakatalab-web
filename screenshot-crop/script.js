@@ -94,6 +94,7 @@
     },
   };
 
+  let manualEdge = 'top';
   const els = {};
   document.addEventListener('DOMContentLoaded', init);
 
@@ -119,6 +120,9 @@
       presetDeleteButton: document.getElementById('presetDeleteButton'),
       presetCloseButton: document.getElementById('presetCloseButton'),
       previewCanvas: document.getElementById('previewCanvas'),
+      advancedCropPanel: document.getElementById('advancedCropPanel'),
+      manualEdgeCanvas: document.getElementById('manualEdgeCanvas'),
+      manualEdgeLabel: document.getElementById('manualEdgeLabel'),
       canvasShell: document.getElementById('canvasShell'),
       canvasHelp: document.getElementById('canvasHelp'),
       detectedLabel: document.getElementById('detectedLabel'),
@@ -285,6 +289,11 @@
       applyAutoCrop();
     });
     els.autoAgainButton.addEventListener('click', applyAutoCrop);
+    els.advancedCropPanel.addEventListener('toggle', drawManualEdge);
+    document.addEventListener('screenshot-crop-before-update', (event) => {
+      if (state.items.some((item) => !item.saved) &&
+          !window.confirm('保存していない画像があります。更新して編集を終了しますか？')) event.preventDefault();
+    });
 
     [
       [els.cropTop, 'top'],
@@ -292,7 +301,12 @@
       [els.cropLeft, 'left'],
       [els.cropRight, 'right'],
     ].forEach(([input, edge]) => {
+      input.addEventListener('focus', () => {
+        manualEdge = edge;
+        drawManualEdge();
+      });
       input.addEventListener('input', () => {
+        manualEdge = edge;
         if (!state.image || !state.enabledEdges[edge]) return;
         state.compareOriginal = false;
         updateCompareState();
@@ -1250,6 +1264,41 @@
       : '端は切りません（メタデータのみ除去）';
   }
 
+  function drawManualEdge() {
+    if (!els.advancedCropPanel.open || !state.image) return;
+    const edge = state.enabledEdges[manualEdge] ? manualEdge : EDGE_KEYS.find(key => state.enabledEdges[key]);
+    const canvas = els.manualEdgeCanvas;
+    canvas.parentElement.hidden = !edge;
+    if (!edge) return;
+
+    const imageW = state.image.naturalWidth;
+    const imageH = state.image.naturalHeight;
+    const width = Math.max(1, Math.round(canvas.clientWidth));
+    const height = Math.max(1, Math.round(canvas.clientHeight));
+    if (canvas.width !== width) canvas.width = width;
+    if (canvas.height !== height) canvas.height = height;
+    const vertical = edge === 'left' || edge === 'right';
+    const cut = state.crop[edge];
+    const boundary = edge === 'bottom' ? imageH - cut : edge === 'right' ? imageW - cut : cut;
+    const sampleW = Math.min(imageW, width);
+    const sampleH = Math.min(imageH, height);
+    const x = clamp(Math.round((vertical ? boundary : imageW / 2) - sampleW / 2), 0, imageW - sampleW);
+    const y = clamp(Math.round((vertical ? imageH / 2 : boundary) - sampleH / 2), 0, imageH - sampleH);
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+    ctx.clearRect(0, 0, width, height);
+    ctx.drawImage(state.image, x, y, sampleW, sampleH, 0, 0, width, height);
+    applyRedactions(canvas, state.redactions, {
+      sourceWidth: imageW, sourceHeight: imageH,
+      crop: { left: x, top: y, right: imageW - x - sampleW, bottom: imageH - y - sampleH },
+    });
+    const mark = vertical ? (boundary - x) * width / sampleW : (boundary - y) * height / sampleH;
+    ctx.fillStyle = '#facc15';
+    if (vertical) ctx.fillRect(clamp(mark - 1, 0, width - 2), 0, 2, height);
+    else ctx.fillRect(0, clamp(mark - 1, 0, height - 2), width, 2);
+    els.manualEdgeLabel.textContent = `${({ top: '上', bottom: '下', left: '左', right: '右' })[edge]} ${cut}px`;
+  }
+
   function drawPreview() {
     if (!state.image || !els.previewCanvas || !els.canvasShell) return;
 
@@ -1276,6 +1325,7 @@
     ctx.clearRect(0, 0, drawW, drawH);
     ctx.drawImage(base, 0, 0);
 
+    drawManualEdge();
     if (state.compareOriginal) return;
     applyRedactions(canvas, state.redactions, {
       crop: { top: 0, right: 0, bottom: 0, left: 0 },
@@ -1312,6 +1362,12 @@
     updateCompareState();
     updateRedactionUI();
     drawPreview();
+    if (state.redactionTool) {
+      const rect = els.previewCanvas.getBoundingClientRect();
+      if (rect.top < 0 || rect.bottom > window.innerHeight) {
+        els.previewCanvas.scrollIntoView({ block: 'center', behavior: 'instant' });
+      }
+    }
   }
 
   function updateRedactionUI() {

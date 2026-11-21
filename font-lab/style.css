@@ -167,6 +167,8 @@ body.dark-mode .fontlab-header {
     min-height: 44px;
     padding: 0 0.5rem;
 }
+.mobile-tester-link { display: none; }
+#select-font { scroll-margin-top: 100px; }
 .header-nav-link:hover {
     color: var(--primary);
 }
@@ -202,6 +204,8 @@ body.dark-mode .header-btn:hover {
 
 @media (max-width: 768px) {
     .header-nav { display: none; }
+    .mobile-tester-link { display: inline-flex; }
+    .hero-title { text-wrap: balance; }
     .header-btn {
         width: 48px;
         height: 48px;
@@ -497,10 +501,14 @@ body.dark-mode .preview-container-wrapper {
 .control-slider {
     -webkit-appearance: none;
     width: 100%;
-    height: 6px;
-    border-radius: 3px;
-    background: var(--border-color);
-    outline: none;
+    height: 28px;
+    margin-block: 0;
+    background: linear-gradient(var(--border-color), var(--border-color)) center / 100% 6px no-repeat;
+    cursor: pointer;
+}
+.control-slider:focus-visible {
+    outline: 2px solid var(--primary);
+    outline-offset: 2px;
 }
 .control-slider::-webkit-slider-thumb {
     -webkit-appearance: none;
@@ -1078,6 +1086,7 @@ body.dark-mode .scroll-btn:hover {
         max-width: 100% !important;
         box-sizing: border-box !important;
     }
+    .device-toggles { display: none; }
     .preview-container.mobile-mode {
         max-width: 100% !important;
     }
