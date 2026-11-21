@@ -696,6 +696,33 @@ for (const width of [320, 390, 1440]) {
   }
 }
 
+const otherWorks = await browser.newPage({ viewport: { width: 320, height: 667 }, hasTouch: true });
+try {
+  await otherWorks.goto(base + '/other-projects.html', { waitUntil: 'domcontentloaded' });
+  const cards = otherWorks.locator('.other-project-link');
+  assert.equal(await cards.count(), 4);
+  const cardBounds = () => cards.evaluateAll(links => links.map(link => {
+    const { left, top, right, bottom } = link.getBoundingClientRect();
+    return { left, top, right, bottom };
+  }));
+  const mobileCards = await cardBounds();
+  assert.ok(mobileCards.every(card => card.left >= 0 && card.right <= 320));
+  assert.ok(mobileCards[0].top < mobileCards[1].top && mobileCards[3].bottom <= 667);
+  await otherWorks.setViewportSize({ width: 1440, height: 900 });
+  const desktopCards = await cardBounds();
+  assert.equal(desktopCards[0].top, desktopCards[1].top);
+  assert.equal(desktopCards[2].top, desktopCards[3].top);
+  assert.ok(desktopCards[0].right < desktopCards[1].left);
+  await otherWorks.setViewportSize({ width: 390, height: 844 });
+  await cards.first().locator('.other-project-description').tap();
+  await otherWorks.waitForURL(base + '/ogp-simulator/');
+  await otherWorks.goBack();
+  await otherWorks.getByRole('link', { name: 'トップの作品に戻る' }).tap();
+  await otherWorks.waitForURL(base + '/#projects');
+} finally {
+  await otherWorks.close();
+}
+
 const analyticsPage=await browser.newPage({viewport:{width:390,height:850}});
 await analyticsPage.route('**/*googletagmanager.com/**',route=>route.abort());
 await analyticsPage.route('**/*google-analytics.com/**',route=>route.abort());

@@ -781,22 +781,122 @@ body.dark-mode .pikalab-wing {
 .projects-grid--secondary .card--featured { grid-column: auto; }
 
 .other-projects-entry { margin: 1rem 0; text-align: center; }
-.other-projects-page { max-width: 48rem; padding-block: calc(var(--header-height) + 1rem) 3rem; }
-.other-projects-page h1 { margin: .75rem 0 1rem; }
-.other-project-list { list-style: none; padding: 0; display: grid; gap: .5rem; }
+.other-projects-header .header-container,
+.other-projects-page {
+  width: 100%;
+  max-width: 54rem;
+}
+.other-projects-page {
+  --project-border: #c6deee;
+  --project-action-bg: #fff3f0;
+  --project-action-border: #e6aaa6;
+  --project-action-text: #8a3439;
+  padding-block: calc(var(--header-height) + clamp(.5rem, 2.5vw, 1.5rem)) 2rem;
+}
+body.dark-mode .other-projects-page {
+  --project-border: #455d79;
+  --project-action-bg: #392a36;
+  --project-action-border: #9b666b;
+  --project-action-text: #ffd2d1;
+}
+.other-projects-back {
+  gap: .5rem;
+  padding-inline: .75rem;
+  border: 1px solid var(--project-border);
+  border-radius: var(--radius-btn);
+  background: var(--c-surface);
+  font-size: .875rem;
+}
+.other-projects-back:hover {
+  color: var(--project-action-text);
+  border-color: var(--project-action-border);
+}
+.other-projects-page h1 {
+  margin-block: .55rem 1rem;
+  font-size: clamp(1.65rem, 4vw, 2.125rem);
+}
+.other-project-list {
+  list-style: none;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: .625rem;
+}
 .other-project-link {
   display: grid;
-  grid-template-columns: auto minmax(0, 1fr) auto;
+  grid-template-columns: auto minmax(0, 1fr);
   align-items: center;
-  gap: .85rem;
-  padding: .85rem 1rem;
+  gap: .25rem .625rem;
+  min-height: 100%;
+  padding: .55rem .875rem .6rem 1rem;
   color: var(--c-text);
-  background: var(--c-surface);
-  border: 1px solid var(--c-text-light);
+  background: var(--grad-tool) left / 4px 100% no-repeat, var(--c-surface);
+  border: 1px solid var(--project-border);
   border-radius: var(--radius-md);
 }
-.other-project-link small { display: block; color: var(--c-text-light); }
-.other-project-link:hover strong, .other-project-link:focus-visible strong { text-decoration: underline; }
+.other-project-icon {
+  display: grid;
+  place-items: center;
+  width: 1.875rem;
+  height: 1.875rem;
+  border-radius: .55rem;
+  background: rgba(var(--c-tag-tool-rgb), .16);
+  line-height: 1;
+}
+.other-project-title {
+  font: 700 1.0625rem/1.4 var(--font-display);
+  overflow-wrap: anywhere;
+}
+.other-project-description,
+.other-project-open {
+  grid-column: 1 / -1;
+}
+.other-project-description {
+  color: var(--c-text-light);
+  font-size: .875rem;
+  line-height: 1.45;
+  overflow-wrap: anywhere;
+}
+.other-project-open {
+  display: inline-flex;
+  align-items: center;
+  justify-self: start;
+  gap: .45rem;
+  padding: .3rem .65rem;
+  border: 1px solid var(--project-action-border);
+  border-radius: var(--radius-btn);
+  background: var(--project-action-bg);
+  color: var(--project-action-text);
+  font: 700 .8125rem/1.25 var(--font-base);
+}
+.other-project-link:hover { border-color: var(--project-action-border); }
+.other-project-link:is(:hover, :focus-visible) .other-project-open { text-decoration: underline; }
+.other-project-link:focus-visible { outline-color: #3983b9; outline-offset: -3px; }
+
+@media (hover: none) {
+  .other-projects-header .theme-btn {
+    -webkit-tap-highlight-color: transparent;
+    transform: none;
+  }
+}
+
+@media (23.5rem <= width < 42rem) {
+  .other-project-link { grid-template-columns: auto minmax(0, 1fr) auto; }
+  .other-project-open { grid-column: 3; grid-row: 1; }
+}
+
+@media (min-width: 42rem) {
+  .other-project-list { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .875rem; }
+  .other-project-link {
+    grid-template-columns: 2.5rem minmax(0, 1fr);
+    align-content: start;
+    column-gap: .875rem;
+    padding: 1rem 1.125rem 1.125rem;
+  }
+  .other-project-icon { width: 2.5rem; height: 2.5rem; font-size: 1.25rem; }
+  .other-project-title { font-size: 1.125rem; }
+  .other-project-description, .other-project-open { grid-column: 2; }
+  .other-project-open { margin-top: .25rem; }
+}
 
 .project-data-status {
   margin: 1rem 0 0;
