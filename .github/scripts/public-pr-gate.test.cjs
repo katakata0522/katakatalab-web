@@ -22,8 +22,17 @@ test('文書だけでも統合チェックを完了し、RootとPikaLabの重い
 test('RootとPikaLabと共有環境の変更を別々に選択する', () => {
     assert.deepEqual(selectWorkflows(['qrcode/script.js']), { root: true, pikalab: false });
     assert.deepEqual(selectWorkflows(['pikalab/speed_reader/style.css']), { root: false, pikalab: true });
+    for (const file of ['.github/scripts/local-tools-e2e.mjs', '.github/scripts/pwa-update-e2e.mjs',
+        '.github/workflows/root-quality.yml']) {
+        assert.deepEqual(selectWorkflows([file]), { root: true, pikalab: false }, file);
+    }
+    for (const file of ['.github/workflows/pikalab-quality.yml', '.github/scripts/validate_pikalab.py',
+        '.github/scripts/pikalab-ci-scope.cjs']) {
+        assert.deepEqual(selectWorkflows([file]), { root: false, pikalab: true }, file);
+    }
     for (const file of ['.node-version', 'qa/published-dependencies.json', 'scripts/public-qa/prepare.py',
-        '.github/workflows/public-pr-gate.yml', '.github/scripts/verify-playwright-runtime.cjs', 'education-sw-privacy.js']) {
+        '.github/workflows/public-pr-gate.yml', '.github/scripts/build-public-root.cjs',
+        '.github/scripts/verify-playwright-runtime.cjs', '.github/scripts/unknown-new.cjs', 'education-sw-privacy.js']) {
         assert.deepEqual(selectWorkflows([file]), { root: true, pikalab: true }, file);
     }
     assert.deepEqual(selectWorkflows(['qrcode/script.js', 'pikalab/speed_reader/style.css']), { root: true, pikalab: true });
