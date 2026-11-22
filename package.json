@@ -2,6 +2,8 @@
   "name": "katakatalab-web-qa",
   "private": true,
   "scripts": {
+    "dev": "node scripts/ai-studio-preview.mjs",
+    "start": "node scripts/ai-studio-preview.mjs",
     "audit:dependencies": "node .github/scripts/audit-dependencies.cjs"
   },
   "devDependencies": {
