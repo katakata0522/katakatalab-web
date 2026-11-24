@@ -1,9 +1,9 @@
-const CACHE_NAME = 'katakatalab-v27';
+const CACHE_NAME = 'katakatalab-v28';
 const CACHE_PREFIX = 'katakatalab-';
 const ASSETS = [
     './',
     './index.html',
-    './style.css?v=20261124-mobile-design',
+    './style.css?v=20261124-mobile-flask',
     './script.js?v=20261124-mobile-design',
     './project-filter-state.js',
     './project-history.js',

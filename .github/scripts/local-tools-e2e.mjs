@@ -727,21 +727,24 @@ const analyticsPage=await browser.newPage({viewport:{width:390,height:850}});
 await analyticsPage.route('**/*googletagmanager.com/**',route=>route.abort());
 await analyticsPage.route('**/*google-analytics.com/**',route=>route.abort());
 await analyticsPage.goto(base+'/',{waitUntil:'domcontentloaded'});
-for (const height of [667, 850]) {
-  await analyticsPage.setViewportSize({width: 390, height});
+for (const [width, height, minFlaskHeight] of [[320, 667, 54], [390, 667, 62], [390, 850, 62]]) {
+  await analyticsPage.setViewportSize({width, height});
   const layout = await analyticsPage.locator('#interactive-flask button').evaluate(button => {
     const circle = button.getBoundingClientRect();
     const flask = button.querySelector('.art-flask');
     const search = document.getElementById('project-search').getBoundingClientRect();
+    const title = document.querySelector('.hero-title');
     return {
       beforeIntro: circle.bottom <= document.querySelector('#hero-subtitle').getBoundingClientRect().top,
+      besideTitle: circle.left >= title.getBoundingClientRect().right - parseFloat(getComputedStyle(title).paddingRight),
       searchBottom: search.bottom,
       width: circle.width, height: circle.height,
+      flaskHeight: flask.offsetHeight,
       flaskRatio: flask.offsetWidth / flask.offsetHeight,
     };
   });
-  assert.ok(layout.beforeIntro && layout.searchBottom <= height, 'フラスコが本文を覆わず初期画面内で検索できる');
-  assert.ok(layout.width >= 44 && Math.abs(layout.width - layout.height) <= 1, 'フラスコは押せる大きさの正円');
+  assert.ok(layout.beforeIntro && layout.besideTitle && layout.searchBottom <= height, 'フラスコが見出しや本文を覆わず初期画面内で検索できる');
+  assert.ok(layout.flaskHeight >= minFlaskHeight && Math.abs(layout.width - layout.height) <= 1, 'フラスコ本体を大きくし、押せる範囲は正円を保つ');
   assert.ok(layout.flaskRatio > 0.7 && layout.flaskRatio < 0.85, '丸底フラスコの縦長の形を保つ');
 }
 const finder=analyticsPage.locator('#projects-controls');
