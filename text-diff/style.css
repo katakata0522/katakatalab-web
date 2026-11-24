@@ -4,12 +4,13 @@
    Variables
    ========================================= */
 :root {
-  --c-primary: #3b82f6;       /* Blue 500 */
+  --c-primary: #1d4ed8;
   --c-primary-hover: #2563eb;
+  --c-primary-action: #1d4ed8;
   --c-bg: #f8fafc;            /* Gray 50 */
   --c-card-bg: #ffffff;
   --c-text-main: #1e293b;     /* Slate 800 */
-  --c-text-sub: #64748b;      /* Slate 500 */
+  --c-text-sub: #475569;
   --c-border: #e2e8f0;
   --c-input-bg: #f1f5f9;      /* Slate 100 */
   --c-header-bg: #f8fafc;
@@ -99,13 +100,24 @@ body {
   display: flex; background: var(--c-card-bg); padding: 3px;
   border-radius: 6px; border: 1px solid var(--c-border);
 }
-.radio-label input { display: none; }
+.radio-label { position: relative; }
+.radio-label input {
+  position: absolute;
+  inline-size: 1px;
+  block-size: 1px;
+  opacity: 0;
+  margin: 0;
+}
+.radio-label input:focus-visible + .radio-btn {
+  outline: 2px solid var(--c-primary);
+  outline-offset: 2px;
+}
 .radio-btn {
   display: block; padding: 6px 14px; border-radius: 4px;
   font-size: 0.85rem; cursor: pointer; color: var(--c-text-sub); font-weight: bold; transition: all 0.2s;
 }
 .radio-label input:checked + .radio-btn {
-  background: var(--c-primary); color: #fff; box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+  background: var(--c-primary-action); color: #fff; box-shadow: 0 1px 3px rgba(0,0,0,0.1);
 }
 
 .actions { display: flex; gap: 10px; margin-left: auto; align-items: center; flex-wrap: wrap; }
@@ -113,7 +125,7 @@ body {
   border: none; border-radius: 6px; padding: 10px 20px; font-weight: bold;
   cursor: pointer; display: flex; align-items: center; gap: 8px; transition: all 0.2s; font-size: 0.9rem;
 }
-.btn-primary { background: var(--c-primary); color: #fff; }
+.btn-primary { background: var(--c-primary-action); color: #fff; }
 .btn-primary:hover { opacity: 0.9; transform: translateY(-1px); }
 .btn-secondary { background: var(--c-input-bg); color: var(--c-text-main); border: 1px solid var(--c-border); }
 .btn-secondary:hover { background: var(--c-bg); border-color: #d1d5db; }

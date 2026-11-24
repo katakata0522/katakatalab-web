@@ -16,8 +16,9 @@ body {
   --c-safe: #3B82F6;
   --c-purple: #8B5CF6;
   
-  --c-primary: #FF7675;
-  --c-primary-dark: #D63031;
+  --c-primary: #ab3e43;
+  --c-primary-dark: #923139;
+  --c-on-pwd-primary: #fff;
   --c-text: #2D3436;
   --c-text-light: #3f484b;
   --c-bg: #FFFBF0;
@@ -162,7 +163,7 @@ body.dark-mode .pwd-tab-btn:hover {
 
 .pwd-tab-btn.active {
   background: var(--c-primary);
-  color: white;
+  color: var(--c-on-pwd-primary);
   box-shadow: 0 4px 12px rgba(255, 118, 117, 0.28);
 }
 
@@ -266,7 +267,7 @@ body.dark-mode .pwd-preset-btn {
 
 .pwd-preset-btn.active {
   background: var(--c-primary);
-  color: white;
+  color: var(--c-on-pwd-primary);
   border-color: var(--c-primary);
   box-shadow: 0 2px 6px rgba(15, 23, 42, 0.15);
 }
@@ -753,7 +754,7 @@ body.dark-mode .pwd-cat-btn {
 
 .pwd-cat-btn.active {
   background: var(--c-primary);
-  color: white;
+  color: var(--c-on-pwd-primary);
   border-color: var(--c-primary);
 }
 
@@ -998,6 +999,7 @@ body.dark-mode .pwd-faq-item {
 
 .app-toast-info {
   background: var(--c-primary);
+  color: var(--c-on-pwd-primary);
   border: 1px solid rgba(255,255,255,0.05);
 }
 
@@ -1175,8 +1177,9 @@ body.dark-mode .pwd-wrapper {
   --c-glass-border: rgba(255, 255, 255, 0.12);
   background-color: #0b132b;
   
-  --c-primary: #FF7675;
+  --c-primary: #ffaaa4;
   --c-primary-dark: #ff9b9a;
+  --c-on-pwd-primary: #321d26;
 }
 
 body.dark-mode .pwd-item:hover {

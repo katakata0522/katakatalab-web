@@ -732,21 +732,32 @@ for (const height of [667, 850]) {
   const layout = await analyticsPage.locator('#interactive-flask button').evaluate(button => {
     const circle = button.getBoundingClientRect();
     const flask = button.querySelector('.art-flask');
+    const search = document.getElementById('project-search').getBoundingClientRect();
     return {
-      belowIntro: circle.top >= document.querySelector('#hero-subtitle').getBoundingClientRect().bottom,
-      centerOffset: Math.abs((circle.left + circle.right - document.documentElement.clientWidth) / 2),
+      beforeIntro: circle.bottom <= document.querySelector('#hero-subtitle').getBoundingClientRect().top,
+      searchBottom: search.bottom,
       width: circle.width, height: circle.height,
       flaskRatio: flask.offsetWidth / flask.offsetHeight,
     };
   });
-  assert.ok(layout.belowIntro && layout.centerOffset <= 1, `フラスコを紹介文の下中央に表示 (${height}px高)`);
-  assert.ok(layout.width >= 140 && Math.abs(layout.width - layout.height) <= 1, 'フラスコの背景は大きな正円');
+  assert.ok(layout.beforeIntro && layout.searchBottom <= height, 'フラスコが本文を覆わず初期画面内で検索できる');
+  assert.ok(layout.width >= 44 && Math.abs(layout.width - layout.height) <= 1, 'フラスコは押せる大きさの正円');
   assert.ok(layout.flaskRatio > 0.7 && layout.flaskRatio < 0.85, '丸底フラスコの縦長の形を保つ');
 }
 const finder=analyticsPage.locator('#projects-controls');
 const finderSummary=finder.locator('summary');
-const projectSearch=finder.locator('#project-search');
-assert.equal(await projectSearch.isVisible(),false);
+const projectSearch=analyticsPage.getByRole('searchbox', { name: 'ツールを検索' });
+assert.equal(await projectSearch.isVisible(),true);
+assert.equal(await finder.evaluate(details => details.open), false);
+const mobileMenu = analyticsPage.getByRole('dialog', { name: 'サイトメニュー' });
+await analyticsPage.getByRole('button', { name: 'メニューを開く' }).click();
+await mobileMenu.waitFor();
+assert.equal(await analyticsPage.locator('main').evaluate(main => main.inert), true);
+await mobileMenu.getByRole('button', { name: 'メニューを閉じる' }).focus();
+await analyticsPage.keyboard.press('Escape');
+assert.equal(await mobileMenu.isVisible(), false);
+assert.equal(await analyticsPage.locator('main').evaluate(main => main.inert), false);
+assert.equal(await analyticsPage.locator('.menu-toggle').evaluate(button => button === document.activeElement), true);
 assert.equal(await analyticsPage.locator('#projects-grid .card').first().isVisible(),true);
 assert.equal(await analyticsPage.locator('#updates, #faq').evaluateAll(items => items.every(item => !item.open)), true);
 const faq = analyticsPage.locator('#faq');
@@ -790,9 +801,10 @@ assert.equal(await picks.first().locator('.card-body .card-link').isVisible(), t
 await analyticsPage.setViewportSize({width: 390, height: 850});
 assert.equal(await row.isVisible(), true);
 await finderSummary.press('Enter');
-assert.equal(await projectSearch.isVisible(),false);
+assert.equal(await finder.evaluate(details => details.open), false);
 await analyticsPage.keyboard.press('/');
 assert.equal(await projectSearch.evaluate(input=>document.activeElement===input),true);
+await finderSummary.click();
 await finder.locator('[data-filter="learning"]').click();
 assert.deepEqual(await picks.evaluateAll(cards => cards.map(card => card.dataset.id)), ['pikalab']);
 assert.equal(await analyticsPage.locator('#primary-projects-title').isVisible(), false);

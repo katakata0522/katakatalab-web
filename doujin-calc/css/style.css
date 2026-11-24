@@ -57,6 +57,57 @@ button, input, select, textarea, a {
 .lab-home-link { display: inline-block; margin-bottom: 0.2rem; color: #475569; font-size: 0.75rem; text-decoration: underline; text-underline-offset: 3px; }
 .dark .lab-home-link { color: #cbd5e1; }
 
+.doujin-header-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  column-gap: 0.85rem;
+}
+.doujin-header-layout .lab-home-link { justify-self: start; margin: 0; }
+.doujin-heading { grid-area: 2 / 1; min-width: 0; }
+.doujin-heading > :first-child { flex-shrink: 0; }
+.doujin-header-actions { grid-area: 1 / 2 / span 2; }
+.doujin-header-actions button { justify-content: center; min-inline-size: 44px; min-block-size: 44px; }
+
+.doujin-presets {
+  background: #fff;
+  border: 1px solid #cbd5e1;
+  border-radius: 1rem;
+  padding-inline: 0.9rem;
+}
+.dark .doujin-presets { background: #1e293b; border-color: #475569; }
+.doujin-presets summary { min-height: 44px; padding-block: 0.7rem; cursor: pointer; font-weight: 700; }
+.doujin-presets[open] { padding-bottom: 0.8rem; }
+.doujin-select-row { min-width: 0; }
+.doujin-select-row select { min-width: 0; max-width: 100%; }
+
+.doujin-page :is(a, button, input, select, textarea, summary):focus-visible {
+  outline: 2px solid #4338ca;
+  outline-offset: 3px;
+}
+.dark .doujin-page :is(a, button, input, select, textarea, summary):focus-visible { outline-color: #c7d2fe; }
+.dark .doujin-page :is(footer, .doujin-heading) .text-slate-400,
+.dark .doujin-page footer .text-slate-500 { color: #cbd5e1; }
+html:not(.dark) .doujin-page .text-slate-400 { color: #526174; }
+html:not(.dark) .doujin-page .text-amber-600 { color: #92400e; }
+html:not(.dark) .doujin-page .text-emerald-600 { color: #047857; }
+.doujin-page #range-sold-percent { min-height: 24px; }
+
+@media (max-width: 639px) {
+  .doujin-header-layout { row-gap: 0.4rem; }
+  .doujin-header-actions { grid-area: 1 / 2; }
+  .doujin-heading { grid-column: 1 / -1; }
+  .doujin-heading h1 { display: grid; grid-template-columns: auto minmax(0, 1fr); align-items: center; column-gap: 0.45rem; font-size: 1rem; line-height: 1.45; }
+  .doujin-heading-context { font-size: 0.75rem; font-weight: 700; }
+  .doujin-heading-name { grid-area: 2 / 1 / auto / -1; text-wrap: balance; }
+  .doujin-heading-badge { grid-area: 1 / 2; justify-self: start; }
+  .doujin-page .doujin-select-row { display: grid; grid-template-columns: minmax(0, 1fr); gap: 0.2rem; }
+  .doujin-page :is(#tab-cost-total, #tab-cost-unit, #input-non-sale, #select-deadline, #select-change-mode) { min-height: 40px; }
+  .doujin-page main > [id] { scroll-margin-top: 8.5rem; }
+  .doujin-mobile-nav { padding-block: 0.25rem calc(0.25rem + env(safe-area-inset-bottom)); }
+  .doujin-mobile-nav a { min-height: 46px; flex: 1; justify-content: center; font-size: 0.6875rem; text-align: center; }
+}
+
 /* Custom Shadows & Cards */
 .custom-shadow {
   box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.05), 0 2px 6px -1px rgba(0, 0, 0, 0.03);

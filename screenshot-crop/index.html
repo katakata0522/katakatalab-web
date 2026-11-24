@@ -33,7 +33,7 @@
   <link rel="icon" href="./pwa-icon.svg" type="image/svg+xml">
   <link rel="icon" href="/favicon.ico" sizes="any">
   <link rel="apple-touch-icon" href="./pwa-icon.svg">
-  <link rel="stylesheet" href="./style.css?v=20261121-edge-preview">
+  <link rel="stylesheet" href="./style.css?v=20261124-mobile-design">
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
@@ -134,10 +134,10 @@
       <section class="upload-card" id="uploadSection" aria-labelledby="upload-title">
         <h2 id="upload-title" class="visually-hidden">画像を選ぶ</h2>
 
-        <label class="drop-zone" id="dropZone" for="fileInput" role="button" tabindex="0" aria-describedby="uploadHelp">
-          <input id="fileInput" class="visually-hidden" type="file" accept=".png,.jpg,.jpeg,.webp,image/png,image/jpeg,image/webp" multiple>
+        <input id="fileInput" class="visually-hidden" type="file" accept=".png,.jpg,.jpeg,.webp,image/png,image/jpeg,image/webp" aria-labelledby="upload-label" aria-describedby="uploadHelp" multiple>
+        <label class="drop-zone" id="dropZone" for="fileInput">
           <span class="drop-icon" aria-hidden="true">＋</span>
-          <strong>画像を選ぶ</strong>
+          <strong id="upload-label">画像を選ぶ</strong>
           <span id="uploadHelp">1〜8枚・PNG / JPG / WebP</span>
           <small>PCはまとめてドラッグ＆ドロップもOK</small>
         </label>
@@ -435,7 +435,7 @@
   <script src="./image.js?v=20261005-v1-hide" defer></script>
   <script src="./preview.js?v=20261002-v31-mobile-density" defer></script>
   <script src="./zip.js?v=20261002-v31-mobile-density" defer></script>
-  <script src="./script.js?v=20261121-edge-preview" defer></script>
+  <script src="./script.js?v=20261124-mobile-design" defer></script>
   <script src="./pwa.js?v=20261121-update-prompt" defer></script>
 </body>
 </html>

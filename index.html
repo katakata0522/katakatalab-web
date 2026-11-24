@@ -167,7 +167,7 @@
     </noscript>
 
     <link rel="icon" href="icon.svg" type="image/svg+xml">
-    <link rel="stylesheet" href="style.css?v=20261121-recommendation-titles">
+    <link rel="stylesheet" href="style.css?v=20261124-mobile-design">
 
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#FF7675">
@@ -250,6 +250,7 @@
         </div>
     </noscript>
 
+    <a class="home-skip-link" href="#main-content">本文へ移動</a>
     <header class="header">
         <div class="container header-container">
             <a href="#home" class="logo">
@@ -278,7 +279,7 @@
         <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/>
     </svg>
 </button>
-                <button type="button" class="menu-toggle" aria-label="メニューを開く" aria-expanded="false" aria-controls="mobile-menu">
+                <button type="button" class="menu-toggle" aria-label="メニューを開く" aria-expanded="false" aria-controls="mobile-menu" aria-haspopup="dialog">
                     <span class="bar"></span><span class="bar"></span><span class="bar"></span>
                 </button>
             </div>
@@ -286,7 +287,7 @@
     </header>
 
     <div class="menu-overlay" id="menu-overlay" aria-hidden="true"></div>
-    <div class="mobile-menu drawer-menu" id="mobile-menu" aria-hidden="true">
+    <div class="mobile-menu drawer-menu" id="mobile-menu" role="dialog" aria-modal="true" aria-label="サイトメニュー" aria-hidden="true" inert>
         <button type="button" class="menu-close-btn" aria-label="メニューを閉じる">✕</button>
         <div class="mobile-menu-inner">
             <nav class="mobile-nav" aria-label="メニュー">
@@ -314,7 +315,7 @@
         </div>
     </div>
 
-    <main>
+    <main id="main-content" tabindex="-1">
         <!-- SITE_FACE:hero 定番H1＋実験場コピー -->
         <section id="home" class="hero">
             <div class="container hero-container">
@@ -348,9 +349,20 @@
         <!-- ツール一覧（ヒーロー直下） -->
         <section id="projects" class="section projects-section section-band-tools" aria-labelledby="projects-title">
             <div class="container">
-                <h2 id="projects-title" class="visually-hidden">コンテンツ一覧</h2>
-                <details class="projects-controls" id="projects-controls">
-                    <summary>コンテンツを探す</summary>
+                <div class="projects-search-panel">
+                  <h2 id="projects-title">コンテンツを探す</h2>
+                  <div class="search-box-container">
+                      <span class="search-icon" aria-hidden="true">🔍</span>
+                      <input type="search" id="project-search" class="search-input" placeholder="QR / パスワード / 比率" aria-label="ツールを検索" aria-describedby="project-filter-status" aria-keyshortcuts="/" title="スラッシュ(/)キーでも検索欄に移動できます" maxlength="80" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+                      <kbd class="search-kbd" title="キーボードの / キー">/</kbd>
+                      <button type="button" id="search-clear" class="search-clear-btn" aria-label="検索をクリア" hidden>×</button>
+                  </div>
+                  <div id="project-share-row" class="search-share-row" hidden>
+                      <button type="button" id="project-share" class="search-share-btn" aria-label="現在の絞り込み結果を共有">🔗 絞り込みを共有</button>
+                      <span id="project-share-status" class="visually-hidden" role="status" aria-live="polite"></span>
+                  </div>
+                  <details class="projects-controls" id="projects-controls">
+                    <summary>絞り込み・履歴</summary>
                     <div class="projects-controls-body">
                         <div class="shelf-nav-wrapper">
                             <nav class="shelf-nav" aria-label="ツールの種類で絞り込む">
@@ -359,18 +371,6 @@
                                 <button type="button" class="shelf-nav-btn" data-filter="learning" aria-pressed="false">🎓 学習ラボ</button>
                                 <button type="button" class="shelf-nav-btn" data-filter="story" aria-pressed="false">📖 読みもの</button>
                             </nav>
-                        </div>
-
-                        <div class="search-box-container">
-                            <span class="search-icon" aria-hidden="true">🔍</span>
-                            <input type="search" id="project-search" class="search-input" placeholder="QR / パスワード / 比率" aria-label="ツールを検索" aria-describedby="project-filter-status" aria-keyshortcuts="/" title="スラッシュ(/)キーでも検索欄に移動できます" maxlength="80" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
-                            <kbd class="search-kbd" title="キーボードの / キー">/</kbd>
-                            <button type="button" id="search-clear" class="search-clear-btn" aria-label="検索をクリア" hidden>×</button>
-                        </div>
-
-                        <div id="project-share-row" class="search-share-row" hidden>
-                            <button type="button" id="project-share" class="search-share-btn" aria-label="現在の絞り込み結果を共有">🔗 絞り込みを共有</button>
-                            <span id="project-share-status" class="visually-hidden" role="status" aria-live="polite"></span>
                         </div>
 
                         <section id="recent-projects" class="recent-projects recent-projects--promoted" hidden aria-labelledby="recent-projects-title">
@@ -384,7 +384,8 @@
                             <input type="checkbox" id="project-detailed-view"> 詳しい説明・ガイドも表示
                         </label>
                     </div>
-                </details>
+                  </details>
+                </div>
 
                 <section class="recommended-projects" id="recommended-projects" aria-labelledby="recommended-projects-title">
                     <h3 class="recommended-projects-title" id="recommended-projects-title">おすすめ！</h3>
@@ -1141,7 +1142,7 @@
 
     <script src="project-filter-state.js?v=20260716-2"></script>
     <script src="project-history.js?v=20260716-2"></script>
-    <script src="script.js?v=20261121-recommendations"></script>
+    <script src="script.js?v=20261124-mobile-design"></script>
 </body>
 
 </html>

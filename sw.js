@@ -1,10 +1,10 @@
-const CACHE_NAME = 'katakatalab-v26';
+const CACHE_NAME = 'katakatalab-v27';
 const CACHE_PREFIX = 'katakatalab-';
 const ASSETS = [
     './',
     './index.html',
-    './style.css?v=20261121-recommendation-titles',
-    './script.js?v=20261121-recommendations',
+    './style.css?v=20261124-mobile-design',
+    './script.js?v=20261124-mobile-design',
     './project-filter-state.js',
     './project-history.js',
     './projects.json?v=20261121-recommendations',
@@ -19,7 +19,7 @@ const ASSETS = [
     './icon-192.png',
     './icon-512.png',
     './ogp.svg',
-    './discount-calc/', './discount-calc/index.html', './discount-calc/style.css?v=20261121-tools', './discount-calc/script.js?v=20261121-tools', './discount-calc/manifest.json'
+    './discount-calc/', './discount-calc/index.html', './discount-calc/style.css?v=20261124-mobile-design', './discount-calc/script.js?v=20261121-tools', './discount-calc/manifest.json'
 ];
 
 // Install Service Worker
