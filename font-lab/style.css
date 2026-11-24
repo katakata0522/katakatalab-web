@@ -1058,10 +1058,11 @@ body.dark-mode .scroll-btn:hover {
         box-sizing: border-box !important;
     }
     .hero {
-        padding: 1.5rem 0.5rem 2rem 0.5rem !important;
+        padding: 1.25rem 0.75rem 1.5rem !important;
     }
     .hero-title {
         font-size: 1.75rem !important;
+        margin-bottom: 0.65rem;
     }
     .font-cards-grid {
         grid-template-columns: 1fr !important;

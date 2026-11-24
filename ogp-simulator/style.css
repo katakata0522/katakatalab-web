@@ -157,11 +157,20 @@ textarea.input-text:focus {
   outline: 0;
 }
 .file-upload-area:hover,
-.file-upload-area:focus {
+.file-upload-area:focus-within {
   border-color: var(--c-primary);
   background: var(--c-bg);
 }
-.file-input { display: none; }
+.file-upload-area:has(.file-input:focus-visible) {
+  outline: 2px solid currentColor;
+  outline-offset: 3px;
+}
+.file-input {
+  position: absolute;
+  inline-size: 1px;
+  block-size: 1px;
+  clip-path: inset(50%);
+}
 .icon-upload { font-size: 1.8rem; display: block; margin-bottom: 6px; }
 .upload-placeholder p { margin: 0; font-size: 0.85rem; font-weight: bold; color: var(--c-text-sub); }
 
