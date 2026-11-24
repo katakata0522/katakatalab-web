@@ -415,7 +415,7 @@ button, input { font: inherit; }
 .quick-rate-label {
   font-size: 0.8rem;
   font-weight: 700;
-  color: var(--c-text-sub, #78716c);
+  color: var(--c-text);
   white-space: nowrap;
 }
 

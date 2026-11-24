@@ -97,9 +97,10 @@ html:not(.dark) .doujin-page .text-emerald-600 { color: #047857; }
   .doujin-header-layout { row-gap: 0.4rem; }
   .doujin-header-actions { grid-area: 1 / 2; }
   .doujin-heading { grid-column: 1 / -1; }
-  .doujin-heading h1 { font-size: 1rem; line-height: 1.45; }
-  .doujin-heading-context { display: block; font-size: 0.75rem; font-weight: 700; }
-  .doujin-heading-name { text-wrap: balance; }
+  .doujin-heading h1 { display: grid; grid-template-columns: auto minmax(0, 1fr); align-items: center; column-gap: 0.45rem; font-size: 1rem; line-height: 1.45; }
+  .doujin-heading-context { font-size: 0.75rem; font-weight: 700; }
+  .doujin-heading-name { grid-area: 2 / 1 / auto / -1; text-wrap: balance; }
+  .doujin-heading-badge { grid-area: 1 / 2; justify-self: start; }
   .doujin-page .doujin-select-row { display: grid; grid-template-columns: minmax(0, 1fr); gap: 0.2rem; }
   .doujin-page :is(#tab-cost-total, #tab-cost-unit, #input-non-sale, #select-deadline, #select-change-mode) { min-height: 40px; }
   .doujin-page main > [id] { scroll-margin-top: 8.5rem; }
