@@ -43,7 +43,7 @@
   <script src="./js/lucide.min.js"></script>
 
   <!-- Custom Stylesheet -->
-  <link rel="stylesheet" href="./css/style.css?v=20261121-tools">
+  <link rel="stylesheet" href="./css/style.css?v=20261124-mobile-design">
 
   <!-- JSON-LD 構造化マークアップ (WebApplication & FAQPage) -->
   <script type="application/ld+json">
@@ -63,7 +63,7 @@
   }
   </script>
 </head>
-<body class="min-h-screen bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-100 flex flex-col justify-between transition-colors duration-200 pb-16 sm:pb-0">
+<body class="doujin-page min-h-screen bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-100 flex flex-col justify-between transition-colors duration-200 pb-16 sm:pb-0">
 
   <!-- 印刷用ヘッダー (画面上は非表示、印刷時のみ表示) -->
   <div id="print-header" class="hidden">
@@ -73,19 +73,19 @@
 
   <!-- ヘッダー -->
   <header class="bg-white dark:bg-slate-900/90 border-b border-slate-200 dark:border-slate-800 sticky top-0 z-30 shadow-sm backdrop-blur">
-    <div class="max-w-5xl mx-auto px-4 py-3 flex items-center justify-between">
-      <div class="flex items-center gap-2.5">
+    <div class="doujin-header-layout max-w-5xl mx-auto px-4 py-3">
+      <a href="../#projects" class="lab-home-link">KatakataLab に戻る</a>
+      <div class="doujin-heading flex items-center gap-2.5">
         <div class="w-9 h-9 bg-gradient-to-br from-indigo-600 to-purple-600 rounded-xl flex items-center justify-center text-white shadow-md">
           <i data-lucide="book-open" class="w-5 h-5"></i>
         </div>
         <div>
-          <a href="../#projects" class="lab-home-link">KatakataLab に戻る</a>
-          <h1 class="text-sm sm:text-base font-black text-slate-900 dark:text-white leading-tight">同人即売会 頒布価格＆お釣りシミュレーター <span class="text-xs bg-indigo-100 dark:bg-indigo-950 text-indigo-700 dark:text-indigo-300 px-1.5 py-0.5 rounded font-black">Pro</span></h1>
+          <h1 class="text-sm sm:text-base font-black text-slate-900 dark:text-white leading-tight"><span class="doujin-heading-context">同人即売会</span> <span class="doujin-heading-name">頒布価格＆お釣りシミュレーター</span> <span class="text-xs bg-indigo-100 dark:bg-indigo-950 text-indigo-700 dark:text-indigo-300 px-1.5 py-0.5 rounded font-black">Pro</span></h1>
           <p class="text-[10px] text-slate-500 dark:text-slate-400 font-medium">コミケ・COMITIA・赤ブー・M3・ゲーム即売会・アンソロ対応</p>
         </div>
       </div>
 
-      <div class="flex items-center gap-2">
+      <div class="doujin-header-actions flex items-center gap-2">
         <button id="btn-print-page" type="button" class="text-xs font-bold text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white px-2.5 py-1.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 flex items-center gap-1 transition-all" title="A4印刷またはPDF保存">
           <i data-lucide="printer" class="w-3.5 h-3.5"></i>
           <span class="hidden sm:inline">印刷 / PDF</span>
@@ -115,13 +115,11 @@
   <main class="max-w-5xl mx-auto px-4 py-5 w-full flex-1">
     
     <!-- 1. クイックプリセット選択バー -->
-    <div class="mb-5">
-      <label class="text-xs font-black text-slate-600 dark:text-slate-400 mb-2 flex items-center gap-1.5">
-        <span class="w-2 h-2 rounded-full bg-indigo-600"></span>
-        <span>ジャンル別クイックプリセット（ワンタップで相場を自動入力）</span>
-      </label>
+    <details class="doujin-presets mb-4">
+      <summary>ジャンル別プリセット</summary>
+      <p class="text-sm text-slate-600 dark:text-slate-300 mb-2">ジャンルに合わせて部数や相場を入力できます。</p>
       <div class="grid grid-cols-2 sm:grid-cols-5 gap-2" id="preset-buttons-container"></div>
-    </div>
+    </details>
 
     <!-- 2. コスト・部数入力カード -->
     <div class="bg-white dark:bg-slate-800/90 rounded-3xl p-5 sm:p-6 border border-slate-200 dark:border-slate-700 custom-shadow mb-6" id="section-inputs">
@@ -155,10 +153,10 @@
 
           <!-- 非売枠設定 -->
           <div class="mt-2.5 flex items-center justify-between text-xs text-slate-500 dark:text-slate-400 bg-slate-50 dark:bg-slate-900/60 p-2.5 rounded-2xl border border-slate-200/60 dark:border-slate-700/60">
-            <span class="flex items-center gap-1">
+            <label for="input-non-sale" class="flex items-center gap-1">
               <i data-lucide="bookmark" class="w-3.5 h-3.5 text-slate-400"></i>
               <span>見本誌提出 ＆ スケブ用 (基本2部)</span>
-            </span>
+            </label>
             <div class="flex items-center gap-1">
               <input type="text" id="input-non-sale" inputmode="numeric" value="2" class="w-12 text-center py-1 text-xs font-bold bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-600 rounded-lg outline-none text-slate-900 dark:text-white">
               <span class="text-[11px] font-bold text-slate-600 dark:text-slate-400">部</span>
@@ -209,8 +207,8 @@
 
           <!-- 印刷所締切シミュレーター ＆ 1部原価 -->
           <div class="mt-2.5 grid grid-cols-2 gap-2">
-            <div class="flex items-center justify-between text-xs bg-slate-50 dark:bg-slate-900/60 p-2 rounded-2xl border border-slate-200/60 dark:border-slate-700/60">
-              <span class="text-[11px] text-slate-500">締切プラン:</span>
+            <div class="doujin-select-row flex items-center justify-between text-xs bg-slate-50 dark:bg-slate-900/60 p-2 rounded-2xl border border-slate-200/60 dark:border-slate-700/60">
+              <label class="text-xs text-slate-600 dark:text-slate-300" for="select-deadline">締切プラン</label>
               <select id="select-deadline" class="text-xs font-bold bg-transparent text-indigo-700 dark:text-indigo-300 outline-none">
                 <option value="early30">超早割の目安 (-30%)</option>
                 <option value="early15">早割の目安 (-15%)</option>
@@ -438,7 +436,7 @@
           </div>
           <div>
             <div class="flex items-center justify-between pb-2 border-b border-slate-100 dark:border-slate-700/60">
-              <span class="text-xs font-black text-indigo-700 dark:text-indigo-300">自由設定価格</span>
+              <label for="input-custom-price" class="text-xs font-black text-indigo-700 dark:text-indigo-300">自由設定価格</label>
               <span id="custom-comfort-badge" class="text-xs font-bold text-amber-600 bg-amber-50 dark:bg-amber-950/60 dark:text-amber-400 px-2 py-0.5 rounded-full">★★★☆☆ 注意</span>
             </div>
             
@@ -600,7 +598,7 @@
 
       <!-- スライダー -->
       <div class="mb-4">
-        <input type="range" id="range-sold-percent" min="0" max="100" value="70" step="5" class="w-full h-2.5 bg-slate-200 dark:bg-slate-700 rounded-lg appearance-none cursor-pointer accent-indigo-600">
+        <input type="range" id="range-sold-percent" aria-label="販売予定の割合（パーセント）" min="0" max="100" value="70" step="5" class="w-full h-2.5 bg-slate-200 dark:bg-slate-700 rounded-lg appearance-none cursor-pointer accent-indigo-600">
         <div class="flex justify-between text-[10px] font-bold text-slate-400 mt-1">
           <span>0% (大爆死)</span>
           <span id="label-slider-breakeven">56部 (損益分岐)</span>
@@ -658,7 +656,7 @@
 
           <!-- 釣銭規模モード切替 -->
           <div class="mb-3 p-2 bg-slate-50 dark:bg-slate-900/60 rounded-xl border border-slate-200/60 dark:border-slate-700/60 flex items-center justify-between text-xs">
-            <span class="text-[11px] font-bold text-slate-600 dark:text-slate-400">サークル規模:</span>
+            <label for="select-change-mode" class="text-xs font-bold text-slate-600 dark:text-slate-300">サークル規模</label>
             <select id="select-change-mode" class="text-xs font-bold bg-transparent text-indigo-700 dark:text-indigo-300 outline-none">
               <option value="beginner">島中・初心者モード (〜50部 / 1万円目安)</option>
               <option value="standard" selected>標準モード (100〜200部)</option>
@@ -819,7 +817,7 @@
           </div>
 
           <div class="relative">
-            <textarea id="textarea-menu-memo" readonly class="w-full h-28 p-3 text-xs font-mono text-slate-800 dark:text-slate-200 bg-slate-50 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-700 rounded-2xl resize-none outline-none leading-relaxed select-all"></textarea>
+            <textarea id="textarea-menu-memo" readonly aria-label="お品書き告知用テキスト" class="w-full h-28 p-3 text-xs font-mono text-slate-800 dark:text-slate-200 bg-slate-50 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-700 rounded-2xl resize-none outline-none leading-relaxed select-all"></textarea>
           </div>
         </div>
 
@@ -850,7 +848,7 @@
             <p class="text-[11px] text-slate-500 dark:text-slate-400">お釣りミス防止・設営時短・キャッシュレス対応</p>
           </div>
         </div>
-        <span class="text-[10px] text-slate-400 bg-slate-100 dark:bg-slate-700 px-2 py-0.5 rounded font-bold">PR</span>
+        <span class="text-[10px] text-slate-600 dark:text-slate-200 bg-slate-100 dark:bg-slate-700 px-2 py-0.5 rounded font-bold">PR</span>
       </div>
 
       <div class="grid grid-cols-1 sm:grid-cols-3 gap-3" id="supplies-grid-container"></div>
@@ -874,7 +872,7 @@
   </main>
 
   <!-- スマホ用フローティング クイックジャンプバー -->
-  <div class="sm:hidden fixed bottom-0 left-0 right-0 z-40 bg-white/95 dark:bg-slate-900/95 border-t border-slate-200 dark:border-slate-800 px-4 py-2 flex items-center justify-around backdrop-blur text-[10px] font-bold">
+  <nav aria-label="即売会ツール内の移動" class="doujin-mobile-nav sm:hidden fixed bottom-0 left-0 right-0 z-40 bg-white/95 dark:bg-slate-900/95 border-t border-slate-200 dark:border-slate-800 px-4 py-2 flex items-center justify-around backdrop-blur font-bold">
     <a href="#section-inputs" class="flex flex-col items-center gap-0.5 text-slate-500 dark:text-slate-400 hover:text-indigo-600">
       <i data-lucide="edit-3" class="w-4 h-4"></i>
       <span>部数・原価</span>
@@ -883,7 +881,7 @@
       <i data-lucide="tag" class="w-4 h-4"></i>
       <span>価格比較</span>
     </a>
-    <a href="#section-counter" class="flex flex-col items-center gap-0.5 text-emerald-600 dark:text-emerald-400">
+    <a href="#section-counter" class="flex flex-col items-center gap-0.5 text-slate-500 dark:text-slate-400 hover:text-indigo-600">
       <i data-lucide="calculator" class="w-4 h-4"></i>
       <span>マルチレジ</span>
     </a>
@@ -891,7 +889,7 @@
       <i data-lucide="coins" class="w-4 h-4"></i>
       <span>釣銭準備</span>
     </a>
-  </div>
+  </nav>
 
   <!-- 法務・税務モーダル -->
   <div id="modal-legal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-sm p-4" role="dialog" aria-modal="true" aria-labelledby="modal-legal-title">

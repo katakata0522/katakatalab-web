@@ -11,7 +11,7 @@ body {
 .seireki-wrapper {
   --c-primary: #1E293B;        /* 知的ディープインディゴ */
   --c-primary-dark: #0F172A;   /* 極濃インディゴ */
-  --c-accent: #06B6D4;         /* クリアシアン */
+  --c-accent: #0e7490;
   --c-text: #1E293B;           /* 文字カラーコントラスト強化 */
   --c-text-light: #64748B;     /* サブ文字 */
   --c-bg: #F8FAFC;             /* プラチナグレー極薄背景 */
@@ -21,7 +21,7 @@ body {
   
   --c-warn: #FECB6E;
   --c-danger: #EF4444;
-  --c-success: #10B981;
+  --c-success: #047857;
   --c-safe: #3B82F6;
   
   --radius-lg: 12px;           /* ソリッドな角丸 */
@@ -59,6 +59,14 @@ body {
 body.dark-mode .seireki-tool-header {
   background: rgba(15, 23, 42, 0.85);
   border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+body.dark-mode :is(.seireki-select, .seireki-input--short) {
+  background-color: #202c44;
+}
+
+body.dark-mode .seireki-tab-btn.active {
+  color: #0b132b;
 }
 
 .seireki-header-logo {
@@ -951,6 +959,8 @@ body.dark-mode .seireki-wrapper {
   --c-surface: #1c2541;
   --c-primary: #38bdf8;
   --c-primary-dark: #0284c7;
+  --c-accent: #67e8f9;
+  --c-success: #6ee7b7;
   --c-text: #f8fafc;
   --c-text-light: #94a3b8;
   --c-glass-bg: rgba(28, 37, 65, 0.85);

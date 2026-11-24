@@ -197,7 +197,7 @@ button:focus-visible {
   width: min(170px, 28vw);
   padding: 0.7rem 0.8rem 1rem;
   color: var(--white);
-  background: var(--red);
+  background: #ae352d;
   text-align: center;
   clip-path: polygon(0 0, 100% 0, 100% 86%, 50% 100%, 0 86%);
 }
@@ -914,6 +914,7 @@ body.dark-mode .article-hero {
 body.dark-mode .chapter-stamp {
   border-color: rgba(243, 201, 75, 0.4);
   color: #f3c94b;
+  background: #74231f;
 }
 
 body.dark-mode .note-box,

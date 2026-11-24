@@ -584,7 +584,7 @@
                         <p>
                             そこで、`head` タグの非常に早い段階で以下のように記述します：
                         </p>
-                        <pre class="article-code-block"><span class="code-block-header">html</span><code>&lt;link rel="preload" href="./fonts/my-round-font.woff2" as="font" type="font/woff2" crossorigin&gt;</code></pre>
+                        <pre class="article-code-block" tabindex="0" role="region" aria-label="フォントを先読みするHTMLの例"><span class="code-block-header">html</span><code>&lt;link rel="preload" href="./fonts/my-round-font.woff2" as="font" type="font/woff2" crossorigin&gt;</code></pre>
                         <p>
                             この記述により、ブラウザはCSSの解析完了を待たずに対象フォントの取得を開始できます。
                         </p>
@@ -633,7 +633,7 @@
                         <p>
                             サブセットした1ファイルを自己ホストする場合の最小例です。複数スライスに分けるなら、同じ <code>font-family</code> で <code>unicode-range</code> だけ変えた <code>@font-face</code> を並べます。
                         </p>
-                        <pre class="article-code-block"><span class="code-block-header">css</span><code>@font-face {
+                        <pre class="article-code-block" tabindex="0" role="region" aria-label="フォントを指定するCSSの例"><span class="code-block-header">css</span><code>@font-face {
   font-family: "My Round JP";
   src: url("./fonts/my-round-jp.woff2") format("woff2");
   font-weight: 400;

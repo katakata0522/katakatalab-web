@@ -192,12 +192,6 @@
     els.presetDeleteButton.addEventListener('click', deleteSelectedPreset);
     els.presetCloseButton.addEventListener('click', closePresetManager);
 
-    els.dropZone.addEventListener('keydown', (event) => {
-      if (event.key !== 'Enter' && event.key !== ' ') return;
-      event.preventDefault();
-      els.fileInput.click();
-    });
-
     ['dragenter', 'dragover'].forEach((name) => {
       els.dropZone.addEventListener(name, (event) => {
         event.preventDefault();

@@ -2,8 +2,9 @@
 
 :root {
   /* KatakataLab 本サイト寄せ */
-  --c-primary: #FF7675;
-  --c-primary-hover: #D63031;
+  --c-primary: #ab3e43;
+  --c-primary-hover: #923139;
+  --c-on-primary: #fff;
   --c-bg: #FFFBF0;
   --c-card-bg: #ffffff;
   --c-text-main: #2D3436;
@@ -30,6 +31,7 @@
   :root {
     --c-primary: #ff9b9a;
     --c-primary-hover: #ff7675;
+    --c-on-primary: #321d26;
     --c-bg: #0b132b;
     --c-card-bg: #1c2541;
     --c-text-main: #f8fafc;
@@ -54,6 +56,7 @@
 body.dark-mode {
   --c-primary: #ff9b9a;
   --c-primary-hover: #ff7675;
+  --c-on-primary: #321d26;
   --c-bg: #0b132b;
   --c-card-bg: #1c2541;
   --c-text-main: #f8fafc;
@@ -118,10 +121,10 @@ body {
   background: var(--c-primary);
 }
 .btn-preset.active .ratio-text {
-  color: #ffffff;
+  color: var(--c-on-primary);
 }
 .btn-preset.active .ratio-label {
-  color: rgba(255, 255, 255, 0.8);
+  color: var(--c-on-primary);
 }
 .ratio-text { font-weight: 800; font-size: 1rem; color: var(--c-text-main); transition: color 0.2s; }
 .ratio-label { font-size: 0.7rem; color: var(--c-text-sub); margin-top: 2px; transition: color 0.2s; }
@@ -211,7 +214,7 @@ input.input-error {
   transition: all 0.2s;
   display: flex; align-items: center; justify-content: center; gap: 5px;
 }
-.btn-detect:hover { background: var(--c-primary); color: #fff; }
+.btn-detect:hover { background: var(--c-primary); color: var(--c-on-primary); }
 .btn-detect:active { transform: scale(0.95); }
 
 /* Preview Area */

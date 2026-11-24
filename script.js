@@ -137,6 +137,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const backElements = document.querySelectorAll('main, footer, .bottom-nav');
 
         if (active) {
+            mobileMenu.inert = false;
             mobileMenu.classList.add('active');
             mobileMenu.setAttribute('aria-hidden', 'false');
             if (menuToggle) menuToggle.setAttribute('aria-expanded', 'true');
@@ -146,7 +147,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 bars[1].style.opacity = '0';
                 bars[2].style.transform = 'rotate(-45deg) translate(5px, -5px)';
             }
-            backElements.forEach(el => el.setAttribute('aria-hidden', 'true'));
+            backElements.forEach(el => { el.inert = true; });
             preventBodyScroll(true);
             
             // 開いたときに閉じボタンへフォーカス移動（アクセシビリティ向上）
@@ -154,6 +155,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (menuCloseBtn) menuCloseBtn.focus();
             }, 50);
         } else {
+            backElements.forEach(el => { el.inert = false; });
+            if (menuToggle) menuToggle.focus({ preventScroll: true });
+            mobileMenu.inert = true;
             mobileMenu.classList.remove('active');
             mobileMenu.setAttribute('aria-hidden', 'true');
             if (menuToggle) menuToggle.setAttribute('aria-expanded', 'false');
@@ -163,11 +167,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 bars[1].style.opacity = '1';
                 bars[2].style.transform = 'none';
             }
-            backElements.forEach(el => el.removeAttribute('aria-hidden'));
             preventBodyScroll(false);
-            
-            // 閉じたとき元のボタンへフォーカスを戻す
-            if (menuToggle) menuToggle.focus();
         }
     }
 
@@ -1178,7 +1178,6 @@ document.addEventListener('DOMContentLoaded', () => {
         // / : Focus Search
         if (e.key === '/' && searchInput && document.activeElement !== searchInput) {
             e.preventDefault();
-            if (projectControls) projectControls.open = true;
             searchInput.focus();
         }
 

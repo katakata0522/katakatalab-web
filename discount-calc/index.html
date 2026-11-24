@@ -27,7 +27,7 @@
   <meta name="twitter:image" content="https://katakatalab.com/discount-calc/ogp.png">
 
   <link rel="icon" href="/favicon.ico">
-  <link rel="stylesheet" href="style.css?v=20261121-tools">
+  <link rel="stylesheet" href="style.css?v=20261124-mobile-design">
     <link rel="stylesheet" href="../tool-chrome.css?v=source">
 </head>
 <body>
@@ -78,7 +78,7 @@
         <button type="button" data-add="10000" class="btn-haptic" aria-label="1万円追加">＋1万</button>
         <button type="button" data-add="1000" class="btn-haptic" aria-label="千円追加">＋1000</button>
         <button type="button" data-add="100" class="btn-haptic" aria-label="百円追加">＋100</button>
-        <button type="button" id="resetAllBtn" class="btn-haptic" aria-label="入力・計算設定をリセット" title="価格・税率・追加割引・カスタム割引率をリセット（買物メモは保持）" style="background:rgba(239,68,68,0.12);color:#f87171;border-color:rgba(239,68,68,0.3);">↩ 入力・計算設定をリセット</button>
+        <button type="button" id="resetAllBtn" class="btn-haptic" aria-label="入力・計算設定をリセット" title="価格・税率・追加割引・カスタム割引率をリセット（買物メモは保持）" style="background:rgba(239,68,68,0.12);color:var(--c-reset-ink);border-color:rgba(239,68,68,0.3);">↩ 入力・計算設定をリセット</button>
       </div>
     </div>
     <div id="discount-rate-options" class="quick-rate-buttons" role="group" aria-label="よく使う割引率のショートカット">
@@ -192,7 +192,7 @@
       <p>金額を入力するだけで割引後の価格を一括計算します。タイムセールなどの「レジにてさらに〇〇%OFF」の重ね割や、買物メモでの合計額メモにも対応。このツールの計算処理はブラウザ内で行い、金額・買物メモを送信する処理は設けていません。</p>
       <div style="display: flex; justify-content: space-between; align-items: center; gap: 1rem; flex-wrap: wrap; margin-top: 0.75rem;">
         <div>
-          <strong style="color: var(--c-primary, #f59e0b);">📘 あわせて読みたい実践ガイド:</strong>
+          <strong style="color: var(--c-primary-dark);">📘 あわせて読みたい実践ガイド:</strong>
           <span style="font-size: 0.85rem; color: var(--c-text-light, #555);">重なり割引の読み方や端数計算のポイントをまとめています。</span>
         </div>
         <a href="../guides/discount-guide.html" target="_blank" rel="noopener" class="btn btn-primary" style="padding: 0.4rem 0.85rem; font-size: 0.85rem; text-decoration: none; border-radius: 4px; font-weight: bold; background: linear-gradient(135deg, #f59e0b, #d97706); color: white;">ガイドを読む →</a>

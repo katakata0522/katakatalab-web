@@ -12,6 +12,9 @@ body.english-site-shell {
   --en-primary: #ff7675;
   --en-primary-dark: #d63031;
   --en-primary-strong: #b83232;
+  --en-action: #ab3e43;
+  --en-action-hover: #923139;
+  --en-on-action: #fff;
   --en-accent: #ffeaa7;
   --en-border: rgba(45, 52, 54, 0.1);
   --en-shadow: 0 8px 24px rgba(45, 52, 54, 0.06);
@@ -41,6 +44,9 @@ body.english-site-shell.dark-mode {
   --en-card: rgba(28, 37, 65, 0.92);
   --en-text: #f8fafc;
   --en-muted: #d5dee8;
+  --en-action: #ffaaa4;
+  --en-action-hover: #ffc5c0;
+  --en-on-action: #321d26;
   --en-border: rgba(255, 255, 255, 0.1);
   --en-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
   background-image:
@@ -256,14 +262,13 @@ body.english-site-shell.dark-mode .english-eyebrow {
 }
 
 .english-btn--primary {
-  background: var(--en-primary);
-  color: #fff !important;
+  background: var(--en-action);
+  color: var(--en-on-action) !important;
   box-shadow: 0 4px 12px rgba(255, 118, 117, 0.25);
 }
 
 .english-btn--primary:hover {
-  background: var(--en-primary-dark);
-  color: #fff !important;
+  background: var(--en-action-hover);
 }
 
 .english-btn--secondary {
@@ -394,8 +399,8 @@ body.english-site-shell.dark-mode .english-btn--secondary {
   margin-top: auto;
   padding: 0.4rem 1.15rem;
   border-radius: 999px;
-  background: var(--en-primary);
-  color: #fff !important;
+  background: var(--en-action);
+  color: var(--en-on-action) !important;
   font-size: 0.86rem;
   font-weight: 700;
   text-decoration: none !important;
@@ -403,8 +408,7 @@ body.english-site-shell.dark-mode .english-btn--secondary {
 }
 
 .english-card-action:hover {
-  background: var(--en-primary-dark);
-  color: #fff !important;
+  background: var(--en-action-hover);
 }
 
 /* ----- Notes / articles ----- */

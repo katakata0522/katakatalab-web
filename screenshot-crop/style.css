@@ -322,13 +322,13 @@ input:focus-visible {
 
 .drop-zone:hover,
 .drop-zone.is-dragover,
-.drop-zone:focus-visible {
+#fileInput:focus-visible + .drop-zone {
   border-color: var(--action);
   background: #eff6ff;
 }
 
-.drop-zone:focus-visible {
-  outline: 3px solid rgba(37, 99, 235, 0.22);
+#fileInput:focus-visible + .drop-zone {
+  outline: 3px solid var(--action);
   outline-offset: 3px;
 }
 

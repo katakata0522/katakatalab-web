@@ -1,12 +1,13 @@
 @charset "UTF-8";
 
 :root {
-  --c-primary: #ec4899;       /* Pink 500 */
-  --c-primary-hover: #db2777;
+  --c-primary: #a61756;
+  --c-primary-hover: #96134d;
+  --c-action-bg: #a61756;
   --c-bg: #fdf2f8;            /* Pink 50 */
   --c-card-bg: #ffffff;
   --c-text-main: #1f2937;
-  --c-text-sub: #6b7280;
+  --c-text-sub: #4b5563;
   --c-border: #e5e7eb;
   --c-input-bg: #ffffff;
   --c-accent-bg: #fce7f3;
@@ -18,11 +19,11 @@
 @media (prefers-color-scheme: dark) {
   :root {
     --c-primary: #f472b6;
-    --c-primary-hover: #f472b6;
+    --c-primary-hover: #ffafd8;
     --c-bg: #0f172a;
     --c-card-bg: #1e293b;
     --c-text-main: #f1f5f9;
-    --c-text-sub: #94a3b8;
+    --c-text-sub: #cbd5e1;
     --c-border: #334155;
     --c-input-bg: #0f172a;
     --c-accent-bg: #334155;
@@ -701,7 +702,7 @@ input:checked ~ .icon-moon { opacity: 1; }
 
 .banner-badge {
   display: inline-block;
-  background: var(--c-primary);
+  background: var(--c-action-bg);
   color: #fff;
   font-size: 0.7rem;
   font-weight: 800;
@@ -725,7 +726,7 @@ input:checked ~ .icon-moon { opacity: 1; }
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  background: var(--c-primary);
+  background: var(--c-action-bg);
   color: #fff;
   font-weight: bold;
   font-size: 0.88rem;
@@ -736,7 +737,7 @@ input:checked ~ .icon-moon { opacity: 1; }
   box-shadow: 0 4px 10px rgba(236, 72, 153, 0.25);
 }
 .btn-banner:hover {
-  background: var(--c-primary-hover);
+  background: #831843;
   transform: scale(1.02);
   box-shadow: 0 6px 15px rgba(236, 72, 153, 0.35);
 }
@@ -870,11 +871,11 @@ input:checked ~ .icon-moon { opacity: 1; }
    ========================================================================== */
 body.dark-mode {
   --c-primary: #f472b6;
-  --c-primary-hover: #f472b6;
+  --c-primary-hover: #ffafd8;
   --c-bg: #0b132b;
   --c-card-bg: #1c2541;
   --c-text-main: #f8fafc;
-  --c-text-sub: #94a3b8;
+  --c-text-sub: #cbd5e1;
   --c-border: rgba(255, 255, 255, 0.1);
   --c-input-bg: #0f172a;
   --c-accent-bg: rgba(236, 72, 153, 0.2);

@@ -6,7 +6,7 @@
   <title>PX to REM 変換ラボ｜Web制作・デザイナー向け計算ツール - KatakataLab</title>
   <meta name="description" content="Web制作で必須のPXとREMを相互変換できる計算ツール。基準値(Root)の変更、リアルタイムプレビュー、CSSコピペ用の一覧表生成機能付き。">
   
-  <link rel="stylesheet" href="style.css?v=20261121-tools">
+  <link rel="stylesheet" href="style.css?v=20261124-mobile-design">
 
   <link rel="icon" href="../icon.svg" type="image/svg+xml">
   <link rel="canonical" href="https://katakatalab.com/px-rem-converter/">
@@ -168,7 +168,7 @@
     </p>
 
     <div class="feature-box" style="background: var(--c-glass-bg, rgba(255,255,255,0.05)); border: 2px solid var(--c-primary, #FF7675); border-radius: var(--radius-md, 8px); padding: 1.5rem; margin: 2rem 0; text-align: left;">
-      <h3 style="color: var(--c-primary, #FF7675); margin-top: 0; font-weight: 800;">🧪 料理店でたとえる px と rem</h3>
+      <h3 style="color: var(--primary-color); margin-top: 0; font-weight: 800;">🧪 料理店でたとえる px と rem</h3>
       <p>
         px は「お皿」に近い絶対指定です。ブラウザの文字サイズ設定を変えても、指定した px はその設定には追従しません。ページのズームでは伸びます。「お皿のサイズは絶対に変わらない」わけではありません。
       </p>
@@ -181,7 +181,7 @@
     <p>
       「どれをpxにして、どれをremにすればいいの？」と迷ったときは、次を目安にしてください。
     </p>
-    <div class="table-container" style="margin: 1.5rem 0; overflow-x: auto; border: 1px solid var(--c-glass-border, rgba(255,255,255,0.1)); border-radius: 8px;">
+    <div class="table-container" tabindex="0" role="region" aria-label="場面別の推奨単位" style="margin: 1.5rem 0; overflow-x: auto; border: 1px solid var(--c-glass-border, rgba(255,255,255,0.1)); border-radius: 8px;">
       <div class="responsive-table-container"><table class="conversion-table" style="width: 100%; border-collapse: collapse; text-align: left; font-size: 0.92rem;">
         <thead>
           <tr style="border-bottom: 2px solid var(--c-primary, #FF7675); background: rgba(255, 118, 117, 0.05);">
@@ -193,12 +193,12 @@
         <tbody>
           <tr style="border-bottom: 1px solid var(--c-glass-border, rgba(255,255,255,0.1));">
             <td style="padding: 12px; font-weight: 700;">本文・見出しの文字</td>
-            <td style="padding: 12px; color: var(--c-primary, #FF7675); font-weight: 800;">REM</td>
+            <td style="padding: 12px; color: var(--primary-color); font-weight: 800;">REM</td>
             <td style="padding: 12px;">ルートの font-size に追従するため。ユーザー設定への追従には、ルート自身もその設定に合わせる設計が必要です。</td>
           </tr>
           <tr style="border-bottom: 1px solid var(--c-glass-border, rgba(255,255,255,0.1));">
             <td style="padding: 12px; font-weight: 700;">余白(Margin / Padding)</td>
-            <td style="padding: 12px; color: var(--c-primary, #FF7675); font-weight: 800;">REM</td>
+            <td style="padding: 12px; color: var(--primary-color); font-weight: 800;">REM</td>
             <td style="padding: 12px;">文字が大きくなったとき、余白も一緒にスケールしてバランスを保つため。</td>
           </tr>
           <tr style="border-bottom: 1px solid var(--c-glass-border, rgba(255,255,255,0.1));">
@@ -221,7 +221,7 @@
     </div>
 
     <div class="feature-box" style="background: rgba(255, 118, 117, 0.04); border-left: 4px solid var(--c-primary, #FF7675); padding: 1.25rem; margin: 2rem 0; border-radius: 0 8px 8px 0; text-align: left;">
-      <h3 style="margin-top: 0; font-weight: 800; color: var(--c-primary, #FF7675);">⚠️ 文字サイズだけをremにするときの注意</h3>
+      <h3 style="margin-top: 0; font-weight: 800; color: var(--primary-color);">⚠️ 文字サイズだけをremにするときの注意</h3>
       <p style="margin-bottom: 0; line-height: 1.7;">
         よくあるミスが、<strong>「文字サイズだけをremにして、余白をpxのままにする」</strong>ことです。<br>
         ユーザーが文字サイズを大きくしたとき、文字だけ巨大化して余白は狭いままになり、窮屈になります。<br>
@@ -232,11 +232,11 @@
     <div class="feature-box" style="background: var(--c-glass-bg, rgba(255,255,255,0.03)); border: 1px solid var(--c-glass-border, rgba(255,255,255,0.1)); border-radius: var(--radius-md, 8px); padding: 1.5rem; margin-top: 2.5rem; text-align: left;">
       <div style="display: flex; justify-content: space-between; align-items: center; gap: 1rem; flex-wrap: wrap; text-align: left;">
         <div style="flex: 1; min-width: 200px;">
-          <h3 style="margin-top: 0; font-weight: 800; color: var(--c-primary, #FF7675);">📘 あわせて読みたい実践ガイド</h3>
-          <p style="font-size: 0.85rem; color: var(--c-text-light, #555); margin: 0; line-height: 1.6;">16px基準と10px基準の落とし穴や、ブラウザがremを必要とする本当の理由を徹底解説。</p>
+          <h3 style="margin-top: 0; font-weight: 800; color: var(--primary-color);">📘 あわせて読みたい実践ガイド</h3>
+          <p style="font-size: 0.85rem; color: var(--text-sub); margin: 0; line-height: 1.6;">16px基準と10px基準の落とし穴や、ブラウザがremを必要とする本当の理由を徹底解説。</p>
         </div>
         <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
-          <a href="../guides/px-rem-guide.html" class="btn btn-primary" style="padding: 0.5rem 1rem; font-size: 0.85rem; text-decoration: none; display: inline-flex; align-items: center; gap: 0.25rem; background: var(--c-primary, #FF7675); color: white; border: none; border-radius: 4px; font-weight: bold; cursor: pointer; white-space: nowrap;" target="_blank" rel="noopener noreferrer">ガイドを読む →</a>
+          <a href="../guides/px-rem-guide.html" class="btn btn-primary" style="padding: 0.5rem 1rem; font-size: 0.85rem; text-decoration: none; display: inline-flex; align-items: center; gap: 0.25rem; background: var(--primary-color); color: var(--on-primary); border: none; border-radius: 4px; font-weight: bold; cursor: pointer; white-space: nowrap;" target="_blank" rel="noopener noreferrer">ガイドを読む →</a>
           <a href="../guides/case-studies.html" class="btn btn-secondary" style="padding: 0.5rem 1rem; font-size: 0.85rem; white-space: nowrap;" target="_blank" rel="noopener noreferrer">実例を見る →</a>
         </div>
       </div>
@@ -244,22 +244,22 @@
 
     <!-- アコーディオン式コラムセクション -->
     <details class="pwd-column-details" style="margin-top: 2.5rem; padding: 1.5rem; background: var(--c-glass-bg, rgba(255,255,255,0.03)); border: 1px solid var(--c-glass-border, rgba(255,255,255,0.1)); border-radius: var(--radius-md, 8px); text-align: left; box-shadow: var(--glass-shadow); cursor: pointer;">
-        <summary class="pwd-column-summary" style="font-weight: 800; font-size: 1.1rem; color: var(--c-primary, #FF7675); list-style: none; display: flex; align-items: center; justify-content: space-between; gap: 0.5rem; outline: none; user-select: none;">
+        <summary class="pwd-column-summary" style="font-weight: 800; font-size: 1.1rem; color: var(--primary-color); list-style: none; display: flex; align-items: center; justify-content: space-between; gap: 0.5rem; user-select: none;">
             <span>📖 このツールの使い方</span>
             <span class="summary-toggle-icon" style="font-size: 0.9rem; transition: transform 0.2s;">▼</span>
         </summary>
-        <div class="pwd-column-content" style="margin-top: 1.25rem; font-size: 0.92rem; color: var(--c-text, #2d3436); line-height: 1.85; cursor: default;" onclick="event.stopPropagation();">
-            <h4 style="color: var(--c-primary, #FF7675); margin-top: 0; font-weight: 800; font-size: 1.1rem; margin-bottom: 0.75rem;">基準サイズの意味</h4>
+        <div class="pwd-column-content" style="margin-top: 1.25rem; font-size: 0.92rem; color: var(--text-main); line-height: 1.85; cursor: default;" onclick="event.stopPropagation();">
+            <h4 style="color: var(--primary-color); margin-top: 0; font-weight: 800; font-size: 1.1rem; margin-bottom: 0.75rem;">基準サイズの意味</h4>
             <p>
                 上の基準入力は、プロジェクトの html（ルート）の font-size です。ブラウザ既定はだいたい 16px。10px 運用なら 10 を入れてください。計算は「px ÷ 基準 = rem」です。16 と 10 のボタンは、よくある値へのショートカットです。
             </p>
 
-            <h4 style="color: var(--c-primary, #FF7675); margin-top: 1.5rem; font-weight: 800; font-size: 1.05rem; margin-bottom: 0.5rem;">早見表の追加と削除</h4>
+            <h4 style="color: var(--primary-color); margin-top: 1.5rem; font-weight: 800; font-size: 1.05rem; margin-bottom: 0.5rem;">早見表の追加と削除</h4>
             <p>
                 よく使う px を入力して「リストに追加」できます。不要な行は × で削除、↩ リセットで初期リストに戻せます。行の px をクリックすると、上の変換欄とプレビューにセットされます。
             </p>
 
-            <h4 style="color: var(--c-primary, #FF7675); margin-top: 1.5rem; font-weight: 800; font-size: 1.05rem; margin-bottom: 0.5rem;">コードコピーは現在の早見表の全行</h4>
+            <h4 style="color: var(--primary-color); margin-top: 1.5rem; font-weight: 800; font-size: 1.05rem; margin-bottom: 0.5rem;">コードコピーは現在の早見表の全行</h4>
             <p>
                 「コードをコピー」には、現在の早見表の全行が含まれます。追加した行や8px・11pxなども対象で、削除した行は含まれません。
             </p>

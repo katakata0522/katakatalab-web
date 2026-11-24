@@ -381,8 +381,9 @@ test('公開HTMLはプライバシー・SEO・アクセシビリティ契約を�
   assert.match(html, /og:locale/);
   assert.match(html, /og:image:alt/);
   assert.match(html, /twitter:image:alt/);
-  assert.match(html, /accept="\.png,\.jpg,\.jpeg,\.webp,image\/png,image\/jpeg,image\/webp" multiple/);
-  assert.match(html, /role="button" tabindex="0"/);
+  assert.match(html, /<input\b[^>]*\bid="fileInput"[^>]*\btype="file"[^>]*>/);
+  assert.match(html, /accept="\.png,\.jpg,\.jpeg,\.webp,image\/png,image\/jpeg,image\/webp"[^>]*\bmultiple\b/);
+  assert.match(html, /aria-labelledby="upload-label"[^>]*>\s*<label\b[^>]*\bfor="fileInput"/);
   assert.match(html, /"@type": "WebApplication"/);
   assert.match(html, /"price": "0"/);
   assert.match(html, /"@type": "BreadcrumbList"/);

@@ -127,12 +127,15 @@ body {
   gap: 0.5rem;
 }
 .bc-home {
-  color: #ff7675;
+  color: #a33b36;
   font-weight: 700;
   text-decoration: none;
   display: inline-flex;
   align-items: center;
   gap: 0.25rem;
+}
+body.dark-mode .bc-home {
+  color: #ffb4a9;
 }
 .bc-sep { opacity: 0.4; }
 .bc-current { font-weight: 700; color: var(--c-text); }
@@ -150,7 +153,7 @@ body {
   gap: 0.25rem;
 }
 .bc-other-tool {
-  color: #d97706;
+  color: #92400e;
   background: #fef3c7;
 }
 body.dark-mode .bc-other-tool {
