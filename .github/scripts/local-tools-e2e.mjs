@@ -727,23 +727,36 @@ const analyticsPage=await browser.newPage({viewport:{width:390,height:850}});
 await analyticsPage.route('**/*googletagmanager.com/**',route=>route.abort());
 await analyticsPage.route('**/*google-analytics.com/**',route=>route.abort());
 await analyticsPage.goto(base+'/',{waitUntil:'domcontentloaded'});
-for (const [width, height, minFlaskHeight] of [[320, 667, 54], [390, 667, 62], [390, 850, 62]]) {
+await analyticsPage.evaluate(async () => { await document.fonts.ready; });
+for (const [width, height, minFlaskHeight, minTitleSize] of [[320, 667, 54, 25], [390, 667, 62, 30], [390, 850, 62, 30]]) {
   await analyticsPage.setViewportSize({width, height});
   const layout = await analyticsPage.locator('#interactive-flask button').evaluate(button => {
     const circle = button.getBoundingClientRect();
     const flask = button.querySelector('.art-flask');
     const search = document.getElementById('project-search').getBoundingClientRect();
     const title = document.querySelector('.hero-title');
+    const titleBox = title.getBoundingClientRect();
+    const titleStyle = getComputedStyle(title);
+    const titleBottom = titleBox.bottom + parseFloat(titleStyle.marginBlockEnd);
+    const introBox = document.getElementById('hero-subtitle').getBoundingClientRect();
+    const headerBottom = document.querySelector('.header').getBoundingClientRect().bottom;
     return {
-      beforeIntro: circle.bottom <= document.querySelector('#hero-subtitle').getBoundingClientRect().top,
-      besideTitle: circle.left >= title.getBoundingClientRect().right - parseFloat(getComputedStyle(title).paddingRight),
+      besideTitle: circle.left >= titleBox.right,
+      bottomDifference: Math.abs(circle.bottom - titleBottom),
+      titleSize: parseFloat(titleStyle.fontSize),
+      titleLines: Math.round(titleBox.height / parseFloat(titleStyle.lineHeight)),
+      headerGap: circle.top - headerBottom,
+      introGap: introBox.top - Math.max(circle.bottom, titleBottom),
       searchBottom: search.bottom,
       width: circle.width, height: circle.height,
       flaskHeight: flask.offsetHeight,
       flaskRatio: flask.offsetWidth / flask.offsetHeight,
     };
   });
-  assert.ok(layout.beforeIntro && layout.besideTitle && layout.searchBottom <= height, 'フラスコが見出しや本文を覆わず初期画面内で検索できる');
+  assert.ok(layout.besideTitle && layout.searchBottom <= height, 'フラスコが見出しを覆わず初期画面内で検索できる');
+  assert.ok(layout.titleSize >= minTitleSize && layout.titleLines === 3 && layout.bottomDifference <= 1, '大きな3行の見出しとフラスコの下端が揃う');
+  assert.ok(layout.headerGap >= 6 && layout.headerGap <= 16, 'フラスコがヘッダー近くに収まる');
+  assert.ok(layout.introGap >= 8 && layout.introGap <= 16, '見出しとフラスコの直下に紹介文が収まる');
   assert.ok(layout.flaskHeight >= minFlaskHeight && Math.abs(layout.width - layout.height) <= 1, 'フラスコ本体を大きくし、押せる範囲は正円を保つ');
   assert.ok(layout.flaskRatio > 0.7 && layout.flaskRatio < 0.85, '丸底フラスコの縦長の形を保つ');
 }

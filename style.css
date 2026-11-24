@@ -1612,25 +1612,34 @@ body.dark-mode .section-tag-column { background-color: #442a2a; color: #ff7675; 
   .menu-toggle { display: flex; }
   .language-link { display: none; }
   .section { padding: 2.2rem 0; }
-  .hero { padding: calc(var(--header-height) + 1.2rem) 0 1rem; }
+  .hero { padding: calc(var(--header-height) + 0.5rem) 0 0.8rem; }
   .hero-container {
     --mobile-flask-size: clamp(96px, 28vw, 116px);
-    --mobile-flask-top: 0.3rem;
-    flex-direction: column;
-    align-items: stretch;
-    gap: 0;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) var(--mobile-flask-size);
+    align-items: end;
+    gap: 0.75rem;
     text-align: start;
   }
+  .hero-content { display: contents; }
   .hero-title {
-    font-size: clamp(1.4rem, 6vw, 1.85rem);
-    line-height: 1.28;
-    margin-bottom: 0.65rem;
-    min-block-size: calc(var(--mobile-flask-size) + var(--mobile-flask-top));
-    padding-inline-end: calc(var(--mobile-flask-size) + 0.65rem);
+    grid-area: 1 / 1;
+    font-size: clamp(1.35rem, 7.9vw, 2.125rem);
+    line-height: 1.2;
+    letter-spacing: 0;
+    margin: 0;
+    /* 行の下側の余白を詰め、文字と円の下端を見た目で揃える。 */
+    margin-block-end: -0.2em;
+    overflow-wrap: anywhere;
   }
-  .hero-subtitle { font-size: 0.9rem; line-height: 1.65; margin-bottom: 0; }
+  .hero-content .hero-subtitle {
+    grid-column: 1 / -1;
+    grid-row: 2;
+    font-size: 0.9rem;
+    margin: 0;
+  }
   .section-title { font-size: 1.65rem; }
-  .hero-visual { position: absolute; inset-block-start: var(--mobile-flask-top); inset-inline-end: 1rem; }
+  .hero-visual { grid-area: 1 / 2; }
   .hero-orb, .hero-visual .art-bubble { display: none; }
   .lab-scene { width: var(--mobile-flask-size); height: var(--mobile-flask-size); }
   .cozy-lab-art { width: 100%; height: 100%; animation: none; }
