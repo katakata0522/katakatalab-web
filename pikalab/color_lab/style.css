@@ -1003,10 +1003,6 @@ header .text-yellow-500 {
     .character-mixer-spin, .character-pop-burst { animation: none !important; }
 }
 
-.palette-slot {
-    flex-shrink: 0;
-}
-
 @media (max-width: 640px) {
     header {
         flex-wrap: wrap;
