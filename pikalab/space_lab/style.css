@@ -381,10 +381,39 @@ button[class*="bg-emerald-500"][aria-label$="へワープ"]::after {
 main > header { pointer-events: none; }
 main > header a,
 main > header button { pointer-events: auto; }
-@media (max-width: 374px) {
-    /* 実フォントで4行になりナビに重なる幅だけ、同じ見出しを2行へ収める。 */
-    #space-header h1 { font-size: 16px; line-height: 24px; letter-spacing: 0.04em; }
+@media (max-width: 640px) {
+    #space-header {
+        display: grid;
+        grid-template-columns: auto minmax(0, 1fr) auto;
+        gap: 0.25rem;
+        padding: 0.5rem;
+    }
+    #space-header > a, #space-header button {
+        min-width: 2.75rem;
+        min-height: 2.75rem;
+        padding: 0.375rem;
+    }
+    #space-header h1 {
+        justify-content: center;
+        gap: 0.25rem;
+        font-size: 1rem;
+        line-height: 1.25;
+        letter-spacing: 0.025em;
+    }
+    #space-header h1 > span:first-child { font-size: 1.125rem; line-height: 1; }
+    .space-title-text { min-width: 0; word-break: keep-all; overflow-wrap: anywhere; }
+    #space-header > div:last-child { gap: 0.25rem; }
+    #minimap-container { width: calc(100% - 1rem); }
+    /* 惑星の位置を保ち、密集する水星・金星でも隣のボタンがタップを奪わない。 */
+    #minimap-markers button { width: clamp(24px, 7%, 40px) !important; }
+    #minimap-markers button:hover { --tw-scale-x: 1; --tw-scale-y: 1; }
 }
+
+@media (max-width: 359px) {
+    #space-header h1 { font-size: 0.9375rem; letter-spacing: 0.01em; }
+    #space-header h1 > span:first-child { display: none; }
+}
+
 /* 長いロック説明を中央から溢れさせず、本文とタブを別々にスクロールできるようにする。 */
 #secret-content-area { min-width: 0; }
 #secret-content-area > div.h-full { height: auto; min-height: 100%; flex-shrink: 0; }

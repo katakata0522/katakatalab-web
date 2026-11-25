@@ -274,6 +274,20 @@ function comparableMetrics(metrics, { animated = false } = {}) {
     if (animated) for (const anchor of value.anchors) delete anchor.box;
     return value;
 }
+function checkMobileHeader(metrics) {
+    const box = key => metrics.anchors.find(item => item.key === key).box;
+    const title = box('header h1'), goal = box('#task-input'), header = box('header');
+    const actions = ['#complete-count-badge', '#dark-mode-toggle-btn', '[data-action="parents-modal-open"]', '#open-sound-drawer-btn'].map(box);
+    let right = title.x + title.width;
+    for (const action of actions) {
+        assert.ok(action.x >= right - 1 && action.x + action.width <= metrics.viewport.width, 'Title, badge and buttons fit side by side');
+        assert.ok(action.y + action.height <= goal.y && action.y >= 0, 'Goal is below the toolbar');
+        right = action.x + action.width;
+    }
+    assert.ok(actions.slice(1).every(button => button.width >= 44 && button.height >= 44));
+    assert.ok(title.y + title.height <= goal.y && goal.y + goal.height <= header.height);
+    assert.ok(goal.width >= metrics.viewport.width - 32 && header.height <= 120, 'Full-width goal in a two-row header');
+}
 function initialComparison(candidate, baseline) {
     const actual = comparableMetrics(candidate), expected = comparableMetrics(baseline), exceptions = [];
     const drawerAnchor = expected.anchors.find(anchor => anchor.key === '#sound-drawer');
@@ -288,6 +302,24 @@ function initialComparison(candidate, baseline) {
         if (actualButton.style.color !== expectedButton.style.color) {
             exceptions.push({ selector: '#open-sound-drawer-btn', field: 'style.color', before: expectedButton.style.color, after: actualButton.style.color, reason: 'Approved dark-mode icon contrast correction only; geometry and text remain exact' });
             expectedButton.style.color = actualButton.style.color;
+        }
+    }
+    if (candidate.viewport.width <= 767) {
+        const headerKeys = new Set(['header', 'header h1', '#complete-count-badge', '#task-input', '#dark-mode-toggle-btn', '[data-action="parents-modal-open"]', '#open-sound-drawer-btn']);
+        const dy = actual.anchors[0].box.height - expected.anchors[0].box.height;
+        for (const [index, old] of expected.anchors.entries()) {
+            const current = actual.anchors[index];
+            if (headerKeys.has(old.key)) {
+                exceptions.push({ key: old.key, oldBox: old.box, newBox: current.box, reason: 'Measured mobile toolbar and goal rows' });
+                old.box = current.box;
+                old.layout = current.layout;
+                const properties = { header: ['display', 'padding', 'gap'], 'header h1': ['fontSize', 'lineHeight', 'letterSpacing'], '#complete-count-badge': ['padding', 'gap'] };
+                for (const prop of properties[old.key] || []) old.style[prop] = current.style[prop];
+                if (old.key === 'header' && candidate.viewport.width <= 374) old.text = old.text.replace(/^timer\s+/, '');
+            } else if (!['#sound-drawer', '#parents-modal'].includes(old.key)) {
+                old.box.y = Math.round((old.box.y + dy) * 100) / 100;
+                old.layout.top += Math.round(dy);
+            }
         }
     }
     return { actual, expected, exceptions };
@@ -342,16 +374,18 @@ async function layoutSuite() {
     for (const viewport of VIEWPORTS) for (const theme of ['light', 'dark']) {
         const name = `initial-${viewport.width}-${theme}`;
         await runCase(name, async (page, record) => {
-            const candidate = await noOverflow(page, record, 'initial'); await screenshot(page, `${name}-after`); let baseline = null;
+            const candidate = await noOverflow(page, record, 'initial');
+            if (viewport.width <= 767) checkMobileHeader(candidate);
+            await screenshot(page, `${name}-after`); let baseline = null;
             if (baselineUrl) {
                 const prior = await createCase(viewport, { theme, reducedMotion: true });
                 try { await ready(prior, baselineUrl); baseline = await layoutMetrics(prior.page); await screenshot(prior.page, `${name}-before`); assert.deepEqual(prior.errors, []); }
                 finally { await prior.context.close(); }
             }
             record.comparison = `${name}-comparison.json`; const comparison = baseline ? initialComparison(candidate, baseline) : null;
-            await writeJSON(record.comparison, { baseline, candidate, exceptions: comparison?.exceptions || [], policy: 'Exact initial content, computed styles and geometry under the same browser reduced-motion preference, apart from the explicitly recorded rain-description spelling and dark sound-button color corrections; no CSS or asset substitution.' });
+            await writeJSON(record.comparison, { baseline, candidate, exceptions: comparison?.exceptions || [], policy: 'Exact initial content, computed styles and geometry under the same browser reduced-motion preference, apart from the explicitly recorded rain-description spelling, dark sound-button color and measured mobile header changes; no CSS or asset substitution.' });
             imagePairs.push({ name, before: baseline ? `${name}-before.png` : null, after: `${name}-after.png`, metrics: record.comparison });
-            if (comparison) assert.deepEqual(comparison.actual, comparison.expected, 'Initial UI/content/layout preserved outside the explicitly recorded spelling and dark icon-color corrections');
+            if (comparison) assert.deepEqual(comparison.actual, comparison.expected, 'Initial UI/content/layout preserved outside the documented corrections and mobile header');
             if (theme === 'dark') {
                 await darkHeaderContrast(page, record);
                 await page.locator('#restart-btn').hover();

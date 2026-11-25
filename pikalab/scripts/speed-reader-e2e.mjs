@@ -278,10 +278,18 @@ async function layoutSnapshot(page) {
         const normalize = value => String(value || '').replace(/\s+/g, ' ').trim();
         const key = element => {
             if (element.id) return `#${element.id}`;
+            if (element.getAttribute('role') === 'progressbar') return 'reader-progressbar';
             if (element === document.body) return 'body';
             const peers = [...element.parentElement.children].filter(peer => peer.tagName === element.tagName);
             return `${key(element.parentElement)}>${element.tagName.toLowerCase()}:nth-of-type(${peers.indexOf(element) + 1})`;
         };
+        const play = document.getElementById('main-play-btn');
+        const rateGroup = document.getElementById('wpm-badge').parentElement;
+        const bands = [
+            ['transport', play.parentElement],
+            ['tabs', document.getElementById('tab-library').parentElement],
+            ['grades', document.getElementById('cat-btn-low-elem').parentElement],
+        ].filter(([, element]) => element.getBoundingClientRect().height > 0);
         const properties = ['display', 'position', 'fontFamily', 'fontSize', 'fontWeight', 'lineHeight', 'letterSpacing',
             'color', 'backgroundColor', 'borderTopColor', 'borderTopWidth', 'borderRadius', 'paddingTop', 'paddingRight',
             'paddingBottom', 'paddingLeft', 'marginTop', 'marginRight', 'marginBottom', 'marginLeft', 'gap',
@@ -291,7 +299,24 @@ async function layoutSnapshot(page) {
             const rect = element.getBoundingClientRect();
             const style = getComputedStyle(element);
             if (!rect.width || !rect.height || style.visibility === 'hidden' || style.display === 'none') return [];
-            return [{ key: key(element), text: normalize([...element.childNodes].filter(node => node.nodeType === Node.TEXT_NODE).map(node => node.textContent).join(' ')),
+            const band = bands.find(([, root]) => root === element || root.contains(element));
+            // 各操作列の高さが変わっても、その前後の本文内の位置・間隔は基準版と比較する。
+            const flow = { y: rect.y + scrollY, height: rect.height };
+            if (innerWidth <= 640 && !element.closest('dialog,[role="dialog"]')) {
+                for (const [, root] of bands) {
+                    if (root === element || root.contains(element)) continue;
+                    if (element.contains(root)) flow.height -= root.getBoundingClientRect().height;
+                    else if (root.compareDocumentPosition(element) & Node.DOCUMENT_POSITION_FOLLOWING) flow.y -= root.getBoundingClientRect().height;
+                }
+            }
+            const isButton = element instanceof HTMLButtonElement;
+            const labelFits = !band || !isButton || [...element.childNodes].filter(node => node.nodeType === Node.TEXT_NODE && node.textContent.trim()).every(node => {
+                const range = document.createRange();
+                range.selectNodeContents(node);
+                return [...range.getClientRects()].every(r => !r.width || (r.left >= rect.left - 1 && r.right <= rect.right + 1 && r.top >= rect.top - 1 && r.bottom <= rect.bottom + 1));
+            });
+            return [{ key: key(element), band: band?.[0], bandRoot: element === band?.[1], isButton, labelFits, rateGroup: element === rateGroup, flow,
+                text: normalize([...element.childNodes].filter(node => node.nodeType === Node.TEXT_NODE).map(node => node.textContent).join(' ')),
                 box: { x: round(rect.x + scrollX), y: round(rect.y + scrollY), width: round(rect.width), height: round(rect.height) },
                 style: Object.fromEntries(properties.map(property => [property, style[property]])),
                 semantics: { role: element.getAttribute('role'), label: element.getAttribute('aria-label'),
@@ -305,10 +330,29 @@ async function layoutSnapshot(page) {
             addedWidth: round(home.getBoundingClientRect().width + parseFloat(getComputedStyle(home.parentElement).columnGap))
         } : null;
         return { viewport: { width: innerWidth, height: innerHeight }, width: document.documentElement.scrollWidth,
-            height: document.documentElement.scrollHeight, text: normalize(document.body.innerText), nodes, homeNavigation };
+            height: document.documentElement.scrollHeight, bandHeight: bands.reduce((sum, [, node]) => sum + node.getBoundingClientRect().height, 0), text: normalize(document.body.innerText), nodes, homeNavigation };
     });
 }
 
+function assertMobileControls(snapshot) {
+    const nodes = snapshot.nodes;
+    for (const band of ['transport', 'tabs', 'grades']) {
+        const root = nodes.find(node => node.band === band && node.bandRoot);
+        if (!root) continue;
+        const buttons = nodes.filter(node => node.band === band && node.isButton);
+        const columns = band === 'transport' ? 4 : band === 'tabs' ? 3 : snapshot.viewport.width < 560 ? 2 : 4;
+        assert.equal(buttons.length, band === 'tabs' ? 3 : 4);
+        for (const [index, { box, labelFits }] of buttons.entries()) {
+            assert.ok(labelFits, 'ボタン内でラベル全体を読める');
+            assert.ok(box.width >= 44 && box.height >= 44, '操作ボタンの押せる範囲');
+            assert.ok(box.x >= root.box.x - 1 && box.x + box.width <= root.box.x + root.box.width + 1);
+            if (index % columns) {
+                const previous = buttons[index - 1].box;
+                assert.ok(previous.x + previous.width <= box.x + 1 && Math.abs(previous.y - box.y) <= 3, '同じ列のボタンが重ならない');
+            } else if (index) assert.ok(box.y >= buttons[index - columns].box.y + buttons[index - columns].box.height - 1);
+        }
+    }
+}
 function compareLayout(actual, expected, name) {
     let previousText = expected.text;
     let comparedNodes = actual.nodes;
@@ -329,17 +373,37 @@ function compareLayout(actual, expected, name) {
     }
     assert.equal(actual.text, previousText, `${name}: 表示文言を維持する`);
     assert.equal(actual.width, expected.width, `${name}: ページ幅を維持する`);
-    assert.ok(Math.abs(actual.height - expected.height) <= 1, `${name}: ページ高を維持する`);
+    const mobile = actual.viewport.width <= 640;
+    const bandDelta = mobile ? actual.bandHeight - expected.bandHeight : 0;
+    assert.ok(Math.abs(actual.height - expected.height - bandDelta) <= 1, `${name}: ページ高を維持する`);
     assert.deepEqual(comparedNodes.map(node => node.key), expected.nodes.map(node => node.key), `${name}: 表示要素を維持する`);
     for (let index = 0; index < comparedNodes.length; index++) {
         const received = comparedNodes[index];
         const previous = expected.nodes[index];
-        assert.deepEqual(received.style, previous.style, `${name}: ${received.key} の計算済みスタイル`);
+        const style = { ...previous.style };
+        const badge = ['#wpm-badge', '#chunk-badge', '#source-badge'].includes(received.key);
+        let changedStyles = [];
+        if (received.rateGroup) changedStyles = ['alignItems'];
+        if (received.key === '#source-badge') changedStyles.push('position', 'marginLeft', 'overflowX', 'overflowY');
+        if (mobile && badge) changedStyles.push('paddingTop', 'paddingBottom', 'paddingLeft', 'paddingRight', 'fontSize');
+        if (mobile && received.bandRoot) changedStyles.push('display', 'gridTemplateColumns', 'gap', 'overflowX', 'overflowY');
+        if (mobile && ['tabs', 'transport'].includes(received.band) && received.key.includes('>span:')) changedStyles.push('overflowX', 'overflowY');
+        if (mobile && !received.bandRoot && ['tabs', 'grades'].includes(received.band))
+            changedStyles.push('paddingTop', 'paddingBottom', 'paddingLeft', 'paddingRight', 'fontSize', 'lineHeight', 'flexDirection', 'justifyContent', 'gap');
+        if (mobile && (received.key === '#main-play-btn' || received.key.startsWith('#main-play-btn>')))
+            changedStyles.push('paddingLeft', 'paddingRight', 'fontSize', 'lineHeight', 'gap');
+        for (const property of changedStyles) style[property] = received.style[property];
+        assert.deepEqual(received.style, style, `${name}: ${received.key} の計算済みスタイル`);
         assert.deepEqual(received.semantics, previous.semantics, `${name}: ${received.key} の操作上の意味`);
         assert.equal(received.text, previous.text, `${name}: ${received.key} の文言`);
         assert.equal(received.value, previous.value, `${name}: ${received.key} の入力値`);
         for (const property of ['x', 'y', 'width', 'height']) {
-            assert.ok(Math.abs(received.box[property] - previous.box[property]) <= 1,
+            if (received.rateGroup && property === 'width') continue;
+            if (mobile && (badge || received.rateGroup) && property !== 'y') continue;
+            if (mobile && received.band && (!received.bandRoot || property === 'height')) continue;
+            const flow = mobile && (property === 'height' || property === 'y');
+            const a = flow ? received.flow[property] : received.box[property], b = flow ? previous.flow[property] : previous.box[property];
+            assert.ok(Math.abs(a - b) <= 1,
                 `${name}: ${received.key} ${property}: ${previous.box[property]} → ${received.box[property]}`);
         }
     }
@@ -364,6 +428,9 @@ async function layoutSuite() {
                     }
                     const label = `${viewport.width}x${viewport.height}-${state}`;
                     const actual = await layoutSnapshot(page);
+                    if (viewport.width <= 640) assertMobileControls(actual);
+                    const badge = key => actual.nodes.find(node => node.key === key).box;
+                    assert.ok(badge('#chunk-badge').x + badge('#chunk-badge').width < badge('#source-badge').x, '速度・語数と教材名が重ならない');
                     const expected = baseline ? await layoutSnapshot(baseline.page) : null;
                     await writeFile(path.join(artifactDir, `${label}-geometry.json`), `${JSON.stringify({ candidate: actual, baseline: expected }, null, 2)}\n`);
                     await screenshot(page, `${label}-candidate`);

@@ -99,18 +99,16 @@
                 aria-live="polite" aria-atomic="true">Ready?</div>
 
             <!-- Status Badges -->
-            <div class="absolute top-4 left-4 md:top-6 md:left-6 flex gap-2">
+            <div class="reader-status absolute top-4 left-4 right-4 md:top-6 md:left-6 md:right-6 flex gap-2">
                 <span id="wpm-badge"
                     class="px-3 py-1.5 rounded-lg bg-slate-800 text-teal-300 text-sm md:text-lg font-bold border border-slate-700 font-mono shadow-lg">WPM:
                     250</span>
                 <span id="chunk-badge"
                     class="px-3 py-1.5 rounded-lg bg-slate-800 text-slate-300 text-sm md:text-lg font-bold border border-slate-700 font-mono shadow-lg">1単語</span>
+                <div id="source-badge"
+                    class="px-4 py-1.5 rounded-lg bg-slate-800/90 text-white text-sm md:text-base font-bold border border-slate-700 font-serif transition-opacity duration-500 shadow-lg opacity-0">
+                    タイトル</div>
             </div>
-
-            <!-- Source Title Badge -->
-            <div id="source-badge"
-                class="absolute top-4 right-4 md:top-6 md:right-6 px-4 py-1.5 rounded-lg bg-slate-800/90 text-white text-sm md:text-base font-bold border border-slate-700 font-serif transition-opacity duration-500 shadow-lg opacity-0">
-                タイトル</div>
 
             <!-- Progress Bar -->
             <div class="absolute bottom-0 left-0 w-full h-3 bg-slate-800" role="progressbar" aria-label="読書の進み具合"
@@ -121,7 +119,7 @@
         </div>
 
         <!-- Control Buttons -->
-        <div class="grid grid-cols-4 gap-2 md:gap-3 px-1">
+        <div class="reader-transport grid grid-cols-4 gap-2 md:gap-3 px-1">
             <button type="button" data-action="reset"
                 class="bg-white text-slate-500 hover:text-teal-600 hover:bg-teal-50 border-2 border-white hover:border-teal-100 rounded-2xl py-3 md:py-5 font-bold shadow-sm flex items-center justify-center gap-1 md:gap-2 transition-all group"
                 title="最初に戻る (R)" aria-label="最初に戻る">
@@ -157,7 +155,7 @@
         <div class="glass-panel p-4 md:p-6 rounded-3xl w-full">
 
             <!-- Tab Buttons -->
-            <div class="flex gap-2 mb-6 overflow-x-auto pb-2 no-scrollbar border-b border-slate-100" role="tablist"
+            <div class="reader-tabs flex gap-2 mb-6 overflow-x-auto pb-2 no-scrollbar border-b border-slate-100" role="tablist"
                 aria-label="コンテンツ切り替え">
                 <button type="button" data-action="switch-tab" data-param="library" id="tab-library" role="tab"
                     aria-selected="true" aria-controls="content-library" tabindex="0"
@@ -179,7 +177,7 @@
             <!-- Library Tab Content -->
             <div id="content-library" role="tabpanel" aria-labelledby="tab-library"
                 class="tab-content animate-fade-in block">
-                <div class="flex gap-2 mb-6 overflow-x-auto pb-2 no-scrollbar" role="tablist" aria-label="学年カテゴリ">
+                <div class="reader-grades flex gap-2 mb-6 overflow-x-auto pb-2 no-scrollbar" role="tablist" aria-label="学年カテゴリ">
                     <button type="button" data-action="switch-category" data-param="low-elem" id="cat-btn-low-elem"
                         role="tab" aria-selected="false" aria-controls="lib-cat-low-elem" tabindex="-1"
                         class="cat-btn px-4 py-3 rounded-full border font-bold text-sm whitespace-nowrap shadow-sm hover:bg-slate-50 border-slate-200 text-slate-500 bg-white">🐣

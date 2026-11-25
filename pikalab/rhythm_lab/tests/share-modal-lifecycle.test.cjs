@@ -24,7 +24,7 @@ function createRuntime() {
     const trigger = new Element();
     const context = vm.createContext({
         HTMLElement: Element,
-        document: { readyState: 'loading', addEventListener() {}, activeElement: trigger, contains: () => true },
+        document: { readyState: 'loading', addEventListener() {}, body: new Element(), activeElement: trigger, contains: () => true },
         window: { location: { protocol: 'https:', host: 'example.test', pathname: '/rhythm_lab/' } },
         setTimeout(callback) { pending.set(++nextId, callback); return nextId; },
         clearTimeout(id) { pending.delete(id); },
@@ -71,6 +71,8 @@ test('閉じる途中で再表示しても最後は元の起動ボタンへ戻�
     runtime.openShareModal();
     runtime.document.activeElement = runtime.domCache.shareCloseBtn;
     runtime.closeShareModal();
+    // モバイルブラウザーが閉じるアニメーション中にフォーカスを背面へ移した場合。
+    runtime.document.activeElement = runtime.document.body;
     runtime.openShareModal();
     runtime.closeShareModal();
     runtime.flush();

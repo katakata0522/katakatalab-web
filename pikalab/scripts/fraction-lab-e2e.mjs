@@ -548,7 +548,9 @@ function compareLayout(actual, expected, name, theme) {
         if (!after) { differences.push({ key, property: 'missing-anchor' }); continue; }
         for (const property of ['x', 'y', 'width', 'height']) if (Math.abs(after.box[property] - before.box[property]) > 1) {
             const difference = { key, property: `box.${property}`, before: before.box[property], after: after.box[property] };
-            if (actual.viewport.width <= 400 && before.headerDescendant && after.headerDescendant) allowedGeometryFixes.push({ ...difference, reason: mobileHeaderReason });
+            if (actual.viewport.width <= 640 && after.semantics.role === 'tab' && ['width', 'x'].includes(property))
+                allowedGeometryFixes.push({ ...difference, reason: 'Content-width mobile navigation tabs' });
+            else if (actual.viewport.width <= 400 && before.headerDescendant && after.headerDescendant) allowedGeometryFixes.push({ ...difference, reason: mobileHeaderReason });
             else differences.push(difference);
         }
         for (const [property, previous] of Object.entries(before.style)) {
@@ -559,7 +561,9 @@ function compareLayout(actual, expected, name, theme) {
                 && key.endsWith('>h1:nth-of-type(1)') && property === 'letterSpacing'
                 && before.style.fontSize === '18px' && after.style.fontSize === '14px'
                 && previous === '-0.45px' && after.style[property] === '-0.35px';
-            if (scaledTitleSpacing) allowedGeometryFixes.push({ ...difference, reason: 'The unchanged -0.025em title letter spacing scales exactly with the approved mobile font size 18px to 14px' });
+            if (actual.viewport.width <= 640 && after.semantics.role === 'tab' && ['paddingLeft', 'paddingRight', 'gap'].includes(property))
+                allowedGeometryFixes.push({ ...difference, reason: 'Compact inline tab spacing' });
+            else if (scaledTitleSpacing) allowedGeometryFixes.push({ ...difference, reason: 'The unchanged -0.025em title letter spacing scales exactly with the approved mobile font size 18px to 14px' });
             else if (actual.viewport.width <= 400 && before.headerDescendant && after.headerDescendant && ['paddingLeft', 'paddingRight', 'gap', 'marginRight', 'fontSize'].includes(property)) allowedGeometryFixes.push({ ...difference, reason: mobileHeaderReason });
             else if (scopedLightColor) allowedColorDifferences.push({ ...difference, reason: 'Scoped light-panel foreground contrast correction; geometry remains strict' });
             else differences.push(difference);
@@ -594,13 +598,23 @@ async function layoutSuite() {
                         comparisons.push(compareLayout(actual, expected, name, theme));
                     }
                     imagePairs.push({ name, baseline: baseline ? `${name}-baseline.png` : null, candidate: `${name}-candidate.png`, geometry: `${name}-geometry.json` });
+                    if (viewport.width <= 640) {
+                        const tabs = actual.nodes.filter(node => node.semantics.role === 'tab');
+                        assert.equal(tabs.length, TABS.length);
+                        for (const [index, node] of tabs.entries()) {
+                            assert.ok(node.box.height >= 44 && node.box.width >= 44);
+                            if (index) assert.ok(Math.abs(node.box.x - tabs[index - 1].box.x - tabs[index - 1].box.width) <= 1);
+                        }
+                        const selected = tabs.find(node => node.semantics.selected === 'true');
+                        assert.ok(selected.box.x >= -1 && selected.box.x + selected.box.width <= viewport.width + 1, 'Selected tab is fully visible');
+                    }
                     await noHorizontalOverflow(page, record);
                     record.states.push({ state, nodes: actual.nodes.length, anchors: actual.nodes.filter(node => node.anchor).length });
                 }
                 record.comparisons = comparisons; record.baselineComparison = baseline ? 'performed' : 'explicitly skipped: FRACTION_LAB_BASELINE_ROOT is unset';
                 await writeJSON(`${theme}-${viewport.width}x${viewport.height}-comparison.json`, comparisons);
                 assert.deepEqual(comparisons.flatMap(item => item.differences.map(difference => ({ state: item.name, ...difference }))), [],
-                    'Initial layout geometry and styles remain unchanged except narrowly documented color corrections');
+                    'Only the measured compact header, navigation tabs and documented color corrections change');
                 if (baseline) { assert.deepEqual(baseline.errors, []); assert.deepEqual(baseline.requestFailures, []); }
             } finally { await baseline?.context.close(); }
         }, options, viewport);
@@ -866,7 +880,7 @@ try {
         assertions: 'Actual build only; rendered DOM/native inputs/read-only DOM and CDP observations. No imported app runtime, exposed app state, forced app transitions or substituted local assets.',
         environment: { mainSuite: 'Only external-font routes and explicitly declared storage fixtures/failures; real time and normal native inputs',
             smoke: 'Four fresh contexts, network-loaded Japanese and symbol fonts, serviceWorkers allow, no routes/init scripts/clock hacks' },
-        geometry: 'Initial anchors strict in both themes except measured header descendant geometry below 401px for verified header overlap. Outer header/nav/main remain strict. Scoped light-panel foreground contrast and semantic SVG colors documented.' });
+        geometry: 'Both themes retain outer header, navigation and main bounds. Compact header descendants and the inline size/spacing of mobile tabs have separate geometry checks.' });
     await layoutSuite(); await tabAndRangeSuite(); await compareSuite(); await arithmeticSuite(); await egyptSuite();
     await quizSuite(); await modalSuite(); await storageSuite(); await realFontsSmokeSuite(); await performanceSuite();
     if (failures.length) throw new AggregateError(failures, `Fraction Lab built E2E: ${failures.length}/${results.length} cases failed; see ${artifactDir}/results.json`);
