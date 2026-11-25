@@ -111,18 +111,34 @@
         ].filter(Boolean).join(' ');
     }
 
+    const HEAT_PATTERN = /(火|加熱|コンロ|熱湯|電子レンジ|オーブン|アイロン|ろうそく|線香|太陽炉|鍋で|湯せん)/;
+    const OUTDOOR_PATTERN = /(公園|街を歩|近所の|外の気温|虫の集まる場所|屋外|散歩|歩いて|大地図を作ろう)/;
+    const ADULT_PATTERN = /(保護者|大人と一緒|付き添)/;
+    const DISCUSSION_MESSAGES = Object.freeze({
+        matched: '予想と同じだったのは、どの条件が関係していそう？ 別の条件でも同じになるかな？',
+        different: 'どこが予想と違った？ 測り方・材料・温度・回数など、結果に影響したものはありそう？',
+        unclear: 'もう一度確かめるなら、回数を増やす？ 測り方を変える？ 比べる条件を減らす？'
+    });
+    const reflectionDom = {
+        result: null,
+        discussion: null,
+        nextQuestion: null,
+        prompt: null,
+        outcomes: []
+    };
+
     function requiresHeat(topic) {
-        return /(火|加熱|コンロ|熱湯|電子レンジ|オーブン|アイロン|ろうそく|線香|太陽炉|鍋で|湯せん)/.test(topicText(topic));
+        return HEAT_PATTERN.test(topicText(topic));
     }
 
     function requiresOutdoor(topic) {
-        return /(公園|街を歩|近所の|外の気温|虫の集まる場所|屋外|散歩|歩いて|大地図を作ろう)/.test(topicText(topic));
+        return OUTDOOR_PATTERN.test(topicText(topic));
     }
 
     function requiresAdult(topic) {
         if (topic?.adultRequired === true) return true;
         const safetyText = Array.isArray(topic?.safety) ? topic.safety.join(' ') : '';
-        return /(保護者|大人と一緒|付き添)/.test(safetyText);
+        return ADULT_PATTERN.test(safetyText);
     }
 
     function topicMatchesPreference(topic, preference) {
@@ -315,7 +331,11 @@
 
         status.textContent = `${FILTERS[preference].label}：${FILTERS[preference].description} ${matching.length < 3 ? `条件に合う候補は${matching.length}件でした。` : ''}`;
         container.innerHTML = '';
-        matching.forEach((topic) => renderTopicCard(topic, container, template));
+        const fragment = typeof document.createDocumentFragment === 'function'
+            ? document.createDocumentFragment()
+            : container;
+        matching.forEach((topic) => renderTopicCard(topic, fragment, template));
+        if (fragment !== container) container.appendChild(fragment);
     }
 
     function createReflectionPanel() {
@@ -356,6 +376,12 @@
             </div>
         `;
 
+        reflectionDom.result = document.getElementById('plan-result');
+        reflectionDom.discussion = document.getElementById('plan-discussion');
+        reflectionDom.nextQuestion = document.getElementById('plan-next-question');
+        reflectionDom.prompt = document.getElementById('science-discussion-prompt');
+        reflectionDom.outcomes = Array.from(section.querySelectorAll('input[name="science-outcome"]'));
+
         section.querySelectorAll('textarea, input[name="science-outcome"]').forEach((element) => {
             element.addEventListener('input', saveReflectionFromPanel);
             element.addEventListener('change', () => {
@@ -366,39 +392,44 @@
         loadReflectionIntoPanel();
     }
 
+    function getCheckedOutcome() {
+        for (let i = 0; i < reflectionDom.outcomes.length; i++) {
+            if (reflectionDom.outcomes[i].checked) return reflectionDom.outcomes[i].value;
+        }
+        return document.querySelector('input[name="science-outcome"]:checked')?.value || '';
+    }
+
     function updateDiscussionPrompt() {
-        const outcome = document.querySelector('input[name="science-outcome"]:checked')?.value || '';
-        const prompt = document.getElementById('science-discussion-prompt');
+        const outcome = getCheckedOutcome();
+        const prompt = reflectionDom.prompt || document.getElementById('science-discussion-prompt');
         if (!prompt) return;
 
-        const messages = {
-            matched: '予想と同じだったのは、どの条件が関係していそう？ 別の条件でも同じになるかな？',
-            different: 'どこが予想と違った？ 測り方・材料・温度・回数など、結果に影響したものはありそう？',
-            unclear: 'もう一度確かめるなら、回数を増やす？ 測り方を変える？ 比べる条件を減らす？'
-        };
-        prompt.textContent = messages[outcome] || '結果を見て、「なぜ？」を1つ考えてみよう。';
+        prompt.textContent = DISCUSSION_MESSAGES[outcome] || '結果を見て、「なぜ？」を1つ考えてみよう。';
     }
 
     function saveReflectionFromPanel() {
-        const result = document.getElementById('plan-result')?.value || '';
-        const discussion = document.getElementById('plan-discussion')?.value || '';
-        const nextQuestion = document.getElementById('plan-next-question')?.value || '';
-        const outcome = document.querySelector('input[name="science-outcome"]:checked')?.value || '';
+        const result = (reflectionDom.result || document.getElementById('plan-result'))?.value || '';
+        const discussion = (reflectionDom.discussion || document.getElementById('plan-discussion'))?.value || '';
+        const nextQuestion = (reflectionDom.nextQuestion || document.getElementById('plan-next-question'))?.value || '';
+        const outcome = getCheckedOutcome();
         writeReflectionForCurrentTopic({ result, outcome, discussion, nextQuestion });
     }
 
     function loadReflectionIntoPanel() {
-        if (!document.getElementById('plan-result')) return;
+        const result = reflectionDom.result || document.getElementById('plan-result');
+        if (!result) return;
         const data = readReflectionForCurrentTopic();
 
-        const result = document.getElementById('plan-result');
-        const discussion = document.getElementById('plan-discussion');
-        const nextQuestion = document.getElementById('plan-next-question');
-        if (result) result.value = data.result || '';
+        const discussion = reflectionDom.discussion || document.getElementById('plan-discussion');
+        const nextQuestion = reflectionDom.nextQuestion || document.getElementById('plan-next-question');
+        result.value = data.result || '';
         if (discussion) discussion.value = data.discussion || '';
         if (nextQuestion) nextQuestion.value = data.nextQuestion || '';
 
-        document.querySelectorAll('input[name="science-outcome"]').forEach((input) => {
+        const outcomes = reflectionDom.outcomes.length > 0
+            ? reflectionDom.outcomes
+            : document.querySelectorAll('input[name="science-outcome"]');
+        outcomes.forEach((input) => {
             input.checked = input.value === data.outcome;
         });
         updateDiscussionPrompt();

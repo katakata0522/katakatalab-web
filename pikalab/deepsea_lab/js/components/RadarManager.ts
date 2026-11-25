@@ -26,6 +26,7 @@ export class RadarManager {
     private allItems: DeepSeaItem[] = [];
     
     // パフォーマンス最適化のための絶対座標事前計算キャッシュ
+    private factElements: Map<string, HTMLElement> = new Map();
     private elementCache: Map<string, CachedPosition> = new Map();
     private ticking = false;
     private transitionFrame: number | null = null;
@@ -60,6 +61,7 @@ export class RadarManager {
 
         // 1. 初期描画完了時にキャッシュを構築してレーダーを初動更新（1秒遅延を完全に廃止）
         eventBus.on(CONFIG.EVENTS.FIELD_RENDERED, () => {
+            this.factElements.clear();
             this.cacheElements();
             this.updateRadar();
         });
@@ -67,7 +69,7 @@ export class RadarManager {
         // 2. スクロールおよびスワイプ時に超高速・滑らかに更新
         this.container.addEventListener('scroll', () => {
             this.requestUpdate();
-        });
+        }, { passive: true });
 
         // 3. 画面リサイズ時には座標が変わるため、即時更新とデバウンス補正で描画崩れを防ぐ
         let resizeTimeout: any = null;
@@ -95,6 +97,7 @@ export class RadarManager {
             this.transitionUntil = 0;
             this.cancelTransition();
             this.clearAllIndicators();
+            this.factElements.clear();
             this.cacheElements();
             this.updateRadar();
         });
@@ -132,11 +135,30 @@ export class RadarManager {
         this.transitionFrame = null;
     }
 
+    private indexFactElements(): void {
+        this.factElements.clear();
+        const nodes = document.querySelectorAll<HTMLElement>('[data-fact-id]');
+        for (let i = 0; i < nodes.length; i++) {
+            const node = nodes[i];
+            const factId = node.getAttribute('data-fact-id');
+            if (factId && !this.factElements.has(factId)) {
+                this.factElements.set(factId, node);
+            }
+        }
+    }
+
     private cacheElements(): void {
         this.elementCache.clear();
         if (!this.isMobileViewport()) return;
+        if (this.factElements.size === 0) {
+            this.indexFactElements();
+        }
         this.allItems.forEach(item => {
-            const el = document.querySelector(`[data-fact-id="${item.id}"]`) as HTMLElement;
+            let el = this.factElements.get(item.id) || null;
+            if (el && !el.isConnected) {
+                this.indexFactElements();
+                el = this.factElements.get(item.id) || null;
+            }
             if (el) {
                 const absOffset = this.getAbsoluteOffset(el);
                 this.elementCache.set(item.id, {

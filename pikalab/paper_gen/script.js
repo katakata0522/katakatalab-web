@@ -36,9 +36,42 @@ const CONFIG = {
 };
 
 const PAPER_TYPES = Object.freeze(['kanji', 'grid5', 'grid10', 'english', 'music', 'genko400', 'genko200']);
+const PAPER_TYPE_SET = new Set(PAPER_TYPES);
 const KANJI_STYLES = Object.freeze(['35', '84', '104']);
+const KANJI_STYLE_SET = new Set(KANJI_STYLES);
 const BOOK_REPORT_SLOTS = Object.freeze(['1', '2', '3']);
+const BOOK_REPORT_SLOT_SET = new Set(BOOK_REPORT_SLOTS);
 const DRAFT_SAVE_ERROR_MESSAGE = '下書きを保存できませんでした。ブラウザの保存容量や設定を確認してください。';
+
+const PARAGRAPH_SPLIT_REGEX = /\r\n|[\n\r\u2028\u2029]/;
+const LEADING_SPACE_REGEX = /^[ 　]/;
+const BASE64URL_REGEX = /^[A-Za-z0-9_-]*$/;
+const XML_ESCAPE_TEST_REGEX = /[&<>]/;
+const XML_ESCAPE_REGEX = /[&<>]/g;
+const XML_ESCAPE_MAP = Object.freeze({ '&': '&amp;', '<': '&lt;', '>': '&gt;' });
+const BURASAGE_CHAR_SET = new Set('。、」』）】〉》〕｝');
+const OPEN_BRACKET_CHAR_SET = new Set('「『（【〈《〔｛');
+const SMALL_KANA_CHAR_SET = new Set('っゃゅょぁぃぅぇぉャュョァィゥェォッー');
+const VERTICAL_FORM_CHAR_SET = new Set('ー「」『』（）【】〈〉《》〔〕｛｝…‥―—');
+const VERTICAL_OFFSET_PUNC = Object.freeze({ dx: '0.3em', dy: '-0.3em', isPunc: true });
+const VERTICAL_OFFSET_OPEN_BRACKET = Object.freeze({ dx: '-0.15em', dy: '0.15em', isPunc: false });
+const VERTICAL_OFFSET_SMALL = Object.freeze({ dx: '0.15em', dy: '-0.15em', isPunc: false });
+const VERTICAL_OFFSET_DEFAULT = Object.freeze({ dx: '0', dy: '0', isPunc: false });
+const SHARED_TEXT_ENCODER = typeof TextEncoder !== 'undefined' ? new TextEncoder() : null;
+const SHARED_UTF8_DECODER = typeof TextDecoder !== 'undefined'
+    ? new TextDecoder('utf-8', { fatal: true, ignoreBOM: true })
+    : null;
+const genkoGridTemplateCache = new Map();
+
+function isGenkoPaperType(type) {
+    return type === 'genko400' || type === 'genko200';
+}
+
+function escapeXmlText(value) {
+    return XML_ESCAPE_TEST_REGEX.test(value)
+        ? value.replace(XML_ESCAPE_REGEX, (character) => XML_ESCAPE_MAP[character])
+        : value;
+}
 
 // 結合文字・異体字セレクタ・絵文字の連結を、表示上の1文字として扱う。
 const GRAPHEME_SEGMENTER = typeof Intl !== 'undefined' && typeof Intl.Segmenter === 'function'
@@ -74,33 +107,26 @@ function mapTextToGenkoGrid(text, maxCols, maxRows) {
 
     if (!text) return pages;
 
-    const paragraphs = text.split(/\r\n|[\n\r\u2028\u2029]/);
+    const paragraphs = text.split(PARAGRAPH_SPLIT_REGEX);
     let pageIdx = 0;
     let col = 0;
     let row = 0;
-    const burasageChars = '。、」』）】〉》〕｝';
 
     for (const paragraph of paragraphs) {
         // 自動字下げ（スペース以外から始まる空でない段落の先頭に全角スペースを追加）
-        let processedParagraph = paragraph;
-        if (paragraph.length > 0 && !/^[ 　]/.test(paragraph)) {
-            processedParagraph = '　' + paragraph;
-        }
+        const processedParagraph = paragraph.length > 0 && !LEADING_SPACE_REGEX.test(paragraph)
+            ? '　' + paragraph
+            : paragraph;
 
-        const chars = Array.from(iterateCharacters(processedParagraph));
-        let charIndex = 0;
-        while (charIndex < chars.length) {
-            const char = chars[charIndex];
-
+        for (const char of iterateCharacters(processedParagraph)) {
             // 句読点と閉じ括弧の通常の組は行末へぶら下げる。
             // 長い記号列は最大2文字までにし、用紙の下端より外へ消えないよう
             // 残りを次のマスへ送る（文字を削ったり同じ座標へ重ねたりしない）。
-            if (row === 0 && burasageChars.includes(char)) {
+            if (row === 0 && BURASAGE_CHAR_SET.has(char)) {
                 const previousColumn = col > 0 ? pages[pageIdx][col - 1]
                     : pageIdx > 0 ? pages[pageIdx - 1][maxCols - 1] : null;
                 if (previousColumn && countCharacters(previousColumn[maxRows - 1]) < 3) {
                     previousColumn[maxRows - 1] += char;
-                    charIndex++;
                     continue;
                 }
             }
@@ -120,7 +146,6 @@ function mapTextToGenkoGrid(text, maxCols, maxRows) {
                 currentPage = createNewPage();
                 pages.push(currentPage);
             }
-            charIndex++;
         }
 
         // 段落の終わりで改行
@@ -160,19 +185,16 @@ function mapTextToGenkoGrid(text, maxCols, maxRows) {
  * @param {string} char 判定する文字
  */
 function getVerticalTextOffset(char) {
-    const puncs = '。、」』）】〉》〕｝';
-    if (puncs.includes(char)) {
-        return { dx: '0.3em', dy: '-0.3em', isPunc: true };
+    if (BURASAGE_CHAR_SET.has(char)) {
+        return VERTICAL_OFFSET_PUNC;
     }
-    const openBrackets = '「『（【〈《〔｛';
-    if (openBrackets.includes(char)) {
-        return { dx: '-0.15em', dy: '0.15em', isPunc: false };
+    if (OPEN_BRACKET_CHAR_SET.has(char)) {
+        return VERTICAL_OFFSET_OPEN_BRACKET;
     }
-    const smalls = 'っゃゅょっぁぃぅぇぉっャュョァィゥェォッー';
-    if (smalls.includes(char)) {
-        return { dx: '0.15em', dy: '-0.15em', isPunc: false };
+    if (SMALL_KANA_CHAR_SET.has(char)) {
+        return VERTICAL_OFFSET_SMALL;
     }
-    return { dx: '0', dy: '0', isPunc: false };
+    return VERTICAL_OFFSET_DEFAULT;
 }
 
 
@@ -215,12 +237,12 @@ function clampNumber(value, min, max, fallback = min) {
 }
 
 function sanitizePaperType(type) {
-    return PAPER_TYPES.includes(type) ? type : 'kanji';
+    return PAPER_TYPE_SET.has(type) ? type : 'kanji';
 }
 
 function sanitizeKanjiStyle(style) {
     const candidate = String(style ?? '');
-    return KANJI_STYLES.includes(candidate) ? candidate : '35';
+    return KANJI_STYLE_SET.has(candidate) ? candidate : '35';
 }
 
 function countCharacters(value) {
@@ -244,7 +266,8 @@ function truncateCharacters(value, maxLength) {
 // 通常URLとLINEへの入れ子URLがサーバーの要求行上限を超えないようにする。
 // 短い旧形式は維持し、日本語1000文字の長文はUTF-8のURL-safe Base64へ切り替える。
 function encodeSharedDraft(text) {
-    const bytes = new TextEncoder().encode(text);
+    const encoder = SHARED_TEXT_ENCODER || new TextEncoder();
+    const bytes = encoder.encode(text);
     return btoa(String.fromCharCode(...bytes)).replaceAll('+', '-').replaceAll('/', '_').replace(/=+$/, '');
 }
 
@@ -252,9 +275,10 @@ function readSharedDraft(params) {
     if (params.has('draft')) return params.get('draft');
     const encoded = params.get('draft64');
     if (encoded === null) return null;
-    if (!/^[A-Za-z0-9_-]*$/.test(encoded)) throw new TypeError('共有下書きの形式が不正です');
+    if (!BASE64URL_REGEX.test(encoded)) throw new TypeError('共有下書きの形式が不正です');
     const bytes = Uint8Array.from(atob(encoded.replaceAll('-', '+').replaceAll('_', '/')), char => char.charCodeAt(0));
-    return new TextDecoder('utf-8', { fatal: true, ignoreBOM: true }).decode(bytes);
+    const decoder = SHARED_UTF8_DECODER || new TextDecoder('utf-8', { fatal: true, ignoreBOM: true });
+    return decoder.decode(bytes);
 }
 
 function buildShareQuery(type, draftText, kanjiStyle, maxDraftLength = 1000) {
@@ -264,14 +288,14 @@ function buildShareQuery(type, draftText, kanjiStyle, maxDraftLength = 1000) {
 
     if (safeType === 'kanji') params.set('kanji', sanitizeKanjiStyle(kanjiStyle));
 
-    const isGenko = safeType === 'genko400' || safeType === 'genko200';
+    const isGenko = isGenkoPaperType(safeType);
     const sourceText = isGenko && typeof draftText === 'string' ? draftText : '';
     let safeDraft = truncateCharacters(sourceText, maxDraftLength);
     if (safeDraft) {
         params.set('draft', safeDraft);
         // 短文は既存URLを保つ。外側URLのパーセント符号化も含めて長さを判定する。
         if (encodeURIComponent(params.toString()).length > 6500) {
-            const encoder = new TextEncoder();
+            const encoder = SHARED_TEXT_ENCODER || new TextEncoder();
             const characters = [];
             let byteLength = 0;
             for (const character of iterateCharacters(safeDraft)) {
@@ -294,7 +318,7 @@ function buildShareQuery(type, draftText, kanjiStyle, maxDraftLength = 1000) {
 
 function sanitizeBookReportSlot(slot) {
     const candidate = String(slot ?? '');
-    return BOOK_REPORT_SLOTS.includes(candidate) ? candidate : '1';
+    return BOOK_REPORT_SLOT_SET.has(candidate) ? candidate : '1';
 }
 
 function normalizeBookReportData(value, draftText) {
@@ -515,13 +539,69 @@ function buildMusicMarkup(paperConfig) {
     return wrapSinglePageSVG(svgContent, A4_W, A4_H);
 }
 
+function getGenkoGridTemplate(is400, A4_W, A4_H, layout) {
+    const cacheKey = `${is400 ? '400' : '200'}:${A4_W}:${A4_H}`;
+    const cached = genkoGridTemplateCache.get(cacheKey);
+    if (cached) return cached;
+
+    const { maxCols, maxRows, cellW, cellH, hashiraW, totalW, totalH, offsetX, offsetY, colXPositions, rowYPositions } = layout;
+    const genkoStroke = '#8db39e'; // 原稿用紙クラシック緑
+    const parts = [];
+    const hashiraCenterX = A4_W / 2;
+
+    // 二重外枠の描画
+    parts.push(`<rect x="${offsetX - 1.5}" y="${offsetY - 1.5}" width="${totalW + 3.0}" height="${totalH + 3.0}" fill="none" stroke="${genkoStroke}" stroke-width="0.8" />`);
+    parts.push(`<rect x="${offsetX - 0.5}" y="${offsetY - 0.5}" width="${totalW + 1.0}" height="${totalH + 1.0}" fill="none" stroke="${genkoStroke}" stroke-width="0.3" />`);
+
+    if (is400) {
+        // 柱の境界線（左右の縦線）の描画
+        parts.push(`<line x1="${hashiraCenterX - hashiraW / 2}" y1="${offsetY}" x2="${hashiraCenterX - hashiraW / 2}" y2="${offsetY + totalH}" stroke="${genkoStroke}" stroke-width="0.5" />`);
+        parts.push(`<line x1="${hashiraCenterX + hashiraW / 2}" y1="${offsetY}" x2="${hashiraCenterX + hashiraW / 2}" y2="${offsetY + totalH}" stroke="${genkoStroke}" stroke-width="0.5" />`);
+
+        // 柱の中央座標
+        const centerY = offsetY + totalH / 2;
+        const gyobiIndent = 1.5; // へこみの深さ (mm)
+        const gyobiTopY = centerY - 12.0;
+        const gyobiBottomY = centerY - 6.0;
+        const gyobiBottomTopY = centerY + 6.0;
+        const gyobiBottomBottomY = centerY + 12.0;
+
+        // 上側魚尾
+        parts.push(`<path d="M ${hashiraCenterX - hashiraW / 2} ${gyobiTopY} L ${hashiraCenterX + hashiraW / 2} ${gyobiTopY} L ${hashiraCenterX + hashiraW * 0.3} ${gyobiBottomY} L ${hashiraCenterX} ${gyobiBottomY - gyobiIndent} L ${hashiraCenterX - hashiraW * 0.3} ${gyobiBottomY} Z" fill="${genkoStroke}" />`);
+        // 下側魚尾
+        parts.push(`<path d="M ${hashiraCenterX - hashiraW / 2} ${gyobiBottomBottomY} L ${hashiraCenterX + hashiraW / 2} ${gyobiBottomBottomY} L ${hashiraCenterX + hashiraW * 0.3} ${gyobiBottomTopY} L ${hashiraCenterX} ${gyobiBottomTopY + gyobiIndent} L ${hashiraCenterX - hashiraW * 0.3} ${gyobiBottomTopY} Z" fill="${genkoStroke}" />`);
+    }
+
+    const rectStrokeWidth = is400 ? 0.4 : 0.5;
+    for (let c = 0; c < maxCols; c++) {
+        const x = colXPositions[c];
+        for (let r = 0; r < maxRows; r++) {
+            parts.push(`<rect x="${x}" y="${rowYPositions[r]}" width="${cellW}" height="${cellH}" fill="none" stroke="${genkoStroke}" stroke-width="${rectStrokeWidth}" />`);
+        }
+    }
+
+    const template = parts.join('');
+    genkoGridTemplateCache.set(cacheKey, template);
+    return template;
+}
+
+function buildGenkoTextNode(char, idx, centerX, centerY, fontSize) {
+    const offset = getVerticalTextOffset(char);
+    const classStr = offset.isPunc ? 'genko-text punc' : 'genko-text';
+    const verticalForm = VERTICAL_FORM_CHAR_SET.has(char);
+    const dyVal = idx > 0 ? `${idx - 0.3}em` : verticalForm ? '0' : offset.dy;
+    const dxVal = idx > 0 ? '0.3em' : verticalForm ? '0' : offset.dx;
+    const orientation = verticalForm ? ' style="writing-mode:vertical-rl;text-orientation:mixed"' : '';
+    const safeChar = escapeXmlText(char);
+    return `<text x="${centerX}" y="${centerY}" class="${classStr}" font-size="${fontSize}" text-anchor="middle" dominant-baseline="central" dx="${dxVal}" dy="${dyVal}"${orientation}>${safeChar}</text>`;
+}
+
 /**
  * 原稿用紙 (400字 / 200字) のマークアップを生成する (共通ロジック)
  */
 function buildGenkoMarkup(type, paperConfig, text, mappedPages) {
     const { A4_W, A4_H } = paperConfig;
-    const genkoStroke = '#8db39e'; // 原稿用紙クラシック緑
-    
+
     const is400 = type === 'genko400';
     const maxCols = is400 ? 20 : 10;
     const maxRows = 20;
@@ -532,90 +612,70 @@ function buildGenkoMarkup(type, paperConfig, text, mappedPages) {
     const hashiraW = is400 ? 8.0 : 0.0;
     const fontSize = is400 ? 4.8 : 7.2;
     const textYOffset = is400 ? 0.3 : 0.4;
-    
+
     const totalW = maxCols * cellW + (maxCols - (is400 ? 2 : 1)) * colGap + hashiraW; // 400字: 166mm, 200字: 118mm
     const totalH = maxRows * cellH + (maxRows - 1) * rowGap; // 400字: 149.5mm, 200字: 209.5mm
     const offsetX = (A4_W - totalW) / 2;
     const offsetY = (A4_H - totalH) / 2;
 
-    const textPages = mappedPages || mapTextToGenkoGrid(text, maxCols, maxRows);
-    let pagesMarkup = '';
+    const colXPositions = new Array(maxCols);
+    for (let c = 0; c < maxCols; c++) {
+        colXPositions[c] = is400 && c >= 10
+            ? A4_W - offsetX - (c + 1) * cellW - (c - 1) * colGap - hashiraW
+            : A4_W - offsetX - (c + 1) * cellW - c * colGap;
+    }
+    const rowYPositions = new Array(maxRows);
+    for (let r = 0; r < maxRows; r++) {
+        rowYPositions[r] = offsetY + r * cellH + r * rowGap;
+    }
 
-    textPages.forEach((textGrid, pageIdx) => {
-        let svgContent = '';
-        const hashiraCenterX = A4_W / 2;
-
-        // 二重外枠の描画
-        svgContent += `<rect x="${offsetX - 1.5}" y="${offsetY - 1.5}" width="${totalW + 3.0}" height="${totalH + 3.0}" fill="none" stroke="${genkoStroke}" stroke-width="0.8" />`;
-        svgContent += `<rect x="${offsetX - 0.5}" y="${offsetY - 0.5}" width="${totalW + 1.0}" height="${totalH + 1.0}" fill="none" stroke="${genkoStroke}" stroke-width="0.3" />`;
-
-        if (is400) {
-            // 柱の境界線（左右の縦線）の描画
-            svgContent += `<line x1="${hashiraCenterX - hashiraW / 2}" y1="${offsetY}" x2="${hashiraCenterX - hashiraW / 2}" y2="${offsetY + totalH}" stroke="${genkoStroke}" stroke-width="0.5" />`;
-            svgContent += `<line x1="${hashiraCenterX + hashiraW / 2}" y1="${offsetY}" x2="${hashiraCenterX + hashiraW / 2}" y2="${offsetY + totalH}" stroke="${genkoStroke}" stroke-width="0.5" />`;
-
-            // 柱の中央座標
-            const centerY = offsetY + totalH / 2;
-            const gyobiIndent = 1.5; // へこみの深さ (mm)
-            
-            // 魚尾を柱のちょうど中央付近にコンパクトに対向配置（文字は印刷せず、一般的な空白仕様とする）
-            const gyobiTopY = centerY - 12.0;
-            const gyobiBottomY = centerY - 6.0;
-            const gyobiBottomTopY = centerY + 6.0;
-            const gyobiBottomBottomY = centerY + 12.0;
-
-            // 上側魚尾
-            svgContent += `<path d="M ${hashiraCenterX - hashiraW / 2} ${gyobiTopY} L ${hashiraCenterX + hashiraW / 2} ${gyobiTopY} L ${hashiraCenterX + hashiraW * 0.3} ${gyobiBottomY} L ${hashiraCenterX} ${gyobiBottomY - gyobiIndent} L ${hashiraCenterX - hashiraW * 0.3} ${gyobiBottomY} Z" fill="${genkoStroke}" />`;
-            // 下側魚尾
-            svgContent += `<path d="M ${hashiraCenterX - hashiraW / 2} ${gyobiBottomBottomY} L ${hashiraCenterX + hashiraW / 2} ${gyobiBottomBottomY} L ${hashiraCenterX + hashiraW * 0.3} ${gyobiBottomTopY} L ${hashiraCenterX} ${gyobiBottomTopY + gyobiIndent} L ${hashiraCenterX - hashiraW * 0.3} ${gyobiBottomTopY} Z" fill="${genkoStroke}" />`;
-        }
-
-        // マス目の描画＆流し込み文字
-        for (let c = 0; c < maxCols; c++) {
-            let x;
-            if (is400) {
-                if (c < 10) {
-                    x = A4_W - offsetX - (c + 1) * cellW - c * colGap;
-                } else {
-                    x = A4_W - offsetX - (c + 1) * cellW - (c - 1) * colGap - hashiraW;
-                }
-            } else {
-                x = A4_W - offsetX - (c + 1) * cellW - c * colGap;
-            }
-
-            for (let r = 0; r < maxRows; r++) {
-                const y = offsetY + r * cellH + r * rowGap;
-                svgContent += `<rect x="${x}" y="${y}" width="${cellW}" height="${cellH}" fill="none" stroke="${genkoStroke}" stroke-width="${is400 ? 0.4 : 0.5}" />`;
-                
-                const cellVal = textGrid[c][r];
-                if (cellVal && cellVal.trim() !== '') {
-                    const chars = Array.from(iterateCharacters(cellVal));
-                    chars.forEach((char, idx) => {
-                        const offset = getVerticalTextOffset(char);
-                        const classStr = offset.isPunc ? 'genko-text punc' : 'genko-text';
-                        
-                        // ぶら下げの2文字目以降の句読点は、文字と重ならないようにマスの枠外（右下）にオフセット
-                        // 連続する「。」や閉じ括弧も、同じ座標に重ねず縦に続ける。
-                        // 長音・括弧はフォントの縦書き字形を使い、横向きのままにしない。
-                        const verticalForm = 'ー「」『』（）【】〈〉《》〔〕｛｝…‥―—'.includes(char);
-                        const dyVal = idx > 0 ? `${idx - 0.3}em` : verticalForm ? '0' : offset.dy;
-                        const dxVal = idx > 0 ? '0.3em' : verticalForm ? '0' : offset.dx;
-                        const orientation = verticalForm ? ' style="writing-mode:vertical-rl;text-orientation:mixed"' : '';
-
-                        // XML/SVGのパースエラーを防ぐために特殊文字をエスケープ
-                        const safeChar = char.replace(/[&<>]/g, (character) => ({
-                            '&': '&amp;', '<': '&lt;', '>': '&gt;'
-                        })[character]);
-                        svgContent += `<text x="${x + cellW / 2}" y="${y + cellH / 2 + textYOffset}" class="${classStr}" font-size="${fontSize}" text-anchor="middle" dominant-baseline="central" dx="${dxVal}" dy="${dyVal}"${orientation}>${safeChar}</text>`;
-                    });
-                }
-            }
-        }
-
-        pagesMarkup += wrapSinglePageSVG(svgContent, A4_W, A4_H);
+    const baseGridSvg = getGenkoGridTemplate(is400, A4_W, A4_H, {
+        maxCols,
+        maxRows,
+        cellW,
+        cellH,
+        hashiraW,
+        totalW,
+        totalH,
+        offsetX,
+        offsetY,
+        colXPositions,
+        rowYPositions,
     });
 
-    return pagesMarkup;
+    const halfCellW = cellW / 2;
+    const halfCellHPlusOffset = cellH / 2 + textYOffset;
+    const textPages = mappedPages || mapTextToGenkoGrid(text, maxCols, maxRows);
+    const pageMarkups = new Array(textPages.length);
+
+    for (let pageIdx = 0; pageIdx < textPages.length; pageIdx++) {
+        const textGrid = textPages[pageIdx];
+        const textParts = [];
+
+        for (let c = 0; c < maxCols; c++) {
+            const colArr = textGrid[c];
+            const centerX = colXPositions[c] + halfCellW;
+            for (let r = 0; r < maxRows; r++) {
+                const cellVal = colArr[r];
+                if (!cellVal || cellVal.trim() === '') continue;
+                const centerY = rowYPositions[r] + halfCellHPlusOffset;
+                if (cellVal.length === 1) {
+                    textParts.push(buildGenkoTextNode(cellVal, 0, centerX, centerY, fontSize));
+                } else {
+                    let idx = 0;
+                    for (const char of iterateCharacters(cellVal)) {
+                        textParts.push(buildGenkoTextNode(char, idx, centerX, centerY, fontSize));
+                        idx++;
+                    }
+                }
+            }
+        }
+
+        const svgContent = textParts.length > 0 ? baseGridSvg + textParts.join('') : baseGridSvg;
+        pageMarkups[pageIdx] = wrapSinglePageSVG(svgContent, A4_W, A4_H);
+    }
+
+    return pageMarkups.join('');
 }
 
 /**
@@ -716,6 +776,13 @@ const app = {
         this.dom.previewSizer = document.getElementById('paper-preview-sizer');
         this.dom.previewContainer = document.getElementById('preview-container');
         this.dom.paperBtns = document.querySelectorAll('.paper-btn');
+        this.dom.paperBtnByType = new Map();
+        this.dom.paperBtns.forEach((btn) => {
+            const type = btn.dataset?.paperType;
+            if (type && !this.dom.paperBtnByType.has(type)) {
+                this.dom.paperBtnByType.set(type, btn);
+            }
+        });
         this.dom.zoomInBtn = document.getElementById('zoom-in-btn');
         this.dom.zoomOutBtn = document.getElementById('zoom-out-btn');
         this.dom.printPaperBtn = document.getElementById('print-paper-btn');
@@ -902,8 +969,8 @@ const app = {
         if (!this.dom.printTarget) return;
         const safeType = sanitizePaperType(type);
         this.activePaperType = safeType;
-        const matchedBtn = btnElement || Array.from(this.dom.paperBtns).find(
-            (button) => button.dataset.paperType === safeType
+        const matchedBtn = btnElement || this.dom.paperBtnByType?.get(safeType) || Array.from(this.dom.paperBtns || []).find(
+            (button) => button.dataset?.paperType === safeType
         ) || null;
 
         this.updateActiveButton(matchedBtn);
@@ -911,15 +978,11 @@ const app = {
         // 漢字設定パネルの表示制御
         const isKanji = safeType === 'kanji';
         if (this.dom.kanjiSettingsPanel) {
-            if (isKanji) {
-                this.dom.kanjiSettingsPanel.classList.remove('hidden');
-            } else {
-                this.dom.kanjiSettingsPanel.classList.add('hidden');
-            }
+            this.dom.kanjiSettingsPanel.classList.toggle('hidden', !isKanji);
         }
 
         // 原稿用紙以外のときは流し込みフォームを無効化
-        const isGenko = safeType === 'genko400' || safeType === 'genko200';
+        const isGenko = isGenkoPaperType(safeType);
         if (this.dom.draftTextarea) {
             this.dom.draftTextarea.disabled = !isGenko;
         }
@@ -935,7 +998,7 @@ const app = {
     refreshPaper() {
         const target = this.dom.printTarget;
         if (!target) return;
-        const isGenko = this.activePaperType === 'genko400' || this.activePaperType === 'genko200';
+        const isGenko = isGenkoPaperType(this.activePaperType);
         const text = isGenko ? (this.dom.draftTextarea?.value || '') : '';
         const key = JSON.stringify([this.activePaperType, this.activeKanjiStyle, text]);
         if (this.renderedTarget === target && this.renderedKey === key) return;
@@ -975,7 +1038,7 @@ const app = {
     analyzeDraft(text) {
         const type = this.activePaperType;
         if (this.draftAnalysis?.text === text && this.draftAnalysis.type === type) return this.draftAnalysis;
-        const isGenko = type === 'genko400' || type === 'genko200';
+        const isGenko = isGenkoPaperType(type);
         // 文字数表示と150ms後の描画で同じ原稿を二重にマッピングしない。
         this.draftAnalysis = {
             text, type, length: countCharacters(text),
@@ -993,7 +1056,7 @@ const app = {
         }
 
         if (this.dom.draftSheetEstimate) {
-            const isGenko = this.activePaperType === 'genko400' || this.activePaperType === 'genko200';
+            const isGenko = isGenkoPaperType(this.activePaperType);
             if (!isGenko) {
                 this.dom.draftSheetEstimate.textContent = '目安: 0.0枚';
                 return;
@@ -1117,13 +1180,15 @@ const app = {
             alert('共有リンクの下書きを読み込めませんでした。');
         }
 
+        const requestedType = params.get('type');
+        const hasValidRequestedType = requestedType && PAPER_TYPE_SET.has(requestedType);
+
         if (urlDraft) {
             if (this.dom.draftTextarea) {
                 // 共有リンクの閲覧だけでは、端末にある感想文の下書きを上書きしない。
                 this.dom.draftTextarea.value = urlDraft;
             }
-            const requestedType = params.get('type');
-            if (requestedType && PAPER_TYPES.includes(requestedType)) {
+            if (hasValidRequestedType) {
                 initialType = requestedType;
             } else {
                 const len = countCharacters(urlDraft);
@@ -1131,19 +1196,15 @@ const app = {
             }
         } else if (hasLoadDraft) {
             this.loadFromBookReport();
-            const requestedType = params.get('type');
-            if (requestedType && PAPER_TYPES.includes(requestedType)) {
+            if (hasValidRequestedType) {
                 initialType = requestedType;
             } else {
                 // 文字数に応じて200字か400字か最適な方を自動で選ぶ
                 const len = this.dom.draftTextarea ? countCharacters(this.dom.draftTextarea.value) : 0;
                 initialType = len > 0 && len <= 200 ? 'genko200' : 'genko400';
             }
-        } else {
-            const requestedType = params.get('type');
-            if (requestedType && PAPER_TYPES.includes(requestedType)) {
-                initialType = requestedType;
-            }
+        } else if (hasValidRequestedType) {
+            initialType = requestedType;
         }
 
         if (initialType === 'kanji') {
@@ -1153,7 +1214,7 @@ const app = {
             });
         }
 
-        this.setPaper(initialType, Array.from(this.dom.paperBtns).find(btn => btn.dataset.paperType === initialType) || firstBtn);
+        this.setPaper(initialType, this.dom.paperBtnByType?.get(initialType) || firstBtn);
 
         setTimeout(() => this.adjustScale(), CONFIG.INIT_DELAY_MS);
     }

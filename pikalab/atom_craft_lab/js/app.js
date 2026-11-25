@@ -11,30 +11,44 @@ import {
 import { loadBalanceStage, renderBalanceStageUI, verifyBalanceAndReact } from './balance.js';
 import { renderBookSection, updateStampBadge } from './book.js';
 
+const MODE_KEYS = Object.freeze(['craft', 'balance', 'book']);
+const MODE_SECTION_IDS = Object.freeze({
+    craft: 'sectionCraft',
+    balance: 'sectionBalance',
+    book: 'sectionBook'
+});
+const MODE_TAB_IDS = Object.freeze({
+    craft: 'tabModeCraft',
+    balance: 'tabModeBalance',
+    book: 'tabModeBook'
+});
+const ACTIVE_TAB_CLASS = 'flex items-center justify-center gap-1.5 py-2.5 px-2 rounded-xl font-extrabold text-xs sm:text-sm transition bg-white dark:bg-slate-800 text-sky-600 dark:text-sky-400 shadow-sm cursor-pointer';
+const INACTIVE_TAB_CLASS = 'flex items-center justify-center gap-1.5 py-2.5 px-2 rounded-xl font-extrabold text-xs sm:text-sm transition text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white cursor-pointer';
+const BALANCE_HINT_BOX_CLASS = 'rounded-2xl p-4 border text-xs sm:text-sm font-bold leading-relaxed bg-amber-50 border-amber-300 text-amber-900 dark:bg-amber-950/60 dark:text-amber-200 dark:border-amber-800 animate-pop';
+
+const RECIPE_BY_ID = new Map(MOLECULE_RECIPES.map(recipe => [recipe.id, recipe]));
+const RECIPE_INDEX_BY_ID = new Map(MOLECULE_RECIPES.map((recipe, idx) => [recipe.id, idx]));
+
+const domCache = new Map();
+function getEl(id) {
+    const cached = domCache.get(id);
+    if (cached && cached.isConnected !== false) return cached;
+    const el = document.getElementById(id);
+    if (el) domCache.set(id, el);
+    return el;
+}
+
 function switchMode(mode) {
     playSound('pop');
     state.currentMode = mode;
 
-    const sections = {
-        craft: document.getElementById('sectionCraft'),
-        balance: document.getElementById('sectionBalance'),
-        book: document.getElementById('sectionBook')
-    };
-    const tabs = {
-        craft: document.getElementById('tabModeCraft'),
-        balance: document.getElementById('tabModeBalance'),
-        book: document.getElementById('tabModeBook')
-    };
-
-    Object.keys(sections).forEach(k => {
-        if (k === mode) {
-            sections[k].classList.remove('hidden');
-            tabs[k].className = 'flex items-center justify-center gap-1.5 py-2.5 px-2 rounded-xl font-extrabold text-xs sm:text-sm transition bg-white dark:bg-slate-800 text-sky-600 dark:text-sky-400 shadow-sm cursor-pointer';
-        } else {
-            sections[k].classList.add('hidden');
-            tabs[k].className = 'flex items-center justify-center gap-1.5 py-2.5 px-2 rounded-xl font-extrabold text-xs sm:text-sm transition text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white cursor-pointer';
-        }
-    });
+    for (const key of MODE_KEYS) {
+        const section = getEl(MODE_SECTION_IDS[key]);
+        const tab = getEl(MODE_TAB_IDS[key]);
+        const isActive = key === mode;
+        section.classList.toggle('hidden', !isActive);
+        tab.className = isActive ? ACTIVE_TAB_CLASS : INACTIVE_TAB_CLASS;
+    }
 
     if (mode === 'book') renderBookSection();
 }
@@ -53,13 +67,13 @@ function handleGlobalClick(e) {
         }
         case 'toggle-settings': {
             playSound('pop');
-            document.getElementById('settingsDrawer').classList.toggle('hidden');
+            getEl('settingsDrawer').classList.toggle('hidden');
             break;
         }
         case 'toggle-sound': {
             state.soundEnabled = !state.soundEnabled;
-            document.getElementById('soundIcon').textContent = state.soundEnabled ? '🔊' : '🔇';
-            document.getElementById('soundLabel').textContent = state.soundEnabled ? '音 ON' : '音 OFF';
+            getEl('soundIcon').textContent = state.soundEnabled ? '🔊' : '🔇';
+            getEl('soundLabel').textContent = state.soundEnabled ? '音 ON' : '音 OFF';
             if (state.soundEnabled) playSound('pop');
             break;
         }
@@ -67,22 +81,22 @@ function handleGlobalClick(e) {
             playSound('pop');
             state.fontLarge = !state.fontLarge;
             document.documentElement.classList.toggle('font-large', state.fontLarge);
-            document.getElementById('fontLabel').textContent = state.fontLarge ? '文字：おおきく' : '文字：ふつう';
+            getEl('fontLabel').textContent = state.fontLarge ? '文字：おおきく' : '文字：ふつう';
             break;
         }
         case 'toggle-motion': {
             playSound('pop');
             state.reduceMotion = !state.reduceMotion;
             document.body.classList.toggle('reduce-motion', state.reduceMotion);
-            document.getElementById('motionLabel').textContent = state.reduceMotion ? '動きをへらす：ON' : '動きをへらす：OFF';
+            getEl('motionLabel').textContent = state.reduceMotion ? '動きをへらす：ON' : '動きをへらす：OFF';
             break;
         }
         case 'toggle-theme': {
             playSound('pop');
             state.darkMode = !state.darkMode;
             document.documentElement.classList.toggle('dark', state.darkMode);
-            document.getElementById('themeIcon').textContent = state.darkMode ? '☀️' : '🌙';
-            document.getElementById('themeLabel').textContent = state.darkMode ? '夜の画面：ON' : '夜の画面：OFF';
+            getEl('themeIcon').textContent = state.darkMode ? '☀️' : '🌙';
+            getEl('themeLabel').textContent = state.darkMode ? '夜の画面：ON' : '夜の画面：OFF';
             break;
         }
         case 'select-mission': {
@@ -98,7 +112,7 @@ function handleGlobalClick(e) {
         }
         case 'next-mission': {
             playSound('pop');
-            const curIdx = MOLECULE_RECIPES.findIndex(r => r.id === state.selectedRecipeId);
+            const curIdx = RECIPE_INDEX_BY_ID.has(state.selectedRecipeId) ? RECIPE_INDEX_BY_ID.get(state.selectedRecipeId) : -1;
             const nextRecipe = MOLECULE_RECIPES[(curIdx + 1) % MOLECULE_RECIPES.length];
             state.selectedRecipeId = nextRecipe.id;
             state.chamberAtoms = [];
@@ -108,7 +122,7 @@ function handleGlobalClick(e) {
             break;
         }
         case 'fill-mission-atoms': {
-            const recipe = MOLECULE_RECIPES.find(r => r.id === state.selectedRecipeId);
+            const recipe = RECIPE_BY_ID.get(state.selectedRecipeId);
             if (recipe && recipe.defaultAtoms) {
                 hideSynthesizedView();
                 playSound('pop');
@@ -155,7 +169,7 @@ function handleGlobalClick(e) {
         case 'toggle-coeff-one': {
             playSound('pop');
             state.showCoeffOne = !state.showCoeffOne;
-            document.getElementById('toggleCoeffOneBtn').textContent = state.showCoeffOne
+            getEl('toggleCoeffOneBtn').textContent = state.showCoeffOne
                 ? '📝 係数「1」も表示中'
                 : '📝 係数「1」を省略中';
             renderBalanceStageUI();
@@ -181,7 +195,7 @@ function handleGlobalClick(e) {
             }
             playSound(delta > 0 ? 'pop' : 'remove');
             arr[idx] = nextVal;
-            document.getElementById('balanceFeedbackBox').classList.add('hidden');
+            getEl('balanceFeedbackBox').classList.add('hidden');
             renderBalanceStageUI();
             break;
         }
@@ -193,8 +207,8 @@ function handleGlobalClick(e) {
         case 'show-balance-hint': {
             playSound('hint');
             const stage = BALANCE_STAGES[state.currentStageIndex];
-            const box = document.getElementById('balanceFeedbackBox');
-            box.className = 'rounded-2xl p-4 border text-xs sm:text-sm font-bold leading-relaxed bg-amber-50 border-amber-300 text-amber-900 dark:bg-amber-950/60 dark:text-amber-200 dark:border-amber-800 animate-pop';
+            const box = getEl('balanceFeedbackBox');
+            box.className = BALANCE_HINT_BOX_CLASS;
             box.innerHTML = `💡 <strong>ヒント：</strong>${stage.hint}`;
             break;
         }
@@ -206,7 +220,7 @@ function handleGlobalClick(e) {
             const recipeId = target.getAttribute('data-recipe-id');
             if (recipeId) {
                 state.selectedRecipeId = recipeId;
-                const recipe = MOLECULE_RECIPES.find(r => r.id === recipeId);
+                const recipe = RECIPE_BY_ID.get(recipeId);
                 if (recipe) state.chamberAtoms = [...recipe.defaultAtoms];
                 hideSynthesizedView();
                 renderCraftMissionsAndPalette();
@@ -224,7 +238,7 @@ function handleGlobalClick(e) {
             break;
         }
         case 'close-break-modal': {
-            document.getElementById('breakModal').classList.add('hidden');
+            getEl('breakModal').classList.add('hidden');
             break;
         }
     }
@@ -238,11 +252,12 @@ function initApp() {
     updateStampBadge();
 
     /* 時計表示で焦らせず、バックグラウンドで30分経過時のみ休憩を案内 */
-    setInterval(() => {
+    const breakTimerId = setInterval(() => {
         state.elapsedSeconds++;
         if (state.elapsedSeconds >= 1800 && !state.breakReminded) {
             state.breakReminded = true;
-            document.getElementById('breakModal').classList.remove('hidden');
+            getEl('breakModal').classList.remove('hidden');
+            clearInterval(breakTimerId);
         }
     }, 1000);
 }

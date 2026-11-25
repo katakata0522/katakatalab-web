@@ -378,6 +378,39 @@ header .material-symbols-rounded.hidden {
     display: none;
 }
 
+@media (max-width: 900px) {
+    header {
+        padding: 0.75rem 1rem !important;
+        gap: 0.5rem;
+    }
+
+    header > div:first-child {
+        min-width: 0;
+        gap: 0.625rem !important;
+    }
+
+    header > div:last-child {
+        flex-shrink: 0;
+        gap: 0.4rem !important;
+    }
+
+    header h1 {
+        font-size: clamp(1.05rem, 2.4vw, 1.3rem) !important;
+        line-height: 1.25 !important;
+        white-space: nowrap;
+    }
+}
+
+@media (max-width: 767px) {
+    header {
+        position: static !important;
+    }
+
+    section[aria-label="ドラムパッド"] {
+        padding: 1rem;
+    }
+}
+
 @media (max-width: 520px) {
     header {
         padding: 0.75rem !important;
@@ -398,8 +431,9 @@ header .material-symbols-rounded.hidden {
     }
 
     header h1 {
-        font-size: 1rem !important;
+        font-size: 0.95rem !important;
         line-height: 1.2 !important;
+        white-space: normal;
     }
 
     header p {

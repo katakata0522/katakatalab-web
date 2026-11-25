@@ -3,6 +3,24 @@ if (typeof document !== 'undefined') {
     else document.addEventListener('DOMContentLoaded', init, { once: true });
 }
 
+const TAB_IDS = ['whatis', 'visual', 'compare', 'calc', 'sub', 'secret'];
+const TAB_ID_SET = new Set(TAB_IDS);
+const elementCacheByDoc = new WeakMap();
+
+function getEl(id) {
+    if (typeof document === 'undefined') return null;
+    let cache = elementCacheByDoc.get(document);
+    if (!cache) {
+        cache = new Map();
+        elementCacheByDoc.set(document, cache);
+    }
+    const cached = cache.get(id);
+    if (cached && cached.isConnected !== false) return cached;
+    const el = document.getElementById(id);
+    if (el) cache.set(id, el);
+    return el;
+}
+
 let initialized = false;
 function init() {
     if (initialized) return;
@@ -188,7 +206,7 @@ function decomposeEgyptianFraction(numerator, denominator, maxTerms = 20) {
 }
 
 function switchTab(id, shouldFocus = false) {
-    if (!['whatis', 'visual', 'compare', 'calc', 'sub', 'secret'].includes(id)) return;
+    if (!TAB_ID_SET.has(id)) return;
     let activeTab = null;
     document.querySelectorAll('.nav-btn').forEach(b => {
         const isActive = b.dataset.tab === id;
@@ -197,18 +215,19 @@ function switchTab(id, shouldFocus = false) {
         b.setAttribute('tabindex', isActive ? '0' : '-1');
         if (isActive) activeTab = b;
     });
-    ['whatis', 'visual', 'compare', 'calc', 'sub', 'secret'].forEach(v => {
-        const el = document.getElementById(`view-${v}`);
+    for (let i = 0; i < TAB_IDS.length; i++) {
+        const v = TAB_IDS[i];
+        const el = getEl(`view-${v}`);
         if (el) {
             const isActive = v === id;
             el.classList.toggle('hidden', !isActive);
             el.classList.toggle('flex', isActive);
             el.hidden = !isActive;
         }
-    });
+    }
     if (shouldFocus && activeTab) activeTab.focus();
 
-    const liveStatus = document.getElementById('fraction-live-status');
+    const liveStatus = getEl('fraction-live-status');
     if (liveStatus && activeTab) {
         liveStatus.textContent = `${activeTab.textContent.trim()}を表示しました`;
     }
@@ -222,7 +241,7 @@ function setSvgAttribute(node, name, value) {
     if (node.getAttribute(name) !== String(value)) node.setAttribute(name, value);
 }
 function getPizzaDrawing(svgId, denominator) {
-    const svg = document.getElementById(svgId);
+    const svg = getEl(svgId);
     const d = clampInteger(denominator, 1, 12, 1);
     const cached = pizzaDrawings.get(svg);
     if (cached && cached.denominator === d) return cached;
@@ -268,22 +287,24 @@ function readBoundedInput(input, min, max, fallback) {
 
 // --- 1. Visual Mode ---
 function updateVisual() {
-    const dInput = document.getElementById('vis-denom');
-    const nInput = document.getElementById('vis-numer');
+    const dInput = getEl('vis-denom');
+    const nInput = getEl('vis-numer');
     const d = readBoundedInput(dInput, 1, 12, 1);
     nInput.max = d;
     const n = readBoundedInput(nInput, 0, d, 0);
 
-    document.getElementById('vis-denom-val').innerText = d;
-    document.getElementById('vis-numer-val').innerText = n;
-    document.getElementById('vis-display').innerText = `${n}/${d}`;
-    document.getElementById('vis-percent').innerText = Math.round((n / d) * 100) + "%";
-    document.getElementById('vis-decimal').innerText = (n / d).toFixed(2);
+    const ratio = n / d;
+    const pct = ratio * 100;
+    getEl('vis-denom-val').innerText = d;
+    getEl('vis-numer-val').innerText = n;
+    getEl('vis-display').innerText = `${n}/${d}`;
+    getEl('vis-percent').innerText = `${Math.round(pct)}%`;
+    getEl('vis-decimal').innerText = ratio.toFixed(2);
 
     drawPizza('vis-pizza-svg', n, d, "#0EA5E9");
 
-    const bar = document.getElementById('vis-bar');
-    const marks = document.getElementById('vis-line-marks');
+    const bar = getEl('vis-bar');
+    const marks = getEl('vis-line-marks');
     // 分子だけのスライダー操作ではバー・目盛り・クリックリスナーを作り直さない。
     if (bar.childElementCount !== d) {
         const segments = document.createDocumentFragment();
@@ -307,16 +328,18 @@ function updateVisual() {
         }
         marks.replaceChildren(labels);
     }
-    Array.from(bar.children).forEach((part, index) => part.classList.toggle('active', index < n));
-    const pct = (n / d) * 100;
-    document.getElementById('vis-line-fill').style.width = `${pct}%`;
-    document.getElementById('vis-line-dot').style.left = `${pct}%`;
+    const barChildren = bar.children;
+    for (let index = 0; index < barChildren.length; index++) {
+        barChildren[index].classList.toggle('active', index < n);
+    }
+    getEl('vis-line-fill').style.width = `${pct}%`;
+    getEl('vis-line-dot').style.left = `${pct}%`;
 }
 
 // --- 2. Compare Mode ---
 function updateCompare() {
-    const n1In = document.getElementById('cmp-n1'); const d1In = document.getElementById('cmp-d1');
-    const n2In = document.getElementById('cmp-n2'); const d2In = document.getElementById('cmp-d2');
+    const n1In = getEl('cmp-n1'); const d1In = getEl('cmp-d1');
+    const n2In = getEl('cmp-n2'); const d2In = getEl('cmp-d2');
 
     const d1 = readBoundedInput(d1In, 1, 12, 1); n1In.max = d1;
     const n1 = readBoundedInput(n1In, 0, d1, 0);
@@ -326,23 +349,22 @@ function updateCompare() {
     drawPizza('cmp-svg-1', n1, d1, '#0EA5E9');
     drawPizza('cmp-svg-2', n2, d2, '#EC4899'); // Pink
 
+    const v1 = n1 / d1; const v2 = n2 / d2;
     // Bars
-    document.getElementById('cmp-bar-1').style.width = `${(n1 / d1) * 100}%`;
-    document.getElementById('cmp-bar-2').style.width = `${(n2 / d2) * 100}%`;
+    getEl('cmp-bar-1').style.width = `${v1 * 100}%`;
+    getEl('cmp-bar-2').style.width = `${v2 * 100}%`;
 
     // Display
-    document.getElementById('cmp-disp-1').innerText = `${n1}/${d1}`;
-    document.getElementById('cmp-disp-2').innerText = `${n2}/${d2}`;
+    getEl('cmp-disp-1').innerText = `${n1}/${d1}`;
+    getEl('cmp-disp-2').innerText = `${n2}/${d2}`;
+    getEl('cmp-val-1').innerText = v1.toFixed(2);
+    getEl('cmp-val-2').innerText = v2.toFixed(2);
 
-    const v1 = n1 / d1; const v2 = n2 / d2;
-    document.getElementById('cmp-val-1').innerText = v1.toFixed(2);
-    document.getElementById('cmp-val-2').innerText = v2.toFixed(2);
-
-    const relation = n1 * d2 === n2 * d1 ? '同じ大きさ' : n1 * d2 > n2 * d1 ? '左の分数のほうが大きい' : '右の分数のほうが大きい';
-    const status = document.getElementById('cmp-status');
-    if (status) status.textContent = `${n1}/${d1} と ${n2}/${d2} は、${relation}です`;
-    const icon = document.getElementById('cmp-icon');
     const difference = n1 * d2 - n2 * d1;
+    const relation = difference === 0 ? '同じ大きさ' : difference > 0 ? '左の分数のほうが大きい' : '右の分数のほうが大きい';
+    const status = getEl('cmp-status');
+    if (status) status.textContent = `${n1}/${d1} と ${n2}/${d2} は、${relation}です`;
+    const icon = getEl('cmp-icon');
     if (difference === 0) {
         icon.innerText = 'equal'; icon.className = "material-symbols-rounded text-6xl text-green-400";
     } else if (difference > 0) {
@@ -354,9 +376,9 @@ function updateCompare() {
 
 // --- 3 & 4. Calc & Sub Mode Helper ---
 function updateCalc() {
-    const d = readBoundedInput(document.getElementById('calc-denom'), 2, 10, 2);
-    const n1In = document.getElementById('calc-n1');
-    const n2In = document.getElementById('calc-n2');
+    const d = readBoundedInput(getEl('calc-denom'), 2, 10, 2);
+    const n1In = getEl('calc-n1');
+    const n2In = getEl('calc-n2');
 
     n1In.min = 1;
     n2In.min = 1;
@@ -369,16 +391,16 @@ function updateCalc() {
 
     const result = analyzeSameDenominatorOperation(n1, n2, d, 'add');
     setArithmeticWarning(
-        document.getElementById('calc-warning'),
+        getEl('calc-warning'),
         result.exceedsOne
             ? `答えは ${result.numerator}/${d}。これは1より大きい分数だよ。下のピザ図は1枚分（${d}/${d}）までを表示しているので、式の答えそのものとは分けて見てね。`
             : ''
     );
 
-    document.getElementById('calc-d-val').innerText = d;
-    document.getElementById('calc-d-common-1').innerText = d;
-    document.getElementById('calc-d-common-2').innerText = d;
-    document.getElementById('calc-res-text').innerText = `${result.numerator}/${d}`;
+    getEl('calc-d-val').innerText = d;
+    getEl('calc-d-common-1').innerText = d;
+    getEl('calc-d-common-2').innerText = d;
+    getEl('calc-res-text').innerText = `${result.numerator}/${d}`;
 
     drawPizza('calc-svg-1', n1, d, '#0EA5E9');
     drawPizza('calc-svg-2', n2, d, '#EC4899');
@@ -389,9 +411,9 @@ function updateCalc() {
 }
 
 function updateSub() {
-    const d = readBoundedInput(document.getElementById('sub-denom'), 2, 10, 2);
-    const n1In = document.getElementById('sub-n1');
-    const n2In = document.getElementById('sub-n2');
+    const d = readBoundedInput(getEl('sub-denom'), 2, 10, 2);
+    const n1In = getEl('sub-n1');
+    const n2In = getEl('sub-n2');
 
     n1In.min = 1;
     n2In.min = 0;
@@ -404,16 +426,16 @@ function updateSub() {
 
     const result = analyzeSameDenominatorOperation(n1, n2, d, 'subtract');
     setArithmeticWarning(
-        document.getElementById('sub-warning'),
+        getEl('sub-warning'),
         result.isNegative
             ? `答えは ${result.numerator}/${d}。0より小さい数は、この1枚のピザ図では表せないよ。式の答えは入力どおりの正しい値を表示しているよ。`
             : ''
     );
 
-    document.getElementById('sub-d-val').innerText = d;
-    document.getElementById('sub-d-common-1').innerText = d;
-    document.getElementById('sub-d-common-2').innerText = d;
-    document.getElementById('sub-res-text').innerText = `${result.numerator}/${d}`;
+    getEl('sub-d-val').innerText = d;
+    getEl('sub-d-common-1').innerText = d;
+    getEl('sub-d-common-2').innerText = d;
+    getEl('sub-res-text').innerText = `${result.numerator}/${d}`;
 
     drawPizza('sub-svg-1', n1, d, '#0EA5E9');
     drawPizza('sub-svg-2', n2, d, '#EC4899');
@@ -434,20 +456,20 @@ function validateEgyptianInput(numerator, denominator) {
     return n < d ? { ok: true, numerator: n, denominator: d } : { ok: false, reason: 'improper_fraction' };
 }
 function resetEgyptResult() {
-    document.getElementById('egypt-placeholder').style.display = 'block';
-    const content = document.getElementById('egypt-content');
+    getEl('egypt-placeholder').style.display = 'block';
+    const content = getEl('egypt-content');
     content.classList.add('hidden');
     content.classList.remove('flex');
-    document.getElementById('egypt-formula').replaceChildren();
-    document.getElementById('egypt-steps').replaceChildren();
-    document.getElementById('egypt-warning').classList.add('hidden');
+    getEl('egypt-formula').replaceChildren();
+    getEl('egypt-steps').replaceChildren();
+    getEl('egypt-warning').classList.add('hidden');
 }
 function calcEgypt() {
-    const nInput = document.getElementById('egypt-n');
-    const dInput = document.getElementById('egypt-d');
+    const nInput = getEl('egypt-n');
+    const dInput = getEl('egypt-d');
     const input = validateEgyptianInput(nInput.value, dInput.value);
     resetEgyptResult();
-    const warningEl = document.getElementById('egypt-warning');
+    const warningEl = getEl('egypt-warning');
     if (!input.ok) {
         // 入力を別の分数へ勝手に置き換えず、元の値を直せるように残す。
         warningEl.textContent = input.reason === 'input_range'
@@ -463,30 +485,35 @@ function calcEgypt() {
         warningEl.classList.remove('hidden');
         return;
     }
-    document.getElementById('egypt-placeholder').style.display = 'none';
-    const content = document.getElementById('egypt-content');
+    getEl('egypt-placeholder').style.display = 'none';
+    const content = getEl('egypt-content');
     content.classList.remove('hidden');
     content.classList.add('flex');
-    const formula = document.getElementById('egypt-formula');
+    const formula = getEl('egypt-formula');
+    const formulaFrag = typeof document.createDocumentFragment === 'function' ? document.createDocumentFragment() : formula;
     const first = document.createElement('span');
     first.className = 'text-slate-400 mr-2'; first.textContent = `${n}/${d} = `;
-    formula.appendChild(first);
+    formulaFrag.appendChild(first);
     decomposition.terms.forEach((term, index) => {
         if (index > 0) {
             const plus = document.createElement('span');
-            plus.className = 'mx-2 text-slate-500'; plus.textContent = '+'; formula.appendChild(plus);
+            plus.className = 'mx-2 text-slate-500'; plus.textContent = '+'; formulaFrag.appendChild(plus);
         }
         const item = document.createElement('span');
-        item.className = 'text-amber-400 text-2xl'; item.textContent = term; formula.appendChild(item);
+        item.className = 'text-amber-400 text-2xl'; item.textContent = term; formulaFrag.appendChild(item);
     });
-    const steps = document.getElementById('egypt-steps');
+    if (formulaFrag !== formula) formula.appendChild(formulaFrag);
+
+    const steps = getEl('egypt-steps');
+    const stepsFrag = typeof document.createDocumentFragment === 'function' ? document.createDocumentFragment() : steps;
     [`スタート: ${n}/${d}`, ...decomposition.remainders.map(value => `${value} が残ったよ`)].forEach((text, index) => {
         if (index > 0) {
             const arrow = document.createElement('span');
-            arrow.className = 'text-amber-500'; arrow.textContent = ' → '; steps.appendChild(arrow);
+            arrow.className = 'text-amber-500'; arrow.textContent = ' → '; stepsFrag.appendChild(arrow);
         }
-        steps.appendChild(document.createTextNode(text));
+        stepsFrag.appendChild(document.createTextNode(text));
     });
+    if (stepsFrag !== steps) steps.appendChild(stepsFrag);
 }
 
 // --- Settings & Modal Logic ---
@@ -567,11 +594,25 @@ function applySettings() {
 }
 
 function setupModals() {
+    const triggerByTarget = new Map();
+    const restoreModalTrigger = (targetId) => {
+        const triggerBtn = triggerByTarget.get(targetId)
+            || document.querySelector(`[data-target="${targetId}"][data-action="open-modal"]`);
+        if (triggerBtn) {
+            triggerBtn.setAttribute('aria-expanded', 'false');
+            triggerBtn.focus();
+        }
+    };
+
     // Open modal buttons
     document.querySelectorAll('[data-action="open-modal"]').forEach(btn => {
+        const targetId = btn.dataset.target;
+        if (targetId && !triggerByTarget.has(targetId)) {
+            triggerByTarget.set(targetId, btn);
+        }
         btn.addEventListener('click', (e) => {
-            const targetId = e.currentTarget.dataset.target;
-            const dialog = document.getElementById(targetId);
+            const id = e.currentTarget.dataset.target;
+            const dialog = getEl(id);
             if (!dialog || dialog.open) return;
 
             if (typeof dialog.showModal === 'function') {
@@ -587,7 +628,7 @@ function setupModals() {
     document.querySelectorAll('[data-action="close-modal"]').forEach(btn => {
         btn.addEventListener('click', (e) => {
             const targetId = e.currentTarget.dataset.target;
-            const dialog = document.getElementById(targetId);
+            const dialog = getEl(targetId);
             if (!dialog) return;
 
             if (typeof dialog.close === 'function') {
@@ -597,17 +638,13 @@ function setupModals() {
             }
 
             // Restore aria-expanded on trigger button
-            const triggerBtn = document.querySelector(`[data-target="${targetId}"][data-action="open-modal"]`);
-            if (triggerBtn) {
-                triggerBtn.setAttribute('aria-expanded', 'false');
-                triggerBtn.focus();
-            }
+            restoreModalTrigger(targetId);
         });
     });
 
     // Close dialog when clicking backdrop
     ['parents-modal', 'settings-modal'].forEach(id => {
-        const dialog = document.getElementById(id);
+        const dialog = getEl(id);
         if (dialog) {
             dialog.addEventListener('click', (e) => {
                 const rect = dialog.getBoundingClientRect();
@@ -617,40 +654,30 @@ function setupModals() {
                         dialog.close();
                     } else {
                         dialog.removeAttribute('open');
-                        const triggerBtn = document.querySelector(`[data-target="${id}"][data-action="open-modal"]`);
-                        if (triggerBtn) {
-                            triggerBtn.setAttribute('aria-expanded', 'false');
-                            triggerBtn.focus();
-                        }
+                        restoreModalTrigger(id);
                     }
                 }
             });
             dialog.addEventListener('close', () => {
-                const triggerBtn = document.querySelector(`[data-target="${id}"][data-action="open-modal"]`);
-                if (triggerBtn) {
-                    triggerBtn.setAttribute('aria-expanded', 'false');
-                    triggerBtn.focus();
-                }
+                restoreModalTrigger(id);
             });
         }
     });
 
     // Settings switches toggle logic
-    const darkToggle = document.getElementById('dark-mode-toggle');
+    const darkToggle = getEl('dark-mode-toggle');
     if (darkToggle) {
         darkToggle.addEventListener('click', () => {
             userSettings.darkMode = !userSettings.darkMode;
-            applySettings();
             saveSettings('darkMode');
             applySettings();
         });
     }
 
-    const motionToggle = document.getElementById('motion-toggle');
+    const motionToggle = getEl('motion-toggle');
     if (motionToggle) {
         motionToggle.addEventListener('click', () => {
             userSettings.reduceMotion = !userSettings.reduceMotion;
-            applySettings();
             saveSettings('reduceMotion');
             applySettings();
         });

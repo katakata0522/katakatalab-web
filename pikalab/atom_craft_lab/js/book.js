@@ -1,11 +1,26 @@
 import { MOLECULE_RECIPES, BALANCE_STAGES } from './data.js';
 import { state } from './state.js';
 
+const STAGE_EQUATION_LABELS = BALANCE_STAGES.map(stage => {
+    const leftStr = stage.reactants.map(r => (r.targetCoeff > 1 ? r.targetCoeff : '') + r.formula).join(' + ');
+    const rightStr = stage.products.map(p => (p.targetCoeff > 1 ? p.targetCoeff : '') + p.formula).join(' + ');
+    return `${leftStr} → ${rightStr}`;
+});
+
+const domCache = new Map();
+function getEl(id) {
+    const cached = domCache.get(id);
+    if (cached && cached.isConnected !== false) return cached;
+    const el = document.getElementById(id);
+    if (el) domCache.set(id, el);
+    return el;
+}
+
 export function renderBookSection() {
     const totalStamps = state.discoveredMolecules.size + state.clearedStages.size;
-    document.getElementById('bookProgressText').textContent = `🏅 ${totalStamps} / 16 スタンプ`;
+    getEl('bookProgressText').textContent = `🏅 ${totalStamps} / 16 スタンプ`;
 
-    const molGrid = document.getElementById('bookMoleculesGrid');
+    const molGrid = getEl('bookMoleculesGrid');
     molGrid.innerHTML = MOLECULE_RECIPES.map(m => {
         const unlocked = state.discoveredMolecules.has(m.id);
         const cls = unlocked
@@ -22,11 +37,9 @@ export function renderBookSection() {
         </button>`;
     }).join('');
 
-    const reactGrid = document.getElementById('bookReactionsGrid');
+    const reactGrid = getEl('bookReactionsGrid');
     reactGrid.innerHTML = BALANCE_STAGES.map((s, idx) => {
         const cleared = state.clearedStages.has(s.id);
-        const leftStr = s.reactants.map(r => (r.targetCoeff > 1 ? r.targetCoeff : '') + r.formula).join(' + ');
-        const rightStr = s.products.map(p => (p.targetCoeff > 1 ? p.targetCoeff : '') + p.formula).join(' + ');
         const cls = cleared
             ? 'bg-emerald-50/70 dark:bg-emerald-950/40 border-emerald-200 dark:border-emerald-800 hover:border-emerald-400'
             : 'bg-slate-50 dark:bg-slate-800/40 border-slate-200 dark:border-slate-800 hover:border-slate-400 opacity-80';
@@ -35,7 +48,7 @@ export function renderBookSection() {
             <div class="min-w-0">
                 <div class="text-[11px] font-bold text-slate-500 dark:text-slate-400">${s.shortName}</div>
                 <div class="font-mono font-extrabold text-xs sm:text-sm text-slate-900 dark:text-white truncate mt-0.5">
-                    ${cleared ? `${leftStr} → ${rightStr}` : 'パズルに挑戦しよう ➔'}
+                    ${cleared ? STAGE_EQUATION_LABELS[idx] : 'パズルに挑戦しよう ➔'}
                 </div>
             </div>
             <span class="shrink-0 text-xs font-extrabold">${cleared ? '🏅' : '⚖️'}</span>
@@ -45,5 +58,5 @@ export function renderBookSection() {
 
 export function updateStampBadge() {
     const total = state.discoveredMolecules.size + state.clearedStages.size;
-    document.getElementById('stampCountBadge').textContent = `${total}/16`;
+    getEl('stampCountBadge').textContent = `${total}/16`;
 }
