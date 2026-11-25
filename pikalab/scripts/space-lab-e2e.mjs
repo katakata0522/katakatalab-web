@@ -317,37 +317,71 @@ async function initialGeometry(page) {
             style: Object.fromEntries(['fontFamily', 'fontSize', 'fontWeight', 'lineHeight', 'letterSpacing', 'padding', 'gap', 'color', 'backgroundColor'].map(key => [key, s[key]])) }; };
         return [...selectors.map(selector => read(document.querySelector(selector), selector)),
             ...[...document.querySelectorAll('#a11y-container button')].map((node, index) => read(node, `planet-hit-area-${index}`)),
-            ...[...document.querySelectorAll('#minimap-markers button')].map((node, index) => read(node, `minimap-marker-${index}`))];
+            ...[...document.querySelectorAll('#minimap-markers button')].map((node, index) => ({ ...read(node, `minimap-marker-${index}`), orbit: node.style.left }))];
     });
+}
+const mobileHeaderKeys = ['header', 'header h1', 'header a', '#header-badge-btn', '#bgm-toggle-btn', '[data-action="parents-modal-open"]'];
+function checkMobileHeader(geometry, viewport) {
+    const box = key => geometry.find(item => item.key === key).box;
+    const title = box('header h1'), controls = mobileHeaderKeys.slice(2).map(box);
+    const markerTop = box('minimap-marker-0').y;
+    assert.ok(title.height <= 42 && title.x >= controls[0].x + controls[0].width && title.x + title.width <= controls[1].x, 'Readable title fits between the back link and actions in at most two lines');
+    assert.ok(box('header').height <= markerTop + 1, 'Header ends above the actual minimap touch targets');
+    for (const [index, control] of controls.entries()) {
+        assert.ok(control.width >= 44 && control.height >= 44 && control.x >= 0 && control.x + control.width <= viewport.width);
+        if (index) assert.ok(control.x >= controls[index - 1].x + controls[index - 1].width);
+    }
+    const map = box('#minimap-container');
+    let right = map.x;
+    for (const { box: target } of geometry.filter(item => item.key.startsWith('minimap-marker-'))) {
+        assert.ok(target.width >= 32 && target.height >= 44 && target.x >= right - 0.1, 'Every planet has its own touch target');
+        right = target.x + target.width;
+    }
+    assert.ok(right <= map.x + map.width + 1);
 }
 function compareInitialGeometry(candidate, baseline, viewport) {
     const actual = structuredClone(candidate), expected = structuredClone(baseline), exceptions = [];
-    if (viewport.width === 360) {
-        const keys = ['header', 'header h1', 'header a', '#header-badge-btn', '#bgm-toggle-btn', '[data-action="parents-modal-open"]'];
-        const title = candidate.find(item => item.key === 'header h1');
-        assert.equal(title.style.fontSize, '16px', '360px title uses the approved compact font');
-        assert.equal(title.style.lineHeight, '24px'); assert.equal(title.style.letterSpacing, '0.64px');
-        assert.ok(title.box.height <= 48, '360px title occupies at most two lines');
-        assert.ok(candidate.find(item => item.key === 'header').box.height <= 80, '360px header ends above the minimap');
-        for (const key of keys) {
+    if (viewport.width <= 640) {
+        const map = candidate.find(item => item.key === '#minimap-container').box;
+        assert.ok(map.x >= 0 && map.x + map.width <= viewport.width && map.width >= viewport.width - 20);
+        for (const [index, item] of actual.entries()) {
+            const old = expected[index];
+            if (item.key === '#minimap-container' || item.key.startsWith('minimap-marker-')) {
+                if (item.key !== '#minimap-container') {
+                    assert.ok(Math.abs(item.box.y + item.box.height / 2 - old.box.y - old.box.height / 2) <= 1);
+                    old.box.y = item.box.y;
+                    old.box.height = item.box.height;
+                }
+                old.box.x = item.box.x;
+                old.box.width = item.box.width;
+            }
+        }
+        for (const key of mobileHeaderKeys) {
             const a = actual.find(item => item.key === key), b = expected.find(item => item.key === key);
-            for (const field of ['y', 'height']) {
-                if (a.box[field] !== b.box[field]) exceptions.push({ key, field: `box.${field}`, baseline: b.box[field], candidate: a.box[field], reason: '360px live-font title previously wrapped to four lines and covered minimap controls' });
-                b.box[field] = a.box[field];
-            }
-            if (key === 'header h1') for (const field of ['fontSize', 'lineHeight', 'letterSpacing']) {
-                if (a.style[field] !== b.style[field]) exceptions.push({ key, field: `style.${field}`, baseline: b.style[field], candidate: a.style[field], reason: 'Approved360px-only two-line title correction' });
-                b.style[field] = a.style[field];
-            }
+            exceptions.push({ key, before: b.box, after: a.box });
+            b.box = a.box;
+            const fields = key === 'header h1' ? ['fontSize', 'lineHeight', 'letterSpacing', 'gap'] : ['padding', 'gap'];
+            for (const field of fields) b.style[field] = a.style[field];
         }
     }
     return { actual, expected, exceptions };
 }
 async function layoutSuite() {
-    await parallel(VIEWPORTS.flatMap(viewport => ['light', 'dark'].map(theme => ({ viewport, theme }))), async ({ viewport, theme }) => {
+    await parallel([{ width: 320, height: 568 }, ...VIEWPORTS].flatMap(viewport => ['light', 'dark'].map(theme => ({ viewport, theme }))), async ({ viewport, theme }) => {
         const name = `initial-${viewport.width}-${theme}`;
         await runCase(name, async (page, record) => {
-            const candidate = await initialGeometry(page); await noOverflow(page, record, 'initial');
+            const candidate = await initialGeometry(page);
+            if (viewport.width <= 640) {
+                checkMobileHeader(candidate, viewport);
+                const hitTargets = await page.locator('#minimap-markers button').evaluateAll(nodes => nodes.map(button => {
+                    const r = button.getBoundingClientRect(), y = r.y + r.height / 2;
+                    const dot = Number.parseFloat(getComputedStyle(button, '::after').left);
+                    return dot >= 7 && dot <= r.width - 7 &&
+                        [r.left + 2, r.left + dot, r.right - 2].every(x => document.elementFromPoint(x, y)?.closest('button') === button);
+                }));
+                assert.equal(hitTargets.filter(Boolean).length, PLANETS.length, 'Tap the dot or either edge of each planet cell');
+            }
+            await noOverflow(page, record, 'initial');
             await screenshot(page, name); let baseline = null;
             if (baselineUrl) {
                 const prior = await createCase(viewport, { theme });
@@ -356,10 +390,10 @@ async function layoutSuite() {
             }
             const compared = baseline ? compareInitialGeometry(candidate, baseline, viewport) : null;
             const comparison = { candidate, baseline, exceptions: compared?.exceptions || [],
-                rationale: 'Visible initial anchors are exact except the explicitly bounded360px title-font and header/control vertical correction. Horizontal positions/widths, all minimap anchors, canvas/hit areas and every other viewport remain exact. Canvas pixels are animated review artifacts.' };
+                rationale: 'Mobile header and minimap targets must fit. Relative planet positions, canvas geometry and larger viewports are preserved.' };
             record.geometry = `${name}-geometry.json`; await writeJSON(record.geometry, comparison);
             imagePairs.push({ name, candidate: `${name}.png`, baseline: baseline ? `${name}-baseline.png` : null, geometry: record.geometry });
-            if (compared) assert.deepEqual(compared.actual, compared.expected, 'Initial anchors remain exact outside the bounded360px header correction');
+            if (compared) assert.deepEqual(compared.actual, compared.expected, 'Only the measured mobile header changes');
             for (let index = 0; index < PLANETS.length; index++) await reachable(page, `#minimap-markers button:nth-child(${index + 1})`, record);
             await hiddenDialogsAreInert(page);
         }, { theme }, viewport);
@@ -859,7 +893,7 @@ try {
     browser = await chromium.launch({ headless: true });
     await writeJSON('run-metadata.json', { browser: 'Chromium', version: browser.version(), candidateDist: dist, baselineDist, viewports: VIEWPORTS,
         mainEnvironment: 'Native fonts/time/input; no local asset substitution. Explicit storage/image/UFO/lifecycle fixtures are individually labeled. No imported application runtime, forced app transitions or exposed app state.',
-        nativeSmoke: 'Four untouched contexts with actual network fonts and PWA enabled', initialGeometry: 'Exact initial visible anchors in light/dark preferences; only360px title font and header/control y/height have an explicitly checked two-line/minimap-clearance correction' });
+        nativeSmoke: 'Four untouched contexts with actual network fonts and PWA enabled', initialGeometry: 'Both themes compare map geometry and test the mobile header, minimap spacing and individual warp targets down to 320px.' });
     if (productionUrl) await productionSuite();
     else {
         await layoutSuite(); await navigationSuite(); await quizzesAndCompletionSuite(); await modalSuite(); await shortScreenSuite(); await interruptionSuite();

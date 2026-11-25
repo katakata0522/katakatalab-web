@@ -917,7 +917,7 @@ const App = {
             ? document.createDocumentFragment()
             : null;
         
-        State.planetData.forEach(p => {
+        State.planetData.forEach((p, index) => {
             const pct = (p.cx / totalW) * 100;
             
             let btn = this._minimapButtons.get(p.id);
@@ -942,6 +942,8 @@ const App = {
                     ? 'bg-emerald-500 border-emerald-300 hover:bg-emerald-400 hover:scale-125 hover:shadow-[0_0_12px_rgba(16,185,129,0.9)]'
                     : 'bg-slate-700 border-slate-400 hover:bg-cyan-400 hover:border-cyan-300 hover:scale-125 hover:shadow-[0_0_12px_rgba(6,182,212,0.9)]');
             btn.style.left = `${pct}%`;
+            // スマホでは同じ幅の押下領域内で、点を元の地図上の位置に寄せる。
+            btn.style.setProperty('--dot-in-cell', `${pct * State.planetData.length - index * 100}%`);
             btn.title = p.name;
             btn.setAttribute('aria-label', `${p.name}へワープ`);
         });

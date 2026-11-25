@@ -64,7 +64,8 @@ function installFakeTone() {
     }
     window.__rhythmTone = log;
     window.Tone = {
-        context: { state: 'suspended', lookAhead: 0 },
+        context: { state: 'suspended', lookAhead: 0, sampleRate: 48000 },
+        now: () => performance.now() / 1000,
         async start() {
             log.startRequests += 1;
             if (config.holdStart) await new Promise(resolve => pendingStarts.push(resolve));
@@ -243,6 +244,11 @@ async function snapshotGeometry(page) {
         }
         return {
             boxes,
+            firstTrackHeight: document.getElementById('row-hihat').parentElement.getBoundingClientRect().height,
+            steps: [...document.querySelectorAll('#step-indicators > *')].map((lamp, index) => {
+                const cell = document.querySelectorAll('#row-hihat > button')[index];
+                return { lamp: lamp.getBoundingClientRect().left, cell: cell.getBoundingClientRect().left };
+            }),
             wording: document.querySelector('main').innerText.replace(/\s+/g, ' ').trim(),
             width: document.documentElement.clientWidth,
             scrollWidth: document.documentElement.scrollWidth
@@ -250,15 +256,42 @@ async function snapshotGeometry(page) {
     });
 }
 
+function checkMobileControls(metrics, viewport) {
+    const boxes = metrics.boxes;
+    assert.equal(metrics.steps.length, 16);
+    for (const step of metrics.steps) assert.ok(Math.abs(step.lamp - step.cell) <= 2, '各拍のランプとドラムボタンの左端が揃う');
+    if (viewport.width > 374) return;
+    for (const name of ['tempoSlider', 'volumeSlider']) {
+        const slider = boxes[name];
+        assert.ok(slider.y >= boxes.play.y + boxes.play.height && slider.width >= 80, '縦積みのスライダーに指を動かす幅がある');
+        assert.ok(slider.x >= boxes.playbackPanel.x && slider.x + slider.width <= boxes.playbackPanel.x + boxes.playbackPanel.width);
+    }
+}
 function compareGeometry(before, after, viewport) {
     assert.equal(after.wording, before.wording, '表示中のメイン説明・ラベルを無関係に変更しない');
     const corrections = [];
     const headerDelta = after.boxes.header.height - before.boxes.header.height;
+    const compactPad = viewport.width <= 767 || (viewport.width <= 900 && viewport.height <= 480);
+    const stacked = viewport.width <= 374;
+    const playerDelta = stacked ? after.boxes.playbackPanel.height - before.boxes.playbackPanel.height : 0;
+    const padDelta = compactPad ? after.boxes.grid.height - before.boxes.grid.height : 0;
     for (const name of ['main', 'playbackPanel', 'presetPanel', 'play', 'tempo', 'tempoSlider', 'volumeSlider', 'presets', 'name', 'grid', 'firstRow']) {
         const oldBox = before.boxes[name];
         const newBox = after.boxes[name];
         for (const dimension of ['x', 'y', 'width', 'height']) {
-            const expected = oldBox[dimension] + (dimension === 'y' ? headerDelta : 0);
+            let expected = oldBox[dimension] + (dimension === 'y' ? headerDelta : 0);
+            if (dimension === 'y' && ['presetPanel', 'presets', 'name', 'grid', 'firstRow'].includes(name)) expected += playerDelta;
+            if (dimension === 'height' && name === 'main') expected += playerDelta + padDelta;
+            if (dimension === 'height' && name === 'playbackPanel') expected += playerDelta;
+            if (dimension === 'height' && name === 'grid') expected += padDelta;
+            if (compactPad && name === 'firstRow' && dimension === 'x') expected = after.steps[0].lamp;
+            if (compactPad && name === 'firstRow' && dimension === 'y') expected += (after.firstTrackHeight - before.firstTrackHeight) / 2;
+            if (stacked && ['play', 'tempo', 'tempoSlider', 'volumeSlider'].includes(name)) {
+                const panel = after.boxes.playbackPanel;
+                assert.ok(newBox.x >= panel.x && newBox.x + newBox.width <= panel.x + panel.width);
+                assert.ok(newBox.y >= panel.y && newBox.y + newBox.height <= panel.y + panel.height);
+                if (dimension !== 'height' && !(name === 'play' && dimension === 'width')) continue;
+            }
             if (Math.abs(newBox[dimension] - expected) <= 2) continue;
             // 狭い画面の既存はみ出し修正は、画面内へ収まったことと画像で別途確認する。
             // 広い画面やグリッドの構造変更にこの例外は適用しない。
@@ -743,6 +776,7 @@ export async function runRhythmRegressions(browser, baseUrl, { baselineUrl, arti
             assert.equal(await page.locator(`${CELLS}[role]`).count(), 0, 'native buttonに不要なroleを追加しない');
             assert.equal(await page.locator(CELLS).evaluateAll(nodes => nodes.every(node => node.type === 'button')), true, 'すべてのセルがフォームを送信しないnative button');
             await assertNoHorizontalOverflow(page, `${size} 初期表示`);
+            if (viewport.width <= 767 || (viewport.width <= 900 && viewport.height <= 480)) checkMobileControls(candidate, viewport);
             if (baseline) geometry.push({ viewport, before: baseline, after: candidate, allowedCorrections: compareGeometry(baseline, candidate, viewport) });
             await verifyColorsAndNoop(page);
             await screenshot(page, artifactDir, `${size}-selected-pattern`);

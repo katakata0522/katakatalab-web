@@ -65,7 +65,7 @@
     </noscript>
 
     <header
-        class="bg-white dark:bg-slate-800 border-b-4 border-pink-200 dark:border-pink-700 px-6 py-4 flex justify-between items-center z-20 shadow-sm sticky top-0 transition-colors">
+        class="rhythm-header bg-white dark:bg-slate-800 border-b-4 border-pink-200 dark:border-pink-700 px-6 py-4 flex justify-between items-center z-20 shadow-sm sticky top-0 transition-colors">
         <div class="flex items-center gap-3">
             <div class="bg-pink-500 text-white p-2 rounded-2xl shadow-[0_4px_0_#be185d] transform -rotate-3"
                 aria-hidden="true">
@@ -105,7 +105,7 @@
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
 
             <!-- 再生コントロール -->
-            <div class="glass-panel p-6 rounded-3xl flex items-center gap-6 justify-center md:justify-start">
+            <div class="rhythm-playback glass-panel p-6 rounded-3xl flex items-center gap-6 justify-center md:justify-start">
                 <button type="button" id="play-btn"
                     class="bg-pink-500 hover:bg-pink-600 text-white w-20 h-20 rounded-full shadow-[0_6px_0_#be185d] flex items-center justify-center transition-transform hover:scale-105 active:scale-95 active:shadow-none active:translate-y-1.5 flex-shrink-0"
                     aria-label="再生/停止">
@@ -210,10 +210,10 @@
 
         <!-- ドラムグリッド -->
         <section
-            class="bg-slate-800 dark:bg-slate-900 rounded-3xl shadow-2xl p-6 overflow-hidden relative flex-1 flex flex-col justify-center min-h-[400px] transition-colors"
+            class="rhythm-pad bg-slate-800 dark:bg-slate-900 rounded-3xl shadow-2xl p-6 overflow-hidden relative flex-1 flex flex-col justify-center min-h-[400px] transition-colors"
             aria-label="ドラムパッド">
             <div class="w-full overflow-x-auto">
-                <div class="min-w-[900px] mx-auto">
+                <div class="rhythm-sequence min-w-[900px] mx-auto">
                     <div class="flex gap-2 mb-3 pl-[100px]" id="step-indicators" aria-hidden="true"></div>
 
                     <div class="space-y-3" aria-label="リズムグリッド">

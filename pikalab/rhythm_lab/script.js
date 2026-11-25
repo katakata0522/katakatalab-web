@@ -189,6 +189,7 @@ const RhythmLab = (function () {
     let isAudioInit = false;
     let audioInitPromise = null;
     let synths = {};
+    const lastAttackTime = new WeakMap();
     let masterGain = null;
     let limiter = null;
     let transportEventId = null;
@@ -202,7 +203,6 @@ const RhythmLab = (function () {
     let audioGeneration = 0;
     const previewRequests = {};
     let shareModalCloseTimer = null;
-    let lastFocusedElement = null;
 
     // 処理中フラグ（連打防止）
     const processingLocks = {
@@ -589,11 +589,16 @@ const RhythmLab = (function () {
         const config = INSTRUMENT_CONFIG[type];
         if (!synth || !config) return;
         try {
+            // 起動直後の連打ではオーディオ時計が進まず、同じ音源に同時刻の発音が届く。
+            const requested = time ?? Tone.now();
+            const previous = lastAttackTime.get(synth);
+            const start = previous === undefined ? requested : Math.max(requested, previous + 1 / Tone.context.sampleRate);
             if (config.note !== null) {
-                synth.triggerAttackRelease(config.note, config.duration, time);
+                synth.triggerAttackRelease(config.note, config.duration, start);
             } else {
-                synth.triggerAttackRelease(config.duration, time);
+                synth.triggerAttackRelease(config.duration, start);
             }
+            lastAttackTime.set(synth, start);
         } catch (error) {
             console.error('音声再生エラー:', error);
         }
@@ -1405,11 +1410,6 @@ const RhythmLab = (function () {
             }
         }
 
-        // 閉じる途中の再表示では、モーダル内のボタンを復帰先で上書きしない。
-        if (document.activeElement instanceof HTMLElement && !domCache.shareModal.contains?.(document.activeElement)) {
-            lastFocusedElement = document.activeElement;
-        }
-
         isShareModalOpen = true;
         domCache.shareModal.classList.remove('hidden');
         domCache.shareModal.setAttribute('aria-hidden', 'false');
@@ -1431,9 +1431,6 @@ const RhythmLab = (function () {
         if (!domCache.shareModal || !domCache.shareContent) return;
         if (!isShareModalOpen) return;
 
-        const focusTarget = (lastFocusedElement instanceof HTMLElement && document.contains(lastFocusedElement))
-            ? lastFocusedElement
-            : domCache.shareBtn;
         isShareModalOpen = false;
         domCache.shareModal.classList.add('opacity-0');
         domCache.shareModal.setAttribute('aria-hidden', 'true');
@@ -1444,9 +1441,8 @@ const RhythmLab = (function () {
         shareModalCloseTimer = setTimeout(() => {
             shareModalCloseTimer = null;
             domCache.shareModal.classList.add('hidden');
-            lastFocusedElement = null;
             requestAnimationFrame(() => {
-                if (!isShareModalOpen) focusTarget?.focus();
+                if (!isShareModalOpen) domCache.shareBtn?.focus();
             });
         }, 300);
     }
