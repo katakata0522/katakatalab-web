@@ -441,10 +441,11 @@ function clearUITimeouts() {
 }
 
 function isPracticeBlocked() {
+    const parentsModal = elements.parentsModal || document.getElementById('parents-modal');
     return inputIsComposing || gameState.isCountingDown ||
         elements.settingsOverlay?.classList.contains('active') ||
         elements.tutorialOverlay?.classList.contains('active') ||
-        Boolean(document.getElementById('parents-modal')?.open);
+        Boolean(parentsModal?.open);
 }
 
 function startGameClock() {
@@ -485,7 +486,8 @@ function initializeElements() {
         'tutorial-overlay', 'tutorial-step-title', 'tutorial-step-body', 'tutorial-progress-bar', 'tutorial-next-btn', 'tutorial-skip-btn', 'open-tutorial-btn',
         'countdown-overlay', 'countdown-number', 'countdown-level',
         'pause-overlay', 'pause-btn', 'resume-btn', 'quit-btn',
-        'quit-from-pause-btn', 'level-badge', 'review-btn', 'review-section', 'review-count'
+        'quit-from-pause-btn', 'level-badge', 'review-btn', 'review-section', 'review-count',
+        'parents-modal'
     ];
 
     ids.forEach(id => {
@@ -1642,7 +1644,8 @@ function handleKeydown(e) {
     if (e.key === 'Escape' && !e.repeat) {
         if (isSettingsOpen) { e.preventDefault(); saveSettingsFromUI(); closeSettings(); return; }
         if (isTutorialOpen) { e.preventDefault(); closeTutorial(); return; }
-        if (!document.getElementById('parents-modal')?.open && (gameState.isRunning || gameState.isCountingDown)) {
+        const parentsModal = elements.parentsModal || document.getElementById('parents-modal');
+        if (!parentsModal?.open && (gameState.isRunning || gameState.isCountingDown)) {
             e.preventDefault(); quitGame(); return;
         }
     }
@@ -2135,6 +2138,12 @@ function setupTouchKeyboard() {
     updateKeyboardDisplay();
 }
 
+const TOUCH_ROMAJI_ROWS = Object.freeze([
+    ['q', 'w', 'e', 'r', 't', 'y', 'u', 'i', 'o', 'p'],
+    ['a', 's', 'd', 'f', 'g', 'h', 'j', 'k', 'l'],
+    ['z', 'x', 'c', 'v', 'b', 'n', 'm', '←']
+]);
+
 function updateKeyboardDisplay() {
     const container = document.getElementById('touch-keyboard');
     if (!container) return;
@@ -2165,13 +2174,11 @@ function updateKeyboardDisplay() {
         keysContainer.style.flexDirection = 'column';
         keysContainer.style.gap = '6px';
 
-        const romajiRows = [
-            ['q', 'w', 'e', 'r', 't', 'y', 'u', 'i', 'o', 'p'],
-            ['a', 's', 'd', 'f', 'g', 'h', 'j', 'k', 'l'],
-            ['z', 'x', 'c', 'v', 'b', 'n', 'm', '←']
-        ];
+        const fragment = typeof document.createDocumentFragment === 'function'
+            ? document.createDocumentFragment()
+            : keysContainer;
 
-        romajiRows.forEach((rowKeys) => {
+        TOUCH_ROMAJI_ROWS.forEach((rowKeys) => {
             const rowDiv = document.createElement('div');
             rowDiv.className = 'touch-keyboard-row';
             rowDiv.style.display = 'flex';
@@ -2197,8 +2204,11 @@ function updateKeyboardDisplay() {
                 btn.addEventListener('click', () => handleTouchKeyPress(key));
                 rowDiv.appendChild(btn);
             });
-            keysContainer.appendChild(rowDiv);
+            fragment.appendChild(rowDiv);
         });
+        if (fragment !== keysContainer) {
+            keysContainer.appendChild(fragment);
+        }
     }
 }
 

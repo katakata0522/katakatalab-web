@@ -847,8 +847,12 @@ input:checked ~ .icon-moon { opacity: 1; }
     max-width: 100% !important;
     box-sizing: border-box !important;
   }
-  .app-title { font-size: 1.6rem; }
-  .badge-security { width: 100%; justify-content: center; margin-top: 8px; }
+  .tool-header { margin-bottom: 14px; gap: 8px; }
+  .app-title { font-size: 1.55rem; }
+  .app-desc { font-size: 0.82rem; margin-top: 3px; }
+  .badge-security { width: auto; justify-content: flex-start; margin-top: 0; padding: 4px 10px; font-size: 0.72rem; }
+  .config-panel { gap: 12px; }
+  .file-upload-area { min-height: 84px; padding: 14px; }
   .sns-actions-row { padding-left: 6px; padding-right: 6px; }
   .preview-tabs-scroll {
     width: 100% !important;
@@ -959,9 +963,105 @@ body.dark-mode .input-hint {
   color: #94a3b8 !important;
 }
 
+body.dark-mode .sister-banner-card {
+  background: linear-gradient(135deg, #371a2d 0%, #1e1b4b 100%);
+  border-color: rgba(244, 114, 182, 0.25);
+}
 
+.is-hidden {
+  display: none;
+}
 
+.ogp-code-box {
+  margin-top: 18px;
+  padding: 14px;
+  border-radius: 12px;
+  border: 1px solid var(--c-border);
+  background: var(--c-bg);
+}
+
+.ogp-code-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 10px;
+}
+
+.ogp-code-title {
+  font-size: 0.82rem;
+  font-weight: 800;
+  color: var(--c-text-main);
+}
+
+.btn-copy-meta {
+  border: 1px solid var(--c-primary);
+  background: var(--c-card-bg);
+  color: var(--c-primary);
+  border-radius: 8px;
+  padding: 6px 12px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background-color 0.2s, color 0.2s;
+}
+
+.btn-copy-meta:hover {
+  background: var(--c-primary);
+  color: #ffffff;
+}
+
+.ogp-code-output {
+  margin: 0;
+  padding: 12px;
+  border-radius: 8px;
+  background: #0f172a;
+  color: #e2e8f0;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 0.76rem;
+  line-height: 1.55;
+  overflow-x: auto;
+  white-space: pre;
+}
+
+.ogp-copy-status {
+  margin: 8px 0 0;
+  min-height: 1.2em;
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--c-primary);
+}
+
+.manual-ogp-copy {
+  width: 100%;
+  box-sizing: border-box;
+  margin-top: 8px;
+  padding: 8px;
+  border-radius: 8px;
+  border: 1px solid var(--c-border);
+  background: var(--c-input-bg);
+  color: var(--c-text-main);
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 0.75rem;
+}
+
+body.dark-mode .ogp-code-box {
+  background: #162038;
+  border-color: rgba(255, 255, 255, 0.12);
+}
+
+body.dark-mode .btn-copy-meta {
+  background: #1e293b;
+  color: #f472b6;
+  border-color: rgba(244, 114, 182, 0.5);
+}
+
+body.dark-mode .btn-copy-meta:hover {
+  background: #db2777;
+  color: #ffffff;
+}
 
 /* Keep keyboard focus visible without changing the selected theme. */
 .toggle-switch-theme input:focus-visible + .slider { outline: 2px solid currentColor; outline-offset: 4px; }
-.tab-btn:focus-visible, #dropZone:focus-visible, #removeImageBtn:focus-visible { outline: 2px solid currentColor; outline-offset: 3px; }
+.tab-btn:focus-visible, #dropZone:focus-visible, #removeImageBtn:focus-visible, .btn-copy-meta:focus-visible { outline: 2px solid currentColor; outline-offset: 3px; }

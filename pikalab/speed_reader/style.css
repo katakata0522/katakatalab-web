@@ -347,3 +347,52 @@ body.text-size-xl #reader-display {
 #drop-zone.drag-over span {
     color: #0d9488 !important;
 }
+
+@media (max-width: 640px) {
+    .glass-panel [role="tablist"] {
+        flex-wrap: wrap;
+        overflow-x: visible;
+        gap: 0.4rem;
+        padding-bottom: 0.5rem;
+    }
+
+    .tab-btn {
+        padding: 0.55rem 0.75rem;
+        font-size: 0.85rem;
+        gap: 0.35rem;
+        min-height: 42px;
+        flex: 1 1 auto;
+        justify-content: center;
+    }
+
+    .cat-btn {
+        padding: 0.45rem 0.75rem;
+        font-size: 0.78rem;
+        min-height: 40px;
+    }
+
+    #wpm-badge,
+    #chunk-badge {
+        padding: 0.25rem 0.5rem;
+        font-size: 0.75rem;
+    }
+
+    #source-badge {
+        padding: 0.25rem 0.55rem;
+        font-size: 0.75rem;
+        max-width: 45%;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    #main-play-btn {
+        font-size: 0.9rem;
+        gap: 0.1rem;
+        padding-inline: 0.25rem;
+    }
+
+    #main-play-btn .material-symbols-rounded {
+        font-size: 1.35rem;
+    }
+}

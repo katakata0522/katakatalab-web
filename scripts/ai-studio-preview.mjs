@@ -32,6 +32,7 @@ const files = new Set([
   "style.css",
   "sw.js",
   "terms.html",
+  "theme-sync.js",
   "tool-chrome.css",
   "updates.html",
   "who-is-katakata.html"

@@ -329,8 +329,8 @@ ins.is-newline::after, del.is-newline::after {
 .legend { display: flex; gap: 20px; margin-top: 15px; font-size: 0.85rem; flex-wrap: wrap; }
 .legend-item { display: flex; align-items: center; gap: 5px; font-weight: bold; }
 .swatch { width: 14px; height: 14px; border-radius: 3px; border: 1px solid rgba(0,0,0,0.1); }
-.swatch.add { background: var(--c-diff-add-bg); border: 2px solid var(--c-diff-add-text); }
-.swatch.del { background: var(--c-diff-del-bg); border: 2px solid var(--c-diff-del-text); }
+.swatch.add, .legend-item.add .swatch { background: var(--c-diff-add-bg); border: 2px solid var(--c-diff-add-text); }
+.swatch.del, .legend-item.del .swatch { background: var(--c-diff-del-bg); border: 2px solid var(--c-diff-del-text); }
 .legend-item.note { color: var(--c-text-sub); font-weight: normal; margin-left: auto; }
 
 /* =========================================
@@ -503,18 +503,8 @@ ins.is-newline::after, del.is-newline::after {
 .tool-footer a { color: inherit; text-decoration: none; }
 .tool-footer a:hover { color: var(--c-primary); text-decoration: underline; }
 
-/* Mobile Optimization */
-@media (max-width: 768px) {
-  .tool-wrapper { padding: 15px; }
-  .control-bar { flex-direction: column; align-items: stretch; gap: 15px; }
-  .actions { justify-content: space-between; margin-left: 0; width: 100%; }
-  .btn-primary, .btn-secondary { flex: 1; justify-content: center; }
-  
-  .two-pane { grid-template-columns: 1fr; }
-  .input-area { height: 250px; }
-  .diff-pane { height: 400px; }
-  .legend-item.note { margin-left: 0; width: 100%; margin-top: 5px; }
-}
+.is-hidden { display: none; }
+.diff-line-num--unified { width: 5.5em; text-align: center; }
 
 /* =========================================
    Advanced Usability Enhancements
@@ -703,25 +693,6 @@ ins.is-newline::after, del.is-newline::after {
   to { opacity: 1; transform: translateY(0); }
 }
 
-/* レスポンシブStickyの微調整 */
-@media (max-width: 768px) {
-  .result-header {
-    position: static; /* モバイルでは押しやすさのためスクロール追従を解除 */
-    flex-direction: column;
-    align-items: stretch;
-    gap: 10px;
-    padding: 15px;
-  }
-  .result-actions {
-    flex-wrap: wrap;
-    justify-content: space-between;
-  }
-  .diff-nav {
-    width: 100%;
-    justify-content: space-between;
-  }
-}
-
 /* =========================================
    Diff Viewer Grid & Split View Styles
    ========================================= */
@@ -732,13 +703,6 @@ ins.is-newline::after, del.is-newline::after {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 20px;
-}
-
-@media (max-width: 768px) {
-  .split-view {
-    grid-template-columns: 1fr;
-    gap: 15px;
-  }
 }
 
 /* =========================================
@@ -828,6 +792,36 @@ body.dark-mode .badge-security {
   border-color: rgba(96, 165, 250, 0.4) !important;
 }
 
+body.dark-mode .result-header {
+  background: rgba(30, 41, 59, 0.9);
+  border-color: rgba(255, 255, 255, 0.12);
+}
+
+body.dark-mode .diff-line.mod {
+  background-color: rgba(96, 165, 250, 0.16);
+}
+
+body.dark-mode .diff-pane {
+  background: #0f172a;
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+body.dark-mode #copyFormat {
+  background: #0f172a;
+  color: #f8fafc;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 6px;
+  padding: 6px 8px;
+}
+
+body.dark-mode .sister-card {
+  background: #0f172a;
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+body.dark-mode .sister-card:hover {
+  background: #1e293b;
+}
 
 /* Both editors and results remain side-by-side at every viewport size. */
 .two-pane, .split-view { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
@@ -840,11 +834,25 @@ body.dark-mode .badge-security {
 #manualCopyDiff { width: 100%; min-height: 8rem; box-sizing: border-box; }
 @media(max-width: 768px) {
   .two-pane, .split-view { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 6px; }
-  .pane-header { padding: 8px 5px; }
+  .tool-wrapper { padding: 15px; }
+  .control-bar { flex-direction: column; align-items: stretch; padding: 10px; gap: 10px; }
+  .control-group { width: 100%; flex-wrap: wrap; gap: 6px; }
+  .toggle-switch { width: 100%; display: grid; grid-template-columns: 1fr 1fr; gap: 4px; }
+  .radio-label { width: 100%; display: flex; }
+  .radio-btn { width: 100%; text-align: center; white-space: nowrap; font-size: 0.74rem; padding: 8px 4px; }
+  .pane-header { padding: 8px 6px; flex-direction: column; align-items: stretch; gap: 4px; }
+  .pane-actions { gap: 4px; justify-content: flex-start; }
+  .pane-actions .char-count { font-size: 0.7rem; }
+  .btn-paste, .btn-file-label { font-size: 0.7rem; padding: 4px 6px; white-space: nowrap; }
+  .input-area { height: 250px; padding: 10px 8px; font-size: 0.85rem; min-height: 180px; }
+  .diff-pane { height: 400px; }
   .diff-line-num { min-width: 2em; width: 2em; }
-  .result-actions { flex-wrap: wrap; }
-  .actions { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); }
-  .actions button { min-height: 44px; padding-inline: 6px; }
+  .result-header { position: static; flex-direction: column; align-items: stretch; gap: 10px; padding: 15px; }
+  .result-actions { flex-wrap: wrap; justify-content: space-between; }
+  .diff-nav { width: 100%; justify-content: space-between; }
+  .legend-item.note { margin-left: 0; width: 100%; margin-top: 5px; }
+  .actions { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); margin-left: 0; width: 100%; }
+  .actions button { min-height: 44px; padding-inline: 6px; justify-content: center; }
   #compareBtn { grid-column: 1 / -1; }
   .code-mode .diff-line-content { min-width: 0; white-space: pre-wrap; overflow-wrap: anywhere; }
 }

@@ -4,20 +4,22 @@
  */
 
 const CACHE_PREFIX = 'doujin-calc-';
-const CACHE_NAME = 'doujin-calc-v1.5.5';
+const CACHE_NAME = 'doujin-calc-v1.5.6';
 
 const STATIC_ASSETS = [
   './',
   './index.html',
   './manifest.json',
-  './css/style.css?v=20261121-tools',
+  './css/tailwind.built.css?v=20261125',
+  './css/style.css?v=20261124-mobile-design',
+  '../theme-sync.js?v=20261125',
   './js/config.js?v=20261121-tools',
   './js/toast.js',
   './js/calculator.js?v=20261121-tools',
   './js/legal-tax-data.js',
   './js/state.js?v=20261121-tools',
   './js/renderer.js?v=20261121-tools',
-  './js/app.js?v=20261121-tools',
+  './js/app.js?v=20261125',
   './js/lucide.min.js'
 ];
 

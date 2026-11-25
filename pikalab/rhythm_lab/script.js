@@ -286,6 +286,7 @@ const RhythmLab = (function () {
         domCache.shareLinkInput = document.getElementById('share-link-input');
         domCache.shareQrcode = document.getElementById('share-qrcode');
         domCache.shareContent = document.getElementById('share-content');
+        domCache.parentsModal = document.getElementById('parents-modal');
 
         // プリセットボタン（定数PRESETSから動的に取得）
         Object.keys(PRESETS).forEach(name => {
@@ -736,32 +737,43 @@ const RhythmLab = (function () {
             stepClassCache.inactive[i] = `${INDICATOR_CLASSES.inactive} ${marginClass}`;
         }
 
+        const useFrag = typeof document.createDocumentFragment === 'function';
+        const indicatorTarget = useFrag ? document.createDocumentFragment() : domCache.stepIndicators;
+        const rowTargets = {};
         INSTRUMENTS.forEach(inst => {
             if (domCache.rows[inst]) {
                 domCache.rows[inst].innerHTML = '';
+                rowTargets[inst] = useFrag ? document.createDocumentFragment() : domCache.rows[inst];
             }
             domCache.cells[inst] = [];
         });
 
         for (let i = 0; i < STEPS; i++) {
-            const marginClass = getMarginClass(i);
-
             // インジケーター作成
             const ind = document.createElement('div');
             // キャッシュされたクラスを使用
             ind.className = stepClassCache.inactive[i];
             ind.id = `ind-${i}`;
             ind.dataset.beatAccent = getBeatAccentLevel(i);
-            domCache.stepIndicators.appendChild(ind);
+            indicatorTarget.appendChild(ind);
             domCache.indicators[i] = ind;
 
             // 各楽器のセル作成
             INSTRUMENTS.forEach(inst => {
                 const cell = createCell(inst, i);
-                if (domCache.rows[inst]) {
-                    domCache.rows[inst].appendChild(cell);
+                if (rowTargets[inst]) {
+                    rowTargets[inst].appendChild(cell);
                 }
                 domCache.cells[inst][i] = cell;
+            });
+        }
+
+        if (useFrag) {
+            domCache.stepIndicators.appendChild(indicatorTarget);
+            INSTRUMENTS.forEach(inst => {
+                if (domCache.rows[inst] && rowTargets[inst]) {
+                    domCache.rows[inst].appendChild(rowTargets[inst]);
+                }
             });
         }
     }
@@ -1553,6 +1565,9 @@ const RhythmLab = (function () {
         }
 
         domCache.userPresetList.innerHTML = '';
+        const listTarget = typeof document.createDocumentFragment === 'function'
+            ? document.createDocumentFragment()
+            : domCache.userPresetList;
         userPresets.forEach((p, idx) => {
             const wrapper = document.createElement('div');
             wrapper.className = 'user-preset-item flex items-center gap-1';
@@ -1575,17 +1590,20 @@ const RhythmLab = (function () {
 
             wrapper.appendChild(btn);
             wrapper.appendChild(deleteBtn);
-            domCache.userPresetList.appendChild(wrapper);
+            listTarget.appendChild(wrapper);
         });
+        if (listTarget !== domCache.userPresetList) {
+            domCache.userPresetList.appendChild(listTarget);
+        }
     }
 
+    const HTML_ESCAPE_MAP = Object.freeze({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' });
+
     /**
-     * HTMLエスケープ（XSS対策）
+     * HTMLエスケープ（XSS対策・DOM生成なし）
      */
     function escapeHtml(str) {
-        const div = document.createElement('div');
-        div.textContent = str;
-        return div.innerHTML;
+        return String(str ?? '').replace(/[&<>"']/g, ch => HTML_ESCAPE_MAP[ch]);
     }
 
     // ========================================
@@ -1594,7 +1612,8 @@ const RhythmLab = (function () {
     function isModalOpen() {
         const isHelpOpen = !!domCache.modal?.open;
         const isShareOpen = !!domCache.shareModal && !domCache.shareModal.classList.contains('hidden');
-        return isHelpOpen || isShareOpen || !!document.getElementById('parents-modal')?.open;
+        const parentsModal = domCache.parentsModal || document.getElementById('parents-modal');
+        return isHelpOpen || isShareOpen || !!parentsModal?.open;
     }
 
     function getPresetNameFromCode(code) {
@@ -1813,7 +1832,8 @@ const RhythmLab = (function () {
         // モーダルが開いている場合
         if (isModalOpen()) {
             if (e.key === 'Escape') {
-                if (document.getElementById('parents-modal')?.open) return;
+                const parentsModal = domCache.parentsModal || document.getElementById('parents-modal');
+                if (parentsModal?.open) return;
                 e.preventDefault();
                 if (domCache.modal?.open) {
                     closeHelp();

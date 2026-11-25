@@ -1003,3 +1003,57 @@ header .text-yellow-500 {
     .character-mixer-spin, .character-pop-burst { animation: none !important; }
 }
 
+.palette-slot {
+    flex-shrink: 0;
+}
+
+@media (max-width: 640px) {
+    header {
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        padding: 0.625rem 0.75rem !important;
+    }
+
+    header > div:first-child {
+        min-width: 0;
+        gap: 0.5rem;
+    }
+
+    header > div:first-child > div:first-child {
+        padding: 0.375rem;
+    }
+
+    header h1 {
+        font-size: 1.15rem !important;
+        white-space: nowrap;
+    }
+
+    header .badge-dx-pop {
+        font-size: 0.8rem !important;
+        margin-left: 0.35rem !important;
+        padding: 0.15rem 0.5rem !important;
+    }
+
+    header > div:last-child {
+        width: 100%;
+        justify-content: space-between;
+        gap: 0.5rem;
+    }
+
+    header [role="tablist"] {
+        flex: 1 1 auto;
+    }
+
+    header [role="tablist"] > button {
+        flex: 1 1 0;
+        justify-content: center;
+        min-height: 38px;
+    }
+
+    header [data-action="parents-modal-open"] {
+        min-width: 40px;
+        min-height: 40px;
+        justify-content: center;
+    }
+}
+

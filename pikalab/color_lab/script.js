@@ -174,19 +174,30 @@
 
     /* ==================== SHARED UTILS ==================== */
 
+    const HTML_ESCAPE_MAP = { '&': '&amp;', '<': '&lt;', '>': '&gt;' };
+    const elementByIdCache = new Map();
+    let cachedFaceParts = null;
+
+    function getFaceParts() {
+        if (typeof document === 'undefined') return [];
+        if (cachedFaceParts && cachedFaceParts.length > 0 && cachedFaceParts[0].isConnected) {
+            return cachedFaceParts;
+        }
+        cachedFaceParts = Array.from(document.querySelectorAll('.face-part'));
+        return cachedFaceParts;
+    }
+
     /**
      * HTMLをエスケープしてXSSを防ぐ
      * @param {string} str
      * @returns {string}
      */
     function escapeHtml(str) {
-        const div = document.createElement('div');
-        div.textContent = str;
-        return div.innerHTML;
+        return String(str ?? '').replace(/[&<>]/g, ch => HTML_ESCAPE_MAP[ch]);
     }
 
     /**
-     * DOM要素を安全に取得する
+     * DOM要素を安全に取得する（接続中要素はキャッシュから返す）
      * @param {string} id
      * @returns {HTMLElement|null}
      */
@@ -194,10 +205,17 @@
         if (typeof document === 'undefined') {
             return null;
         }
+        const cached = elementByIdCache.get(id);
+        if (cached && cached.isConnected) {
+            return cached;
+        }
         const element = document.getElementById(id);
         if (!element) {
+            elementByIdCache.delete(id);
             console.error(`[color_lab] 要素が見つかりません: #${id}`);
+            return null;
         }
+        elementByIdCache.set(id, element);
         return element;
     }
 
@@ -713,10 +731,8 @@
         const container = getElementByIdSafe(SELECTORS.RECIPE_LIST_CONTAINER);
         if (!container) return;
 
-        container.innerHTML = '';
         const list = RECIPES_DATA[state.lab.currentRecipeTab] || RECIPES_DATA.basic;
-
-        list.forEach(recipe => {
+        const buttons = list.map(recipe => {
             const btn = document.createElement('button');
             btn.type = 'button';
             btn.className = 'p-2 rounded-xl border-2 border-slate-100 hover:border-yellow-300 hover:bg-yellow-50 transition-all text-left flex items-center gap-3 group bg-white shadow-sm focus:outline-none';
@@ -731,8 +747,9 @@
                 <div class="w-8 h-8 rounded-full ${recipe.color} border-2 shadow-sm"></div>
                 <span class="font-bold text-slate-600 group-hover:text-yellow-600">${recipe.label}</span>
             `;
-            container.appendChild(btn);
+            return btn;
         });
+        container.replaceChildren(...buttons);
     }
 
     function switchRecipeTab(tabId) {
@@ -1010,7 +1027,7 @@
 
     /* ==================== REACTION ANIMATIONS ==================== */
     function triggerEyeSpin() {
-        const eyes = document.querySelectorAll('.face-part');
+        const eyes = getFaceParts();
         eyes.forEach(eye => {
             if (eye.tagName === 'circle') {
                 eye.classList.add('eye-spin');
@@ -1137,8 +1154,8 @@
             hexCode.textContent = ColorLogic.rgbToHsl(r, g, b);
         }
 
-        // キャラクターの目の要素を取得
-        const eyes = document.querySelectorAll('.face-part');
+        // キャラクターの目の要素を取得（キャッシュ再利用）
+        const eyes = getFaceParts();
 
         // リアクション判定
         if (r < 10 && g < 10 && b < 10) {
@@ -1291,9 +1308,12 @@
         }
     }
 
+    let cachedAllTargetLevels = null;
     function getRandomTargetColor() {
-        const allPool = [...LEVELS_NORMAL, ...LEVELS_CHALLENGE];
-        const selected = allPool[Math.floor(Math.random() * allPool.length)];
+        if (!cachedAllTargetLevels) {
+            cachedAllTargetLevels = [...LEVELS_NORMAL, ...LEVELS_CHALLENGE];
+        }
+        const selected = cachedAllTargetLevels[Math.floor(Math.random() * cachedAllTargetLevels.length)];
         return {
             t: [...selected.t],
             h: selected.h,
@@ -1398,14 +1418,13 @@
         const grid = getElementByIdSafe('calendar-grid');
         if (!grid) return;
         
-        grid.innerHTML = '';
-        
+        const cells = [];
         const weekdays = ['日', '月', '火', '水', '木', '金', '土'];
         weekdays.forEach(day => {
             const cell = document.createElement('div');
             cell.className = 'calendar-header-cell';
             cell.textContent = day;
-            grid.appendChild(cell);
+            cells.push(cell);
         });
         
         const now = new Date();
@@ -1420,15 +1439,16 @@
         for (let i = 0; i < startDayOfWeek; i++) {
             const empty = document.createElement('div');
             empty.className = 'calendar-day-cell empty-day';
-            grid.appendChild(empty);
+            cells.push(empty);
         }
         
         const stampedDates = new Set(readDailyStamps());
 
         const todayStr = getTodayString();
+        const yearMonthPrefix = `${year}-${String(month + 1).padStart(2, '0')}-`;
         
         for (let day = 1; day <= totalDays; day++) {
-            const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+            const dateStr = `${yearMonthPrefix}${String(day).padStart(2, '0')}`;
             const cell = document.createElement('div');
             cell.className = 'calendar-day-cell';
             cell.textContent = String(day);
@@ -1444,8 +1464,9 @@
                 cell.setAttribute('aria-label', `${day}日`);
             }
             
-            grid.appendChild(cell);
+            cells.push(cell);
         }
+        grid.replaceChildren(...cells);
     }
 
     function openCalendarModal() {

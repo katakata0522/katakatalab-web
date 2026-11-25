@@ -18,6 +18,7 @@ document.addEventListener('DOMContentLoaded', () => {
     clearBtn: document.getElementById('clearBtn'),
     editBtn: document.getElementById('editBtn'),
     swapBtn: document.getElementById('swapBtn'),
+    sampleBtn: document.getElementById('sampleBtn'),
     pasteBtns: document.querySelectorAll('.btn-paste'),
     
     inputSection: document.getElementById('inputSection'),
@@ -140,6 +141,48 @@ document.addEventListener('DOMContentLoaded', () => {
         setTimeout(() => icon.style.transform = '', 300);
       }
     });
+
+    // サンプル読み込み（1クリックで差分チェックを体験）
+    if (els.sampleBtn) {
+      els.sampleBtn.addEventListener('click', () => {
+        cancelAllFileReads();
+        if (isEnglish) {
+          els.textOriginal.value = [
+            'Release Checklist (v1.0)',
+            '- Plan price: $10 / month',
+            '- Privacy: Runs locally in your browser',
+            '- Support hours: 10:00-17:00 JST',
+            '- Export format: CSV'
+          ].join('\n');
+          els.textNew.value = [
+            'Release Checklist (v1.1)',
+            '- Plan price: $12 / month (tax included)',
+            '- Privacy: Runs locally in your browser',
+            '- Support hours: 10:00-18:00 JST',
+            '- Export format: CSV / JSON',
+            '- Dark mode: Supported across tools'
+          ].join('\n');
+        } else {
+          els.textOriginal.value = [
+            '【お知らせ】料金プラン改定のご案内',
+            '基本料金: 1,000円（税別）',
+            'データ処理: ブラウザ内で完結（外部送信なし）',
+            '受付時間: 平日 10:00〜17:00',
+            '対応形式: PNG / JPEG'
+          ].join('\n');
+          els.textNew.value = [
+            '【お知らせ】料金プラン改定のご案内（2026年版）',
+            '基本料金: 1,200円（税込）',
+            'データ処理: ブラウザ内で完結（外部送信なし）',
+            '受付時間: 平日 10:00〜18:00',
+            '対応形式: PNG / JPEG / WebP',
+            '備考: ダークモード切り替えにも対応しました。'
+          ].join('\n');
+        }
+        updateCharCounts();
+        runCompare();
+      });
+    }
 
     // View切り替え（ジャンプターゲットのインテリジェント継承）
     els.viewRadios.forEach(radio => {
@@ -521,7 +564,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const kind = part.added ? 'add' : part.removed ? 'del' : '';
         const marker = part.added ? '+' : part.removed ? '-' : ' ';
         const number = part.added ? `  ${++newNumber}` : part.removed ? `${++oldNumber}` : `${++oldNumber}   ${++newNumber}`;
-        return `<div class="diff-line ${kind}"><div class="diff-line-num" style="width: 5.5em; text-align: center;">${number}</div><div class="diff-line-marker">${marker}</div><div class="diff-line-content"><${tag}>${escapeHtml(value)}</${tag}></div></div>`;
+        return `<div class="diff-line ${kind}"><div class="diff-line-num diff-line-num--unified">${number}</div><div class="diff-line-marker">${marker}</div><div class="diff-line-content"><${tag}>${escapeHtml(value)}</${tag}></div></div>`;
       })).join('');
       return;
     }
@@ -584,7 +627,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
       result += `
         <div class="${currentClass}">
-          <div class="diff-line-num" style="width: 5.5em; text-align: center;">${numDisplay}</div>
+          <div class="diff-line-num diff-line-num--unified">${numDisplay}</div>
           <div class="diff-line-marker">${marker}</div>
           <div class="diff-line-content">${line}</div>
         </div>

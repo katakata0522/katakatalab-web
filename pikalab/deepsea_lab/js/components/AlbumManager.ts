@@ -6,10 +6,19 @@ import { deepSeaData, DeepSeaItem } from '../data';
 import { playSound } from '../audio';
 import { ConfettiManager } from '../utils/confetti';
 
+const NUMBER_MATCH_REGEX = /[\d.]+/g;
+const FOCUSABLE_SELECTOR = 'button:not([disabled]), [href], input, select, textarea, [tabindex]:not([tabindex="-1"])';
+const LENS_NORMAL_ACTIVE_CLASS = 'bg-blue-600 hover:bg-blue-500 text-white rounded-full px-3 py-1.5 text-xs flex items-center gap-1 font-bold shadow-lg transition-colors border border-blue-400/30';
+const LENS_MACRO_ACTIVE_CLASS = 'bg-emerald-600 hover:bg-emerald-500 text-white rounded-full px-3 py-1.5 text-xs flex items-center gap-1 font-bold shadow-lg transition-colors border border-emerald-400/30';
+const LENS_INACTIVE_CLASS = 'bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-full px-3 py-1.5 text-xs flex items-center gap-1 font-bold shadow-lg transition-all border border-slate-600/50';
+const QUIZ_OPT_BASE_CLASS = 'quiz-opt-btn w-full text-left bg-slate-800/80 hover:bg-slate-700/80 text-slate-200 border border-slate-700 rounded-xl px-4 py-2.5 text-sm transition-all flex items-center gap-2';
+
 export class AlbumManager {
     private storage: StorageManager;
     private capturedIds: Set<string>;
     private allCreatures: DeepSeaItem[];
+    private creatureItems: DeepSeaItem[];
+    private landmarkItems: DeepSeaItem[];
     private dataMap: Record<string, DeepSeaItem>;
 
     private modal: HTMLElement | null;
@@ -17,6 +26,7 @@ export class AlbumManager {
     private albumGrid: HTMLElement | null;
     private albumCount: HTMLElement | null;
     private albumProgress: HTMLElement | null;
+    private albumProgressBar: HTMLElement | null;
 
     private confetti: ConfettiManager;
     private isJustCompleted: boolean = false;
@@ -34,11 +44,17 @@ export class AlbumManager {
         this.solvedQuizIds = new Set(this.storage.loadQuiz());
         
         this.allCreatures = [];
+        this.creatureItems = [];
+        this.landmarkItems = [];
         deepSeaData.forEach(item => {
             if (item.type === 'battle' && item.participants) {
-                item.participants.forEach(p => this.allCreatures.push(p));
+                item.participants.forEach(p => {
+                    this.allCreatures.push(p);
+                    (p.is_artifact ? this.landmarkItems : this.creatureItems).push(p);
+                });
             } else if (item.type !== 'battle') {
                 this.allCreatures.push(item);
+                (item.is_artifact ? this.landmarkItems : this.creatureItems).push(item);
             }
         });
         this.dataMap = Object.fromEntries(this.allCreatures.map(item => [item.id, item]));
@@ -48,6 +64,7 @@ export class AlbumManager {
         this.albumGrid = document.getElementById('album-grid');
         this.albumCount = document.getElementById('album-count');
         this.albumProgress = document.getElementById('album-progress');
+        this.albumProgressBar = document.getElementById('album-progress-bar');
 
         // #3: Null check warning logs for DOM elements
         if (!this.modal) console.warn("AlbumManager: Element with id 'sea-modal' not found.");
@@ -76,8 +93,8 @@ export class AlbumManager {
     }
 
     private updateHeaderUI(): void {
-        const progressText = document.getElementById('album-progress');
-        const progressBar = document.getElementById('album-progress-bar');
+        const progressText = this.albumProgress || document.getElementById('album-progress');
+        const progressBar = this.albumProgressBar || document.getElementById('album-progress-bar');
         
         if (this.albumCount) this.albumCount.textContent = this.capturedIds.size.toString();
         
@@ -93,15 +110,16 @@ export class AlbumManager {
     private renderAlbumGrid(): void {
         if (!this.albumGrid) return;
         this.albumGrid.innerHTML = '';
-        
-        const creatures = this.allCreatures.filter(item => !item.is_artifact);
-        const landmarks = this.allCreatures.filter(item => item.is_artifact);
+
+        const fragment = typeof document.createDocumentFragment === 'function'
+            ? document.createDocumentFragment()
+            : this.albumGrid;
         
         const createSection = (title: string, items: DeepSeaItem[]) => {
             const sectionTitle = document.createElement('h3');
             sectionTitle.className = 'col-span-full text-left text-lg md:text-xl font-bold text-indigo-300 mt-4 border-b border-indigo-500/30 pb-2';
             sectionTitle.textContent = title;
-            this.albumGrid!.appendChild(sectionTitle);
+            fragment.appendChild(sectionTitle);
             
             items.forEach(item => {
                 const isCaptured = this.has(item.id);
@@ -131,12 +149,15 @@ export class AlbumManager {
                         this.showFact(item.id, false);
                     });
                 }
-                this.albumGrid!.appendChild(div);
+                fragment.appendChild(div);
             });
         };
         
-        createSection('深海生物', creatures);
-        createSection('ランドマーク', landmarks);
+        createSection('深海生物', this.creatureItems);
+        createSection('ランドマーク', this.landmarkItems);
+        if (fragment !== this.albumGrid) {
+            this.albumGrid.appendChild(fragment);
+        }
     }
 
     registerCreature(id: string): void {
@@ -170,7 +191,7 @@ export class AlbumManager {
 
     private parseSizeToMeters(sizeStr: string): number {
         // "10-15cm", "2.5-3.8m", "約50m" などの文字列から最大の数値をメートルで抽出
-        const matches = sizeStr.match(/[\d.]+/g);
+        const matches = sizeStr.match(NUMBER_MATCH_REGEX);
         if (!matches) return 0.5; // default
         let maxVal = Math.max(...matches.map(Number));
         if (sizeStr.includes('cm')) {
@@ -260,10 +281,10 @@ export class AlbumManager {
         if (descContainer) descContainer.classList.remove('hidden');
         if (macroContainer) macroContainer.classList.add('hidden');
         if (btnLensNormal) {
-            btnLensNormal.className = 'bg-blue-600 hover:bg-blue-500 text-white rounded-full px-3 py-1.5 text-xs flex items-center gap-1 font-bold shadow-lg transition-colors border border-blue-400/30';
+            btnLensNormal.className = LENS_NORMAL_ACTIVE_CLASS;
         }
         if (btnLensMacro) {
-            btnLensMacro.className = 'bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-full px-3 py-1.5 text-xs flex items-center gap-1 font-bold shadow-lg transition-all border border-slate-600/50';
+            btnLensMacro.className = LENS_INACTIVE_CLASS;
         }
 
         if (isLensUnlocked) {
@@ -296,7 +317,7 @@ export class AlbumManager {
                 }
 
                 // スタイルの初期化
-                btnEl.className = 'quiz-opt-btn w-full text-left bg-slate-800/80 hover:bg-slate-700/80 text-slate-200 border border-slate-700 rounded-xl px-4 py-2.5 text-sm transition-all flex items-center gap-2';
+                btnEl.className = QUIZ_OPT_BASE_CLASS;
                 btnEl.disabled = solved;
 
                 if (solved) {
@@ -417,7 +438,7 @@ export class AlbumManager {
             if (modalElement.classList.contains('hidden')) return;
             const openModals = this.getOpenModals();
             if (openModals[openModals.length - 1] !== modalElement) return;
-            modalElement.querySelector<HTMLElement>('button:not([disabled]), [href], input, select, textarea, [tabindex]:not([tabindex="-1"])')?.focus();
+            modalElement.querySelector<HTMLElement>(FOCUSABLE_SELECTOR)?.focus();
         }, 50);
         eventBus.emit('modal_opened', modalElement.id);
     }
@@ -654,10 +675,10 @@ export class AlbumManager {
             }
             
             if (btnLensNormal) {
-                btnLensNormal.className = 'bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-full px-3 py-1.5 text-xs flex items-center gap-1 font-bold shadow-lg transition-all border border-slate-600/50';
+                btnLensNormal.className = LENS_INACTIVE_CLASS;
             }
             if (btnLensMacro) {
-                btnLensMacro.className = 'bg-emerald-600 hover:bg-emerald-500 text-white rounded-full px-3 py-1.5 text-xs flex items-center gap-1 font-bold shadow-lg transition-colors border border-emerald-400/30';
+                btnLensMacro.className = LENS_MACRO_ACTIVE_CLASS;
             }
         } else {
             playSound('click');
@@ -666,10 +687,10 @@ export class AlbumManager {
             if (macroContainer) macroContainer.classList.add('hidden');
 
             if (btnLensNormal) {
-                btnLensNormal.className = 'bg-blue-600 hover:bg-blue-500 text-white rounded-full px-3 py-1.5 text-xs flex items-center gap-1 font-bold shadow-lg transition-colors border border-blue-400/30';
+                btnLensNormal.className = LENS_NORMAL_ACTIVE_CLASS;
             }
             if (btnLensMacro) {
-                btnLensMacro.className = 'bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-full px-3 py-1.5 text-xs flex items-center gap-1 font-bold shadow-lg transition-all border border-slate-600/50';
+                btnLensMacro.className = LENS_INACTIVE_CLASS;
             }
         }
     }

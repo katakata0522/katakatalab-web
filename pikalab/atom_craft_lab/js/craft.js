@@ -5,9 +5,27 @@ import { getCompositionCounts, isCompositionMatch } from './chemistry.js';
 import { getMoleculeSvg } from './molecule-svg.js';
 import { updateStampBadge } from './book.js';
 
+const RECIPE_BY_ID = new Map(MOLECULE_RECIPES.map(recipe => [recipe.id, recipe]));
+const FEEDBACK_BASE_CLASS = 'rounded-xl px-3.5 py-2.5 text-xs sm:text-sm font-bold flex items-center gap-2 border ';
+const FEEDBACK_EMERALD_CLASS = `${FEEDBACK_BASE_CLASS}bg-emerald-50 text-emerald-800 border-emerald-200 dark:bg-emerald-950/60 dark:text-emerald-200 dark:border-emerald-800`;
+const FEEDBACK_AMBER_CLASS = `${FEEDBACK_BASE_CLASS}bg-amber-50 text-amber-800 border-amber-200 dark:bg-amber-950/60 dark:text-amber-200 dark:border-amber-800`;
+
+const domCache = new Map();
+function getEl(id) {
+    const cached = domCache.get(id);
+    if (cached && cached.isConnected !== false) return cached;
+    const el = document.getElementById(id);
+    if (el) domCache.set(id, el);
+    return el;
+}
+
+function getSelectedRecipe() {
+    return RECIPE_BY_ID.get(state.selectedRecipeId) || MOLECULE_RECIPES[0];
+}
+
 export function renderCraftMissionsAndPalette() {
-    const currentRecipe = MOLECULE_RECIPES.find(r => r.id === state.selectedRecipeId) || MOLECULE_RECIPES[0];
-    const btnContainer = document.getElementById('craftMissionButtons');
+    const currentRecipe = getSelectedRecipe();
+    const btnContainer = getEl('craftMissionButtons');
 
     btnContainer.innerHTML = MOLECULE_RECIPES.map(recipe => {
         const isSelected = recipe.id === currentRecipe.id;
@@ -22,11 +40,11 @@ export function renderCraftMissionsAndPalette() {
         </button>`;
     }).join('');
 
-    document.getElementById('craftMissionStatus').textContent = `発見済み：${state.discoveredMolecules.size} / 8種`;
-    document.getElementById('craftTargetDesc').textContent = currentRecipe.hint;
+    getEl('craftMissionStatus').textContent = `発見済み：${state.discoveredMolecules.size} / 8種`;
+    getEl('craftTargetDesc').textContent = currentRecipe.hint;
 
     /* パレット描画：今のお題で使う原子には★バッジを表示して認知負荷を下げる */
-    const paletteGrid = document.getElementById('atomPaletteGrid');
+    const paletteGrid = getEl('atomPaletteGrid');
     paletteGrid.innerHTML = PALETTE_ATOM_KEYS.map(key => {
         const atom = ATOMS[key];
         const isNeeded = Boolean(currentRecipe.composition[key]);
@@ -48,11 +66,11 @@ export function renderCraftMissionsAndPalette() {
 }
 
 export function renderCraftChamber() {
-    const currentRecipe = MOLECULE_RECIPES.find(r => r.id === state.selectedRecipeId) || MOLECULE_RECIPES[0];
+    const currentRecipe = getSelectedRecipe();
     const currentCounts = getCompositionCounts(state.chamberAtoms);
 
     /* 目標レシピのチェックリスト表示（あといくつ必要か一目でわかる） */
-    const checklistEl = document.getElementById('recipeChecklist');
+    const checklistEl = getEl('recipeChecklist');
     const reqBadges = Object.entries(currentRecipe.composition).map(([sym, reqCount]) => {
         const cur = currentCounts[sym] || 0;
         const ok = cur === reqCount;
@@ -67,19 +85,19 @@ export function renderCraftChamber() {
     });
 
     /* 目標以外の余分な原子が入っている場合の通知バッジ */
-    Object.keys(currentCounts).forEach(sym => {
+    for (const sym of Object.keys(currentCounts)) {
         if (!currentRecipe.composition[sym]) {
             reqBadges.push(`<span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-xl border bg-amber-50 text-amber-800 border-amber-300 dark:bg-amber-950/70 dark:text-amber-200 text-xs font-extrabold">
                 ⚠️ ${ATOMS[sym].name}(${sym})は使わないよ
             </span>`);
         }
-    });
+    }
     checklistEl.innerHTML = reqBadges.join('');
 
-    const container = document.getElementById('chamberAtomsContainer');
-    const emptyPrompt = document.getElementById('chamberEmptyPrompt');
-    const synthBtn = document.getElementById('synthesizeBtn');
-    const synthBtnLabel = document.getElementById('synthesizeBtnLabel');
+    const container = getEl('chamberAtomsContainer');
+    const emptyPrompt = getEl('chamberEmptyPrompt');
+    const synthBtn = getEl('synthesizeBtn');
+    const synthBtnLabel = getEl('synthesizeBtnLabel');
 
     if (state.chamberAtoms.length === 0) {
         container.innerHTML = '';
@@ -110,22 +128,17 @@ export function renderCraftChamber() {
 }
 
 export function hideSynthesizedView() {
-    const resView = document.getElementById('synthesizedResultView');
+    const resView = getEl('synthesizedResultView');
     resView.classList.add('hidden');
     resView.classList.remove('flex');
-    document.getElementById('chamberAtomsContainer').classList.remove('hidden');
-    document.getElementById('craftFeedbackBar').classList.add('hidden');
+    getEl('chamberAtomsContainer').classList.remove('hidden');
+    getEl('craftFeedbackBar').classList.add('hidden');
 }
 
 export function showCraftFeedback(colorType, message) {
-    const bar = document.getElementById('craftFeedbackBar');
-    const textEl = document.getElementById('craftFeedbackText');
-    bar.className = 'rounded-xl px-3.5 py-2.5 text-xs sm:text-sm font-bold flex items-center gap-2 border ';
-    if (colorType === 'emerald') {
-        bar.className += 'bg-emerald-50 text-emerald-800 border-emerald-200 dark:bg-emerald-950/60 dark:text-emerald-200 dark:border-emerald-800';
-    } else {
-        bar.className += 'bg-amber-50 text-amber-800 border-amber-200 dark:bg-amber-950/60 dark:text-amber-200 dark:border-amber-800';
-    }
+    const bar = getEl('craftFeedbackBar');
+    const textEl = getEl('craftFeedbackText');
+    bar.className = colorType === 'emerald' ? FEEDBACK_EMERALD_CLASS : FEEDBACK_AMBER_CLASS;
     textEl.textContent = message;
 }
 
@@ -145,15 +158,15 @@ export function synthesizeMolecule() {
         state.discoveredMolecules.add(matched.id);
         state.selectedRecipeId = matched.id;
 
-        document.getElementById('chamberAtomsContainer').classList.add('hidden');
-        const resultView = document.getElementById('synthesizedResultView');
+        getEl('chamberAtomsContainer').classList.add('hidden');
+        const resultView = getEl('synthesizedResultView');
         resultView.classList.remove('hidden');
         resultView.classList.add('flex');
 
-        document.getElementById('moleculeSvgHolder').innerHTML = getMoleculeSvg(matched.svgType);
-        document.getElementById('synthResultCategory').textContent = matched.category;
-        document.getElementById('synthResultName').textContent = `${matched.name}（${matched.formula}）`;
-        document.getElementById('synthResultExplain').textContent = matched.explain;
+        getEl('moleculeSvgHolder').innerHTML = getMoleculeSvg(matched.svgType);
+        getEl('synthResultCategory').textContent = matched.category;
+        getEl('synthResultName').textContent = `${matched.name}（${matched.formula}）`;
+        getEl('synthResultExplain').textContent = matched.explain;
 
         showCraftFeedback(
             'emerald',
@@ -166,7 +179,7 @@ export function synthesizeMolecule() {
         updateStampBadge();
     } else {
         playSound('hint');
-        const target = MOLECULE_RECIPES.find(r => r.id === state.selectedRecipeId) || MOLECULE_RECIPES[0];
+        const target = getSelectedRecipe();
         const diffs = [];
         const allKeys = new Set([...Object.keys(currentCounts), ...Object.keys(target.composition)]);
         allKeys.forEach(sym => {

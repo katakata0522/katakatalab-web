@@ -241,8 +241,8 @@ export function recordRecentApp(appId, appName, url) {
     if (!normalizedId || !expectedUrl || url === '#') return;
 
     const safeName = (typeof appName === 'string' ? appName.trim() : '').slice(0, 80) || normalizedId;
-    const list = Array.isArray(userProfile.recentApps) ? [...userProfile.recentApps] : [];
-    const filtered = list.filter(item => item.id !== normalizedId).filter(isValidRecentApp);
+    const list = Array.isArray(userProfile.recentApps) ? userProfile.recentApps : [];
+    const filtered = list.filter(item => item && item.id !== normalizedId && isValidRecentApp(item));
     filtered.unshift({ id: normalizedId, name: safeName, url: expectedUrl });
     userProfile.recentApps = filtered.slice(0, RECENT_MAX);
     saveProfile();
@@ -316,7 +316,12 @@ export function editUserName(playSound = null) {
     }
 }
 
-let isBadgesRendered = false;
+const BADGE_ENTRIES = Object.entries(BADGE_DEFINITIONS);
+const BADGE_LOCKED_CLASS = 'badge-item aspect-square rounded-xl flex flex-col items-center justify-center p-2 transition-all bg-slate-100 border-2 border-slate-200 text-slate-300 grayscale';
+const BADGE_UNLOCKED_BASE_CLASS = 'badge-item aspect-square rounded-xl flex flex-col items-center justify-center p-2 transition-all bg-white shadow-sm border-transparent';
+
+let renderedBadgeGrid = null;
+const badgeDomCache = new Map();
 
 /**
  * ラボ訪問スタンプのグリッドをレンダリング（DOMトラッシング対策済み）
@@ -325,11 +330,15 @@ export function renderBadges() {
     const grid = document.getElementById('badge-grid');
     if (!grid) return;
 
-    // 初回のみDOM要素を構築
-    if (!isBadgesRendered) {
+    // 初回（またはDOM差し替え時）のみDOM要素を構築
+    if (renderedBadgeGrid !== grid || badgeDomCache.size === 0) {
         grid.innerHTML = '';
-        Object.keys(BADGE_DEFINITIONS).forEach(id => {
-            const def = BADGE_DEFINITIONS[id];
+        badgeDomCache.clear();
+        const useFragment = typeof document.createDocumentFragment === 'function';
+        const target = useFragment ? document.createDocumentFragment() : grid;
+
+        for (let i = 0; i < BADGE_ENTRIES.length; i++) {
+            const [id, def] = BADGE_ENTRIES[i];
             const el = document.createElement('div');
             el.id = `badge-item-${id}`;
             el.className = 'badge-item aspect-square rounded-xl flex flex-col items-center justify-center p-2 border-2 transition-all';
@@ -338,25 +347,34 @@ export function renderBadges() {
                 <span class="material-symbols-rounded text-3xl mb-1">${def.icon}</span>
                 <span class="badge-label text-[10px] font-bold leading-tight text-center">???</span>
             `;
-            grid.appendChild(el);
-        });
-        isBadgesRendered = true;
+            target.appendChild(el);
+            badgeDomCache.set(id, {
+                el,
+                label: el.querySelector('.badge-label'),
+                def
+            });
+        }
+        if (useFragment) {
+            grid.appendChild(target);
+        }
+        renderedBadgeGrid = grid;
     }
 
     // 2回目以降は状態（CSSクラスとテキスト）のみを更新
-    Object.keys(BADGE_DEFINITIONS).forEach(id => {
-        const def = BADGE_DEFINITIONS[id];
-        const hasBadge = userProfile.badges.includes(id);
-        const el = document.getElementById(`badge-item-${id}`);
-        if (!el) return;
+    const ownedBadges = new Set(userProfile.badges);
+    for (let i = 0; i < BADGE_ENTRIES.length; i++) {
+        const [id, def] = BADGE_ENTRIES[i];
+        const cached = badgeDomCache.get(id);
+        const el = cached && cached.el.isConnected !== false ? cached.el : document.getElementById(`badge-item-${id}`);
+        if (!el) continue;
 
-        const label = el.querySelector('.badge-label');
-        if (hasBadge) {
-            el.className = `badge-item aspect-square rounded-xl flex flex-col items-center justify-center p-2 transition-all bg-white shadow-sm border-transparent ${def.color}`;
+        const label = cached && cached.el === el ? cached.label : el.querySelector('.badge-label');
+        if (ownedBadges.has(id)) {
+            el.className = `${BADGE_UNLOCKED_BASE_CLASS} ${def.color}`;
             if (label) label.textContent = def.name;
         } else {
-            el.className = 'badge-item aspect-square rounded-xl flex flex-col items-center justify-center p-2 transition-all bg-slate-100 border-2 border-slate-200 text-slate-300 grayscale';
+            el.className = BADGE_LOCKED_CLASS;
             if (label) label.textContent = '???';
         }
-    });
+    }
 }

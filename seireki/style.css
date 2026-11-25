@@ -882,12 +882,13 @@ body.dark-mode .seireki-badge-item {
   }
 
   .seireki-tab-btn {
-    padding: 0.35rem 0.15rem !important;
-    font-size: 0.72rem !important;
-    min-height: 40px !important;
+    padding: 0.45rem 0.15rem !important;
+    font-size: clamp(0.6rem, 2.65vw, 0.72rem) !important;
+    min-height: 44px !important;
     text-align: center !important;
     justify-content: center !important;
-    white-space: normal !important;
+    white-space: nowrap !important;
+    letter-spacing: -0.02em !important;
     line-height: 1.2 !important;
     gap: 0.15rem !important;
   }
@@ -998,3 +999,111 @@ body.dark-mode .seireki-table tbody tr:hover {
   background-color: rgba(6, 182, 212, 0.12) !important;
 }
 
+/* Extracted from inline styles */
+.seireki-theme-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  border: 1px solid rgba(0, 0, 0, 0.12);
+  background: var(--c-surface, #ffffff);
+  color: inherit;
+  cursor: pointer;
+}
+
+.seireki-theme-btn .svg-icon {
+  width: 18px;
+  height: 18px;
+}
+
+.seireki-theme-btn .svg-sun {
+  display: none;
+}
+
+body.dark-mode .seireki-theme-btn {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.16);
+  color: #f8fafc;
+}
+
+.seireki-lead-note {
+  font-size: 0.85rem;
+  color: var(--c-text-light);
+  margin-bottom: 1rem;
+  line-height: 1.5;
+}
+
+.seireki-card--spaced {
+  margin-bottom: 1rem;
+}
+
+.seireki-table-note {
+  font-size: 0.8rem;
+  color: var(--c-text-light);
+  margin-bottom: 1rem;
+  line-height: 1.5;
+  text-align: left;
+}
+
+.seireki-highlight-label {
+  color: var(--c-success);
+  font-weight: bold;
+}
+
+.seireki-column-title {
+  color: var(--c-primary);
+  margin-top: 0;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.seireki-callout {
+  background: var(--c-bg);
+  border-left: 4px solid var(--c-primary);
+  border-radius: 0 var(--radius-md, 12px) var(--radius-md, 12px) 0;
+  padding: 1.25rem;
+  margin: 1.5rem 0;
+}
+
+.seireki-callout h4 {
+  color: var(--c-primary);
+  margin-top: 0;
+  font-weight: 800;
+  font-size: 1.05rem;
+  margin-bottom: 0.5rem;
+}
+
+.seireki-callout p {
+  margin: 0;
+  font-size: 0.92rem;
+  line-height: 1.7;
+}
+
+.seireki-column-outro {
+  margin-bottom: 0;
+}
+
+.seireki-info-meta {
+  font-size: 0.85rem;
+  color: var(--c-text-light);
+  margin: 0 0 1rem;
+  line-height: 1.6;
+}
+
+.seireki-info-list {
+  margin: 0;
+  padding-left: 1.25rem;
+  color: var(--c-text-light);
+  line-height: 1.8;
+}
+
+.seireki-info-footnote {
+  font-size: 0.85rem;
+  color: var(--c-text-light);
+  margin: 1rem 0 0;
+  line-height: 1.6;
+}
