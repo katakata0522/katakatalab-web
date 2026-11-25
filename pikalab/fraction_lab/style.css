@@ -58,6 +58,20 @@ nav [role="tablist"] {
     min-width: 0;
 }
 
+.fraction-intro-mark { display: none; }
+@media (min-width: 768px) {
+    .fraction-intro-mark {
+        display: block;
+        position: absolute;
+        top: 1rem;
+        right: 1.5rem;
+        color: #38bdf8;
+        opacity: 0.15;
+        pointer-events: none;
+    }
+    .fraction-intro-mark .material-symbols-rounded { display: block; font-size: 3rem; }
+}
+
 /* ネオンテキスト */
 .neon-text {
     text-shadow: 0 0 5px var(--accent-glow), 0 0 15px rgba(56, 189, 248, 0.3);

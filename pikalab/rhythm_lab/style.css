@@ -433,3 +433,6 @@ header .material-symbols-rounded.hidden {
         padding-right: 0.625rem !important;
     }
 }
+
+.rhythm-clear-hint { white-space: nowrap; }
+.rhythm-clear-hint .material-symbols-rounded { vertical-align: middle; }
