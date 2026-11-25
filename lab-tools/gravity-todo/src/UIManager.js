@@ -139,6 +139,8 @@ export class UIManager {
   setHistoryState(canUndo, canRedo, reason = '') {
     const undo = document.getElementById('undo-btn');
     const redo = document.getElementById('redo-btn');
+    const controls = undo?.closest?.('.history-controls');
+    if (controls) controls.dataset.hasHistory = String(Boolean(canUndo || canRedo));
     if (undo) { undo.disabled = !canUndo; undo.title = canUndo ? '直前の単件爆破を戻す' : reason || '戻せる単件爆破はありません'; }
     if (redo) { redo.disabled = !canRedo; redo.title = canRedo ? '戻した単件爆破をやり直す' : reason || 'やり直せる単件爆破はありません'; }
   }

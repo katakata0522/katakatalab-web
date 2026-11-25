@@ -21,8 +21,14 @@
     <style>
         .updates-container {
             max-width: 800px;
-            margin: 2rem auto;
-            padding: 0 1rem;
+            margin: 0 auto 2rem;
+            padding: calc(var(--header-height, 70px) + 2rem) 1rem 1rem;
+        }
+
+        .updates-subtitle {
+            text-align: center;
+            color: var(--c-text-light, #666);
+            margin-bottom: 0.5rem;
         }
 
         .update-timeline {
@@ -38,26 +44,28 @@
             top: 0;
             bottom: 0;
             width: 2px;
-            background: #e0e0e0;
+            background: var(--c-control-border, #e0e0e0);
         }
 
-        [data-theme="dark"] .update-timeline::before {
-            background: #444;
+        body.dark-mode .update-timeline::before {
+            background: rgba(255, 255, 255, 0.2);
         }
 
         .update-entry {
             position: relative;
             margin-bottom: 2.5rem;
-            background: var(--card-bg, #fff);
+            background: var(--c-card-bg, var(--c-surface, #fff));
             padding: 1.5rem;
             border-radius: 12px;
-            border: 1px solid var(--border-color, #eee);
+            border: 1px solid var(--c-glass-border, #eee);
             box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-            color: var(--text-color, #333);
+            color: var(--c-text, #333);
         }
 
-        [data-theme="dark"] .update-entry {
-            border-color: #444;
+        body.dark-mode .update-entry {
+            background: var(--c-surface, #1c2541);
+            border-color: rgba(255, 255, 255, 0.12);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.35);
         }
 
         .update-entry::after {
@@ -67,8 +75,8 @@
             top: 1.5rem;
             width: 12px;
             height: 12px;
-            background: #007bff;
-            border: 3px solid var(--bg-color, #fff);
+            background: var(--c-primary, #ff7675);
+            border: 3px solid var(--c-bg, #fff);
             border-radius: 50%;
             z-index: 1;
         }
@@ -84,49 +92,61 @@
         .update-date {
             font-family: 'Outfit', sans-serif;
             font-weight: 700;
-            color: var(--text-light, #666);
+            color: var(--c-text-light, #666);
             font-size: 1.1rem;
         }
 
         .update-version {
             font-family: monospace;
-            background: var(--bg-color, #eee);
+            background: var(--c-bg, #eee);
             padding: 2px 6px;
             border-radius: 4px;
             font-size: 0.85rem;
-            color: var(--text-color, #555);
-            border: 1px solid var(--border-color, #ddd);
+            color: var(--c-text, #555);
+            border: 1px solid var(--c-control-border, #ddd);
+        }
+
+        body.dark-mode .update-version {
+            background: rgba(255, 255, 255, 0.08);
+            border-color: rgba(255, 255, 255, 0.16);
+            color: var(--c-text, #f8fafc);
         }
 
         .tag-system { background: linear-gradient(135deg, #6c5ce7, #a29bfe); color: white; padding: 2px 8px; border-radius: 12px; font-size: 0.75rem; font-weight: bold; }
-        .tag-content { background: linear-gradient(135deg, #00b894, #55efc4); color: white; padding: 2px 8px; border-radius: 12px; font-size: 0.75rem; font-weight: bold; }
-        .tag-fix { background: linear-gradient(135deg, #ff7675, #fab1a0); color: white; padding: 2px 8px; border-radius: 12px; font-size: 0.75rem; font-weight: bold; }
+        .tag-content { background: linear-gradient(135deg, #00997a, #00b894); color: white; padding: 2px 8px; border-radius: 12px; font-size: 0.75rem; font-weight: bold; }
+        .tag-fix { background: linear-gradient(135deg, #e17055, #ff7675); color: white; padding: 2px 8px; border-radius: 12px; font-size: 0.75rem; font-weight: bold; }
 
         .update-title {
             font-size: 1.2rem;
             font-weight: 700;
             margin-bottom: 0.5rem;
-            color: var(--text-color, #333);
+            color: var(--c-text, #333);
         }
 
         .update-body {
             font-size: 0.95rem;
             line-height: 1.7;
-            color: var(--text-color, #333);
+            color: var(--c-text-light, #333);
         }
-        
+
         /* リンク色などの調整 */
         .update-body a {
-            color: #007bff;
+            color: var(--c-primary-dark, #d63031);
+            text-decoration: underline;
+            text-underline-offset: 2px;
         }
-        [data-theme="dark"] .update-body a {
-            color: #54a0ff;
+        body.dark-mode .update-body a {
+            color: #ffaaa4;
         }
 
         .update-body ul {
             padding-left: 1.5rem;
             margin-top: 0.5rem;
-            color: var(--text-color, #333);
+            color: var(--c-text-light, #333);
+        }
+
+        .update-body strong {
+            color: var(--c-text, #2d3436);
         }
 
         .back-link {
@@ -135,14 +155,14 @@
             margin-top: 3rem;
             margin-bottom: 2rem;
         }
-        
+
         .hero-title {
-            color: var(--text-color, #333);
+            color: var(--c-text, #333);
         }
-        
+
         /* サブタイトル用 */
         main > p {
-            color: var(--text-light, #666);
+            color: var(--c-text-light, #666);
         }
     </style>
 
@@ -183,7 +203,7 @@
     <main class="updates-container">
 
         <h1 class="hero-title" style="font-size: 2rem; text-align: center; margin-bottom: 1rem;">Update Log</h1>
-        <p style="text-align: center; color: #666;">KatakataLabの進化の記録</p>
+        <p class="updates-subtitle">KatakataLabの進化の記録</p>
 
         <div class="update-timeline">
 

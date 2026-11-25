@@ -35,25 +35,47 @@ class DoujinApp {
     this.renderer.updateCalculations(this.store.state, this.store.multiCounter, this.store);
   }
 
-  initTheme() {
-    const isDark = localStorage.getItem('doujin_dark_theme') === 'true' ||
-      (!('doujin_dark_theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches);
-    
-    if (isDark) {
-      document.documentElement.classList.add('dark');
-      if (this.renderer.dom.themeIcon) this.renderer.dom.themeIcon.setAttribute('data-lucide', 'sun');
-    } else {
-      document.documentElement.classList.remove('dark');
-      if (this.renderer.dom.themeIcon) this.renderer.dom.themeIcon.setAttribute('data-lucide', 'moon');
+  syncThemeIcon(isDark) {
+    const toggleBtn = this.renderer.dom.themeToggle;
+    if (toggleBtn) {
+      toggleBtn.setAttribute('aria-pressed', isDark ? 'true' : 'false');
+      // Lucideは<i>を<svg>に置換するため毎回アイコン要素を再同期する
+      toggleBtn.innerHTML = `<i data-lucide="${isDark ? 'sun' : 'moon'}" id="icon-theme" class="w-4 h-4"></i>`;
+      this.renderer.dom.themeIcon = toggleBtn.querySelector('#icon-theme');
+      if (window.lucide) window.lucide.createIcons();
     }
   }
 
+  initTheme() {
+    if (window.KatakataTheme) {
+      const isDark = window.KatakataTheme.init({
+        legacyKeys: ['doujin_dark_theme'],
+        htmlDarkClass: true,
+        bodyDarkClass: true
+      });
+      this.syncThemeIcon(isDark);
+      window.KatakataTheme.subscribe((dark) => this.syncThemeIcon(dark));
+      return;
+    }
+
+    const stored = localStorage.getItem('theme') || localStorage.getItem('doujin_dark_theme');
+    const isDark = stored === 'dark' || stored === 'true' ||
+      (!stored && window.matchMedia('(prefers-color-scheme: dark)').matches);
+
+    document.documentElement.classList.toggle('dark', isDark);
+    this.syncThemeIcon(isDark);
+  }
+
   toggleTheme() {
-    const isDark = document.documentElement.classList.toggle('dark');
-    localStorage.setItem('doujin_dark_theme', isDark);
-    if (this.renderer.dom.themeIcon) {
-      this.renderer.dom.themeIcon.setAttribute('data-lucide', isDark ? 'sun' : 'moon');
-      if (window.lucide) window.lucide.createIcons();
+    let isDark;
+    if (window.KatakataTheme) {
+      isDark = window.KatakataTheme.toggle();
+    } else {
+      isDark = document.documentElement.classList.toggle('dark');
+      try {
+        localStorage.setItem('theme', isDark ? 'dark' : 'light');
+      } catch (_) {}
+      this.syncThemeIcon(isDark);
     }
     Toast.show(isDark ? '🌙 ダークモードを適用しました' : '☀️ ライトモードを適用しました');
   }
@@ -298,6 +320,9 @@ class DoujinApp {
       this.openLegalModal('💳 即売会キャッシュレス決済導入ガイド', LEGAL_TAX_DATA.cashlessGuide);
     });
     d.btnCloseLegalModal?.addEventListener('click', () => {
+      d.legalModal?.classList.add('hidden');
+    });
+    document.getElementById('btn-close-legal-modal-footer')?.addEventListener('click', () => {
       d.legalModal?.classList.add('hidden');
     });
     d.legalModal?.addEventListener('click', (e) => {

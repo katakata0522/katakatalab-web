@@ -614,6 +614,37 @@ kbd {
         min-width: 40px;
         min-height: 40px;
     }
+    #canvasContainer > div.absolute.bottom-4.right-4 {
+        flex-direction: row;
+        align-items: center;
+        bottom: 0.5rem;
+        right: 0.5rem;
+        gap: 0.2rem;
+        padding: 0.25rem 0.45rem;
+    }
+    #canvasContainer > div.absolute.bottom-4.right-4 button {
+        padding: 0.3rem 0.45rem;
+    }
+}
+
+body.bg-gray-900 > .breadcrumbs-tool.breadcrumbs-tool--bar {
+    background: #111827;
+    border-bottom: 1px solid #374151;
+    color: #cbd5e1;
+}
+body.bg-gray-900 > .breadcrumbs-tool.breadcrumbs-tool--bar a {
+    color: #e2e8f0;
+}
+body.bg-gray-900 > .breadcrumbs-tool.breadcrumbs-tool--bar .breadcrumbs-tool__sep {
+    color: #64748b;
+}
+body.bg-gray-900 > .breadcrumbs-tool.breadcrumbs-tool--bar .breadcrumbs-tool__current {
+    color: #f8fafc;
+}
+body.bg-gray-900 > .breadcrumbs-tool.breadcrumbs-tool--bar .breadcrumbs-tool__index {
+    background: rgba(55, 65, 81, 0.75);
+    border-color: #4b5563;
+    color: #f8fafc;
 }
 @media (max-width: 360px) {
     body > header { padding-inline: .5rem; }

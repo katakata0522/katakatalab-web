@@ -27,8 +27,8 @@
   <meta name="twitter:image" content="https://katakatalab.com/discount-calc/ogp.png">
 
   <link rel="icon" href="/favicon.ico">
-  <link rel="stylesheet" href="style.css?v=20261124-mobile-design">
-    <link rel="stylesheet" href="../tool-chrome.css?v=source">
+  <link rel="stylesheet" href="style.css?v=20261125">
+    <link rel="stylesheet" href="../tool-chrome.css?v=20261125">
 </head>
 <body>
     <script>try{if(localStorage.getItem('theme')==='dark')document.body.classList.add('dark-mode');}catch(e){}</script>
@@ -44,9 +44,12 @@
             <span class="breadcrumbs-tool__sep">/</span>
             <span class="breadcrumbs-tool__current" aria-current="page">割引計算ツール</span>
         </div>
-        <a href="../#projects" class="breadcrumbs-tool__index">
-            <span>🧰</span> ツール一覧へ
-        </a>
+        <div class="breadcrumbs-tool__actions">
+            <a href="../#projects" class="breadcrumbs-tool__index">
+                <span>🧰</span> ツール一覧へ
+            </a>
+            <button type="button" class="tool-theme-toggle" data-theme-toggle aria-label="ダークモードに切り替え" aria-pressed="false" title="ダークモードに切り替え">🌙</button>
+        </div>
     </nav>
 
     <!-- Auto-Injected noscript fallback -->
@@ -78,7 +81,7 @@
         <button type="button" data-add="10000" class="btn-haptic" aria-label="1万円追加">＋1万</button>
         <button type="button" data-add="1000" class="btn-haptic" aria-label="千円追加">＋1000</button>
         <button type="button" data-add="100" class="btn-haptic" aria-label="百円追加">＋100</button>
-        <button type="button" id="resetAllBtn" class="btn-haptic" aria-label="入力・計算設定をリセット" title="価格・税率・追加割引・カスタム割引率をリセット（買物メモは保持）" style="background:rgba(239,68,68,0.12);color:var(--c-reset-ink);border-color:rgba(239,68,68,0.3);">↩ 入力・計算設定をリセット</button>
+        <button type="button" id="resetAllBtn" class="btn-haptic btn-reset-all" aria-label="入力・計算設定をリセット" title="価格・税率・追加割引・カスタム割引率をリセット（買物メモは保持）">↩ 入力・計算設定をリセット</button>
       </div>
     </div>
     <div id="discount-rate-options" class="quick-rate-buttons" role="group" aria-label="よく使う割引率のショートカット">
@@ -190,12 +193,12 @@
     <div class="feature-box">
       <h3>💡 クイック使い方とポイント</h3>
       <p>金額を入力するだけで割引後の価格を一括計算します。タイムセールなどの「レジにてさらに〇〇%OFF」の重ね割や、買物メモでの合計額メモにも対応。このツールの計算処理はブラウザ内で行い、金額・買物メモを送信する処理は設けていません。</p>
-      <div style="display: flex; justify-content: space-between; align-items: center; gap: 1rem; flex-wrap: wrap; margin-top: 0.75rem;">
+      <div class="guide-cta-row">
         <div>
-          <strong style="color: var(--c-primary-dark);">📘 あわせて読みたい実践ガイド:</strong>
-          <span style="font-size: 0.85rem; color: var(--c-text);">重なり割引の読み方や端数計算のポイントをまとめています。</span>
+          <strong class="guide-cta-title">📘 あわせて読みたい実践ガイド:</strong>
+          <span class="guide-cta-desc">重なり割引の読み方や端数計算のポイントをまとめています。</span>
         </div>
-        <a href="../guides/discount-guide.html" target="_blank" rel="noopener" class="btn btn-primary" style="padding: 0.4rem 0.85rem; font-size: 0.85rem; text-decoration: none; border-radius: 4px; font-weight: bold; background: var(--c-selected); color: var(--c-on-selected);">ガイドを読む →</a>
+        <a href="../guides/discount-guide.html" target="_blank" rel="noopener" class="btn btn-primary btn-guide-link">ガイドを読む →</a>
       </div>
     </div>
 
@@ -342,7 +345,8 @@
 ]
 </script>
 
-<script src="script.js?v=20261121-tools" defer></script>
+<script src="../theme-sync.js?v=20261125" defer></script>
+<script src="script.js?v=20261126-tool-updates" defer></script>
 
 <script>
 // 個別manifestの入口からも、親PWAの同じ配信版を利用する。

@@ -309,6 +309,41 @@ document.addEventListener('DOMContentLoaded', () => {
     const mobileCardWidth = window.matchMedia?.('(max-width: 768px)');
     const detailedCardView = document.getElementById('project-detailed-view');
 
+    const PROJECT_ICONS = {
+        'moyamoya-sorter': '🌿',
+        'chiritsumo-calc': '☕',
+        'qrcode': '📱',
+        'aspect-ratio': '📐',
+        'password-generator': '🔑',
+        'seireki': '📅',
+        'discount-calc': '🏷️',
+        'ogp-simulator': '🖼️',
+        'px-rem': '⚖️',
+        'svg-viewer': '🎨',
+        'text-diff': '📝',
+        'font-lab': '🔤',
+        'base64': '📦',
+        'html-formatter': '💻',
+        'json-formatter': '🧩',
+        'timestamp': '⏱️',
+        'case-converter': '🔠',
+        'character-counter': '🔢',
+        'url-encoder': '🔗',
+        'dummy-image': '🖼️',
+        'pikalab': '✨',
+        'playpoint': '🎮',
+        'asobi-pocket': '🎲',
+        'gravity-todo': '🚀',
+        'kids-smile-land': '🎈',
+        'kirarin-play-park': '🎡',
+        'site-hub': '🌐',
+        'usagi-app': '🐰',
+        'doujin-calc': '📚',
+        'motion-atlas': '🎞️',
+        'emphasis-lines': '💥',
+        'screenshot-crop': '✂️',
+    };
+
     function renderProjectCard(p) {
         const isFeatured = p.featured;
         const url = p.url || '';
@@ -319,6 +354,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const storyAttr = story ? `data-story="${escapeHTML(story)}"` : '';
         const aliasesAttr = `data-aliases="${escapeHTML(JSON.stringify(Array.isArray(p.aliases) ? p.aliases : []))}"`;
         const id = escapeHTML(p.id);
+        const icon = p.icon || PROJECT_ICONS[p.id] || '🧪';
         const note = p.mobileNote || [];
         const external = new URL(url, 'https://katakatalab.com/').origin !== 'https://katakatalab.com';
         const recommended = Boolean(p.recommendationOrder);
@@ -326,7 +362,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const tabLabel = desktopNewTab ? ' <span class="card-action-target">（別タブ）</span>' : '';
         const desktopAction = recommended
             ? `${escapeHTML(p.mobileAction || '作品ページへ')}${tabLabel} →`
-            : '使う →';
+            : escapeHTML(p.actions?.mainText || '使う →');
         const mobileOrder = Number.isInteger(p.mobileOrder) ? ` style="--mobile-order:${p.mobileOrder}"` : '';
 
         return `
@@ -347,7 +383,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         ${p.targetBadge ? `<span class="badge-target font-badge">${escapeHTML(p.targetBadge)}</span>` : ''}
                         ${p.statusBadge ? `<span class="badge-new">${escapeHTML(p.statusBadge)}</span>` : ''}
                     </div>
-                    <h3 class="card-title">${escapeHTML(p.title)}</h3>
+                    <h3 class="card-title"><span class="card-title-icon" aria-hidden="true">${escapeHTML(icon)}</span> ${escapeHTML(p.title)}</h3>
                     <p class="card-text">${escapeHTML(p.text)}</p>
                     ${!recommended && p.guideLinks?.length ? `
                         <div class="card-guide-links">
@@ -706,6 +742,7 @@ document.addEventListener('DOMContentLoaded', () => {
             tagClass: Array.from(card.querySelector('.card-tag')?.classList || []).find(name => name.startsWith('tag-')) || '',
             targetBadge: card.querySelector('.badge-target')?.textContent.trim() || '',
             statusBadge: card.querySelector('.badge-new')?.textContent.trim() || '',
+            icon: card.querySelector('.card-title-icon')?.textContent.trim() || '',
             title: (card.querySelector('.project-row-name') || card.querySelector('.card-title'))?.textContent.trim() || '',
             text: card.querySelector('.card-text')?.textContent.trim() || '',
             rowTitle: card.querySelector('.project-row-name')?.textContent.trim(),
@@ -726,8 +763,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 url: link.getAttribute('href') || ''
             })),
             actions: {
-                // D7: 主操作は常に「使う」表記に寄せる（カード種別で揺らがない）
-                mainText: '使う →',
+                mainText: card.querySelector('.card-body .card-action-label')?.textContent.trim() || '使う →',
                 detail: Boolean(card.querySelector('.card-detail-btn'))
             }
         }));

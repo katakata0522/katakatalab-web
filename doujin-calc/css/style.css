@@ -78,8 +78,12 @@ button, input, select, textarea, a {
 .dark .doujin-presets { background: #1e293b; border-color: #475569; }
 .doujin-presets summary { min-height: 44px; padding-block: 0.7rem; cursor: pointer; font-weight: 700; }
 .doujin-presets[open] { padding-bottom: 0.8rem; }
-.doujin-select-row { min-width: 0; }
-.doujin-select-row select { min-width: 0; max-width: 100%; }
+.doujin-select-row { min-width: 0; gap: 0.35rem; }
+.doujin-select-row label { white-space: nowrap; flex-shrink: 0; }
+.doujin-select-row select { min-width: 0; max-width: 100%; flex: 1 1 auto; }
+@media (min-width: 640px) {
+  .doujin-cost-meta-grid { grid-template-columns: minmax(0, 1.35fr) minmax(0, 0.85fr) !important; }
+}
 
 .doujin-page :is(a, button, input, select, textarea, summary):focus-visible {
   outline: 2px solid #4338ca;
@@ -101,7 +105,9 @@ html:not(.dark) .doujin-page .text-emerald-600 { color: #047857; }
   .doujin-heading-context { font-size: 0.75rem; font-weight: 700; }
   .doujin-heading-name { grid-area: 2 / 1 / auto / -1; text-wrap: balance; }
   .doujin-heading-badge { grid-area: 1 / 2; justify-self: start; }
+  .doujin-page .doujin-cost-meta-grid { grid-template-columns: minmax(0, 1fr); }
   .doujin-page .doujin-select-row { display: grid; grid-template-columns: minmax(0, 1fr); gap: 0.2rem; }
+  .doujin-page #select-deadline { width: 100%; }
   .doujin-page :is(#tab-cost-total, #tab-cost-unit, #input-non-sale, #select-deadline, #select-change-mode) { min-height: 40px; }
   .doujin-page main > [id] { scroll-margin-top: 8.5rem; }
   .doujin-mobile-nav { padding-block: 0.25rem calc(0.25rem + env(safe-area-inset-bottom)); }

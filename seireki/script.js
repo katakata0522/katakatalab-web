@@ -125,6 +125,7 @@ function setupEventListeners() {
   });
 
   if (UI.eraName) UI.eraName.addEventListener('change', () => {
+    updateEraYearPlaceholder();
     syncWesternFromWareki();
     updateAllCalculations();
   });
@@ -215,8 +216,22 @@ function initStaticTexts() {
   
   // プレースホルダーを動的に20年前の年に設定
   UI.inputYear.placeholder = `例：${CONFIG.currentYear - 20}`;
+  updateEraYearPlaceholder();
   fillDateSelect(UI.birthMonth, 12, '月');
   fillDateSelect(UI.birthDay, 31, '日');
+}
+
+function updateEraYearPlaceholder() {
+  if (!UI.eraName || !UI.eraYear) return;
+  const currentReiwa = Math.max(1, CONFIG.currentYear - 2018);
+  const placeholders = {
+    '令和': String(currentReiwa),
+    '平成': '12',
+    '昭和': '60',
+    '大正': '10',
+    '明治': '35'
+  };
+  UI.eraYear.placeholder = placeholders[UI.eraName.value] || String(currentReiwa);
 }
 
 function fillDateSelect(select, max, suffix) {
@@ -292,6 +307,7 @@ function syncWarekiFromWestern() {
   }
   if (!UI.eraName || !UI.eraYear) return;
   UI.eraName.value = era.name;
+  updateEraYearPlaceholder();
   UI.eraYear.value = String(year - era.start + 1);
 }
 

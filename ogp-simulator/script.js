@@ -37,7 +37,11 @@ document.addEventListener('DOMContentLoaded', () => {
     metaDescs: document.querySelectorAll('.meta-desc'),
     
     previewThemeToggle: document.getElementById('previewThemeToggle'),
-    previewCanvas: document.getElementById('previewCanvas')
+    previewCanvas: document.getElementById('previewCanvas'),
+    ogpCodeOutput: document.getElementById('ogpCodeOutput'),
+    copyOgpMetaBtn: document.getElementById('copyOgpMetaBtn'),
+    ogpCopyStatus: document.getElementById('ogpCopyStatus'),
+    manualOgpMetaCopy: document.getElementById('manualOgpMetaCopy')
   };
 
   // プレースホルダー画像
@@ -111,6 +115,7 @@ document.addEventListener('DOMContentLoaded', () => {
           view.classList.remove('active');
           if(view.id === `view-${target}`) view.classList.add('active');
         });
+        updateMetaSnippet();
       });
     });
 
@@ -124,6 +129,11 @@ document.addEventListener('DOMContentLoaded', () => {
         els.previewCanvas.classList.add('theme-light');
       }
     });
+
+    // 5. Copy Generated OGP Meta Tags
+    if (els.copyOgpMetaBtn && typeof els.copyOgpMetaBtn.addEventListener === 'function') {
+      els.copyOgpMetaBtn.addEventListener('click', copyMetaSnippet);
+    }
 
     els.resetBtn.addEventListener('click', () => {
       if ((els.ogTitle.value || els.ogDesc.value || els.siteName.value || imagePending || currentImageData !== PLACEHOLDER_IMG)
@@ -144,6 +154,73 @@ document.addEventListener('DOMContentLoaded', () => {
      Text and image preview logic
      ========================================= */
 
+  function escapeAttr(val) {
+    return String(val || '')
+      .replace(/&/g, '&amp;')
+      .replace(/"/g, '&quot;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;');
+  }
+
+  function getActiveTwitterCardType() {
+    let cardType = 'summary_large_image';
+    els.tabBtns.forEach((btn) => {
+      if (btn.classList && btn.classList.contains('active') && btn.dataset && btn.dataset.target === 'twitter-summary') {
+        cardType = 'summary';
+      }
+    });
+    return cardType;
+  }
+
+  function buildMetaSnippet() {
+    const title = escapeAttr(els.ogTitle.value || 'No Title');
+    const desc = escapeAttr(els.ogDesc.value || 'No description provided.');
+    const site = escapeAttr(els.siteName.value || 'katakatalab.com');
+    const cardType = getActiveTwitterCardType();
+    return [
+      `<meta property="og:title" content="${title}">`,
+      `<meta property="og:description" content="${desc}">`,
+      `<meta property="og:site_name" content="${site}">`,
+      `<meta property="og:type" content="website">`,
+      `<meta property="og:image" content="https://${site}/ogp.png">`,
+      `<meta name="twitter:card" content="${cardType}">`
+    ].join('\n');
+  }
+
+  function updateMetaSnippet() {
+    if (!els.ogpCodeOutput) return;
+    els.ogpCodeOutput.textContent = buildMetaSnippet();
+  }
+
+  function copyMetaSnippet() {
+    const snippet = buildMetaSnippet();
+    const setStatus = (msg) => {
+      if (els.ogpCopyStatus) els.ogpCopyStatus.textContent = msg;
+    };
+    const showManual = () => {
+      if (els.manualOgpMetaCopy) {
+        els.manualOgpMetaCopy.value = snippet;
+        els.manualOgpMetaCopy.hidden = false;
+        if (typeof els.manualOgpMetaCopy.focus === 'function') els.manualOgpMetaCopy.focus();
+        if (typeof els.manualOgpMetaCopy.select === 'function') els.manualOgpMetaCopy.select();
+      }
+      setStatus(t('下のテキスト欄を選択して手動でコピーしてください。', 'Select the text below and copy manually.'));
+    };
+    if (els.manualOgpMetaCopy) {
+      els.manualOgpMetaCopy.hidden = true;
+      els.manualOgpMetaCopy.value = '';
+    }
+    if (typeof navigator !== 'undefined' && navigator.clipboard && typeof navigator.clipboard.writeText === 'function') {
+      Promise.resolve(navigator.clipboard.writeText(snippet))
+        .then(() => {
+          setStatus(t('OGPメタタグをコピーしました！', 'Copied OGP meta tags!'));
+        })
+        .catch(showManual);
+    } else {
+      showManual();
+    }
+  }
+
   function updateText() {
     const title = els.ogTitle.value || 'No Title';
     const desc = els.ogDesc.value || 'No description provided.';
@@ -161,6 +238,7 @@ document.addEventListener('DOMContentLoaded', () => {
     els.metaTitles.forEach(el => el.textContent = title);
     els.metaDescs.forEach(el => el.textContent = desc);
     els.metaDomains.forEach(el => el.textContent = domain);
+    updateMetaSnippet();
   }
 
   function handleFile(file) {

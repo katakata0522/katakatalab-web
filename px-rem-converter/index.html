@@ -6,7 +6,7 @@
   <title>PX to REM 変換ラボ｜Web制作・デザイナー向け計算ツール - KatakataLab</title>
   <meta name="description" content="Web制作で必須のPXとREMを相互変換できる計算ツール。基準値(Root)の変更、リアルタイムプレビュー、CSSコピペ用の一覧表生成機能付き。">
   
-  <link rel="stylesheet" href="style.css?v=20261124-mobile-design">
+  <link rel="stylesheet" href="style.css?v=20261125-refactored">
 
   <link rel="icon" href="../icon.svg" type="image/svg+xml">
   <link rel="canonical" href="https://katakatalab.com/px-rem-converter/">
@@ -23,7 +23,7 @@
   <meta name="twitter:description" content="Web制作で必須のPXとREMを相互変換できる計算ツール。基準値(Root)の変更、リアルタイムプレビュー、CSSコピペ用の一覧表生成機能付き。">
   <meta name="twitter:image" content="https://katakatalab.com/ogp.png">
   <meta name="twitter:site" content="@Katakata_toybox">
-    <link rel="stylesheet" href="../tool-chrome.css?v=source">
+  <link rel="stylesheet" href="../tool-chrome.css?v=20261125">
 </head>
 <body>
     <script>try{if(localStorage.getItem('theme')==='dark')document.body.classList.add('dark-mode');}catch(e){}</script>
@@ -37,9 +37,12 @@
             <span class="breadcrumbs-tool__sep">/</span>
             <span class="breadcrumbs-tool__current" aria-current="page">px / rem 変換</span>
         </div>
-        <a href="../#projects" class="breadcrumbs-tool__index">
-            <span>🧰</span> ツール一覧へ
-        </a>
+        <div class="breadcrumbs-tool__actions">
+            <button type="button" class="tool-theme-toggle" data-theme-toggle aria-label="ダークモードに切り替え" aria-pressed="false" title="ダークモードに切り替え">🌙</button>
+            <a href="../#projects" class="breadcrumbs-tool__index">
+                <span>🧰</span> ツール一覧へ
+            </a>
+        </div>
     </nav>
 
 <main class="tool-wrapper">
@@ -62,15 +65,12 @@
     </div>
   </header>
 
-  <div class="root-explain">
-    <p>ブラウザの既定はだいたい <strong>16px = 1rem</strong> です。root を 10 にすると <strong>14px = 1.4rem</strong> になります。</p>
-    <p><code>font-size: 62.5%</code> は「ユーザー既定の 62.5%」なので、既定が 16px なら約 10px、ユーザーが 20px なら 12.5px です。<code>font-size: 10px</code> 固定とは別です。</p>
-    <p>このページの基準入力には、プロジェクトの実際の root を入れてください。</p>
-  </div>
-
   <section class="converter-panel">
     <div class="input-card" id="pxCard">
-      <label for="pxInput">PX <small>(絶対サイズ・ピクセル)</small></label>
+      <div class="input-card-head">
+        <label for="pxInput">PX <small>(絶対サイズ・ピクセル)</small></label>
+        <button type="button" id="copyPxValBtn" class="btn-copy-inline" aria-label="PXの値をコピー">📋 コピー</button>
+      </div>
       <div class="input-row">
         <input type="number" id="pxInput" value="16" placeholder="16" step="1" inputmode="decimal" aria-label="変換元のピクセル値 (PX)">
         <span class="unit-label">px</span>
@@ -80,13 +80,22 @@
     <div class="exchange-icon">⇄</div>
 
     <div class="input-card" id="remCard">
-      <label for="remInput">REM <small>(相対サイズ・レム)</small></label>
+      <div class="input-card-head">
+        <label for="remInput">REM <small>(相対サイズ・レム)</small></label>
+        <button type="button" id="copyRemValBtn" class="btn-copy-inline" aria-label="REMの値をコピー">📋 コピー</button>
+      </div>
       <div class="input-row">
         <input type="number" id="remInput" placeholder="1" step="0.0625" inputmode="decimal" aria-label="変換元のレム値 (REM)">
         <span class="unit-label">rem</span>
       </div>
     </div>
   </section>
+
+  <div class="root-explain">
+    <p>ブラウザの既定はだいたい <strong>16px = 1rem</strong> です。root を 10 にすると <strong>14px = 1.4rem</strong> になります。</p>
+    <p><code>font-size: 62.5%</code> は「ユーザー既定の 62.5%」なので、既定が 16px なら約 10px、ユーザーが 20px なら 12.5px です。<code>font-size: 10px</code> 固定とは別です。</p>
+    <p>このページの基準入力には、プロジェクトの実際の root を入れてください。</p>
+  </div>
 
   <section class="preview-area">
     <h2 class="sub-title">見た目の確認</h2>
@@ -119,7 +128,7 @@
     </div>
     <p class="copy-hint">コピーには現在の早見表の全行を含みます（追加したサイズも含む）。</p>
     
-    <textarea id="manualCopyCode" readonly hidden rows="14" aria-label="手動コピー用コード" spellcheck="false" style="width:100%;box-sizing:border-box"></textarea>
+    <textarea id="manualCopyCode" readonly hidden class="manual-copy-code" rows="14" aria-label="手動コピー用コード" spellcheck="false"></textarea>
 
     <div class="custom-add-container">
 
@@ -167,99 +176,99 @@
       ただ数値を変換するだけでなく、文字が実際にどう見えるかのプレビュー機能や、CSS変数を一括でコピーできるボタンも用意しました。ぜひ、あなたの強力な相棒として役立ててください！
     </p>
 
-    <div class="feature-box" style="background: var(--c-glass-bg, rgba(255,255,255,0.05)); border: 2px solid var(--c-primary, #FF7675); border-radius: var(--radius-md, 8px); padding: 1.5rem; margin: 2rem 0; text-align: left;">
-      <h3 style="color: var(--primary-color); margin-top: 0; font-weight: 800;">🧪 料理店でたとえる px と rem</h3>
+    <div class="feature-box feature-box--highlight">
+      <h3>🧪 料理店でたとえる px と rem</h3>
       <p>
         px は「お皿」に近い絶対指定です。ブラウザの文字サイズ設定を変えても、指定した px はその設定には追従しません。ページのズームでは伸びます。「お皿のサイズは絶対に変わらない」わけではありません。
       </p>
-      <p style="margin-bottom: 0;">
+      <p>
         rem は「盛り付け」に近い相対指定です。ルート（html）の font-size を見るので、ルートがユーザーの文字サイズ設定に追従する設計なら一緒に伸びます。ルートを固定pxにすると、その追従は保証されません。画面幅のレスポンシブ（メディアクエリ）とは別の話です。動かしたくないものは px、文字サイズ設定に合わせて伸びてほしいものは rem。
       </p>
     </div>
 
-    <h3 style="margin-top: 2.5rem; font-weight: 800;">実務での使い分け</h3>
+    <h3 class="article-subheading">実務での使い分け</h3>
     <p>
       「どれをpxにして、どれをremにすればいいの？」と迷ったときは、次を目安にしてください。
     </p>
-    <div class="table-container" tabindex="0" role="region" aria-label="場面別の推奨単位" style="margin: 1.5rem 0; overflow-x: auto; border: 1px solid var(--c-glass-border, rgba(255,255,255,0.1)); border-radius: 8px;">
-      <div class="responsive-table-container"><table class="conversion-table" style="width: 100%; border-collapse: collapse; text-align: left; font-size: 0.92rem;">
+    <div class="table-container article-table-wrap" tabindex="0" role="region" aria-label="場面別の推奨単位">
+      <div class="responsive-table-container"><table class="conversion-table guide-table">
         <thead>
-          <tr style="border-bottom: 2px solid var(--c-primary, #FF7675); background: rgba(255, 118, 117, 0.05);">
-            <th style="padding: 12px; font-weight: 800;">場面</th>
-            <th style="padding: 12px; font-weight: 800;">推奨単位</th>
-            <th style="padding: 12px; font-weight: 800;">理由</th>
+          <tr>
+            <th>場面</th>
+            <th>推奨単位</th>
+            <th>理由</th>
           </tr>
         </thead>
         <tbody>
-          <tr style="border-bottom: 1px solid var(--c-glass-border, rgba(255,255,255,0.1));">
-            <td style="padding: 12px; font-weight: 700;">本文・見出しの文字</td>
-            <td style="padding: 12px; color: var(--primary-color); font-weight: 800;">REM</td>
-            <td style="padding: 12px;">ルートの font-size に追従するため。ユーザー設定への追従には、ルート自身もその設定に合わせる設計が必要です。</td>
+          <tr>
+            <td class="guide-table__scene">本文・見出しの文字</td>
+            <td class="guide-table__unit guide-table__unit--accent">REM</td>
+            <td>ルートの font-size に追従するため。ユーザー設定への追従には、ルート自身もその設定に合わせる設計が必要です。</td>
           </tr>
-          <tr style="border-bottom: 1px solid var(--c-glass-border, rgba(255,255,255,0.1));">
-            <td style="padding: 12px; font-weight: 700;">余白(Margin / Padding)</td>
-            <td style="padding: 12px; color: var(--primary-color); font-weight: 800;">REM</td>
-            <td style="padding: 12px;">文字が大きくなったとき、余白も一緒にスケールしてバランスを保つため。</td>
+          <tr>
+            <td class="guide-table__scene">余白(Margin / Padding)</td>
+            <td class="guide-table__unit guide-table__unit--accent">REM</td>
+            <td>文字が大きくなったとき、余白も一緒にスケールしてバランスを保つため。</td>
           </tr>
-          <tr style="border-bottom: 1px solid var(--c-glass-border, rgba(255,255,255,0.1));">
-            <td style="padding: 12px; font-weight: 700;">行間 (line-height)</td>
-            <td style="padding: 12px; font-weight: 800;">単位なし（例: 1.5）</td>
-            <td style="padding: 12px;">その要素自身の font-size に対する倍率になります。原則すべて rem にはしません。</td>
+          <tr>
+            <td class="guide-table__scene">行間 (line-height)</td>
+            <td class="guide-table__unit">単位なし（例: 1.5）</td>
+            <td>その要素自身の font-size に対する倍率になります。原則すべて rem にはしません。</td>
           </tr>
-          <tr style="border-bottom: 1px solid var(--c-glass-border, rgba(255,255,255,0.1));">
-            <td style="padding: 12px; font-weight: 700;">1px / 2px の罫線（ボーダー）</td>
-            <td style="padding: 12px; font-weight: 700;">PX</td>
-            <td style="padding: 12px;">16px基準なら 1px は 0.0625rem です。サブピクセルのにじみは起きることがありますが例外です。細い線は px のほうが読みやすく、意図した太さを保ちやすいです。</td>
+          <tr>
+            <td class="guide-table__scene">1px / 2px の罫線（ボーダー）</td>
+            <td class="guide-table__unit">PX</td>
+            <td>16px基準なら 1px は 0.0625rem です。サブピクセルのにじみは起きることがありますが例外です。細い線は px のほうが読みやすく、意図した太さを保ちやすいです。</td>
           </tr>
-          <tr style="border-bottom: 1px solid var(--c-glass-border, rgba(255,255,255,0.1));">
-            <td style="padding: 12px; font-weight: 700;">アイコン</td>
-            <td style="padding: 12px; font-weight: 700;">場合による</td>
-            <td style="padding: 12px;">変形してほしくないなら px。フォントに連動させるなら rem。</td>
+          <tr>
+            <td class="guide-table__scene">アイコン</td>
+            <td class="guide-table__unit">場合による</td>
+            <td>変形してほしくないなら px。フォントに連動させるなら rem。</td>
           </tr>
         </tbody>
       </table></div>
     </div>
 
-    <div class="feature-box" style="background: rgba(255, 118, 117, 0.04); border-left: 4px solid var(--c-primary, #FF7675); padding: 1.25rem; margin: 2rem 0; border-radius: 0 8px 8px 0; text-align: left;">
-      <h3 style="margin-top: 0; font-weight: 800; color: var(--primary-color);">⚠️ 文字サイズだけをremにするときの注意</h3>
-      <p style="margin-bottom: 0; line-height: 1.7;">
+    <div class="feature-box feature-box--warning">
+      <h3>⚠️ 文字サイズだけをremにするときの注意</h3>
+      <p>
         よくあるミスが、<strong>「文字サイズだけをremにして、余白をpxのままにする」</strong>ことです。<br>
         ユーザーが文字サイズを大きくしたとき、文字だけ巨大化して余白は狭いままになり、窮屈になります。<br>
         文字をremにするなら、周囲の余白もremで揃える。rem が見るのはルートの font-size です。画面幅のメディアクエリとは別の話です。
       </p>
     </div>
 
-    <div class="feature-box" style="background: var(--c-glass-bg, rgba(255,255,255,0.03)); border: 1px solid var(--c-glass-border, rgba(255,255,255,0.1)); border-radius: var(--radius-md, 8px); padding: 1.5rem; margin-top: 2.5rem; text-align: left;">
-      <div style="display: flex; justify-content: space-between; align-items: center; gap: 1rem; flex-wrap: wrap; text-align: left;">
-        <div style="flex: 1; min-width: 200px;">
-          <h3 style="margin-top: 0; font-weight: 800; color: var(--primary-color);">📘 あわせて読みたい実践ガイド</h3>
-          <p style="font-size: 0.85rem; color: var(--text-sub); margin: 0; line-height: 1.6;">16px基準と10px基準の落とし穴や、ブラウザがremを必要とする本当の理由を徹底解説。</p>
+    <div class="feature-box feature-box--cta">
+      <div class="guide-cta-row">
+        <div class="guide-cta-copy">
+          <h3>📘 あわせて読みたい実践ガイド</h3>
+          <p>16px基準と10px基準の落とし穴や、ブラウザがremを必要とする本当の理由を徹底解説。</p>
         </div>
-        <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
-          <a href="../guides/px-rem-guide.html" class="btn btn-primary" style="padding: 0.5rem 1rem; font-size: 0.85rem; text-decoration: none; display: inline-flex; align-items: center; gap: 0.25rem; background: var(--primary-color); color: var(--on-primary); border: none; border-radius: 4px; font-weight: bold; cursor: pointer; white-space: nowrap;" target="_blank" rel="noopener noreferrer">ガイドを読む →</a>
-          <a href="../guides/case-studies.html" class="btn btn-secondary" style="padding: 0.5rem 1rem; font-size: 0.85rem; white-space: nowrap;" target="_blank" rel="noopener noreferrer">実例を見る →</a>
+        <div class="guide-cta-actions">
+          <a href="../guides/px-rem-guide.html" class="btn-guide-primary" target="_blank" rel="noopener noreferrer">ガイドを読む →</a>
+          <a href="../guides/case-studies.html" class="btn-guide-secondary" target="_blank" rel="noopener noreferrer">実例を見る →</a>
         </div>
       </div>
     </div>
 
     <!-- アコーディオン式コラムセクション -->
-    <details class="pwd-column-details" style="margin-top: 2.5rem; padding: 1.5rem; background: var(--c-glass-bg, rgba(255,255,255,0.03)); border: 1px solid var(--c-glass-border, rgba(255,255,255,0.1)); border-radius: var(--radius-md, 8px); text-align: left; box-shadow: var(--glass-shadow); cursor: pointer;">
-        <summary class="pwd-column-summary" style="font-weight: 800; font-size: 1.1rem; color: var(--primary-color); list-style: none; display: flex; align-items: center; justify-content: space-between; gap: 0.5rem; user-select: none;">
+    <details class="pwd-column-details">
+        <summary class="pwd-column-summary">
             <span>📖 このツールの使い方</span>
-            <span class="summary-toggle-icon" style="font-size: 0.9rem; transition: transform 0.2s;">▼</span>
+            <span class="summary-toggle-icon">▼</span>
         </summary>
-        <div class="pwd-column-content" style="margin-top: 1.25rem; font-size: 0.92rem; color: var(--text-main); line-height: 1.85; cursor: default;" onclick="event.stopPropagation();">
-            <h4 style="color: var(--primary-color); margin-top: 0; font-weight: 800; font-size: 1.1rem; margin-bottom: 0.75rem;">基準サイズの意味</h4>
+        <div class="pwd-column-content">
+            <h4>基準サイズの意味</h4>
             <p>
                 上の基準入力は、プロジェクトの html（ルート）の font-size です。ブラウザ既定はだいたい 16px。10px 運用なら 10 を入れてください。計算は「px ÷ 基準 = rem」です。16 と 10 のボタンは、よくある値へのショートカットです。
             </p>
 
-            <h4 style="color: var(--primary-color); margin-top: 1.5rem; font-weight: 800; font-size: 1.05rem; margin-bottom: 0.5rem;">早見表の追加と削除</h4>
+            <h4>早見表の追加と削除</h4>
             <p>
                 よく使う px を入力して「リストに追加」できます。不要な行は × で削除、↩ リセットで初期リストに戻せます。行の px をクリックすると、上の変換欄とプレビューにセットされます。
             </p>
 
-            <h4 style="color: var(--primary-color); margin-top: 1.5rem; font-weight: 800; font-size: 1.05rem; margin-bottom: 0.5rem;">コードコピーは現在の早見表の全行</h4>
+            <h4>コードコピーは現在の早見表の全行</h4>
             <p>
                 「コードをコピー」には、現在の早見表の全行が含まれます。追加した行や8px・11pxなども対象で、削除した行は含まれません。
             </p>
@@ -288,7 +297,7 @@
     </section>
 
     <!-- 著者・更新情報 -->
-    <div class="author-meta" style="margin-top: 3rem; font-size: 0.8rem; color: var(--text-sub); border-top: 1px solid var(--border-color); padding-top: 20px; display: flex; justify-content: space-between; flex-wrap: wrap; gap: 10px;">
+    <div class="author-meta">
       <span>作成者: かたかた</span>
       <span>更新日: 2026年8月17日</span>
     </div>
@@ -327,7 +336,8 @@
 }
 </script>
 
-<script src="script.js?v=20261119-review" defer></script>
+<script src="../theme-sync.js?v=20261125" defer></script>
+<script src="script.js?v=20261125" defer></script>
 
 </body>
 </html>
