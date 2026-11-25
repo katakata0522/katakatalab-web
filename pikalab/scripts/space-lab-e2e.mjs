@@ -317,7 +317,7 @@ async function initialGeometry(page) {
             style: Object.fromEntries(['fontFamily', 'fontSize', 'fontWeight', 'lineHeight', 'letterSpacing', 'padding', 'gap', 'color', 'backgroundColor'].map(key => [key, s[key]])) }; };
         return [...selectors.map(selector => read(document.querySelector(selector), selector)),
             ...[...document.querySelectorAll('#a11y-container button')].map((node, index) => read(node, `planet-hit-area-${index}`)),
-            ...[...document.querySelectorAll('#minimap-markers button')].map((node, index) => read(node, `minimap-marker-${index}`))];
+            ...[...document.querySelectorAll('#minimap-markers button')].map((node, index) => ({ ...read(node, `minimap-marker-${index}`), orbit: node.style.left }))];
     });
 }
 const mobileHeaderKeys = ['header', 'header h1', 'header a', '#header-badge-btn', '#bgm-toggle-btn', '[data-action="parents-modal-open"]'];
@@ -331,21 +331,26 @@ function checkMobileHeader(geometry, viewport) {
         assert.ok(control.width >= 44 && control.height >= 44 && control.x >= 0 && control.x + control.width <= viewport.width);
         if (index) assert.ok(control.x >= controls[index - 1].x + controls[index - 1].width);
     }
+    const map = box('#minimap-container');
+    let right = map.x;
+    for (const { box: target } of geometry.filter(item => item.key.startsWith('minimap-marker-'))) {
+        assert.ok(target.width >= 32 && target.height >= 44 && target.x >= right - 0.1, 'Every planet has its own touch target');
+        right = target.x + target.width;
+    }
+    assert.ok(right <= map.x + map.width + 1);
 }
 function compareInitialGeometry(candidate, baseline, viewport) {
     const actual = structuredClone(candidate), expected = structuredClone(baseline), exceptions = [];
     if (viewport.width <= 640) {
         const map = candidate.find(item => item.key === '#minimap-container').box;
-        const oldMap = baseline.find(item => item.key === '#minimap-container').box;
         assert.ok(map.x >= 0 && map.x + map.width <= viewport.width && map.width >= viewport.width - 20);
         for (const [index, item] of actual.entries()) {
             const old = expected[index];
             if (item.key === '#minimap-container' || item.key.startsWith('minimap-marker-')) {
                 if (item.key !== '#minimap-container') {
-                    const center = item.box.x + item.box.width / 2;
-                    const oldCenter = old.box.x + old.box.width / 2;
-                    assert.ok(Math.abs(center - (map.x + (oldCenter - oldMap.x) / oldMap.width * map.width)) <= 1);
-                    assert.ok(item.box.width >= 24 && item.box.height >= 40);
+                    assert.ok(Math.abs(item.box.y + item.box.height / 2 - old.box.y - old.box.height / 2) <= 1);
+                    old.box.y = item.box.y;
+                    old.box.height = item.box.height;
                 }
                 old.box.x = item.box.x;
                 old.box.width = item.box.width;
@@ -366,7 +371,16 @@ async function layoutSuite() {
         const name = `initial-${viewport.width}-${theme}`;
         await runCase(name, async (page, record) => {
             const candidate = await initialGeometry(page);
-            if (viewport.width <= 640) checkMobileHeader(candidate, viewport);
+            if (viewport.width <= 640) {
+                checkMobileHeader(candidate, viewport);
+                const hitTargets = await page.locator('#minimap-markers button').evaluateAll(nodes => nodes.map(button => {
+                    const r = button.getBoundingClientRect(), y = r.y + r.height / 2;
+                    const dot = Number.parseFloat(getComputedStyle(button, '::after').left);
+                    return dot >= 7 && dot <= r.width - 7 &&
+                        [r.left + 2, r.left + dot, r.right - 2].every(x => document.elementFromPoint(x, y)?.closest('button') === button);
+                }));
+                assert.equal(hitTargets.filter(Boolean).length, PLANETS.length, 'Tap the dot or either edge of each planet cell');
+            }
             await noOverflow(page, record, 'initial');
             await screenshot(page, name); let baseline = null;
             if (baselineUrl) {

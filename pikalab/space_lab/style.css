@@ -404,9 +404,26 @@ main > header button { pointer-events: auto; }
     .space-title-text { min-width: 0; word-break: keep-all; overflow-wrap: anywhere; }
     #space-header > div:last-child { gap: 0.25rem; }
     #minimap-container { width: calc(100% - 1rem); }
-    /* 惑星の位置を保ち、密集する水星・金星でも隣のボタンがタップを奪わない。 */
-    #minimap-markers button { width: clamp(24px, 7%, 40px) !important; }
-    #minimap-markers button:hover { --tw-scale-x: 1; --tw-scale-y: 1; }
+    /* 9つのボタンでバーを分け、境目でも隣の惑星とタップ領域が重ならないようにする。 */
+    #minimap-markers { padding: 0; }
+    #minimap-markers button {
+        position: relative;
+        left: auto !important;
+        flex: 1 1 0;
+        width: auto !important;
+        min-width: 0;
+        height: 44px !important;
+        border: 0;
+        border-radius: 0;
+        transform: none;
+    }
+    #minimap-markers button::after {
+        position: absolute;
+        left: clamp(8px, var(--dot-in-cell), calc(100% - 8px));
+        top: 50%;
+        transform: translate(-50%, -50%);
+    }
+    #minimap-markers button:focus-visible { outline: 2px solid #67e8f9; outline-offset: -2px; }
 }
 
 @media (max-width: 359px) {
