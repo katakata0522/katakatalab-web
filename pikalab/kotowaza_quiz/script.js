@@ -48,10 +48,8 @@ const StorageManager = {
         }
     },
 
-    getHighScore(mode, count, category = 'all', difficulty = 'all') {
-        // 新しいキー形式を試す
+    _readHighScoreFromData(data, mode, count, category = 'all', difficulty = 'all') {
         const newKey = `${mode}_${count}_${category}_${difficulty}`;
-        const data = this._getData();
         const isValidScore = (score) => Number.isFinite(score) && score >= 0;
         if (isValidScore(data[newKey])) return data[newKey];
 
@@ -64,12 +62,16 @@ const StorageManager = {
         return 0;
     },
 
+    getHighScore(mode, count, category = 'all', difficulty = 'all') {
+        return this._readHighScoreFromData(this._getData(), mode, count, category, difficulty);
+    },
+
     saveHighScore(mode, count, score, category = 'all', difficulty = 'all') {
         if (!Number.isFinite(score) || score < 0) return false;
         try {
             const key = `${mode}_${count}_${category}_${difficulty}`;
             const data = this._getData();
-            const currentHigh = this.getHighScore(mode, count, category, difficulty);
+            const currentHigh = this._readHighScoreFromData(data, mode, count, category, difficulty);
 
             const isNewRecord = score > currentHigh;
             if (isNewRecord) {
@@ -220,10 +222,12 @@ function initializeElements() {
 
     // 選択肢ボタン
     elements.choiceBtns = document.querySelectorAll('.choice-btn');
+    elements.choiceBtnSet = new Set(elements.choiceBtns);
     // 設定ボタン
     elements.categoryBtns = document.querySelectorAll('#category-select .btn-config');
     elements.difficultyBtns = document.querySelectorAll('#difficulty-select .btn-config');
     elements.countBtns = document.querySelectorAll('.btn-count');
+    elements.screens = document.querySelectorAll('.screen');
 }
 
 function applyPortalSettings() {
@@ -254,15 +258,13 @@ function shuffleArray(array) {
     return arr;
 }
 
+const KATAKANA_RANGE_REGEX = /[\u30A1-\u30F6]/g;
+
 function normalizeKanaToHiragana(text) {
     if (typeof text !== 'string') return '';
-    return Array.from(text.normalize('NFKC')).map((char) => {
-        const code = char.charCodeAt(0);
-        if (code >= 0x30A1 && code <= 0x30F6) {
-            return String.fromCharCode(code - 0x60);
-        }
-        return char;
-    }).join('');
+    return text.normalize('NFKC').replace(KATAKANA_RANGE_REGEX, (char) =>
+        String.fromCharCode(char.charCodeAt(0) - 0x60)
+    );
 }
 
 function sanitizeFillinInput(text) {
@@ -375,7 +377,10 @@ function focusCurrentScreen(screenId) {
 }
 
 function showScreen(screenId) {
-    document.querySelectorAll('.screen').forEach(screen => screen.classList.remove('active'));
+    const screens = elements.screens && elements.screens.length > 0
+        ? elements.screens
+        : document.querySelectorAll('.screen');
+    screens.forEach(screen => screen.classList.remove('active'));
     const target = document.getElementById(screenId) || elements.startScreen;
     target?.classList.add('active');
     focusCurrentScreen(target?.id || 'start-screen');
@@ -534,19 +539,36 @@ const GENERAL_OVERLAPS = [
     [], [], ['転ばぬ先の杖', '備えあれば憂いなし', '用意周到'], []
 ];
 
+const MEANING_OVERLAP_MAP = (() => {
+    const map = new Map();
+    for (const group of MEANING_OVERLAP_GROUPS) {
+        for (const name of group) {
+            let set = map.get(name);
+            if (!set) {
+                set = new Set();
+                map.set(name, set);
+            }
+            for (const other of group) set.add(other);
+        }
+    }
+    return map;
+})();
+
 function getChoicePool(correctItem, allItems) {
     let cache = choicePoolCache.get(allItems);
     if (!cache) { cache = new Map(); choicePoolCache.set(allItems, cache); }
     const key = `${correctItem.kanji || correctItem.hiragana}\0${correctItem.meaning}`;
     if (cache.has(key)) return cache.get(key);
-    const excluded = new Set([correctItem.kanji]);
-    for (const group of MEANING_OVERLAP_GROUPS) {
-        if (group.includes(correctItem.kanji)) group.forEach(name => excluded.add(name));
-    }
+    const overlapSet = MEANING_OVERLAP_MAP.get(correctItem.kanji);
+    const excluded = overlapSet ? new Set(overlapSet) : new Set([correctItem.kanji]);
     const seen = new Set([correctItem.meaning]);
     // 同じ意味文が別の項目にもある場合を含め、意味文単位で除外する。
     const source = allItems.length >= 4 ? allItems : [...allItems, ...getQuizCatalog()];
-    const excludedMeanings = new Set(source.filter(item => item && excluded.has(item.kanji)).map(item => item.meaning));
+    const excludedMeanings = new Set();
+    for (let i = 0; i < source.length; i++) {
+        const item = source[i];
+        if (item && excluded.has(item.kanji)) excludedMeanings.add(item.meaning);
+    }
     const pool = [];
     for (const item of source) {
         if (!item || typeof item.meaning !== 'string' || !item.meaning.trim()
@@ -958,8 +980,18 @@ function awardCorrectAnswer() {
     return { pointsGained, speedBonus };
 }
 
+function recordWrongQuestion(question) {
+    const questionText = question.kanji || question.hiragana;
+    if (!gameState.wrongQuestions.some(q => (q.kanji || q.hiragana) === questionText)) {
+        gameState.wrongQuestions.push(question);
+    }
+}
+
 function handleChoiceClick(btn) {
-    if (!canAnswer('meaning') || !Array.from(elements.choiceBtns).includes(btn) || btn.disabled) return;
+    const isChoiceBtn = elements.choiceBtnSet
+        ? elements.choiceBtnSet.has(btn)
+        : Array.from(elements.choiceBtns).includes(btn);
+    if (!canAnswer('meaning') || !isChoiceBtn || btn.disabled) return;
     gameState.answered = true;
 
     const isCorrect = btn.dataset.correct === 'true';
@@ -991,10 +1023,7 @@ function handleChoiceClick(btn) {
         gameState.streak = 0; // ストリークリセット
 
         // 間違えた問題を記録
-        const questionText = gameState.currentQuestion.kanji || gameState.currentQuestion.hiragana;
-        if (!gameState.wrongQuestions.some(q => (q.kanji || q.hiragana) === questionText)) {
-            gameState.wrongQuestions.push(gameState.currentQuestion);
-        }
+        recordWrongQuestion(gameState.currentQuestion);
 
         SoundManager.play('wrong');
         showFeedback(false, `不正解… 正解は「${gameState.currentQuestion.meaning}」`);
@@ -1036,10 +1065,7 @@ function handleFillinSubmit() {
         gameState.wrongCount++;
         gameState.streak = 0;
         // 間違えた問題を記録（重複回避）
-        const questionText = gameState.currentQuestion.kanji || gameState.currentQuestion.hiragana;
-        if (!gameState.wrongQuestions.some(q => (q.kanji || q.hiragana) === questionText)) {
-            gameState.wrongQuestions.push(gameState.currentQuestion);
-        }
+        recordWrongQuestion(gameState.currentQuestion);
         SoundManager.play('wrong');
         showFeedback(false, `不正解… 正解は「${answer}」`);
     }
@@ -1095,15 +1121,18 @@ function showComboPopup(streak) {
 // 紙吹雪エフェクト
 function createConfetti() {
     const colors = ['#FFD700', '#FF6B6B', '#4CAF50', '#2196F3', '#9C27B0'];
+    const target = typeof document.createDocumentFragment === 'function'
+        ? document.createDocumentFragment()
+        : document.body;
     for (let i = 0; i < 50; i++) {
         const confetti = document.createElement('div');
         confetti.className = 'confetti';
         confetti.style.left = `${Math.random() * 100}vw`;
         confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
         confetti.style.animationDelay = `${Math.random() * 0.5}s`;
-        document.body.appendChild(confetti);
-
+        target.appendChild(confetti);
     }
+    if (target !== document.body) document.body.appendChild(target);
     scheduleEffectCleanup(CONFIG.CONFETTI_DURATION_MS);
 }
 
@@ -1257,9 +1286,12 @@ function setupEventListeners() {
     });
 
     // 問題数選択
-    document.querySelectorAll('.btn-count').forEach(btn => {
+    const countBtns = elements.countBtns && elements.countBtns.length > 0
+        ? elements.countBtns
+        : document.querySelectorAll('.btn-count');
+    countBtns.forEach(btn => {
         btn.addEventListener('click', () => {
-            document.querySelectorAll('.btn-count').forEach(b => { b.classList.remove('active'); b.setAttribute('aria-pressed', 'false'); });
+            countBtns.forEach(b => { b.classList.remove('active'); b.setAttribute('aria-pressed', 'false'); });
             btn.classList.add('active');
             btn.setAttribute('aria-pressed', 'true');
             const count = btn.dataset.count;

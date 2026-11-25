@@ -300,8 +300,20 @@ body.theme-night .card-cover .cover-badge {
     z-index: 1;
 }
 
-/* モバイル時のカード対応 */
+/* モバイル時のカード・操作タップ領域対応 */
 @media (max-width: 640px) {
+    .premium-header > a {
+        min-height: 40px;
+        padding-inline: 0.5rem;
+    }
+    #font-size-toggle,
+    #dark-mode-toggle {
+        min-width: 40px;
+        min-height: 40px;
+    }
+    .worry-pill {
+        min-height: 38px;
+    }
     .premium-article-card {
         flex-direction: row;
     }

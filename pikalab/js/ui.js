@@ -17,6 +17,15 @@ let menuKeyDownHandler = null;
 let menuOpenTimer = null;
 let menuCloseTimer = null;
 
+const MODAL_FOCUSABLE_SELECTOR = 'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])';
+const MENU_FOCUSABLE_SELECTOR = 'input, button, a, [tabindex]:not([tabindex="-1"])';
+const TOAST_ICON_MAP = Object.freeze({
+    info: 'info',
+    success: 'check_circle',
+    warning: 'warning',
+    error: 'error'
+});
+
 /**
  * トグルスイッチの状態を更新するヘルパー（共有用）
  */
@@ -58,9 +67,7 @@ export function setupFocusTrap(modalId) {
     }
     previousActiveElement = activeEl;
 
-    const focusableElements = modal.querySelectorAll(
-        'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
-    );
+    const focusableElements = modal.querySelectorAll(MODAL_FOCUSABLE_SELECTOR);
     const firstFocusable = focusableElements[0];
     const lastFocusable = focusableElements[focusableElements.length - 1];
 
@@ -168,9 +175,7 @@ function setupMenuKeyEvents() {
         if (e.key !== 'Tab' && e.key !== 'Escape') return;
 
         // メニュー内の有効な（表示されている）フォーカス可能な要素を取得
-        const focusableElements = Array.from(menu.querySelectorAll(
-            'input, button, a, [tabindex]:not([tabindex="-1"])'
-        )).filter(el => {
+        const focusableElements = Array.from(menu.querySelectorAll(MENU_FOCUSABLE_SELECTOR)).filter(el => {
             return el.offsetWidth > 0 && el.offsetHeight > 0;
         });
 
@@ -399,15 +404,17 @@ export function showToast(message, type = 'info') {
     toast.className = `toast toast-${type}`;
     toast.setAttribute('role', 'status');
     
-    let icon = 'info';
-    if (type === 'success') icon = 'check_circle';
-    if (type === 'warning') icon = 'warning';
-    if (type === 'error') icon = 'error';
+    const icon = TOAST_ICON_MAP[type] || 'info';
+    const iconSpan = document.createElement('span');
+    iconSpan.className = 'material-symbols-rounded toast-icon';
+    iconSpan.textContent = icon;
 
-    toast.innerHTML = `
-        <span class="material-symbols-rounded toast-icon">${icon}</span>
-        <span class="toast-text">${message}</span>
-    `;
+    const textSpan = document.createElement('span');
+    textSpan.className = 'toast-text';
+    textSpan.textContent = message;
+
+    toast.appendChild(iconSpan);
+    toast.appendChild(textSpan);
     container.appendChild(toast);
 
     setTimeout(() => {

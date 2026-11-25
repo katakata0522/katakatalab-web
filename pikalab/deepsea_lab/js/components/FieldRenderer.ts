@@ -76,6 +76,11 @@ export class FieldRenderer {
         this.updateContainerHeight();
 
         // #11: Depth markers (Render in depth-markers-overlay to bypass searchlight darkness overlay)
+        const markerTarget = markersContainer || this.container;
+        const markerFragment = typeof document.createDocumentFragment === 'function'
+            ? document.createDocumentFragment()
+            : markerTarget;
+
         markersData.forEach((marker: DepthMarker) => {
             const div = createDiv('depth-marker');
             
@@ -91,15 +96,17 @@ export class FieldRenderer {
             const span = createElement('span', `depth-label ${marker.class}`);
             span.textContent = marker.label;
             div.appendChild(span);
-            
-            if (markersContainer) {
-                markersContainer.appendChild(div);
-            } else {
-                this.container!.appendChild(div);
-            }
+            markerFragment.appendChild(div);
         });
+        if (markerFragment !== markerTarget) {
+            markerTarget.appendChild(markerFragment);
+        }
 
         const solvedCount = this.storage.loadQuiz().length;
+        const entityFragment = typeof document.createDocumentFragment === 'function'
+            ? document.createDocumentFragment()
+            : this.container;
+        const imagesToObserve: HTMLImageElement[] = [];
 
         // Entities (Creatures, Battles, Vents)
         deepSeaData.forEach((item: DeepSeaItem) => {
@@ -131,7 +138,7 @@ export class FieldRenderer {
                     el.classList.add('creature-locked');
                 }
                 this.entityNodes.set(item.id, el);
-                this.container!.appendChild(el);
+                entityFragment.appendChild(el);
                 
                 // 画像要素を監視対象に追加して遅延読み込み
                 const images = el.querySelectorAll('img');
@@ -143,10 +150,15 @@ export class FieldRenderer {
                     } else if (item.id) {
                         this.creatureNodes.set(item.id, imgEl);
                     }
-                    this.observer.observe(imgEl);
+                    imagesToObserve.push(imgEl);
                 });
             }
         });
+
+        if (entityFragment !== this.container) {
+            this.container.appendChild(entityFragment);
+        }
+        imagesToObserve.forEach(imgEl => this.observer.observe(imgEl));
 
         // 描画完了イベントを発火
         eventBus.emit(CONFIG.EVENTS.FIELD_RENDERED);
@@ -265,13 +277,8 @@ export class FieldRenderer {
     private updateSilhouetteState(): void {
         for (const [id, img] of this.creatureNodes.entries()) {
             const isCaptured = this.capturedIds.has(id);
-            if (isCaptured) {
-                img.classList.remove('creature-img-unregistered');
-                img.classList.add('creature-img-registered');
-            } else {
-                img.classList.remove('creature-img-registered');
-                img.classList.add('creature-img-unregistered');
-            }
+            img.classList.toggle('creature-img-registered', isCaptured);
+            img.classList.toggle('creature-img-unregistered', !isCaptured);
         }
     }
 

@@ -30,10 +30,14 @@
     });
 
     function updateEqualPartitionCopy() {
-        const candidates = Array.from(document.querySelectorAll('#view-whatis .text-amber-400'));
-        const warning = candidates.find((element) => element.textContent?.includes('大きさがバラバラ'));
-        if (!warning) return;
-        warning.textContent = FRACTION_EVOLUTION_CONFIG.EQUAL_PARTITION_COPY;
+        const candidates = document.querySelectorAll('#view-whatis .text-amber-400');
+        for (let i = 0; i < candidates.length; i++) {
+            const element = candidates[i];
+            if (element.textContent && element.textContent.includes('大きさがバラバラ')) {
+                element.textContent = FRACTION_EVOLUTION_CONFIG.EQUAL_PARTITION_COPY;
+                return;
+            }
+        }
     }
 
     function createConceptCard() {
@@ -130,21 +134,23 @@
             feedback.setAttribute('role', 'status');
             feedback.setAttribute('aria-live', 'polite');
 
+            const optionButtons = [];
             item.options.forEach((option, optionIndex) => {
                 const button = document.createElement('button');
                 button.type = 'button';
                 button.className = 'bg-slate-800 hover:bg-slate-700 text-slate-100 border border-slate-600 rounded-xl px-4 py-3 font-bold transition';
                 button.textContent = option;
+                optionButtons.push(button);
                 button.addEventListener('click', () => {
                     if (answered) return;
                     answered = true;
                     const isCorrect = optionIndex === item.answerIndex;
                     if (isCorrect) correctCount += 1;
 
-                    optionGrid.querySelectorAll('button').forEach((candidate) => {
-                        candidate.disabled = true;
-                        candidate.classList.add('opacity-70');
-                    });
+                    for (let i = 0; i < optionButtons.length; i++) {
+                        optionButtons[i].disabled = true;
+                        optionButtons[i].classList.add('opacity-70');
+                    }
 
                     button.classList.remove('opacity-70', 'border-slate-600');
                     button.classList.add(isCorrect ? 'border-emerald-400' : 'border-amber-400');
@@ -170,11 +176,17 @@
                 optionGrid.appendChild(button);
             });
 
-            questionArea.appendChild(progress);
-            questionArea.appendChild(question);
-            questionArea.appendChild(optionGrid);
-            questionArea.appendChild(feedback);
-            if (shouldFocus) optionGrid.querySelector('button').focus();
+            if (typeof document.createDocumentFragment === 'function') {
+                const fragment = document.createDocumentFragment();
+                fragment.append(progress, question, optionGrid, feedback);
+                questionArea.appendChild(fragment);
+            } else {
+                questionArea.appendChild(progress);
+                questionArea.appendChild(question);
+                questionArea.appendChild(optionGrid);
+                questionArea.appendChild(feedback);
+            }
+            if (shouldFocus && optionButtons[0]) optionButtons[0].focus();
         };
 
         const renderResult = () => {

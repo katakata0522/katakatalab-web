@@ -8,7 +8,30 @@
     const STORAGE_KEY = 'pikalab_kanji_progress';
     const CLASS_SHINING = 'shining-card';
     const catalogByKanji = new Map(Data.KANJI_ALL.map(entry => [entry.k, entry]));
+    const catalogIndexByKanji = new Map(Data.KANJI_ALL.map((entry, idx) => [entry.k, idx + 1]));
     const verticalKanji = new Set(Data.KANJI_UD.map(entry => entry.k));
+    const BASIC_PARTS_SET = new Set(['木', '日', '言', '氵', '土', '亻', '女', '口']);
+
+    function buildModeIndex(pool) {
+        const byPair = new Map();
+        const validLByR = new Map();
+        const validRByL = new Map();
+        for (const entry of pool) {
+            byPair.set(`${entry.l}\u0000${entry.r}`, entry);
+            let lSet = validLByR.get(entry.r);
+            if (!lSet) { lSet = new Set(); validLByR.set(entry.r, lSet); }
+            lSet.add(entry.l);
+            let rSet = validRByL.get(entry.l);
+            if (!rSet) { rSet = new Set(); validRByL.set(entry.l, rSet); }
+            rSet.add(entry.r);
+        }
+        return { byPair, validLByR, validRByL };
+    }
+
+    const modeIndexes = {
+        lr: buildModeIndex(Data.KANJI_LR),
+        ud: buildModeIndex(Data.KANJI_UD)
+    };
 
     // 出題用の絞り込みで、図鑑・ラボ共用のカタログを書き換えない。
     function getQuizPool(mode, exposure) {
@@ -28,6 +51,22 @@
         if (match.on) parts.push(`音：${match.on}`);
         if (match.kun) parts.push(`訓：${match.kun}`);
         return parts.length > 0 ? parts.join('　') : match.y;
+    }
+
+    function extractOkurigana(kun) {
+        const matched = kun ? kun.match(/（([^）]+)）/) : null;
+        return matched ? matched[1] : '';
+    }
+
+    function renderKanjiWithOkurigana(targetEl, entry, okuriganaSpanClass) {
+        if (!targetEl) return false;
+        const okurigana = extractOkurigana(entry.kun);
+        if (okurigana) {
+            targetEl.innerHTML = `${entry.k}<span class="${okuriganaSpanClass}">${okurigana}</span>`;
+            return true;
+        }
+        targetEl.textContent = entry.k;
+        return false;
     }
     let selectedL = null;
     let selectedR = null;
@@ -129,12 +168,17 @@
         { id: 'stamp_collector', name: 'スタンプコレクター', desc: 'スタンプが合計3個以上たまる', unlock: () => dailyClearHistory.length >= 3 }
     ];
 
-    function getTodayString() {
-        const d = new Date();
-        const y = d.getFullYear();
-        const m = String(d.getMonth() + 1).padStart(2, '0');
-        const r = String(d.getDate()).padStart(2, '0');
+    let unlockToastTimer = null;
+
+    function formatDateKey(date) {
+        const y = date.getFullYear();
+        const m = String(date.getMonth() + 1).padStart(2, '0');
+        const r = String(date.getDate()).padStart(2, '0');
         return `${y}-${m}-${r}`;
+    }
+
+    function getTodayString() {
+        return formatDateKey(new Date());
     }
 
     function seedRandom(seed) {
@@ -256,7 +300,6 @@
         '大型': 'おおがた',
         '休憩': 'きゅうけい',
         '動物': 'どうぶつ',
-        '燃料': 'ねんりょう',
         '料理': 'りょうり',
         '神社': 'じんじゃ',
         '神様': 'かみさま',
@@ -264,26 +307,29 @@
         '田植え': 'たうえ'
     };
 
-    // 語順と正規表現は固定なので、表示のたびに作り直さない。
-    const rubyPatterns = Object.entries(RUBY_DICT)
-        .sort((a, b) => b[0].length - a[0].length)
-        .map(([kanji, ruby]) => [new RegExp(kanji, 'g'), `<ruby>${kanji}<rt>${ruby}</rt></ruby>`]);
+    // 単一パス正規表現とメモ化キャッシュでルビ付与を高速化する。
+    const rubyMarkupMap = new Map();
+    const sortedRubyTerms = Object.keys(RUBY_DICT).sort((a, b) => b.length - a.length);
+    for (const kanji of sortedRubyTerms) {
+        rubyMarkupMap.set(kanji, `<ruby>${kanji}<rt>${RUBY_DICT[kanji]}</rt></ruby>`);
+    }
+    const rubySinglePassRegex = new RegExp(
+        `(<ruby>[\\s\\S]*?<\\/ruby>)|(${sortedRubyTerms.map(t => t.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join('|')})`,
+        'g'
+    );
+    const furiganaCache = new Map();
 
     // ルビ置換ヘルパー
     function applyFurigana(text) {
-        if (!configFurigana) return text;
-        let result = text;
-        
-        for (const [regex, markup] of rubyPatterns) {
-            // すでに置換されたrubyタグで分割し、その外側（平文）部分だけを置換することで入れ子を防ぐ
-            const parts = result.split(/(<ruby>[^]*?<\/ruby>)/g);
-            for (let i = 0; i < parts.length; i++) {
-                if (!parts[i].startsWith('<ruby>')) {
-                    parts[i] = parts[i].replace(regex, markup);
-                }
-            }
-            result = parts.join('');
-        }
+        if (!configFurigana || !text) return text;
+        const cached = furiganaCache.get(text);
+        if (cached !== undefined) return cached;
+        const result = text.replace(rubySinglePassRegex, (match, existingRuby, term) => {
+            if (existingRuby) return existingRuby;
+            return rubyMarkupMap.get(term) || match;
+        });
+        if (furiganaCache.size > 512) furiganaCache.clear();
+        furiganaCache.set(text, result);
         return result;
     }
 
@@ -353,14 +399,13 @@
         if (!parentEl) return;
         const rect = parentEl.getBoundingClientRect();
         
-        // エフェクト用のコンテナ（body直下に絶対配置）
+        // エフェクト用のコンテナ（子要素をまとめて構築してからbodyへ1回だけ追加）
         const container = document.createElement('div');
         container.style.position = 'fixed';
         container.style.left = `${rect.left + rect.width / 2}px`;
         container.style.top = `${rect.top + rect.height / 2}px`;
         container.style.pointerEvents = 'none';
         container.style.zIndex = '9999';
-        document.body.appendChild(container);
         
         const colors = ['#F59E0B', '#EF4444', '#10B981', '#3B82F6', '#EC4899', '#8B5CF6'];
         const shapes = ['★', '●', '🌸', '✨', '◆', '☀'];
@@ -391,6 +436,8 @@
             
             container.appendChild(p);
         }
+
+        document.body.appendChild(container);
         
         // 1秒後にエフェクトコンテナを自動クリーンアップ
         setTimeout(() => {
@@ -936,18 +983,15 @@
                     return;
                 }
                 
-                const pool = currentLabMode === 'lr' ? Data.KANJI_LR : Data.KANJI_UD;
+                const idx = modeIndexes[currentLabMode] || modeIndexes.lr;
 
                 // 左リストのフィルタリング
                 if (selectedR) {
-                    const validL = pool.filter(k => k.r === selectedR).map(k => k.l);
+                    const validL = idx.validLByR.get(selectedR);
                     btns1.forEach(b => {
-                        const char = b.textContent;
-                        if (validL.includes(char)) {
-                            b.classList.remove('opacity-30', 'pointer-events-none');
-                        } else {
-                            b.classList.add('opacity-30', 'pointer-events-none');
-                        }
+                        const isValid = validL ? validL.has(b.textContent) : false;
+                        b.classList.toggle('opacity-30', !isValid);
+                        b.classList.toggle('pointer-events-none', !isValid);
                     });
                 } else {
                     btns1.forEach(b => b.classList.remove('opacity-30', 'pointer-events-none'));
@@ -955,14 +999,11 @@
                 
                 // 右リストのフィルタリング
                 if (selectedL) {
-                    const validR = pool.filter(k => k.l === selectedL).map(k => k.r);
+                    const validR = idx.validRByL.get(selectedL);
                     btns2.forEach(b => {
-                        const char = b.textContent;
-                        if (validR.includes(char)) {
-                            b.classList.remove('opacity-30', 'pointer-events-none');
-                        } else {
-                            b.classList.add('opacity-30', 'pointer-events-none');
-                        }
+                        const isValid = validR ? validR.has(b.textContent) : false;
+                        b.classList.toggle('opacity-30', !isValid);
+                        b.classList.toggle('pointer-events-none', !isValid);
                     });
                 } else {
                     btns2.forEach(b => b.classList.remove('opacity-30', 'pointer-events-none'));
@@ -1009,14 +1050,11 @@
                 if (!match) return;
 
                 const charEl = dom.dictDetailChar;
-                const okuriganaMatch = match.kun ? match.kun.match(/（([^）]+)）/) : null;
-                const okurigana = okuriganaMatch ? okuriganaMatch[1] : '';
-                if (okurigana && charEl) {
-                    charEl.innerHTML = `${match.k}<span class="text-4xl font-fude text-orange-500 ml-1 select-none">${okurigana}</span>`;
-                    charEl.className = 'text-8xl font-fude text-orange-600 my-2 flex items-baseline justify-center w-full';
-                } else if (charEl) {
-                    charEl.textContent = match.k;
-                    charEl.className = 'text-8xl font-fude text-orange-600 my-2';
+                if (charEl) {
+                    const hasOkurigana = renderKanjiWithOkurigana(charEl, match, 'text-4xl font-fude text-orange-500 ml-1 select-none');
+                    charEl.className = hasOkurigana
+                        ? 'text-8xl font-fude text-orange-600 my-2 flex items-baseline justify-center w-full'
+                        : 'text-8xl font-fude text-orange-600 my-2';
                 }
 
                 if (dom.dictDetailPart1) dom.dictDetailPart1.textContent = match.l;
@@ -1025,7 +1063,7 @@
                 if (dom.dictDetailMeaning) dom.dictDetailMeaning.innerHTML = applyFurigana(match.m);
 
                 // No. と レア度 (星) の反映
-                const index = Data.KANJI_ALL.indexOf(match) + 1;
+                const index = catalogIndexByKanji.get(kanji) || 0;
                 if (dom.dictDetailNo) dom.dictDetailNo.textContent = `No. ${String(index).padStart(3, '0')}`;
                 
                 const rarity = App.lab.getKanjiRarity(kanji);
@@ -1110,8 +1148,16 @@
                     if (i1) i1.textContent = 'format_align_left';
                     if (l2) l2.textContent = 'つくり'; 
                     if (i2) i2.textContent = 'format_align_right';
-                    if (c1) Data.PARTS_L_LR.forEach(p => App.ui.createBtn(p, 'left', c1));
-                    if (c2) Data.PARTS_R_LR.forEach(p => App.ui.createBtn(p, 'right', c2));
+                    if (c1) {
+                        const f1 = document.createDocumentFragment();
+                        Data.PARTS_L_LR.forEach(p => App.ui.createBtn(p, 'left', f1));
+                        c1.appendChild(f1);
+                    }
+                    if (c2) {
+                        const f2 = document.createDocumentFragment();
+                        Data.PARTS_R_LR.forEach(p => App.ui.createBtn(p, 'right', f2));
+                        c2.appendChild(f2);
+                    }
                 } else {
                     if (parts) {
                         parts.className = 'flex flex-col items-center gap-2 transition-all my-4';
@@ -1131,9 +1177,19 @@
                     if (i1) i1.textContent = 'vertical_align_top';
                     if (l2) l2.textContent = 'あし'; 
                     if (i2) i2.textContent = 'vertical_align_bottom';
-                    if (c1) Data.PARTS_L_UD.forEach(p => App.ui.createBtn(p, 'left', c1));
-                    if (c2) Data.PARTS_R_UD.forEach(p => App.ui.createBtn(p, 'right', c2));
+                    if (c1) {
+                        const f1 = document.createDocumentFragment();
+                        Data.PARTS_L_UD.forEach(p => App.ui.createBtn(p, 'left', f1));
+                        c1.appendChild(f1);
+                    }
+                    if (c2) {
+                        const f2 = document.createDocumentFragment();
+                        Data.PARTS_R_UD.forEach(p => App.ui.createBtn(p, 'right', f2));
+                        c2.appendChild(f2);
+                    }
                 }
+                dom.displayLeft = document.getElementById('display-left');
+                dom.displayRight = document.getElementById('display-right');
                 selectedL = null; selectedR = null; App.ui.resetResult();
             },
 
@@ -1152,7 +1208,9 @@
                     Array.from(parent.children).forEach(b => b.classList.remove('selected'));
                 }
                 el.classList.add('selected');
-                const disp = document.getElementById(side === 'left' ? 'display-left' : 'display-right');
+                const disp = side === 'left'
+                    ? (dom.displayLeft || document.getElementById('display-left'))
+                    : (dom.displayRight || document.getElementById('display-right'));
                 if (disp) disp.textContent = char;
                 const clsLR = 'w-24 h-24 md:w-32 md:h-32 border-4 border-solid rounded-3xl flex items-center justify-center bg-white text-6xl md:text-7xl font-fude';
                 const clsUD = 'w-24 h-12 md:w-32 md:h-16 border-4 border-solid rounded-xl flex items-center justify-center bg-white text-3xl md:text-4xl font-fude';
@@ -1207,17 +1265,13 @@
                 const container = dom.dailyStampsContainer;
                 if (container) {
                     container.innerHTML = '';
+                    const clearSet = new Set(dailyClearHistory);
+                    const frag = document.createDocumentFragment();
                     
                     for (let i = 6; i >= 0; i--) {
-                        const checkDate = new Date();
-                        checkDate.setDate(d.getDate() - i);
-                        
-                        const y = checkDate.getFullYear();
-                        const m = String(checkDate.getMonth() + 1).padStart(2, '0');
-                        const r = String(checkDate.getDate()).padStart(2, '0');
-                        const checkDateStr = `${y}-${m}-${r}`;
-                        
-                        const isCleared = dailyClearHistory.includes(checkDateStr);
+                        const checkDate = new Date(d.getFullYear(), d.getMonth(), d.getDate() - i);
+                        const checkDateStr = formatDateKey(checkDate);
+                        const isCleared = clearSet.has(checkDateStr);
                         const dayLabel = `${checkDate.getMonth() + 1}/${checkDate.getDate()}`;
                         
                         const slot = document.createElement('div');
@@ -1237,8 +1291,9 @@
                                 <span class="mt-0.5 text-[8px] font-black">${dayLabel}</span>
                             `;
                         }
-                        container.appendChild(slot);
+                        frag.appendChild(slot);
                     }
+                    container.appendChild(frag);
                 }
             },
 
@@ -1247,6 +1302,7 @@
                 if (!g) return;
                 if (col.size === 0) return;
                 g.innerHTML = '';
+                const frag = document.createDocumentFragment();
                 col.forEach(k => {
                     const d = document.createElement('div');
                     const isShiny = shiningKanji.has(k);
@@ -1255,14 +1311,16 @@
                         : 'bg-white border-2 border-orange-100 rounded-xl h-20 flex items-center justify-center text-4xl font-fude text-orange-800 shadow-sm animate-pop-in cursor-pointer hover:bg-orange-50 active:scale-95 transition-all';
                     d.textContent = k;
                     d.addEventListener('click', () => App.ui.openDictDetail(k));
-                    g.appendChild(d);
+                    frag.appendChild(d);
                 });
+                g.appendChild(frag);
             },
 
             renderCourses: function () {
                 const grid = dom.coursesGrid;
                 if (!grid) return;
                 grid.innerHTML = '';
+                const frag = document.createDocumentFragment();
                 
                 COURSES.forEach(course => {
                     const key = `${gameMode}_${course.id}`;
@@ -1294,8 +1352,9 @@
                         </div>
                     `;
                     card.addEventListener('click', () => App.quiz.startCourse(course.id));
-                    grid.appendChild(card);
+                    frag.appendChild(card);
                 });
+                grid.appendChild(frag);
             },
 
             renderQuizContent: function () {
@@ -1348,13 +1407,15 @@
                 const container = side === 'left' ? dom.quizChoicesLeft : dom.quizChoicesRight;
                 if (!container) return;
                 container.innerHTML = '';
+                const frag = document.createDocumentFragment();
                 chars.forEach(c => {
                     const b = document.createElement('button');
                     b.className = 'quiz-choice-btn';
                     b.textContent = c;
                     b.addEventListener('click', () => App.ui.selectQuizPart(side, c, b));
-                    container.appendChild(b);
+                    frag.appendChild(b);
                 });
+                container.appendChild(frag);
             },
 
             selectQuizPart: function (side, char, btn) {
@@ -1375,8 +1436,8 @@
             updateQuizSlotsDisplay: function (isUD) {
                 const container = dom.quizSlotsContainer;
                 if (!container) return;
-                let sl = document.getElementById('quiz-slot-left');
-                let sr = document.getElementById('quiz-slot-right');
+                let sl = dom.quizSlotLeft && dom.quizSlotLeft.isConnected ? dom.quizSlotLeft : document.getElementById('quiz-slot-left');
+                let sr = dom.quizSlotRight && dom.quizSlotRight.isConnected ? dom.quizSlotRight : document.getElementById('quiz-slot-right');
 
                 if (!sl || !sr) {
                     container.innerHTML = `
@@ -1387,8 +1448,10 @@
                     sl = document.getElementById('quiz-slot-left');
                     sr = document.getElementById('quiz-slot-right');
                 }
-
-                const plusEl = document.getElementById('quiz-slot-plus');
+                dom.quizSlotLeft = sl;
+                dom.quizSlotRight = sr;
+                const plusEl = dom.quizSlotPlus && dom.quizSlotPlus.isConnected ? dom.quizSlotPlus : document.getElementById('quiz-slot-plus');
+                dom.quizSlotPlus = plusEl;
                 if (plusEl) {
                     plusEl.style.display = isUD ? 'none' : 'block';
                 }
@@ -1482,8 +1545,10 @@
                 nameEl.textContent = titleName;
                 toast.classList.add('show');
                 
-                setTimeout(() => {
+                if (unlockToastTimer) clearTimeout(unlockToastTimer);
+                unlockToastTimer = setTimeout(() => {
                     toast.classList.remove('show');
+                    unlockToastTimer = null;
                 }, 3000);
             },
 
@@ -1511,6 +1576,7 @@
                     return;
                 }
                 
+                const frag = document.createDocumentFragment();
                 wrongKanjiList.forEach(kanji => {
                     const match = catalogByKanji.get(kanji);
                     if (!match) return;
@@ -1546,8 +1612,9 @@
                         App.wrong.masterKanji(kanji);
                     });
                     
-                    grid.appendChild(item);
+                    frag.appendChild(item);
                 });
+                grid.appendChild(frag);
             },
 
             updateHoloTicketUI: function () {
@@ -1574,6 +1641,7 @@
                     return;
                 }
                 
+                const frag = document.createDocumentFragment();
                 currentRunMistakes.forEach(kanji => {
                     const b = document.createElement('button');
                     b.className = 'w-10 h-10 flex items-center justify-center text-xl font-fude bg-white border border-red-200 text-slate-800 rounded-xl hover:bg-red-50 hover:border-red-300 transition-all focus:outline-none';
@@ -1581,8 +1649,9 @@
                     b.addEventListener('click', () => {
                         App.ui.openDictDetail(kanji);
                     });
-                    container.appendChild(b);
+                    frag.appendChild(b);
                 });
+                container.appendChild(frag);
             }
         },
 
@@ -1604,8 +1673,8 @@
 
             combineKanji: function () {
                 if (!selectedL || !selectedR) { Audio.playSound('fail'); return; }
-                const pool = currentLabMode === 'lr' ? Data.KANJI_LR : Data.KANJI_UD;
-                const match = pool.find(d => d.l === selectedL && d.r === selectedR);
+                const idx = modeIndexes[currentLabMode] || modeIndexes.lr;
+                const match = idx.byPair.get(`${selectedL}\u0000${selectedR}`);
                 const rb = dom.resultBox;
                 const rc = dom.resultChar;
                 const ri = dom.resultInfo;
@@ -1614,14 +1683,11 @@
 
                 if (match) {
                     Audio.playSound('success');
-                    const okuriganaMatch = match.kun ? match.kun.match(/（([^）]+)）/) : null;
-                    const okurigana = okuriganaMatch ? okuriganaMatch[1] : '';
-                    if (okurigana && rc) {
-                        rc.innerHTML = `${match.k}<span class="text-3xl md:text-4xl text-orange-500 font-fude ml-1 select-none">${okurigana}</span>`;
-                        rc.className = 'text-5xl md:text-6xl font-fude text-orange-600 flex items-baseline justify-center w-full';
-                    } else if (rc) {
-                        rc.textContent = match.k;
-                        rc.className = 'text-8xl md:text-9xl font-fude text-orange-600';
+                    if (rc) {
+                        const hasOkurigana = renderKanjiWithOkurigana(rc, match, 'text-3xl md:text-4xl text-orange-500 font-fude ml-1 select-none');
+                        rc.className = hasOkurigana
+                            ? 'text-5xl md:text-6xl font-fude text-orange-600 flex items-baseline justify-center w-full'
+                            : 'text-8xl md:text-9xl font-fude text-orange-600';
                     }
                     if (rb) {
                         rb.className = 'w-28 h-28 md:w-32 md:h-32 border-4 border-orange-500 rounded-3xl flex items-center justify-center bg-white shadow-xl transform animate-bounce-pop';
@@ -1706,24 +1772,18 @@
                         rc.className = 'text-8xl md:text-9xl font-fude text-slate-400';
                     }
 
-                    const pool = currentLabMode === 'lr' ? Data.KANJI_LR : Data.KANJI_UD;
-                    const possiblePartners = pool
-                        .filter(d => d.l === selectedL)
-                        .map(d => d.r);
-                    
+                    const possiblePartnersSet = idx.validRByL.get(selectedL);
                     let hintText = '';
-                    if (possiblePartners.length > 0) {
-                        const uniquePartners = [...new Set(possiblePartners)].slice(0, 3);
+                    if (possiblePartnersSet && possiblePartnersSet.size > 0) {
+                        const uniquePartners = Array.from(possiblePartnersSet).slice(0, 3);
                         const listStr = uniquePartners.map(p => `「${p}」`).join(' や ');
                         hintText = currentLabMode === 'ud'
                             ? `ヒント: 上パーツ「${selectedL}」は、下に ${listStr} をあわせると合体できるよ！`
                             : `ヒント: 左パーツ「${selectedL}」は、右に ${listStr} をあわせると合体できるよ！`;
                     } else {
-                        const possibleLefts = pool
-                            .filter(d => d.r === selectedR)
-                            .map(d => d.l);
-                        if (possibleLefts.length > 0) {
-                            const uniqueLefts = [...new Set(possibleLefts)].slice(0, 3);
+                        const possibleLeftsSet = idx.validLByR.get(selectedR);
+                        if (possibleLeftsSet && possibleLeftsSet.size > 0) {
+                            const uniqueLefts = Array.from(possibleLeftsSet).slice(0, 3);
                             const listStr = uniqueLefts.map(p => `「${p}」`).join(' や ');
                             hintText = currentLabMode === 'ud'
                                 ? `ヒント: 下パーツ「${selectedR}」は、上に ${listStr} をあわせると合体できるよ！`
@@ -1754,11 +1814,8 @@
                 const match = catalogByKanji.get(kanjiChar);
                 if (!match) return 1;
                 
-                const isUD = verticalKanji.has(kanjiChar);
-                if (isUD) return 3;
-                
-                const basicParts = ['木', '日', '言', '氵', '土', '亻', '女', '口'];
-                if (basicParts.includes(match.l) && basicParts.includes(match.r)) {
+                if (verticalKanji.has(kanjiChar)) return 3;
+                if (BASIC_PARTS_SET.has(match.l) && BASIC_PARTS_SET.has(match.r)) {
                     return 1;
                 }
                 
@@ -1877,14 +1934,8 @@
                     }
                     if (title) title.textContent = 'せいかい！';
                     
-                    const okuriganaMatch = currentQuiz.kun ? currentQuiz.kun.match(/（([^）]+)）/) : null;
-                    const okurigana = okuriganaMatch ? okuriganaMatch[1] : '';
                     if (kanji) {
-                        if (okurigana) {
-                            kanji.innerHTML = `${currentQuiz.k}<span class="text-2xl font-fude text-orange-500 ml-0.5 select-none">${okurigana}</span>`;
-                        } else {
-                            kanji.textContent = currentQuiz.k;
-                        }
+                        renderKanjiWithOkurigana(kanji, currentQuiz, 'text-2xl font-fude text-orange-500 ml-0.5 select-none');
                         kanji.className = 'text-6xl font-fude text-orange-600 mb-4 flex items-baseline justify-center w-full animate-bounce-pop';
                     }
                     
@@ -1919,14 +1970,8 @@
                     }
                     if (title) title.textContent = 'ざんねん...';
                     
-                    const okuriganaMatch = currentQuiz.kun ? currentQuiz.kun.match(/（([^）]+)）/) : null;
-                    const okurigana = okuriganaMatch ? okuriganaMatch[1] : '';
                     if (kanji) {
-                        if (okurigana) {
-                            kanji.innerHTML = `${currentQuiz.k}<span class="text-2xl font-fude text-orange-400 ml-0.5 select-none">${okurigana}</span>`;
-                        } else {
-                            kanji.textContent = currentQuiz.k;
-                        }
+                        renderKanjiWithOkurigana(kanji, currentQuiz, 'text-2xl font-fude text-orange-400 ml-0.5 select-none');
                         kanji.className = 'text-6xl font-fude text-slate-600 mb-4 flex items-baseline justify-center w-full';
                     }
                     
@@ -2137,15 +2182,11 @@
         daily: {
             getStampStreakCount: function () {
                 const d = new Date();
+                const clearSet = new Set(dailyClearHistory);
                 let clearedCount = 0;
                 for (let i = 6; i >= 0; i--) {
-                    const checkDate = new Date();
-                    checkDate.setDate(d.getDate() - i);
-                    const y = checkDate.getFullYear();
-                    const m = String(checkDate.getMonth() + 1).padStart(2, '0');
-                    const r = String(checkDate.getDate()).padStart(2, '0');
-                    const checkDateStr = `${y}-${m}-${r}`;
-                    if (dailyClearHistory.includes(checkDateStr)) {
+                    const checkDate = new Date(d.getFullYear(), d.getMonth(), d.getDate() - i);
+                    if (clearSet.has(formatDateKey(checkDate))) {
                         clearedCount++;
                     }
                 }

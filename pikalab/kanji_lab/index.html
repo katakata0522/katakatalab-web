@@ -146,15 +146,25 @@
             transition: background-color 0.5s, border-color 0.5s;
         }
 
-        @media (max-width: 640px) {
+        /* Material Symbolsの代替表示時もヘッダー幅を押し広げない */
+        #game-header .material-symbols-rounded {
+            display: inline-block;
+            width: 1em;
+            max-width: 1em;
+            overflow: hidden;
+            line-height: 1;
+            flex: 0 0 auto;
+        }
+
+        @media (max-width: 1024px) {
             #game-header {
                 flex-wrap: wrap;
-                gap: 0.75rem;
+                gap: 0.625rem 0.75rem;
                 align-items: center;
             }
 
             #game-header > div:first-child {
-                flex: 1 1 100%;
+                flex: 1 1 auto;
                 min-width: 0;
             }
 
@@ -166,8 +176,33 @@
                 flex-wrap: wrap;
             }
 
+            #game-header > div:last-child > div {
+                margin-right: 0;
+            }
+
+            #theme-selector {
+                max-width: 8.75rem;
+            }
+        }
+
+        @media (max-width: 767px) {
+            #game-header {
+                position: static;
+                padding: 0.625rem 0.75rem;
+                gap: 0.5rem;
+            }
+
+            #game-header > div:last-child {
+                justify-content: flex-start;
+                gap: 0.35rem;
+            }
+
             #theme-selector {
                 max-width: 8.25rem;
+            }
+
+            .glass-panel:has(#stage-container) {
+                padding-top: 3.85rem;
             }
         }
 

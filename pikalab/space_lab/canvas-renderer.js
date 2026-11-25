@@ -37,15 +37,21 @@ const makeBlackTransparent = (img, planetId) => {
             maskRadiusRatio = 0.93;  // 水星も少し絞り気味にして綺麗にする
         } 
 
+        const width = canvas.width;
+        const height = canvas.height;
         const clipRadius = maxRadius * maskRadiusRatio;
         const clipRadiusSquared = clipRadius * clipRadius;
         const fadeRadiusSquared = Math.max(0, clipRadius - 2) ** 2;
-        for (let y = 0; y < canvas.height; y++) {
-            for (let x = 0; x < canvas.width; x++) {
-                const idx = (y * canvas.width + x) * 4;
+        for (let y = 0; y < height; y++) {
+            const dy = y - cy;
+            const dySq = dy * dy;
+            const rowOffset = y * width;
+            for (let x = 0; x < width; x++) {
+                const idx = (rowOffset + x) * 4;
                 
                 if (useCircularMask) {
-                    const distSquared = (x - cx) ** 2 + (y - cy) ** 2;
+                    const dx = x - cx;
+                    const distSquared = dx * dx + dySq;
                     if (distSquared > clipRadiusSquared) {
                         data[idx + 3] = 0; // 円の外側は完全に透過
                         continue;
@@ -60,12 +66,12 @@ const makeBlackTransparent = (img, planetId) => {
                 const r = data[idx];
                 const g = data[idx + 1];
                 const b = data[idx + 2];
-                const maxVal = Math.max(r, g, b);
+                const maxVal = r > g ? (r > b ? r : b) : (g > b ? g : b);
                 if (maxVal < 18) {
                     if (maxVal < 4) {
                         data[idx + 3] = 0;
                     } else {
-                        const ratio = (maxVal - 4) / (18 - 4);
+                        const ratio = (maxVal - 4) / 14;
                         data[idx + 3] = Math.min(data[idx + 3], data[idx + 3] * ratio);
                     }
                 }
@@ -138,7 +144,9 @@ export const CanvasMap = {
         const startPad = W < 600 ? CONFIG.CANVAS.START_PAD_MOBILE : CONFIG.CANVAS.START_PAD_PC;
 
         let x = startPad;
-
+        const newButtonsFragment = UI.DOM.a11yContainer && typeof document.createDocumentFragment === 'function'
+            ? document.createDocumentFragment()
+            : null;
 
         State.planetData = PLANETS.map((p, i) => {
             const r  = (PLANET_RADII[p.id] || 50) * scale;
@@ -167,7 +175,8 @@ export const CanvasMap = {
                         if (State.hoveredPlanet?.id === p.id) State.hoveredPlanet = null;
                     };
                     this._a11yButtons.set(p.id, btn);
-                    UI.DOM.a11yContainer.appendChild(btn);
+                    if (newButtonsFragment) newButtonsFragment.appendChild(btn);
+                    else UI.DOM.a11yContainer.appendChild(btn);
                 }
                 // 要素を再利用し、リサイズでフォーカスを失わず座標だけを更新する。
                 btn._planetEntry = entry;
@@ -184,6 +193,9 @@ export const CanvasMap = {
             x = cx + r + (PLANET_GAP[p.id] || 90) * scale;
             return entry;
         });
+        if (newButtonsFragment && newButtonsFragment.childNodes.length > 0) {
+            UI.DOM.a11yContainer.appendChild(newButtonsFragment);
+        }
         State.totalWidth = x + startPad;
         if (UI.DOM.a11yContainer) UI.DOM.a11yContainer.style.width = `${State.totalWidth}px`;
 
@@ -323,21 +335,21 @@ export const CanvasMap = {
 
         // 惑星（および環）の表示領域を避けて軌道線を描くことで、環や本体を線が貫通する「人間的な気持ち悪さ」を完全に防ぐ
         let currentX = 0;
-        const skipIntervals = State.planetData.map(p => {
+        const planets = State.planetData;
+        for (let i = 0; i < planets.length; i++) {
+            const p = planets[i];
             const sx = p.cx - State.scrollX;
             // 土星は環の幅が広いため大きめにスキップ、天王星も環の広がりを考慮
             const factor = (p.id === 'saturn') ? 1.75 : ((p.id === 'uranus') ? 1.35 : 0.92);
             const halfW = p.r * factor;
-            return { left: sx - halfW, right: sx + halfW };
-        });
-
-        skipIntervals.forEach(interval => {
-            if (interval.left > currentX) {
+            const left = sx - halfW;
+            const right = sx + halfW;
+            if (left > currentX) {
                 ctx.moveTo(currentX, orbitY);
-                ctx.lineTo(interval.left, orbitY);
+                ctx.lineTo(left, orbitY);
             }
-            currentX = Math.max(currentX, interval.right);
-        });
+            if (right > currentX) currentX = right;
+        }
 
         if (currentX < W) {
             ctx.moveTo(currentX, orbitY);
@@ -530,8 +542,12 @@ export const CanvasMap = {
                 alpha: 1
             });
         }
-        this._shootingStars = this._shootingStars.filter(s => s.alpha > 0.02);
-        this._shootingStars.forEach(s => {
+        const stars = this._shootingStars;
+        if (stars.length === 0) return;
+        let writeIdx = 0;
+        for (let i = 0; i < stars.length; i++) {
+            const s = stars[i];
+            if (s.alpha <= 0.02) continue;
             ctx.save();
             const g = ctx.createLinearGradient(s.x, s.y, s.x - s.vx * 12, s.y - s.vy * 12);
             g.addColorStop(0, `rgba(255,255,255,${s.alpha})`);
@@ -541,7 +557,11 @@ export const CanvasMap = {
             ctx.lineTo(s.x - s.vx * 14, s.y - s.vy * 14);
             ctx.stroke(); ctx.restore();
             s.x += s.vx * frameScale; s.y += s.vy * frameScale; s.alpha -= 0.022 * frameScale;
-        });
+            if (s.alpha > 0.02) {
+                stars[writeIdx++] = s;
+            }
+        }
+        stars.length = writeIdx;
     },
 
     _updateMinimap() {
@@ -557,11 +577,17 @@ export const CanvasMap = {
 
     _planetAtPos(cx, cy) {
         const t = Date.now() / 1000;
-        return State.planetData.find(p => {
+        const planets = State.planetData;
+        for (let i = 0; i < planets.length; i++) {
+            const p = planets[i];
             const sx = p.cx - State.scrollX;
             const sy = p.cy + Math.sin(t * CONFIG.CANVAS.FLOAT_SPEED + p.phase) * CONFIG.CANVAS.FLOAT_AMPLITUDE;
-            return Math.hypot(cx - sx, cy - sy) < p.r * 1.25;
-        }) || null;
+            const dx = cx - sx;
+            const dy = cy - sy;
+            const hitR = p.r * 1.25;
+            if (dx * dx + dy * dy < hitR * hitR) return p;
+        }
+        return null;
     },
 
     _canvasPos(e) {

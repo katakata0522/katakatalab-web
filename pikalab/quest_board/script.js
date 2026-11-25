@@ -73,16 +73,49 @@ function normalizeCount(value) {
     return Math.max(CONFIG.MIN_COUNT, Math.min(CONFIG.MAX_COUNT, parsed));
 }
 
+const DIGITS_ONLY_REGEX = /^\d+$/;
+const BASE64URL_NONEMPTY_REGEX = /^[A-Za-z0-9_-]+$/;
+const ALLOWED_SHARE_KEY_SET = new Set(['title', 'count', 'reward', 'stamps']);
+const FOCUSABLE_SELECTOR = 'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])';
+const SPARKLE_NOTES = Object.freeze([523.25, 659.25, 783.99, 1046.50]);
+const SHARED_TEXT_ENCODER = typeof TextEncoder !== 'undefined' ? new TextEncoder() : null;
+const SHARED_UTF8_DECODER = typeof TextDecoder !== 'undefined'
+    ? new TextDecoder('utf-8', { fatal: true })
+    : null;
+
+function getPreferredColumnCount(count) {
+    return count > 28 ? 7 : count > 21 ? 6 : count > 15 ? 5 : count > 9 ? 4 : 3;
+}
+
+function getStampSpots() {
+    if (!elements.stampGrid) return [];
+    if (Array.isArray(elements.stampSpots)
+        && elements.stampSpots.length === elements.stampGrid.childElementCount
+        && (elements.stampSpots.length === 0 || elements.stampSpots[0].parentNode === elements.stampGrid)) {
+        return elements.stampSpots;
+    }
+    return elements.stampGrid.querySelectorAll('.stamp-spot');
+}
+
 function countCharacters(value) {
     const text = typeof value === 'string' ? value : String(value ?? '');
-    return Array.from(text).length;
+    let count = 0;
+    for (const _ of text) count++;
+    return count;
 }
 
 function truncateCharacters(value, maxLength) {
     const text = typeof value === 'string' ? value : String(value ?? '');
     const parsedMax = Number(maxLength);
     const safeMax = Number.isFinite(parsedMax) ? Math.max(0, Math.floor(parsedMax)) : 0;
-    return Array.from(text).slice(0, safeMax).join('');
+    if (safeMax === 0) return '';
+    if (text.length <= safeMax) return text;
+    const chars = [];
+    for (const ch of text) {
+        chars.push(ch);
+        if (chars.length >= safeMax) break;
+    }
+    return chars.join('');
 }
 
 function calculateContainScale(containerWidth, containerHeight, contentWidth, contentHeight, minScale = 0.1, maxScale = 1) {
@@ -110,7 +143,7 @@ function calculateContainScale(containerWidth, containerHeight, contentWidth, co
 }
 
 function parseStampIndex(value, maxCount) {
-    const parsedIndex = typeof value === 'number' || (typeof value === 'string' && /^\d+$/.test(value)) ? Number(value) : NaN;
+    const parsedIndex = typeof value === 'number' || (typeof value === 'string' && DIGITS_ONLY_REGEX.test(value)) ? Number(value) : NaN;
     const safeMaxCount = Number(maxCount);
     if (!Number.isInteger(parsedIndex) || !Number.isInteger(safeMaxCount) || safeMaxCount < 1) {
         return null;
@@ -207,7 +240,7 @@ function applyQuestState(data) {
     stampState = resizeStampState(data.stamps, data.count);
     updateBoard(false);
     // 回数が同じときはボタンを作り直さず、フォーカスと既存DOMを保つ。
-    elements.stampGrid.querySelectorAll('.stamp-spot').forEach((spot, index) => {
+    getStampSpots().forEach((spot, index) => {
         spot.classList.toggle('stamped', stampState[index]);
         spot.setAttribute('aria-pressed', String(stampState[index]));
     });
@@ -254,14 +287,15 @@ function syncStoredState() {
     if (questBoardState.dirtyCount || questBoardState.composing.size) return;
     const remote = Storage.read();
     if (!remote.ok) return;
+    const local = getState();
     // 別タブでの削除を受けた後、閲覧だけで古い保存値を復活させない。
     if (!remote.data) {
-        questBoardState.persistedState = getState();
+        questBoardState.persistedState = local;
         return;
     }
-    const next = mergeQuestState(questBoardState.persistedState, getState(), remote.data);
+    const next = mergeQuestState(questBoardState.persistedState, local, remote.data);
     questBoardState.persistedState = remote.data;
-    if (JSON.stringify(next) !== JSON.stringify(getState())) applyQuestState(next);
+    if (JSON.stringify(next) !== JSON.stringify(local)) applyQuestState(next);
 }
 
 // ===================================
@@ -312,7 +346,10 @@ function generateGrid(count) {
     grid.innerHTML = '';
 
     const template = elements.stampIconTemplate;
-    const fragment = document.createDocumentFragment();
+    const fragment = typeof document.createDocumentFragment === 'function'
+        ? document.createDocumentFragment()
+        : grid;
+    const spots = new Array(count);
 
     for (let i = 1; i <= count; i++) {
         const spot = document.createElement('button');
@@ -346,9 +383,13 @@ function generateGrid(count) {
         spot.appendChild(numSpan);
         spot.appendChild(markDiv);
         fragment.appendChild(spot);
+        spots[i - 1] = spot;
     }
 
-    grid.appendChild(fragment);
+    if (fragment !== grid) {
+        grid.appendChild(fragment);
+    }
+    elements.stampSpots = spots;
     questBoardState.lastRenderedCount = count;
 }
 
@@ -404,8 +445,7 @@ const AudioManager = {
 
         try {
             const now = this.audioCtx.currentTime;
-            const notes = [523.25, 659.25, 783.99, 1046.50]; // C5, E5, G5, C6
-            notes.forEach((freq, i) => {
+            SPARKLE_NOTES.forEach((freq, i) => {
                 const osc = this.audioCtx.createOscillator();
                 const gain = this.audioCtx.createGain();
                 
@@ -475,7 +515,7 @@ function toggleStamp(spot) {
     flushPendingBoard();
     syncStoredState();
 
-    const allSpots = elements.stampGrid.querySelectorAll('.stamp-spot');
+    const allSpots = getStampSpots();
     const clickedIndex = parseStampIndex(spot.dataset.index, allSpots.length);
     if (clickedIndex === null) return;
 
@@ -595,22 +635,27 @@ function adjustScale() {
     const count = normalizeCount(elements.questCount.value);
     const narrow = window.matchMedia('(max-width: 767px)').matches;
     if (!narrow) {
-        const preferred = count > 28 ? 7 : count > 21 ? 6 : count > 15 ? 5 : count > 9 ? 4 : 3;
+        const preferred = getPreferredColumnCount(count);
         const gap = parseFloat(getComputedStyle(grid).columnGap) || 15;
         const fitting = Math.max(1, Math.floor((grid.clientWidth + gap) / (44 + gap)));
-        grid.style.gridTemplateColumns = `repeat(${Math.min(preferred, fitting)}, 1fr)`;
+        const nextColumns = `repeat(${Math.min(preferred, fitting)}, 1fr)`;
+        if (grid.style.gridTemplateColumns !== nextColumns) {
+            grid.style.gridTemplateColumns = nextColumns;
+        }
     }
     const cardW = card.offsetWidth;
     const cardH = card.offsetHeight;
     if (cardW <= 0 || cardH <= 0) return;
     const rawScale = calculateContainScale(Math.max(container.clientWidth - 40, 1), Math.max(container.clientHeight - 80, 1), cardW, cardH);
-    const spots = [...grid.children];
-    const smallest = Math.min(...spots.map(spot => {
-        const style = getComputedStyle(spot);
-        return Math.min(parseFloat(style.width), parseFloat(style.height));
-    }));
+    const spots = grid.children;
+    let smallest = Infinity;
+    for (let i = 0; i < spots.length; i++) {
+        const style = getComputedStyle(spots[i]);
+        const dim = Math.min(parseFloat(style.width), parseFloat(style.height));
+        if (dim < smallest) smallest = dim;
+    }
     // CSSの44pxをボード全体の縮小で打ち消さない。縦に収まらない場合はスクロールする。
-    const scale = Math.min(1, Math.max(rawScale, smallest > 0 ? 44 / smallest : 1));
+    const scale = Math.min(1, Math.max(rawScale, smallest > 0 && Number.isFinite(smallest) ? 44 / smallest : 1));
     const transform = `scale(${scale})`;
     if (card.style.transform !== transform) card.style.transform = transform;
     container.classList.toggle('quest-scroll-board', cardH > container.clientHeight - 32);
@@ -625,7 +670,7 @@ function preparePrint() {
     document.body.classList.toggle('print-stamps', !!elements.printWithStamps?.checked);
     const count = normalizeCount(elements.questCount.value);
     // 印刷は画面幅に依存せず、既存の回数別の列構成を使う。
-    const columns = count > 28 ? 7 : count > 21 ? 6 : count > 15 ? 5 : count > 9 ? 4 : 3;
+    const columns = getPreferredColumnCount(count);
     elements.stampGrid.style.setProperty('--print-columns', columns);
     elements.stampGrid.style.setProperty('--print-rows', Math.ceil(count / columns));
 }
@@ -673,6 +718,13 @@ function initializeElements() {
     elements.shareImportConfirmBtn = document.getElementById('share-import-confirm-btn');
     elements.shareImportCancelBtn = document.getElementById('share-import-cancel-btn');
     elements.printWithStamps = document.getElementById('print-with-stamps');
+    elements.shareWithProgress = document.getElementById('share-with-progress');
+    elements.backgroundTargets = [
+        document.querySelector('header'),
+        document.getElementById('main-content'),
+        document.querySelector('.skip-link')
+    ].filter(Boolean);
+    elements.stampSpots = null;
 }
 
 function validateRequiredElements() {
@@ -768,11 +820,13 @@ function setupEventListeners() {
 }
 
 function setBackgroundInteractivity(disabled) {
-    const backgroundTargets = [
-        document.querySelector('header'),
-        document.getElementById('main-content'),
-        document.querySelector('.skip-link')
-    ];
+    const backgroundTargets = Array.isArray(elements.backgroundTargets) && elements.backgroundTargets.length > 0
+        ? elements.backgroundTargets
+        : [
+            document.querySelector('header'),
+            document.getElementById('main-content'),
+            document.querySelector('.skip-link')
+        ];
 
     backgroundTargets.forEach((target) => {
         if (!target) return;
@@ -794,7 +848,8 @@ function initHelpModal() {
 }
 
 function encodeUtf8ToBase64Url(value) {
-    const bytes = new TextEncoder().encode(String(value ?? ''));
+    const encoder = SHARED_TEXT_ENCODER || new TextEncoder();
+    const bytes = encoder.encode(String(value ?? ''));
     let binary = '';
     for (const byte of bytes) {
         binary += String.fromCharCode(byte);
@@ -815,7 +870,8 @@ function decodeBase64UrlToUtf8(base64Url) {
 
     const binary = atob(standardBase64);
     const bytes = Uint8Array.from(binary, (char) => char.charCodeAt(0));
-    return new TextDecoder('utf-8', { fatal: true }).decode(bytes);
+    const decoder = SHARED_UTF8_DECODER || new TextDecoder('utf-8', { fatal: true });
+    return decoder.decode(bytes);
 }
 
 function serializeQuestData(data) {
@@ -838,9 +894,8 @@ function deserializeQuestData(base64Str) {
 
 function validateQuestShareData(data) {
     if (!data || typeof data !== 'object' || Array.isArray(data)) return null;
-    const allowedKeys = ['title', 'count', 'reward', 'stamps'];
     const dataKeys = Object.keys(data);
-    if (dataKeys.length !== allowedKeys.length || dataKeys.some((key) => !allowedKeys.includes(key))) return null;
+    if (dataKeys.length !== ALLOWED_SHARE_KEY_SET.size || dataKeys.some((key) => !ALLOWED_SHARE_KEY_SET.has(key))) return null;
     if (typeof data.title !== 'string' || countCharacters(data.title) > CONFIG.MAX_TITLE_LENGTH) return null;
     if (typeof data.reward !== 'string' || countCharacters(data.reward) > CONFIG.MAX_REWARD_LENGTH) return null;
     if (!Number.isInteger(data.count) || data.count < CONFIG.MIN_COUNT || data.count > CONFIG.MAX_COUNT) return null;
@@ -859,7 +914,7 @@ function parseQuestShareData(base64Str) {
     if (typeof base64Str !== 'string'
         || base64Str.length === 0
         || base64Str.length > CONFIG.MAX_SHARE_PARAM_LENGTH
-        || !/^[A-Za-z0-9_-]+$/.test(base64Str)) {
+        || !BASE64URL_NONEMPTY_REGEX.test(base64Str)) {
         return null;
     }
     return validateQuestShareData(deserializeQuestData(base64Str));
@@ -989,7 +1044,7 @@ function loadFromUrlParams(search = null) {
 }
 
 function trapModalFocus(event, modal) {
-    const focusable = [...modal.querySelectorAll('button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])')]
+    const focusable = [...modal.querySelectorAll(FOCUSABLE_SELECTOR)]
         .filter(node => !node.disabled && node.getClientRects().length > 0);
     const first = focusable[0], last = focusable.at(-1);
     if (!first) { event.preventDefault(); return; }
@@ -1018,7 +1073,7 @@ function initShareModal() {
     const shareCopyBtn = elements.shareCopyBtn;
     const shareLinkInput = elements.shareLinkInput;
     const shareQrcode = elements.shareQrcode;
-    const shareWithProgress = document.getElementById('share-with-progress');
+    const shareWithProgress = elements.shareWithProgress || document.getElementById('share-with-progress');
 
     if (shareBtn && shareModal && shareCloseBtn && shareCopyBtn && shareLinkInput && shareQrcode) {
         let copyGeneration = 0;
