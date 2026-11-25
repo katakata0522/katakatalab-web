@@ -36,9 +36,30 @@ const EduData = {
     ],
     // カテゴリごとのアイテム取得ヘルパー
     getItemsByIDs: function(idArray) {
-        return this.items.filter(item => idArray.includes(item.id));
+        const idSet = new Set(idArray);
+        return this.items.filter(item => idSet.has(item.id));
     }
 };
+
+const EDU_CONFETTI_COLORS = Object.freeze(['#fce18a', '#ff726d', '#b48def', '#f4306d', '#55efc4']);
+const LONGPRESS_TOOLTIP_STYLE = Object.freeze({
+    position: 'fixed',
+    bottom: '100px',
+    left: '50%',
+    transform: 'translateX(-50%) translateY(10px)',
+    backgroundColor: '#ef4444',
+    color: '#ffffff',
+    padding: '12px 24px',
+    borderRadius: '9999px',
+    boxShadow: '0 8px 16px rgba(0,0,0,0.15)',
+    zIndex: '99999',
+    fontSize: '18px',
+    fontWeight: 'bold',
+    pointerEvents: 'none',
+    opacity: '0',
+    transition: 'opacity 0.2s ease, transform 0.2s ease',
+    border: '3px solid #ffffff'
+});
 
 const EDU_SOUND_STORAGE_KEY = 'wonder_school_profile_v2';
 const EDU_SOUND_DEFAULTS = Object.freeze({ isOn: true, volume: 0.1 });
@@ -122,6 +143,13 @@ const EduSound = {
         btn.setAttribute('aria-pressed', this.isOn ? 'true' : 'false');
     },
     
+    loadVoices: function() {
+        if (typeof window === 'undefined' || !('speechSynthesis' in window)) return;
+        const voices = window.speechSynthesis.getVoices();
+        this.preferredVoice = voices.find(v => v.lang === 'ja-JP' && (v.name.includes('Google') || v.name.includes('Online') || v.name.includes('Nanami') || v.name.includes('Kyoko')))
+                           || voices.find(v => v.lang.includes('ja'));
+    },
+
     init: function() {
         const storage = getSafeLocalStorage();
         const settings = loadEduSoundSettings(storage);
@@ -129,13 +157,9 @@ const EduSound = {
         this.volume = settings.volume;
 
         if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
-            const loadVoices = () => {
-                const voices = window.speechSynthesis.getVoices();
-                this.preferredVoice = voices.find(v => v.lang === 'ja-JP' && (v.name.includes('Google') || v.name.includes('Online') || v.name.includes('Nanami') || v.name.includes('Kyoko'))) 
-                                   || voices.find(v => v.lang.includes('ja'));
-            };
-            loadVoices();
-            window.speechSynthesis.onvoiceschanged = loadVoices;
+            const onVoicesChanged = () => this.loadVoices();
+            this.loadVoices();
+            window.speechSynthesis.onvoiceschanged = onVoicesChanged;
         }
 
         // ミュートボタンの初期テキストを同期
@@ -171,7 +195,7 @@ const EduSound = {
             utterance.volume = this.volume;
             
             if (!this.preferredVoice && window.speechSynthesis.getVoices().length > 0) {
-                this.init();
+                this.loadVoices();
             }
             if (this.preferredVoice) {
                 utterance.voice = this.preferredVoice;
@@ -208,36 +232,42 @@ const EduUtils = {
         };
     },
     shootConfetti: function() {
-        const colors = ['#fce18a', '#ff726d', '#b48def', '#f4306d', '#55efc4'];
-        const fragment = document.createDocumentFragment();
+        const useFragment = typeof document.createDocumentFragment === 'function';
+        const container = useFragment ? document.createDocumentFragment() : document.body;
+        const pieces = [];
         
-        for(let i = 0; i < 40; i++) {
-            let conf = document.createElement('div');
+        for (let i = 0; i < 40; i++) {
+            const conf = document.createElement('div');
             conf.className = 'confetti-piece';
             conf.style.left = Math.random() * 100 + 'vw';
-            conf.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+            conf.style.backgroundColor = EDU_CONFETTI_COLORS[Math.floor(Math.random() * EDU_CONFETTI_COLORS.length)];
             
-            let startY = Math.random() * 20 + 10 + 'vh';
-            let endY = '100vh';
-            let startX = 0;
-            let endX = Math.random() * 100 - 50 + 'px';
+            const startY = Math.random() * 20 + 10 + 'vh';
+            const endY = '100vh';
+            const startX = 0;
+            const endX = Math.random() * 100 - 50 + 'px';
 
             conf.animate([
                 { transform: `translate3d(${startX}, ${startY}, 0) rotate(0deg)`, opacity: 1 },
-                { transform: `translate3d(${endX}, ${endY}, 0) rotate(${Math.random()*360}deg)`, opacity: 0 }
+                { transform: `translate3d(${endX}, ${endY}, 0) rotate(${Math.random() * 360}deg)`, opacity: 0 }
             ], { 
                 duration: Math.random() * 1000 + 1500, 
                 easing: 'cubic-bezier(.37,0,.63,1)' 
             });
 
-            fragment.appendChild(conf);
-            
-            // ガベージコレクションのためにsetTimeoutで消す
-            setTimeout(() => {
-                if (conf.parentNode) conf.remove();
-            }, 2500);
+            container.appendChild(conf);
+            pieces.push(conf);
         }
-        document.body.appendChild(fragment);
+        if (useFragment) {
+            document.body.appendChild(container);
+        }
+
+        // ガベージコレクションのために1つのタイマーでまとめて消す
+        setTimeout(() => {
+            for (let i = 0; i < pieces.length; i++) {
+                if (pieces[i].parentNode) pieces[i].remove();
+            }
+        }, 2500);
     },
     
     shuffleArray: function(array) {
@@ -253,10 +283,9 @@ const EduUtils = {
 
     awardEduplayBadge: function() {
         try {
-            const STORAGE_KEY = 'wonder_school_profile_v2';
             const storage = getSafeLocalStorage();
             if (!storage) return;
-            let profileRaw = storage.getItem(STORAGE_KEY);
+            const profileRaw = storage.getItem(EDU_SOUND_STORAGE_KEY);
             let profile = { badges: [] };
             if (profileRaw) {
                 profile = JSON.parse(profileRaw);
@@ -269,7 +298,7 @@ const EduUtils = {
             }
             if (!profile.badges.includes('eduplay')) {
                 profile.badges.push('eduplay');
-                storage.setItem(STORAGE_KEY, JSON.stringify(profile));
+                storage.setItem(EDU_SOUND_STORAGE_KEY, JSON.stringify(profile));
                 console.log('Awarded badge: eduplay');
                 setTimeout(() => {
                     EduSound.speak("「ひろばのスター」バッジをゲットしたよ！");
@@ -358,7 +387,33 @@ const EduUtils = {
         // 既存のインラインonclick属性を削除し、長押しでのみ動作するようにする
         btnElement.removeAttribute('onclick');
 
-        let pressTimer; let startTime; const showTooltip = () => { const oldTip = document.getElementById('longpress-back-tip'); if (oldTip) oldTip.remove(); const tip = document.createElement('div'); tip.id = 'longpress-back-tip'; tip.innerText = '1.5\u3073\u3087\u3046 \u306a\u304c\u304a\u3057 \u3057\u3066\u306d\uff01'; Object.assign(tip.style, { position: 'fixed', bottom: '100px', left: '50%', transform: 'translateX(-50%) translateY(10px)', backgroundColor: '#ef4444', color: '#ffffff', padding: '12px 24px', borderRadius: '9999px', boxShadow: '0 8px 16px rgba(0,0,0,0.15)', zIndex: '99999', fontSize: '18px', fontWeight: 'bold', pointerEvents: 'none', opacity: '0', transition: 'opacity 0.2s ease, transform 0.2s ease', border: '3px solid #ffffff' }); document.body.appendChild(tip); requestAnimationFrame(() => { tip.style.opacity = '1'; tip.style.transform = 'translateX(-50%) translateY(0)'; }); EduSound.speak('\u3044\u3061\u3066\u3093\u3054\u3073\u3087\u3046 \u306a\u304c\u304a\u3057 \u3057\u3066\u306d'); setTimeout(() => { tip.style.opacity = '0'; tip.style.transform = 'translateX(-50%) translateY(-10px)'; setTimeout(() => tip.remove(), 200); }, 2000); };
+        let pressTimer = null;
+        let tipHideTimer = null;
+        let tipRemoveTimer = null;
+        let startTime = 0;
+        const showTooltip = () => {
+            clearTimeout(tipHideTimer);
+            clearTimeout(tipRemoveTimer);
+            const oldTip = document.getElementById('longpress-back-tip');
+            if (oldTip) oldTip.remove();
+
+            const tip = document.createElement('div');
+            tip.id = 'longpress-back-tip';
+            tip.innerText = '1.5\u3073\u3087\u3046 \u306a\u304c\u304a\u3057 \u3057\u3066\u306d\uff01';
+            Object.assign(tip.style, LONGPRESS_TOOLTIP_STYLE);
+            document.body.appendChild(tip);
+
+            requestAnimationFrame(() => {
+                tip.style.opacity = '1';
+                tip.style.transform = 'translateX(-50%) translateY(0)';
+            });
+            EduSound.speak('\u3044\u3061\u3066\u3093\u3054\u3073\u3087\u3046 \u306a\u304c\u304a\u3057 \u3057\u3066\u306d');
+            tipHideTimer = setTimeout(() => {
+                tip.style.opacity = '0';
+                tip.style.transform = 'translateX(-50%) translateY(-10px)';
+                tipRemoveTimer = setTimeout(() => tip.remove(), 200);
+            }, 2000);
+        };
         let isPressing = false;
         const holdTime = 1500; // 1.5秒長押し
         

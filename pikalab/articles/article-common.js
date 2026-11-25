@@ -80,16 +80,21 @@
         if (scrollTopBtn) {
             scrollTopBtn.tabIndex = -1; // Initially hidden from tab order
             let ticking = false;
+            let isVisible = false;
 
             window.addEventListener('scroll', () => {
                 if (!ticking) {
                     window.requestAnimationFrame(() => {
-                        if (window.scrollY > 400) {
-                            scrollTopBtn.classList.add('visible');
-                            scrollTopBtn.tabIndex = 0;
-                        } else {
-                            scrollTopBtn.classList.remove('visible');
-                            scrollTopBtn.tabIndex = -1;
+                        const shouldShow = window.scrollY > 400;
+                        if (shouldShow !== isVisible) {
+                            isVisible = shouldShow;
+                            if (shouldShow) {
+                                scrollTopBtn.classList.add('visible');
+                                scrollTopBtn.tabIndex = 0;
+                            } else {
+                                scrollTopBtn.classList.remove('visible');
+                                scrollTopBtn.tabIndex = -1;
+                            }
                         }
                         ticking = false;
                     });

@@ -24,6 +24,17 @@ function shiftClockByFiveMinutes(hour, minute, direction) {
 }
 const MANABI_PROFILE_KEY = 'wonder_school_profile_v2';
 const MANABI_TABS = ['money', 'clock', 'moji'];
+const VALID_COIN_VALUES = new Set([1, 5, 10, 50, 100]);
+const CLOCK_READ_MINUTES = [0, 15, 30, 45];
+const CLOCK_READ_LABELS = (() => {
+    const labels = [];
+    for (let hour = 1; hour <= 12; hour++) {
+        for (const minute of CLOCK_READ_MINUTES) {
+            labels.push(`${hour}じ ${minute === 0 ? '' : minute + 'ふん'}`);
+        }
+    }
+    return labels;
+})();
 
 function readManabiProfile() {
     try {
@@ -321,7 +332,7 @@ class MoneyGame {
     }
 
     addMoney(val) {
-        if (![1, 5, 10, 50, 100].includes(val)) return;
+        if (!VALID_COIN_VALUES.has(val)) return;
         this.app.audio.playSfx('coin');
         this.coinHistory.push(val);
         this.updateTray();
@@ -346,11 +357,15 @@ class MoneyGame {
     }
 
     updateTray() {
-        const sum = this.coinHistory.reduce((a, b) => a + b, 0);
+        let sum = 0;
+        for (let i = 0; i < this.coinHistory.length; i++) sum += this.coinHistory[i];
         document.getElementById('current-money').textContent = sum;
         
         const tray = document.getElementById('coin-tray');
         tray.innerHTML = '';
+        const target = typeof document.createDocumentFragment === 'function'
+            ? document.createDocumentFragment()
+            : tray;
         this.coinHistory.forEach(val => {
             const el = document.createElement('div');
             el.className = 'tray-coin';
@@ -365,8 +380,9 @@ class MoneyGame {
             } else {
                 el.style.background = '#F8FAFC'; el.style.borderColor = '#CBD5E1'; el.style.color = '#64748B';
             }
-            tray.appendChild(el);
+            target.appendChild(el);
         });
+        if (target !== tray) tray.appendChild(target);
     }
 
     checkMoney() {
@@ -456,19 +472,22 @@ class ClockGame {
 
     initClockUI() {
         const f = document.getElementById('clock-face');
-        
+        const target = typeof document.createDocumentFragment === 'function'
+            ? document.createDocumentFragment()
+            : f;
         for (let i = 0; i < 60; i++) {
             const t = document.createElement('div');
             t.className = `clock-tick ${i % 5 === 0 ? 'major' : ''}`;
             t.style.transform = `rotate(${i * 6}deg)`;
-            f.appendChild(t);
+            target.appendChild(t);
         }
         for (let i = 1; i <= 12; i++) {
             const n = document.createElement('div');
             n.className = 'clock-num';
             n.textContent = i;
-            f.appendChild(n);
+            target.appendChild(n);
         }
+        if (target !== f) f.appendChild(target);
         this.clockInit = true;
         this.layoutClockNumbers();
         if (typeof ResizeObserver !== 'undefined') {
@@ -500,8 +519,14 @@ class ClockGame {
     setHands(h, m) {
         const md = m * 6;
         const hd = (h % 12) * 30 + m * 0.5;
-        document.getElementById('hand-minute').style.transform = `translateX(-50%) rotate(${md}deg)`;
-        document.getElementById('hand-hour').style.transform = `translateX(-50%) rotate(${hd}deg)`;
+        if (!this.handMinute || this.handMinute.isConnected === false) {
+            this.handMinute = document.getElementById('hand-minute');
+        }
+        if (!this.handHour || this.handHour.isConnected === false) {
+            this.handHour = document.getElementById('hand-hour');
+        }
+        this.handMinute.style.transform = `translateX(-50%) rotate(${md}deg)`;
+        this.handHour.style.transform = `translateX(-50%) rotate(${hd}deg)`;
     }
 
     setMode(mode) {
@@ -509,10 +534,10 @@ class ClockGame {
         this.app.audio.playSfx('click');
         this.cancelPointer();
         this.mode = mode;
-        document.getElementById('mode-clock-read').setAttribute('aria-pressed', String(mode === 'read'));
-        document.getElementById('mode-clock-set').setAttribute('aria-pressed', String(mode === 'set'));
         const bR = document.getElementById('mode-clock-read');
         const bS = document.getElementById('mode-clock-set');
+        bR.setAttribute('aria-pressed', String(mode === 'read'));
+        bS.setAttribute('aria-pressed', String(mode === 'set'));
         const op = document.getElementById('clock-opts');
         const ch = document.getElementById('clock-check-btn');
         const touch = document.getElementById('clock-touch');
@@ -539,23 +564,20 @@ class ClockGame {
 
     initRead() {
         this.targetHour = Math.floor(Math.random() * 12) + 1;
-        this.targetMinute = [0, 15, 30, 45][Math.floor(Math.random() * 4)];
+        this.targetMinute = CLOCK_READ_MINUTES[Math.floor(Math.random() * 4)];
         document.getElementById('clock-question').textContent = "いま なんじ？";
         this.setHands(this.targetHour, this.targetMinute);
         
         const cor = `${this.targetHour}じ ${this.targetMinute === 0 ? '' : this.targetMinute + 'ふん'}`;
         // 候補全体から重複なしで選ぶ。乱数の偏りでもwhileが終わらなくならない。
-        const candidates = [];
-        for (let hour = 1; hour <= 12; hour++) {
-            for (const minute of [0, 15, 30, 45]) {
-                const text = `${hour}じ ${minute === 0 ? '' : minute + 'ふん'}`;
-                if (text !== cor) candidates.push(text);
-            }
-        }
+        const candidates = CLOCK_READ_LABELS.filter(text => text !== cor);
         const list = shuffleChoices([cor, ...shuffleChoices(candidates).slice(0, 3)]);
 
         const container = document.getElementById('clock-opts');
         container.innerHTML = '';
+        const target = typeof document.createDocumentFragment === 'function'
+            ? document.createDocumentFragment()
+            : container;
         list.forEach(x => {
             const b = document.createElement('button');
             b.type = 'button';
@@ -570,8 +592,9 @@ class ClockGame {
                     this.app.setMaron('ちがうよ<br>よくみて');
                 }
             };
-            container.appendChild(b);
+            target.appendChild(b);
         });
+        if (target !== container) container.appendChild(target);
     }
 
     initSet() {
@@ -637,7 +660,7 @@ class ClockGame {
         const snap = Math.round(d / 30) * 30;
         this.currentMinute = (snap / 6) % 60;
 
-        if (Math.sqrt(x * x + y * y) < 60) {
+        if (x * x + y * y < 3600) {
             let h = Math.round(snap / 30);
             if (h === 0) h = 12;
             this.currentHour = h;
@@ -752,9 +775,12 @@ class MojiGame {
         this.stopTimer();
         if (this.app.isLocked || this.app.isModalOpen || this.app.tabId !== 'tab-moji' || document.hidden) return;
         this.mSt = Date.now();
+        if (!this.timerEl || this.timerEl.isConnected === false) {
+            this.timerEl = document.getElementById('timer');
+        }
         this.mIv = setInterval(() => {
             const elapsed = this.elapsedMs + (Date.now() - this.mSt);
-            document.getElementById('timer').textContent = (elapsed / 1000).toFixed(1);
+            if (this.timerEl) this.timerEl.textContent = (elapsed / 1000).toFixed(1);
         }, 100);
     }
 
@@ -803,6 +829,9 @@ class MojiGame {
         const ti = Math.floor(Math.random() * n);
         this.correctIndex = ti;
         
+        const target = typeof document.createDocumentFragment === 'function'
+            ? document.createDocumentFragment()
+            : g;
         for (let i = 0; i < n; i++) {
             const d = document.createElement('button');
             d.type = 'button';
@@ -811,10 +840,14 @@ class MojiGame {
             d.setAttribute('data-index', i);
             d.textContent = (i === ti) ? tgt : base;
             d.setAttribute('aria-label', `${d.textContent}の文字マス`);
-            g.appendChild(d);
+            target.appendChild(d);
         }
+        if (target !== g) g.appendChild(target);
         this.elapsedMs = 0;
-        document.getElementById('timer').textContent = "0.0";
+        if (!this.timerEl || this.timerEl.isConnected === false) {
+            this.timerEl = document.getElementById('timer');
+        }
+        if (this.timerEl) this.timerEl.textContent = "0.0";
         this.startTimer();
     }
 
@@ -1023,6 +1056,10 @@ class ManabiLandApp {
 
     createStarConfetti() {
         const colors = ['#FFD700', '#FFDF00', '#FFEC00', '#FFF200', '#FFF900'];
+        const stars = [];
+        const target = typeof document.createDocumentFragment === 'function'
+            ? document.createDocumentFragment()
+            : document.body;
         for (let i = 0; i < 40; i++) {
             const star = document.createElement('div');
             star.className = 'star-confetti';
@@ -1031,9 +1068,13 @@ class ManabiLandApp {
             star.textContent = '★';
             star.style.color = colors[Math.floor(Math.random() * colors.length)];
             star.style.fontSize = `${Math.random() * 20 + 20}px`;
-            document.body.appendChild(star);
-            setTimeout(() => star.remove(), 3000);
+            target.appendChild(star);
+            stars.push(star);
         }
+        if (target !== document.body) document.body.appendChild(target);
+        setTimeout(() => {
+            for (let i = 0; i < stars.length; i++) stars[i].remove();
+        }, 3000);
     }
 
     setupTabEvents() {

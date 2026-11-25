@@ -103,10 +103,13 @@ const app = {
         }
     },
 
+    INTEGER_PATTERN: /^[+-]?\d+$/,
+    INTERACTIVE_SELECTOR: 'button, a[href], input, textarea, select, summary, audio, video, [contenteditable]:not([contenteditable="false"]), [role="button"]',
+
     sanitizeInteger(value, min, max, fallback) {
         // 空文字・部分的な数値・無限大を保存値として受け入れない。
         if (typeof value !== 'number' && typeof value !== 'string') return fallback;
-        if (typeof value === 'string' && !/^[+-]?\d+$/.test(value.trim())) return fallback;
+        if (typeof value === 'string' && !this.INTEGER_PATTERN.test(value.trim())) return fallback;
         const parsed = Number(value);
         if (!Number.isSafeInteger(parsed)) return fallback;
         if (parsed < min) return min;
@@ -371,6 +374,11 @@ const app = {
         this.dom.header = document.querySelector('header');
         this.dom.mainContent = document.getElementById('main-content');
         this.dom.footer = document.querySelector('footer');
+        this.dom.progressBar = document.querySelector('[role="progressbar"]');
+        this.dom.chimeVolumeSlider = document.getElementById('chime-volume-slider');
+        this.dom.presetBtns = Array.from(document.querySelectorAll('.preset-btn'));
+        this.dom.timerPresets = Array.from(document.querySelectorAll('.timer-preset'));
+        this.dom.soundControls = new Map();
     },
 
     // --- EVENT BINDING ---
@@ -414,7 +422,7 @@ const app = {
 
             if (e.code !== 'Space' || e.defaultPrevented || e.repeat || e.isComposing || e.keyCode === 229
                 || e.altKey || e.ctrlKey || e.metaKey || e.shiftKey) return;
-            const interactive = 'button, a[href], input, textarea, select, summary, audio, video, [contenteditable]:not([contenteditable="false"]), [role="button"]';
+            const interactive = this.INTERACTIVE_SELECTOR;
             const target = e.target || document.activeElement;
             if (target?.isContentEditable || target?.closest?.(interactive)
                 || document.activeElement?.isContentEditable || document.activeElement?.closest?.(interactive)) return;
@@ -428,9 +436,12 @@ const app = {
         document.getElementById('restart-btn')?.addEventListener('click', () => this.resetTimerState(this.totalTime / 60));
 
         // Presets
-        document.querySelectorAll('.preset-btn').forEach(btn => {
+        const presetBtns = this.dom.presetBtns || Array.from(document.querySelectorAll('.preset-btn'));
+        presetBtns.forEach(btn => {
             btn.addEventListener('click', () => {
-                document.querySelectorAll('.preset-btn').forEach(b => b.classList.remove('preset-btn-active'));
+                for (let i = 0; i < presetBtns.length; i++) {
+                    presetBtns[i].classList.remove('preset-btn-active');
+                }
                 btn.classList.add('preset-btn-active');
                 this.setTimer(btn.dataset.break, 'break');
                 this.setTimer(btn.dataset.focus, 'focus');
@@ -438,7 +449,8 @@ const app = {
         });
 
         // Timer Presets
-        document.querySelectorAll('.timer-preset').forEach(btn => {
+        const timerPresets = this.dom.timerPresets || Array.from(document.querySelectorAll('.timer-preset'));
+        timerPresets.forEach(btn => {
             btn.addEventListener('click', (e) => {
                 const target = e.currentTarget;
                 this.setTimer(target?.dataset?.value, target?.dataset?.mode);
@@ -658,7 +670,8 @@ const app = {
         const m = Math.floor(this.timeLeft / 60);
         const s = this.timeLeft % 60;
         this.dom.timerDisplay.innerText = `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
-        document.title = this.isRunning ? `(${m}:${s.toString().padStart(2, '0')}) Focus Studio` : 'Focus Studio';
+        const nextTitle = this.isRunning ? `(${m}:${s.toString().padStart(2, '0')}) Focus Studio` : 'Focus Studio';
+        if (document.title !== nextTitle) document.title = nextTitle;
         const percent = this.totalTime > 0 ? ((this.totalTime - this.timeLeft) / this.totalTime) * 100 : 0;
         this.setProgress(percent);
 
@@ -674,7 +687,10 @@ const app = {
         }
 
         // Update aria-valuenow for progressbar
-        document.querySelector('[role="progressbar"]')?.setAttribute('aria-valuenow', 100 - Math.round(percent));
+        const progressBar = this.dom.progressBar && this.dom.progressBar.isConnected !== false
+            ? this.dom.progressBar
+            : (this.dom.progressBar = document.querySelector('[role="progressbar"]'));
+        progressBar?.setAttribute('aria-valuenow', 100 - Math.round(percent));
     },
 
     setTimer(minutes, mode) {
@@ -714,7 +730,10 @@ const app = {
 
     updateButtons(minutes, mode) {
         const { CLASSES } = this.CONSTANTS;
-        document.querySelectorAll('.timer-preset').forEach(btn => {
+        const buttons = this.dom.timerPresets && this.dom.timerPresets.length > 0
+            ? this.dom.timerPresets
+            : document.querySelectorAll('.timer-preset');
+        buttons.forEach(btn => {
             if (btn.dataset.mode !== mode) return;
             const btnVal = parseInt(btn.dataset.value, 10);
             const isActive = btnVal === minutes;
@@ -897,6 +916,11 @@ const app = {
 
         const { SOUND_COLORS } = this.CONSTANTS;
         soundContainer.innerHTML = '';
+        if (!this.dom.soundControls) this.dom.soundControls = new Map();
+        this.dom.soundControls.clear();
+        const target = typeof document.createDocumentFragment === 'function'
+            ? document.createDocumentFragment()
+            : soundContainer;
         this.soundsData.forEach(s => {
             const colors = SOUND_COLORS[s.color] || SOUND_COLORS.slate;
             const card = document.createElement('div');
@@ -913,27 +937,48 @@ const app = {
                 </div>
                 <input type="range" id="vol-${s.id}" min="-60" max="-10" value="-20" disabled class="w-full h-1 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-kawaii-primary">
             `;
-            soundContainer.appendChild(card);
-            document.getElementById(`btn-${s.id}`)?.addEventListener('click', () => this.toggleSound(s.id));
-            document.getElementById(`vol-${s.id}`)?.addEventListener('input', (e) => {
+            const button = card.querySelector(`#btn-${s.id}`);
+            const slider = card.querySelector(`#vol-${s.id}`);
+            const icon = button?.querySelector('span') || null;
+            this.dom.soundControls.set(s.id, { button, slider, icon });
+            button?.addEventListener('click', () => this.toggleSound(s.id));
+            slider?.addEventListener('input', (e) => {
                 if (this.sounds[s.id]) {
                     const volume = this.sanitizeInteger(e.target.value, -60, -10, -20);
                     this.sounds[s.id].volume.rampTo(volume, 0.1);
                 }
             });
+            target.appendChild(card);
         });
+        if (target !== soundContainer) soundContainer.appendChild(target);
 
         this.updateSoundBadge();
     },
 
-    syncSoundState(type) {
-        const soundData = this.soundsData.find((sound) => sound.id === type);
-        if (!soundData) return;
-        const active = Boolean(this.sounds[type]);
+    getSoundData(type) {
+        if (!this._soundById) {
+            this._soundById = new Map(this.soundsData.map((sound) => [sound.id, sound]));
+        }
+        return this._soundById.get(type) || null;
+    },
+
+    getSoundControlRefs(type) {
+        const cached = this.dom.soundControls?.get(type);
+        if (cached && cached.button?.isConnected !== false && cached.slider?.isConnected !== false) {
+            return cached;
+        }
         const button = document.getElementById(`btn-${type}`);
         const slider = document.getElementById(`vol-${type}`);
+        const icon = button?.querySelector('span') || null;
+        return { button, slider, icon };
+    },
+
+    syncSoundState(type) {
+        const soundData = this.getSoundData(type);
+        if (!soundData) return;
+        const active = Boolean(this.sounds[type]);
+        const { button, slider, icon } = this.getSoundControlRefs(type);
         if (button) {
-            const icon = button.querySelector('span');
             if (icon) icon.innerText = active ? 'pause' : 'play_arrow';
             button.classList.toggle('bg-kawaii-primary', active);
             button.classList.toggle('text-white', active);

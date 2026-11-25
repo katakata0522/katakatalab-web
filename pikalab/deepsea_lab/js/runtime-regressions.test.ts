@@ -117,31 +117,37 @@ describe('レーダー予約数と状態', () => {
         const items = deepSeaData.flatMap(item => item.type === 'battle' ? item.participants || [] : [item]);
         const elements = items.map(item => { const el = dom.make('', 'DIV', dom.field); el.setAttribute('data-fact-id', item.id); el.offsetParent = dom.field; el.rect.top = 500; el.rect.left = 500; return el; });
         const radar = new RadarManager() as any;
+        const indexQueries = vi.spyOn(dom.doc, 'querySelectorAll');
         radar.updateRadar = vi.fn(); radar.init();
+        const initialIndexes = indexQueries.mock.calls.filter(([selector]) => selector === '[data-fact-id]').length;
+        indexQueries.mockClear();
         elements.forEach(el => { el.layoutReads = 0; });
         const queries = vi.spyOn(dom.doc, 'querySelector'); queries.mockClear();
-        return { radar, elements, queries };
+        return { radar, elements, queries, indexQueries, initialIndexes };
     }
-    it('昼夜10回連打でもフレーム予約と全件走査は1本', () => {
-        const { elements, queries } = setupRadar();
+    it('昼夜10回連打でもフレーム予約は1本で、描画済みの要素を再検索しない', () => {
+        const { elements, queries, indexQueries, initialIndexes } = setupRadar();
         for (let i = 0; i < 10; i++) eventBus.emit(CONFIG.EVENTS.TIME_CHANGED);
         const pendingBefore = frames.size;
         flushFrame();
         const scans = queries.mock.calls.filter(([selector]) => String(selector).startsWith('[data-fact-id=')).length;
         const reads = elements.reduce((total, el) => total + el.layoutReads, 0);
-        console.log('RADAR_COUNTER', JSON.stringify({ pendingBefore, pendingAfter: frames.size, itemCount: elements.length, selectorQueries: scans, layoutReads: reads }));
+        expect(initialIndexes).toBe(1);
         expect(pendingBefore).toBe(1);
         expect(frames.size).toBe(1);
-        expect(scans).toBe(elements.length);
+        expect(scans).toBe(0);
+        expect(indexQueries).not.toHaveBeenCalled();
         expect(reads).toBe(elements.length * 4);
     });
     it('非表示のデスクトップレーダーには移動ループを作らない', () => {
-        const { elements, queries } = setupRadar(1280);
+        const { elements, queries, indexQueries, initialIndexes } = setupRadar(1280);
         for (let i = 0; i < 10; i++) eventBus.emit(CONFIG.EVENTS.TIME_CHANGED);
         flushFrame();
         console.log('RADAR_DESKTOP_COUNTER', JSON.stringify({ pending: frames.size, selectorQueries: queries.mock.calls.length, layoutReads: elements.reduce((sum, el) => sum + el.layoutReads, 0) }));
+        expect(initialIndexes).toBe(0);
         expect(frames.size).toBe(0);
         expect(queries).not.toHaveBeenCalled();
+        expect(indexQueries).not.toHaveBeenCalled();
     });
     it.each([1280, 390])('%ipxで始めた昼夜移動を途中のモバイル復帰後も最終位置まで追従する', (initialWidth) => {
         const { radar, elements } = setupRadar(initialWidth);

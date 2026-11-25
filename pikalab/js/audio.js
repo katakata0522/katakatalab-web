@@ -226,7 +226,8 @@ export function updateSoundIcon() {
 }
 
 // 同一効果音の多重再生（チャタリング）防止用キャッシュ
-const lastPlayedTimes = {};
+const lastPlayedTimes = Object.create(null);
+const AUDIO_RESUME_EVENTS = Object.freeze(['mousedown', 'touchstart', 'keydown']);
 
 /**
  * 効果音を再生
@@ -301,13 +302,13 @@ export function initAudioEventListeners() {
     };
 
     const removeListeners = () => {
-        ['mousedown', 'touchstart', 'keydown'].forEach(evt => {
-            document.documentElement.removeEventListener(evt, resumeAudio);
-        });
+        for (let i = 0; i < AUDIO_RESUME_EVENTS.length; i++) {
+            document.documentElement.removeEventListener(AUDIO_RESUME_EVENTS[i], resumeAudio);
+        }
     };
 
     // ユーザー操作時にAudioContextを再開 (アクセシビリティ対応)
-    ['mousedown', 'touchstart', 'keydown'].forEach(evt => {
-        document.documentElement.addEventListener(evt, resumeAudio, { passive: true });
-    });
+    for (let i = 0; i < AUDIO_RESUME_EVENTS.length; i++) {
+        document.documentElement.addEventListener(AUDIO_RESUME_EVENTS[i], resumeAudio, { passive: true });
+    }
 }

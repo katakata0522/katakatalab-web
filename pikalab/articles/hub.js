@@ -5,6 +5,8 @@
 (() => {
     'use strict';
 
+    const WHITESPACE_SPLIT_REGEX = /\s+/;
+
     function initHub() {
         const articleList = document.getElementById('article-list');
         if (!articleList) return;
@@ -46,9 +48,14 @@
         let searchQuery = (urlParams.get('q') || '').trim();
         let currentlyVisible = INITIAL_COUNT;
 
+        const pillEntries = pills.map(pill => ({
+            pill,
+            filter: pill.getAttribute('data-filter') || 'all'
+        }));
+        const validFilterSet = new Set(pillEntries.map(entry => entry.filter));
+
         // Validate currentFilter against available pills
-        const validFilterExists = pills.some(p => p.getAttribute('data-filter') === currentFilter);
-        if (!validFilterExists && currentFilter !== 'all') {
+        if (!validFilterSet.has(currentFilter) && currentFilter !== 'all') {
             currentFilter = 'all';
         }
 
@@ -59,14 +66,14 @@
 
         // Sync pill UI
         function updatePillUI() {
-            pills.forEach(pill => {
-                const filter = pill.getAttribute('data-filter');
+            for (let i = 0; i < pillEntries.length; i++) {
+                const { pill, filter } = pillEntries[i];
                 if (filter === currentFilter) {
                     pill.classList.add('active-pill');
                 } else {
                     pill.classList.remove('active-pill');
                 }
-            });
+            }
         }
 
         // Update URL search parameters smoothly without page reload
@@ -88,7 +95,7 @@
 
         // Apply filtering, search, and pagination
         function applyLimitAndFilter() {
-            const queryWords = searchQuery.toLowerCase().split(/\s+/).filter(Boolean);
+            const queryWords = searchQuery ? searchQuery.toLowerCase().split(WHITESPACE_SPLIT_REGEX).filter(Boolean) : [];
             let totalMatched = 0;
             let visibleCount = 0;
             const animatedCards = [];

@@ -69,11 +69,11 @@ button.text-gray-500 {
 .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 
 @media (max-width: 480px) {
-    #header {
+    #header:has(#pikalab-back-btn) {
         padding-top: 3.75rem;
     }
 
-    #header h1 {
+    #header:has(#pikalab-back-btn) h1 {
         font-size: clamp(2rem, 10vw, 2.6rem);
         line-height: 1.1;
         text-align: center;
@@ -90,6 +90,14 @@ button.text-gray-500 {
         white-space: nowrap;
     }
 
+    #header:has(#pikalab-back-btn) [data-action="parents-modal-open"] {
+        top: 0.25rem;
+        right: 3.6rem;
+        min-height: 48px;
+        min-width: 48px;
+        padding: 0;
+    }
+
     #sound-toggle {
         top: 0.25rem;
         right: 0.25rem;
@@ -101,7 +109,8 @@ button.text-gray-500 {
         display: inline-flex !important;
         align-items: center;
         justify-content: center;
-        padding: 0 1.25rem !important;
+        padding: 0 0.9rem !important;
+        white-space: nowrap;
     }
 
     #sound-toggle {

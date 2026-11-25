@@ -5,9 +5,12 @@ interface Particle {
     baseSpeed: number;
     drift: number;
     opacity: number;
+    fillStyle: string;
     angle: number;
     angleSpeed: number;
 }
+
+const TWO_PI = Math.PI * 2;
 
 let canvas: OffscreenCanvas | null = null;
 let ctx: OffscreenCanvasRenderingContext2D | null = null;
@@ -25,17 +28,32 @@ let targetGlobalWind = 0;
 let globalSpeedMult = 1;
 let targetSpeedMult = 1;
 
+function resetParticle(p: Particle, yPos: number | null = null): Particle {
+    const opacity = Math.random() * 0.6 + 0.1;
+    p.x = Math.random() * width;
+    p.y = yPos !== null ? yPos : Math.random() * height;
+    p.size = Math.random() * 2 + 0.5;
+    p.baseSpeed = Math.random() * 0.5 + 0.1;
+    p.drift = Math.random() * 0.4 - 0.2;
+    p.opacity = opacity;
+    p.fillStyle = `rgba(255, 255, 255, ${opacity})`;
+    p.angle = Math.random() * TWO_PI;
+    p.angleSpeed = Math.random() * 0.02 - 0.01;
+    return p;
+}
+
 function createParticle(yPos: number | null = null): Particle {
-    return {
-        x: Math.random() * width,
-        y: yPos !== null ? yPos : Math.random() * height,
-        size: Math.random() * 2 + 0.5,
-        baseSpeed: Math.random() * 0.5 + 0.1,
-        drift: Math.random() * 0.4 - 0.2,
-        opacity: Math.random() * 0.6 + 0.1,
-        angle: Math.random() * Math.PI * 2,
-        angleSpeed: Math.random() * 0.02 - 0.01
-    };
+    return resetParticle({
+        x: 0,
+        y: 0,
+        size: 0,
+        baseSpeed: 0,
+        drift: 0,
+        opacity: 0,
+        fillStyle: '',
+        angle: 0,
+        angleSpeed: 0
+    }, yPos);
 }
 
 function initParticles(): void {
@@ -91,17 +109,17 @@ function animate(): void {
         p.y += (p.baseSpeed * globalSpeedMult) + scrollVelocity;
         
         if (p.y > height + 10) {
-            Object.assign(p, createParticle(-10));
+            resetParticle(p, -10);
         } else if (p.y < -10) {
-            Object.assign(p, createParticle(height + 10));
+            resetParticle(p, height + 10);
         }
         
         if (p.x > width) p.x = 0;
         if (p.x < 0) p.x = width;
         
         ctx.beginPath();
-        ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(255, 255, 255, ${p.opacity})`;
+        ctx.arc(p.x, p.y, p.size, 0, TWO_PI);
+        ctx.fillStyle = p.fillStyle;
         ctx.fill();
     }
     
