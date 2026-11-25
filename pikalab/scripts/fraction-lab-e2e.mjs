@@ -590,6 +590,19 @@ async function layoutSuite() {
                         await target.locator(`#tab-${state}`).click(); await scrollMainTop(target); await target.waitForTimeout(450);
                     }
                     const name = `${theme}-${viewport.width}x${viewport.height}-${state}`;
+                    if (state === 'whatis') {
+                        const mark = page.locator('.fraction-intro-mark[aria-hidden="true"]');
+                        assert.equal(await mark.count(), 1);
+                        assert.equal(await mark.isVisible(), viewport.width >= 768);
+                        if (await mark.isVisible()) {
+                            assert.ok(await mark.evaluate(icon => {
+                                const box = icon.getBoundingClientRect();
+                                const heading = document.querySelector('#view-whatis h2'), range = document.createRange();
+                                range.selectNodeContents(heading);
+                                return [...range.getClientRects()].every(line => box.left >= line.right || box.right <= line.left || box.top >= line.bottom || box.bottom <= line.top);
+                            }), 'Decoration stays clear of every line of the introduction heading');
+                        }
+                    }
                     const actual = await layoutSnapshot(page), expected = baseline ? await layoutSnapshot(baseline.page) : null;
                     await writeJSON(`${name}-geometry.json`, { candidate: actual, baseline: expected });
                     await screenshot(page, `${name}-candidate`);

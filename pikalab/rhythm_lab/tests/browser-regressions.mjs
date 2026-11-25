@@ -776,6 +776,15 @@ export async function runRhythmRegressions(browser, baseUrl, { baselineUrl, arti
             assert.equal(await page.locator(`${CELLS}[role]`).count(), 0, 'native buttonに不要なroleを追加しない');
             assert.equal(await page.locator(CELLS).evaluateAll(nodes => nodes.every(node => node.type === 'button')), true, 'すべてのセルがフォームを送信しないnative button');
             await assertNoHorizontalOverflow(page, `${size} 初期表示`);
+            const readableHint = await page.locator('.rhythm-pad-hint').evaluate(hint => {
+                const phrase = document.createRange();
+                phrase.selectNodeContents(hint.firstChild);
+                const [first] = phrase.getClientRects(), second = hint.querySelector('.rhythm-clear-hint');
+                const next = second.getBoundingClientRect();
+                return phrase.getClientRects().length === 1 && second.getClientRects().length === 1 &&
+                    (next.left >= first.right - 1 || next.top >= first.bottom - 1);
+            });
+            assert.ok(readableHint, '試聴とクリアの説明は順に読み、各説明の途中で列に分かれない');
             if (viewport.width <= 767 || (viewport.width <= 900 && viewport.height <= 480)) checkMobileControls(candidate, viewport);
             if (baseline) geometry.push({ viewport, before: baseline, after: candidate, allowedCorrections: compareGeometry(baseline, candidate, viewport) });
             await verifyColorsAndNoop(page);
