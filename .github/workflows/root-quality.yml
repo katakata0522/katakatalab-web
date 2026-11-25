@@ -51,6 +51,16 @@ jobs:
           node scripts/build-project-cards.cjs
           git diff --exit-code -- index.html
           node .github/scripts/build-public-root.cjs
+          test ! -e public-build/motion-atlas-source
+      - name: Verify Motion Atlas matches the published assets
+        working-directory: motion-atlas-source
+        run: |
+          npm audit --package-lock-only --ignore-scripts --audit-level=low
+          npm ci --ignore-scripts --no-audit --no-fund
+          npm run lint
+          npm run build
+          npm test
+          node scripts/prepare-katakatalab.mjs --check ..
       - name: Install locked browser tools
         run: |
           npm ci --ignore-scripts --no-audit --no-fund
