@@ -7,6 +7,9 @@
   const Redaction = typeof window !== 'undefined'
     ? window.ScreenshotCropRedaction
     : (typeof module !== 'undefined' && module.exports ? require('./redaction.js') : null);
+  const Frame = typeof window !== 'undefined'
+    ? window.ScreenshotCropFrame
+    : (typeof module !== 'undefined' && module.exports ? require('./frame.js') : null);
 
   function requireCore() {
     if (!Core) throw new Error('Screenshot crop core is required');
@@ -245,11 +248,24 @@
       });
     }
 
+    const frameActive = Boolean(options.frame && Frame?.isFrameActive?.(options.frame));
+    const exportCanvas = frameActive
+      ? Frame.renderFramedCanvas(canvas, options.frame)
+      : canvas;
+
     // Re-encoding through Canvas creates a new image instead of passing the
     // original file through, so EXIF/GPS/camera metadata is not inherited.
-    const mime = options.mime || outputMime(file);
+    let mime = options.mime || outputMime(file);
+    if (
+      frameActive
+      && !options.mime
+      && mime === 'image/jpeg'
+      && Frame.normalizeFrameOptions(options.frame).style === 'rounded'
+    ) {
+      mime = 'image/png';
+    }
     const quality = mime === 'image/jpeg' || mime === 'image/webp' ? 0.94 : undefined;
-    const blob = await canvasToBlob(canvas, mime, quality);
+    const blob = await canvasToBlob(exportCanvas, mime, quality);
     return { blob, mime, name: outputName(file, mime) };
   }
 

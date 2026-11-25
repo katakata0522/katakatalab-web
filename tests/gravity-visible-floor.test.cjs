@@ -69,3 +69,16 @@ test('an obscured pinned task stays pinned while returning to visible space', ()
   assert.equal(body.isStatic, true);
   assert.equal(body.bounds.max.y, 486);
 });
+
+test('shrinking viewport width clamps off-screen task bodies inside visible bounds', () => {
+  const f = fixture();
+  const rightBody = f.task(250, 0, false);
+  rightBody.position.x = 1200;
+  rightBody.bounds = { min: { x: 1120, y: 202 }, max: { x: 1280, y: 250 } };
+  f.engine.initWorld();
+  f.engine.width = 390;
+  f.engine.rebuildFloor();
+  assert.ok(rightBody.position.x <= 390 - 80 - 8);
+  assert.ok(rightBody.position.x >= 88);
+  assert.equal(rightBody.velocity.x, 0);
+});

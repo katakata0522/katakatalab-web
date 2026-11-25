@@ -190,10 +190,23 @@ export class PhysicsEngine {
     this.Composite.add(this.world, [this.ground, this.leftWall, this.rightWall]);
     const floorY = this.getFloorY();
     for (const body of this.getTaskBodies()) {
+      const hasXBounds = Number.isFinite(body.bounds?.min?.x) && Number.isFinite(body.bounds?.max?.x);
+      const halfW = hasXBounds ? Math.max(20, (body.bounds.max.x - body.bounds.min.x) / 2) : 40;
+      const minX = Math.min(this.width / 2, halfW + 8);
+      const maxX = Math.max(minX, this.width - halfW - 8);
+      const clampedX = Math.max(minX, Math.min(maxX, body.position.x));
+      const xChanged = Math.abs(clampedX - body.position.x) > 0.5;
       const overlap = body.bounds.max.y - floorY;
-      if (overlap > 0) {
-        this.Body.setPosition(body, { x: body.position.x, y: body.position.y - overlap - 2 });
-        this.Body.setVelocity(body, { x: body.velocity.x, y: Math.min(0, body.velocity.y) });
+      const yChanged = overlap > 0;
+      if (xChanged || yChanged) {
+        this.Body.setPosition(body, {
+          x: clampedX,
+          y: yChanged ? body.position.y - overlap - 2 : body.position.y,
+        });
+        this.Body.setVelocity(body, {
+          x: xChanged ? 0 : body.velocity.x,
+          y: yChanged ? Math.min(0, body.velocity.y) : body.velocity.y,
+        });
       }
     }
   }
@@ -301,20 +314,29 @@ export class PhysicsEngine {
     if (!hasSavedState) {
       const cx = this.width / 2;
       const floor = this.getFloorY();
+      const headerEl = typeof document !== 'undefined' && typeof document.querySelector === 'function'
+        ? document.querySelector('.header-shell')
+        : null;
+      const headerBottom = headerEl ? headerEl.getBoundingClientRect().bottom : 140;
+      const openSpace = Math.max(0, floor - headerBottom);
+      const playTop = openSpace >= 160
+        ? headerBottom + 64
+        : headerBottom + Math.max(36, openSpace * 0.42);
+      const xSpread = Math.min(150, Math.max(30, this.width * 0.14));
 
       // 1. ピン留め（青色・空中固定）
-      setTimeout(() => this.addTask('@📌 1. 空中にピン留め!', cx - 150, 150, 0.1, {
+      setTimeout(() => this.addTask('@📌 1. 空中にピン留め!', cx - xSpread, playTop, 0.08, {
         blockColor: '#0f3460', blockBorder: '#4a90e2', persist: false, isDemo: true
       }), 400);
 
-      // 2. ドラッグ（緑色・標準・やや高めから落下）
-      setTimeout(() => this.addTask('👆 2. ドラッグで掴めるよ', cx + 150, floor - 400, -0.1, {
+      // 2. ドラッグ（緑色・標準・見やすい高さから落下）
+      setTimeout(() => this.addTask('👆 2. ドラッグで掴めるよ', cx + xSpread, Math.max(playTop + 16, floor - 180), -0.08, {
         blockColor: '#1b5e20', blockBorder: '#4caf50', persist: false, isDemo: true
       }), 1200);
 
       // 3. 爆破（赤色・巨大・ボヨンボヨン跳ねる）
       // 「!」が含まれるため自動的に1.4倍の巨大サイズになり、赤色指定でバウンドする
-      setTimeout(() => this.addTask('🔥 3. 長押しで爆破!! 💥!', cx, floor - 800, 0, {
+      setTimeout(() => this.addTask('🔥 3. 長押しで爆破!! 💥!', cx, Math.max(playTop + 24, floor - 240), 0, {
         blockColor: '#b71c1c', blockBorder: '#ff5252', persist: false, isDemo: true
       }), 2200);
 

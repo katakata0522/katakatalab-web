@@ -22,9 +22,9 @@
   <meta name="twitter:card" content="summary_large_image">
 
   <link rel="icon" href="/favicon.ico">
-  <link rel="stylesheet" href="style.css?v=20261121-comparison">
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jsdiff/5.1.0/diff.min.js"></script>
-    <link rel="stylesheet" href="../tool-chrome.css?v=source">
+  <link rel="stylesheet" href="style.css?v=20261125-refactored">
+  <script src="diff-engine.js?v=20261125"></script>
+  <link rel="stylesheet" href="../tool-chrome.css?v=20261125">
 </head>
 <body>
     <script>try{if(localStorage.getItem('theme')==='dark')document.body.classList.add('dark-mode');}catch(e){}</script>
@@ -40,9 +40,12 @@
             <span class="breadcrumbs-tool__sep">/</span>
             <span class="breadcrumbs-tool__current" aria-current="page">テキスト差分チェック</span>
         </div>
-        <a href="../#projects" class="breadcrumbs-tool__index">
-            <span>🧰</span> ツール一覧へ
-        </a>
+        <div class="breadcrumbs-tool__actions">
+            <button type="button" class="tool-theme-toggle" data-theme-toggle aria-label="ダークモードに切り替え" aria-pressed="false" title="ダークモードに切り替え">🌙</button>
+            <a href="../#projects" class="breadcrumbs-tool__index">
+                <span>🧰</span> ツール一覧へ
+            </a>
+        </div>
     </nav>
 
     <!-- Auto-Injected noscript fallback -->
@@ -81,7 +84,7 @@
       </div>
     </div>
 
-    <div class="control-group" id="viewToggle" style="display:none;">
+    <div class="control-group is-hidden" id="viewToggle">
       <span class="control-label">表示:</span>
       <div class="toggle-switch">
         <label class="radio-label">
@@ -96,6 +99,9 @@
     </div>
     
     <div class="actions">
+      <button type="button" id="sampleBtn" class="btn-secondary" aria-label="サンプル文章を入力して差分を試す" title="サンプルで試す">
+        <span class="icon-sample">✨</span> サンプル
+      </button>
       <button type="button" id="swapBtn" class="btn-secondary" aria-label="左右のテキストを入れ替え" title="入れ替え">
         <span class="icon-swap">⇄</span> 入れ替え
       </button>
@@ -106,9 +112,9 @@
     </div>
   </nav>
 
-  <div id="alertBox" class="alert-box" role="alert" style="display:none;"></div>
+  <div id="alertBox" class="alert-box is-hidden" role="alert"></div>
 
-  <div id="undoToast" class="undo-toast" role="status" aria-live="polite" style="display:none;">
+  <div id="undoToast" class="undo-toast is-hidden" role="status" aria-live="polite">
     <div class="undo-toast-inner">
       <span class="undo-msg">📥 入力をクリアしました</span>
       <button type="button" id="undoBtn" class="btn-undo">元に戻す (Undo)</button>
@@ -121,11 +127,11 @@
       <div class="pane-header">
         <label for="textOriginal" class="pane-label">変更前</label>
         <div class="pane-actions">
-          <span id="fileInfoOriginal" class="file-info-badge" style="display:none;"></span>
+          <span id="fileInfoOriginal" class="file-info-badge is-hidden"></span>
           <span id="charCountOriginal" class="char-count">0文字</span>
           <button type="button" class="btn-paste" data-target="original" aria-label="変更前に貼り付け">貼り付け</button>
           <label class="btn-file-label" title="ファイルから読み込み" aria-label="ファイルから読み込み">
-            <input type="file" class="file-input" data-target="original" accept=".txt,.md,.js,.css,.html,.json,.xml" style="display:none;" aria-label="変更前のファイルを端末内で開く">
+            <input type="file" class="file-input is-hidden" data-target="original" accept=".txt,.md,.js,.css,.html,.json,.xml" aria-label="変更前のファイルを端末内で開く">
             📁 ファイルを開く
           </label>
         </div>
@@ -137,11 +143,11 @@
       <div class="pane-header">
         <label for="textNew" class="pane-label">変更後</label>
         <div class="pane-actions">
-          <span id="fileInfoNew" class="file-info-badge" style="display:none;"></span>
+          <span id="fileInfoNew" class="file-info-badge is-hidden"></span>
           <span id="charCountNew" class="char-count">0文字</span>
           <button type="button" class="btn-paste" data-target="new" aria-label="変更後に貼り付け">貼り付け</button>
           <label class="btn-file-label" title="ファイルから読み込み" aria-label="ファイルから読み込み">
-            <input type="file" class="file-input" data-target="new" accept=".txt,.md,.js,.css,.html,.json,.xml" style="display:none;" aria-label="変更後のファイルを端末内で開く">
+            <input type="file" class="file-input is-hidden" data-target="new" accept=".txt,.md,.js,.css,.html,.json,.xml" aria-label="変更後のファイルを端末内で開く">
             📁 ファイルを開く
           </label>
         </div>
@@ -150,13 +156,13 @@
     </div>
   </section>
 
-  <section id="resultSection" class="result-container" style="display:none;">
+  <section id="resultSection" class="result-container is-hidden">
 <p id="comparisonStatus" role="status" aria-live="polite"></p>
     <div class="result-header">
       <h2>比較結果</h2>
       <div class="result-actions">
         <!-- 差分統計バッジ & スマートジャンプナビ -->
-        <div id="diffNav" class="diff-nav" style="display:none;">
+        <div id="diffNav" class="diff-nav is-hidden">
           <span id="diffStat" class="diff-stat"></span>
           <div class="jump-group">
             <button type="button" id="btnPrevDiff" class="btn-jump" aria-label="前の差分へ" title="前の差分">▲</button>
@@ -166,11 +172,11 @@
 
         <!-- 統合ビュー用コピーボタン -->
 <label for="copyFormat">コピー内容</label><select id="copyFormat"><option value="diff">差分テキスト（+/-付き）</option><option value="new">変更後の全文</option></select>
-        <button type="button" id="btnCopyDiff" class="btn-secondary btn-copy-diff" aria-label="差分をコピー" title="選んだ内容をコピー" style="display:none;">
+        <button type="button" id="btnCopyDiff" class="btn-secondary btn-copy-diff is-hidden" aria-label="差分をコピー" title="選んだ内容をコピー">
           <span class="icon-copy">📋</span> 選んだ内容をコピー
         </button>
 
-        <span id="statusMessage" class="status-msg" style="display:none;">
+        <span id="statusMessage" class="status-msg is-hidden">
           <span class="icon-check">✅</span> 完全一致
         </span>
         <button type="button" id="editBtn" class="btn-secondary" aria-label="編集に戻る">
@@ -191,7 +197,7 @@
       </div>
     </div>
 
-    <div id="diffViewUnified" class="diff-viewer unified-view" style="display:none;">
+    <div id="diffViewUnified" class="diff-viewer unified-view is-hidden">
       <div class="pane diff-pane full-width">
         <div class="pane-sticky-header">統合結果</div>
         <div id="diffUnified" class="diff-content" tabindex="0"></div>
@@ -205,7 +211,7 @@
     </div>
   </section>
 
-  <div id="loadingOverlay" class="loading-overlay" style="display:none;" aria-live="assertive">
+  <div id="loadingOverlay" class="loading-overlay is-hidden" aria-live="assertive">
     <div class="spinner"></div>
     <p>比較中...</p>
   </div>
@@ -290,7 +296,6 @@
         </a>
       </div>
     </section>
-  </article>
 
 
 
@@ -352,6 +357,7 @@
 ]
 </script>
 
-<script src="script.js" defer></script>
+<script src="../theme-sync.js?v=20261125" defer></script>
+<script src="script.js?v=20261125" defer></script>
 </body>
 </html>

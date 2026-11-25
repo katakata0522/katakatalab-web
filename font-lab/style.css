@@ -226,7 +226,7 @@ body.dark-mode .header-btn:hover {
 /* --- Hero Section --- */
 .hero {
     text-align: center;
-    padding: 3rem 1rem 4rem 1rem;
+    padding: 1.5rem 1rem 1.75rem 1rem;
 }
 .hero-tag {
     display: inline-flex;
@@ -312,6 +312,7 @@ body.dark-mode .glass-card:hover {
     grid-template-columns: 1fr 340px;
     gap: 2rem;
     margin-bottom: 1.5rem;
+    align-items: start;
 }
 
 .compare-howto {
@@ -353,6 +354,13 @@ body.dark-mode .glass-card:hover {
     gap: 1.5rem;
 }
 
+@media (min-width: 1025px) {
+    .canvas-card {
+        position: sticky;
+        top: 84px;
+    }
+}
+
 .canvas-header {
     display: flex;
     justify-content: space-between;
@@ -392,15 +400,16 @@ body.dark-mode .device-btn.active {
 }
 
 .preview-container-wrapper {
+    position: relative;
     background: rgba(255, 255, 255, 0.5);
     border: 1px dashed var(--border-color);
     border-radius: 20px;
     padding: 1.5rem;
     flex-grow: 1;
     display: flex;
-    align-items: center;
+    align-items: flex-start;
     justify-content: center;
-    min-height: 350px;
+    min-height: 320px;
     transition: background 0.4s ease;
 }
 body.dark-mode .preview-container-wrapper {

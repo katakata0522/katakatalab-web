@@ -79,12 +79,12 @@
           <button id="share-btn" class="icon-btn" aria-label="Xでシェア" title="破壊スコアをXでシェア" style="margin-left:auto; font-family:sans-serif; font-size:1.1rem; padding: 0 4px;">X</button>
         </div>
 
-        <div id="undo-snackbar" class="history-controls" role="status" aria-live="polite">
+        <div id="undo-snackbar" class="history-controls" data-has-history="false" role="status" aria-live="polite">
           <span data-undo-message>単件の爆破を戻す・やり直す（この画面を開いている間）</span>
           <button type="button" id="undo-btn" class="undo-btn" disabled>元に戻す</button>
           <button type="button" id="redo-btn" class="undo-btn" disabled>やり直す</button>
         </div>
-        <p class="settings-note">今日の爆破数は単件の手動爆破を数えます。元に戻しても減らず、やり直しでは増えません。</p>
+        <p class="settings-note today-destroy-note">今日の爆破数は単件の手動爆破を数えます。元に戻しても減らず、やり直しでは増えません。</p>
         <div id="settings-panel" class="settings-panel hidden" role="dialog" aria-label="カラー設定">
           <label class="settings-note"><input type="checkbox" id="reduced-effects"> 演出を控えめにする</label>
           <p class="settings-note">OSの「動きを減らす」設定も優先します。</p><p id="settings-save-status" role="status"></p>

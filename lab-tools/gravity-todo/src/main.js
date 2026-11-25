@@ -43,6 +43,7 @@ document.addEventListener('DOMContentLoaded', () => {
     setTimeout(() => {
       hintBar.classList.add('hidden');
       hintBar.classList.remove('hint-bar--hiding');
+      document.documentElement.style.setProperty('--hint-height', '0px');
     }, 400);
   }
   hintClose?.addEventListener('click', hideHint);

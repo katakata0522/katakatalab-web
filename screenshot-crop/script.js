@@ -8,6 +8,8 @@
   const DeviceProfiles = window.ScreenshotCropDeviceProfiles;
   const Presets = window.ScreenshotCropPresets;
   const Redaction = window.ScreenshotCropRedaction;
+  const Sample = window.ScreenshotCropSample || null;
+  const Frame = window.ScreenshotCropFrame || null;
   if (!Core || !ImageOps || !Preview || !Zip || !DeviceProfiles || !Presets || !Redaction) {
     throw new Error('Screenshot crop dependencies failed to load');
   }
@@ -76,10 +78,17 @@
     detected: 'generic',
     enabledEdges: defaultEdges(),
     compareOriginal: false,
+    previewFinish: false,
     draggingEdge: '',
     redactions: [],
     redactionTool: '',
     redactionDraft: null,
+    frame: {
+      style: 'none',
+      radius: 24,
+      background: 'mist',
+      padding: 'md',
+    },
     manualTouched: false,
     activationToken: 0,
     profiles: loadProfiles(),
@@ -103,6 +112,7 @@
       fileInput: document.getElementById('fileInput'),
       dropZone: document.getElementById('dropZone'),
       pasteButton: document.getElementById('pasteButton'),
+      trySampleButton: document.getElementById('trySampleButton'),
       replaceButton: document.getElementById('replaceButton'),
       removeCurrentButton: document.getElementById('removeCurrentButton'),
       uploadMessage: document.getElementById('uploadMessage'),
@@ -129,13 +139,24 @@
       editState: document.getElementById('editState'),
       resultSize: document.getElementById('resultSize'),
       removedSummary: document.getElementById('removedSummary'),
+      finishPreviewButton: document.getElementById('finishPreviewButton'),
       compareButton: document.getElementById('compareButton'),
+      quickTopBottomButton: document.getElementById('quickTopBottomButton'),
+      quickClearEdgesButton: document.getElementById('quickClearEdgesButton'),
       redactionPanel: document.getElementById('redactionPanel'),
       redactionCount: document.getElementById('redactionCount'),
       redactionHelp: document.getElementById('redactionHelp'),
       redactionToolButtons: [...document.querySelectorAll('[data-redaction-tool]')],
       undoRedactionButton: document.getElementById('undoRedactionButton'),
       clearRedactionButton: document.getElementById('clearRedactionButton'),
+      framePanel: document.getElementById('framePanel'),
+      frameStatusBadge: document.getElementById('frameStatusBadge'),
+      frameSubcontrols: document.getElementById('frameSubcontrols'),
+      frameBackdropControls: document.getElementById('frameBackdropControls'),
+      frameStyleButtons: [...document.querySelectorAll('[data-frame-style]')],
+      frameRadiusButtons: [...document.querySelectorAll('[data-frame-radius]')],
+      frameBgButtons: [...document.querySelectorAll('[data-frame-bg]')],
+      framePaddingButtons: [...document.querySelectorAll('[data-frame-padding]')],
       autoAgainButton: document.getElementById('autoAgainButton'),
       safeMargin: document.getElementById('safeMargin'),
       modeButtons: [...document.querySelectorAll('.mode-button')],
@@ -172,6 +193,7 @@
     updateBatchUI();
     updatePresetUI();
     updateRedactionUI();
+    updateFrameUI();
     updateQuickActions();
 
     els.fileInput.addEventListener('change', (event) => {
@@ -183,6 +205,7 @@
     els.replaceButton.addEventListener('click', () => els.fileInput.click());
     els.removeCurrentButton.addEventListener('click', removeCurrentItem);
     els.pasteButton.addEventListener('click', pasteFromClipboard);
+    els.trySampleButton?.addEventListener('click', trySampleImage);
 
     els.prevImageButton.addEventListener('click', () => activateItem(state.currentIndex - 1));
     els.nextImageButton.addEventListener('click', () => activateItem(state.currentIndex + 1));
@@ -252,6 +275,7 @@
         }
 
         state.compareOriginal = false;
+        state.previewFinish = false;
         updateBatchUI();
         updateCompareState();
         updateEdgeControls();
@@ -261,6 +285,9 @@
         drawPreview();
       });
     });
+
+    els.quickTopBottomButton?.addEventListener('click', applyQuickTopBottom);
+    els.quickClearEdgesButton?.addEventListener('click', applyQuickClearEdges);
 
     els.modeButtons.forEach((button) => {
       button.addEventListener('click', () => {
@@ -303,6 +330,7 @@
         manualEdge = edge;
         if (!state.image || !state.enabledEdges[edge]) return;
         state.compareOriginal = false;
+        state.previewFinish = false;
         updateCompareState();
         state.crop[edge] = Number(input.value);
         state.crop = normalizeCrop(state.crop, state.image.naturalWidth, state.image.naturalHeight);
@@ -320,10 +348,37 @@
 
     els.compareButton.addEventListener('click', () => {
       state.compareOriginal = !state.compareOriginal;
+      if (state.compareOriginal) state.previewFinish = false;
       state.redactionDraft = null;
       updateCompareState();
       updateRedactionUI();
       drawPreview();
+    });
+
+    els.finishPreviewButton?.addEventListener('click', () => {
+      if (!isFrameActive()) return;
+      state.previewFinish = !state.previewFinish;
+      if (state.previewFinish) {
+        state.compareOriginal = false;
+        state.redactionTool = '';
+        state.redactionDraft = null;
+      }
+      updateCompareState();
+      updateRedactionUI();
+      drawPreview();
+    });
+
+    els.frameStyleButtons?.forEach((button) => {
+      button.addEventListener('click', () => setFrameStyle(button.dataset.frameStyle || 'none'));
+    });
+    els.frameRadiusButtons?.forEach((button) => {
+      button.addEventListener('click', () => setFrameRadius(Number(button.dataset.frameRadius)));
+    });
+    els.frameBgButtons?.forEach((button) => {
+      button.addEventListener('click', () => setFrameBackground(button.dataset.frameBg || 'mist'));
+    });
+    els.framePaddingButtons?.forEach((button) => {
+      button.addEventListener('click', () => setFramePadding(button.dataset.framePadding || 'md'));
     });
 
     els.redactionToolButtons.forEach((button) => {
@@ -339,6 +394,8 @@
         drawPreview();
       }
     });
+
+    document.addEventListener('keydown', onEditorKeyDown);
 
     els.previewCanvas.addEventListener('pointerdown', onPointerDown);
     els.previewCanvas.addEventListener('pointermove', onPointerMove);
@@ -371,10 +428,11 @@
     return state.currentIndex >= 0 ? state.items[state.currentIndex] : null;
   }
 
-  function createItem(file) {
+  function createItem(file, options = {}) {
     return {
       id: ++itemSequence,
       file,
+      isSample: Boolean(options.isSample),
       objectUrl: URL.createObjectURL(file),
       thumbnailUrl: '',
       thumbnailPromise: null,
@@ -421,7 +479,7 @@
     return state.items.reduce((sum, item) => sum + item.file.size, 0);
   }
 
-  async function addFiles(files) {
+  async function addFiles(files, options = {}) {
     let skippedFormat = 0;
     let skippedLimit = 0;
     let added = 0;
@@ -437,7 +495,7 @@
         skippedLimit += 1;
         continue;
       }
-      state.items.push(createItem(file));
+      state.items.push(createItem(file, options));
       bytes += file.size;
       added += 1;
     }
@@ -461,6 +519,24 @@
     }
   }
 
+  async function trySampleImage() {
+    if (!Sample?.createSampleScreenshotFile) return;
+    const button = els.trySampleButton;
+    setButtonsBusy([button], true, 'サンプル準備中…');
+    setMessage(els.uploadMessage, 'サンプル画像を用意しています…', 'info');
+
+    try {
+      const sampleFile = await Sample.createSampleScreenshotFile();
+      await addFiles([sampleFile], { isSample: true });
+      showToast('サンプル画像を読み込みました（自由に試せます）', 3200);
+    } catch (error) {
+      console.error(error);
+      setMessage(els.uploadMessage, 'サンプル画像の作成に失敗しました。お手元の画像を選んでお試しください。', 'error');
+    } finally {
+      setButtonsBusy([button], false);
+    }
+  }
+
   function removeCurrentItem() {
     if (state.currentIndex < 0) return;
     removeItemAt(state.currentIndex);
@@ -472,6 +548,7 @@
     state.crop = { top: 0, right: 0, bottom: 0, left: 0 };
     state.detected = 'generic';
     state.compareOriginal = false;
+    state.previewFinish = false;
     state.redactions = [];
     state.redactionTool = '';
     state.redactionDraft = null;
@@ -482,6 +559,7 @@
     els.editorSection.hidden = true;
     updateBatchUI();
     updateQuickActions();
+    updateCompareState();
     setMessage(els.uploadMessage, '');
     setMessage(els.exportMessage, '');
     updatePresetUI();
@@ -911,13 +989,221 @@
     });
   }
 
+  function isFrameActive() {
+    return Boolean(Frame?.isFrameActive?.(state.frame));
+  }
+
+  function activeFrameOption() {
+    return isFrameActive() ? { ...state.frame } : null;
+  }
+
+  function exportOptions(redactions, extra = {}) {
+    const options = { ...extra, redactions };
+    const frame = activeFrameOption();
+    if (frame) options.frame = frame;
+    return options;
+  }
+
+  function updateFrameUI() {
+    const active = isFrameActive();
+    const style = state.frame.style;
+
+    els.frameStyleButtons?.forEach((button) => {
+      const selected = button.dataset.frameStyle === style;
+      button.classList.toggle('is-active', selected);
+      button.setAttribute('aria-pressed', String(selected));
+    });
+    els.frameRadiusButtons?.forEach((button) => {
+      const selected = Number(button.dataset.frameRadius) === Number(state.frame.radius);
+      button.classList.toggle('is-active', selected);
+      button.setAttribute('aria-pressed', String(selected));
+    });
+    els.frameBgButtons?.forEach((button) => {
+      const selected = button.dataset.frameBg === state.frame.background;
+      button.classList.toggle('is-active', selected);
+      button.setAttribute('aria-pressed', String(selected));
+    });
+    els.framePaddingButtons?.forEach((button) => {
+      const selected = button.dataset.framePadding === state.frame.padding;
+      button.classList.toggle('is-active', selected);
+      button.setAttribute('aria-pressed', String(selected));
+    });
+
+    if (els.frameSubcontrols) els.frameSubcontrols.hidden = style === 'none';
+    if (els.frameBackdropControls) els.frameBackdropControls.hidden = style !== 'backdrop';
+    if (els.frameStatusBadge) {
+      els.frameStatusBadge.hidden = !active;
+      els.frameStatusBadge.textContent = style === 'backdrop' ? 'フレーム' : '角丸';
+    }
+    if (!active) state.previewFinish = false;
+    updateCompareState();
+  }
+
+  function setFrameStyle(style) {
+    const next = style === 'rounded' || style === 'backdrop' ? style : 'none';
+    state.frame.style = next;
+    if (next === 'rounded' && Number(state.frame.radius) === 0) {
+      state.frame.radius = 24;
+    }
+    state.previewFinish = isFrameActive();
+    if (state.previewFinish) {
+      state.compareOriginal = false;
+      state.redactionTool = '';
+      state.redactionDraft = null;
+    }
+    markCurrentItemUnsaved();
+    setMessage(els.exportMessage, '');
+    updateFrameUI();
+    updateRedactionUI();
+    syncControls();
+    drawPreview();
+  }
+
+  function setFrameRadius(radius) {
+    if (!Number.isFinite(radius)) return;
+    state.frame.radius = Math.max(0, Math.min(64, Math.round(radius)));
+    if (state.frame.style === 'none' && state.frame.radius > 0) {
+      state.frame.style = 'rounded';
+    }
+    state.previewFinish = isFrameActive();
+    if (state.previewFinish) state.compareOriginal = false;
+    markCurrentItemUnsaved();
+    setMessage(els.exportMessage, '');
+    updateFrameUI();
+    syncControls();
+    drawPreview();
+  }
+
+  function setFrameBackground(bgId) {
+    state.frame.background = bgId;
+    if (state.frame.style !== 'backdrop') state.frame.style = 'backdrop';
+    state.previewFinish = true;
+    state.compareOriginal = false;
+    markCurrentItemUnsaved();
+    setMessage(els.exportMessage, '');
+    updateFrameUI();
+    syncControls();
+    drawPreview();
+  }
+
+  function setFramePadding(padId) {
+    state.frame.padding = padId;
+    if (state.frame.style !== 'backdrop') state.frame.style = 'backdrop';
+    state.previewFinish = true;
+    state.compareOriginal = false;
+    markCurrentItemUnsaved();
+    setMessage(els.exportMessage, '');
+    updateFrameUI();
+    syncControls();
+    drawPreview();
+  }
+
+  function applyQuickTopBottom() {
+    const item = currentItem();
+    if (!item || !state.image) return;
+    const width = state.image.naturalWidth;
+    const height = state.image.naturalHeight;
+    state.enabledEdges = { top: true, bottom: true, left: false, right: false };
+    state.crop = normalizeCrop({
+      top: state.crop.top || item.estimatedCrop?.top || fallbackEdgeCrop(width, height, 'top'),
+      bottom: state.crop.bottom || item.estimatedCrop?.bottom || fallbackEdgeCrop(width, height, 'bottom'),
+      left: 0,
+      right: 0,
+    }, width, height);
+    state.manualTouched = true;
+    state.compareOriginal = false;
+    state.previewFinish = false;
+
+    item.crop = cloneCrop(state.crop);
+    item.enabledEdges = cloneEdges(state.enabledEdges);
+    item.manualTouched = true;
+    item.inheritedBatchAdjustment = false;
+    item.saved = false;
+
+    updateBatchUI();
+    updateCompareState();
+    updateEdgeControls();
+    updateEditState();
+    setMessage(els.exportMessage, '');
+    syncControls();
+    drawPreview();
+  }
+
+  function applyQuickClearEdges() {
+    const item = currentItem();
+    if (!item || !state.image) return;
+    state.enabledEdges = { top: false, bottom: false, left: false, right: false };
+    state.crop = { top: 0, right: 0, bottom: 0, left: 0 };
+    state.manualTouched = true;
+    state.compareOriginal = false;
+    state.previewFinish = false;
+
+    item.crop = cloneCrop(state.crop);
+    item.enabledEdges = cloneEdges(state.enabledEdges);
+    item.manualTouched = true;
+    item.inheritedBatchAdjustment = false;
+    item.saved = false;
+
+    updateBatchUI();
+    updateCompareState();
+    updateEdgeControls();
+    updateEditState();
+    setMessage(els.exportMessage, '');
+    syncControls();
+    drawPreview();
+  }
+
+  function onEditorKeyDown(event) {
+    if (!state.image || els.editorSection?.hidden) return;
+    const target = event.target;
+    const tagName = target?.tagName || '';
+    const isEditable = tagName === 'INPUT' || tagName === 'TEXTAREA' || tagName === 'SELECT' || target?.isContentEditable;
+
+    if ((event.metaKey || event.ctrlKey) && !event.altKey) {
+      const key = String(event.key || '').toLowerCase();
+      if (key === 's') {
+        event.preventDefault();
+        saveImage();
+        return;
+      }
+      if (key === 'z' && !event.shiftKey && !isEditable && state.redactions.length > 0) {
+        event.preventDefault();
+        undoRedaction();
+        return;
+      }
+    }
+
+    if (isEditable || event.metaKey || event.ctrlKey || event.altKey) return;
+    if (state.items.length > 1) {
+      if (event.key === 'ArrowLeft' && state.currentIndex > 0) {
+        event.preventDefault();
+        activateItem(state.currentIndex - 1);
+      } else if (event.key === 'ArrowRight' && state.currentIndex < state.items.length - 1) {
+        event.preventDefault();
+        activateItem(state.currentIndex + 1);
+      }
+    }
+  }
+
   function updateCompareState() {
     els.compareButton.setAttribute('aria-pressed', String(state.compareOriginal));
     els.compareButton.textContent = state.compareOriginal ? '編集に戻る' : '元画像と比較';
+
+    if (els.finishPreviewButton) {
+      const frameOn = isFrameActive();
+      els.finishPreviewButton.hidden = !frameOn;
+      els.finishPreviewButton.setAttribute('aria-pressed', String(state.previewFinish && frameOn));
+      els.finishPreviewButton.textContent = state.previewFinish ? '切り抜きに戻る' : '仕上がり確認';
+    }
+
     if (els.canvasHelp) {
-      els.canvasHelp.textContent = state.compareOriginal
-        ? '元画像を表示中です'
-        : '黄色いバーを指やマウスで動かして微調整できます';
+      if (state.compareOriginal) {
+        els.canvasHelp.textContent = '元画像を表示中です';
+      } else if (state.previewFinish && isFrameActive()) {
+        els.canvasHelp.textContent = '仕上がりプレビュー中です（切り位置を直すには「切り抜きに戻る」）';
+      } else {
+        els.canvasHelp.textContent = '黄色いバーを指やマウスで動かして微調整できます';
+      }
     }
   }
 
@@ -1245,6 +1531,9 @@
     const sourceH = state.image.naturalHeight;
     const resultW = sourceW - state.crop.left - state.crop.right;
     const resultH = sourceH - state.crop.top - state.crop.bottom;
+    const outputDims = isFrameActive() && Frame?.computeFramedDimensions
+      ? Frame.computeFramedDimensions(resultW, resultH, state.frame)
+      : { width: resultW, height: resultH };
     const activeParts = EDGE_KEYS
       .filter((edge) => state.enabledEdges[edge] && state.crop[edge] > 0)
       .map((edge) => {
@@ -1252,10 +1541,14 @@
         return `${labels[edge]} ${state.crop[edge].toLocaleString()}px`;
       });
 
-    els.resultSize.textContent = `${resultW.toLocaleString()} × ${resultH.toLocaleString()}px`;
+    const finishNote = isFrameActive()
+      ? (state.frame.style === 'backdrop' ? '・背景フレーム付き' : '・角丸')
+      : '';
+
+    els.resultSize.textContent = `${outputDims.width.toLocaleString()} × ${outputDims.height.toLocaleString()}px`;
     els.removedSummary.textContent = activeParts.length
-      ? `${activeParts.join('・')}をカット`
-      : '端は切りません（メタデータのみ除去）';
+      ? `${activeParts.join('・')}をカット${finishNote}`
+      : (finishNote ? `端は切らずに装飾${finishNote}` : '端は切りません（メタデータのみ除去）');
   }
 
   function drawManualEdge() {
@@ -1293,8 +1586,67 @@
     els.manualEdgeLabel.textContent = `${({ top: '上', bottom: '下', left: '左', right: '右' })[edge]} ${cut}px`;
   }
 
+  function drawFramedFinishPreview() {
+    const imageW = state.image.naturalWidth;
+    const imageH = state.image.naturalHeight;
+    const sx = state.crop.left;
+    const sy = state.crop.top;
+    const sw = Math.max(1, imageW - state.crop.left - state.crop.right);
+    const sh = Math.max(1, imageH - state.crop.top - state.crop.bottom);
+
+    // Keep preview fast for ultra-high-resolution images while keeping exact proportions.
+    const maxPreviewSourceSide = 1400;
+    const sourceScale = Math.min(1, maxPreviewSourceSide / Math.max(sw, sh));
+    const pw = Math.max(1, Math.round(sw * sourceScale));
+    const ph = Math.max(1, Math.round(sh * sourceScale));
+
+    const tempCanvas = document.createElement('canvas');
+    tempCanvas.width = pw;
+    tempCanvas.height = ph;
+    const tempCtx = tempCanvas.getContext('2d', { alpha: true });
+    if (!tempCtx) return false;
+    tempCtx.drawImage(state.image, sx, sy, sw, sh, 0, 0, pw, ph);
+
+    if (state.redactions.length) {
+      applyRedactions(tempCanvas, state.redactions, {
+        crop: state.crop,
+        sourceWidth: imageW,
+        sourceHeight: imageH,
+      });
+    }
+
+    const scaledFrameOptions = {
+      ...state.frame,
+      radius: Math.round(Number(state.frame.radius || 0) * sourceScale),
+    };
+    const framedCanvas = Frame.renderFramedCanvas(tempCanvas, scaledFrameOptions);
+    const { drawW, drawH } = computeLayout(
+      framedCanvas.width,
+      framedCanvas.height,
+      els.canvasShell.clientWidth,
+      window.innerHeight,
+      CONFIG,
+    );
+
+    const canvas = els.previewCanvas;
+    if (canvas.width !== drawW || canvas.height !== drawH) {
+      canvas.width = drawW;
+      canvas.height = drawH;
+    }
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return false;
+    ctx.clearRect(0, 0, drawW, drawH);
+    ctx.drawImage(framedCanvas, 0, 0, drawW, drawH);
+    return true;
+  }
+
   function drawPreview() {
     if (!state.image || !els.previewCanvas || !els.canvasShell) return;
+
+    drawManualEdge();
+    if (state.previewFinish && !state.compareOriginal && isFrameActive() && Frame?.renderFramedCanvas) {
+      if (drawFramedFinishPreview()) return;
+    }
 
     const imageW = state.image.naturalWidth;
     const imageH = state.image.naturalHeight;
@@ -1319,7 +1671,6 @@
     ctx.clearRect(0, 0, drawW, drawH);
     ctx.drawImage(base, 0, 0);
 
-    drawManualEdge();
     if (state.compareOriginal) return;
     applyRedactions(canvas, state.redactions, {
       crop: { top: 0, right: 0, bottom: 0, left: 0 },
@@ -1352,7 +1703,10 @@
     const next = mode === 'black' || mode === 'blur' ? mode : '';
     state.redactionTool = state.redactionTool === next ? '' : next;
     state.redactionDraft = null;
-    if (state.redactionTool) state.compareOriginal = false;
+    if (state.redactionTool) {
+      state.compareOriginal = false;
+      state.previewFinish = false;
+    }
     updateCompareState();
     updateRedactionUI();
     drawPreview();
@@ -1388,9 +1742,15 @@
     }
 
     if (els.canvasHelp) {
-      els.canvasHelp.textContent = state.redactionTool && !state.compareOriginal
-        ? '画像上で隠したい範囲をなぞってください'
-        : '黄色いバーを動かして調整できます';
+      if (state.redactionTool && !state.compareOriginal) {
+        els.canvasHelp.textContent = '画像上で隠したい範囲をなぞってください';
+      } else if (state.compareOriginal) {
+        els.canvasHelp.textContent = '元画像を表示中です';
+      } else if (state.previewFinish && isFrameActive()) {
+        els.canvasHelp.textContent = '仕上がりプレビュー中です（切り位置を直すには「切り抜きに戻る」）';
+      } else {
+        els.canvasHelp.textContent = '黄色いバーを動かして調整できます';
+      }
     }
   }
 
@@ -1419,7 +1779,7 @@
   }
 
   function onPointerDown(event) {
-    if (!state.image) return;
+    if (!state.image || state.previewFinish) return;
 
     if (state.redactionTool && !state.compareOriginal) {
       const start = pointerImagePosition(event);
@@ -1683,6 +2043,7 @@
     let changed = false;
 
     items.forEach((item) => {
+      if (item?.isSample) return;
       const remembered = rememberableCrop(item);
       if (!remembered) return;
       const result = upsertProfile(nextProfiles, {
@@ -1726,7 +2087,7 @@
         state.image,
         item.file,
         state.crop,
-        { mime: 'image/png', redactions: state.redactions },
+        exportOptions(state.redactions, { mime: 'image/png' }),
       ).then(({ blob }) => blob);
       const clipboardItem = new window.ClipboardItem({ 'image/png': blobPromise });
       await navigator.clipboard.write([clipboardItem]);
@@ -1785,7 +2146,7 @@
         state.image,
         item.file,
         state.crop,
-        { redactions: state.redactions },
+        exportOptions(state.redactions),
       );
       triggerDownload(blob, name);
       // 保存中に編集・画像切替・別操作があれば、その画面の案内を優先する。
@@ -1845,7 +2206,7 @@
         const item = state.items[index];
         els.saveAllIndividualButton.textContent = `準備中 ${index + 1} / ${state.items.length}`;
         const { image, crop, redactions } = await prepareItemForExport(item);
-        const result = await exportCroppedBlob(image, item.file, crop, { redactions });
+        const result = await exportCroppedBlob(image, item.file, crop, exportOptions(redactions));
         const prefix = `${String(index + 1).padStart(2, '0')}-`;
         downloads.push({
           name: outputName(item.file, result.mime, prefix),
@@ -1895,7 +2256,7 @@
         const item = state.items[index];
         els.saveAllButton.textContent = `ZIPを作成中 ${index + 1} / ${state.items.length}`;
         const { image, crop, redactions } = await prepareItemForExport(item);
-        const result = await exportCroppedBlob(image, item.file, crop, { redactions });
+        const result = await exportCroppedBlob(image, item.file, crop, exportOptions(redactions));
         const prefix = `${String(index + 1).padStart(2, '0')}-`;
         entries.push({
           name: outputName(item.file, result.mime, prefix),
@@ -1937,7 +2298,7 @@
         state.image,
         item.file,
         state.crop,
-        { redactions: state.redactions },
+        exportOptions(state.redactions),
       );
       const file = new File([blob], name, { type: mime });
       if (navigator.canShare && !navigator.canShare({ files: [file] })) {

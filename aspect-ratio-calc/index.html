@@ -22,12 +22,12 @@
   <meta name="twitter:image" content="https://katakatalab.com/ogp.png">
 
   <link rel="icon" href="/favicon.ico">
-  <link rel="stylesheet" href="style.css?v=20261121-tools">
+  <link rel="stylesheet" href="style.css?v=20261125">
   <link rel="canonical" href="https://katakatalab.com/aspect-ratio-calc/">
   <link rel="alternate" hreflang="ja" href="https://katakatalab.com/aspect-ratio-calc/">
   <link rel="alternate" hreflang="en" href="https://katakatalab.com/aspect-ratio-calc/en/">
   <link rel="alternate" hreflang="x-default" href="https://katakatalab.com/aspect-ratio-calc/">
-    <link rel="stylesheet" href="../tool-chrome.css?v=source">
+    <link rel="stylesheet" href="../tool-chrome.css?v=20261125">
 </head>
 <body>
     <script>try{if(localStorage.getItem('theme')==='dark')document.body.classList.add('dark-mode');}catch(e){}</script>
@@ -43,9 +43,12 @@
             <span class="breadcrumbs-tool__sep">/</span>
             <span class="breadcrumbs-tool__current" aria-current="page">アスペクト比計算</span>
         </div>
-        <a href="../#projects" class="breadcrumbs-tool__index">
-            <span>🧰</span> ツール一覧へ
-        </a>
+        <div class="breadcrumbs-tool__actions">
+            <a href="../#projects" class="breadcrumbs-tool__index">
+                <span>🧰</span> ツール一覧へ
+            </a>
+            <button type="button" class="tool-theme-toggle" data-theme-toggle aria-label="ダークモードに切り替え" aria-pressed="false" title="ダークモードに切り替え">🌙</button>
+        </div>
     </nav>
 
     <!-- Auto-Injected noscript fallback -->
@@ -188,12 +191,12 @@
     <div class="feature-box">
       <h3>💡 クイック使い方とポイント</h3>
       <p>比率と片方のサイズを入力すると、もう片方を自動計算します。初期状態は「比率固定 ON」です。Monitor / Phone / Cinema の装飾枠プレビューで仕上がりサイズ感も直感的に確認できます。</p>
-      <div style="display: flex; justify-content: space-between; align-items: center; gap: 1rem; flex-wrap: wrap; margin-top: 0.75rem;">
+      <div class="guide-cta-row">
         <div>
-          <strong style="color: var(--c-primary, #6c5ce7);">📘 あわせて読みたい実践ガイド:</strong>
-          <span style="font-size: 0.85rem; color: var(--c-text-sub);">YouTube・SNS・資料作成での比率の選び方を整理しています。</span>
+          <strong class="guide-cta-title">📘 あわせて読みたい実践ガイド:</strong>
+          <span class="guide-cta-desc">YouTube・SNS・資料作成での比率の選び方を整理しています。</span>
         </div>
-        <a href="../guides/aspect-ratio-guide.html" target="_blank" rel="noopener" class="btn btn-primary" style="padding: 0.4rem 0.85rem; font-size: 0.85rem; text-decoration: none; border-radius: 4px; font-weight: bold; background: var(--c-primary); color: var(--c-on-primary);">ガイドを読む →</a>
+        <a href="../guides/aspect-ratio-guide.html" target="_blank" rel="noopener" class="btn btn-primary btn-guide-link">ガイドを読む →</a>
       </div>
     </div>
 
@@ -311,6 +314,7 @@
 }
 </script>
 
+<script src="../theme-sync.js?v=20261125" defer></script>
 <script src="script.js?v=20260817-2" defer></script>
 </body>
 </html>
