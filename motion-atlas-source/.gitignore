@@ -1,0 +1,7 @@
+/node_modules/
+/dist/
+/.standalone-dist/
+/standalone.html
+/.release/
+/public/.htaccess
+/public/assets/favicon.svg

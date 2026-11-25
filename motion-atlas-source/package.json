@@ -1,0 +1,32 @@
+{
+  "name": "katakatalab-motion-lab",
+  "version": "1.0.0",
+  "description": "動きの仕組み図鑑｜KatakataLab Motion Atlas - WebアニメーションとUI配置の仕組みを見て・触って・AI指示文で持ち帰れる図鑑サイト",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite --port=3000 --host=0.0.0.0",
+    "build": "vite build && vite build --mode standalone && node scripts/make-standalone.mjs .standalone-dist",
+    "preview": "vite preview --port=4173",
+    "start": "npx --yes serve dist -l 3000",
+    "lint": "tsc --noEmit",
+    "test": "node scripts/verify-build.mjs",
+    "release:check": "vite build && node scripts/prepare-katakatalab.mjs --check",
+    "release:prepare": "npm run lint && npm run build && npm test && node scripts/prepare-katakatalab.mjs --prepare"
+  },
+  "dependencies": {
+    "lucide-react": "^0.546.0",
+    "react": "^19.0.1",
+    "react-dom": "^19.0.1"
+  },
+  "devDependencies": {
+    "@tailwindcss/vite": "^4.3.3",
+    "@vitejs/plugin-react": "^6.1.1",
+    "@types/node": "^22.14.0",
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
+    "tailwindcss": "^4.3.3",
+    "typescript": "^5.8.2",
+    "vite": "^8.3.0"
+  }
+}

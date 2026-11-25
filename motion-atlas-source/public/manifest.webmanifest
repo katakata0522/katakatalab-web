@@ -1,0 +1,16 @@
+{
+  "name": "動きの仕組み図鑑｜KatakataLab Motion Atlas",
+  "short_name": "Motion Atlas",
+  "description": "Webアニメーションの仕組みを見て・触って・AI指示文で持ち帰れる図鑑",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#FAF9F6",
+  "theme_color": "#2563EB",
+  "icons": [
+    {
+      "src": "./assets/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml"
+    }
+  ]
+}
