@@ -91,3 +91,77 @@ test('検索とリセットで入力を同期し、記事へのフラグメン�
     assert.equal(new URLSearchParams(h.location.search).has('q'), false);
     assert.equal(h.location.hash, '#article-list');
 });
+
+test('旧カテゴリのURLパラメータも新しい5テーマに自動対応しaria-pressedを同期する', () => {
+    const originalSearch = '?category=%E7%AE%97%E6%95%B0';
+    let layouts = 0;
+    const cards = [
+        { category: '勉強・学習習慣', title: '算数記事' },
+        { category: 'やる気・心の力', title: '心の力記事' },
+    ].map(({ category, title }) => {
+        const classes = new Set();
+        return {
+            classList: {
+                add: (...n) => n.forEach(x => classes.add(x)),
+                remove: (...n) => n.forEach(x => classes.delete(x)),
+                contains: n => classes.has(n),
+            },
+            getAttribute: name => (name === 'data-category' ? category : null),
+            querySelector: sel => (sel === '.title' ? { textContent: title } : null),
+        };
+    });
+    const pills = ['all', '勉強・学習習慣', 'やる気・心の力'].map(value => {
+        const attrs = { 'data-filter': value, 'aria-pressed': 'false' };
+        const classes = new Set();
+        return {
+            attrs,
+            classList: {
+                add: (...n) => n.forEach(x => classes.add(x)),
+                remove: (...n) => n.forEach(x => classes.delete(x)),
+                contains: n => classes.has(n),
+            },
+            getAttribute: name => attrs[name] || null,
+            setAttribute: (name, val) => { attrs[name] = val; },
+            addEventListener: () => {},
+        };
+    });
+    const list = {
+        querySelectorAll: () => cards,
+        getBoundingClientRect: () => ({ top: 10 }),
+        get offsetWidth() { layouts++; return 500; },
+    };
+    const elements = Object.fromEntries(
+        ['load-more-btn', 'load-more-container', 'no-results-state', 'search-result-count', 'reset-filters-btn']
+            .map(id => [id, { style: {}, addEventListener: () => {} }]),
+    );
+    elements['article-list'] = list;
+    const location = { pathname: '/pikalab/articles/', search: originalSearch, hash: '' };
+    const ctx = {
+        URLSearchParams,
+        document: {
+            readyState: 'complete',
+            getElementById: id => elements[id] || null,
+            querySelectorAll: sel => (sel === '.worry-pill' ? pills : []),
+        },
+        location,
+        history: {
+            replaceState(_s, _u, target) {
+                const parsed = new URL(target, 'https://example.com');
+                location.pathname = parsed.pathname;
+                location.search = parsed.search;
+            },
+        },
+        addEventListener: () => {},
+        setTimeout,
+        clearTimeout,
+        scrollTo() {},
+    };
+    ctx.window = ctx;
+    vm.runInNewContext(fs.readFileSync(path.join(__dirname, 'hub.js'), 'utf8'), ctx);
+    assert.equal(pills[1].attrs['aria-pressed'], 'true');
+    assert.equal(pills[0].attrs['aria-pressed'], 'false');
+    assert.equal(cards[0].classList.contains('hidden-article'), false);
+    assert.equal(cards[1].classList.contains('hidden-article'), true);
+    assert.equal(new URLSearchParams(location.search).get('category'), '勉強・学習習慣');
+    assert.equal(layouts, 1);
+});

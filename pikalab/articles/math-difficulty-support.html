@@ -35,17 +35,17 @@
     <script src="./article-appearance.js"></script>
     
     <!-- Header -->
-    <header class="premium-header sticky top-0 z-50 px-5 py-3 md:px-8 md:py-4 flex items-center justify-between transition-all bg-white/90 backdrop-blur-md border-b border-slate-100">
-        <a href="./" class="inline-flex items-center gap-2 rounded-full bg-white px-4 py-2 text-sm font-black text-slate-600 shadow-[0_2px_10px_rgba(0,0,0,0.04)] border border-slate-100 transition-all hover:bg-sky-50 hover:text-sky-600 hover:border-sky-200 hover:-translate-y-0.5">
-            <span class="material-symbols-rounded text-base">arrow_back</span>
+    <header class="premium-header sticky top-0 z-50 px-4 py-2.5 md:px-8 flex items-center justify-between transition-all">
+        <a href="./" class="header-back-link">
+            <span class="material-symbols-rounded text-base" aria-hidden="true">arrow_back</span>
             読みもの広場にもどる
         </a>
-        <div class="flex items-center gap-2 md:gap-3">
-            <button type="button" id="font-size-toggle" class="w-9 h-9 md:w-10 md:h-10 rounded-full bg-white border border-slate-100 shadow-sm flex items-center justify-center text-slate-600 hover:bg-slate-50 transition-colors" aria-label="文字サイズ変更" title="文字サイズ変更">
-                <span class="font-black text-[14px] md:text-[15px] transition-all">あ</span>
+        <div class="flex items-center gap-2">
+            <button type="button" id="font-size-toggle" class="header-icon-btn" aria-label="文字サイズ変更" title="文字サイズ変更">
+                <span class="font-bold text-[14px] md:text-[15px]">あ</span>
             </button>
-            <button type="button" id="dark-mode-toggle" class="w-9 h-9 md:w-10 md:h-10 rounded-full bg-white border border-slate-100 shadow-sm flex items-center justify-center text-slate-600 hover:bg-slate-50 transition-colors" aria-label="ダークモード切替" title="ダークモード切替">
-                <span class="material-symbols-rounded text-base md:text-lg dark-icon">dark_mode</span>
+            <button type="button" id="dark-mode-toggle" class="header-icon-btn" aria-label="ダークモード切替" title="ダークモード切替">
+                <span class="material-symbols-rounded text-base dark-icon" aria-hidden="true">dark_mode</span>
             </button>
         </div>
     </header>
@@ -53,14 +53,14 @@
     <div class="mx-auto max-w-6xl px-5 py-6 md:px-8 md:py-10 relative z-10">
         
         <!-- Breadcrumbs -->
-        <nav class="text-[11px] md:text-xs font-bold text-slate-400 mb-6 flex items-center gap-2 breadcrumb-nav flex-wrap">
-            <a href="../../" class="inline-flex min-h-[44px] min-w-[44px] items-center justify-center hover:text-sky-500 transition-colors whitespace-nowrap">ホーム</a>
-            <span class="material-symbols-rounded text-[14px]">chevron_right</span>
-            <a href="../" class="inline-flex min-h-[44px] min-w-[44px] items-center justify-center hover:text-sky-500 transition-colors whitespace-nowrap">PikaLab</a>
-            <span class="material-symbols-rounded text-[14px]">chevron_right</span>
-            <a href="./" class="inline-flex min-h-[44px] min-w-[44px] items-center justify-center hover:text-sky-500 transition-colors whitespace-nowrap">読みもの広場</a>
-            <span class="material-symbols-rounded text-[14px]">chevron_right</span>
-            <span class="text-slate-600 breadcrumb-current whitespace-nowrap truncate max-w-[200px] md:max-w-none">算数が苦手な子への声かけはどうする？苦手意識を強めない家庭の関わり方</span>
+        <nav aria-label="パンくずリスト" class="text-[11px] font-medium text-slate-400 mb-5 flex items-center gap-1.5 breadcrumb-nav flex-wrap">
+            <a href="../../" class="hover:text-slate-600 transition-colors whitespace-nowrap">ホーム</a>
+            <span class="material-symbols-rounded text-[13px]" aria-hidden="true">chevron_right</span>
+            <a href="../" class="hover:text-slate-600 transition-colors whitespace-nowrap">PikaLab</a>
+            <span class="material-symbols-rounded text-[13px]" aria-hidden="true">chevron_right</span>
+            <a href="./" class="hover:text-slate-600 transition-colors whitespace-nowrap">読みもの広場</a>
+            <span class="material-symbols-rounded text-[13px]" aria-hidden="true">chevron_right</span>
+            <span class="breadcrumb-current whitespace-nowrap truncate max-w-[220px] md:max-w-none">算数が苦手な子への声かけはどうする？苦手意識を強めない家庭の関わり方</span>
         </nav>
 
         <!-- 2-Column Layout -->
@@ -71,19 +71,22 @@
 
                 <article class="bg-white rounded-[32px] p-6 md:p-10 shadow-[0_8px_30px_rgba(0,0,0,0.03)] border border-slate-100">
                     <!-- Article Header -->
-                    <header class="mb-10 text-center md:text-left">
-                        <div class="flex items-center justify-center md:justify-start gap-3 mb-5">
-                            <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-sky-50 text-sky-600 text-[11px] font-black tracking-wider">
-                                <span class="material-symbols-rounded text-[14px]">calculate</span>
-                                算数
+                    <header class="mb-9 pb-6 border-b border-slate-200/80 text-center md:text-left">
+                        <div class="flex flex-wrap items-center justify-center md:justify-start gap-3 mb-4">
+                            <span class="tag bg-indigo-light inline-flex items-center gap-1.5">
+                                <span class="material-symbols-rounded text-[14px]" aria-hidden="true">menu_book</span>
+                                <span>勉強・学習習慣</span>
+                            </span>
+                            <span class="text-xs font-bold text-slate-400 inline-flex items-center gap-1">
+                                <span class="material-symbols-rounded text-[14px]" aria-hidden="true">schedule</span> 読了 約5分
                             </span>
                         </div>
-                        <h1 class="font-pop text-2xl md:text-4xl font-black text-slate-800 leading-[1.5] mb-6">
-                            算数が苦手な子への声かけはどうする？<br class="hidden md:block">苦手意識を強めない家庭の関わり方
+                        <h1 class="article-title-balanced font-pop text-2xl md:text-3xl font-black text-slate-900 leading-[1.45] mb-4">
+                            算数が苦手な子への声かけはどうする？苦手意識を強めない家庭の関わり方
                         </h1>
-                        <div class="flex items-center justify-center md:justify-start gap-4 text-sm text-slate-500 font-medium">
+                        <div class="flex items-center justify-center md:justify-start gap-4 text-xs md:text-sm text-slate-500 font-medium">
                             <div class="flex items-center gap-1">
-                                <span class="material-symbols-rounded text-[16px]">edit_calendar</span>
+                                <span class="material-symbols-rounded text-[16px]" aria-hidden="true">edit_calendar</span>
                                 <span>公開 2026.03.12 / </span><time datetime="2026-08-02">更新 2026.08.02</time>
                             </div>
                         </div>
@@ -91,38 +94,38 @@
 
                     <!-- Article Body -->
                     <div class="article-body">
-                        <p>算数が苦手な子を見ると、保護者はつい焦ります。<br>
-                        早く分からせたい。<br>
-                        遅れを取り戻したい。<br>
-                        なんとか自信をつけさせたい。<br>
-                        その気持ちはとても自然です。<br>
-                        ただ、算数は焦って押すほど、<strong>苦手意識が深くなる</strong>ことがあります。</p>
+                        <p>算数が苦手な子を見ると、保護者はつい焦ります。</p>
+                        <p>早く分からせたい。</p>
+                        <p>遅れを取り戻したい。</p>
+                        <p>なんとか自信をつけさせたい。</p>
+                        <p>その気持ちはとても自然です。</p>
+                        <p>ただ、算数は焦って押すほど、<strong>苦手意識が深くなる</strong>ことがあります。</p>
 
-                        <p>実際、数学不安に関する研究では、算数や数学への不安と成績には安定した負の関連が示されています。<br>
-Zhang らのメタ分析では、84サンプル、8,680人を統合し、数学不安と数学成績の間に頑健な負の関連が確認されました。<br>
-                        しかもこの関連は、学年や課題の種類によって強さが変わるものの、学校期全体を通じて無視できないものです。<br>
-                        数学不安と成績が関係していることは分かりますが、この相関だけで「不安が成績を下げる」「成績が不安を生む」という因果の向きまでは決まりません。両方が影響し合う可能性を含めて見る必要があります。</p>
+                        <p>実際、数学不安に関する研究では、算数や数学への不安と成績には安定した負の関連が示されています。</p>
+                        <p>Zhang らのメタ分析では、84サンプル、8,680人を統合し、数学不安と数学成績の間に頑健な負の関連が確認されました。</p>
+                        <p>しかもこの関連は、学年や課題の種類によって強さが変わるものの、学校期全体を通じて無視できないものです。</p>
+                        <p>数学不安と成績が関係していることは分かりますが、この相関だけで「不安が成績を下げる」「成績が不安を生む」という因果の向きまでは決まりません。両方が影響し合う可能性を含めて見る必要があります。</p>
 
-                        <p>ここで大事なのは、算数が苦手な子を<strong>「能力が低い子」と早く決めつけない</strong>ことです。<br>
-                        不安が強いと、頭の中の<strong>ワーキングメモリが圧迫</strong>され、普段ならできることもやりにくくなります。<br>
-                        そのため、間違いの中には「理解不足」だけでなく<strong>「焦りで力が出ない」</strong>ものも混ざります。<br>
-                        家庭で全部を「分かっていないせい」と受け取ると、子どもはますます緊張しやすくなります。</p>
+                        <p>ここで大事なのは、算数が苦手な子を<strong>「能力が低い子」と早く決めつけない</strong>ことです。</p>
+                        <p>不安が強いと、頭の中の<strong>ワーキングメモリが圧迫</strong>され、普段ならできることもやりにくくなります。</p>
+                        <p>そのため、間違いの中には「理解不足」だけでなく<strong>「焦りで力が出ない」</strong>ものも混ざります。</p>
+                        <p>家庭で全部を「分かっていないせい」と受け取ると、子どもはますます緊張しやすくなります。</p>
 
-                        <p>また、Frontiers の学校年齢の子ども向け介入レビューでも、数学不安への介入はまだ決定打が一つあるわけではない一方、感情面への配慮や戦略指導を含む支援は有望だと整理されています。<br>
-                        つまり、ただ練習量を増やせばよい、というより、気持ちと学び方の両方を見る必要があるということです。</p>
+                        <p>また、Frontiers の学校年齢の子ども向け介入レビューでも、数学不安への介入はまだ決定打が一つあるわけではない一方、感情面への配慮や戦略指導を含む支援は有望だと整理されています。</p>
+                        <p>つまり、ただ練習量を増やせばよい、というより、気持ちと学び方の両方を見る必要があるということです。</p>
 
                         <h2>苦手意識を強めやすい声かけ</h2>
 
-                        <p>まず避けたいのは、家庭で算数だけを特別な恐怖の教科にしてしまう言い方です。<br>
-                        「なんでこれが分からないの」<br>
-                        「こんなの簡単でしょ」<br>
-                        「前もやったよね」<br>
-                        この手の言葉は、説明としては何も増えないのに、<strong>恥ずかしさだけを強めます</strong>。</p>
+                        <p>まず避けたいのは、家庭で算数だけを特別な恐怖の教科にしてしまう言い方です。</p>
+                        <p>「なんでこれが分からないの」</p>
+                        <p>「こんなの簡単でしょ」</p>
+                        <p>「前もやったよね」</p>
+                        <p>この手の言葉は、説明としては何も増えないのに、<strong>恥ずかしさだけを強めます</strong>。</p>
 
-                        <p>次に危ういのは、親自身の算数不安をそのまま渡してしまうことです。<br>
-                        「私も算数だめだったから」<br>
-                        「うちは理系じゃないからね」<br>
-                        こうした言葉は気休めに見えて、子どもには「算数が苦手なのは変えにくいこと」と届く場合があります。</p>
+                        <p>次に危ういのは、親自身の算数不安をそのまま渡してしまうことです。</p>
+                        <p>「私も算数だめだったから」</p>
+                        <p>「うちは理系じゃないからね」</p>
+                        <p>こうした言葉は気休めに見えて、子どもには「算数が苦手なのは変えにくいこと」と届く場合があります。</p>
 
                         <h2>家庭で持ちたい支え方</h2>
 
@@ -133,35 +136,35 @@ Zhang らのメタ分析では、84サンプル、8,680人を統合し、数学�
                             <li>一度に長くやらせず、短く切って終わりを作る</li>
                         </ol>
 
-                        <p>たとえば、計算ミスが多い時に、すぐ反復を増やす前に、桁の見落としなのか、問題文が読めていないのか、式の意味が曖昧なのかを見る。<br>
-                        ここが分かるだけで、家庭での支え方は大きく変わります。<br>
-                        算数が苦手な子ほど、「全部分からない」と見えやすいのですが、実際には<strong>つまずきの場所がもっと小さい</strong>ことがあります。</p>
+                        <p>たとえば、計算ミスが多い時に、すぐ反復を増やす前に、桁の見落としなのか、問題文が読めていないのか、式の意味が曖昧なのかを見る。</p>
+                        <p>ここが分かるだけで、家庭での支え方は大きく変わります。</p>
+                        <p>算数が苦手な子ほど、「全部分からない」と見えやすいのですが、実際には<strong>つまずきの場所がもっと小さい</strong>ことがあります。</p>
 
-                        <p>また、「できた問題」をきちんと残すことも大切です。<br>
-                        不安が強い子は、自分の失敗ばかり覚えやすいです。<br>
-                        だからこそ、「この考え方は合っていた」「ここまでは自力でできた」を見える形で伝える方が、次の一歩が作りやすいです。<br>
-                        これは甘やかしではなく、<strong>自己効力感を失わせないための支え</strong>です。</p>
+                        <p>また、「できた問題」をきちんと残すことも大切です。</p>
+                        <p>不安が強い子は、自分の失敗ばかり覚えやすいです。</p>
+                        <p>だからこそ、「この考え方は合っていた」「ここまでは自力でできた」を見える形で伝える方が、次の一歩が作りやすいです。</p>
+                        <p>これは甘やかしではなく、<strong>自己効力感を失わせないための支え</strong>です。</p>
 
-                        <p>もう一つ大切なのは、算数を<strong>「感情の教科でもある」</strong>と理解しておくことです。<br>
-                        国語や社会より、算数では「分からない」がその場ではっきり見えやすい。<br>
-                        だから恥ずかしさや焦りが起きやすく、子どもによっては強く記憶に残ります。<br>
-                        家庭で一回きつく言われただけで、次の問題を見るのが怖くなる子もいます。<br>
-                        内容だけでなく気持ちを整える必要があるのは、このためです。</p>
+                        <p>もう一つ大切なのは、算数を<strong>「感情の教科でもある」</strong>と理解しておくことです。</p>
+                        <p>国語や社会より、算数では「分からない」がその場ではっきり見えやすい。</p>
+                        <p>だから恥ずかしさや焦りが起きやすく、子どもによっては強く記憶に残ります。</p>
+                        <p>家庭で一回きつく言われただけで、次の問題を見るのが怖くなる子もいます。</p>
+                        <p>内容だけでなく気持ちを整える必要があるのは、このためです。</p>
 
-                        <p>練習のさせ方も、量より順番が大切です。<br>
-                        いきなり似た問題を10問やらせるより、<strong>まず1問を一緒に整理し、似た問題を2問だけやる</strong>。<br>
-                        そこから少しずつ増やす方が、苦手意識の強い子には入りやすいです。<br>
-                        「たくさんやれば慣れる」は半分正しく、半分危ない。<br>
-                        不安が高い時は、量がそのまま恐怖の反復になることもあります。</p>
+                        <p>練習のさせ方も、量より順番が大切です。</p>
+                        <p>いきなり似た問題を10問やらせるより、<strong>まず1問を一緒に整理し、似た問題を2問だけやる</strong>。</p>
+                        <p>そこから少しずつ増やす方が、苦手意識の強い子には入りやすいです。</p>
+                        <p>「たくさんやれば慣れる」は半分正しく、半分危ない。</p>
+                        <p>不安が高い時は、量がそのまま恐怖の反復になることもあります。</p>
 
-                        <p>PikaLab の「<a href="../fraction_lab/" class="text-sky-600 hover:text-sky-500 font-bold underline">分数・パーフェクトラボ</a>」のように、見て理解しやすい形から入るのが役立つのもこのためです。<br>
-                        算数が苦手な子には、最初から計算の速さを求めるより、まずイメージと意味がつながる経験が重要です。<br>
-                        分かった感じが出ると、手を動かす怖さが少し下がります。</p>
+                        <p>PikaLab の「<a href="../fraction_lab/" class="text-sky-600 hover:text-sky-500 font-bold underline">分数・パーフェクトラボ</a>」のように、見て理解しやすい形から入るのが役立つのもこのためです。</p>
+                        <p>算数が苦手な子には、最初から計算の速さを求めるより、まずイメージと意味がつながる経験が重要です。</p>
+                        <p>分かった感じが出ると、手を動かす怖さが少し下がります。</p>
 
-                        <p>算数が苦手な子への関わり方で大切なのは、正解を急ぎすぎないことです。<br>
-                        不安を減らし、つまずきを小さくし、できた部分を残す。<br>
-                        その積み重ねの方が、長い目ではずっと効きます。<br>
-                        算数嫌いを減らす第一歩は、難しい内容を教え込むことより、<strong>怖さを増やさない家庭の空気を作る</strong>ことかもしれません。</p>
+                        <p>算数が苦手な子への関わり方で大切なのは、正解を急ぎすぎないことです。</p>
+                        <p>不安を減らし、つまずきを小さくし、できた部分を残す。</p>
+                        <p>その積み重ねの方が、長い目ではずっと効きます。</p>
+                        <p>算数嫌いを減らす第一歩は、難しい内容を教え込むことより、<strong>怖さを増やさない家庭の空気を作る</strong>ことかもしれません。</p>
 
                         <!-- References -->
                         <!-- 関連記事 -->
@@ -175,11 +178,11 @@ Zhang らのメタ分析では、84サンプル、8,680人を統合し、数学�
                             </h3>
                             <div class="related-articles-grid">
                                 <a href="failure-resilience.html" class="related-card group">
-                                    <div class="related-card-cover bg-gradient-fuchsia">
-                                        <span class="material-symbols-rounded">favorite</span>
+                                    <div class="related-card-cover bg-gradient-fuchsia" aria-hidden="true">
+                                        <span class="material-symbols-rounded" aria-hidden="true">favorite</span>
                                     </div>
                                     <div class="related-card-body">
-                                        <span class="related-card-tag bg-fuchsia-light text-fuchsia-700">心の力</span>
+                                        <span class="related-card-tag bg-fuchsia-light">やる気・心の力</span>
                                         <h4 class="related-card-title">失敗に強い子は、どう育っていくのでしょうか</h4>
                                         <span class="related-card-link">
                                             記事を読む <span class="material-symbols-rounded text-sm" aria-hidden="true">arrow_forward</span>
@@ -187,11 +190,11 @@ Zhang らのメタ分析では、84サンプル、8,680人を統合し、数学�
                                     </div>
                                 </a>
                                 <a href="careless-mistakes-support.html" class="related-card group">
-                                    <div class="related-card-cover bg-gradient-indigo">
-                                        <span class="material-symbols-rounded">rule</span>
+                                    <div class="related-card-cover bg-gradient-indigo" aria-hidden="true">
+                                        <span class="material-symbols-rounded" aria-hidden="true">rule</span>
                                     </div>
                                     <div class="related-card-body">
-                                        <span class="related-card-tag bg-emerald-light text-emerald-700">学習習慣</span>
+                                        <span class="related-card-tag bg-indigo-light">勉強・学習習慣</span>
                                         <h4 class="related-card-title">ケアレスミスが多いのは、落ち着きがないからですか？</h4>
                                         <span class="related-card-link">
                                             記事を読む <span class="material-symbols-rounded text-sm" aria-hidden="true">arrow_forward</span>
@@ -215,12 +218,12 @@ Zhang らのメタ分析では、84サンプル、8,680人を統合し、数学�
             </main>
 
             <!-- Sidebar (Right) -->
-            <aside class="lg:w-[32%] w-full space-y-8 mt-8 lg:mt-0">
+            <aside class="lg:w-[32%] w-full space-y-6 mt-8 lg:mt-0">
                 <!-- プロフィールウィジェット -->
-                <div class="bg-white rounded-[24px] p-6 shadow-sm border border-slate-100 text-center">
-                    <h3 class="font-pop font-black text-slate-800 mb-4 flex items-center justify-center gap-2">この記事を書いている人</h3>
-                    <div class="w-20 h-20 mx-auto bg-slate-100 border border-slate-200 rounded-full mb-4 flex items-center justify-center text-slate-400 shadow-inner">
-                        <span class="material-symbols-rounded text-3xl">face</span>
+                <div class="sidebar-widget text-center">
+                    <h3 class="widget-title justify-center">この記事を書いている人</h3>
+                    <div class="w-20 h-20 mx-auto bg-slate-100 border border-slate-200 rounded-full mb-4 flex items-center justify-center text-slate-400 shadow-inner" aria-hidden="true">
+                        <span class="material-symbols-rounded text-3xl" aria-hidden="true">face</span>
                     </div>
                     <strong class="block text-slate-800 font-black text-base mb-2">かたかた</strong>
                     <p class="text-xs text-slate-600 font-medium leading-[1.8]">
@@ -229,25 +232,25 @@ Zhang らのメタ分析では、84サンプル、8,680人を統合し、数学�
                 </div>
 
                 <!-- ツールウィジェット -->
-                <div class="bg-white rounded-[24px] p-6 shadow-sm border border-slate-100">
-                    <h3 class="font-pop font-black text-slate-800 mb-4 flex items-center gap-2">一緒に使えるツール</h3>
-                    <div class="space-y-3">
-                        <a href="../book_report/" class="flex items-center gap-3 p-3 rounded-2xl hover:bg-slate-50 transition-colors group">
-                            <div class="w-10 h-10 rounded-full bg-emerald-50 text-emerald-600 flex items-center justify-center group-hover:scale-110 transition-transform">
-                                <span class="material-symbols-rounded text-[18px]">edit_note</span>
+                <div class="sidebar-widget">
+                    <h3 class="widget-title">一緒に使えるツール</h3>
+                    <div class="space-y-2.5">
+                        <a href="../book_report/" class="sidebar-tool-link group">
+                            <div class="sidebar-tool-icon bg-emerald-50 text-emerald-600 group-hover:scale-110 transition-transform" aria-hidden="true">
+                                <span class="material-symbols-rounded text-[20px]" aria-hidden="true">edit_note</span>
                             </div>
                             <div class="text-left">
                                 <span class="block text-[10px] font-black text-slate-400 tracking-wider">書く前の補助</span>
-                                <strong class="text-slate-700 font-bold text-sm group-hover:text-emerald-600 transition-colors">読書感想文メーカー</strong>
+                                <strong class="text-slate-700 font-black text-sm group-hover:text-emerald-600 transition-colors">読書感想文メーカー</strong>
                             </div>
                         </a>
-                        <a href="../fraction_lab/" class="flex items-center gap-3 p-3 rounded-2xl hover:bg-slate-50 transition-colors group">
-                            <div class="w-10 h-10 rounded-full bg-orange-50 text-orange-600 flex items-center justify-center group-hover:scale-110 transition-transform">
-                                <span class="material-symbols-rounded text-[18px]">donut_large</span>
+                        <a href="../fraction_lab/" class="sidebar-tool-link group">
+                            <div class="sidebar-tool-icon bg-orange-50 text-orange-600 group-hover:scale-110 transition-transform" aria-hidden="true">
+                                <span class="material-symbols-rounded text-[20px]" aria-hidden="true">donut_large</span>
                             </div>
                             <div class="text-left">
                                 <span class="block text-[10px] font-black text-slate-400 tracking-wider">図で分数を確かめる</span>
-                                <strong class="text-slate-700 font-bold text-sm group-hover:text-orange-600 transition-colors">分数・パーフェクトラボ</strong>
+                                <strong class="text-slate-700 font-black text-sm group-hover:text-orange-600 transition-colors">分数・パーフェクトラボ</strong>
                             </div>
                         </a>
                     </div>
