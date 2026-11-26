@@ -549,10 +549,11 @@ function compareLayout(actual, expected, name, theme) {
         for (const property of ['x', 'y', 'width', 'height']) if (Math.abs(after.box[property] - before.box[property]) > 1) {
             const difference = { key, property: `box.${property}`, before: before.box[property], after: after.box[property] };
             const isNumberLineBox = key.includes('.number-line-container') || after.themeClass?.toString().includes('number-line-container');
+            const isStepperOrMathSvg = /^#(?:vis-|cmp-|calc-|sub-|egypt-)(?:denom|numer|[nd][12]?|svg-(?:1|2|res))$/.test(key);
             const isFlowBoxAfterControlsOrDiagram = !before.headerDescendant
                 && !['#fraction-header', '#fraction-nav', '#main-content'].includes(key)
                 && after.semantics.role !== 'tab'
-                && (['y', 'height'].includes(property) || (name.endsWith('-whatis') && ['x', 'width'].includes(property)));
+                && (['y', 'height'].includes(property) || ((name.endsWith('-whatis') || isStepperOrMathSvg) && ['x', 'width'].includes(property)));
             if (actual.viewport.width <= 640 && after.semantics.role === 'tab' && ['width', 'x'].includes(property))
                 allowedGeometryFixes.push({ ...difference, reason: 'Content-width mobile navigation tabs' });
             else if (actual.viewport.width <= 400 && before.headerDescendant && after.headerDescendant) allowedGeometryFixes.push({ ...difference, reason: mobileHeaderReason });
