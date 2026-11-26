@@ -327,6 +327,24 @@
     };
 
     let currentCharacter = 'momo';
+    let lastMutedHintTime = 0;
+
+    function maybeShowSoundMutedHint(keepCurrentBubble = false) {
+        if (soundEnabled) return;
+        const btnSound = document.getElementById('btn-sound');
+        if (btnSound) {
+            btnSound.classList.remove('sound-hint-pulse');
+            void btnSound.offsetWidth;
+            btnSound.classList.add('sound-hint-pulse');
+        }
+        const now = Date.now();
+        if (keepCurrentBubble || now - lastMutedHintTime < 8000) return;
+        lastMutedHintTime = now;
+        const bubbleP = document.getElementById('navigator-bubble');
+        if (bubbleP) {
+            bubbleP.textContent = 'いま音はオフだよ。右上の「音をオン（長押し）」で音が出るよ！';
+        }
+    }
 
     function updateNavigator(charKey, text) {
         currentCharacter = charKey;
@@ -450,7 +468,10 @@
 
     // どうぶつなきごえシンセ
     function playAnimalSynth(animal) {
-        if (!soundEnabled) return;
+        if (!soundEnabled) {
+            maybeShowSoundMutedHint();
+            return;
+        }
         initAudio();
         if (!audioCtx) return;
         const now = audioCtx.currentTime;
@@ -679,6 +700,10 @@
         // おうちボタンと案内エリアの動的表示制御
         const btnBackHome = document.getElementById('btn-back-home');
         const navigatorArea = document.getElementById('navigator-area');
+        document.body?.classList?.toggle('in-game', tabId !== 'home');
+        if (!silent && typeof window.scrollTo === 'function') {
+            window.scrollTo(0, 0);
+        }
 
         if (tabId === 'home') {
             if (btnBackHome) btnBackHome.classList.add('hidden');
@@ -900,7 +925,11 @@
             const card = document.createElement('button');
             card.className = "btn-puni shadow-orange-100 bg-amber-50/50 hover:bg-amber-100/50 p-2 rounded-2xl border-2 border-orange-100 flex flex-col items-center justify-between aspect-square relative";
             card.onclick = () => {
-                updateNavigator('momo', `${item.char}！ ${item.word} の、 ${item.char}！`);
+                const text = soundEnabled
+                    ? `${item.char}！ ${item.word} の、 ${item.char}！`
+                    : `${item.char}！ ${item.word} の、 ${item.char}！（音オフ中：右上で音オン）`;
+                updateNavigator('momo', text);
+                if (!soundEnabled) maybeShowSoundMutedHint(true);
             };
 
             const charSpan = document.createElement('span');
@@ -1017,27 +1046,42 @@
 
     // ④ 筆圧エミュレーション用移動スピードトラッキング
     let lastDrawTime = 0;
+    let lastCanvasWidth = 0;
+    let lastCanvasHeight = 0;
 
-    function resizeCanvas() {
+    function resizeCanvas(fromWindowResize = false) {
         if (!canvas || !canvas.parentElement) return;
         const parent = canvas.parentElement;
         const rect = parent.getBoundingClientRect();
-        
+        if (rect.width <= 0 || rect.height <= 0) return;
+        const targetW = Math.round(rect.width);
+        const targetH = Math.round(rect.height);
+        // スマホのアドレスバー出入りによる高さのみの微変動で絵が伸縮・再描画されないようにする
+        if (fromWindowResize && lastCanvasWidth > 0 && Math.abs(targetW - lastCanvasWidth) <= 2 && Math.abs(targetH - lastCanvasHeight) <= 120) {
+            return;
+        }
+        if (lastCanvasWidth === targetW && lastCanvasHeight === targetH && canvas.width === targetW && canvas.height === targetH) {
+            return;
+        }
+
         // 1. 現在のキャンバス描画内容をメモリ上の一時キャンバス（バッファ）に退避
         const tempCanvas = document.createElement('canvas');
-        tempCanvas.width = canvas.width;
-        tempCanvas.height = canvas.height;
-        const tempCtx = tempCanvas.getContext('2d');
-        
-        // 旧キャンバスからコピー
-        tempCtx.drawImage(canvas, 0, 0);
+        const hasPrev = canvas.width > 0 && canvas.height > 0;
+        if (hasPrev) {
+            tempCanvas.width = canvas.width;
+            tempCanvas.height = canvas.height;
+            const tempCtx = tempCanvas.getContext('2d');
+            if (tempCtx) tempCtx.drawImage(canvas, 0, 0);
+        }
 
         // 2. キャンバスの大きさを親コンテナサイズに再フィッティング
-        canvas.width = rect.width;
-        canvas.height = rect.height;
+        canvas.width = targetW;
+        canvas.height = targetH;
+        lastCanvasWidth = targetW;
+        lastCanvasHeight = targetH;
 
         // 3. 画質クリア処理をせずに、退避した内容を書き戻し（画面が回転しても描いた絵が絶対消えない）
-        if (ctx) {
+        if (ctx && hasPrev) {
             ctx.save();
             ctx.drawImage(tempCanvas, 0, 0, tempCanvas.width, tempCanvas.height, 0, 0, canvas.width, canvas.height);
             ctx.restore();
@@ -1053,7 +1097,7 @@
 
     window.addEventListener('resize', () => {
         if (currentTab === 'draw') {
-            resizeCanvas();
+            resizeCanvas(true);
         }
     });
 
@@ -1497,7 +1541,10 @@
     let currentOtoateTargetNote = 0;
 
     function playMokkinNote(freq) {
-        if (!soundEnabled) return;
+        if (!soundEnabled) {
+            maybeShowSoundMutedHint();
+            return;
+        }
         initAudio();
         if (!audioCtx) return;
         const now = audioCtx.currentTime;

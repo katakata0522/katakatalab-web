@@ -991,6 +991,7 @@ function createBookReportApp() {
                     this.navigationTimer = setTimeout(() => {
                         this.navigationTimer = null;
                         if (this.currentStep !== step + 1 || !next.classList.contains('active')) return;
+                        if (typeof window.matchMedia === 'function' && window.matchMedia('(max-width: 767px)').matches) return;
                         const firstInput = next.querySelector('input:not([type=hidden]), textarea');
                         if (firstInput) {
                             firstInput.focus();

@@ -221,6 +221,8 @@ const RhythmLab = (function () {
         modal: null,
         playBtn: null,
         playIcon: null,
+        mobilePlayFab: null,
+        mobilePlayIcon: null,
         tempoDisplay: null,
         tempoSlider: null,
         volumeSlider: null,
@@ -261,6 +263,8 @@ const RhythmLab = (function () {
         domCache.modal = document.getElementById('help-modal');
         domCache.playBtn = document.getElementById('play-btn');
         domCache.playIcon = document.getElementById('play-icon');
+        domCache.mobilePlayFab = document.getElementById('mobile-play-fab');
+        domCache.mobilePlayIcon = document.getElementById('mobile-play-icon');
         domCache.tempoDisplay = document.getElementById('tempo-input');
         domCache.tempoSlider = document.getElementById('tempo-slider');
         domCache.volumeSlider = document.getElementById('volume-slider');
@@ -861,6 +865,14 @@ const RhythmLab = (function () {
         }
         if (domCache.playBtn) {
             domCache.playBtn.className = isPlaying ? BUTTON_CLASSES.playing : BUTTON_CLASSES.stopped;
+        }
+        if (domCache.mobilePlayIcon) {
+            domCache.mobilePlayIcon.textContent = isPlaying ? 'stop' : 'play_arrow';
+            domCache.mobilePlayIcon.className = isPlaying ? 'material-symbols-rounded text-3xl' : 'material-symbols-rounded text-3xl ml-0.5';
+        }
+        if (domCache.mobilePlayFab) {
+            domCache.mobilePlayFab.classList.toggle('is-playing', isPlaying);
+            domCache.mobilePlayFab.setAttribute('aria-pressed', String(isPlaying));
         }
     }
 
@@ -1726,6 +1738,7 @@ const RhythmLab = (function () {
     function setupEventListeners() {
         // 再生ボタン
         domCache.playBtn?.addEventListener('click', togglePlay);
+        domCache.mobilePlayFab?.addEventListener('click', togglePlay);
 
         // テンポスライダー
         domCache.tempoSlider?.addEventListener('input', (e) => {

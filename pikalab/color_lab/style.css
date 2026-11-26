@@ -79,8 +79,8 @@ input[type=range] {
     background: transparent;
     min-height: 44px;
     cursor: pointer;
-    touch-action: manipulation;
-    /* Improve touch responsiveness */
+    /* 横方向ドラッグでスライダー操作を優先し、縦スクロールを妨げない */
+    touch-action: pan-y;
 }
 
 input[type=range]::-webkit-slider-runnable-track {
@@ -1052,4 +1052,289 @@ header .text-yellow-500 {
         justify-content: center;
     }
 }
+
+/* --- ビルド済みCSSに不足しているユーティリティ補完＆モバイル最適化 --- */
+body {
+    min-height: 100dvh;
+}
+
+.grid-cols-7 {
+    grid-template-columns: repeat(7, minmax(0, 1fr));
+}
+
+.max-h-60 {
+    max-height: 15rem;
+}
+
+.max-w-sm {
+    max-width: 24rem;
+}
+
+.max-w-lg {
+    max-width: 32rem;
+}
+
+.min-h-\[6rem\] {
+    min-height: 6rem;
+}
+
+.h-auto {
+    height: auto;
+}
+
+.max-h-\[90vh\] {
+    max-height: 90vh;
+    max-height: 90dvh;
+}
+
+#blend-colors-btn {
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+
+#dressup-modal > div,
+#calendar-modal > div,
+#trophy-modal > div {
+    max-height: 90vh;
+    max-height: 90dvh;
+    overflow-y: auto;
+}
+
+#close-dressup-btn,
+#close-calendar-btn,
+#close-trophy-btn,
+#parents-modal [data-action="parents-modal-close"],
+#exit-game-btn {
+    width: 44px;
+    height: 44px;
+    min-width: 44px;
+    min-height: 44px;
+    flex-shrink: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+#close-calendar-btn-bottom,
+#close-trophy-btn-bottom {
+    min-height: 44px;
+}
+
+#edit-name-btn {
+    min-width: 36px;
+    min-height: 36px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+@media (max-width: 767px) {
+    #view-lab,
+    #view-game {
+        padding: 0.75rem !important;
+        padding-bottom: calc(1.5rem + env(safe-area-inset-bottom)) !important;
+        gap: 0.75rem !important;
+    }
+
+    /* つくるモード：キャラプレビューを最上段、すぐ下にスライダーを配置 */
+    #view-lab .lab-col-controls,
+    #view-lab .lab-col-stage {
+        display: contents;
+    }
+
+    #view-lab .lab-stage-card {
+        order: 1;
+        flex: 0 0 auto !important;
+        width: 100%;
+        height: auto !important;
+        min-height: 0 !important;
+        padding: 0.875rem !important;
+        display: flex !important;
+        flex-direction: row !important;
+        flex-wrap: wrap !important;
+        align-items: center !important;
+        justify-content: space-between !important;
+        gap: 0.5rem;
+    }
+
+    #view-lab .lab-dressup-trigger {
+        position: static !important;
+        order: 1;
+        flex-shrink: 0;
+    }
+
+    #view-lab .lab-speech-bubble {
+        position: static !important;
+        order: 2;
+        flex: 1 1 auto;
+        min-width: 0;
+        max-width: 100%;
+        padding: 0.375rem 0.625rem !important;
+        margin-left: auto;
+        transform: rotate(1deg) !important;
+        animation: none !important;
+    }
+
+    #view-lab .lab-speech-bubble p {
+        font-size: 0.78rem !important;
+        line-height: 1.3;
+        word-break: keep-all;
+    }
+
+    #view-lab #blob-character {
+        order: 3;
+        flex: 0 0 auto;
+        width: 148px !important;
+        height: 148px !important;
+        margin: 1.5rem auto 0.5rem !important;
+    }
+
+    #view-lab .lab-color-code-bar {
+        position: static !important;
+        order: 4;
+        flex: 0 0 100%;
+        width: 100%;
+    }
+
+    #view-lab .lab-color-code-bar > div {
+        padding: 0.625rem 0.875rem !important;
+        gap: 0.5rem !important;
+    }
+
+    #view-lab .lab-col-controls > div:first-child {
+        order: 2;
+        flex: 0 0 auto !important;
+        width: 100%;
+        padding: 1rem !important;
+    }
+
+    #view-lab .lab-col-controls > div:first-child h2 {
+        font-size: 1rem !important;
+    }
+
+    #view-lab .lab-col-controls > div:first-child .mb-4 {
+        margin-bottom: 0.5rem !important;
+    }
+
+    #view-lab .lab-palette-card {
+        order: 3;
+        flex: 0 0 auto !important;
+        width: 100%;
+    }
+
+    #view-lab .lab-col-controls > div:last-child {
+        order: 4;
+        flex: 0 0 auto !important;
+        width: 100%;
+    }
+
+    /* あそぶモード：おてほん・あなたのいろを横並びにし、直下にスライダーを収める */
+    #game-main > div:first-child {
+        padding: 0.5rem 0.75rem !important;
+        margin-bottom: 0.625rem !important;
+        gap: 0.5rem;
+    }
+
+    #game-main .game-stage-row {
+        display: grid !important;
+        grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+        align-items: stretch !important;
+        gap: 0.45rem !important;
+        flex: 0 0 auto !important;
+    }
+
+    #game-target-shine-wrapper {
+        grid-column: 1;
+        grid-row: 1;
+        order: initial !important;
+        width: 100% !important;
+        padding: 0.625rem 0.5rem !important;
+        border-width: 2px !important;
+        border-radius: 1.25rem !important;
+    }
+
+    #game-vs-label {
+        grid-column: 2;
+        grid-row: 1;
+        order: initial !important;
+        font-size: 1rem !important;
+        align-self: center;
+    }
+
+    #game-player-card {
+        display: contents !important;
+    }
+
+    #game-player-card .game-player-preview {
+        grid-column: 3;
+        grid-row: 1;
+        background-color: #ffffff;
+        border: 2px solid #bfdbfe;
+        border-radius: 1.25rem;
+        padding: 0.625rem 0.5rem;
+        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.08);
+    }
+
+    #game-target,
+    #game-player {
+        width: 78px !important;
+        height: 78px !important;
+        margin-bottom: 0.375rem !important;
+    }
+
+    .game-rgb-chip {
+        min-width: 0 !important;
+        width: 100%;
+        font-size: 0.65rem !important;
+        padding: 0.2rem 0.35rem !important;
+        margin-bottom: 0.375rem !important;
+        letter-spacing: 0.01em !important;
+    }
+
+    #game-player-rgb {
+        margin-bottom: 0 !important;
+    }
+
+    #game-target-shine-wrapper > div:last-child {
+        padding: 0.35rem 0.4rem !important;
+        font-size: 0.72rem !important;
+        line-height: 1.25;
+    }
+
+    #game-player-card .game-sliders-box {
+        grid-column: 1 / -1;
+        grid-row: 2;
+        background-color: #ffffff;
+        border: 2px solid #e2e8f0;
+        border-radius: 1.25rem;
+        padding: 0.5rem 0.875rem;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.06);
+    }
+
+    #game-player-card .game-sliders-box.space-y-4 > :not([hidden]) ~ :not([hidden]) {
+        margin-top: 0.125rem !important;
+    }
+
+    #game-player-card .game-sliders-box input[type=range] {
+        min-height: 40px;
+    }
+
+    #game-main .game-action-area {
+        margin-top: 0.5rem !important;
+        min-height: 6.5rem;
+    }
+
+    #game-main .game-action-area:has(#result-modal:not(.hidden)) #check-btn {
+        display: none;
+    }
+
+    #result-modal:not(.hidden) {
+        position: relative !important;
+        inset: auto !important;
+        width: 100%;
+        padding: 0.75rem 1rem;
+        border-radius: 1.25rem;
+    }
+}
+
 

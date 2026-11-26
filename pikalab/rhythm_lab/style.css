@@ -97,8 +97,8 @@ body {
 .preset-button[data-selected="true"]::after {
     content: "選択中";
     position: absolute;
-    right: 8px;
-    top: -8px;
+    right: 6px;
+    top: -6px;
     padding: 2px 6px;
     border-radius: 9999px;
     font-size: 10px;
@@ -107,6 +107,7 @@ body {
     color: white;
     background: linear-gradient(135deg, #ec4899, #db2777);
     box-shadow: 0 4px 10px rgba(219, 39, 119, 0.35);
+    z-index: 1;
 }
 
 /* ========================================
@@ -234,6 +235,7 @@ button[data-type][data-index]:focus-visible {
 #tempo-slider,
 #volume-slider {
     min-height: 44px;
+    touch-action: pan-y;
 }
 
 #tempo-input,
@@ -387,9 +389,18 @@ header .material-symbols-rounded.hidden {
 
 @media (max-width: 767px), (max-width: 900px) and (max-height: 480px) {
     header.rhythm-header { position: static; }
-    main .rhythm-pad { padding-inline: 1rem; }
+    main { min-width: 0; }
+    main .rhythm-pad { padding-inline: 1rem; max-width: 100%; min-width: 0; }
     .rhythm-pad .rhythm-sequence { min-width: max-content; }
-    .rhythm-sequence [id^="instrument-"] { flex: 0 0 5rem; }
+    .rhythm-sequence [id^="instrument-"] {
+        flex: 0 0 5rem;
+        position: sticky;
+        left: 0;
+        z-index: 2;
+        background-color: rgba(30, 41, 59, 0.94);
+        border-radius: 0.5rem;
+        backdrop-filter: blur(4px);
+    }
     /* 楽器行の枠線・余白・楽器名・列間隔と、拍のランプの開始位置を揃える。 */
     .rhythm-sequence #step-indicators { padding-inline-start: calc(1px + 0.5rem + 5rem + 0.75rem); }
 }
@@ -436,3 +447,110 @@ header .material-symbols-rounded.hidden {
 
 .rhythm-clear-hint { white-space: nowrap; }
 .rhythm-clear-hint .material-symbols-rounded { vertical-align: middle; }
+
+/* タップ領域とモバイル再生FAB */
+#help-close-btn,
+#share-close-btn,
+#parents-modal [data-action="parents-modal-close"],
+header [data-action="parents-modal-open"] {
+    min-width: 44px;
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.mobile-play-fab {
+    display: none;
+}
+
+@media (max-width: 767px) {
+    .mobile-play-fab {
+        position: fixed;
+        right: 1rem;
+        bottom: calc(1rem + env(safe-area-inset-bottom));
+        width: 52px;
+        height: 52px;
+        z-index: 30;
+        display: flex;
+        box-shadow: 0 6px 16px rgba(190, 24, 93, 0.35);
+    }
+
+    .mobile-play-fab.is-playing {
+        background-color: #334155;
+        box-shadow: 0 6px 16px rgba(15, 23, 42, 0.45);
+    }
+}
+
+/* ダークモード時のモーダル背景とQR・プリセット文字コントラストを補正 */
+#help-modal {
+    background-color: #ffffff;
+    color: #1e293b;
+}
+
+#help-modal::backdrop,
+#parents-modal::backdrop {
+    background: rgba(15, 23, 42, 0.72);
+    backdrop-filter: blur(4px);
+}
+
+html.dark #preset-rock {
+    color: #93c5fd !important;
+}
+
+html.dark #preset-hiphop {
+    color: #fdba74 !important;
+}
+
+html.dark #preset-latin {
+    color: #86efac !important;
+}
+
+html.dark #help-modal,
+html.dark #help-modal > div:last-child,
+html.dark #share-content,
+html.dark #parents-modal,
+html.dark #parents-modal > div {
+    background-color: #1e293b !important;
+    color: #f1f5f9 !important;
+    opacity: 1;
+}
+
+html.dark #help-modal,
+html.dark #share-content,
+html.dark #parents-modal {
+    border: 1px solid #334155;
+}
+
+html.dark #help-modal .text-slate-800,
+html.dark #parents-modal h2,
+html.dark #parents-modal h3,
+html.dark #parents-modal h4,
+html.dark #parents-modal strong {
+    color: #f8fafc;
+}
+
+html.dark #help-modal .text-slate-600,
+html.dark #parents-modal p,
+html.dark #parents-modal li {
+    color: #cbd5e1;
+}
+
+html.dark #help-modal .bg-slate-50,
+html.dark #parents-modal .bg-gradient-to-r,
+html.dark #parents-modal .bg-slate-50 {
+    background: #0f172a;
+    border-color: #334155;
+}
+
+html.dark #share-qrcode {
+    background-color: #ffffff;
+    padding: 0.5rem;
+    border-radius: 0.75rem;
+}
+
+html.dark #help-close-btn:hover,
+html.dark #share-close-btn:hover {
+    background-color: rgba(255, 255, 255, 0.25);
+}
+

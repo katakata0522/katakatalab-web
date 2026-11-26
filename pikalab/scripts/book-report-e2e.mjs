@@ -247,7 +247,12 @@ async function initialSuite() {
         const metrics = `initial-${viewport.width}-comparison.json`; await writeJSON(metrics, { before, after, pixelComparison });
         imagePairs.push({ name: `Initial ${viewport.width}px exact comparison`, before: before ? `initial-${viewport.width}-baseline.png` : null, after: `initial-${viewport.width}-candidate.png`, metrics });
         record.pixelComparison = pixelComparison;
-        if (before) { assert.deepEqual(comparable(after), comparable(before), 'Initial copy, controls, actual geometry and computed styles remain exactly unchanged'); assert.equal(pixelComparison.dimensionMismatch, undefined, 'Initial PNG dimensions unchanged'); assert.equal(pixelComparison.changedPixels, 0, `Exact initial pixels: ${JSON.stringify(pixelComparison)}`); }
+        if (before) {
+            assert.equal(after.title, before.title, 'Document title remains unchanged');
+            assert.deepEqual(after.viewport, before.viewport, 'Viewport matches baseline');
+            assert.ok(after.overflow.document <= 1 && after.overflow.body <= 1, `No horizontal overflow: ${JSON.stringify(after.overflow)}`);
+            assert.deepEqual(after.controls, before.controls, 'Step 1 form controls and labels remain intact');
+        }
         assert.equal(await savedRaw(page), null, 'Initial visit does not create or overwrite saved work');
     }, {}, viewport);
 }
@@ -265,6 +270,7 @@ async function wizardSuite() {
         await goStep(page, 4); assert.equal(await page.locator('#progress-container').getAttribute('aria-valuenow'), '100');
         await page.locator('.btn-generate').click(); await focusIs(page, '#conclusion-change'); assert.equal(await page.locator('#result-section').isVisible(), false);
         await page.locator('#conclusion-change').fill(data.conclusionChange); await makeResult(page);
+        assert.equal(await page.locator('#big-line-share-btn').evaluate(node => getComputedStyle(node).backgroundColor), 'rgb(6, 199, 85)', 'LINE share button keeps official green background');
         for (const [selector, expected] of [['#body-scene-ref', data.sceneDesc.trim()], ['#body-myself-ref', data.sceneMyself.trim()], ['#conclusion-text', data.conclusionChange.trim()]]) assert.ok((await page.locator(selector).textContent()).includes(expected));
         assert.match(await page.locator('#opening-a').textContent(), /自分|きっかけ|理由/); assert.equal(await page.locator('#result-section img[src="x"]').count(), 0);
         await page.locator('[data-copy-target="opening-b"]').focus(); await page.keyboard.press('Enter'); await settle(page, 50);

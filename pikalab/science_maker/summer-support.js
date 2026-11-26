@@ -344,7 +344,7 @@
         if (!section || document.getElementById('plan-result')) return;
 
         section.innerHTML = `
-            <p class="text-center text-xs font-bold text-gray-400 mb-6 bg-gray-100 inline-block px-4 py-1 rounded-full mx-auto block w-max">
+            <p class="text-center text-xs font-bold text-gray-400 mb-6 bg-gray-100 inline-block px-4 py-1 rounded-full mx-auto block max-w-full w-fit">
                 ↓ ここから下は研究が終わってから書こう ↓
             </p>
 
