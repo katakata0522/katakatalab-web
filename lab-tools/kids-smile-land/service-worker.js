@@ -1,11 +1,11 @@
 const CACHE_PREFIX = 'smile-land-v';
-const CACHE_NAME = 'smile-land-v5-20261119';
+const CACHE_NAME = 'smile-land-v6-20261126';
 const ASSETS = [
   './',
   './index.html',
-  './style.css?v=20261119-review',
+  './style.css?v=20261126-mobile',
   './tailwind-built.css',
-  './app.js?v=20261119-review',
+  './app.js?v=20261126-mobile',
   './manifest.json',
   './kiwimaru-400.woff2',
   './kiwimaru-500.woff2',
