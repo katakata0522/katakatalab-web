@@ -110,6 +110,21 @@ test('複数ラボの変更を合成し、全画面guard対象のラボも認識
     assert.equal(scope.full, false);
 });
 
+test('画面検証は個別ラボだけのPRで絞り、共通・PWA・main・手動では全画面を選ぶ', () => {
+    const files = ['pikalab/scripts/speed-reader-e2e.mjs', 'pikalab/science_maker/index.html'];
+    assert.equal(classifyChanges(files).visual_directories, 'science_maker,speed_reader');
+    for (const file of ['pikalab/style.css', 'pikalab/vite.config.js', 'pikalab/public/focus_studio/sw-hardened.js',
+        'pikalab/speed_reader/manifest.webmanifest', 'pikalab/focus_studio/router.js']) {
+        assert.equal(classifyChanges([...files, file]).visual_directories, '', file);
+    }
+    for (const options of [{ eventName: 'push' }, { eventName: 'workflow_dispatch' }, { preserveVisual: true }]) {
+        assert.equal(classifyChanges(files, options).visual_directories, '');
+    }
+    const workflow = readWorkflow();
+    assert.match(workflow, /visual_directories: \$\{\{ steps\.scope\.outputs\.visual_directories \}\}/);
+    assert.match(workflow, /VISUAL_GUARD_DIRECTORIES: \$\{\{ needs\.scope\.outputs\.visual_directories \}\}/);
+});
+
 test('専用E2Eだけの修正も対象ラボの全検証を選択する', () => {
     for (const [file, key] of Object.entries(LAB_E2E_FILES)) {
         assert.ok(Object.hasOwn(LABS, key), file);
