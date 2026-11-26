@@ -133,6 +133,22 @@ test('PRは一つの入口から同じコミットの検証を呼び、全結果
     assert.match(finalJob, /run: node \.github\/scripts\/public-pr-gate\.cjs verify/);
 });
 
+test('専用入力だけを限定し、直前のRoot成功を完全なSHAで確認する', () => {
+    const { rootBrowserScope, parentRootSucceeded } = require('./public-pr-gate.cjs');
+    assert.equal(rootBrowserScope(['index.html']), 'home');
+    assert.equal(rootBrowserScope(['qrcode/app.js']), 'qrcode');
+    assert.equal(rootBrowserScope(['index.html', 'style.css']), 'all');
+    assert.equal(rootBrowserScope([]), 'all');
+    const sha = 'a'.repeat(40), repo = 'katakata0522/katakatalab-web';
+    const parent = { head_sha: sha, head_branch: 'main', event: 'push', head_repository: { full_name: repo },
+        path: '.github/workflows/root-quality.yml', status: 'completed', conclusion: 'success' };
+    assert.ok(parentRootSucceeded({ workflow_runs: [parent] }, sha, repo));
+    for (const change of [{ head_sha: 'b'.repeat(40) }, { conclusion: 'failure' }, { status: 'in_progress' },
+        { event: 'pull_request' }, { head_repository: { full_name: 'other/web' } }]) {
+        assert.ok(!parentRootSucceeded({ workflow_runs: [{ ...parent, ...change }] }, sha, repo));
+    }
+});
+
 test('mainの独立した検証とPikaLab全ラボの集約を維持する', () => {
     for (const name of ['root-quality', 'pikalab-quality', 'source-boundary', 'dependency-audit']) {
         assert.match(workflow(name), /push:\n\s+branches: \[main\]/);
@@ -149,6 +165,7 @@ test('mainの独立した検証とPikaLab全ラボの集約を維持する', () 
     assert.match(validate, /needs\.scope\.result == 'success'/);
     const completion = pika.split('\n  completion:\n')[1];
     assert.match(completion, /needs: \[relevance, scope, validate, space-browser, focus-browser, paper-browser, quest-browser, book-browser\]/);
-    assert.match(completion, /if: \$\{\{ always\(\) && needs\.relevance\.result == 'success' && needs\.relevance\.outputs\.pikalab == 'true' \}\}/);
+    assert.match(completion, /always\(\).*github\.event_name != 'push'.*needs\.relevance\.result == 'success'.*needs\.relevance\.outputs\.pikalab == 'true'/);
+    assert.match(relevance, /if: github\.event_name == 'push'/);
     assert.match(completion, /run: node \.github\/scripts\/public-pr-gate\.cjs pikalab/);
 });

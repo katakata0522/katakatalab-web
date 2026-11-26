@@ -16,6 +16,7 @@ const ROOT_ONLY_GITHUB_FILES = new Set([
 const PIKALAB_ONLY_GITHUB_FILES = new Set([
     '.github/workflows/pikalab-quality.yml',
     '.github/scripts/pikalab-ci-scope.cjs',
+    '.github/scripts/article-copy-scope.py',
     '.github/scripts/pikalab-ci-scope.test.cjs',
     '.github/scripts/pikalab-e2e-inputs.cjs',
     '.github/scripts/validate_pikalab.py',
@@ -69,6 +70,14 @@ function readRevisionFile(revision, path) {
     return execFileSync('git', ['show', `${revision}:${path}`], { encoding: 'utf8', maxBuffer: 8 * 1024 * 1024 });
 }
 
+function rootBrowserScope(files) {
+    if (files.length && files.every(file => file === 'index.html')) return 'home';
+    for (const tool of ['qrcode', 'emphasis-lines', 'motion-atlas-source']) {
+        if (files.length && files.every(file => file.startsWith(tool + '/'))) return tool;
+    }
+    return 'all';
+}
+
 function selectFromRevision(baseSha) {
     const files = readChanges(baseSha);
     const shared = {};
@@ -80,7 +89,7 @@ function selectFromRevision(baseSha) {
         shared.manifestBefore = readRevisionFile(baseSha, 'qa/published-dependencies.json');
         shared.manifestAfter = readRevisionFile('HEAD', 'qa/published-dependencies.json');
     }
-    return selectWorkflows(files, shared);
+    return { ...selectWorkflows(files, shared), root_mode: rootBrowserScope(files) };
 }
 
 function requireResult(needs, job, expected) {
@@ -113,11 +122,29 @@ function verifyGate(needs, { draft = false } = {}) {
     return '必要な品質検査・名義・公開境界が成功しました。対象外だけを未実行としています。';
 }
 
-function run(mode) {
-    if (mode === 'select') {
+function parentRootSucceeded(runs, sha, repo) {
+    const run = runs.workflow_runs?.[0];
+    return Boolean(run && run.head_sha === sha && run.head_branch === 'main' && run.event === 'push'
+        && run.head_repository?.full_name === repo && run.path === '.github/workflows/root-quality.yml'
+        && run.status === 'completed' && run.conclusion === 'success');
+}
+
+async function run(mode) {
+    if (mode === 'select' || mode === 'root-push') {
         let scope;
         try { scope = selectFromRevision(process.env.BASE_SHA); }
-        catch { scope = { root: true, pikalab: true }; }
+        catch { scope = { root: true, pikalab: true, root_mode: 'all' }; }
+        if (mode === 'root-push' && !scope.root) {
+            // 直前のmainが赤・未完了・不明なら、Root変更の取りこぼしを全件検証で回収する。
+            const repo = process.env.GITHUB_REPOSITORY;
+            const sha = process.env.BASE_SHA;
+            try {
+                const url = new URL('https://api.github.com/repos/' + repo + '/actions/workflows/root-quality.yml/runs');
+                url.search = new URLSearchParams({ branch: 'main', event: 'push', head_sha: sha, per_page: '1' });
+                const response = await fetch(url, { signal: AbortSignal.timeout(8000) });
+                scope.root = !response.ok || !parentRootSucceeded(await response.json(), sha, repo);
+            } catch { scope.root = true; }
+        }
         if (!process.env.GITHUB_OUTPUT) throw new Error('CI出力先がありません');
         appendFileSync(process.env.GITHUB_OUTPUT, Object.entries(scope).map(([key, value]) => `${key}=${value}\n`).join(''));
         console.log(JSON.stringify(scope));
@@ -131,9 +158,8 @@ function run(mode) {
     }
 }
 
-module.exports = { selectWorkflows, onlyHigedanfanSitemapChanged,
+module.exports = { selectWorkflows, rootBrowserScope, parentRootSucceeded, onlyHigedanfanSitemapChanged,
     onlyHigedanfanDependenciesChanged, verifyGate, verifyPikaResults };
 if (require.main === module) {
-    try { run(process.argv[2]); }
-    catch (error) { console.error(error.message); process.exitCode = 1; }
+    run(process.argv[2]).catch(error => { console.error(error.message); process.exitCode = 1; });
 }
