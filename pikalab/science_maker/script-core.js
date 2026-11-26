@@ -22,6 +22,18 @@ const PLAN_FIELD_LIMITS = Object.freeze({
     materials: 300,
     method: 1000
 });
+const PLAN_FIELD_ENTRIES = Object.freeze(Object.entries(PLAN_FIELD_LIMITS));
+const ALLOWED_SHARE_KEY_SET = new Set(['topicId', 'createdAt', ...Object.keys(PLAN_FIELD_LIMITS)]);
+const PLAN_DATE_REGEX = /^(\d{4})\/(\d{1,2})\/(\d{1,2})$/;
+const BASE64URL_REGEX = /^[A-Za-z0-9_-]+$/;
+const PLAN_INPUT_IDS = Object.freeze([
+    'student-name',
+    'plan-title',
+    'plan-motivation',
+    'plan-hypothesis',
+    'plan-materials',
+    'plan-method'
+]);
 
 const QUIZ_OPTIONS = Object.freeze({
     time: Object.freeze(['1day', '3days', '1week']),
@@ -29,6 +41,7 @@ const QUIZ_OPTIONS = Object.freeze({
 });
 
 const STEP_IDS = Object.freeze(['step-quiz', 'step-results', 'step-plan']);
+const STEP_ID_SET = new Set(STEP_IDS);
 
 const TIME_LABEL_MAP = Object.freeze({
     '1day': '1日',
@@ -165,8 +178,23 @@ function normalizeQuizAnswer(key, value) {
     return QUIZ_OPTIONS[key].includes(value) ? value : null;
 }
 
+const domByDoc = new WeakMap();
+function getEl(id) {
+    if (typeof document === 'undefined') return null;
+    let cache = domByDoc.get(document);
+    if (!cache) {
+        cache = new Map();
+        domByDoc.set(document, cache);
+    }
+    const cached = cache.get(id);
+    if (cached && cached.isConnected !== false) return cached;
+    const el = document.getElementById(id);
+    if (el) cache.set(id, el);
+    return el;
+}
+
 function isValidStepId(stepId) {
-    return STEP_IDS.includes(stepId);
+    return STEP_ID_SET.has(stepId);
 }
 
 function collectSafetyNotes(topic) {
@@ -233,7 +261,7 @@ function deserializePlanData(base64Str) {
 
 function isValidPlanDate(value) {
     if (typeof value !== 'string' || value.length > CONFIG.MAX_SHARE_DATE_LENGTH) return false;
-    const match = /^(\d{4})\/(\d{1,2})\/(\d{1,2})$/.exec(value);
+    const match = PLAN_DATE_REGEX.exec(value);
     if (!match) return false;
 
     const year = Number(match[1]);
@@ -248,9 +276,11 @@ function isValidPlanDate(value) {
 
 function validatePlanShareData(data, topicsData = getTopicsData()) {
     if (!data || typeof data !== 'object' || Array.isArray(data)) return null;
-    const allowedKeys = ['topicId', 'createdAt', ...Object.keys(PLAN_FIELD_LIMITS)];
     const dataKeys = Object.keys(data);
-    if (dataKeys.length !== allowedKeys.length || dataKeys.some((key) => !allowedKeys.includes(key))) return null;
+    if (dataKeys.length !== ALLOWED_SHARE_KEY_SET.size) return null;
+    for (let i = 0; i < dataKeys.length; i++) {
+        if (!ALLOWED_SHARE_KEY_SET.has(dataKeys[i])) return null;
+    }
     if (!Array.isArray(topicsData) || typeof data.topicId !== 'string') return null;
     if (!topicsData.some((topic) => topic && topic.id === data.topicId)) return null;
     if (!isValidPlanDate(data.createdAt)) return null;
@@ -260,7 +290,8 @@ function validatePlanShareData(data, topicsData = getTopicsData()) {
         createdAt: data.createdAt
     };
 
-    for (const [fieldName, maxLength] of Object.entries(PLAN_FIELD_LIMITS)) {
+    for (let i = 0; i < PLAN_FIELD_ENTRIES.length; i++) {
+        const [fieldName, maxLength] = PLAN_FIELD_ENTRIES[i];
         const value = data[fieldName];
         if (typeof value !== 'string' || value.length > maxLength) return null;
         validated[fieldName] = value;
@@ -273,7 +304,7 @@ function parsePlanShareData(base64Str, topicsData = getTopicsData()) {
     if (typeof base64Str !== 'string'
         || base64Str.length === 0
         || base64Str.length > CONFIG.MAX_SHARE_PARAM_LENGTH
-        || !/^[A-Za-z0-9_-]+$/.test(base64Str)) {
+        || !BASE64URL_REGEX.test(base64Str)) {
         return null;
     }
     return validatePlanShareData(deserializePlanData(base64Str), topicsData);
@@ -373,14 +404,26 @@ const debouncedSave = debounce(() => savePlanState(), 500);
 
 function updateCounterFor(id) {
     if (typeof document === 'undefined') return;
-    const el = document.getElementById(id);
-    const counterEl = document.getElementById(`counter-${id}`);
+    const el = getEl(id);
+    const counterEl = getEl(`counter-${id}`);
     const limit = COUNTER_LIMITS[id];
     if (el && counterEl && limit) {
-        const len = el.value.length;
-        const remain = limit - len;
+        const remain = limit - el.value.length;
         counterEl.textContent = `あと ${remain} 文字`;
-        if (remain <= 10) { counterEl.className = 'text-right text-xs text-red-500 font-bold mt-1 mr-1 print:hidden'; el.style.borderColor = '#f87171'; el.style.backgroundColor = '#fef2f2'; } else { counterEl.className = 'text-right text-xs text-gray-400 mt-1 mr-1 print:hidden'; el.style.borderColor = ''; el.style.backgroundColor = ''; }
+        const isWarning = remain <= 10;
+        const warnKey = isWarning ? '1' : '0';
+        if (counterEl.dataset.warn !== warnKey) {
+            counterEl.dataset.warn = warnKey;
+            if (isWarning) {
+                counterEl.className = 'text-right text-xs text-red-500 font-bold mt-1 mr-1 print:hidden';
+                el.style.borderColor = '#f87171';
+                el.style.backgroundColor = '#fef2f2';
+            } else {
+                counterEl.className = 'text-right text-xs text-gray-400 mt-1 mr-1 print:hidden';
+                el.style.borderColor = '';
+                el.style.backgroundColor = '';
+            }
+        }
     }
 }
 
@@ -388,15 +431,15 @@ const boundPrintInputs = new WeakSet();
 
 function syncPrintElements() {
     if (typeof document === 'undefined') return;
-    const ids = ['student-name', 'plan-title', 'plan-motivation', 'plan-hypothesis', 'plan-materials', 'plan-method'];
-    ids.forEach(id => {
-        const el = document.getElementById(id);
-        const printEl = document.getElementById(`print-${id}`);
+    for (let i = 0; i < PLAN_INPUT_IDS.length; i++) {
+        const id = PLAN_INPUT_IDS[i];
+        const el = getEl(id);
+        const printEl = getEl(`print-${id}`);
         if (el && printEl) {
             printEl.textContent = el.value;
             updateCounterFor(id);
             // テーマ変更でも同じ入力要素を使うため、保存イベントは一度だけ登録する。
-            if (boundPrintInputs.has(el)) return;
+            if (boundPrintInputs.has(el)) continue;
             boundPrintInputs.add(el);
             el.addEventListener('input', () => {
                 printEl.textContent = el.value;
@@ -404,7 +447,7 @@ function syncPrintElements() {
                 debouncedSave();
             });
         }
-    });
+    }
 }
 
 // ===================================
@@ -520,6 +563,10 @@ function showResults() {
 
     container.innerHTML = '';
 
+    const fragment = typeof document.createDocumentFragment === 'function'
+        ? document.createDocumentFragment()
+        : container;
+
     results.forEach((topic) => {
         const clone = template.content.cloneNode(true);
         const card = clone.querySelector('.result-card');
@@ -564,8 +611,12 @@ function showResults() {
             }
         });
 
-        container.appendChild(clone);
+        fragment.appendChild(clone);
     });
+
+    if (fragment !== container) {
+        container.appendChild(fragment);
+    }
 
     switchStep('step-results');
 }
@@ -842,25 +893,26 @@ function setupHypothesisHelp() {
     const tooltip = elements.hypothesisHelpTooltip;
     if (!btn || !tooltip) return;
 
-    const setExpanded = (expanded) => {
-        btn.setAttribute('aria-expanded', expanded ? 'true' : 'false');
-        tooltip.classList.toggle('hidden', !expanded);
+    let expanded = false;
+    const setExpanded = (nextExpanded) => {
+        expanded = nextExpanded;
+        btn.setAttribute('aria-expanded', nextExpanded ? 'true' : 'false');
+        tooltip.classList.toggle('hidden', !nextExpanded);
     };
 
     btn.addEventListener('click', (event) => {
         event.preventDefault();
-        const isExpanded = btn.getAttribute('aria-expanded') === 'true';
-        setExpanded(!isExpanded);
+        setExpanded(!expanded);
     });
 
     document.addEventListener('click', (event) => {
-        if (!(event.target instanceof Node)) return;
+        if (!expanded || !(event.target instanceof Node)) return;
         if (btn.contains(event.target) || tooltip.contains(event.target)) return;
         setExpanded(false);
     });
 
     document.addEventListener('keydown', (event) => {
-        if (event.key === 'Escape') {
+        if (expanded && event.key === 'Escape') {
             setExpanded(false);
         }
     });

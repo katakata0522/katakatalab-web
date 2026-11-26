@@ -26,8 +26,8 @@
   <meta name="twitter:image" content="https://katakatalab.com/ogp-simulator/ogp.png">
 
   <link rel="icon" href="/favicon.ico">
-  <link rel="stylesheet" href="style.css?v=20260824-responsive">
-    <link rel="stylesheet" href="../tool-chrome.css?v=source">
+  <link rel="stylesheet" href="style.css?v=20261125-refactored">
+  <link rel="stylesheet" href="../tool-chrome.css?v=20261125">
 </head>
 <body>
     <script>try{if(localStorage.getItem('theme')==='dark')document.body.classList.add('dark-mode');}catch(e){}</script>
@@ -43,9 +43,12 @@
             <span class="breadcrumbs-tool__sep">/</span>
             <span class="breadcrumbs-tool__current" aria-current="page">OGPシミュレーター</span>
         </div>
-        <a href="../#projects" class="breadcrumbs-tool__index">
-            <span>🧰</span> ツール一覧へ
-        </a>
+        <div class="breadcrumbs-tool__actions">
+            <button type="button" class="tool-theme-toggle" data-theme-toggle aria-label="ダークモードに切り替え" aria-pressed="false" title="ダークモードに切り替え">🌙</button>
+            <a href="../#projects" class="breadcrumbs-tool__index">
+                <span>🧰</span> ツール一覧へ
+            </a>
+        </div>
     </nav>
 
     <!-- Auto-Injected noscript fallback -->
@@ -64,36 +67,32 @@
       <h1 class="app-title">OGPの見え方を<span class="accent">確かめる</span></h1>
       <p class="app-desc">手入力したタイトル・説明・画像を、SNS風の枠に置いて見るモックです。公式の実表示ではありません。</p>
     </div>
-    <span class="badge-security" title="画像はサーバーに送信されません">
-      <span class="icon-lock">🔒</span> Client-Side Preview
-    </span>
   </header>
 
   <div class="two-column-layout">
     
     <section class="config-panel" aria-label="OGP設定入力">
-      <p id="mockCountHelp" class="app-desc">文字数はUTF-16単位で数えています（絵文字などは2以上になる場合があります）。40・80はこのモック用の目安で、SNSの入力上限ではありません。</p>
-        <div class="input-group">
-        <label class="group-label" for="imageInput">OG Image <small>(サムネイル画像)</small></label>
-        <div class="file-upload-area" id="dropZone" tabindex="0" role="button" aria-label="画像をアップロード">
-          <input type="file" id="imageInput" accept="image/*" class="file-input" tabindex="-1">
+      <div class="input-group">
+        <label class="group-label" for="imageInput">サムネイル画像</label>
+        <div class="file-upload-area" id="dropZone">
+          <input type="file" id="imageInput" accept="image/*" class="file-input">
           <div class="upload-placeholder">
             <span class="icon-upload">📁</span>
             <p>クリックして画像を選択<br><small>またはここにドロップ</small></p>
           </div>
-          <div id="imagePreviewContainer" class="image-preview-container" style="display:none;">
+          <div id="imagePreviewContainer" class="image-preview-container is-hidden">
             <img id="imagePreviewThumb" src="" alt="Selected">
             <button type="button" id="removeImageBtn" class="btn-icon-remove" title="削除" aria-label="画像を削除">×</button>
           </div>
         </div>
         <p class="app-desc">検査するのは画像形式・容量（10MiB以下）と読込可否、横長カード用の比率の目安です。画像の必要解像度、SNS別の受付条件、公開URLやOGタグ、キャッシュは検査しません。入力はこのページ内だけで扱い、再読み込みやリセットで消えます。</p>
         <p id="imageLoadStatus" role="status" aria-live="polite" aria-atomic="true"></p>
-        <div id="ratioWarning" class="warning-msg" role="alert" style="display:none;"></div>
+        <div id="ratioWarning" class="warning-msg is-hidden" role="alert"></div>
       </div>
 
       <div class="input-group">
         <div class="label-row">
-          <label for="ogTitle" class="group-label">OG Title</label>
+          <label for="ogTitle" class="group-label">タイトル</label>
           <span id="countTitle" class="char-count">0 / 40</span>
         </div>
         <input type="text" id="ogTitle" aria-describedby="mockCountHelp" class="input-text" placeholder="記事のタイトルを入力...">
@@ -101,23 +100,25 @@
 
       <div class="input-group">
         <div class="label-row">
-          <label for="ogDesc" class="group-label">OG Description</label>
+          <label for="ogDesc" class="group-label">説明文</label>
           <span id="countDesc" class="char-count">0 / 80</span>
         </div>
         <textarea id="ogDesc" aria-describedby="mockCountHelp" class="input-text" rows="3" placeholder="記事の説明文を入力..."></textarea>
+        <p id="mockCountHelp" class="app-desc">文字数はUTF-16単位で数えています（絵文字などは2以上になる場合があります）。40・80はこのモック用の目安で、SNSの入力上限ではありません。</p>
       </div>
 
       <div class="input-group">
-        <label for="siteName" class="group-label">Site Name / Domain</label>
+        <label for="siteName" class="group-label">サイト名・ドメイン</label>
         <input type="text" id="siteName" class="input-text" placeholder="katakatalab.com">
       </div>
 
       <div class="actions">
-        <button type="button" id="resetBtn" class="btn-text">Reset All</button>
+        <a class="panel-jump" href="#share-preview">プレビューを見る</a>
+        <button type="button" id="resetBtn" class="btn-text">入力をリセット</button>
       </div>
     </section>
 
-    <section class="preview-panel sticky-container" aria-label="プレビュー表示">
+    <section id="share-preview" tabindex="-1" class="preview-panel sticky-container" aria-label="プレビュー表示">
       <div class="preview-controls">
         <div class="preview-tabs-scroll">
           <div class="preview-tabs">
@@ -137,6 +138,7 @@
         </div>
       </div>
 
+      <a class="panel-jump" href="#ogTitle">タイトルの入力に戻る</a>
       <div id="previewCanvas" class="preview-canvas theme-light">
         
         <!-- X (Large) Feed Mock -->
@@ -268,6 +270,16 @@
       </div>
       <div class="preview-note">
         ※ これはSNS風のモックです。公式スクレイパでも実タイムラインでもありません。LINEの正方形寄り切り抜きは、この画面では再現しません。
+      </div>
+
+      <div class="ogp-code-box" aria-label="OGP HTMLメタタグ生成">
+        <div class="ogp-code-header">
+          <span class="ogp-code-title">🏷️ HTMLメタタグ（そのままコピペ用）</span>
+          <button type="button" id="copyOgpMetaBtn" class="btn-copy-meta">📋 タグをコピー</button>
+        </div>
+        <pre id="ogpCodeOutput" class="ogp-code-output" aria-label="生成されたOGPメタタグ"></pre>
+        <p id="ogpCopyStatus" class="ogp-copy-status" role="status" aria-live="polite"></p>
+        <textarea id="manualOgpMetaCopy" class="manual-ogp-copy" readonly hidden rows="6" aria-label="手動コピー用OGPメタタグ"></textarea>
       </div>
     </section>
   </div>
@@ -411,6 +423,7 @@
 ]
 </script>
 
-<script src="script.js" defer></script>
+<script src="../theme-sync.js?v=20261125" defer></script>
+<script src="script.js?v=20261125" defer></script>
 </body>
 </html>

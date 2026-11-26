@@ -20,7 +20,9 @@ document.addEventListener('DOMContentLoaded', () => {
     customPxInput: document.getElementById('customPxInput'),
     addSizeBtn: document.getElementById('addSizeBtn'),
     resetSizesBtn: document.getElementById('resetSizesBtn'),
-    listMessage: document.getElementById('listMessage')
+    listMessage: document.getElementById('listMessage'),
+    copyPxValBtn: document.getElementById('copyPxValBtn'),
+    copyRemValBtn: document.getElementById('copyRemValBtn')
   };
 
   if (!els.rootBase || !els.pxInput || !els.remInput || !els.tableBody) {
@@ -48,7 +50,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
   function updateCopyLabel() {
-    els.copyBtn.textContent = pageLang === 'en' ? `Copy this list as code (${customSizes.length})` : `この一覧をコードでコピー（${customSizes.length}件）`;
+    els.copyBtn.textContent = pageLang === 'en' ? `Copy code (${customSizes.length})` : `コードをコピー（${customSizes.length}件）`;
     els.copyBtn.disabled = !customSizes.length || !Number.isFinite(getRoot());
   }
 
@@ -92,6 +94,32 @@ document.addEventListener('DOMContentLoaded', () => {
     els.pxInput.addEventListener('input', () => { lastEdited = 'px'; disarmReset(); syncFromPx(); });
     els.remInput.addEventListener('input', () => { lastEdited = 'rem'; disarmReset(); syncFromRem(); });
     els.copyBtn.addEventListener('click', copyCodeFormat);
+
+    const bindInlineCopy = (btn, inputEl, unit) => {
+      if (!btn || !inputEl) return;
+      const defaultLabel = pageLang === 'en' ? '📋 Copy' : '📋 コピー';
+      let timer = null;
+      btn.addEventListener('click', () => {
+        const val = String(inputEl.value || '').trim();
+        if (!val) return;
+        const formatted = `${val}${unit}`;
+        copyText(formatted)
+          .then(() => {
+            clearTimeout(timer);
+            btn.textContent = pageLang === 'en' ? `✓ ${formatted}` : `✓ ${formatted}`;
+            btn.classList.add('is-copied');
+            timer = setTimeout(() => {
+              btn.textContent = defaultLabel;
+              btn.classList.remove('is-copied');
+            }, 1400);
+          })
+          .catch(() => {
+            showListMessage(pageLang === 'en' ? 'Copy failed. Copy the value manually.' : 'コピーに失敗しました。入力欄から手動でコピーしてください。');
+          });
+      });
+    };
+    bindInlineCopy(els.copyPxValBtn, els.pxInput, 'px');
+    bindInlineCopy(els.copyRemValBtn, els.remInput, 'rem');
 
     // 4. カスタムサイズ追加アクション
     els.customPxInput.addEventListener('input', disarmReset);

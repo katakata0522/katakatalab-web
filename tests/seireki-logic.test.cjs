@@ -42,6 +42,22 @@ test('今年生まれは満年齢を-1歳にしない', () => {
   assert.equal(result.manAge, 0);
 });
 
+test('改元日と、その月だけで判定できる和暦を区別する', () => {
+  for (const [year, month, day, before, after] of [
+    [1912, 7, 30, '明治45年', '大正元年'],
+    [1926, 12, 25, '大正15年', '昭和元年'],
+    [1989, 1, 8, '昭和64年', '平成元年'],
+  ]) {
+    assert.equal(logic.warekiDisplay(year, month, day - 1), before);
+    assert.equal(logic.warekiDisplay(year, month, day), after);
+    assert.equal(logic.warekiDisplay(year, month), before + ' / ' + after);
+  }
+  assert.equal(logic.warekiDisplay(2019, 4, 30), '平成31年');
+  assert.equal(logic.warekiDisplay(2019, 5, 1), '令和元年');
+  assert.equal(logic.warekiDisplay(2019, 4), '平成31年');
+  assert.equal(logic.warekiDisplay(2019, 5), '令和元年');
+});
+
 test('月日があるとき満年齢は誕生日前後で分かれる', () => {
   const before = logic.describeAge(2000, 2026, {
     month: 12,

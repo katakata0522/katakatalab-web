@@ -1,7 +1,7 @@
-import { REFERENCE_SIZE } from '../constants.js?v=20261010-1';
-import { Random } from '../utils/random.js?v=20261010-1';
-import { validateRenderParams } from '../utils/validation.js?v=20261010-1';
-import { AnalyticsManager } from '../utils/analytics.js?v=20261010-1';
+import { REFERENCE_SIZE } from '../constants.js?v=20261119-review';
+import { Random } from '../utils/random.js?v=20261119-review';
+import { validateRenderParams } from '../utils/validation.js?v=20261119-review';
+import { AnalyticsManager } from '../utils/analytics.js?v=20261119-review';
 
 /**
  * @typedef {Object} LineParams

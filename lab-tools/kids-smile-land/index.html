@@ -29,7 +29,7 @@
     <!-- ビルドされた静的 Tailwind CSS -->
     <link rel="stylesheet" href="tailwind-built.css">
     <!-- 外部スタイルシートの読み込み -->
-    <link rel="stylesheet" href="style.css?v=20260824-responsive">
+    <link rel="stylesheet" href="style.css?v=20261126-mobile">
 </head>
 <body class="min-h-screen flex flex-col justify-between overflow-x-hidden text-slate-800">
     <script>try{if(localStorage.getItem('theme')==='dark')document.body.classList.add('dark-mode');}catch(e){}</script>
@@ -134,7 +134,7 @@
                 </section>
 
                 <section aria-labelledby="recommended-games"><h2 id="recommended-games" class="font-black">まずは おすすめ3つ</h2>
-                  <div class="grid grid-cols-3 gap-4 py-2">
+                  <div class="grid grid-cols-3 gap-4 py-2 kids-rec-grid">
                     <button data-tab-target="draw" class="card-attraction btn-puni rounded-3xl p-5 border-4 border-rose-200 text-rose-500">🎨<br>おえかき</button>
                     <button data-tab-target="count" class="card-attraction btn-puni rounded-3xl p-5 border-4 border-emerald-200 text-emerald-500">🔢<br>かずかぞえ</button>
                     <button data-tab-target="match" class="card-attraction btn-puni rounded-3xl p-5 border-4 border-sky-200 text-sky-500">🃏<br>えあわせ</button>
@@ -158,7 +158,7 @@
                     <!-- なきごえ -->
                     <button data-tab-target="quiz" class="card-attraction btn-puni bg-gradient-to-br from-amber-50 to-amber-100 border-4 border-amber-200 shadow-amber-200/50 text-amber-500 rounded-3xl p-5 md:p-6 flex flex-col items-center justify-center gap-3 select-none">
                         <span class="text-4xl md:text-5xl select-none filter drop-shadow">🦁</span>
-                        <span class="text-sm md:text-base font-black tracking-wide">おもちゃの音あて</span>
+                        <span class="text-sm md:text-base font-black tracking-wide"><span class="game-label-part">おもちゃの</span><wbr><span class="game-label-part">音あて</span></span>
                     </button>
 
                     <!-- かずかぞえ -->
@@ -176,7 +176,7 @@
                     <!-- もっきんえんそう -->
                     <button data-tab-target="xylophone" class="card-attraction btn-puni bg-gradient-to-br from-indigo-50 to-indigo-100 border-4 border-indigo-200 shadow-indigo-200/50 text-indigo-500 rounded-3xl p-5 md:p-6 flex flex-col items-center justify-center gap-3 select-none">
                         <span class="text-4xl md:text-5xl select-none filter drop-shadow">🎵</span>
-                        <span class="text-sm md:text-base font-black tracking-wide">もっきんえんそう</span>
+                        <span class="text-sm md:text-base font-black tracking-wide"><span class="game-label-part">もっきん</span><wbr><span class="game-label-part">えんそう</span></span>
                     </button>
 
                     <!-- シールデコ -->
@@ -190,7 +190,7 @@
             </div>
 
             <!-- TAB 1: おしゃべりボード（ひらがな） -->
-            <div id="tab-hiragana" class="tab-content flex flex-col h-full">
+            <div id="tab-hiragana" class="tab-content hidden flex flex-col h-full">
                 <!-- サブタブ（せいおん / だくおん） -->
                 <div class="flex gap-2 mb-4 bg-slate-100 p-1.5 rounded-xl border border-slate-200 w-fit">
                     <button data-hiragana-type="standard" id="btn-h-std" class="px-4 py-2 rounded-lg text-sm font-bold bg-white text-blue-600 shadow-sm border border-slate-200 transition-all">あいうえお (せいおん)</button>
@@ -204,7 +204,7 @@
 
             <!-- TAB 2: かずかぞえクイズ -->
             <div id="tab-count" class="tab-content hidden flex flex-col items-center justify-center h-full py-4 text-center">
-                <h3 class="text-lg font-bold text-slate-700 mb-6">くだものやどうぶつ、いくつあるかな？ かぞえてみよう！</h3>
+                <h3 class="text-lg font-bold text-slate-700 mb-6">えが いくつあるかな？ かぞえてみよう！</h3>
                 
                 <!-- アイテム表示キャンバス（パステルサークル） -->
                 <div id="count-items" class="w-full max-w-md bg-orange-50/50 rounded-2xl p-6 min-h-[160px] flex flex-wrap gap-4 items-center justify-center border-2 border-dashed border-orange-200 mb-8 text-4xl md:text-5xl shadow-inner select-none">
@@ -262,7 +262,7 @@
                 </div>
 
                 <!-- キャンバス -->
-                <div class="relative w-full flex-grow bg-slate-50 border-4 border-dashed border-slate-200 rounded-2xl overflow-hidden min-h-[300px]">
+                <div class="relative w-full flex-grow bg-slate-50 border-4 border-dashed border-slate-200 rounded-2xl overflow-hidden min-h-[300px] draw-canvas-wrap">
                     <canvas id="paint-canvas" aria-label="お絵かきキャンバス" class="absolute top-0 left-0 w-full h-full cursor-crosshair touch-none"></canvas>
                 </div>
             </div>
@@ -329,7 +329,7 @@
                 </div>
 
                 <!-- 鍵盤コンテナ -->
-                <div class="flex justify-between items-stretch gap-1.5 md:gap-3 flex-grow h-[260px] md:h-[320px] bg-slate-900/5 p-4 rounded-3xl border border-slate-200 shadow-inner">
+                <div class="flex justify-between items-stretch gap-1.5 md:gap-3 flex-grow h-[260px] md:h-[320px] bg-slate-900/5 p-4 rounded-3xl border border-slate-200 shadow-inner xylo-keys-grid">
                     <!-- ド -->
                     <button id="key-0" data-key-index="0" style="background-color: #ff5e7e;" class="btn-puni shadow-red-900/30 flex-grow rounded-2xl flex flex-col justify-between items-center py-4 text-white font-bold border-2 border-white/20 xylo-key">
                         <span class="text-lg md:text-xl">ド</span>
@@ -524,7 +524,7 @@
             
             <div id="parent-quiz-text" class="text-2xl font-black text-slate-800 my-4 tracking-widest bg-slate-50 py-2 rounded-xl">5 + 7 = ?</div>
             
-            <input type="text" id="parent-answer" placeholder="こたえを入力" class="w-full text-center text-xl font-bold border-2 border-slate-300 rounded-xl py-2 mb-4 focus:border-blue-500 outline-none">
+            <input type="text" id="parent-answer" inputmode="numeric" placeholder="こたえを入力" class="w-full text-center text-xl font-bold border-2 border-slate-300 rounded-xl py-2 mb-4 focus:border-blue-500 outline-none">
             
             <div class="flex gap-2">
                 <button id="btn-close-parent-modal" class="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-600 font-bold py-2.5 rounded-xl text-sm">やめる</button>
@@ -708,10 +708,11 @@
 
     <footer class="px-4 py-5 text-center text-xs text-slate-500" aria-label="サイト情報">
         <p class="mb-2">制作：かたかた / KatakataLab</p>
-        <nav class="flex flex-wrap justify-center gap-x-4 gap-y-2">
+        <nav class="kids-footer-links" aria-label="関連ページ">
             <a href="../../privacy.html" class="underline">プライバシーポリシー</a>
             <a href="../../terms.html" class="underline">利用規約</a>
             <a href="../../contact.html" class="underline">お問い合わせ</a>
+            <a href="../../pikalab/" class="underline">PikaLabに戻る</a>
             <a href="../../" class="underline">KatakataLab</a>
         </nav>
     </footer>
@@ -728,7 +729,7 @@
         else register();
       }
     </script>
-    <script src="app.js"></script>
+    <script src="app.js?v=20261126-mobile"></script>
 </body>
 </html>
 

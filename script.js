@@ -2,6 +2,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     let allProjects = [];
     let searchInput; // スコープを広げてキーボードショートカットでの ReferenceError を防止
+    const projectControls = document.getElementById('projects-controls');
     const projectFilterState = window.KatakataProjectFilterState;
     const projectHistory = window.KatakataProjectHistory;
 
@@ -136,6 +137,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const backElements = document.querySelectorAll('main, footer, .bottom-nav');
 
         if (active) {
+            mobileMenu.inert = false;
             mobileMenu.classList.add('active');
             mobileMenu.setAttribute('aria-hidden', 'false');
             if (menuToggle) menuToggle.setAttribute('aria-expanded', 'true');
@@ -145,7 +147,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 bars[1].style.opacity = '0';
                 bars[2].style.transform = 'rotate(-45deg) translate(5px, -5px)';
             }
-            backElements.forEach(el => el.setAttribute('aria-hidden', 'true'));
+            backElements.forEach(el => { el.inert = true; });
             preventBodyScroll(true);
             
             // 開いたときに閉じボタンへフォーカス移動（アクセシビリティ向上）
@@ -153,6 +155,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (menuCloseBtn) menuCloseBtn.focus();
             }, 50);
         } else {
+            backElements.forEach(el => { el.inert = false; });
+            if (menuToggle) menuToggle.focus({ preventScroll: true });
+            mobileMenu.inert = true;
             mobileMenu.classList.remove('active');
             mobileMenu.setAttribute('aria-hidden', 'true');
             if (menuToggle) menuToggle.setAttribute('aria-expanded', 'false');
@@ -162,11 +167,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 bars[1].style.opacity = '1';
                 bars[2].style.transform = 'none';
             }
-            backElements.forEach(el => el.removeAttribute('aria-hidden'));
             preventBodyScroll(false);
-            
-            // 閉じたとき元のボタンへフォーカスを戻す
-            if (menuToggle) menuToggle.focus();
         }
     }
 
@@ -305,6 +306,44 @@ document.addEventListener('DOMContentLoaded', () => {
         return true;
     }
 
+    const mobileCardWidth = window.matchMedia?.('(max-width: 768px)');
+    const detailedCardView = document.getElementById('project-detailed-view');
+
+    const PROJECT_ICONS = {
+        'moyamoya-sorter': '🌿',
+        'chiritsumo-calc': '☕',
+        'qrcode': '📱',
+        'aspect-ratio': '📐',
+        'password-generator': '🔑',
+        'seireki': '📅',
+        'discount-calc': '🏷️',
+        'ogp-simulator': '🖼️',
+        'px-rem': '⚖️',
+        'svg-viewer': '🎨',
+        'text-diff': '📝',
+        'font-lab': '🔤',
+        'base64': '📦',
+        'html-formatter': '💻',
+        'json-formatter': '🧩',
+        'timestamp': '⏱️',
+        'case-converter': '🔠',
+        'character-counter': '🔢',
+        'url-encoder': '🔗',
+        'dummy-image': '🖼️',
+        'pikalab': '✨',
+        'playpoint': '🎮',
+        'asobi-pocket': '🎲',
+        'gravity-todo': '🚀',
+        'kids-smile-land': '🎈',
+        'kirarin-play-park': '🎡',
+        'site-hub': '🌐',
+        'usagi-app': '🐰',
+        'doujin-calc': '📚',
+        'motion-atlas': '🎞️',
+        'emphasis-lines': '💥',
+        'screenshot-crop': '✂️',
+    };
+
     function renderProjectCard(p) {
         const isFeatured = p.featured;
         const url = p.url || '';
@@ -314,9 +353,20 @@ document.addEventListener('DOMContentLoaded', () => {
         const guideAttr = guide ? `data-guide="${escapeHTML(guide)}"` : '';
         const storyAttr = story ? `data-story="${escapeHTML(story)}"` : '';
         const aliasesAttr = `data-aliases="${escapeHTML(JSON.stringify(Array.isArray(p.aliases) ? p.aliases : []))}"`;
+        const id = escapeHTML(p.id);
+        const icon = p.icon || PROJECT_ICONS[p.id] || '🧪';
+        const note = p.mobileNote || [];
+        const external = new URL(url, 'https://katakatalab.com/').origin !== 'https://katakatalab.com';
+        const recommended = Boolean(p.recommendationOrder);
+        const desktopNewTab = recommended ? Boolean(p.newTab || external) : shouldOpenProjectInNewTab(url);
+        const tabLabel = desktopNewTab ? ' <span class="card-action-target">（別タブ）</span>' : '';
+        const desktopAction = recommended
+            ? `${escapeHTML(p.mobileAction || '作品ページへ')}${tabLabel} →`
+            : escapeHTML(p.actions?.mainText || '使う →');
+        const mobileOrder = Number.isInteger(p.mobileOrder) ? ` style="--mobile-order:${p.mobileOrder}"` : '';
 
         return `
-            <article class="card ${isFeatured ? 'card--featured' : ''}"
+            <article class="card ${isFeatured ? 'card--featured' : ''}"${mobileOrder}
                      data-id="${escapeHTML(p.id)}"
                      data-group="${escapeHTML(p.group || 'primary')}"
                      data-category="${escapeHTML(p.category)}"
@@ -333,19 +383,28 @@ document.addEventListener('DOMContentLoaded', () => {
                         ${p.targetBadge ? `<span class="badge-target font-badge">${escapeHTML(p.targetBadge)}</span>` : ''}
                         ${p.statusBadge ? `<span class="badge-new">${escapeHTML(p.statusBadge)}</span>` : ''}
                     </div>
-                    <h3 class="card-title">${escapeHTML(p.title)}</h3>
+                    <h3 class="card-title"><span class="card-title-icon" aria-hidden="true">${escapeHTML(icon)}</span> ${escapeHTML(p.title)}</h3>
                     <p class="card-text">${escapeHTML(p.text)}</p>
-                    ${p.guideLinks ? `
+                    ${!recommended && p.guideLinks?.length ? `
                         <div class="card-guide-links">
                             <span class="guide-label">クイックガイド:</span>
                             ${p.guideLinks.map(link => `<a href="${escapeHTML(link.url)}" class="guide-badge-link" target="_blank" rel="noopener noreferrer">${escapeHTML(link.text)}</a>`).join('')}
                         </div>
                     ` : ''}
                     <div class="card-actions">
-                        <a href="${escapeHTML(url)}" class="card-link"${shouldOpenProjectInNewTab(url) ? ' target="_blank" rel="noopener noreferrer"' : ''}>使う →</a>
+                        <a href="${escapeHTML(url)}" class="card-link"${desktopNewTab ? ' target="_blank" rel="noopener noreferrer"' : ''}>
+                            <span class="card-action-label">${desktopAction}</span>
+                        </a>
                         ${p.actions.detail ? '<button type="button" class="card-detail-btn">詳しく見る</button>' : ''}
                     </div>
                 </div>
+                <a class="card-link project-row" href="${escapeHTML(url)}"${external ? ' target="_blank" rel="noopener noreferrer"' : ''}
+                   aria-labelledby="row-name-${id} row-action-${id}" aria-describedby="row-purpose-${id}${note.length ? ' row-note-' + id : ''}">
+                    <h3 class="project-row-name" id="row-name-${id}">${escapeHTML(p.rowTitle || p.title)}</h3>
+                    <p class="project-row-purpose" id="row-purpose-${id}">${escapeHTML(p.shortText || p.text)}</p>
+                    ${note.length ? `<p class="project-row-note" id="row-note-${id}">${note.map(phrase => `<span>${escapeHTML(phrase)}</span>`).join('')}</p>` : ''}
+                    <span class="project-row-cta" id="row-action-${id}"><span class="project-row-action">${escapeHTML(p.mobileAction || '作品ページへ')}</span>${external ? '（別タブ）' : ''}<span aria-hidden="true">→</span></span>
+                </a>
             </article>
         `;
     }
@@ -353,6 +412,7 @@ document.addEventListener('DOMContentLoaded', () => {
     function filterProjects({ syncUrl = true } = {}) {
         const primaryGrid = document.getElementById('projects-grid');
         const secondaryGrid = document.getElementById('secondary-projects-grid');
+        const recommendedGrid = document.getElementById('recommended-projects-grid');
         const primaryTitle = document.getElementById('primary-projects-title');
         const secondaryProjects = document.getElementById('secondary-projects');
         const searchInput = document.getElementById('project-search');
@@ -376,6 +436,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         const filtered = allProjects.filter(p => {
+            if (p.group === 'other' && !searchText) return false;
             const matchesFilter = (activeFilter === 'all' || p.shelf === activeFilter);
             
             const corpus = projectFilterState
@@ -386,8 +447,18 @@ document.addEventListener('DOMContentLoaded', () => {
             return matchesFilter && matchesSearch;
         });
 
-        const primaryProjects = filtered.filter(p => (p.group || 'primary') === 'primary');
-        const secondaryItems = filtered.filter(p => p.group === 'secondary');
+        const remaining = recommendedGrid ? filtered.filter(p => !p.recommendationOrder) : filtered;
+        const primaryProjects = remaining.filter(p => (p.group || 'primary') === 'primary' || p.group === 'other');
+        const secondaryItems = remaining.filter(p => p.group === 'secondary');
+        if (recommendedGrid) {
+            const recommendedItems = filtered.filter(p => p.recommendationOrder)
+                .sort((a, b) => a.recommendationOrder - b.recommendationOrder);
+            recommendedGrid.innerHTML = recommendedItems.map(renderProjectCard).join('');
+            document.getElementById('recommended-projects').hidden = recommendedItems.length === 0;
+        }
+        if (mobileCardWidth?.matches && !detailedCardView?.checked) {
+            primaryProjects.sort((a, b) => (a.mobileOrder ?? Infinity) - (b.mobileOrder ?? Infinity));
+        }
 
         primaryGrid.innerHTML = primaryProjects.map(renderProjectCard).join('');
         secondaryGrid.innerHTML = secondaryItems.map(renderProjectCard).join('');
@@ -555,7 +626,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const clearButton = document.getElementById('recent-projects-clear');
 
         document.addEventListener('click', (event) => {
-            const link = event.target.closest('.card-link, .search-suggestion-link, .recent-project-link');
+            const link = event.target.closest('.card-link, .search-suggestion-link, .recent-project-link, .other-project-link');
             if (!link) return;
             const card = link.closest('[data-id]');
             const projectId = card?.getAttribute('data-id') || link.getAttribute('data-project-id');
@@ -577,21 +648,34 @@ document.addEventListener('DOMContentLoaded', () => {
     const debouncedFilter = debounce(filterProjects, 150);
 
     function initProjects() {
-        // フィルタボタン設定（即時反映）
         const filterBtns = document.querySelectorAll('.shelf-nav-btn');
-        const initialState = projectFilterState
-            ? projectFilterState.readProjectFilterState(window.location.search)
-            : { filter: 'all', query: '' };
-        const initialFilterBtn = Array.from(filterBtns).find(btn => btn.getAttribute('data-filter') === initialState.filter);
-        if (initialFilterBtn) {
-            filterBtns.forEach(btn => btn.classList.toggle('active', btn === initialFilterBtn));
-        }
-
-        // 共有URLから初期状態を復元する
         searchInput = document.getElementById('project-search');
-        if (searchInput) searchInput.value = initialState.query;
 
-        filterProjects({ syncUrl: false });
+        function restoreFiltersFromUrl() {
+            const state = projectFilterState
+                ? projectFilterState.readProjectFilterState(window.location.search)
+                : { filter: 'all', query: '' };
+            filterBtns.forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.filter === state.filter);
+            });
+            if (searchInput) searchInput.value = state.query;
+            if (projectControls && (state.query || state.filter !== 'all')) {
+                projectControls.open = true;
+            }
+            filterProjects({ syncUrl: false });
+        }
+        restoreFiltersFromUrl();
+        window.addEventListener('popstate', restoreFiltersFromUrl);
+        const refreshCardLayout = () => {
+            const focusedId = document.activeElement?.closest?.('.projects-grid .card')?.dataset.id;
+            filterProjects({ syncUrl: false });
+            if (focusedId) {
+                const card = document.querySelector(`.projects-grid [data-id="${CSS.escape(focusedId)}"]`);
+                Array.from(card?.querySelectorAll('.card-link') || []).find(link => link.getClientRects().length)?.focus({ preventScroll: true });
+            }
+        };
+        mobileCardWidth?.addEventListener?.('change', refreshCardLayout);
+        detailedCardView?.addEventListener('change', refreshCardLayout);
 
         if (filterBtns.length > 0) {
             filterBtns.forEach(btn => {
@@ -638,15 +722,6 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         }
 
-        window.addEventListener('popstate', () => {
-            if (!projectFilterState) return;
-            const state = projectFilterState.readProjectFilterState(window.location.search);
-            filterBtns.forEach(btn => {
-                btn.classList.toggle('active', btn.getAttribute('data-filter') === state.filter);
-            });
-            if (searchInput) searchInput.value = state.query;
-            filterProjects({ syncUrl: false });
-        });
     }
 
     // 初期HTMLのカードをフォールバック用データとして読み取る
@@ -661,12 +736,20 @@ document.addEventListener('DOMContentLoaded', () => {
             guide: card.dataset.guide || '',
             detail: card.dataset.detail || '',
             featured: card.classList.contains('card--featured'),
+            recommendationOrder: Number(card.dataset.recommendationOrder) || undefined,
+            newTab: card.querySelector('.card-body .card-link')?.target === '_blank',
             tagText: card.querySelector('.card-tag')?.textContent.trim() || '',
             tagClass: Array.from(card.querySelector('.card-tag')?.classList || []).find(name => name.startsWith('tag-')) || '',
             targetBadge: card.querySelector('.badge-target')?.textContent.trim() || '',
             statusBadge: card.querySelector('.badge-new')?.textContent.trim() || '',
-            title: card.querySelector('.card-title')?.textContent.trim() || '',
+            icon: card.querySelector('.card-title-icon')?.textContent.trim() || '',
+            title: (card.querySelector('.project-row-name') || card.querySelector('.card-title'))?.textContent.trim() || '',
             text: card.querySelector('.card-text')?.textContent.trim() || '',
+            rowTitle: card.querySelector('.project-row-name')?.textContent.trim(),
+            shortText: card.querySelector('.project-row-purpose')?.textContent.trim(),
+            mobileAction: card.querySelector('.project-row-action')?.textContent.trim(),
+            mobileNote: Array.from(card.querySelectorAll('.project-row-note > span'), phrase => phrase.textContent),
+            mobileOrder: Number(card.style.getPropertyValue('--mobile-order')) || undefined,
             aliases: (() => {
                 try {
                     const aliases = JSON.parse(card.getAttribute('data-aliases') || '[]');
@@ -680,8 +763,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 url: link.getAttribute('href') || ''
             })),
             actions: {
-                // D7: 主操作は常に「使う」表記に寄せる（カード種別で揺らがない）
-                mainText: '使う →',
+                mainText: card.querySelector('.card-body .card-action-label')?.textContent.trim() || '使う →',
                 detail: Boolean(card.querySelector('.card-detail-btn'))
             }
         }));
@@ -706,6 +788,7 @@ document.addEventListener('DOMContentLoaded', () => {
         initProjectShare();
         initProjectHistory();
         renderRecentProjects();
+        window.addEventListener('pageshow', renderRecentProjects);
 
         fetch(getProjectDataUrl())
             .then(response => {
@@ -723,6 +806,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 const status = document.getElementById('project-data-status');
                 if (status) status.hidden = false;
             });
+    } else if (document.querySelector('.other-project-list')) {
+        initProjectHistory();
     }
 
     // --- A2: ヒーロー「もっと読む」（モバイルでサブを折りたたみ） ---
@@ -1038,14 +1123,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 // カード全体のクリッカブル化（詳しく見るボタンや個別リンク以外のカード表面をクリックしたときはツールへ直行）
                 const card = e.target.closest('.card');
                 if (card && !e.target.closest('a') && !e.target.closest('button')) {
-                    const mainLink = card.querySelector('.card-link');
-                    if (mainLink && mainLink.href) {
-                        if (mainLink.target === '_blank') {
-                            window.open(mainLink.href, '_blank', 'noopener,noreferrer');
-                        } else {
-                            window.location.href = mainLink.href;
-                        }
-                    }
+                    const mainLink = [...card.querySelectorAll('.card-link')].find(link => link.getClientRects().length);
+                    mainLink?.click();
                 }
             }));
         }
@@ -1163,9 +1242,10 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // 初期化時とリサイズ時にのみDOMプロパティを読み込みキャッシュを更新
+    // 表示幅やアコーディオンの高さが変わったら位置を測り直す
     updateSectionDimensions();
     window.addEventListener('resize', debounce(updateSectionDimensions, 200));
+    projectControls?.addEventListener('toggle', updateSectionDimensions);
 
     function onScroll() {
         const scrollY = window.pageYOffset || document.documentElement.scrollTop;

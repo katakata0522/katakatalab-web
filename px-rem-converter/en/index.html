@@ -7,7 +7,7 @@
   <title>PX to REM Converter with CSS Scale Table | KatakataLab</title>
   <meta name="description" content="Convert pixels and rem units in both directions, change the root font size, preview readable text, and copy CSS variables, SCSS variables, or utility-class output.">
   
-  <link rel="stylesheet" href="style.css?v=20260824-responsive">
+  <link rel="stylesheet" href="style.css?v=20261125-refactored">
 
   <link rel="icon" href="../icon.svg" type="image/svg+xml">
   <link rel="canonical" href="https://katakatalab.com/px-rem-converter/en/">
@@ -30,6 +30,7 @@
   <nav class="english-tool-bar" aria-label="Language and English tools">
   <a class="english-tool-bar__home" href="https://katakatalab.com/en/">🧪 English tool index</a>
   <a href="https://katakatalab.com/px-rem-converter/" hreflang="ja" lang="ja">Japanese version</a>
+  <button type="button" class="tool-theme-toggle" data-theme-toggle data-lang="en" aria-label="Switch to dark mode" aria-pressed="false" title="Switch to dark mode">🌙</button>
 </nav>
     <script>try{if(localStorage.getItem('theme')==='dark')document.body.classList.add('dark-mode');}catch(e){}</script>
 
@@ -59,15 +60,12 @@
     </div>
   </header>
 
-  <div class="root-explain">
-    <p>Browsers commonly default to <strong>16px = 1rem</strong>. If the root is 10, <strong>14px = 1.4rem</strong>.</p>
-    <p><code>font-size: 62.5%</code> is 62.5% of the user’s default. At 16px that is about 10px; at 20px it is 12.5px. That is not the same as <code>font-size: 10px</code>.</p>
-    <p>Put your project’s actual root in this page’s base-size field.</p>
-  </div>
-
   <section class="converter-panel">
     <div class="input-card" id="pxCard">
-      <label for="pxInput">PX <small>(absolute pixel value)</small></label>
+      <div class="input-card-head">
+        <label for="pxInput">PX <small>(absolute pixel value)</small></label>
+        <button type="button" id="copyPxValBtn" class="btn-copy-inline" aria-label="Copy PX value">📋 Copy</button>
+      </div>
       <div class="input-row">
         <input type="number" id="pxInput" value="16" placeholder="16" step="1" inputmode="decimal" aria-label="Pixel value to convert">
         <span class="unit-label">px</span>
@@ -77,13 +75,22 @@
     <div class="exchange-icon">⇄</div>
 
     <div class="input-card" id="remCard">
-      <label for="remInput">REM <small>(root-relative rem value)</small></label>
+      <div class="input-card-head">
+        <label for="remInput">REM <small>(root-relative rem value)</small></label>
+        <button type="button" id="copyRemValBtn" class="btn-copy-inline" aria-label="Copy REM value">📋 Copy</button>
+      </div>
       <div class="input-row">
         <input type="number" id="remInput" placeholder="1" step="0.0625" inputmode="decimal" aria-label="REM value to convert">
         <span class="unit-label">rem</span>
       </div>
     </div>
   </section>
+
+  <div class="root-explain">
+    <p>Browsers commonly default to <strong>16px = 1rem</strong>. If the root is 10, <strong>14px = 1.4rem</strong>.</p>
+    <p><code>font-size: 62.5%</code> is 62.5% of the user’s default. At 16px that is about 10px; at 20px it is 12.5px. That is not the same as <code>font-size: 10px</code>.</p>
+    <p>Put your project’s actual root in this page’s base-size field.</p>
+  </div>
 
   <section class="preview-area">
     <h2 class="sub-title">Size preview</h2>
@@ -116,7 +123,7 @@
     </div>
     <p class="copy-hint">Copy includes every row currently in the reference table, including custom sizes.</p>
     
-    <textarea id="manualCopyCode" readonly hidden rows="14" aria-label="Code for manual copying" spellcheck="false" style="width:100%;box-sizing:border-box"></textarea>
+    <textarea id="manualCopyCode" readonly hidden class="manual-copy-code" rows="14" aria-label="Code for manual copying" spellcheck="false"></textarea>
 
     <div class="custom-add-container">
 
@@ -175,7 +182,7 @@
       <p>For another workflow, browse the <a href="https://katakatalab.com/en/">English tool index</a> or switch to the <a href="https://katakatalab.com/px-rem-converter/" hreflang="ja" lang="ja">Japanese version</a>.</p>
     </section>
   </section>
-</article>
+</main>
   <!-- Auto-Injected Unified Footer -->
 <footer class="tool-footer" aria-label="Site information">
   <a href="https://katakatalab.com/en/">🧪 KatakataLab English</a><span class="tool-footer__separator" aria-hidden="true">|</span>
@@ -209,7 +216,8 @@
 }
   </script>
 
-<script src="script.js?v=20260817-2" defer></script>
+<script src="../theme-sync.js?v=20261125" defer></script>
+<script src="script.js?v=20261125" defer></script>
 
   <script src="/international/english-runtime.js" defer></script>
 </body>

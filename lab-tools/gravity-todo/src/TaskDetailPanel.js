@@ -72,6 +72,7 @@ export class TaskDetailPanel {
     }
 
     this._render();
+    this.panel?.removeAttribute('inert');
     this.panel?.classList.remove('hidden');
     this.overlay?.classList.remove('hidden');
     document.body.classList.add('detail-open');
@@ -85,6 +86,7 @@ export class TaskDetailPanel {
   }
 
   close() {
+    this.panel?.setAttribute('inert', '');
     this.panel?.classList.add('hidden');
     this.overlay?.classList.add('hidden');
     document.body.classList.remove('detail-open');
@@ -92,6 +94,7 @@ export class TaskDetailPanel {
     // 背景の操作不可を解除
     document.getElementById('ui-layer')?.removeAttribute('inert');
     document.getElementById('canvas-container')?.removeAttribute('inert');
+    document.querySelector('#task-list-panel > summary')?.focus();
 
     this.currentBody = null;
     this.onOpenStateChange?.(false);

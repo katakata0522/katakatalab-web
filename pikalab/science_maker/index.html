@@ -98,7 +98,7 @@
         <button type="button" data-action="parents-modal-open"
             class="bg-white hover:bg-slate-50 text-slate-600 hover:text-slate-800 px-3 py-2 rounded-xl text-xs font-bold shadow-sm transition-all flex items-center gap-1 border border-slate-200 active:scale-95"
             aria-label="保護者の方へ - 開く" aria-haspopup="dialog" aria-expanded="false">
-            <span class="material-symbols-rounded text-lg text-emerald-500">family_restroom</span>
+            <span class="material-symbols-outlined text-lg text-emerald-500">family_restroom</span>
             <span class="hidden sm:inline">保護者の方へ</span>
         </button>
     </nav>
@@ -162,7 +162,7 @@
                                 class="bg-science-500 text-white rounded-full w-8 h-8 flex items-center justify-center font-bold mr-3 shadow-sm">Q1</span>
                             <h3 class="font-bold text-lg text-science-900">かけられる時間はどれくらい？</h3>
                         </div>
-                        <fieldset class="grid grid-cols-3 gap-3">
+                        <fieldset class="grid grid-cols-1 sm:grid-cols-3 gap-2.5 science-q1-grid">
                             <legend class="sr-only">研究にかけられる時間</legend>
 
                             <input type="radio" name="time" id="time-1day" value="1day" class="sr-only peer/1day">
@@ -303,7 +303,7 @@
             <!-- Step 3: Plan Editor -->
             <div class="step-section print:block" id="step-plan">
                 <div
-                    class="bg-science-600 p-4 text-white flex items-center justify-between print:hidden sticky top-0 z-30 shadow-md">
+                    class="bg-science-600 p-4 text-white flex flex-wrap items-center justify-between gap-2 print:hidden sticky top-0 z-30 shadow-md science-plan-bar">
                     <button type="button"
                         class="flex items-center hover:bg-science-700 px-3 py-1 rounded transition-colors text-sm font-bold"
                         id="back-to-results-btn" aria-label="テーマ選択画面に戻る">
@@ -325,8 +325,8 @@
                     </div>
                 </div>
 
-                <div class="p-4 sm:p-8 bg-gray-100 overflow-y-auto h-full">
-                    <div class="bg-white mx-auto shadow-2xl p-8 sm:p-12 max-w-[210mm] min-h-[297mm] text-gray-800 relative print:w-full print:max-w-none print:min-h-screen print:m-0 print:p-5 print:shadow-none print:border-none"
+                <div class="p-4 sm:p-8 bg-gray-100 overflow-y-auto h-full science-plan-scroll">
+                    <div class="bg-white mx-auto shadow-2xl p-8 sm:p-12 max-w-[210mm] min-h-[297mm] text-gray-800 relative print:w-full print:max-w-none print:min-h-screen print:m-0 print:p-5 print:shadow-none print:border-none science-plan-paper"
                         id="plan-paper">
                         <div class="absolute top-6 right-6 text-gray-100 pointer-events-none print:hidden"
                             aria-hidden="true">
@@ -340,11 +340,11 @@
                                 <p class="text-xs font-bold text-gray-500">この計画書に沿って研究を進めよう！</p>
                             </div>
                             <div class="text-right w-full md:w-auto">
-                                <div class="flex items-baseline justify-end mb-1">
+                                <div class="flex flex-wrap items-baseline justify-end gap-2 mb-1 science-name-row">
                                     <span class="text-sm mr-2 font-bold">　　年　　組</span>
                                     <label for="student-name" class="text-sm font-bold">名前：</label>
                                     <input
-                                        class="border-b border-gray-300 w-40 px-2 py-1 outline-none focus:border-science-500 bg-transparent text-lg font-serif print:hidden"
+                                        class="border-b border-gray-300 w-40 min-w-0 max-w-full px-2 py-1 outline-none focus:border-science-500 bg-transparent text-lg font-serif print:hidden science-name-input"
                                         id="student-name" placeholder="（名前を書く）" type="text" autocomplete="name" maxlength="60">
                                     <span id="print-student-name" class="hidden print:inline border-b border-gray-300 px-2 py-1 text-lg font-serif min-w-[10rem] text-left"></span>
                                 </div>
@@ -461,7 +461,7 @@
                             <!-- Post-Research Section -->
                             <div class="mt-12 pt-8 border-t-4 border-dotted border-gray-300">
                                 <p
-                                    class="text-center text-xs font-bold text-gray-400 mb-6 bg-gray-100 inline-block px-4 py-1 rounded-full mx-auto block w-max">
+                                    class="text-center text-xs font-bold text-gray-400 mb-6 bg-gray-100 inline-block px-4 py-1 rounded-full mx-auto block max-w-full w-fit">
                                     ↓ ここから下は研究が終わってから書こう ↓</p>
                                 <div class="mb-8">
                                     <span class="block text-sm font-black text-gray-400 mb-2">⑥ 結果（わかったこと）</span>
@@ -506,7 +506,7 @@
                 </p>
                 <div class="w-full flex gap-2">
                     <input id="share-link-input" type="text" readonly
-                        class="flex-1 px-3 py-2 text-xs font-mono rounded-lg border border-gray-200 outline-none bg-gray-50 text-gray-600">
+                        class="flex-1 min-w-0 px-3 py-2 text-xs font-mono rounded-lg border border-gray-200 outline-none bg-gray-50 text-gray-600">
                     <button id="share-copy-btn" type="button"
                         class="bg-science-100 hover:bg-science-200 text-science-700 font-bold text-xs px-4 py-2 rounded-lg transition whitespace-nowrap">
                         コピー
@@ -526,12 +526,12 @@
     aria-labelledby="parents-modal-title" style="display:none;">
     <div class="bg-white p-6 md:p-8 max-h-[90vh] overflow-y-auto relative text-left">
         <button type="button" data-action="parents-modal-close" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600 focus:outline-none" aria-label="閉じる">
-            <span class="material-symbols-rounded">close</span>
+            <span class="material-symbols-outlined">close</span>
         </button>
         <div class="mb-6 border-b-2 border-indigo-100 pb-4">
             <h2 id="parents-modal-title"
                 class="text-lg md:text-xl font-black text-slate-800 flex items-center gap-2">
-                <span class="material-symbols-rounded text-indigo-500">family_restroom</span> 保護者の方へ
+                <span class="material-symbols-outlined text-indigo-500">family_restroom</span> 保護者の方へ
             </h2>
             <p class="text-xs text-slate-400 font-bold mt-1">For Parents &amp; Guardians</p>
         </div>
@@ -540,7 +540,7 @@
             <!-- ウェルカムメッセージカード -->
             <div class="bg-gradient-to-r from-indigo-50 to-purple-50 p-5 rounded-2xl border border-indigo-100 text-center">
                 <p class="mb-2 text-indigo-800 text-base">
-                    <span class="material-symbols-rounded text-xl align-bottom mr-1 text-pink-400">favorite</span>
+                    <span class="material-symbols-outlined text-xl align-bottom mr-1 text-pink-400">favorite</span>
                     当サイト「PikaLab」に<br>ご訪問いただき、誠にありがとうございます。
                 </p>
                 <p class="text-xs text-indigo-600">
@@ -551,7 +551,7 @@
             <!-- 1. ねらい -->
             <div>
                 <h3 class="text-indigo-600 font-black mb-2 flex items-center gap-2">
-                    <span class="material-symbols-rounded text-base">school</span> このアプリのねらい
+                    <span class="material-symbols-outlined text-base">school</span> このアプリのねらい
                 </h3>
                 <p>「サイエンスメーカー」は、自由研究のテーマ選びから、予想・方法・結果・考察までを順番に整理する学習支援ツールです。<span class="bg-indigo-100 text-indigo-700 px-1 rounded">「予想する→試す→記録する→考える」</span>という流れを体験し、自分の考えを言葉や記録にまとめる練習に使えます。</p>
             </div>
@@ -559,7 +559,7 @@
             <!-- 2. おねがい -->
             <div>
                 <h3 class="text-pink-500 font-black mb-2 flex items-center gap-2">
-                    <span class="material-symbols-rounded text-base">favorite</span> 保護者様へのおねがい
+                    <span class="material-symbols-outlined text-base">favorite</span> 保護者様へのおねがい
                 </h3>
                 <p>実験の予想が外れても「なんで違ったんだろう？」と一緒に考えてあげてください。<span class="bg-pink-100 text-pink-700 px-1 rounded">予想と違う結果も大切な発見</span>です。正解を先に教えるより、結果を見て次の疑問を一緒に探す使い方がおすすめです。</p>
             </div>
@@ -567,7 +567,7 @@
             <!-- 3. 活用方法 -->
             <div>
                 <h3 class="text-green-600 font-black mb-2 flex items-center gap-2">
-                    <span class="material-symbols-rounded text-base">emoji_objects</span> おうちでの活用方法
+                    <span class="material-symbols-outlined text-base">emoji_objects</span> おうちでの活用方法
                 </h3>
                 <p>実際の観察や実験と組み合わせ、予想したこと・実際に起きたこと・そこから考えたことを分けて記録してみてください。体験と記録を往復すると、自由研究のまとめが作りやすくなります。</p>
             </div>
@@ -575,7 +575,7 @@
             <!-- 4. 健康への配慮 -->
             <div>
                 <h3 class="text-orange-500 font-black mb-2 flex items-center gap-2">
-                    <span class="material-symbols-rounded text-base">timer</span> 健康への配慮（休憩の推奨）
+                    <span class="material-symbols-outlined text-base">timer</span> 健康への配慮（休憩の推奨）
                 </h3>
                 <p>画面を長時間続けて見ないよう、疲れを感じる前に適宜休憩してください。実際の実験ではテーマごとの安全チェックを確認し、火気・加熱・刃物・薬品などを扱う場合は必ず大人と一緒に行ってください。通常の入力内容は端末内で扱われます。共有機能を使うと、氏名欄を含む研究計画の入力内容が共有URLに含まれます。氏名など共有したくない情報は共有前に外してください。ページ表示時にはWebフォント等の外部配信サービスへの通常の通信が発生する場合があります。</p>
             </div>

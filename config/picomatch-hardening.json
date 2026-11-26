@@ -1,0 +1,85 @@
+{
+  "schemaVersion": 1,
+  "advisory": "GHSA-fc5q-39xc-vjpf",
+  "locks": {
+    ".": "01c78828078b5c2538f4fb14e15f49cdf20c5087d959717cc0e4f77e79fad03e",
+    "pikalab": "bbea7dc7075b56d3452583dccb4d8fdb98024d9d6be60391bf742c4386135f59"
+  },
+  "files": {
+    "node_modules/playwright-core/lib/serverRegistry.js": {
+      "before": "b7173eb632bdbf34a6aa137b55e50fbdc95acda4851480423afe6caa86cc48b7",
+      "after": "3f1c22a63493322f4b2bd7bc089360b258c9527d277d719ba7cc7caf7d174536",
+      "copies": 2
+    },
+    "node_modules/playwright-core/lib/utilsBundle.js": {
+      "before": "5c42363c10d2f2f5bc91e07feaa9fa5f417a1a55e6559448d0c20d66f73db9e0",
+      "after": "d9ea5e3cad2eca911f1dee43d6b38dce8801087a10a2cb9ea679a5a64883e19e",
+      "copies": 2
+    },
+    "node_modules/playwright/lib/matchers/expect.js": {
+      "before": "10b9442388bd9cfaae64e3f76c74081548687ab89e7d1f1ea20c93de6bd02358",
+      "after": "2156f42f69aa321415405041f017bcc5add7546376a1360d47e9a939d43b89dd",
+      "copies": 1
+    },
+    "pikalab/node_modules/@rollup/pluginutils/node_modules/picomatch/lib/parse.js": {
+      "before": "ce57c04e04994b83e2ca566170fa192e6fe19d710bea6da00ce2f76d01c0dea4",
+      "after": "ae6bf2cd8dc8f70a0872583a560397401bb35d1f9a8bc90dca79ec70b654006a",
+      "copies": 1
+    },
+    "pikalab/node_modules/picomatch/lib/parse.js": {
+      "before": "3a91656f440069aa8f8e15c9d695b9f6b2209df1eab2be8127c72cbcca45ff5f",
+      "after": "bb57a1bacd4dd7cd6581a028c26a181edca42ebf1e0ca1b221cc9017d9839293",
+      "copies": 1
+    },
+    "pikalab/node_modules/playwright-core/lib/serverRegistry.js": {
+      "before": "b7173eb632bdbf34a6aa137b55e50fbdc95acda4851480423afe6caa86cc48b7",
+      "after": "3f1c22a63493322f4b2bd7bc089360b258c9527d277d719ba7cc7caf7d174536",
+      "copies": 2
+    },
+    "pikalab/node_modules/playwright-core/lib/utilsBundle.js": {
+      "before": "5c42363c10d2f2f5bc91e07feaa9fa5f417a1a55e6559448d0c20d66f73db9e0",
+      "after": "d9ea5e3cad2eca911f1dee43d6b38dce8801087a10a2cb9ea679a5a64883e19e",
+      "copies": 2
+    },
+    "pikalab/node_modules/playwright/lib/matchers/expect.js": {
+      "before": "10b9442388bd9cfaae64e3f76c74081548687ab89e7d1f1ea20c93de6bd02358",
+      "after": "2156f42f69aa321415405041f017bcc5add7546376a1360d47e9a939d43b89dd",
+      "copies": 1
+    },
+    "pikalab/node_modules/rollup/dist/es/shared/node-entry.js": {
+      "before": "f203eedf7c48cda16de14b9a1ee66609c2c5d702dfe829299d86cac8a69a919c",
+      "after": "e44fc809d63b3201590193e96d40fce420ceef9d06a44be1a0eba12c284bc64d",
+      "copies": 1
+    },
+    "pikalab/node_modules/rollup/dist/es/shared/watch.js": {
+      "before": "04eea7ab5c7269ed5dc5d18eb4320fa6ee4b7832c01bc37a6da2f83d72628455",
+      "after": "0b3fd8ed058c106471b23a631bf86125c1ab321ce1e5f8921fda28ff1b6310f7",
+      "copies": 2
+    },
+    "pikalab/node_modules/rollup/dist/shared/index.js": {
+      "before": "59e3133789e00678fbd95b0ed1a27c07badac478f8b46b21c5130e3ee2c7e2aa",
+      "after": "dcb60371fe5e09d8cd84cd677325074636ba390fe736c84c4a7ddd05e0a30be6",
+      "copies": 2
+    },
+    "pikalab/node_modules/rollup/dist/shared/rollup.js": {
+      "before": "43e4969922b46327dd477a66c5bc7c9b778fd0c955fba2b623c7df6faadc7b8e",
+      "after": "d557660fb6667a2eb41eaed875979a8276a11af877d0e0ce5a56467985f402b5",
+      "copies": 1
+    },
+    "pikalab/node_modules/tinyglobby/node_modules/picomatch/lib/parse.js": {
+      "before": "ce57c04e04994b83e2ca566170fa192e6fe19d710bea6da00ce2f76d01c0dea4",
+      "after": "ae6bf2cd8dc8f70a0872583a560397401bb35d1f9a8bc90dca79ec70b654006a",
+      "copies": 1
+    },
+    "pikalab/node_modules/vite/node_modules/picomatch/lib/parse.js": {
+      "before": "4e1e05447668aa1e94366c5516a2bcd8f5fff800cc92b1d0cd7d77703b8618c4",
+      "after": "97c1d42f7141a75b835d14a91644d7dd543908a6c0936514c0903e176fb2dd47",
+      "copies": 1
+    },
+    "pikalab/node_modules/vitest/node_modules/picomatch/lib/parse.js": {
+      "before": "ce57c04e04994b83e2ca566170fa192e6fe19d710bea6da00ce2f76d01c0dea4",
+      "after": "ae6bf2cd8dc8f70a0872583a560397401bb35d1f9a8bc90dca79ec70b654006a",
+      "copies": 1
+    }
+  }
+}

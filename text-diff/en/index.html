@@ -22,15 +22,16 @@
   <meta name="twitter:card" content="summary_large_image">
 
   <link rel="icon" href="/favicon.ico">
-  <link rel="stylesheet" href="style.css?v=20260824-responsive">
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jsdiff/5.1.0/diff.min.js"></script>
+  <link rel="stylesheet" href="style.css?v=20261125-refactored">
+  <script src="diff-engine.js?v=20261125"></script>
   <link rel="stylesheet" href="/international/english-shell.css?v=20260805-lab">
-    <link rel="stylesheet" href="../../tool-chrome.css?v=source">
+  <link rel="stylesheet" href="../../tool-chrome.css?v=20261125">
 </head>
 <body class="english-tool-page english-tool--text-diff">
   <nav class="english-tool-bar" aria-label="Language and English tools">
   <a class="english-tool-bar__home" href="https://katakatalab.com/en/">🧪 English tool index</a>
   <a href="https://katakatalab.com/text-diff/" hreflang="ja" lang="ja">Japanese version</a>
+  <button type="button" class="tool-theme-toggle" data-theme-toggle data-lang="en" aria-label="Switch to dark mode" aria-pressed="false" title="Switch to dark mode">🌙</button>
 </nav>
     <script>try{if(localStorage.getItem('theme')==='dark')document.body.classList.add('dark-mode');}catch(e){}</script>
 
@@ -79,7 +80,7 @@
       </div>
     </div>
 
-    <div class="control-group" id="viewToggle" style="display:none;">
+    <div class="control-group is-hidden" id="viewToggle">
       <span class="control-label">View:</span>
       <div class="toggle-switch">
         <label class="radio-label">
@@ -94,6 +95,9 @@
     </div>
     
     <div class="actions">
+      <button type="button" id="sampleBtn" class="btn-secondary" aria-label="Load sample text and compare" title="Try Sample">
+        <span class="icon-sample">✨</span> Sample
+      </button>
       <button type="button" id="swapBtn" class="btn-secondary" aria-label="Swap the two inputs" title="Swap Texts">
         <span class="icon-swap">⇄</span> Swap
       </button>
@@ -104,9 +108,9 @@
     </div>
   </nav>
 
-  <div id="alertBox" class="alert-box" role="alert" style="display:none;"></div>
+  <div id="alertBox" class="alert-box is-hidden" role="alert"></div>
 
-  <div id="undoToast" class="undo-toast" role="status" aria-live="polite" style="display:none;">
+  <div id="undoToast" class="undo-toast is-hidden" role="status" aria-live="polite">
     <div class="undo-toast-inner">
       <span class="undo-msg">📥 Inputs cleared</span>
       <button type="button" id="undoBtn" class="btn-undo">Undo</button>
@@ -119,11 +123,11 @@
       <div class="pane-header">
         <label for="textOriginal" class="pane-label">Original</label>
         <div class="pane-actions">
-          <span id="fileInfoOriginal" class="file-info-badge" style="display:none;"></span>
+          <span id="fileInfoOriginal" class="file-info-badge is-hidden"></span>
           <span id="charCountOriginal" class="char-count">0 chars</span>
           <button type="button" class="btn-paste" data-target="original" aria-label="Paste into Original">Paste</button>
           <label class="btn-file-label" title="Load from file" aria-label="Load from file">
-            <input type="file" class="file-input" data-target="original" accept=".txt,.md,.js,.css,.html,.json,.xml" style="display:none;" aria-label="Upload the Original file">
+            <input type="file" class="file-input is-hidden" data-target="original" accept=".txt,.md,.js,.css,.html,.json,.xml" aria-label="Upload the Original file">
             📁 File
           </label>
         </div>
@@ -135,11 +139,11 @@
       <div class="pane-header">
         <label for="textNew" class="pane-label">New</label>
         <div class="pane-actions">
-          <span id="fileInfoNew" class="file-info-badge" style="display:none;"></span>
+          <span id="fileInfoNew" class="file-info-badge is-hidden"></span>
           <span id="charCountNew" class="char-count">0 chars</span>
           <button type="button" class="btn-paste" data-target="new" aria-label="Paste into New">Paste</button>
           <label class="btn-file-label" title="Load from file" aria-label="Load from file">
-            <input type="file" class="file-input" data-target="new" accept=".txt,.md,.js,.css,.html,.json,.xml" style="display:none;" aria-label="Upload the New file">
+            <input type="file" class="file-input is-hidden" data-target="new" accept=".txt,.md,.js,.css,.html,.json,.xml" aria-label="Upload the New file">
             📁 File
           </label>
         </div>
@@ -148,13 +152,13 @@
     </div>
   </section>
 
-  <section id="resultSection" class="result-container" style="display:none;">
+  <section id="resultSection" class="result-container is-hidden">
 <p id="comparisonStatus" role="status" aria-live="polite"></p>
     <div class="result-header">
       <h2>Diff Result</h2>
       <div class="result-actions">
         <!-- 差分統計バッジ & スマートジャンプナビ -->
-        <div id="diffNav" class="diff-nav" style="display:none;">
+        <div id="diffNav" class="diff-nav is-hidden">
           <span id="diffStat" class="diff-stat"></span>
           <div class="jump-group">
             <button type="button" id="btnPrevDiff" class="btn-jump" aria-label="Previous difference" title="Previous Diff">▲</button>
@@ -164,11 +168,11 @@
 
         <!-- 統合ビュー用コピーボタン -->
 <label for="copyFormat">Copy format</label><select id="copyFormat"><option value="diff">Difference text (+/-)</option><option value="new">Full changed text</option></select>
-        <button type="button" id="btnCopyDiff" class="btn-secondary btn-copy-diff" aria-label="Copy differences" title="Copy Diff Text" style="display:none;">
+        <button type="button" id="btnCopyDiff" class="btn-secondary btn-copy-diff is-hidden" aria-label="Copy differences" title="Copy Diff Text">
           <span class="icon-copy">📋</span> Copy Diff
         </button>
 
-        <span id="statusMessage" class="status-msg" style="display:none;">
+        <span id="statusMessage" class="status-msg is-hidden">
           <span class="icon-check">✅</span> Identical
         </span>
         <button type="button" id="editBtn" class="btn-secondary" aria-label="Back to editing">
@@ -189,7 +193,7 @@
       </div>
     </div>
 
-    <div id="diffViewUnified" class="diff-viewer unified-view" style="display:none;">
+    <div id="diffViewUnified" class="diff-viewer unified-view is-hidden">
       <div class="pane diff-pane full-width">
         <div class="pane-sticky-header">Combined Result</div>
         <div id="diffUnified" class="diff-content" tabindex="0"></div>
@@ -203,7 +207,7 @@
     </div>
   </section>
 
-  <div id="loadingOverlay" class="loading-overlay" style="display:none;" aria-live="assertive">
+  <div id="loadingOverlay" class="loading-overlay is-hidden" aria-live="assertive">
     <div class="spinner"></div>
     <p>Comparing...</p>
   </div>
@@ -244,8 +248,6 @@
   <a href="https://katakatalab.com/terms.html">Terms (Japanese)</a>
 </footer>
 
-</main>
-
 <script type="application/ld+json">
   {
   "@context": "https://schema.org",
@@ -270,7 +272,8 @@
 }
   </script>
 
-<script src="script.js" defer></script>
+<script src="../theme-sync.js?v=20261125" defer></script>
+<script src="script.js?v=20261125" defer></script>
   <!-- Dynamic UI messages are localized in script.js. Never translate user diff content. -->
 </body>
 </html>

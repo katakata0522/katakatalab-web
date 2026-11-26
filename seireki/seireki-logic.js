@@ -7,10 +7,10 @@ const SeirekiLogic = (() => {
   const MAX_AGE = 120;
   const ETOS = ['申', '酉', '戌', '亥', '子', '丑', '寅', '卯', '辰', '巳', '午', '未'];
   const ERAS = [
-    { name: '令和', start: 2019 },
-    { name: '平成', start: 1989 },
-    { name: '昭和', start: 1926 },
-    { name: '大正', start: 1912 },
+    { name: '令和', start: 2019, month: 5, day: 1 },
+    { name: '平成', start: 1989, month: 1, day: 8 },
+    { name: '昭和', start: 1926, month: 12, day: 25 },
+    { name: '大正', start: 1912, month: 7, day: 30 },
     { name: '明治', start: 1868 }
   ];
 
@@ -56,14 +56,25 @@ const SeirekiLogic = (() => {
     return '';
   }
 
-  function warekiDisplay(year) {
-    const primary = warekiPrimary(year);
+  function erasForDate(year, month, day) {
     const currentIndex = ERAS.findIndex((era) => year >= era.start);
-    if (currentIndex < 0) return primary;
+    if (currentIndex < 0) return [];
     const current = ERAS[currentIndex];
     const previous = ERAS[currentIndex + 1];
-    if (!previous || year !== current.start) return primary;
-    return `${formatEraYear(previous.name, year - previous.start + 1)} / ${primary}`;
+    if (!previous || year !== current.start) return [current];
+    const m = toOptionalInt(month);
+    const d = toOptionalInt(day);
+    if (m !== null) {
+      if (m < current.month) return [previous];
+      if (m > current.month || current.day === 1) return [current];
+      if (d !== null) return [d < current.day ? previous : current];
+    }
+    return [previous, current];
+  }
+
+  function warekiDisplay(year, month, day) {
+    return erasForDate(year, month, day)
+      .map(era => formatEraYear(era.name, year - era.start + 1)).join(' / ');
   }
 
   function toOptionalInt(value) {
@@ -163,6 +174,7 @@ const SeirekiLogic = (() => {
     parseWesternYear,
     warekiToWestern,
     warekiPrimary,
+    erasForDate,
     warekiDisplay,
     isEarlyBirth,
     isValidCalendarDate,

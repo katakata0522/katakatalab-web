@@ -2,6 +2,7 @@
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
+    <meta http-equiv="Content-Security-Policy" content="script-src 'self'; script-src-attr 'none'">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ゲームや勝負で負けると激しく怒る子に、親はどう声をかければいいですか？ | PikaLab 読みもの広場</title>
     <meta name="description" content="トランプやゲームで負けると癇癪を起こすのは向上心の裏返しです。情動調整の発達段階を理解し、悔しさを安全に受け止めて立て直す関わり方を研究から整理します。">
@@ -29,20 +30,20 @@
     <link rel="stylesheet" href="./style.css">
 </head>
 <body class="min-h-screen text-slate-800 antialiased font-sans text-palt bg-slate-50/50">
-    <script>try{var p=localStorage.getItem('wonder_school_profile_v2');if(p&&JSON.parse(p).darkMode)document.body.classList.add('theme-night');}catch(e){}</script>
+    <script src="./article-appearance.js"></script>
     
     <!-- Header -->
-    <header class="premium-header sticky top-0 z-50 px-5 py-3 md:px-8 md:py-4 flex items-center justify-between transition-all bg-white/90 backdrop-blur-md border-b border-slate-100">
-        <a href="./" class="inline-flex items-center gap-2 rounded-full bg-white px-4 py-2 text-sm font-black text-slate-600 shadow-[0_2px_10px_rgba(0,0,0,0.04)] border border-slate-100 transition-all hover:bg-sky-50 hover:text-sky-600 hover:border-sky-200 hover:-translate-y-0.5">
-            <span class="material-symbols-rounded text-base">arrow_back</span>
+    <header class="premium-header sticky top-0 z-50 px-4 py-2.5 md:px-8 flex items-center justify-between transition-all">
+        <a href="./" class="header-back-link">
+            <span class="material-symbols-rounded text-base" aria-hidden="true">arrow_back</span>
             読みもの広場にもどる
         </a>
-        <div class="flex items-center gap-2 md:gap-3">
-            <button type="button" id="font-size-toggle" class="w-9 h-9 md:w-10 md:h-10 rounded-full bg-white border border-slate-100 shadow-sm flex items-center justify-center text-slate-600 hover:bg-slate-50 transition-colors" aria-label="文字サイズ変更" title="文字サイズ変更">
-                <span class="font-black text-[14px] md:text-[15px] transition-all">あ</span>
+        <div class="flex items-center gap-2">
+            <button type="button" id="font-size-toggle" class="header-icon-btn" aria-label="文字サイズ変更" title="文字サイズ変更">
+                <span class="font-bold text-[14px] md:text-[15px]">あ</span>
             </button>
-            <button type="button" id="dark-mode-toggle" class="w-9 h-9 md:w-10 md:h-10 rounded-full bg-white border border-slate-100 shadow-sm flex items-center justify-center text-slate-600 hover:bg-slate-50 transition-colors" aria-label="ダークモード切替" title="ダークモード切替">
-                <span class="material-symbols-rounded text-base md:text-lg dark-icon">dark_mode</span>
+            <button type="button" id="dark-mode-toggle" class="header-icon-btn" aria-label="ダークモード切替" title="ダークモード切替">
+                <span class="material-symbols-rounded text-base dark-icon" aria-hidden="true">dark_mode</span>
             </button>
         </div>
     </header>
@@ -50,14 +51,14 @@
     <div class="mx-auto max-w-6xl px-5 py-6 md:px-8 md:py-10 relative z-10">
         
         <!-- Breadcrumbs -->
-        <nav class="text-[11px] md:text-xs font-bold text-slate-400 mb-6 flex items-center gap-2 breadcrumb-nav flex-wrap">
-            <a href="../../" class="inline-flex min-h-[44px] min-w-[44px] items-center justify-center hover:text-sky-500 transition-colors whitespace-nowrap">ホーム</a>
-            <span class="material-symbols-rounded text-[14px]">chevron_right</span>
-            <a href="../" class="inline-flex min-h-[44px] min-w-[44px] items-center justify-center hover:text-sky-500 transition-colors whitespace-nowrap">PikaLab</a>
-            <span class="material-symbols-rounded text-[14px]">chevron_right</span>
-            <a href="./" class="inline-flex min-h-[44px] min-w-[44px] items-center justify-center hover:text-sky-500 transition-colors whitespace-nowrap">読みもの広場</a>
-            <span class="material-symbols-rounded text-[14px]">chevron_right</span>
-            <span class="text-slate-600 breadcrumb-current whitespace-nowrap truncate max-w-[200px] md:max-w-none">ゲームや勝負で負けると激しく怒る子に、親はどう声をかければいいですか？</span>
+        <nav aria-label="パンくずリスト" class="text-[11px] font-medium text-slate-400 mb-5 flex items-center gap-1.5 breadcrumb-nav flex-wrap">
+            <a href="../../" class="hover:text-slate-600 transition-colors whitespace-nowrap">ホーム</a>
+            <span class="material-symbols-rounded text-[13px]" aria-hidden="true">chevron_right</span>
+            <a href="../" class="hover:text-slate-600 transition-colors whitespace-nowrap">PikaLab</a>
+            <span class="material-symbols-rounded text-[13px]" aria-hidden="true">chevron_right</span>
+            <a href="./" class="hover:text-slate-600 transition-colors whitespace-nowrap">読みもの広場</a>
+            <span class="material-symbols-rounded text-[13px]" aria-hidden="true">chevron_right</span>
+            <span class="breadcrumb-current whitespace-nowrap truncate max-w-[220px] md:max-w-none">ゲームや勝負で負けると激しく怒る子に、親はどう声をかければいいですか？</span>
         </nav>
 
         <!-- 2-Column Layout -->
@@ -68,22 +69,22 @@
 
                 <article class="bg-white rounded-[32px] p-6 md:p-10 shadow-[0_8px_30px_rgba(0,0,0,0.03)] border border-slate-100">
                     <!-- Article Header -->
-                    <header class="mb-10 text-center md:text-left">
-                        <div class="flex items-center justify-center md:justify-start gap-3 mb-5">
-                            <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-fuchsia-50 text-fuchsia-600 text-[11px] font-black tracking-wider">
-                                <span class="material-symbols-rounded text-[14px]">sentiment_dissatisfied</span>
-                                心の力
+                    <header class="mb-9 pb-6 border-b border-slate-200/80 text-center md:text-left">
+                        <div class="flex flex-wrap items-center justify-center md:justify-start gap-3 mb-4">
+                            <span class="tag bg-fuchsia-light inline-flex items-center gap-1.5">
+                                <span class="material-symbols-rounded text-[14px]" aria-hidden="true">favorite</span>
+                                <span>やる気・心の力</span>
                             </span>
-                            <span class="text-xs font-bold text-slate-400 flex items-center gap-1">
-                                <span class="material-symbols-rounded text-[14px]">schedule</span> 読了 約4分
+                            <span class="text-xs font-bold text-slate-400 inline-flex items-center gap-1">
+                                <span class="material-symbols-rounded text-[14px]" aria-hidden="true">schedule</span> 読了 約4分
                             </span>
                         </div>
-                        <h1 class="article-title-balanced font-pop text-2xl md:text-4xl font-black text-slate-800 leading-[1.5] mb-6">
+                        <h1 class="article-title-balanced font-pop text-2xl md:text-3xl font-black text-slate-900 leading-[1.45] mb-4">
                             ゲームや勝負で負けると激しく怒る子に、親はどう声をかければいいですか？
                         </h1>
-                        <div class="flex items-center justify-center md:justify-start gap-4 text-sm text-slate-500 font-medium">
+                        <div class="flex items-center justify-center md:justify-start gap-4 text-xs md:text-sm text-slate-500 font-medium">
                             <div class="flex items-center gap-1">
-                                <span class="material-symbols-rounded text-[16px]">edit_calendar</span>
+                                <span class="material-symbols-rounded text-[16px]" aria-hidden="true">edit_calendar</span>
                                 <span>公開 2026.09.07</span>
                             </div>
                         </div>
@@ -103,7 +104,7 @@
 <p>まず大人が思い出したいのは、どうでもいいと思っていることでは、人は激しく悔しがらないということです。</p>
 <p>負けて大泣きするのは、子どもがそれだけそのゲームに夢中になり、「勝ちたい」「うまくなりたい」と全力で心を傾けていた証拠です。</p>
 <p>問題は「悔しさを感じること」そのものではなく、<strong>湧き上がった巨大な感情を脳がまだ処理しきれずにあふれ出してしまうこと（自己調整の未熟さ）</strong>にあります。</p>
-<p>アイゼンバーグ（Nancy Eisenberg）らの情動調節に関する包括的な研究（2010年）でも、幼少期から学齢期にかけての子どもの感情のコントロール力は、前頭葉の発達とともに年単位でゆっくり育っていくことが示されています。</p>
+<p>アイゼンバーグ（Nancy Eisenberg）らの情動調節に関する研究レビュー（2010年）でも、幼少期から成長にかけて子どもの感情をコントロールする力は、発達とともに年単位でゆっくり育っていくことが整理されています。</p>
 <p>大人のように「まあ、ゲームだから仕方ない」と頭で感情を冷ますブレーキは、小学生の段階ではまだ工事中なのです。</p>
 
 <h2>「悔しかったね」と名札をつけてあげる</h2>
@@ -148,11 +149,11 @@
                             </h3>
                             <div class="related-articles-grid">
                                 <a href="failure-resilience.html" class="related-card group">
-                                    <div class="related-card-cover bg-gradient-fuchsia">
-                                        <span class="material-symbols-rounded">favorite</span>
+                                    <div class="related-card-cover bg-gradient-fuchsia" aria-hidden="true">
+                                        <span class="material-symbols-rounded" aria-hidden="true">favorite</span>
                                     </div>
                                     <div class="related-card-body">
-                                        <span class="related-card-tag bg-fuchsia-light text-fuchsia-700">心の力</span>
+                                        <span class="related-card-tag bg-fuchsia-light">やる気・心の力</span>
                                         <h4 class="related-card-title">失敗に強い子は、どう育っていくのでしょうか</h4>
                                         <span class="related-card-link">
                                             記事を読む <span class="material-symbols-rounded text-sm" aria-hidden="true">arrow_forward</span>
@@ -160,11 +161,11 @@
                                     </div>
                                 </a>
                                 <a href="play-is-learning.html" class="related-card group">
-                                    <div class="related-card-cover bg-gradient-emerald">
-                                        <span class="material-symbols-rounded">toys</span>
+                                    <div class="related-card-cover bg-gradient-emerald" aria-hidden="true">
+                                        <span class="material-symbols-rounded" aria-hidden="true">toys</span>
                                     </div>
                                     <div class="related-card-body">
-                                        <span class="related-card-tag bg-emerald-light text-emerald-700">遊びと学び</span>
+                                        <span class="related-card-tag bg-emerald-light">遊び・探究・未来</span>
                                         <h4 class="related-card-title">遊びはどこまで学びになるのでしょうか</h4>
                                         <span class="related-card-link">
                                             記事を読む <span class="material-symbols-rounded text-sm" aria-hidden="true">arrow_forward</span>
@@ -179,19 +180,19 @@
 <p>・Eisenberg, N., Spinrad, T. L., & Eggum, N. D. (2010). Emotion-related self-regulation and its relation to children's maladjustment. Annual Review of Clinical Psychology, 6, 495–525.<br>
     <a href="https://pubmed.ncbi.nlm.nih.gov/20192797/" target="_blank" rel="noopener noreferrer" class="text-sky-500 hover:underline">https://pubmed.ncbi.nlm.nih.gov/20192797/</a></p>
     <p>・Gottman, J. M., Katz, L. F., & Hooven, C. (1996). Parental meta-emotion philosophy and the emotional life of families: Theoretical models and preliminary data. Journal of Family Psychology, 10(3), 243–268.<br>
-    <a href="https://psycnet.apa.org/record/1996-06900-001" target="_blank" rel="noopener noreferrer" class="text-sky-500 hover:underline">https://psycnet.apa.org/record/1996-06900-001</a></p>
+    <a href="https://doi.org/10.1037/0893-3200.10.3.243" target="_blank" rel="noopener noreferrer" class="text-sky-500 hover:underline">https://doi.org/10.1037/0893-3200.10.3.243</a></p>
 </div>
                     </div>
                 </article>
             </main>
 
             <!-- Sidebar (Right) -->
-            <aside class="lg:w-[32%] w-full space-y-8 mt-8 lg:mt-0">
+            <aside class="lg:w-[32%] w-full space-y-6 mt-8 lg:mt-0">
                 <!-- プロフィールウィジェット -->
-                <div class="bg-white rounded-[24px] p-6 shadow-sm border border-slate-100 text-center">
-                    <h3 class="font-pop font-black text-slate-800 mb-4 flex items-center justify-center gap-2">この記事を書いている人</h3>
-                    <div class="w-20 h-20 mx-auto bg-slate-100 border border-slate-200 rounded-full mb-4 flex items-center justify-center text-slate-400 shadow-inner">
-                        <span class="material-symbols-rounded text-3xl">face</span>
+                <div class="sidebar-widget text-center">
+                    <h3 class="widget-title justify-center">この記事を書いている人</h3>
+                    <div class="w-20 h-20 mx-auto bg-slate-100 border border-slate-200 rounded-full mb-4 flex items-center justify-center text-slate-400 shadow-inner" aria-hidden="true">
+                        <span class="material-symbols-rounded text-3xl" aria-hidden="true">face</span>
                     </div>
                     <strong class="block text-slate-800 font-black text-base mb-2">かたかた</strong>
                     <p class="text-xs text-slate-600 font-medium leading-[1.8]">
@@ -200,25 +201,25 @@
                 </div>
 
                 <!-- ツールウィジェット -->
-                <div class="bg-white rounded-[24px] p-6 shadow-sm border border-slate-100">
-                    <h3 class="font-pop font-black text-slate-800 mb-4 flex items-center gap-2">一緒に使えるツール</h3>
-                    <div class="space-y-3">
-                        <a href="../focus_studio/" class="flex items-center gap-3 p-3 rounded-2xl hover:bg-slate-50 transition-colors group">
-                            <div class="w-10 h-10 rounded-full bg-orange-50 text-orange-600 flex items-center justify-center group-hover:scale-110 transition-transform">
-                                <span class="material-symbols-rounded text-[18px]">timer</span>
+                <div class="sidebar-widget">
+                    <h3 class="widget-title">一緒に使えるツール</h3>
+                    <div class="space-y-2.5">
+                        <a href="../focus_studio/" class="sidebar-tool-link group">
+                            <div class="sidebar-tool-icon bg-orange-50 text-orange-600 group-hover:scale-110 transition-transform" aria-hidden="true">
+                                <span class="material-symbols-rounded text-[20px]" aria-hidden="true">timer</span>
                             </div>
                             <div class="text-left">
                                 <span class="block text-[10px] font-black text-slate-400 tracking-wider">時間の区切り</span>
-                                <strong class="text-slate-700 font-bold text-sm group-hover:text-orange-600 transition-colors">ポモドーロスタジオ</strong>
+                                <strong class="text-slate-700 font-black text-sm group-hover:text-orange-600 transition-colors">ポモドーロスタジオ</strong>
                             </div>
                         </a>
-                        <a href="../book_report/" class="flex items-center gap-3 p-3 rounded-2xl hover:bg-slate-50 transition-colors group">
-                            <div class="w-10 h-10 rounded-full bg-emerald-50 text-emerald-600 flex items-center justify-center group-hover:scale-110 transition-transform">
-                                <span class="material-symbols-rounded text-[18px]">edit_note</span>
+                        <a href="../book_report/" class="sidebar-tool-link group">
+                            <div class="sidebar-tool-icon bg-emerald-50 text-emerald-600 group-hover:scale-110 transition-transform" aria-hidden="true">
+                                <span class="material-symbols-rounded text-[20px]" aria-hidden="true">edit_note</span>
                             </div>
                             <div class="text-left">
                                 <span class="block text-[10px] font-black text-slate-400 tracking-wider">書く前の補助</span>
-                                <strong class="text-slate-700 font-bold text-sm group-hover:text-emerald-600 transition-colors">読書感想文メーカー</strong>
+                                <strong class="text-slate-700 font-black text-sm group-hover:text-emerald-600 transition-colors">読書感想文メーカー</strong>
                             </div>
                         </a>
                     </div>

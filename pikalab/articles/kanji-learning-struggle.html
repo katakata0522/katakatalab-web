@@ -2,6 +2,7 @@
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
+    <meta http-equiv="Content-Security-Policy" content="script-src 'self'; script-src-attr 'none'">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>漢字の書き取りドリルで泣いてしまうとき、親はどう関わればいいですか？ | PikaLab 読みもの広場</title>
     <meta name="description" content="漢字の宿題が苦痛で涙が出るのは単なる怠けではありません。丸暗記の負荷、視覚と手の連動の難しさを理解し、パーツや意味の面白さから支える工夫を整理します。">
@@ -18,7 +19,7 @@
     <meta name="twitter:image" content="https://katakatalab.com/pikalab/pikalab_ogp_compressed.jpg">
     <link rel="canonical" href="https://katakatalab.com/pikalab/articles/kanji-learning-struggle.html">
     <script type="application/ld+json">
-        {"@context":"https://schema.org","@type":"BlogPosting","headline":"漢字の書き取りドリルで泣いてしまうとき、親はどう関わればいいですか？","datePublished":"2026-09-07","mainEntityOfPage":"https://katakatalab.com/pikalab/articles/kanji-learning-struggle.html","image":"https://katakatalab.com/pikalab/pikalab_ogp_compressed.jpg","publisher":{"@type":"Organization","name":"KatakataLab","url":"https://katakatalab.com/"},"author":{"@type":"Person","name":"かたかた","url":"https://katakatalab.com/who-is-katakata.html"},"dateModified":"2026-09-07"}
+        {"@context":"https://schema.org","@type":"BlogPosting","headline":"漢字の書き取りドリルで泣いてしまうとき、親はどう関わればいいですか？","datePublished":"2026-09-07","mainEntityOfPage":"https://katakatalab.com/pikalab/articles/kanji-learning-struggle.html","image":"https://katakatalab.com/pikalab/pikalab_ogp_compressed.jpg","publisher":{"@type":"Organization","name":"KatakataLab","url":"https://katakatalab.com/"},"author":{"@type":"Person","name":"かたかた","url":"https://katakatalab.com/who-is-katakata.html"},"dateModified":"2026-11-22"}
     </script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -29,20 +30,20 @@
     <link rel="stylesheet" href="./style.css">
 </head>
 <body class="min-h-screen text-slate-800 antialiased font-sans text-palt bg-slate-50/50">
-    <script>try{var p=localStorage.getItem('wonder_school_profile_v2');if(p&&JSON.parse(p).darkMode)document.body.classList.add('theme-night');}catch(e){}</script>
+    <script src="./article-appearance.js"></script>
     
     <!-- Header -->
-    <header class="premium-header sticky top-0 z-50 px-5 py-3 md:px-8 md:py-4 flex items-center justify-between transition-all bg-white/90 backdrop-blur-md border-b border-slate-100">
-        <a href="./" class="inline-flex items-center gap-2 rounded-full bg-white px-4 py-2 text-sm font-black text-slate-600 shadow-[0_2px_10px_rgba(0,0,0,0.04)] border border-slate-100 transition-all hover:bg-sky-50 hover:text-sky-600 hover:border-sky-200 hover:-translate-y-0.5">
-            <span class="material-symbols-rounded text-base">arrow_back</span>
+    <header class="premium-header sticky top-0 z-50 px-4 py-2.5 md:px-8 flex items-center justify-between transition-all">
+        <a href="./" class="header-back-link">
+            <span class="material-symbols-rounded text-base" aria-hidden="true">arrow_back</span>
             読みもの広場にもどる
         </a>
-        <div class="flex items-center gap-2 md:gap-3">
-            <button type="button" id="font-size-toggle" class="w-9 h-9 md:w-10 md:h-10 rounded-full bg-white border border-slate-100 shadow-sm flex items-center justify-center text-slate-600 hover:bg-slate-50 transition-colors" aria-label="文字サイズ変更" title="文字サイズ変更">
-                <span class="font-black text-[14px] md:text-[15px] transition-all">あ</span>
+        <div class="flex items-center gap-2">
+            <button type="button" id="font-size-toggle" class="header-icon-btn" aria-label="文字サイズ変更" title="文字サイズ変更">
+                <span class="font-bold text-[14px] md:text-[15px]">あ</span>
             </button>
-            <button type="button" id="dark-mode-toggle" class="w-9 h-9 md:w-10 md:h-10 rounded-full bg-white border border-slate-100 shadow-sm flex items-center justify-center text-slate-600 hover:bg-slate-50 transition-colors" aria-label="ダークモード切替" title="ダークモード切替">
-                <span class="material-symbols-rounded text-base md:text-lg dark-icon">dark_mode</span>
+            <button type="button" id="dark-mode-toggle" class="header-icon-btn" aria-label="ダークモード切替" title="ダークモード切替">
+                <span class="material-symbols-rounded text-base dark-icon" aria-hidden="true">dark_mode</span>
             </button>
         </div>
     </header>
@@ -50,14 +51,14 @@
     <div class="mx-auto max-w-6xl px-5 py-6 md:px-8 md:py-10 relative z-10">
         
         <!-- Breadcrumbs -->
-        <nav class="text-[11px] md:text-xs font-bold text-slate-400 mb-6 flex items-center gap-2 breadcrumb-nav flex-wrap">
-            <a href="../../" class="inline-flex min-h-[44px] min-w-[44px] items-center justify-center hover:text-sky-500 transition-colors whitespace-nowrap">ホーム</a>
-            <span class="material-symbols-rounded text-[14px]">chevron_right</span>
-            <a href="../" class="inline-flex min-h-[44px] min-w-[44px] items-center justify-center hover:text-sky-500 transition-colors whitespace-nowrap">PikaLab</a>
-            <span class="material-symbols-rounded text-[14px]">chevron_right</span>
-            <a href="./" class="inline-flex min-h-[44px] min-w-[44px] items-center justify-center hover:text-sky-500 transition-colors whitespace-nowrap">読みもの広場</a>
-            <span class="material-symbols-rounded text-[14px]">chevron_right</span>
-            <span class="text-slate-600 breadcrumb-current whitespace-nowrap truncate max-w-[200px] md:max-w-none">漢字の書き取りドリルで泣いてしまうとき、親はどう関わればいいですか？</span>
+        <nav aria-label="パンくずリスト" class="text-[11px] font-medium text-slate-400 mb-5 flex items-center gap-1.5 breadcrumb-nav flex-wrap">
+            <a href="../../" class="hover:text-slate-600 transition-colors whitespace-nowrap">ホーム</a>
+            <span class="material-symbols-rounded text-[13px]" aria-hidden="true">chevron_right</span>
+            <a href="../" class="hover:text-slate-600 transition-colors whitespace-nowrap">PikaLab</a>
+            <span class="material-symbols-rounded text-[13px]" aria-hidden="true">chevron_right</span>
+            <a href="./" class="hover:text-slate-600 transition-colors whitespace-nowrap">読みもの広場</a>
+            <span class="material-symbols-rounded text-[13px]" aria-hidden="true">chevron_right</span>
+            <span class="breadcrumb-current whitespace-nowrap truncate max-w-[220px] md:max-w-none">漢字の書き取りドリルで泣いてしまうとき、親はどう関わればいいですか？</span>
         </nav>
 
         <!-- 2-Column Layout -->
@@ -68,22 +69,22 @@
 
                 <article class="bg-white rounded-[32px] p-6 md:p-10 shadow-[0_8px_30px_rgba(0,0,0,0.03)] border border-slate-100">
                     <!-- Article Header -->
-                    <header class="mb-10 text-center md:text-left">
-                        <div class="flex items-center justify-center md:justify-start gap-3 mb-5">
-                            <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-indigo-50 text-indigo-600 text-[11px] font-black tracking-wider">
-                                <span class="material-symbols-rounded text-[14px]">history_edu</span>
-                                学習習慣
+                    <header class="mb-9 pb-6 border-b border-slate-200/80 text-center md:text-left">
+                        <div class="flex flex-wrap items-center justify-center md:justify-start gap-3 mb-4">
+                            <span class="tag bg-indigo-light inline-flex items-center gap-1.5">
+                                <span class="material-symbols-rounded text-[14px]" aria-hidden="true">menu_book</span>
+                                <span>勉強・学習習慣</span>
                             </span>
-                            <span class="text-xs font-bold text-slate-400 flex items-center gap-1">
-                                <span class="material-symbols-rounded text-[14px]">schedule</span> 読了 約4分
+                            <span class="text-xs font-bold text-slate-400 inline-flex items-center gap-1">
+                                <span class="material-symbols-rounded text-[14px]" aria-hidden="true">schedule</span> 読了 約4分
                             </span>
                         </div>
-                        <h1 class="article-title-balanced font-pop text-2xl md:text-4xl font-black text-slate-800 leading-[1.5] mb-6">
+                        <h1 class="article-title-balanced font-pop text-2xl md:text-3xl font-black text-slate-900 leading-[1.45] mb-4">
                             漢字の書き取りドリルで泣いてしまうとき、親はどう関わればいいですか？
                         </h1>
-                        <div class="flex items-center justify-center md:justify-start gap-4 text-sm text-slate-500 font-medium">
+                        <div class="flex items-center justify-center md:justify-start gap-4 text-xs md:text-sm text-slate-500 font-medium">
                             <div class="flex items-center gap-1">
-                                <span class="material-symbols-rounded text-[16px]">edit_calendar</span>
+                                <span class="material-symbols-rounded text-[16px]" aria-hidden="true">edit_calendar</span>
                                 <span>公開 2026.09.07</span>
                             </div>
                         </div>
@@ -102,12 +103,12 @@
 <h2>漢字は「複雑な図形の暗号」に見えている</h2>
 <p>大人にとって「木」や「森」、「休」といった漢字は、意味と形が一瞬で結びつくおなじみの記号です。</p>
 <p>しかし、学び始めの子どもにとって、漢字は極めて複雑な線の集まり（微細な図形）です。</p>
-<p>文字の認知心理学の研究（Perfetti et al., 2005）でも示されているように、漢字の習得には「形（視覚）」「音（発音）」「意味」の3つを脳内で強固に統合する必要があります。</p>
+<p>文字の認知心理学の研究（Perfetti et al., 2005、中国語漢字の読字研究）でも示されているように、漢字を理解して読みこなすには「形（視覚）」「音（発音）」「意味」の3つを脳内で結びつけることが欠かせません。</p>
 <p>さらにそれを紙に書くためには、手先の微細な筋肉をコントロールしながら、線の長さや交差する位置を正確に再現しなければなりません。</p>
 <p>意味も分からず、構造の分解も教わらないまま、「この複雑な記号を10回書き写せ」と言われるのは、大人で言えば意味不明な象形文字を延々と模写させられているようなものなのです。</p>
 
 <h2>ただ何回も書くだけでは定着しにくい</h2>
-<p>教育心理学や記憶の研究において、「同じ単語をただ機械的に何十回も書く作業（反復筆記）」は、学習効率がそれほど高くないことが分かっています。</p>
+<p>同じ文字や単語をただ機械的に何十回も書き写す作業は、子どもにとって負担が大きいわりに、形と意味を結びつけて覚える力にはつながりにくいことがあります。</p>
 <p>1回目や2回目は頭を使いますが、5回目以降になると、子どもの意識は「マスを埋めて終わらせること」だけに集中し、脳はほぼ思考停止状態になります。</p>
 <p>作業が苦行になり、漢字そのものへの嫌悪感が育ってしまうのが一番の悲劇です。</p>
 <p>文部科学省の学習指導要領や国語科の指導資料でも、漢字の学習では単なる反復練習だけでなく、言葉の意味や成り立ち、文章の中での生きた使われ方を理解することが重視されています。</p>
@@ -128,7 +129,7 @@
 </ol>
 <p>漢字は、本来とても面白く、豊かな世界の入り口です。</p>
 <p>マス目を埋める苦痛で、その面白さが閉ざされてしまうのはあまりにももったいないことです。</p>
-<p>PikaLab の「Kanji Lab（漢字合体研究所）」も、まさにこの「漢字をパーツのパズルとして遊ぶ」発想で作られています。</p>
+<p>PikaLab の「<a href="../kanji_lab/" class="text-sky-600 hover:text-sky-500 font-bold underline">かんじ・ガッタイ・ラボ</a>」も、まさにこの「漢字をパーツのパズルとして遊ぶ」発想で作られています。</p>
 <p>偏（へん）と旁（つくり）をガチャンと組み合わせると新しい漢字が生まれる。</p>
 <p>そのパズルを楽しんでいるうちに、子どもは自然と漢字の骨組みを覚えていきます。</p>
 <p>机の上のドリルで鉛筆が止まったら、一度ノートを閉じて、「この漢字、どんなパーツが隠れているかな？」とクイズを出してみてください。</p>
@@ -145,11 +146,11 @@
                             </h3>
                             <div class="related-articles-grid">
                                 <a href="how-reading-habits-grow.html" class="related-card group">
-                                    <div class="related-card-cover bg-gradient-cyan">
-                                        <span class="material-symbols-rounded">menu_book</span>
+                                    <div class="related-card-cover bg-gradient-indigo" aria-hidden="true">
+                                        <span class="material-symbols-rounded" aria-hidden="true">menu_book</span>
                                     </div>
                                     <div class="related-card-body">
-                                        <span class="related-card-tag bg-cyan-light text-cyan-700">読書</span>
+                                        <span class="related-card-tag bg-indigo-light">勉強・学習習慣</span>
                                         <h4 class="related-card-title">読書好きな子は、どうやって育っていくのか</h4>
                                         <span class="related-card-link">
                                             記事を読む <span class="material-symbols-rounded text-sm" aria-hidden="true">arrow_forward</span>
@@ -157,11 +158,11 @@
                                     </div>
                                 </a>
                                 <a href="teaching-children-at-home.html" class="related-card group">
-                                    <div class="related-card-cover bg-gradient-amber">
-                                        <span class="material-symbols-rounded">forum</span>
+                                    <div class="related-card-cover bg-gradient-amber" aria-hidden="true">
+                                        <span class="material-symbols-rounded" aria-hidden="true">forum</span>
                                     </div>
                                     <div class="related-card-body">
-                                        <span class="related-card-tag bg-rose-light text-rose-700">親子の対話</span>
+                                        <span class="related-card-tag bg-amber-light">親子の関わり・声かけ</span>
                                         <h4 class="related-card-title">親が勉強を教えると、なぜ必ずケンカになるのでしょうか</h4>
                                         <span class="related-card-link">
                                             記事を読む <span class="material-symbols-rounded text-sm" aria-hidden="true">arrow_forward</span>
@@ -183,12 +184,12 @@
             </main>
 
             <!-- Sidebar (Right) -->
-            <aside class="lg:w-[32%] w-full space-y-8 mt-8 lg:mt-0">
+            <aside class="lg:w-[32%] w-full space-y-6 mt-8 lg:mt-0">
                 <!-- プロフィールウィジェット -->
-                <div class="bg-white rounded-[24px] p-6 shadow-sm border border-slate-100 text-center">
-                    <h3 class="font-pop font-black text-slate-800 mb-4 flex items-center justify-center gap-2">この記事を書いている人</h3>
-                    <div class="w-20 h-20 mx-auto bg-slate-100 border border-slate-200 rounded-full mb-4 flex items-center justify-center text-slate-400 shadow-inner">
-                        <span class="material-symbols-rounded text-3xl">face</span>
+                <div class="sidebar-widget text-center">
+                    <h3 class="widget-title justify-center">この記事を書いている人</h3>
+                    <div class="w-20 h-20 mx-auto bg-slate-100 border border-slate-200 rounded-full mb-4 flex items-center justify-center text-slate-400 shadow-inner" aria-hidden="true">
+                        <span class="material-symbols-rounded text-3xl" aria-hidden="true">face</span>
                     </div>
                     <strong class="block text-slate-800 font-black text-base mb-2">かたかた</strong>
                     <p class="text-xs text-slate-600 font-medium leading-[1.8]">
@@ -197,25 +198,25 @@
                 </div>
 
                 <!-- ツールウィジェット -->
-                <div class="bg-white rounded-[24px] p-6 shadow-sm border border-slate-100">
-                    <h3 class="font-pop font-black text-slate-800 mb-4 flex items-center gap-2">一緒に使えるツール</h3>
-                    <div class="space-y-3">
-                        <a href="../focus_studio/" class="flex items-center gap-3 p-3 rounded-2xl hover:bg-slate-50 transition-colors group">
-                            <div class="w-10 h-10 rounded-full bg-orange-50 text-orange-600 flex items-center justify-center group-hover:scale-110 transition-transform">
-                                <span class="material-symbols-rounded text-[18px]">timer</span>
+                <div class="sidebar-widget">
+                    <h3 class="widget-title">一緒に使えるツール</h3>
+                    <div class="space-y-2.5">
+                        <a href="../kanji_lab/" class="sidebar-tool-link group">
+                            <div class="sidebar-tool-icon bg-orange-50 text-orange-600 group-hover:scale-110 transition-transform" aria-hidden="true">
+                                <span class="material-symbols-rounded text-[20px]" aria-hidden="true">extension</span>
                             </div>
                             <div class="text-left">
-                                <span class="block text-[10px] font-black text-slate-400 tracking-wider">時間の区切り</span>
-                                <strong class="text-slate-700 font-bold text-sm group-hover:text-orange-600 transition-colors">ポモドーロスタジオ</strong>
+                                <span class="block text-[10px] font-black text-slate-400 tracking-wider">漢字のパーツを組み合わせる</span>
+                                <strong class="text-slate-700 font-black text-sm group-hover:text-orange-600 transition-colors">かんじ・ガッタイ・ラボ</strong>
                             </div>
                         </a>
-                        <a href="../book_report/" class="flex items-center gap-3 p-3 rounded-2xl hover:bg-slate-50 transition-colors group">
-                            <div class="w-10 h-10 rounded-full bg-emerald-50 text-emerald-600 flex items-center justify-center group-hover:scale-110 transition-transform">
-                                <span class="material-symbols-rounded text-[18px]">edit_note</span>
+                        <a href="../book_report/" class="sidebar-tool-link group">
+                            <div class="sidebar-tool-icon bg-emerald-50 text-emerald-600 group-hover:scale-110 transition-transform" aria-hidden="true">
+                                <span class="material-symbols-rounded text-[20px]" aria-hidden="true">edit_note</span>
                             </div>
                             <div class="text-left">
                                 <span class="block text-[10px] font-black text-slate-400 tracking-wider">書く前の補助</span>
-                                <strong class="text-slate-700 font-bold text-sm group-hover:text-emerald-600 transition-colors">読書感想文メーカー</strong>
+                                <strong class="text-slate-700 font-black text-sm group-hover:text-emerald-600 transition-colors">読書感想文メーカー</strong>
                             </div>
                         </a>
                     </div>

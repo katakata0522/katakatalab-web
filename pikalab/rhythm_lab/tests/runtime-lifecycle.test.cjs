@@ -128,7 +128,8 @@ function createTone() {
         };
     }
     const Tone = {
-        context: { state: 'suspended' },
+        context: { state: 'suspended', sampleRate: 48000 },
+        now: () => 12.5,
         async start() { state.resumes += 1; Tone.context.state = 'running'; },
         Transport: {
             bpm: { value: 120, rampTo() {} },
@@ -321,7 +322,11 @@ test('MetalSynthには数値の音程と音価と時刻を渡し、NoiseSynthに
         ['MembraneSynth', ['C1', '8n', 12.5]]
     ]);
     await runtime.playOneShot('hihat');
-    assert.deepEqual(runtime.audio.triggers.at(-1).args, [200, '32n', undefined]);
+    assert.deepEqual(runtime.audio.triggers.at(-1).args, [200, '32n', 12.5 + 1 / 48000]);
+    await runtime.playOneShot('hihat');
+    assert.ok(runtime.audio.triggers.at(-1).args[2] > runtime.audio.triggers.at(-2).args[2], '時計が止まったフレームの連打でも発音順を保つ');
+    runtime.playSoundAtTime('hihat', 13);
+    assert.equal(runtime.audio.triggers.at(-1).args[2], 13, '次の拍は指定時刻のまま鳴る');
 });
 
 test('音声ノードの途中生成に失敗した場合は生成済みノードを破棄して再試行する', async () => {

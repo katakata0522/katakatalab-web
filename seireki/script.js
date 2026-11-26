@@ -22,6 +22,7 @@ const CONFIG = Logic ? {
 
 let lastHighlightedYear = null;
 let warekiInputError = '';
+let enteredAsWareki = false;
 let manualEarlyBirth = false;
 let copyTaskId = 0;
 let previousCopyButton = null;
@@ -90,7 +91,17 @@ function cacheDOM() {
  */
 function setupEventListeners() {
   // タブ切り替え
-  UI.tabBtns.forEach(btn => {
+  UI.tabBtns.forEach((btn, index) => {
+    btn.tabIndex = btn.getAttribute('aria-selected') === 'true' ? 0 : -1;
+    btn.addEventListener('keydown', (event) => {
+      const count = UI.tabBtns.length;
+      const next = { ArrowRight: (index + 1) % count, ArrowLeft: (index + count - 1) % count, Home: 0, End: count - 1 }[event.key];
+      if (next === undefined) return;
+      event.preventDefault();
+      const tab = UI.tabBtns[next];
+      switchTab(tab.dataset.tab);
+      tab.focus();
+    });
     btn.addEventListener('click', () => {
       const targetTab = btn.getAttribute('data-tab');
       switchTab(targetTab);
@@ -98,6 +109,7 @@ function setupEventListeners() {
   });
 
   UI.inputYear.addEventListener('input', () => {
+    enteredAsWareki = false;
     warekiInputError = '';
     sanitizeYearInput(UI.inputYear, 4);
     syncWarekiFromWestern();
@@ -113,6 +125,7 @@ function setupEventListeners() {
   });
 
   if (UI.eraName) UI.eraName.addEventListener('change', () => {
+    updateEraYearPlaceholder();
     syncWesternFromWareki();
     updateAllCalculations();
   });
@@ -120,12 +133,13 @@ function setupEventListeners() {
   [UI.birthMonth, UI.birthDay].forEach((field) => {
     if (!field) return;
     field.addEventListener('change', () => {
-      applyEarlyBirthFromDate();
+      if (!enteredAsWareki) syncWarekiFromWestern();
       updateAllCalculations();
     });
   });
 
   UI.clearBtn.addEventListener('click', () => {
+    enteredAsWareki = false;
     warekiInputError = '';
     manualEarlyBirth = false;
     UI.inputYear.value = '';
@@ -150,7 +164,7 @@ function setupEventListeners() {
     if (state.error || state.incomplete) return;
     const birthYear = state.year;
     const age = Logic.describeAge(birthYear, CONFIG.currentYear, currentBirthdayOptions());
-    const wareki = Logic.warekiDisplay(birthYear);
+    const wareki = Logic.warekiDisplay(birthYear, UI.birthMonth.value, UI.birthDay.value);
     const eto = Logic.etoOf(birthYear);
     const manLine = age.manAge === null
       ? `今年迎える年齢：${age.turningAge}歳（誕生日前は満 ${Math.max(0, age.turningAge - 1)}歳）`
@@ -202,8 +216,22 @@ function initStaticTexts() {
   
   // プレースホルダーを動的に20年前の年に設定
   UI.inputYear.placeholder = `例：${CONFIG.currentYear - 20}`;
+  updateEraYearPlaceholder();
   fillDateSelect(UI.birthMonth, 12, '月');
   fillDateSelect(UI.birthDay, 31, '日');
+}
+
+function updateEraYearPlaceholder() {
+  if (!UI.eraName || !UI.eraYear) return;
+  const currentReiwa = Math.max(1, CONFIG.currentYear - 2018);
+  const placeholders = {
+    '令和': String(currentReiwa),
+    '平成': '12',
+    '昭和': '60',
+    '大正': '10',
+    '明治': '35'
+  };
+  UI.eraYear.placeholder = placeholders[UI.eraName.value] || String(currentReiwa);
 }
 
 function fillDateSelect(select, max, suffix) {
@@ -222,9 +250,11 @@ function fillDateSelect(select, max, suffix) {
 function switchTab(tabId) {
   UI.tabBtns.forEach(btn => {
     if (btn.getAttribute('data-tab') === tabId) {
+      btn.tabIndex = 0;
       btn.classList.add('active');
       btn.setAttribute('aria-selected', 'true');
     } else {
+      btn.tabIndex = -1;
       btn.classList.remove('active');
       btn.setAttribute('aria-selected', 'false');
     }
@@ -270,18 +300,20 @@ function sanitizeYearInput(field, maxLength) {
 
 function syncWarekiFromWestern() {
   const year = Logic.parseWesternYear(UI.inputYear.value);
-  const era = year !== null && Logic.ERAS.find((item) => year >= item.start);
+  const era = year !== null && Logic.erasForDate(year, UI.birthMonth.value, UI.birthDay.value).at(-1);
   if (!era) {
     if (UI.eraYear) UI.eraYear.value = '';
     return;
   }
   if (!UI.eraName || !UI.eraYear) return;
   UI.eraName.value = era.name;
+  updateEraYearPlaceholder();
   UI.eraYear.value = String(year - era.start + 1);
 }
 
 function syncWesternFromWareki() {
   if (!UI.eraName || !UI.eraYear) return;
+  enteredAsWareki = true;
   warekiInputError = '';
   if (!UI.eraYear.value) {
     UI.inputYear.value = '';
@@ -313,6 +345,9 @@ function currentInputState() {
       (Number(month) === today.getMonth() + 1 && Number(day) > today.getDate()))) {
       return { error: '未来の生年月日は入力できません' };
     }
+  }
+  if (enteredAsWareki && !Logic.erasForDate(year, month, day).some(era => era.name === UI.eraName.value)) {
+    return { error: '選択した元号と生年月日が一致しません' };
   }
   return { year };
 }
@@ -539,15 +574,18 @@ function highlightHayamiRow(birthYear) {
     row.classList.toggle('is-selected-year', isMatch);
     if (isMatch) target = row;
   });
-  if (target && lastHighlightedYear !== String(birthYear)) {
-    target.scrollIntoView({ block: 'center', behavior: 'smooth' });
+  const container = UI.hayamiTableBody.closest?.('.seireki-table-container');
+  if (container && target && lastHighlightedYear !== String(birthYear)) {
+    const row = target.getBoundingClientRect();
+    const box = container.getBoundingClientRect();
+    container.scrollTop += row.top - box.top - (container.clientHeight - row.height) / 2;
   }
   lastHighlightedYear = target ? String(birthYear) : null;
 }
 
 function calculateMainResult(birthYear) {
   const age = Logic.describeAge(birthYear, CONFIG.currentYear, currentBirthdayOptions());
-  const wareki = Logic.warekiDisplay(birthYear);
+  const wareki = Logic.warekiDisplay(birthYear, UI.birthMonth.value, UI.birthDay.value);
   const eto = Logic.etoOf(birthYear);
   const manText = age.manAge === null
     ? `※誕生日前の方は満 ${Math.max(0, age.turningAge - 1)}歳です。月日を入れると満年齢を出します。`
@@ -591,7 +629,7 @@ function calculateResumeDates(birthYear) {
 
   UI.resumeGrid.replaceChildren();
   timeline.forEach((item) => {
-    const itemWareki = Logic.warekiDisplay(item.year);
+    const itemWareki = Logic.warekiDisplay(item.year, item.month);
     const dateStr = `${item.year}年（${itemWareki}）${item.month}月`;
     const copyTargetText = `${item.label}：${dateStr}`;
 

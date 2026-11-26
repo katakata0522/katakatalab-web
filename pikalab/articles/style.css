@@ -72,12 +72,105 @@ body.theme-night .premium-header {
     border-bottom-color: #1f2937;
 }
 
+body.dark-mode .text-slate-900,
+body.theme-night .text-slate-900,
+body.dark-mode .text-slate-800,
+body.theme-night .text-slate-800 {
+    color: var(--text-primary);
+}
+body.dark-mode .text-slate-700,
+body.theme-night .text-slate-700,
+body.dark-mode .text-slate-600,
+body.theme-night .text-slate-600 {
+    color: var(--text-secondary);
+}
+body.dark-mode .text-sky-700,
+body.theme-night .text-sky-700 {
+    color: var(--primary);
+}
+body.dark-mode .border-slate-200,
+body.theme-night .border-slate-200 {
+    border-color: var(--border-color);
+}
+body.dark-mode .dynamic-bg > h2 > span:first-child,
+body.theme-night .dynamic-bg > h2 > span:first-child {
+    background-color: #1e293b;
+    color: #94a3b8;
+}
+
 /* --- Premium Header (コンパクト & 洗練) --- */
 .premium-header {
     background: rgba(255, 255, 255, 0.94);
     backdrop-filter: blur(8px);
     border-bottom: 1px solid var(--border-color);
     box-shadow: 0 1px 2px rgba(0,0,0,0.02);
+}
+
+.header-back-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.35rem 0.75rem;
+    margin-left: -0.5rem;
+    border-radius: 8px;
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: var(--text-secondary);
+    text-decoration: none;
+    transition: background-color 0.15s ease, color 0.15s ease;
+}
+.header-back-link:hover {
+    background: var(--border-subtle);
+    color: var(--primary);
+}
+.header-icon-btn {
+    width: 34px;
+    height: 34px;
+    border-radius: 8px;
+    border: 1px solid var(--border-color);
+    background: var(--bg-surface);
+    color: var(--text-secondary);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+}
+.header-icon-btn:hover {
+    background: var(--border-subtle);
+    border-color: #94a3b8;
+    color: var(--text-primary);
+}
+body.dark-mode .header-back-link,
+body.theme-night .header-back-link {
+    color: #cbd5e1;
+}
+body.dark-mode .header-back-link:hover,
+body.theme-night .header-back-link:hover {
+    background: #1e293b;
+    color: var(--primary);
+}
+body.dark-mode .header-icon-btn,
+body.theme-night .header-icon-btn {
+    background: #1e293b;
+    border-color: #334155;
+    color: #e2e8f0;
+}
+body.dark-mode .header-icon-btn:hover,
+body.theme-night .header-icon-btn:hover {
+    background: #273549;
+    border-color: #475569;
+}
+
+body.dark-mode .article-search-input,
+body.theme-night .article-search-input {
+    background: #111827 !important;
+    border-color: #334155 !important;
+    color: #f8fafc !important;
+}
+body.dark-mode .article-search-input::placeholder,
+body.theme-night .article-search-input::placeholder {
+    color: #94a3b8;
 }
 
 /* --- Breadcrumbs --- */
@@ -109,30 +202,65 @@ body.theme-night .dynamic-bg {
     border-color: #334155;
 }
 
+#filter-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.45rem;
+}
+
 .worry-pill {
+    position: relative;
     display: inline-flex;
     align-items: center;
-    padding: 0.35rem 0.75rem;
+    gap: 0.4rem;
+    padding: 0.42rem 0.85rem;
     background: #ffffff;
     border: 1px solid #cbd5e1;
-    border-radius: 6px;
+    border-radius: 8px;
     font-weight: 700;
-    font-size: 0.8rem;
+    font-size: 0.82rem;
     color: var(--text-secondary);
     text-decoration: none;
     cursor: pointer;
-    transition: all 0.15s ease;
+    transition: border-color 0.15s ease, color 0.15s ease, background-color 0.15s ease;
     white-space: nowrap;
-    min-height: 34px;
+    min-height: 38px;
 }
 .worry-pill:hover {
     border-color: var(--primary);
     color: var(--primary);
     background: #f8fafc;
 }
-.worry-pill.active-pill {
+.worry-pill .pill-count {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 1.35rem;
+    padding: 0.05rem 0.35rem;
+    border-radius: 9999px;
+    background: #f1f5f9;
+    color: #475569;
+    font-size: 0.7rem;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+    line-height: 1.3;
+}
+.worry-pill.active-pill,
+.worry-pill[aria-pressed="true"] {
     background: #0f172a;
     border-color: #0f172a;
+    color: #ffffff;
+}
+.worry-pill.active-pill::after,
+.worry-pill[aria-pressed="true"]::after {
+    content: "";
+    position: absolute;
+    inset: auto 0.65rem 2px;
+    border-bottom: 2px solid currentColor;
+}
+.worry-pill.active-pill .pill-count,
+.worry-pill[aria-pressed="true"] .pill-count {
+    background: rgba(255, 255, 255, 0.2);
     color: #ffffff;
 }
 
@@ -143,6 +271,11 @@ body.theme-night .worry-pill {
     border-bottom-color: #0f172a;
     color: #cbd5e1;
 }
+body.dark-mode .worry-pill .pill-count,
+body.theme-night .worry-pill .pill-count {
+    background: rgba(148, 163, 184, 0.18);
+    color: #cbd5e1;
+}
 body.dark-mode .worry-pill:hover,
 body.theme-night .worry-pill:hover {
     border-color: var(--primary);
@@ -150,9 +283,18 @@ body.theme-night .worry-pill:hover {
     background: #273549;
 }
 body.dark-mode .worry-pill.active-pill,
-body.theme-night .worry-pill.active-pill {
+body.theme-night .worry-pill.active-pill,
+body.dark-mode .worry-pill[aria-pressed="true"],
+body.theme-night .worry-pill[aria-pressed="true"] {
     background: #0284c7;
     border-color: #0284c7;
+    color: #ffffff;
+}
+body.dark-mode .worry-pill.active-pill .pill-count,
+body.theme-night .worry-pill.active-pill .pill-count,
+body.dark-mode .worry-pill[aria-pressed="true"] .pill-count,
+body.theme-night .worry-pill[aria-pressed="true"] .pill-count {
+    background: rgba(255, 255, 255, 0.22);
     color: #ffffff;
 }
 
@@ -300,8 +442,33 @@ body.theme-night .card-cover .cover-badge {
     z-index: 1;
 }
 
-/* モバイル時のカード対応 */
+/* モバイル時のカード・操作タップ領域対応 */
 @media (max-width: 640px) {
+    .premium-header > a {
+        min-height: 40px;
+        padding-inline: 0.5rem;
+    }
+    #font-size-toggle,
+    #dark-mode-toggle {
+        min-width: 40px;
+        min-height: 40px;
+    }
+    #filter-container {
+        flex-wrap: nowrap;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        scroll-snap-type: inline proximity;
+        scrollbar-width: none;
+        padding-bottom: 2px;
+    }
+    #filter-container::-webkit-scrollbar {
+        display: none;
+    }
+    .worry-pill {
+        flex: none;
+        scroll-snap-align: start;
+        min-height: 38px;
+    }
     .premium-article-card {
         flex-direction: row;
     }
@@ -323,6 +490,12 @@ body.theme-night .card-cover .cover-badge {
     }
 }
 
+@media (pointer: coarse) {
+    .worry-pill {
+        min-height: 44px;
+    }
+}
+
 /* --- テーマカラー（落ち着いたエディトリアル配色） --- */
 .bg-indigo-light { background: #eef2ff; color: #3730a3; }
 .bg-emerald-light { background: #ecfdf5; color: #065f46; }
@@ -332,19 +505,19 @@ body.theme-night .card-cover .cover-badge {
 .bg-rose-light { background: #fff1f2; color: #9f1239; }
 .bg-violet-light { background: #f5f3ff; color: #5b21b6; }
 .bg-fuchsia-light { background: #fdf4ff; color: #86198f; }
-.bg-teal-light { background: #f0fdf4; color: #115e59; }
+.bg-teal-light { background: #f0fdfa; color: #115e59; }
 .bg-orange-light { background: #fff7ed; color: #9a3412; }
 
-body.dark-mode .bg-indigo-light { background: rgba(99, 102, 241, 0.15); color: #a5b4fc; }
-body.dark-mode .bg-emerald-light { background: rgba(16, 185, 129, 0.15); color: #6ee7b7; }
-body.dark-mode .bg-cyan-light { background: rgba(6, 182, 212, 0.15); color: #67e8f9; }
-body.dark-mode .bg-sky-light { background: rgba(14, 165, 233, 0.15); color: #7dd3fc; }
-body.dark-mode .bg-amber-light { background: rgba(245, 158, 11, 0.15); color: #fde047; }
-body.dark-mode .bg-rose-light { background: rgba(244, 63, 94, 0.15); color: #fda4af; }
-body.dark-mode .bg-violet-light { background: rgba(139, 92, 246, 0.15); color: #c4b5fd; }
-body.dark-mode .bg-fuchsia-light { background: rgba(217, 70, 239, 0.15); color: #f5d0fe; }
-body.dark-mode .bg-teal-light { background: rgba(20, 184, 166, 0.15); color: #5eead4; }
-body.dark-mode .bg-orange-light { background: rgba(249, 115, 22, 0.15); color: #fdba74; }
+body.dark-mode .bg-indigo-light, body.theme-night .bg-indigo-light { background: rgba(99, 102, 241, 0.16); color: #c7d2fe; }
+body.dark-mode .bg-emerald-light, body.theme-night .bg-emerald-light { background: rgba(16, 185, 129, 0.16); color: #a7f3d0; }
+body.dark-mode .bg-cyan-light, body.theme-night .bg-cyan-light { background: rgba(6, 182, 212, 0.16); color: #a5f3fc; }
+body.dark-mode .bg-sky-light, body.theme-night .bg-sky-light { background: rgba(14, 165, 233, 0.16); color: #bae6fd; }
+body.dark-mode .bg-amber-light, body.theme-night .bg-amber-light { background: rgba(245, 158, 11, 0.16); color: #fde68a; }
+body.dark-mode .bg-rose-light, body.theme-night .bg-rose-light { background: rgba(244, 63, 94, 0.16); color: #fecdd3; }
+body.dark-mode .bg-violet-light, body.theme-night .bg-violet-light { background: rgba(139, 92, 246, 0.16); color: #ddd6fe; }
+body.dark-mode .bg-fuchsia-light, body.theme-night .bg-fuchsia-light { background: rgba(217, 70, 239, 0.16); color: #f5d0fe; }
+body.dark-mode .bg-teal-light, body.theme-night .bg-teal-light { background: rgba(20, 184, 166, 0.16); color: #99f6e4; }
+body.dark-mode .bg-orange-light, body.theme-night .bg-orange-light { background: rgba(249, 115, 22, 0.16); color: #fed7aa; }
 
 /* --- 記事詳細ページ（洗練された読書体験） --- */
 article.bg-white {
@@ -422,9 +595,19 @@ body.dark-mode .article-body strong {
     color: var(--text-secondary);
     font-size: 0.95rem;
 }
-body.dark-mode .article-body blockquote {
+body.dark-mode .article-body blockquote,
+body.theme-night .article-body blockquote {
     background: #111827;
     border-left-color: #475569;
+}
+
+body.dark-mode .article-body ol.bg-slate-50,
+body.theme-night .article-body ol.bg-slate-50,
+body.dark-mode .article-body ul.bg-slate-50,
+body.theme-night .article-body ul.bg-slate-50 {
+    background-color: #151d2f !important;
+    border-color: #1f2937 !important;
+    color: var(--text-primary);
 }
 
 /* 参考文献ブロック */
@@ -652,11 +835,20 @@ body.dark-mode .scroll-top-btn {
     to { opacity: 1; transform: translateY(0); }
 }
 
-/* 文字サイズトグル対応 */
+/* 文字サイズトグル対応（見出しバランスは保ち、本文・補足文字を読みやすく底上げ） */
+body.large-text .body {
+    font-size: 0.98rem;
+    line-height: 1.75;
+    -webkit-line-clamp: 3;
+}
 body.large-text .article-body {
     font-size: 1.15rem;
     line-height: 2;
 }
-body.large-text .title {
-    font-size: 1.3rem;
+body.large-text .article-body .reference p {
+    font-size: 0.92rem;
+    line-height: 1.7;
+}
+body.large-text .sidebar-widget p {
+    font-size: 0.9rem;
 }

@@ -16,6 +16,9 @@ const ALLOWED_APP_URLS = new Set(
         .map(app => app.url.trim())
 );
 
+const CONTROL_CHAR_REGEX = /[\u0000-\u001F\u007F]/;
+const URL_SCHEME_REGEX = /^[a-zA-Z][a-zA-Z0-9+.-]*:/;
+
 // カタログは起動中に変わらないため、表示・日替わり抽選の候補を一度だけ解決する。
 const VISIBLE_APPS = APP_DEFINITIONS.filter(canRenderApp);
 const MISSION_APPS = VISIBLE_APPS.filter(app => !app.isAmazonCard);
@@ -97,15 +100,14 @@ function isSafeUrl(url) {
     if (typeof url !== 'string') return false;
     const trimmed = url.trim();
     if (!trimmed) return false;
-    if (/[\u0000-\u001F\u007F]/.test(trimmed)) return false;
+    if (CONTROL_CHAR_REGEX.test(trimmed)) return false;
     if (trimmed.startsWith('javascript:')) return false;
     if (trimmed.startsWith('data:')) return false;
     if (trimmed.startsWith('//')) return false;
     if (trimmed.startsWith('\\')) return false;
     if (trimmed.startsWith('/')) return false;
     if (trimmed.includes('..')) return false;
-    const hasScheme = /^[a-zA-Z][a-zA-Z0-9+.-]*:/.test(trimmed);
-    if (hasScheme) return false;
+    if (URL_SCHEME_REGEX.test(trimmed)) return false;
     return ALLOWED_APP_URLS.has(trimmed);
 }
 
@@ -215,7 +217,7 @@ function createCardElement(app) {
     }
 
     const gradeTagHtml = app.gradeTag 
-        ? `<div class="absolute top-3 right-3 bg-white/90 backdrop-blur text-slate-600 text-[10px] font-black px-2.5 py-1 rounded-lg border border-slate-200">${app.gradeTag}</div>`
+        ? `<div data-surface="chip" class="app-grade-badge absolute top-3 right-3 bg-white/90 backdrop-blur text-slate-600 text-[10px] font-black px-2.5 py-1 rounded-lg border border-slate-200">${app.gradeTag}</div>`
         : '';
 
     card.innerHTML = `
@@ -500,6 +502,8 @@ export function updateRecentUI() {
         list.innerHTML = '<p class="text-[11px] text-slate-400 font-bold px-1">まだありません</p>';
         return;
     }
+    const useFragment = typeof document.createDocumentFragment === 'function';
+    const target = useFragment ? document.createDocumentFragment() : list;
     items.forEach(item => {
         // ボタンも<a>タグに変更するか、別タブで開くか
         const a = document.createElement('a');
@@ -525,8 +529,11 @@ export function updateRecentUI() {
         a.appendChild(left);
         a.appendChild(code);
         
-        list.appendChild(a);
+        target.appendChild(a);
     });
+    if (useFragment) {
+        list.appendChild(target);
+    }
 }
 
 /**

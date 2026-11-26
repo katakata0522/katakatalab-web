@@ -145,3 +145,12 @@ test('PikaLabのアイコンフォントは使用分だけ読み込み、読み�
   assert.match(html, /Material\+Symbols\+Rounded:[^"\s]+&icon_names=[^"\s]+&display=block/);
   assert.doesNotMatch(html, /Material\+Symbols\+Rounded:[^"\s]+&display=swap/);
 });
+test('追加の公開対象は許可リストを保持し、共有領域や重複を拒否する', () => {
+  const { PUBLIC_DIRECTORIES, resolvePublicDirectories } = require('../.github/scripts/build-public-root.cjs');
+  assert.deepEqual(resolvePublicDirectories(), PUBLIC_DIRECTORIES);
+  assert.deepEqual(resolvePublicDirectories(['reviewed-tool']), [...PUBLIC_DIRECTORIES, 'reviewed-tool']);
+  for (const entry of ['../tool', 'tool/index.html', 'config', 'docs', 'pikalab', 'lab-tools', PUBLIC_DIRECTORIES[0]]) {
+    assert.throws(() => resolvePublicDirectories([entry]));
+  }
+  assert.throws(() => resolvePublicDirectories(['reviewed-tool', 'reviewed-tool']));
+});

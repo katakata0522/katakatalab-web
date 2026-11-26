@@ -559,10 +559,18 @@ if (!given) {
       assert.ok((await page.locator('body').textContent()).trim().length > 20);
       if (app === '/lab-tools/gravity-todo/') {
         // Canvasより上の常設ボタンを実クリックし、pointer-events継承の回帰を検出する。
-        await page.waitForFunction(() => document.querySelector('#task-count').textContent === '3');
+        await page.locator('body.app-ready').waitFor();
+        assert.equal(await page.locator('#task-count').textContent(), '0', '初回の見本を自分のタスクに数えない');
         await page.locator('#task-input').fill('履歴ボタン検証');
+        await page.locator('#task-form button:not(:disabled)').waitFor();
         await page.locator('#task-input').press('Enter');
+        const taskList = page.locator('#task-list-panel');
+        const taskListSummary = page.locator('#task-list-panel > summary');
+        assert.equal(await taskList.evaluate(panel => panel.open), false);
+        await taskListSummary.click();
         const task = page.locator('.task-list-item').filter({hasText:'履歴ボタン検証'});
+        await task.waitFor({state:'visible'});
+        assert.equal(await page.locator('.task-list-item').count(), 1);
         await task.locator('[data-action="destroy"]').click();
         await page.locator('#undo-btn').click();
         await task.waitFor({state:'visible'});
@@ -570,10 +578,21 @@ if (!given) {
         await task.waitFor({state:'detached'});
         await page.locator('#undo-btn').click();
         await task.waitFor({state:'visible'});
-          await page.locator('#save-status').waitFor({state:'hidden'});
+        await page.locator('#save-status').waitFor({state:'hidden'});
         await page.reload({waitUntil:'domcontentloaded'});
+        assert.equal(await taskList.evaluate(panel => panel.open), false);
+        await taskListSummary.click();
         await task.waitFor({state:'visible'});
         assert.equal(await page.locator('#task-count').textContent(), '1', 'デモを保存せず実タスクだけ復元');
+        await task.locator('[data-action="detail"]').click();
+        await page.locator('#detail-input').fill('確認');
+        await page.locator('#detail-input').press('Enter');
+        page.once('dialog', dialog => dialog.accept());
+        await page.locator('.subtask-check').click();
+        await task.waitFor({state:'detached'});
+        assert.equal(await page.locator('#task-detail-panel').evaluate(panel => panel.classList.contains('hidden')), true);
+        await page.locator('#undo-btn').click();
+        await task.waitFor({state:'visible'});
       }
       console.log(JSON.stringify({app,offlineLaunch:'PASS',stalledAnalytics:'PASS',storagePreserved:'PASS'}));
     } finally { await context.close(); }
@@ -646,18 +665,180 @@ try {
   console.log(JSON.stringify({doujinProfitBoundary:'PASS',doujinSmallChange:'PASS',doujinInvalidPrice:'PASS'}));
 } finally { await doujinPage.close(); }
 
+for (const width of [320, 390, 1440]) {
+  const page = await browser.newPage({viewport: {width, height: 844}, hasTouch: width < 600});
+  try {
+    await page.goto(base + '/aspect-ratio-calc/');
+    const detect = page.locator('#detectBtn');
+    if (width < 600) await detect.tap();
+    else await detect.click();
+    assert.equal(await page.locator('#infoRatio').textContent(), '16 : 9');
+
+    await page.goto(base + '/seireki/');
+    const year = page.locator('#inputYear');
+    await year.focus();
+    const initialScroll = await page.evaluate(() => scrollY);
+    await year.pressSequentially('2019');
+    await page.waitForFunction(() => document.querySelector('#hayamiTable tr.is-selected-year'));
+    assert.ok(Math.abs(await page.evaluate(() => scrollY) - initialScroll) < 8);
+    assert.ok(await year.evaluate(el => el.getBoundingClientRect().bottom > 0));
+    await page.locator('#birthMonth').selectOption('4');
+    await page.locator('#birthDay').selectOption('30');
+    assert.match(await page.locator('#resultArea').textContent(), /2019年（平成31年）/);
+
+    await page.goto(base + '/px-rem-converter/');
+    const table = page.locator('.cheatsheet-area .table-container');
+    assert.ok(await table.evaluate(el => el.scrollWidth <= el.clientWidth + 1));
+    await page.locator('#pxInput').fill('24');
+    assert.equal(await page.locator('#remInput').inputValue(), '1.5');
+  } finally {
+    await page.close();
+  }
+}
+
+const otherWorks = await browser.newPage({ viewport: { width: 320, height: 667 }, hasTouch: true });
+try {
+  await otherWorks.goto(base + '/other-projects.html', { waitUntil: 'domcontentloaded' });
+  const cards = otherWorks.locator('.other-project-link');
+  assert.equal(await cards.count(), 4);
+  const cardBounds = () => cards.evaluateAll(links => links.map(link => {
+    const { left, top, right, bottom } = link.getBoundingClientRect();
+    return { left, top, right, bottom };
+  }));
+  const mobileCards = await cardBounds();
+  assert.ok(mobileCards.every(card => card.left >= 0 && card.right <= 320));
+  assert.ok(mobileCards[0].top < mobileCards[1].top && mobileCards[3].bottom <= 667);
+  await otherWorks.setViewportSize({ width: 1440, height: 900 });
+  const desktopCards = await cardBounds();
+  assert.equal(desktopCards[0].top, desktopCards[1].top);
+  assert.equal(desktopCards[2].top, desktopCards[3].top);
+  assert.ok(desktopCards[0].right < desktopCards[1].left);
+  await otherWorks.setViewportSize({ width: 390, height: 844 });
+  await cards.first().locator('.other-project-description').tap();
+  await otherWorks.waitForURL(base + '/ogp-simulator/');
+  await otherWorks.goBack();
+  await otherWorks.getByRole('link', { name: 'トップの作品に戻る' }).tap();
+  await otherWorks.waitForURL(base + '/#projects');
+} finally {
+  await otherWorks.close();
+}
+
 const analyticsPage=await browser.newPage({viewport:{width:390,height:850}});
 await analyticsPage.route('**/*googletagmanager.com/**',route=>route.abort());
 await analyticsPage.route('**/*google-analytics.com/**',route=>route.abort());
 await analyticsPage.goto(base+'/',{waitUntil:'domcontentloaded'});
+await analyticsPage.evaluate(async () => { await document.fonts.ready; });
+for (const [width, height, minFlaskHeight, minTitleSize] of [[320, 667, 54, 25], [390, 667, 62, 30], [390, 850, 62, 30]]) {
+  await analyticsPage.setViewportSize({width, height});
+  const layout = await analyticsPage.locator('#interactive-flask button').evaluate(button => {
+    const circle = button.getBoundingClientRect();
+    const flask = button.querySelector('.art-flask');
+    const search = document.getElementById('project-search').getBoundingClientRect();
+    const title = document.querySelector('.hero-title');
+    const titleBox = title.getBoundingClientRect();
+    const titleStyle = getComputedStyle(title);
+    const titleBottom = titleBox.bottom + parseFloat(titleStyle.marginBlockEnd);
+    const introBox = document.getElementById('hero-subtitle').getBoundingClientRect();
+    const headerBottom = document.querySelector('.header').getBoundingClientRect().bottom;
+    return {
+      besideTitle: circle.left >= titleBox.right,
+      bottomDifference: Math.abs(circle.bottom - titleBottom),
+      titleSize: parseFloat(titleStyle.fontSize),
+      titleLines: Math.round(titleBox.height / parseFloat(titleStyle.lineHeight)),
+      headerGap: circle.top - headerBottom,
+      introGap: introBox.top - Math.max(circle.bottom, titleBottom),
+      searchBottom: search.bottom,
+      width: circle.width, height: circle.height,
+      flaskHeight: flask.offsetHeight,
+      flaskRatio: flask.offsetWidth / flask.offsetHeight,
+    };
+  });
+  assert.ok(layout.besideTitle && layout.searchBottom <= height, 'フラスコが見出しを覆わず初期画面内で検索できる');
+  assert.ok(layout.titleSize >= minTitleSize && layout.titleLines === 3 && layout.bottomDifference <= 1, '大きな3行の見出しとフラスコの下端が揃う');
+  assert.ok(layout.headerGap >= 6 && layout.headerGap <= 16, 'フラスコがヘッダー近くに収まる');
+  assert.ok(layout.introGap >= 8 && layout.introGap <= 16, '見出しとフラスコの直下に紹介文が収まる');
+  assert.ok(layout.flaskHeight >= minFlaskHeight && Math.abs(layout.width - layout.height) <= 1, 'フラスコ本体を大きくし、押せる範囲は正円を保つ');
+  assert.ok(layout.flaskRatio > 0.7 && layout.flaskRatio < 0.85, '丸底フラスコの縦長の形を保つ');
+}
+const finder=analyticsPage.locator('#projects-controls');
+const finderSummary=finder.locator('summary');
+const projectSearch=analyticsPage.getByRole('searchbox', { name: 'ツールを検索' });
+assert.equal(await projectSearch.isVisible(),true);
+assert.equal(await finder.evaluate(details => details.open), false);
+const mobileMenu = analyticsPage.getByRole('dialog', { name: 'サイトメニュー' });
+await analyticsPage.getByRole('button', { name: 'メニューを開く' }).click();
+await mobileMenu.waitFor();
+assert.equal(await analyticsPage.locator('main').evaluate(main => main.inert), true);
+await mobileMenu.getByRole('button', { name: 'メニューを閉じる' }).focus();
+await analyticsPage.keyboard.press('Escape');
+assert.equal(await mobileMenu.isVisible(), false);
+assert.equal(await analyticsPage.locator('main').evaluate(main => main.inert), false);
+assert.equal(await analyticsPage.locator('.menu-toggle').evaluate(button => button === document.activeElement), true);
+assert.equal(await analyticsPage.locator('#projects-grid .card').first().isVisible(),true);
+assert.equal(await analyticsPage.locator('#updates, #faq').evaluateAll(items => items.every(item => !item.open)), true);
+const faq = analyticsPage.locator('#faq');
+await faq.locator('summary').click();
+await faq.locator('.faq-question').first().waitFor({ state: 'visible' });
+await analyticsPage.locator('#faq:not(.is-animating)').waitFor();
+await faq.locator('summary').click();
+await analyticsPage.waitForFunction(() => !document.getElementById('faq').open);
+assert.equal(await analyticsPage.locator('#recommended-guides').count(), 0);
+await finderSummary.click();
+assert.equal(await projectSearch.isVisible(),true);
+assert.equal(await finder.locator('.shelf-nav-btn').count(),4);
+assert.equal(await finder.locator('#recent-projects').count(),1);
+const firstTool = analyticsPage.locator('#projects-grid .card').first();
+const row = firstTool.locator('.project-row');
+const detailedView = finder.locator('#project-detailed-view');
+assert.equal(await row.isVisible(), true);
+assert.equal(await firstTool.getAttribute('data-id'), 'screenshot-crop');
+const picks = analyticsPage.locator('#recommended-projects-grid .card');
+const pickIds = ['motion-atlas', 'pikalab', 'playpoint', 'higedanfan', 'qrcode'];
+assert.deepEqual(await picks.evaluateAll(cards => cards.map(card => card.dataset.id)), pickIds);
+assert.ok(await picks.evaluateAll(cards => cards.every(card => card.querySelector('.project-row-note').children.length >= 1)));
+assert.equal(await analyticsPage.locator('#projects-grid .project-row-note').count(), 0);
+const qrCard = analyticsPage.locator('#recommended-projects-grid [data-id="qrcode"] .project-row');
+assert.equal(await qrCard.locator('.project-row-name').textContent(), 'QRコードを作る');
+assert.equal(await qrCard.locator('.project-row-purpose').textContent(), 'URLやWi-Fiの接続情報をQRコードに。');
+assert.equal(await qrCard.locator('.project-row-note > span').count(), 1);
+assert.equal(await qrCard.getAttribute('target'), null);
+const pickHeight = await qrCard.evaluate(element => element.getBoundingClientRect().height);
+const regularHeight = await row.evaluate(element => element.getBoundingClientRect().height);
+assert.ok(regularHeight >= 44 && regularHeight <= 125 && pickHeight > regularHeight);
+await detailedView.check();
+assert.equal(await firstTool.locator('.card-detail-btn').isVisible(), true);
+await detailedView.uncheck();
+await analyticsPage.setViewportSize({width: 1440, height: 900});
+assert.equal(await row.isVisible(), false);
+await analyticsPage.waitForFunction(() => document.querySelector('#projects-grid .card')?.dataset.id === 'doujin-calc');
+assert.equal(await detailedView.isVisible(), false);
+assert.equal(await firstTool.locator('.card-detail-btn').isVisible(), true);
+assert.equal(await picks.first().locator('.card-body .card-link').isVisible(), true);
+await analyticsPage.setViewportSize({width: 390, height: 850});
+assert.equal(await row.isVisible(), true);
+await finderSummary.press('Enter');
+assert.equal(await finder.evaluate(details => details.open), false);
+await analyticsPage.keyboard.press('/');
+assert.equal(await projectSearch.evaluate(input=>document.activeElement===input),true);
+await finderSummary.click();
+await finder.locator('[data-filter="learning"]').click();
+assert.deepEqual(await picks.evaluateAll(cards => cards.map(card => card.dataset.id)), ['pikalab']);
+assert.equal(await analyticsPage.locator('#primary-projects-title').isVisible(), false);
+await finder.locator('[data-filter="all"]').click();
 const privateSearch='送信禁止テスト検索語';
-await analyticsPage.locator('#project-search').fill(privateSearch);
+await projectSearch.fill(privateSearch);
 await analyticsPage.waitForTimeout(900);
 assert.equal(analyticsPage.url().includes('q='),false);
 assert.equal(analyticsPage.url().includes('tool_q='),false);
 const searchEvents=await analyticsPage.evaluate(()=>window.dataLayer.map(entry=>Array.from(entry)).filter(entry=>entry[0]==='event'));
 assert.ok(searchEvents.some(entry=>entry[1]==='site_search'&&entry[2]?.search_length>0));
 assert.equal(JSON.stringify(searchEvents).includes(privateSearch),false);
+
+await analyticsPage.goto(base+'/?shelf=tool&tool_q=QR#projects',{waitUntil:'domcontentloaded'});
+assert.equal(await projectSearch.isVisible(),true);
+assert.equal(await projectSearch.inputValue(),'QR');
+assert.equal(await finder.locator('[data-filter="tool"]').getAttribute('aria-pressed'),'true');
+assert.deepEqual(await picks.evaluateAll(cards => cards.map(card => card.dataset.id)), ['qrcode']);
 
 await analyticsPage.goto(base+'/guides/tool-selection-guide.html',{waitUntil:'domcontentloaded'});
 await analyticsPage.evaluate(()=>{

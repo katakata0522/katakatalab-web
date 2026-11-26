@@ -24,8 +24,9 @@
     --text-light: #64748b;    /* slate-500 */
     --border-color: #e2e8f0;  /* slate-200 */
     
-    --primary: #6366f1;       /* Indigo */
-    --primary-hover: #4f46e5;
+    --primary: #4f46e5;
+    --primary-hover: #4238c8;
+    --primary-ink: var(--primary);
     --primary-light: #e0e7ff;
     
     --accent-sky: #0ea5e9;
@@ -82,6 +83,7 @@ body.dark-mode {
     --border-color: #334155;  /* slate-700 */
     
     --primary-light: rgba(99, 102, 241, 0.15);
+    --primary-ink: #a5b4fc;
     
     background-color: #0b0f19;
 }
@@ -167,6 +169,8 @@ body.dark-mode .fontlab-header {
     min-height: 44px;
     padding: 0 0.5rem;
 }
+.mobile-tester-link { display: none; }
+#select-font { scroll-margin-top: 100px; }
 .header-nav-link:hover {
     color: var(--primary);
 }
@@ -202,6 +206,8 @@ body.dark-mode .header-btn:hover {
 
 @media (max-width: 768px) {
     .header-nav { display: none; }
+    .mobile-tester-link { display: inline-flex; }
+    .hero-title { text-wrap: balance; }
     .header-btn {
         width: 48px;
         height: 48px;
@@ -220,14 +226,14 @@ body.dark-mode .header-btn:hover {
 /* --- Hero Section --- */
 .hero {
     text-align: center;
-    padding: 3rem 1rem 4rem 1rem;
+    padding: 1.5rem 1rem 1.75rem 1rem;
 }
 .hero-tag {
     display: inline-flex;
     align-items: center;
     gap: 0.4rem;
     background: var(--primary-light);
-    color: var(--primary);
+    color: var(--primary-ink);
     font-weight: 900;
     font-size: 0.75rem;
     padding: 0.4rem 1.25rem;
@@ -306,6 +312,7 @@ body.dark-mode .glass-card:hover {
     grid-template-columns: 1fr 340px;
     gap: 2rem;
     margin-bottom: 1.5rem;
+    align-items: start;
 }
 
 .compare-howto {
@@ -347,6 +354,13 @@ body.dark-mode .glass-card:hover {
     gap: 1.5rem;
 }
 
+@media (min-width: 1025px) {
+    .canvas-card {
+        position: sticky;
+        top: 84px;
+    }
+}
+
 .canvas-header {
     display: flex;
     justify-content: space-between;
@@ -386,15 +400,16 @@ body.dark-mode .device-btn.active {
 }
 
 .preview-container-wrapper {
+    position: relative;
     background: rgba(255, 255, 255, 0.5);
     border: 1px dashed var(--border-color);
     border-radius: 20px;
     padding: 1.5rem;
     flex-grow: 1;
     display: flex;
-    align-items: center;
+    align-items: flex-start;
     justify-content: center;
-    min-height: 350px;
+    min-height: 320px;
     transition: background 0.4s ease;
 }
 body.dark-mode .preview-container-wrapper {
@@ -474,7 +489,7 @@ body.dark-mode .preview-container-wrapper {
     justify-content: space-between;
 }
 .control-value {
-    color: var(--primary);
+    color: var(--primary-ink);
     font-weight: bold;
 }
 
@@ -497,10 +512,14 @@ body.dark-mode .preview-container-wrapper {
 .control-slider {
     -webkit-appearance: none;
     width: 100%;
-    height: 6px;
-    border-radius: 3px;
-    background: var(--border-color);
-    outline: none;
+    height: 28px;
+    margin-block: 0;
+    background: linear-gradient(var(--border-color), var(--border-color)) center / 100% 6px no-repeat;
+    cursor: pointer;
+}
+.control-slider:focus-visible {
+    outline: 2px solid var(--primary);
+    outline-offset: 2px;
 }
 .control-slider::-webkit-slider-thumb {
     -webkit-appearance: none;
@@ -781,9 +800,16 @@ body.dark-mode .article-body code {
     top: 0.5rem;
     right: 1rem;
     font-size: 0.7rem;
-    color: #64748b;
+    color: #a6b2c5;
     font-weight: bold;
     text-transform: uppercase;
+}
+
+.article-body .article-code-block > code,
+body.dark-mode .article-body .article-code-block > code {
+    padding: 0;
+    background: transparent;
+    color: inherit;
 }
 
 footer p.text-slate-400 {
@@ -823,7 +849,7 @@ footer p.text-slate-400 {
     transform: translateY(0);
 }
 .font-load-status.success {
-    background: #10b981;
+    background: #047857;
 }
 
 .spinner-icon {
@@ -842,7 +868,7 @@ footer p.text-slate-400 {
     transition: opacity 0.2s ease, all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 .preview-container.loading {
-    opacity: 0.6;
+    cursor: progress;
 }
 
 /* 2. Paper Dark Mode Sync */
@@ -877,7 +903,7 @@ body.dark-mode .preview-container .preview-button {
 .code-tab-btn {
     border: none;
     background: transparent;
-    color: #64748b;
+    color: #a6b2c5;
     font-weight: 800;
     font-size: 0.75rem;
     padding: 0.5rem 1rem;
@@ -1041,10 +1067,11 @@ body.dark-mode .scroll-btn:hover {
         box-sizing: border-box !important;
     }
     .hero {
-        padding: 1.5rem 0.5rem 2rem 0.5rem !important;
+        padding: 1.25rem 0.75rem 1.5rem !important;
     }
     .hero-title {
         font-size: 1.75rem !important;
+        margin-bottom: 0.65rem;
     }
     .font-cards-grid {
         grid-template-columns: 1fr !important;
@@ -1078,6 +1105,7 @@ body.dark-mode .scroll-btn:hover {
         max-width: 100% !important;
         box-sizing: border-box !important;
     }
+    .device-toggles { display: none; }
     .preview-container.mobile-mode {
         max-width: 100% !important;
     }

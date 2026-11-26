@@ -12,7 +12,8 @@ test('カード生成はCRLFを増殖させず、再実行で出力が変わら�
   fs.copyFileSync(path.join(__dirname,'../scripts/build-project-cards.cjs'),path.join(dir,'scripts/build-project-cards.cjs'));
   const projects=['primary','secondary'].map((group,i)=>({id:'sample-'+i,group,category:'tool',shelf:'tool',url:'sample-'+i+'/',tagText:'例',tagClass:'tag-tool',title:'例',text:'説明',actions:{mainText:'開く'}}));
   fs.writeFileSync(path.join(dir,'projects.json'),JSON.stringify(projects));
-  fs.writeFileSync(path.join(dir,'index.html'),'<main>\r\n<!-- PROJECT_CARDS_PRIMARY_START --><!-- PROJECT_CARDS_PRIMARY_END -->\r\n<!-- PROJECT_CARDS_SECONDARY_START --><!-- PROJECT_CARDS_SECONDARY_END -->\r\n</main>\r\n');
+  fs.writeFileSync(path.join(dir,'other-projects.html'),'<!-- PROJECT_CARDS_OTHER_START --><!-- PROJECT_CARDS_OTHER_END -->\r\n');
+  fs.writeFileSync(path.join(dir,'index.html'),'<main>\r\n<!-- PROJECT_CARDS_RECOMMENDED_START --><!-- PROJECT_CARDS_RECOMMENDED_END -->\r\n<!-- PROJECT_CARDS_PRIMARY_START --><!-- PROJECT_CARDS_PRIMARY_END -->\r\n<!-- PROJECT_CARDS_SECONDARY_START --><!-- PROJECT_CARDS_SECONDARY_END -->\r\n</main>\r\n');
   const run=()=>execFileSync(process.execPath,[path.join(dir,'scripts/build-project-cards.cjs')]);
   run();const once=fs.readFileSync(path.join(dir,'index.html'),'utf8');
   assert.equal(once.includes('\r\r'),false);

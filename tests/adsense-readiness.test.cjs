@@ -41,7 +41,12 @@ test('トップは静的作品棚と補足導線を操作可能な形でまと�
   assert.match(html, /data-shelf="learning"/);
   assert.match(html, /data-shelf="tool"/);
   assert.match(html, /data-shelf="story"/);
-  assert.match(html, /data-guide="guides\/aspect-ratio-guide\.html"/);
+  assert.match(html, /href="other-projects\.html"/);
+  assert.match(readFile('other-projects.html'), /href="aspect-ratio-calc\/"/);
+  assert.match(readFile('aspect-ratio-calc/index.html'), /href="\.\.\/guides\/aspect-ratio-guide\.html"/);
+  const aspectRatio = JSON.parse(readFile('projects.json')).find(project => project.id === 'aspect-ratio');
+  assert.equal(aspectRatio.group, 'other');
+  assert.equal(aspectRatio.guide, 'guides/aspect-ratio-guide.html');
   assert.match(html, /data-guide="guides\/password-guide\.html"/);
   assert.match(html, /class="btn btn-secondary modal-guide-link modal-action-link"/);
   assert.match(html, /使い方・Q&amp;A/);
@@ -311,14 +316,15 @@ test('追加コンテンツは具体性と更新責任を示す', () => {
   assert.doesNotMatch(sitemapHtml, /全ページ一覧/);
 });
 
-test('PikaLabはトップで見つけられるが実用ツールと区分されている', () => {
+test('PikaLabはおすすめで見つけられ、絞り込みでは学習ラボに属する', () => {
   const html = readFile('index.html');
 
   const pikalabIndex = html.indexOf('data-id="pikalab"');
-  const qrIndex = html.indexOf('data-id="qrcode"');
+  const recommendedIndex = html.indexOf('id="recommended-projects"');
+  const practicalIndex = html.indexOf('id="primary-projects-title"');
 
-  assert.ok(pikalabIndex >= 0, 'PikaLab をトップの作品棚に表示してください');
-  assert.ok(qrIndex < pikalabIndex, '実用ツールをPikaLabより先に説明してください');
+  assert.ok(recommendedIndex >= 0 && recommendedIndex < pikalabIndex && pikalabIndex < practicalIndex);
+  assert.match(html, /data-id="pikalab"\s+data-group="secondary"\s+data-category="education"\s+data-shelf="learning"/);
   assert.match(html, /実用ツールとは目的が違うものです/);
   assert.doesNotMatch(html, /ひみつきち|ゲーム遊び場|きらりん/);
 });

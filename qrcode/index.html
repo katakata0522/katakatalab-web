@@ -31,7 +31,7 @@
   <meta name="twitter:description" content="URL・テキスト・Wi-Fi情報からQRコードを作成し、PNGで保存できるブラウザ完結型ツールです。">
   <meta name="twitter:image" content="https://katakatalab.com/qrcode/ogp.png">
 
-  <link rel="stylesheet" href="style.css?v=20260824-responsive">
+  <link rel="stylesheet" href="style.css?v=20261121-tools">
     <link rel="stylesheet" href="../tool-chrome.css?v=source">
 </head>
 <body>
@@ -191,6 +191,7 @@
             </div>
           </div>
             <textarea id="qrText" class="input-text" placeholder="https://katakatalab.com" rows="4" spellcheck="false"></textarea>
+            <a class="preview-jump" href="#qr-preview" data-i18n="main.previewJump">プレビューを見る</a>
             <p id="errorMsg" class="error-text" role="alert" style="display:none;" data-i18n="main.errorTooLong">⚠️ 文字数が多すぎます (Max 1000)</p>
           </div>
 
@@ -258,7 +259,7 @@
           </div>
         </section>
 
-        <section class="preview-panel" aria-label="プレビュー">
+        <section id="qr-preview" tabindex="-1" class="preview-panel" aria-label="プレビュー">
           <div class="preview-card">
             <div class="canvas-container">
               <div id="loadingIndicator" class="loading-overlay" style="display:none;">
@@ -793,10 +794,10 @@
 ]
 </script>
 
-<script src="js/pwa.js" defer></script>
+<script src="js/pwa.js?v=20261119-review" defer></script>
 <script src="js/pro-config.js" defer></script>
 <script src="vendor/qrious.min.js" defer></script>
-<script src="script.js?v=20260504a" defer></script>
+<script src="script.js?v=20261121-tools" defer></script>
 <script src="js/details-ui.js" defer></script>
 <div id="qrPrintArea" aria-hidden="true"><canvas id="qrPrintImage" aria-label="QR"></canvas></div>
 </body>

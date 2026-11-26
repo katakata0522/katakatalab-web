@@ -193,3 +193,134 @@ body {
     #recommended-games + .grid .card-attraction { padding: 1rem .5rem; }
 }
 #all-games > summary { cursor: pointer; padding: 1rem .25rem; }
+
+.game-label-part { display: inline-block; white-space: nowrap; }
+.kids-footer-links { display: flex; flex-wrap: wrap; justify-content: center; gap: .5rem 1rem; }
+.kids-footer-links a { display: inline-block; }
+
+/* ビルド済みTailwindに不足しているクラスを補完 */
+.bg-\[\#ff5e7e\] { background-color: #ff5e7e; }
+.bg-\[\#3b82f6\] { background-color: #3b82f6; }
+.bg-\[\#10b981\] { background-color: #10b981; }
+.bg-\[\#f59e0b\] { background-color: #f59e0b; }
+.bg-\[\#8b5cf6\] { background-color: #8b5cf6; }
+.w-11 { width: 2.75rem; }
+.h-11 { height: 2.75rem; }
+.text-3xl { font-size: 1.875rem; line-height: 2.25rem; }
+
+#btn-back-home,
+#btn-close-zukan,
+#btn-close-parent-settings {
+    min-width: 44px;
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.sound-hint-pulse {
+    box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.55);
+    border-color: #f59e0b !important;
+    transition: box-shadow 0.2s ease, border-color 0.2s ease;
+}
+
+@media (max-width: 480px) {
+    .kids-rec-grid {
+        gap: 0.5rem;
+    }
+
+    .kids-rec-grid .card-attraction {
+        padding: 0.75rem 0.25rem;
+        font-size: 0.78rem;
+        line-height: 1.25;
+        white-space: nowrap;
+    }
+}
+
+@media (max-width: 640px) {
+    #app {
+        padding: 0.625rem;
+        padding-bottom: 2rem;
+    }
+
+    #app > main {
+        padding: 0.875rem;
+        border-radius: 1.25rem;
+    }
+
+    /* 各あそび画面ではヘッダーとナビを圧縮し、ファーストビューに遊び本体を収める */
+    body.in-game .kids-header {
+        flex-direction: row;
+        flex-wrap: wrap;
+        align-items: center;
+        padding: 0.5rem 0.75rem;
+        margin-bottom: 0.5rem;
+        gap: 0.45rem;
+    }
+
+    body.in-game .kids-header-main {
+        flex: 1 1 auto;
+        min-width: 0;
+        flex-wrap: nowrap;
+        gap: 0.5rem;
+    }
+
+    body.in-game .kids-header-main > div:first-of-type,
+    body.in-game .kids-title-block p {
+        display: none;
+    }
+
+    body.in-game .kids-title-block {
+        flex: 1 1 auto;
+    }
+
+    body.in-game .kids-header-controls {
+        width: auto;
+        justify-content: flex-end;
+        gap: 0.35rem;
+    }
+
+    body.in-game #sound-options {
+        display: none;
+    }
+
+    body.in-game #navigator-area {
+        padding: 0.5rem 0.75rem;
+        margin-bottom: 0.5rem;
+        gap: 0.5rem;
+    }
+
+    body.in-game #navigator-char {
+        width: 2.75rem;
+        height: 2.75rem;
+        font-size: 1.5rem;
+        flex-shrink: 0;
+    }
+
+    #tab-draw .color-btn {
+        width: 2.5rem;
+        height: 2.5rem;
+    }
+
+    #tab-draw .draw-canvas-wrap {
+        min-height: clamp(240px, 46dvh, 340px);
+        height: clamp(240px, 46dvh, 340px);
+    }
+
+    /* もっきん：375pxでも打ちやすい4列×2段配列 */
+    .xylo-keys-grid {
+        display: grid !important;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 0.5rem;
+        height: auto !important;
+        min-height: 204px;
+        padding: 0.75rem !important;
+    }
+
+    .xylo-keys-grid .xylo-key {
+        margin-top: 0 !important;
+        min-height: 92px;
+        padding: 0.75rem 0.25rem !important;
+    }
+}
+

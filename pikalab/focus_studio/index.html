@@ -66,16 +66,16 @@
 
 
     <header
-        class="relative z-20 px-4 py-2 md:py-3 md:px-8 flex flex-col md:flex-row justify-between items-start md:items-center gap-2 md:gap-4 flex-shrink-0">
-        <div class="flex items-center gap-3 cursor-pointer">
+        class="focus-header relative z-20 px-4 py-2 md:py-3 md:px-8 flex flex-col md:flex-row justify-between items-start md:items-center gap-2 md:gap-4 flex-shrink-0">
+        <div class="focus-brand flex items-center gap-3 cursor-pointer">
             <div
-                class="w-12 h-12 bg-white rounded-2xl flex items-center justify-center text-kawaii-primary shadow-md rotate-3 border-2 border-white flex-shrink-0">
+                class="focus-brand-icon w-12 h-12 bg-white rounded-2xl flex items-center justify-center text-kawaii-primary shadow-md rotate-3 border-2 border-white flex-shrink-0">
                 <span class="material-symbols-rounded text-3xl" aria-hidden="true">timer</span>
             </div>
             <h1 class="text-xl md:text-2xl font-extrabold tracking-tight text-kawaii-dark">Focus Studio</h1>
         </div>
-        <div class="flex flex-col md:flex-row items-center gap-3 w-full md:w-auto">
-            <div class="w-full md:w-80 relative group order-2 md:order-1">
+        <div class="focus-fields flex flex-col md:flex-row items-center gap-3 w-full md:w-auto">
+            <div class="focus-goal w-full md:w-80 relative group order-2 md:order-1">
                 <input
                     class="task-input-header w-full rounded-xl px-4 py-2 text-sm md:text-base font-bold text-kawaii-dark placeholder-kawaii-text/40 outline-none shadow-sm text-left pl-10"
                     id="task-input" placeholder="✨ 今の目標を入力..." type="text" aria-label="今の目標">
@@ -85,7 +85,7 @@
                         aria-hidden="true">edit_note</span>
                 </div>
             </div>
-            <div class="flex items-center gap-2 order-1 md:order-2 w-full md:w-auto justify-end">
+            <div class="focus-toolbar flex items-center gap-2 order-1 md:order-2 w-full md:w-auto justify-end">
                 <div id="complete-count-badge"
                     class="flex items-center bg-white/80 backdrop-blur px-3 py-1.5 rounded-full shadow-sm border border-white gap-2">
                     <span class="material-symbols-rounded text-yellow-500 text-lg"

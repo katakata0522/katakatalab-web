@@ -172,18 +172,21 @@ function applyPortalSettings() {
 
 // Utility Functions
 // ============================================
+const HTML_ESCAPE_MAP = Object.freeze({
+    '&': '&amp;',
+    '<': '&lt;',
+    '>': '&gt;',
+    '"': '&quot;',
+    "'": '&#39;'
+});
+
 const Utils = {
     getCharLength(str = '') {
         return Array.from(String(str)).length;
     },
 
     escapeHTML(str = '') {
-        return String(str)
-            .replace(/&/g, '&amp;')
-            .replace(/</g, '&lt;')
-            .replace(/>/g, '&gt;')
-            .replace(/"/g, '&quot;')
-            .replace(/'/g, '&#39;');
+        return String(str).replace(/[&<>"']/g, ch => HTML_ESCAPE_MAP[ch]);
     },
 
     removeEmoji(text) {
@@ -283,11 +286,26 @@ const Utils = {
     }
 };
 
+const documentElementCache = new WeakMap();
+
 function getElement(id) {
+    if (typeof document === 'undefined') return null;
+    let cache = documentElementCache.get(document);
+    if (!cache) {
+        cache = new Map();
+        documentElementCache.set(document, cache);
+    }
+    const cached = cache.get(id);
+    if (cached && cached.isConnected !== false) {
+        return cached;
+    }
     const element = document.getElementById(id);
     if (!element) {
+        cache.delete(id);
         console.warn(`Element with ID "${id}" not found`);
+        return null;
     }
+    cache.set(id, element);
     return element;
 }
 
@@ -802,14 +820,15 @@ function createBookReportApp() {
                 getElement('big-line-share-btn')?.addEventListener('click', () => this.shareToSocial('line'));
 
                 // Copy cards (selected opening selection & copying)
-                document.querySelectorAll('.copy-card').forEach(card => {
+                const copyCards = Array.from(document.querySelectorAll('.copy-card'));
+                copyCards.forEach(card => {
                     card.addEventListener('click', () => {
                         const targetId = card.dataset.copyTarget;
                         if (targetId) {
                             this.copyText(targetId);
                             
                             // Visual active highlight and active state registration
-                            document.querySelectorAll('.copy-card').forEach(c => { c.classList.remove('active'); c.setAttribute('aria-pressed', 'false'); });
+                            copyCards.forEach(c => { c.classList.remove('active'); c.setAttribute('aria-pressed', 'false'); });
                             card.classList.add('active');
                             card.setAttribute('aria-pressed', 'true');
                             this.formData.selectedOpening = targetId;
@@ -832,9 +851,10 @@ function createBookReportApp() {
             },
 
             bindFeelingChips() {
-                document.querySelectorAll('.feeling-chip').forEach(chip => {
+                const feelingChips = Array.from(document.querySelectorAll('.feeling-chip'));
+                feelingChips.forEach(chip => {
                     chip.addEventListener('click', (e) => {
-                        document.querySelectorAll('.feeling-chip').forEach(c => {
+                        feelingChips.forEach(c => {
                             c.classList.remove('selected');
                             c.setAttribute('aria-pressed', 'false');
                         });
@@ -851,10 +871,13 @@ function createBookReportApp() {
             },
 
             bindOptionCards() {
+                const optionCards = Array.from(document.querySelectorAll('.option-card')).map(card => ({
+                    card,
+                    radio: card.querySelector('input[type="radio"]')
+                }));
                 document.querySelectorAll('.option-card input[type="radio"]').forEach(radio => {
                     radio.addEventListener('change', (e) => {
-                        document.querySelectorAll('.option-card').forEach(card => {
-                            const cardRadio = card.querySelector('input[type="radio"]');
+                        optionCards.forEach(({ card, radio: cardRadio }) => {
                             if (cardRadio?.checked) {
                                 card.classList.add('selected');
                             } else {
@@ -968,6 +991,7 @@ function createBookReportApp() {
                     this.navigationTimer = setTimeout(() => {
                         this.navigationTimer = null;
                         if (this.currentStep !== step + 1 || !next.classList.contains('active')) return;
+                        if (typeof window.matchMedia === 'function' && window.matchMedia('(max-width: 767px)').matches) return;
                         const firstInput = next.querySelector('input:not([type=hidden]), textarea');
                         if (firstInput) {
                             firstInput.focus();
@@ -1343,6 +1367,9 @@ function createBookReportApp() {
                 const container = getElement(containerId);
                 if (!container) return;
                 container.innerHTML = '';
+                const target = typeof document.createDocumentFragment === 'function'
+                    ? document.createDocumentFragment()
+                    : container;
                 chipData.forEach(item => {
                     const btn = document.createElement('button');
                     btn.type = 'button';
@@ -1358,8 +1385,11 @@ function createBookReportApp() {
                             this.saveData();
                         }
                     });
-                    container.appendChild(btn);
+                    target.appendChild(btn);
                 });
+                if (target !== container) {
+                    container.appendChild(target);
+                }
             },
 
             // ----------------------------------------

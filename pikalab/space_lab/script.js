@@ -16,17 +16,18 @@ import { TaskScope, ModalStack } from './lifecycle.mjs';
 // WarpLoader と WarpTransition のコードを DRY 原則に基づき1クラスに統合。
 // パラメータで外観を切り替え、バグ修正が両方に確実に反映される。
 // ============================================================
+const HTML_ESCAPE_MAP = Object.freeze({
+    '&': '&amp;',
+    '<': '&lt;',
+    '>': '&gt;',
+    "'": '&#39;',
+    '"': '&quot;'
+});
+const HTML_ESCAPE_REGEX = /[&<>'"]/g;
+
 function escapeHTML(str) {
     if (typeof str !== 'string') return str;
-    return str.replace(/[&<>'"]/g, 
-        tag => ({
-            '&': '&amp;',
-            '<': '&lt;',
-            '>': '&gt;',
-            "'": '&#39;',
-            '"': '&quot;'
-        }[tag] || tag)
-    );
+    return str.replace(HTML_ESCAPE_REGEX, tag => HTML_ESCAPE_MAP[tag] || tag);
 }
 
 class Starfield {
@@ -457,7 +458,11 @@ const App = {
     },
 
     hasOpenedModal() {
-        return Boolean(this.modals?.top || document.getElementById('parents-modal')?.open);
+        if (this.modals?.top) return true;
+        if (!this._parentsDialog || this._parentsDialog.isConnected === false) {
+            this._parentsDialog = document.getElementById('parents-modal');
+        }
+        return Boolean(this._parentsDialog?.open);
     },
 
     handlePlanetClick(p) {
@@ -564,6 +569,9 @@ const App = {
                 UI.DOM.quiz.q.textContent = q.question;
                 UI.DOM.quiz.options.innerHTML = '';
                 
+                const reviewFrag = typeof document.createDocumentFragment === 'function'
+                    ? document.createDocumentFragment()
+                    : UI.DOM.quiz.options;
                 q.options.forEach((opt, idx) => {
                     const b = document.createElement('button');
                     b.textContent = opt;
@@ -577,8 +585,9 @@ const App = {
                     } else {
                         b.className = CONFIG.CLASSES.QUIZ_BTN_DISABLED;
                     }
-                    UI.DOM.quiz.options.appendChild(b);
+                    reviewFrag.appendChild(b);
                 });
+                if (reviewFrag !== UI.DOM.quiz.options) UI.DOM.quiz.options.appendChild(reviewFrag);
                 
                 UI.DOM.quiz.icon.textContent = '⭕';
                 UI.DOM.quiz.text.textContent = '完全調査済み (復習モード)';
@@ -609,13 +618,17 @@ const App = {
                 UI.DOM.quiz.q.textContent = q.question;
                 UI.DOM.quiz.options.innerHTML = '';
                 
+                const optionsFrag = typeof document.createDocumentFragment === 'function'
+                    ? document.createDocumentFragment()
+                    : UI.DOM.quiz.options;
                 q.options.forEach((opt, idx) => {
                     const b = document.createElement('button');
                     b.textContent = opt;
                     b.className = CONFIG.CLASSES.QUIZ_BTN + ' quiz-cyber-btn';
                     b.onclick = () => this.handleQuiz(q, idx);
-                    UI.DOM.quiz.options.appendChild(b);
+                    optionsFrag.appendChild(b);
                 });
+                if (optionsFrag !== UI.DOM.quiz.options) UI.DOM.quiz.options.appendChild(optionsFrag);
                 
                 // 初期状態（回答前）は結果パネルにフォーカスが当たらないよう、ボタンも完全にhiddenにして隠蔽
                 UI.DOM.quiz.btn.classList.add('hidden');
@@ -779,6 +792,10 @@ const App = {
     },
 
     _spawnStarburst() {
+        const particles = [];
+        const target = typeof document.createDocumentFragment === 'function'
+            ? document.createDocumentFragment()
+            : UI.DOM.stamp;
         for (let i = 0; i < 15; i++) {
             const p = document.createElement('div');
             p.className = 'starburst-particle';
@@ -787,9 +804,13 @@ const App = {
             p.style.setProperty('--tx', `${Math.cos(angle) * dist}px`);
             p.style.setProperty('--ty', `${Math.sin(angle) * dist}px`);
             p.style.left = '50%'; p.style.top = '50%';
-            UI.DOM.stamp.appendChild(p);
-            this.quizTasks.later(() => p.remove(), 600);
+            target.appendChild(p);
+            particles.push(p);
         }
+        if (target !== UI.DOM.stamp) UI.DOM.stamp.appendChild(target);
+        this.quizTasks.later(() => {
+            for (let i = 0; i < particles.length; i++) particles[i].remove();
+        }, 600);
     },
 
     markVisited(id) {
@@ -891,11 +912,18 @@ const App = {
     renderMinimapDots() {
         if (!UI.DOM.minimapMarkers) return;
         const totalW = State.totalWidth || 1;
+        if (!this._minimapButtons) this._minimapButtons = new Map();
+        const newDotsFrag = typeof document.createDocumentFragment === 'function'
+            ? document.createDocumentFragment()
+            : null;
         
-        State.planetData.forEach(p => {
+        State.planetData.forEach((p, index) => {
             const pct = (p.cx / totalW) * 100;
             
-            let btn = UI.DOM.minimapMarkers.querySelector(`[data-planet="${p.id}"]`);
+            let btn = this._minimapButtons.get(p.id);
+            if (!btn || btn.isConnected === false) {
+                btn = UI.DOM.minimapMarkers.querySelector(`[data-planet="${p.id}"]`);
+            }
             if (!btn) {
                 btn = document.createElement('button');
                 btn.dataset.planet = p.id;
@@ -904,22 +932,24 @@ const App = {
                     Audio.play('fx', 'click');
                     this.autoPilotToPlanet(p.id);
                 };
-                UI.DOM.minimapMarkers.appendChild(btn);
+                if (newDotsFrag) newDotsFrag.appendChild(btn);
+                else UI.DOM.minimapMarkers.appendChild(btn);
             }
-            btn.className = 'absolute -translate-x-1/2 w-3.5 h-3.5 rounded-full border-2 transition-all cursor-pointer shadow-md focus:outline-none focus:ring-2 focus:ring-cyan-400 focus:ring-offset-1 focus:ring-offset-slate-900 z-20';
-            btn.style.left = `${pct}%`;
-            
+            this._minimapButtons.set(p.id, btn);
             const isVisited = State.visited.has(p.id);
-            if (isVisited) {
-                btn.className += ' bg-emerald-500 border-emerald-300 hover:bg-emerald-400 hover:scale-125 hover:shadow-[0_0_12px_rgba(16,185,129,0.9)]';
-            } else {
-                btn.className += ' bg-slate-700 border-slate-400 hover:bg-cyan-400 hover:border-cyan-300 hover:scale-125 hover:shadow-[0_0_12px_rgba(6,182,212,0.9)]';
-            }
-            
+            btn.className = 'absolute -translate-x-1/2 w-3.5 h-3.5 rounded-full border-2 transition-all cursor-pointer shadow-md focus:outline-none focus:ring-2 focus:ring-cyan-400 focus:ring-offset-1 focus:ring-offset-slate-900 z-20 '
+                + (isVisited
+                    ? 'bg-emerald-500 border-emerald-300 hover:bg-emerald-400 hover:scale-125 hover:shadow-[0_0_12px_rgba(16,185,129,0.9)]'
+                    : 'bg-slate-700 border-slate-400 hover:bg-cyan-400 hover:border-cyan-300 hover:scale-125 hover:shadow-[0_0_12px_rgba(6,182,212,0.9)]');
+            btn.style.left = `${pct}%`;
+            // スマホでは同じ幅の押下領域内で、点を元の地図上の位置に寄せる。
+            btn.style.setProperty('--dot-in-cell', `${pct * State.planetData.length - index * 100}%`);
             btn.title = p.name;
             btn.setAttribute('aria-label', `${p.name}へワープ`);
-            
         });
+        if (newDotsFrag && newDotsFrag.childNodes.length > 0) {
+            UI.DOM.minimapMarkers.appendChild(newDotsFrag);
+        }
     },
 
     bindModalEvents() {
@@ -929,7 +959,10 @@ const App = {
         UI.DOM.closeCelBtn?.addEventListener('click', () => this.closeCelebration());
         UI.DOM.warpNextBtn?.addEventListener('click', () => this.autoPilot());
         document.addEventListener('keydown', event => {
-            const parents = document.getElementById('parents-modal');
+            if (!this._parentsDialog || this._parentsDialog.isConnected === false) {
+                this._parentsDialog = document.getElementById('parents-modal');
+            }
+            const parents = this._parentsDialog;
             this.modals.trap(event, parents?.open ? parents : this.modals.top);
             if (event.key !== 'Escape') return;
             const top = this.modals.top;

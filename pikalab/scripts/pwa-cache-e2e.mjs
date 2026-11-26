@@ -87,6 +87,7 @@ const server = http.createServer((request, response) => {
       'Content-Type': mimeTypes[path.extname(relative)] || 'application/octet-stream',
       'Cache-Control': 'no-store',
       'Service-Worker-Allowed': '/pikalab/',
+      ...(relative === 'sw.js' ? { 'Content-Security-Policy': "connect-src 'self'" } : {}),
     });
     response.end(bytes);
   } catch {
@@ -95,6 +96,31 @@ const server = http.createServer((request, response) => {
   }
 });
 
+async function verifyNativeFontRequests(page, origin) {
+  await page.goto(origin + harnessPath);
+  assert.ok(await page.evaluate(() => navigator.serviceWorker.controller?.scriptURL.endsWith('/pikalab/sw.js')));
+  // 書体の見た目は各教材の実フォントE2Eで検査する。ここでは外部配信に依存せず通信経路を確認する。
+  const resources = [
+    { url: 'https://fonts.googleapis.com/css2?family=PikaLabRouteFixture', as: 'style', contentType: 'text/css' },
+    { url: 'https://fonts.gstatic.com/s/pikalab-route-fixture.woff2', as: 'font', contentType: 'font/woff2' },
+  ];
+  for (const { url, as, contentType } of resources) {
+    await page.route(url, route => route.fulfill({ contentType, body: as === 'style' ? 'html {}' : 'probe',
+      headers: { 'Access-Control-Allow-Origin': '*' } }));
+    const [response] = await Promise.all([
+      page.waitForResponse(url),
+      page.evaluate(({ url, as }) => new Promise((resolve, reject) => {
+        const link = document.createElement('link');
+        link.rel = 'preload'; link.as = as; link.crossOrigin = 'anonymous'; link.href = url;
+        link.onload = () => resolve(true);
+        link.onerror = () => reject(new Error('書体の配信元へのリクエストに失敗: ' + url));
+        document.head.append(link);
+      }), { url, as }),
+    ]);
+    assert.ok(response.ok() && !response.fromServiceWorker(), url + ': ブラウザーが直接取得する');
+    await page.unroute(url);
+  }
+}
 
 async function verifyInheritedLaunch(browser, origin, lab) {
   serveCandidate = true;
@@ -397,6 +423,8 @@ try {
     assert.equal(matching.length, 1, `${url}: 古いprecache項目を残さない`);
     assert.equal(matching[0].searchParams.get('__WB_REVISION__'), expectedRevision, url);
   }
+  await context.setOffline(false);
+  await verifyNativeFontRequests(page, origin);
   await context.close();
   console.log(`[PWA] Root session-safe upgrade and ${manifest.entries.length} offline asset bytes passed`);
   for (const worker of localWorkers) {

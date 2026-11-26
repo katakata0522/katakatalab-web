@@ -226,6 +226,13 @@ function requireFonts(metrics) {
     }
     assert.ok(metrics.fonts.some(face => face.family.includes('Material Symbols Rounded') && face.status === 'loaded'), 'Actual icon font is loaded');
 }
+function checkMobileHeader(metrics) {
+    const box = key => metrics.anchors.find(item => item.key === key + ':0').box;
+    const header = box('header'), title = box('header h1'), button = box('[data-action="parents-modal-open"]');
+    assert.ok(title.x >= 0 && title.x + title.width <= button.x && button.x + button.width <= header.width);
+    assert.ok(title.y >= 0 && title.y + title.height <= header.height && header.height <= 84, 'Full title fits the header');
+    assert.ok(button.width >= 44 && button.height >= 44 && button.y >= 0 && button.y + button.height <= header.height);
+}
 function compareInitial(after, before) {
     assert.equal(after.title, before.title, 'Initial document title preserved');
     const previousControls = structuredClone(before.controls);
@@ -238,7 +245,17 @@ function compareInitial(after, before) {
     for (const old of before.anchors) {
         const current = after.anchors.find(anchor => anchor.key === old.key);
         assert.ok(current, `${old.key}: original semantic element remains`);
-        assert.equal(current.text, old.text, `${old.key}: visible copy preserved`);
+        const mobile = after.viewport.width <= 767;
+        const titleOrHeader = ['header:0', 'header h1:0'].includes(old.key);
+        const text = titleOrHeader && after.viewport.width <= 480 ? old.text.replace(/\s*\|\s*/, ' ') : old.text;
+        assert.equal(current.text, text, old.key + ': visible copy preserved');
+        if (mobile && ['header h1:0', '[data-action="parents-modal-open"]:0'].includes(old.key)) {
+            const expectedStyle = { ...old.style };
+            if (old.key === 'header h1:0') for (const key of ['fontSize', 'lineHeight', 'letterSpacing']) expectedStyle[key] = current.style[key];
+            assert.deepEqual(current.style, expectedStyle);
+            exceptions.push({ key: old.key, before: old.box, after: current.box, reason: 'Two-line mobile title and full parents button' });
+            continue;
+        }
         // 既知のプレビュー収容修正以外は見た目を完全比較する。修正箇所も差分を記録する。
         if (repaired.test(old.key)) {
             const oldStyle = { ...old.style }, newStyle = { ...current.style };
@@ -327,7 +344,9 @@ async function paperEdges(page, record, label) {
 
 async function initialSuite() {
     for (const viewport of VIEWPORTS) await runCase(`initial-preservation-${viewport.width}`, async (page, record) => {
-        const after = await layoutMetrics(page); requireFonts(after); await noHorizontalOverflow(page, record);
+        const after = await layoutMetrics(page);
+        if (viewport.width <= 767) checkMobileHeader(after);
+        requireFonts(after); await noHorizontalOverflow(page, record);
         const name = `initial-${viewport.width}`;
         await screenshot(page, `${name}-after`);
         if (baselineUrl) {

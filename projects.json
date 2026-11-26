@@ -1,65 +1,10 @@
 [
-  {
-    "id": "moyamoya-sorter",
-    "group": "secondary",
-    "category": "tool",
-    "shelf": "tool",
-    "featured": true,
-    "url": "moyamoya-sorter/",
-    "detail": "やることが多すぎて動けない時や不安な時に。頭のモヤモヤを「変えられること」と「手放していいこと」に仕分け、2分でできる最小の一歩を導く行動整理ツール。",
-    "tagText": "メンタル",
-    "tagClass": "tag-tool",
-    "targetBadge": "👪 全員向け",
-    "statusBadge": "NEW",
-    "title": "モヤモヤ仕分け機",
-    "text": "頭の中のモヤモヤを整理して、今すぐできる「2分の一歩」を決めるツール。",
-    "aliases": [
-      "モヤモヤ仕分け機",
-      "モヤモヤ",
-      "不安解消",
-      "タスク整理",
-      "メンタルケア",
-      "2分タイマー",
-      "スモールステップ"
-    ],
-    "actions": {
-      "mainText": "仕分ける →",
-      "detail": true
-    }
-  },
-  {
-    "id": "chiritsumo-calc",
-    "group": "secondary",
-    "category": "tool",
-    "shelf": "tool",
-    "featured": true,
-    "url": "chiritsumo-calc/",
-    "detail": "カフェ代、コンビニのついで買い、使っていないサブスク…日々のチリツモ出費を見直したお金が、温泉旅行や海外旅などのご褒美体験に化ける未来価値を逆算するシミュレーター。",
-    "tagText": "家計",
-    "tagClass": "tag-tool",
-    "targetBadge": "💼 実用向け",
-    "statusBadge": "NEW",
-    "title": "チリツモ逆算シミュレーター",
-    "text": "我慢する節約をやめて、日々の小さな出費をご褒美体験に楽しく逆算！",
-    "aliases": [
-      "チリツモ",
-      "チリツモ逆算",
-      "節約シミュレーター",
-      "ラテマネー",
-      "固定費見直し",
-      "サブスク解約",
-      "家計簿"
-    ],
-    "actions": {
-      "mainText": "逆算する →",
-      "detail": true
-    }
-  },
 {
     "id": "pikalab",
     "group": "secondary",
     "category": "education",
     "shelf": "learning",
+    "recommendationOrder": 2,
     "featured": false,
     "newTab": true,
     "url": "pikalab/",
@@ -69,7 +14,10 @@
     "targetBadge": "🎓 子ども向け",
     "statusBadge": "LAB",
     "title": "PikaLab",
-    "text": "遊ぶように学ぶための研究室。ミニアプリや学習の手助けをひとつの入口に集めています。",
+    "shortText": "親子で漢字やリズムのゲームを楽しむ。",
+    "mobileAction": "PikaLabを開く",
+    "mobileNote": ["色まぜや深海探検も広告なしで。"],
+    "text": "親子で漢字やリズムを楽しむ子ども向けの研究室。深海生物の探検や色まぜにも、広告なしで取り組めます。",
     "aliases": ["PikaLab", "ピカラボ", "子ども向け", "学習ゲーム", "ミニゲーム", "教育"],
     "actions": {
       "mainText": "研究室へ行く →",
@@ -81,6 +29,7 @@
     "group": "secondary",
     "category": "tool",
     "shelf": "tool",
+    "recommendationOrder": 3,
     "featured": false,
     "url": "https://www.playpoint-sim.com/",
     "detail": "次のGoogle Playステータス（ゴールドやプラチナ等）までに必要な金額と、得られるポイントを試算できるシミュレーター。",
@@ -89,6 +38,9 @@
     "targetBadge": "💼 実用向け",
     "statusBadge": "BEST",
     "title": "Playポイント計算機",
+    "shortText": "次のランクまでの購入額を計算する。",
+    "mobileAction": "計算機を開く",
+    "mobileNote": ["購入でもらえるポイントも試算。"],
     "text": "次のステータスまでに必要な金額や、得られるポイントをさっと試算できます。",
     "aliases": ["Google Play", "Google Playポイント", "ポイント計算", "課金計算", "ステータス"],
     "actions": {
@@ -103,13 +55,15 @@
     "shelf": "tool",
     "featured": false,
     "url": "asobi-pocket/",
-    "detail": "出先・待ち時間・飲み会で、スマホ1台・道具なしですぐ遊べる31種類のパーティーゲーム集。ito、朝それ、ワードウルフ、ウミガメのスープなどをツール付きで楽しめます。",
+    "detail": "出先・待ち時間・飲み会で、スマホ1台・道具なしですぐ遊べるパーティーゲームと進行ツール集。ito、朝それ、ワードウルフ、ウミガメのスープなどをツール付きで楽しめます。",
     "tagText": "ゲーム",
     "tagClass": "tag-tool",
     "targetBadge": "🎉 遊び向け",
     "statusBadge": "NEW",
     "title": "あそびポケット",
-    "text": "スマホ1台・道具なしで、待ち時間や飲み会ですぐ遊べる31種類のパーティーゲーム集。",
+    "shortText": "スマホ1台でみんなで遊ぶ。",
+    "mobileAction": "遊びを選ぶ",
+    "text": "スマホ1台・道具なしで、待ち時間や飲み会ですぐ遊べるパーティーゲームと進行ツール集。",
     "aliases": ["あそびポケット", "Asobi Pocket", "パーティーゲーム", "暇つぶし", "飲み会ゲーム", "スマホゲーム"],
     "actions": {
       "mainText": "使う →",
@@ -129,6 +83,8 @@
     "targetBadge": "🧪 実験向け",
     "statusBadge": "NEW",
     "title": "Gravity TODO",
+    "shortText": "短いタスクを積んで片づける。",
+    "mobileAction": "タスク帳を開く",
     "text": "積み上がる短いタスクを爆破演出で片づける、実験用Todo。",
     "aliases": ["Gravity Todo", "Todo", "タスク", "タスク管理", "やることリスト"],
     "actions": {
@@ -137,30 +93,11 @@
     }
   },
   {
-    "id": "kids-smile-land",
-    "group": "secondary",
-    "category": "education",
-    "shelf": "learning",
-    "featured": false,
-    "url": "lab-tools/kids-smile-land/",
-    "detail": "ひらがな読み上げ、お絵かき、もっきん、おもちゃの音あてなどをまとめた親子向け遊び場です。初期は2〜3歳向けのかんたんで開き、4〜6歳は設定で変えられます。",
-    "tagText": "学び",
-    "tagClass": "tag-education",
-    "targetBadge": "🎓 子ども向け",
-    "statusBadge": "NEW",
-    "title": "キッズ・スマイル・ランド",
-    "text": "文字・音・お絵かきを親子で試す遊び場。初期はかんたん（2〜3歳）です。",
-    "aliases": ["Kids Smile Land", "キッズスマイルランド", "知育", "幼児", "ひらがな", "お絵かき"],
-    "actions": {
-      "mainText": "遊びに行く →",
-      "detail": true
-    }
-  },
-  {
     "id": "motion-atlas",
     "group": "primary",
     "category": "tool",
     "shelf": "tool",
+    "recommendationOrder": 1,
     "featured": false,
     "url": "motion-atlas/",
     "detail": "WebアニメーションやUIの置き方・動きの仕組みを全100パターン収録。再生・スロー再生・種明かし図解で確認し、AIへの指示文やHTML+CSS／Tailwindコードをそのままコピーして使える図鑑。",
@@ -169,6 +106,9 @@
     "targetBadge": "💼 実用向け",
     "statusBadge": "NEW",
     "title": "動きの仕組み図鑑",
+    "shortText": "ボタンやメニューの動きをスロー再生。",
+    "mobileAction": "図鑑を開く",
+    "mobileNote": ["100種類の作例を見比べ、", "気に入った動きのコードをコピー。"],
     "text": "UIの動き方・作り方を100種収録。スロー再生・図解とAI指示・コードをコピペ可能！",
     "aliases": ["動きの仕組み図鑑", "Motion Atlas", "アニメーション", "CSSアニメーション", "Tailwind", "UIモーション", "トランジション", "AIプロンプト"],
     "actions": {
@@ -189,6 +129,8 @@
     "targetBadge": "💼 実用向け",
     "statusBadge": "NEW",
     "title": "同人の価格と釣銭",
+    "shortText": "頒布価格と当日の釣銭を計算する。",
+    "mobileAction": "計算ページへ",
     "text": "頒布価格、黒字になる部数、当日の千円札と硬貨の枚数をブラウザで計算。",
     "aliases": ["同人", "コミケ", "頒布価格", "釣銭", "損益分岐", "同人誌", "即売会"],
     "actions": {
@@ -201,6 +143,7 @@
     "group": "primary",
     "category": "tool",
     "shelf": "tool",
+    "recommendationOrder": 5,
     "featured": false,
     "url": "https://katakatalab.com/qrcode/",
     "guide": "qrcode/guides.html",
@@ -210,6 +153,9 @@
     "targetBadge": "💼 実用向け",
     "statusBadge": "PICK",
     "title": "QRコードを作る",
+    "shortText": "URLやWi-Fiの接続情報をQRコードに。",
+    "mobileAction": "作成ページへ",
+    "mobileNote": ["ブラウザで作って、画像で保存。"],
     "text": "ブラウザ完結でQRコードを作成。用途別の解説ページも用意しています。",
     "aliases": ["QR", "QR code", "QRコード", "二次元コード", "QR作成", "QR Maker Lab"],
     "guideLinks": [
@@ -218,26 +164,6 @@
       { "text": "連絡先", "url": "https://katakatalab.com/qrcode/guide-vcard.html" },
       { "text": "メール", "url": "https://katakatalab.com/qrcode/guide-mail.html" }
     ],
-    "actions": {
-      "mainText": "使う →",
-      "detail": true
-    }
-  },
-  {
-    "id": "aspect-ratio",
-    "group": "primary",
-    "category": "tool",
-    "shelf": "tool",
-    "featured": false,
-    "url": "aspect-ratio-calc/",
-    "guide": "guides/aspect-ratio-guide.html",
-    "detail": "動画編集やWebデザインで、公開先に合う縦横比と画像サイズを確認するツール。比率と片方の長さから、もう片方を自動計算します。",
-    "tagText": "ツール",
-    "tagClass": "tag-tool",
-    "targetBadge": "💼 実用向け",
-    "title": "縦横比を計算する",
-    "text": "16:9などの比率と画像サイズをすぐ計算。画像リサイズや動画編集に役立ちます。",
-    "aliases": ["アスペクト比", "縦横比", "aspect ratio", "aspect-ratio"],
     "actions": {
       "mainText": "使う →",
       "detail": true
@@ -256,28 +182,11 @@
     "tagClass": "tag-tool",
     "targetBadge": "💼 実用向け",
     "title": "安全なパスワードを作る",
+    "shortText": "文字数や記号の有無を選べます。",
+    "mobileAction": "生成ページへ",
+    "mobileOrder": 4,
     "text": "推測されにくいランダムパスワードを作成。文字種や長さを用途に合わせて設定できます。",
     "aliases": ["パスワード", "password", "password generator", "パスワードジェネレーター", "暗号化保管"],
-    "actions": {
-      "mainText": "使う →",
-      "detail": true
-    }
-  },
-  {
-    "id": "px-rem",
-    "group": "primary",
-    "category": "tool",
-    "shelf": "tool",
-    "featured": false,
-    "url": "px-rem-converter/",
-    "guide": "guides/px-rem-guide.html",
-    "detail": "スマホやPCでホームページの文字サイズが崩れないように設計する、Web制作者向けの「pxとrem」の相互変換ツール。サイズ設計の基本ガイド付き。",
-    "tagText": "ツール",
-    "tagClass": "tag-tool",
-    "targetBadge": "💼 実用向け",
-    "title": "px / rem 変換",
-    "text": "CSSのサイズ設計に役立つ、ピクセルとremの相互変換ツール。",
-    "aliases": ["px rem", "px/rem", "ピクセル レム", "CSS単位", "pixel rem"],
     "actions": {
       "mainText": "使う →",
       "detail": true
@@ -296,6 +205,8 @@
     "targetBadge": "💼 実用向け",
     "statusBadge": "NEW",
     "title": "Webフォントを比較する",
+    "shortText": "同じ文章を複数の書体で見比べる。",
+    "mobileAction": "比較ページへ",
     "text": "日本語Webフォントをリアルタイム比較。表示確認と軽量化の考え方を一か所にまとめました。",
     "aliases": ["font", "フォント", "Webフォント", "文字フォント", "Katakata Font Lab"],
     "actions": {
@@ -317,6 +228,8 @@
     "targetBadge": "💼 実用向け",
     "statusBadge": "NEW",
     "title": "コードを試す（CodeStudio）",
+    "shortText": "コードを貼ってブラウザで動かす。",
+    "mobileAction": "編集ページへ",
     "text": "AIが出力したコードもまとめて貼り付け、ブラウザで動作を確認できるWebプレイグラウンド。",
     "aliases": ["CodeStudio", "Code Studio", "web playground", "Webプレイグラウンド", "AIコード", "Vibe Coding"],
     "actions": {
@@ -338,6 +251,8 @@
     "targetBadge": "💼 実用向け",
     "statusBadge": "NEW",
     "title": "強調線・集中線を作る",
+    "shortText": "漫画風の集中線を画像に重ねる。",
+    "mobileAction": "作成ページへ",
     "text": "漫画風の集中線や放射線をブラウザで手軽に作成。YouTubeのサムネ作りに。",
     "aliases": ["集中線", "放射線", "emphasis lines", "サムネイル", "漫画"],
     "actions": {
@@ -357,27 +272,10 @@
     "tagClass": "tag-tool",
     "targetBadge": "💼 実用向け",
     "title": "文章の差分を見る",
+    "shortText": "2つの文章の変更箇所を色で見る。",
+    "mobileAction": "比較ページへ",
     "text": "文章やコードの変更箇所を色分けして視覚的に比較。登録不要・ブラウザ完結。",
     "aliases": ["diff", "text diff", "テキスト比較", "文章比較", "差分"],
-    "actions": {
-      "mainText": "使う →",
-      "detail": true
-    }
-  },
-  {
-    "id": "ogp-simulator",
-    "group": "primary",
-    "category": "tool",
-    "shelf": "tool",
-    "featured": false,
-    "url": "ogp-simulator/",
-    "detail": "記事やWebサイトを公開する前に、X(Twitter)やFacebook、LINEでのシェア時の見え方をリアルタイムで確認・調整できるシミュレーターです。",
-    "tagText": "ツール",
-    "tagClass": "tag-tool",
-    "targetBadge": "💼 実用向け",
-    "title": "OGPシミュレーター",
-    "text": "SNSでシェアした際の見え方を事前に確認。画像比率チェックやダークモード対応。",
-    "aliases": ["OGP", "OGP preview", "SNS画像", "シェア画像", "social image"],
     "actions": {
       "mainText": "使う →",
       "detail": true
@@ -395,27 +293,11 @@
     "tagClass": "tag-tool",
     "targetBadge": "💼 実用向け",
     "title": "割引を計算する",
+    "shortText": "元の値段と割引率から支払額を計算。",
+    "mobileAction": "計算ページへ",
+    "mobileOrder": 5,
     "text": "セールの「◯％オフ」「◯割引き」を税込で一覧表示。レジ落ちの重ね割引にも対応。",
     "aliases": ["割引", "値引き", "セール計算", "discount", "◯％オフ"],
-    "actions": {
-      "mainText": "使う →",
-      "detail": true
-    }
-  },
-  {
-    "id": "seireki",
-    "group": "primary",
-    "category": "tool",
-    "shelf": "tool",
-    "featured": false,
-    "url": "seireki/",
-    "detail": "西暦または和暦を入れて、今年迎える年齢と干支を確認できます。",
-    "tagText": "ツール",
-    "tagClass": "tag-tool",
-    "targetBadge": "💼 実用向け",
-    "title": "年齢・和暦・西暦早見表",
-    "text": "西暦と和暦（令和・平成・昭和など）の相互変換と、今年迎える年齢を一覧表示。",
-    "aliases": ["西暦", "和暦", "年齢計算", "元号", "年齢", "早見表"],
     "actions": {
       "mainText": "使う →",
       "detail": true
@@ -433,29 +315,12 @@
     "tagClass": "tag-article",
     "targetBadge": "👪 全員向け",
     "title": "かたかたのnote",
+    "shortText": "制作の裏話や日々の発見を読む。",
+    "mobileAction": "記事を選ぶ",
     "text": "制作途中で考えたことや日々の発見を、雑多に置いていく場所。",
     "aliases": ["note", "ブログ", "制作話", "読みもの", "かたかたらぼ", "KatakataLab"],
     "actions": {
       "mainText": "読みものを見る →",
-      "detail": true
-    }
-  },
-  {
-    "id": "gear",
-    "group": "secondary",
-    "category": "gear",
-    "shelf": "story",
-    "featured": false,
-    "url": "gear.html",
-    "detail": "個人開発者が実際に使って良かったキーボードやパソコンなどの機材・ガジェットを、開発を楽しくする工夫や選んだ本音とともに紹介。",
-    "tagText": "環境",
-    "tagClass": "tag-gear",
-    "targetBadge": "💼 実用向け",
-    "title": "制作デスクと機材メモ",
-    "text": "気になる機材や、制作環境をもっと楽しくする道具のメモ。",
-    "aliases": ["ガジェット", "機材", "デスク", "開発環境", "desk gear"],
-    "actions": {
-      "mainText": "使う →",
       "detail": true
     }
   },
@@ -466,12 +331,15 @@
     "shelf": "tool",
     "featured": false,
     "url": "screenshot-crop/",
-    "detail": "SNS投稿前に、スクリーンショットの上・下・左右に残ったステータスバーやナビゲーションバー、PCのタスクバーなどを切り落とすツール。画像本体はサーバーや外部AIへ送らず、ブラウザ内で処理します。自動推定のあと、指やマウスで4辺を微調整できます。",
+    "detail": "SNS投稿前に、スクリーンショットの上・下・左右に残ったステータスバーやナビゲーションバー、PCのタスクバーなどを切り落とすツール。画像本体はサーバーや外部AIへ送らず、ブラウザ内で処理します。画像は8枚までまとめて選べます。自動推定のあと、指やマウスで4辺を微調整できます。",
     "tagText": "画像・プライバシー",
     "tagClass": "tag-tool",
     "targetBadge": "💼 実用向け",
     "statusBadge": "NEW",
     "title": "スクショ端カット",
+    "shortText": "スクショの端に写った時刻や通知をカット。",
+    "mobileAction": "切り取りページへ",
+    "mobileOrder": 1,
     "text": "投稿前のスクショから、見せたくない画面端だけをブラウザ内でサッと切る。",
     "aliases": [
       "スクショ端カット",
@@ -495,6 +363,7 @@
     "group": "secondary",
     "category": "tool",
     "shelf": "tool",
+    "recommendationOrder": 4,
     "featured": false,
     "url": "higedanfan/",
     "detail": "Official髭男dismの非公式ファンサイト。曲別の出典から音域・BPM・演奏時間を確かめ、自分のセットリストを作れます。",
@@ -502,7 +371,10 @@
     "tagClass": "tag-tool",
     "targetBadge": "音楽ファン向け",
     "title": "115万キロのファンノート",
-    "text": "髭男の86曲を調べてマイセトリを作る。検定クイズ・聖地マップ・歴代ツアーの記録も。",
+    "shortText": "ヒゲダンの曲やツアーの記録を探す。",
+    "mobileAction": "ファンノートを開く",
+    "mobileNote": ["曲を選んで自分だけのセトリ作り。", "クイズや聖地マップも楽しめます。"],
+    "text": "曲の音域やBPMを調べて、自分のセットリストを作れます。クイズ・聖地マップ・歴代ツアーの記録も。",
     "aliases": [
       "髭男",
       "ヒゲダン",
@@ -512,6 +384,88 @@
     ],
     "actions": {
       "mainText": "ファンノートを開く →",
+      "detail": true
+    }
+  },
+  {
+    "id": "ogp-simulator",
+    "group": "other",
+    "category": "tool",
+    "shelf": "tool",
+    "featured": false,
+    "url": "ogp-simulator/",
+    "detail": "記事やWebサイトを公開する前に、X(Twitter)やFacebook、LINEでのシェア時の見え方をリアルタイムで確認・調整できるシミュレーターです。",
+    "tagText": "ツール",
+    "tagClass": "tag-tool",
+    "targetBadge": "💼 実用向け",
+    "title": "OGPシミュレーター",
+    "shortText": "SNSでシェアしたときの見え方を確認",
+    "text": "SNSでシェアした際の見え方を事前に確認。画像比率チェックやダークモード対応。",
+    "aliases": ["OGP", "OGP preview", "SNS画像", "シェア画像", "social image"],
+    "actions": {
+      "mainText": "使う →",
+      "detail": true
+    }
+  },
+  {
+    "id": "seireki",
+    "group": "other",
+    "category": "tool",
+    "shelf": "tool",
+    "featured": false,
+    "url": "seireki/",
+    "detail": "西暦または和暦を入れて、今年迎える年齢と干支を確認できます。",
+    "tagText": "ツール",
+    "tagClass": "tag-tool",
+    "targetBadge": "💼 実用向け",
+    "title": "年齢・和暦・西暦早見表",
+    "shortText": "生まれ年から和暦と年齢を調べる",
+    "text": "西暦と和暦（令和・平成・昭和など）の相互変換と、今年迎える年齢を一覧表示。",
+    "aliases": ["西暦", "和暦", "年齢計算", "元号", "年齢", "早見表"],
+    "actions": {
+      "mainText": "使う →",
+      "detail": true
+    }
+  },
+  {
+    "id": "aspect-ratio",
+    "group": "other",
+    "category": "tool",
+    "shelf": "tool",
+    "featured": false,
+    "url": "aspect-ratio-calc/",
+    "guide": "guides/aspect-ratio-guide.html",
+    "detail": "動画編集やWebデザインで、公開先に合う縦横比と画像サイズを確認するツール。比率と片方の長さから、もう片方を自動計算します。",
+    "tagText": "ツール",
+    "tagClass": "tag-tool",
+    "targetBadge": "💼 実用向け",
+    "title": "縦横比を計算する",
+    "shortText": "画像の幅と高さから比率を出す",
+    "text": "16:9などの比率と画像サイズをすぐ計算。画像リサイズや動画編集に役立ちます。",
+    "aliases": ["アスペクト比", "縦横比", "aspect ratio", "aspect-ratio"],
+    "actions": {
+      "mainText": "使う →",
+      "detail": true
+    }
+  },
+  {
+    "id": "px-rem",
+    "group": "other",
+    "category": "tool",
+    "shelf": "tool",
+    "featured": false,
+    "url": "px-rem-converter/",
+    "guide": "guides/px-rem-guide.html",
+    "detail": "スマホやPCでホームページの文字サイズが崩れないように設計する、Web制作者向けの「pxとrem」の相互変換ツール。サイズ設計の基本ガイド付き。",
+    "tagText": "ツール",
+    "tagClass": "tag-tool",
+    "targetBadge": "💼 実用向け",
+    "title": "px / rem 変換",
+    "shortText": "文字サイズをpxとremで換算する",
+    "text": "CSSのサイズ設計に役立つ、ピクセルとremの相互変換ツール。",
+    "aliases": ["px rem", "px/rem", "ピクセル レム", "CSS単位", "pixel rem"],
+    "actions": {
+      "mainText": "使う →",
       "detail": true
     }
   }

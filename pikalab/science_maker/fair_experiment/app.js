@@ -8,7 +8,14 @@
     return;
   }
 
-  const $ = id => document.getElementById(id);
+  const elCache = new Map();
+  const $ = id => {
+    const cached = elCache.get(id);
+    if (cached && cached.isConnected !== false) return cached;
+    const found = document.getElementById(id);
+    if (found) elCache.set(id, found);
+    return found;
+  };
   const STORAGE_KEY = 'pikalab_experiment_detective_v2';
   const state = {
     activeId: lib.CASES[0].id,
@@ -21,6 +28,10 @@
     { id: 'compare', label: '光と動き', range: '04–06' },
     { id: 'advanced', label: 'もう一歩', range: '07–09' }
   ]);
+  const CHAPTER_ID_SET = new Set(CHAPTERS.map(c => c.id));
+  const CASES_BY_CHAPTER = new Map(CHAPTERS.map(c => [c.id, lib.CASES.filter(item => item.chapter === c.id)]));
+  const sceneSvgCache = new Map();
+  let lastRenderedSceneKey = '';
   function readSolved() {
     try {
       const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
@@ -57,22 +68,28 @@
     $('investigation').focus({ preventScroll: true });
   }
   function renderChapters() {
-    const container = $('caseChapters'); container.replaceChildren();
+    const container = $('caseChapters');
+    const fragment = document.createDocumentFragment();
     CHAPTERS.forEach(chapter => {
-      const items = lib.CASES.filter(item => item.chapter === chapter.id);
-      const solved = items.filter(item => state.solved.has(item.id)).length;
+      const items = CASES_BY_CHAPTER.get(chapter.id) || [];
+      let solved = 0;
+      for (let i = 0; i < items.length; i++) {
+        if (state.solved.has(items[i].id)) solved++;
+      }
       const btn = el('button', `chapter-button${activeChapter === chapter.id ? ' is-active' : ''}`);
       btn.type = 'button'; btn.dataset.chapter = chapter.id;
       btn.setAttribute('aria-pressed', activeChapter === chapter.id ? 'true' : 'false');
       btn.setAttribute('aria-label', `${chapter.label}、全${items.length}事件中${solved}事件解決`);
       btn.append(el('span', 'chapter-name', chapter.label), el('span', 'chapter-progress', `${solved}/${items.length}`));
-      container.appendChild(btn);
+      fragment.appendChild(btn);
     });
+    container.replaceChildren(fragment);
   }
   function renderNav() {
     renderChapters();
-    const list = $('caseNavigation'); list.replaceChildren();
-    const cases = lib.CASES.filter(item => item.chapter === activeChapter);
+    const list = $('caseNavigation');
+    const fragment = document.createDocumentFragment();
+    const cases = CASES_BY_CHAPTER.get(activeChapter) || [];
     cases.forEach(item => {
       const current = item.id === state.activeId;
       const complete = state.solved.has(item.id);
@@ -86,8 +103,9 @@
       title.append(emoji, copy);
       btn.append(el('span', 'ticket-number', `事件 ${item.order}`), title,
         el('span', 'ticket-status', complete ? '✓ 解決済み' : current ? '調査中' : '未調査'));
-      list.appendChild(btn);
+      fragment.appendChild(btn);
     });
+    list.replaceChildren(fragment);
     $('completedCount').textContent = `${state.solved.size} / ${lib.CASES.length}`;
     $('fileCount').textContent = String(lib.CASES.length).padStart(2, '0');
   }
@@ -103,10 +121,11 @@
     const item = activeCase(); const progress = entry();
     const repaired = progress.index === 2 || (progress.index === 1 && progress.accepted) || progress.finished;
     const locatedMistake = progress.index > 0 || progress.accepted || progress.finished;
-    const board = $('observationList'); board.replaceChildren();
+    const board = $('observationList');
+    const fragment = document.createDocumentFragment();
     const head = el('div', 'comparison-head');
     head.append(el('span', '', '条件'), el('span', '', '実験 A'), el('span', '', '実験 B'));
-    board.append(head);
+    fragment.appendChild(head);
     item.observations.forEach(obs => {
       const found = obs.kind === 'mistake' && locatedMistake && !repaired;
       const corrected = obs.kind === 'mistake' && repaired;
@@ -114,10 +133,21 @@
       row.append(el('span', 'compare-name', obs.name), el('strong', 'compare-a', obs.a),
         el('strong', 'compare-b', repaired && obs.repairedB ? obs.repairedB : obs.b));
       if (corrected) row.lastElementChild.setAttribute('aria-label', `修正後 ${obs.repairedB}`);
-      board.appendChild(row);
+      fragment.appendChild(row);
     });
-    $('sceneArt').dataset.type = item.scene;
-    $('sceneArt').innerHTML = sceneSvg(item.scene, repaired);
+    board.replaceChildren(fragment);
+    const sceneKey = `${item.scene}:${repaired ? 1 : 0}`;
+    if (lastRenderedSceneKey !== sceneKey) {
+      lastRenderedSceneKey = sceneKey;
+      const sceneArt = $('sceneArt');
+      sceneArt.dataset.type = item.scene;
+      let svg = sceneSvgCache.get(sceneKey);
+      if (svg === undefined) {
+        svg = sceneSvg(item.scene, repaired);
+        sceneSvgCache.set(sceneKey, svg);
+      }
+      sceneArt.innerHTML = svg;
+    }
   }
   function renderChoices() {
     const item = activeCase(), progress = entry(), step = item.steps[progress.index];
@@ -125,12 +155,15 @@
     $('questionTitle').textContent = step.title;
     $('questionDetail').textContent = step.description;
     $('stepNumber').textContent = String(progress.index + 1).padStart(2, '0');
-    Array.from($('stepDots').children).forEach((dot, index) => {
-      dot.classList.toggle('active', index === progress.index);
-      dot.classList.toggle('passed', index < progress.index);
-    });
-    const group = $('choiceGroup'); group.replaceChildren();
-    for (const [index, opt] of step.options.entries()) {
+    const stepDots = $('stepDots').children;
+    for (let index = 0; index < stepDots.length; index++) {
+      stepDots[index].classList.toggle('active', index === progress.index);
+      stepDots[index].classList.toggle('passed', index < progress.index);
+    }
+    const group = $('choiceGroup');
+    const fragment = document.createDocumentFragment();
+    for (let index = 0; index < step.options.length; index++) {
+      const opt = step.options[index];
       const label = el('label', 'choice-option');
       const chosen = progress.selected === opt.id;
       label.classList.toggle('is-correct', chosen && progress.accepted);
@@ -143,8 +176,9 @@
       const name = el('span', 'choice-label', opt.label);
       const indicator = el('span', 'choice-indicator'); indicator.setAttribute('aria-hidden', 'true');
       label.append(radio, letter, name, indicator);
-      group.appendChild(label);
+      fragment.appendChild(label);
     }
+    group.replaceChildren(fragment);
     const feedback = $('feedback');
     if (progress.lastFeedback) {
       feedback.hidden = false;
@@ -261,9 +295,9 @@
     const button = event.target.closest('[data-chapter]');
     if (!button) return;
     const chapter = button.dataset.chapter;
-    if (!CHAPTERS.some(c => c.id === chapter)) return;
+    if (!CHAPTER_ID_SET.has(chapter)) return;
     activeChapter = chapter;
-    const available = lib.CASES.filter(item => item.chapter === chapter);
+    const available = CASES_BY_CHAPTER.get(chapter) || [];
     const preferred = available.find(item => !state.solved.has(item.id)) || available[0];
     state.activeId = preferred.id;
     render();

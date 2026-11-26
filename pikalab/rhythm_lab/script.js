@@ -189,6 +189,7 @@ const RhythmLab = (function () {
     let isAudioInit = false;
     let audioInitPromise = null;
     let synths = {};
+    const lastAttackTime = new WeakMap();
     let masterGain = null;
     let limiter = null;
     let transportEventId = null;
@@ -202,7 +203,6 @@ const RhythmLab = (function () {
     let audioGeneration = 0;
     const previewRequests = {};
     let shareModalCloseTimer = null;
-    let lastFocusedElement = null;
 
     // 処理中フラグ（連打防止）
     const processingLocks = {
@@ -221,6 +221,8 @@ const RhythmLab = (function () {
         modal: null,
         playBtn: null,
         playIcon: null,
+        mobilePlayFab: null,
+        mobilePlayIcon: null,
         tempoDisplay: null,
         tempoSlider: null,
         volumeSlider: null,
@@ -261,6 +263,8 @@ const RhythmLab = (function () {
         domCache.modal = document.getElementById('help-modal');
         domCache.playBtn = document.getElementById('play-btn');
         domCache.playIcon = document.getElementById('play-icon');
+        domCache.mobilePlayFab = document.getElementById('mobile-play-fab');
+        domCache.mobilePlayIcon = document.getElementById('mobile-play-icon');
         domCache.tempoDisplay = document.getElementById('tempo-input');
         domCache.tempoSlider = document.getElementById('tempo-slider');
         domCache.volumeSlider = document.getElementById('volume-slider');
@@ -286,6 +290,7 @@ const RhythmLab = (function () {
         domCache.shareLinkInput = document.getElementById('share-link-input');
         domCache.shareQrcode = document.getElementById('share-qrcode');
         domCache.shareContent = document.getElementById('share-content');
+        domCache.parentsModal = document.getElementById('parents-modal');
 
         // プリセットボタン（定数PRESETSから動的に取得）
         Object.keys(PRESETS).forEach(name => {
@@ -588,11 +593,16 @@ const RhythmLab = (function () {
         const config = INSTRUMENT_CONFIG[type];
         if (!synth || !config) return;
         try {
+            // 起動直後の連打ではオーディオ時計が進まず、同じ音源に同時刻の発音が届く。
+            const requested = time ?? Tone.now();
+            const previous = lastAttackTime.get(synth);
+            const start = previous === undefined ? requested : Math.max(requested, previous + 1 / Tone.context.sampleRate);
             if (config.note !== null) {
-                synth.triggerAttackRelease(config.note, config.duration, time);
+                synth.triggerAttackRelease(config.note, config.duration, start);
             } else {
-                synth.triggerAttackRelease(config.duration, time);
+                synth.triggerAttackRelease(config.duration, start);
             }
+            lastAttackTime.set(synth, start);
         } catch (error) {
             console.error('音声再生エラー:', error);
         }
@@ -736,32 +746,43 @@ const RhythmLab = (function () {
             stepClassCache.inactive[i] = `${INDICATOR_CLASSES.inactive} ${marginClass}`;
         }
 
+        const useFrag = typeof document.createDocumentFragment === 'function';
+        const indicatorTarget = useFrag ? document.createDocumentFragment() : domCache.stepIndicators;
+        const rowTargets = {};
         INSTRUMENTS.forEach(inst => {
             if (domCache.rows[inst]) {
                 domCache.rows[inst].innerHTML = '';
+                rowTargets[inst] = useFrag ? document.createDocumentFragment() : domCache.rows[inst];
             }
             domCache.cells[inst] = [];
         });
 
         for (let i = 0; i < STEPS; i++) {
-            const marginClass = getMarginClass(i);
-
             // インジケーター作成
             const ind = document.createElement('div');
             // キャッシュされたクラスを使用
             ind.className = stepClassCache.inactive[i];
             ind.id = `ind-${i}`;
             ind.dataset.beatAccent = getBeatAccentLevel(i);
-            domCache.stepIndicators.appendChild(ind);
+            indicatorTarget.appendChild(ind);
             domCache.indicators[i] = ind;
 
             // 各楽器のセル作成
             INSTRUMENTS.forEach(inst => {
                 const cell = createCell(inst, i);
-                if (domCache.rows[inst]) {
-                    domCache.rows[inst].appendChild(cell);
+                if (rowTargets[inst]) {
+                    rowTargets[inst].appendChild(cell);
                 }
                 domCache.cells[inst][i] = cell;
+            });
+        }
+
+        if (useFrag) {
+            domCache.stepIndicators.appendChild(indicatorTarget);
+            INSTRUMENTS.forEach(inst => {
+                if (domCache.rows[inst] && rowTargets[inst]) {
+                    domCache.rows[inst].appendChild(rowTargets[inst]);
+                }
             });
         }
     }
@@ -844,6 +865,14 @@ const RhythmLab = (function () {
         }
         if (domCache.playBtn) {
             domCache.playBtn.className = isPlaying ? BUTTON_CLASSES.playing : BUTTON_CLASSES.stopped;
+        }
+        if (domCache.mobilePlayIcon) {
+            domCache.mobilePlayIcon.textContent = isPlaying ? 'stop' : 'play_arrow';
+            domCache.mobilePlayIcon.className = isPlaying ? 'material-symbols-rounded text-3xl' : 'material-symbols-rounded text-3xl ml-0.5';
+        }
+        if (domCache.mobilePlayFab) {
+            domCache.mobilePlayFab.classList.toggle('is-playing', isPlaying);
+            domCache.mobilePlayFab.setAttribute('aria-pressed', String(isPlaying));
         }
     }
 
@@ -1393,11 +1422,6 @@ const RhythmLab = (function () {
             }
         }
 
-        // 閉じる途中の再表示では、モーダル内のボタンを復帰先で上書きしない。
-        if (document.activeElement instanceof HTMLElement && !domCache.shareModal.contains?.(document.activeElement)) {
-            lastFocusedElement = document.activeElement;
-        }
-
         isShareModalOpen = true;
         domCache.shareModal.classList.remove('hidden');
         domCache.shareModal.setAttribute('aria-hidden', 'false');
@@ -1419,9 +1443,6 @@ const RhythmLab = (function () {
         if (!domCache.shareModal || !domCache.shareContent) return;
         if (!isShareModalOpen) return;
 
-        const focusTarget = (lastFocusedElement instanceof HTMLElement && document.contains(lastFocusedElement))
-            ? lastFocusedElement
-            : domCache.shareBtn;
         isShareModalOpen = false;
         domCache.shareModal.classList.add('opacity-0');
         domCache.shareModal.setAttribute('aria-hidden', 'true');
@@ -1432,9 +1453,8 @@ const RhythmLab = (function () {
         shareModalCloseTimer = setTimeout(() => {
             shareModalCloseTimer = null;
             domCache.shareModal.classList.add('hidden');
-            lastFocusedElement = null;
             requestAnimationFrame(() => {
-                if (!isShareModalOpen) focusTarget?.focus();
+                if (!isShareModalOpen) domCache.shareBtn?.focus();
             });
         }, 300);
     }
@@ -1553,6 +1573,9 @@ const RhythmLab = (function () {
         }
 
         domCache.userPresetList.innerHTML = '';
+        const listTarget = typeof document.createDocumentFragment === 'function'
+            ? document.createDocumentFragment()
+            : domCache.userPresetList;
         userPresets.forEach((p, idx) => {
             const wrapper = document.createElement('div');
             wrapper.className = 'user-preset-item flex items-center gap-1';
@@ -1575,17 +1598,20 @@ const RhythmLab = (function () {
 
             wrapper.appendChild(btn);
             wrapper.appendChild(deleteBtn);
-            domCache.userPresetList.appendChild(wrapper);
+            listTarget.appendChild(wrapper);
         });
+        if (listTarget !== domCache.userPresetList) {
+            domCache.userPresetList.appendChild(listTarget);
+        }
     }
 
+    const HTML_ESCAPE_MAP = Object.freeze({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' });
+
     /**
-     * HTMLエスケープ（XSS対策）
+     * HTMLエスケープ（XSS対策・DOM生成なし）
      */
     function escapeHtml(str) {
-        const div = document.createElement('div');
-        div.textContent = str;
-        return div.innerHTML;
+        return String(str ?? '').replace(/[&<>"']/g, ch => HTML_ESCAPE_MAP[ch]);
     }
 
     // ========================================
@@ -1594,7 +1620,8 @@ const RhythmLab = (function () {
     function isModalOpen() {
         const isHelpOpen = !!domCache.modal?.open;
         const isShareOpen = !!domCache.shareModal && !domCache.shareModal.classList.contains('hidden');
-        return isHelpOpen || isShareOpen || !!document.getElementById('parents-modal')?.open;
+        const parentsModal = domCache.parentsModal || document.getElementById('parents-modal');
+        return isHelpOpen || isShareOpen || !!parentsModal?.open;
     }
 
     function getPresetNameFromCode(code) {
@@ -1711,6 +1738,7 @@ const RhythmLab = (function () {
     function setupEventListeners() {
         // 再生ボタン
         domCache.playBtn?.addEventListener('click', togglePlay);
+        domCache.mobilePlayFab?.addEventListener('click', togglePlay);
 
         // テンポスライダー
         domCache.tempoSlider?.addEventListener('input', (e) => {
@@ -1813,7 +1841,8 @@ const RhythmLab = (function () {
         // モーダルが開いている場合
         if (isModalOpen()) {
             if (e.key === 'Escape') {
-                if (document.getElementById('parents-modal')?.open) return;
+                const parentsModal = domCache.parentsModal || document.getElementById('parents-modal');
+                if (parentsModal?.open) return;
                 e.preventDefault();
                 if (domCache.modal?.open) {
                     closeHelp();

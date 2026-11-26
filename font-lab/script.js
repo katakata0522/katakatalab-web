@@ -4,11 +4,18 @@
 
 document.addEventListener('DOMContentLoaded', () => {
     // --- 1. Dark Mode System ---
+    const isEnglish = document.documentElement?.lang === 'en';
+    const message = (ja, en) => isEnglish ? en : ja;
     const darkModeToggle = document.getElementById('dark-mode-toggle');
     const darkIcon = darkModeToggle ? darkModeToggle.querySelector('.material-symbols-rounded') : null;
 
     const updateDarkModeUI = (isDark) => {
         document.body.classList.toggle('dark-mode', isDark);
+        if (darkModeToggle) {
+            darkModeToggle.setAttribute('aria-label', isDark
+                ? message('ライトモードに切り替える', 'Switch to light mode')
+                : message('ダークモードに切り替える', 'Switch to dark mode'));
+        }
         if (!darkIcon) return;
         darkIcon.textContent = isDark ? 'light_mode' : 'dark_mode';
         darkIcon.style.color = isDark ? '#f59e0b' : '';
@@ -38,12 +45,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (desktopBtn && mobileBtn && previewContainer) {
         desktopBtn.addEventListener('click', () => {
+            desktopBtn.setAttribute('aria-pressed', 'true');
+            mobileBtn.setAttribute('aria-pressed', 'false');
             desktopBtn.classList.add('active');
             mobileBtn.classList.remove('active');
             previewContainer.classList.remove('mobile-mode');
         });
 
         mobileBtn.addEventListener('click', () => {
+            desktopBtn.setAttribute('aria-pressed', 'false');
+            mobileBtn.setAttribute('aria-pressed', 'true');
             mobileBtn.classList.add('active');
             desktopBtn.classList.remove('active');
             previewContainer.classList.add('mobile-mode');
@@ -165,8 +176,6 @@ document.addEventListener('DOMContentLoaded', () => {
     let activeLoadTaskId = 0;
     const readyFaces = new Set();
     let activeCopyTaskId = 0;
-    const isEnglish = document.documentElement && document.documentElement.lang === 'en';
-    const message = (ja, en) => isEnglish ? en : ja;
     const resetCopyStatus = (tab) => {
         if (!copyBtn) return;
         const activeTab = tab || document.querySelector('.code-tab-btn.active').getAttribute('data-tab');

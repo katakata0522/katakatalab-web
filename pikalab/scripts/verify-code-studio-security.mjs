@@ -5,7 +5,8 @@ import { fileURLToPath } from 'node:url';
 import { chromium } from 'playwright';
 
 const pikalabRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
-const server = await startStaticServer(pikalabRoot);
+const useBuild = process.argv.includes('--build');
+const server = await startStaticServer(useBuild ? path.join(pikalabRoot, 'dist') : pikalabRoot);
 const baseUrl = `http://127.0.0.1:${server.address().port}`;
 const browser = await chromium.launch({ headless: true });
 
@@ -17,7 +18,7 @@ try {
         return url.origin === baseUrl ? route.continue() : route.abort();
     });
 
-    await page.goto(`${baseUrl}/.code-studio/`, { waitUntil: 'domcontentloaded' });
+    await page.goto(`${baseUrl}/${useBuild ? 'code-studio' : '.code-studio'}/`, { waitUntil: 'domcontentloaded' });
     await page.waitForFunction(
         () => Object.getOwnPropertyDescriptor(JSON, 'parse')?.writable === true,
         undefined,
@@ -47,6 +48,43 @@ try {
 
     await page.locator('#ai-import-btn').click();
 
+    if (useBuild) {
+        async function verifyDescription() {
+            const description = await page.locator('[data-i18n="modal_import_desc"]').evaluate(element => ({
+                text: element.textContent, breaks: element.querySelectorAll('br').length
+            }));
+            if (description.text.includes('<br>') || description.breaks !== 1
+                || (description.text.match(/HTML\/CSS\/JS/g) || []).length !== 1) {
+                throw new Error('AI Pasteの説明文に生タグ・重複・改行欠損があります');
+            }
+        }
+        await verifyDescription();
+        for (const language of ['en', 'ja']) {
+            await page.locator('#ai-import-cancel-btn').click();
+            await page.locator('#tools-toggle').click();
+            await page.locator('#sel-lang').selectOption(language);
+            await page.locator('#tools-close').click();
+            await page.locator('#ai-import-btn').click();
+            await verifyDescription();
+        }
+        await page.locator('#ai-import-modal-close').click();
+        for (const width of [1280, 390]) {
+            await page.setViewportSize({ width, height: 900 });
+            const geometry = await page.locator('#param-insert-select').evaluate(element => {
+                const control = element.getBoundingClientRect();
+                const header = element.closest('.pane-header').getBoundingClientRect();
+                return { left: control.left, right: control.right, top: control.top, bottom: control.bottom,
+                    headerLeft: header.left, headerRight: header.right, headerTop: header.top, headerBottom: header.bottom };
+            });
+            if (geometry.left < geometry.headerLeft || geometry.right > geometry.headerRight
+                || geometry.top < geometry.headerTop || geometry.bottom > geometry.headerBottom) {
+                throw new Error(`${width}pxでパラメータ挿入欄が見切れています`);
+            }
+        }
+        await page.setViewportSize({ width: 1366, height: 900 });
+        await page.locator('#ai-import-btn').click();
+    }
+
     const payload = '<img src="/missing-pikalab-xss.png" onerror="document.body.dataset.pikaXss=\'executed\'">';
     await page.locator('#ai-import-text').fill(payload);
     await page.locator('#ai-import-submit-btn').click();
@@ -64,7 +102,7 @@ try {
         throw new Error('攻撃文字列が安全なテキストとしてレビューへ表示されませんでした');
     }
 
-    console.log('Code Studio実ブラウザ検証: JSON境界とAIレビューDOM XSSは正常です');
+    console.log(`Code Studio実ブラウザ検証: JSON境界とAIレビューDOM XSS${useBuild ? '、AI Paste翻訳、ツールバー表示' : ''}は正常です`);
     await context.close();
 } finally {
     await browser.close();

@@ -199,6 +199,9 @@ function bindUiEvents() {
     });
 }
 
+const LOGIN_MODAL_FOCUSABLE_SELECTOR =
+    'button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), a[href], [tabindex]:not([tabindex="-1"])';
+
 /**
  * ログイン中はキーボードフォーカスをモーダル内に保つ
  * @param {KeyboardEvent} event - キーボードイベント
@@ -209,9 +212,8 @@ function trapLoginModalFocus(event) {
     const modal = document.getElementById('login-modal');
     if (!modal || modal.style.display === 'none') return;
 
-    const focusable = Array.from(modal.querySelectorAll(
-        'button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), a[href], [tabindex]:not([tabindex="-1"])'
-    )).filter((element) => !element.hidden);
+    const focusable = Array.from(modal.querySelectorAll(LOGIN_MODAL_FOCUSABLE_SELECTOR))
+        .filter((element) => !element.hidden);
 
     if (focusable.length === 0) {
         event.preventDefault();
@@ -338,16 +340,20 @@ function initAvatarSelector() {
  * オフライン・オンライン検知の初期化
  */
 function initNetworkStatusMonitoring() {
-    if (!navigator.onLine) {
-        showToast('オフラインですが、すでにダウンロードされた機能はそのまま遊べます！', 'warning');
-    }
+    // onLine は端末の接続の目安であり、サイトへの通信可否ではない。
+    // 初回表示では警告せず、閲覧中の状態変化だけを一度ずつ案内する。
+    let connectionNoticeShown = false;
 
     window.addEventListener('offline', () => {
-        showToast('オフラインになりました。ダウンロード済みの機能はそのまま遊べます！', 'warning');
+        if (connectionNoticeShown) return;
+        connectionNoticeShown = true;
+        showToast('通信が不安定な可能性があります。ページを開けない場合は、接続を確認してください。', 'warning');
     });
 
     window.addEventListener('online', () => {
-        showToast('ネットワークに接続されました！', 'success');
+        if (!connectionNoticeShown) return;
+        connectionNoticeShown = false;
+        showToast('接続状態が変わりました。開けなかったページは、もう一度試してください。', 'info');
     });
 }
 
@@ -411,6 +417,63 @@ function init() {
 // --- DOMContentLoaded で初期化 ---
 document.addEventListener('DOMContentLoaded', init);
 
+let cachedRadarStatic = null;
+
+function getRadarStaticParts() {
+    if (cachedRadarStatic) return cachedRadarStatic;
+
+    const { LEVELS, SIZE, MAX_RADIUS } = RADAR_CHART_CONFIG;
+    const center = SIZE / 2;
+    const axes = [];
+    for (let i = 0; i < 5; i++) {
+        const theta = -Math.PI / 2 + i * (2 * Math.PI / 5);
+        axes.push({ cos: Math.cos(theta), sin: Math.sin(theta) });
+    }
+
+    let gridMarkup = '';
+    for (let j = 1; j <= LEVELS; j++) {
+        const r = (MAX_RADIUS / LEVELS) * j;
+        const points = [];
+        for (let i = 0; i < 5; i++) {
+            const px = center + r * axes[i].cos;
+            const py = center + r * axes[i].sin;
+            points.push(`${px.toFixed(1)},${py.toFixed(1)}`);
+        }
+        gridMarkup += `<polygon points="${points.join(' ')}" fill="none" stroke="#e2e8f0" stroke-width="1" />`;
+    }
+
+    let axisMarkup = '';
+    let labelMarkup = '';
+    for (let i = 0; i < 5; i++) {
+        const { cos, sin } = axes[i];
+        const ax = center + MAX_RADIUS * cos;
+        const ay = center + MAX_RADIUS * sin;
+        axisMarkup += `<line x1="${center}" y1="${center}" x2="${ax.toFixed(1)}" y2="${ay.toFixed(1)}" stroke="#cbd5e1" stroke-width="1" stroke-dasharray="2 2" />`;
+
+        let lx = center + 78 * cos;
+        let ly = center + 78 * sin;
+        let anchor = 'middle';
+        if (cos > 0.1) {
+            anchor = 'start';
+            lx += 2;
+        } else if (cos < -0.1) {
+            anchor = 'end';
+            lx -= 2;
+        }
+        if (sin > 0.9) {
+            ly += 4;
+        } else if (sin < -0.9) {
+            ly -= 4;
+        } else {
+            ly += 3;
+        }
+        labelMarkup += `<text x="${lx.toFixed(1)}" y="${ly.toFixed(1)}" text-anchor="${anchor}" fill="#475569" font-size="11" font-weight="900" class="font-pop">${GENRE_MAPPING[i].name}</text>`;
+    }
+
+    cachedRadarStatic = { SIZE, center, MAX_RADIUS, axes, gridMarkup, axisMarkup, labelMarkup };
+    return cachedRadarStatic;
+}
+
 /**
  * 学習ダッシュボード（SVGレーダーチャート）を描画する
  */
@@ -418,90 +481,43 @@ export function renderRadarChart() {
     const container = document.getElementById('radar-chart-container');
     if (!container) return;
 
-    const { MAX_VAL, LEVELS, SIZE, MAX_RADIUS } = RADAR_CHART_CONFIG;
-    const center = SIZE / 2;
+    const { MAX_VAL } = RADAR_CHART_CONFIG;
+    const { SIZE, center, MAX_RADIUS, axes, gridMarkup, axisMarkup, labelMarkup } = getRadarStaticParts();
     const playCounts = userProfile.playCounts || {};
 
-    // グリッド線（同心五角形）を描画
-    let gridMarkup = '';
-    for (let j = 1; j <= LEVELS; j++) {
-        const r = (MAX_RADIUS / LEVELS) * j;
-        const points = [];
-        for (let i = 0; i < 5; i++) {
-            const theta = -Math.PI / 2 + i * (2 * Math.PI / 5);
-            const px = center + r * Math.cos(theta);
-            const py = center + r * Math.sin(theta);
-            points.push(`${px.toFixed(1)},${py.toFixed(1)}`);
-        }
-        gridMarkup += `<polygon points="${points.join(' ')}" fill="none" stroke="#e2e8f0" stroke-width="1" />`;
-    }
-
-    // 軸線の描画
-    let axisMarkup = '';
-    for (let i = 0; i < 5; i++) {
-        const theta = -Math.PI / 2 + i * (2 * Math.PI / 5);
-        const px = center + MAX_RADIUS * Math.cos(theta);
-        const py = center + MAX_RADIUS * Math.sin(theta);
-        axisMarkup += `<line x1="${center}" y1="${center}" x2="${px.toFixed(1)}" y2="${py.toFixed(1)}" stroke="#cbd5e1" stroke-width="1" stroke-dasharray="2 2" />`;
-    }
-
     // 各ジャンルのスコア計算
-    const scores = GENRE_MAPPING.map(g => {
-        const count = g.apps.reduce((sum, appId) => sum + (playCounts[appId] || 0), 0);
-        return Math.min(MAX_VAL, count);
-    });
-
-    const hasData = scores.some(s => s > 0);
-    const dataPoints = [];
-
+    let hasData = false;
+    const scores = new Array(5);
     for (let i = 0; i < 5; i++) {
-        const score = scores[i];
-        const val = hasData ? score : 0;
-        const r = (MAX_RADIUS / MAX_VAL) * val;
-        const theta = -Math.PI / 2 + i * (2 * Math.PI / 5);
-        const px = center + r * Math.cos(theta);
-        const py = center + r * Math.sin(theta);
-        dataPoints.push(`${px.toFixed(1)},${py.toFixed(1)}`);
+        const apps = GENRE_MAPPING[i].apps;
+        let count = 0;
+        for (let k = 0; k < apps.length; k++) {
+            count += playCounts[apps[k]] || 0;
+        }
+        const clamped = Math.min(MAX_VAL, count);
+        scores[i] = clamped;
+        if (clamped > 0) hasData = true;
     }
 
     let dataMarkup = '';
     if (hasData) {
-        dataMarkup += `<polygon points="${dataPoints.join(' ')}" class="radar-chart-polygon" fill="rgba(99, 102, 241, 0.2)" stroke="#6366f1" stroke-width="2.5" stroke-linejoin="round" />`;
-        // 頂点のドット
+        const dataPoints = new Array(5);
+        const dotCoords = new Array(5);
+        const radiusStep = MAX_RADIUS / MAX_VAL;
         for (let i = 0; i < 5; i++) {
-            const [px, py] = dataPoints[i].split(',').map(Number);
+            const r = radiusStep * scores[i];
+            const px = (center + r * axes[i].cos).toFixed(1);
+            const py = (center + r * axes[i].sin).toFixed(1);
+            dataPoints[i] = `${px},${py}`;
+            dotCoords[i] = [Number(px), Number(py)];
+        }
+        dataMarkup += `<polygon points="${dataPoints.join(' ')}" class="radar-chart-polygon" fill="rgba(99, 102, 241, 0.2)" stroke="#6366f1" stroke-width="2.5" stroke-linejoin="round" />`;
+        for (let i = 0; i < 5; i++) {
+            const [px, py] = dotCoords[i];
             dataMarkup += `<circle cx="${px}" cy="${py}" r="4.5" class="radar-chart-dot" style="animation-delay: ${i * 70}ms" fill="#6366f1" stroke="#ffffff" stroke-width="1.5" />`;
         }
     } else {
         dataMarkup += `<text x="${center}" y="${center + 5}" text-anchor="middle" fill="#94a3b8" font-size="10" font-weight="bold">あそんで記録をのばそう！</text>`;
-    }
-
-    // ジャンルラベルの描画
-    let labelMarkup = '';
-    for (let i = 0; i < 5; i++) {
-        const theta = -Math.PI / 2 + i * (2 * Math.PI / 5);
-        const r = 78;
-        let px = center + r * Math.cos(theta);
-        let py = center + r * Math.sin(theta);
-        
-        let anchor = 'middle';
-        if (Math.cos(theta) > 0.1) {
-            anchor = 'start';
-            px += 2;
-        } else if (Math.cos(theta) < -0.1) {
-            anchor = 'end';
-            px -= 2;
-        }
-        
-        if (Math.sin(theta) > 0.9) {
-            py += 4;
-        } else if (Math.sin(theta) < -0.9) {
-            py -= 4;
-        } else {
-            py += 3;
-        }
-
-        labelMarkup += `<text x="${px.toFixed(1)}" y="${py.toFixed(1)}" text-anchor="${anchor}" fill="#475569" font-size="11" font-weight="900" class="font-pop">${GENRE_MAPPING[i].name}</text>`;
     }
 
     container.innerHTML = `

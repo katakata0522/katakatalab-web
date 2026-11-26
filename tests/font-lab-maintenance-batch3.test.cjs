@@ -31,6 +31,14 @@ test('late rejected copy cannot fall back over newer copy',async()=>{
 test('failed stylesheet can be retried',async()=>{
  const x=setup();x.select("'Yomogi', cursive");x.links[0].onerror();await flush();x.select("'Yomogi', cursive");assert.equal(x.links.length,2);x.links[1].onload();await flush();assert.equal(status(x),'適用完了！');
 });
+test('theme and preview controls announce their new states', () => {
+ const x=setup(), theme=x.ids['dark-mode-toggle'], mobile=x.ids['btn-mobile'], desktop=x.ids['btn-desktop'];
+ theme.events.click(); assert.equal(theme.getAttribute('aria-label'),'ライトモードに切り替える');
+ theme.events.click(); assert.equal(theme.getAttribute('aria-label'),'ダークモードに切り替える');
+ mobile.events.click(); assert.equal(mobile.getAttribute('aria-pressed'),'true');
+ desktop.events.click(); assert.equal(mobile.getAttribute('aria-pressed'),'false');
+ assert.equal(desktop.getAttribute('aria-pressed'),'true');
+});
 test('blocked storage does not break generation',()=>{const x=setup({storageThrow:true});assert.match(x.ids['output-css'].innerHTML,/16px/)});
 test('completed copy label resets when input changes',async()=>{
  const x=setup();x.click();await flush();x.ids['slider-size'].value='28';x.ids['slider-size'].events.input();assert.equal(x.ids['copy-css-btn'].querySelector('.btn-text').textContent,'CSSコードをコピー');

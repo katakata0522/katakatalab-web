@@ -158,7 +158,8 @@ function auditEducationFiles(options = {}) {
       // TypeScript内蔵lib.domの説明文にあるsendBeacon例だけを、レビュー済みの完全一致blobに限定する。
       // ライブラリへ実行コードが追加された場合はhashが変わり、この例外を適用しない。
       if (filePath.endsWith(`${path.sep}code-studio${path.sep}assets${path.sep}ts.worker-B0J26iPs.js`)
-        || filePath.endsWith(`${path.sep}.code-studio${path.sep}assets${path.sep}ts.worker-B0J26iPs.js`)) {
+        || filePath.endsWith(`${path.sep}.code-studio${path.sep}assets${path.sep}ts.worker-B0J26iPs.js`)
+        || /\/code-studio\/assets-ui-[a-f0-9]{20}\/ts\.worker-B0J26iPs\.js$/.test(filePath.replaceAll('\\', '/'))) {
         const bytes = fs.readFileSync(filePath);
         const blob = crypto.createHash('sha1').update(`blob ${bytes.length}\0`).update(bytes).digest('hex');
         if (blob === '265427f9ec6773d50878785bf73baf38d2f96ca0') matches = matches.filter(name => name !== '解析イベント送信');

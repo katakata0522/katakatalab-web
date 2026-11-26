@@ -49,6 +49,23 @@ document.addEventListener('DOMContentLoaded', () => {
     const resultList = $('result-list');
     const copyAllBtn = $('copy-all-btn');
     const presetBtns = document.querySelectorAll('.preset-btn');
+    const advanced = $('generation-options');
+    const mobileLayout = window.matchMedia('(max-width: 768px)');
+    let mobileOptionsOpen = false;
+    if (advanced) {
+        const syncOptions = () => { advanced.open = !mobileLayout.matches || mobileOptionsOpen; };
+        syncOptions();
+        advanced.addEventListener('toggle', () => {
+            if (mobileLayout.matches) mobileOptionsOpen = advanced.open;
+        });
+        mobileLayout.addEventListener('change', syncOptions);
+    }
+    function showMobileResults() {
+        if (!mobileLayout.matches) return;
+        const header = $('generated-passwords');
+        header.focus({ preventScroll: true });
+        header.scrollIntoView({ block: 'start', behavior: 'instant' });
+    }
     
     // パスワード診断 DOM
     const checkInput = $('check-input');
@@ -372,6 +389,8 @@ document.addEventListener('DOMContentLoaded', () => {
     // ===== レンダリング =====
     function renderResults(passwords) {
         resultList.replaceChildren();
+        if (copyAllBtn) copyAllBtn.disabled = passwords.length === 0;
+        if (visibilityAllBtn) visibilityAllBtn.disabled = passwords.length === 0;
         if (passwords.length === 0) {
             const msg = document.createElement('div');
             msg.className = 'text-danger small text-center py-3';
@@ -504,6 +523,7 @@ document.addEventListener('DOMContentLoaded', () => {
             presetBtns.forEach(b => { b.classList.remove('active', 'btn-secondary'); b.classList.add('pwd-preset-btn'); });
             btn.classList.add('active');
             generate(); saveSettings();
+            showMobileResults();
         });
     });
 
@@ -528,7 +548,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         debouncedGenerate();
     });
-    inputs.genBtn.addEventListener('click', generate);
+    inputs.genBtn.addEventListener('click', () => { generate(); showMobileResults(); });
     if (inputs.resetBtn) inputs.resetBtn.addEventListener('click', resetSettings);
     if (inputs.saveHistory) {
         inputs.saveHistory.addEventListener('change', () => {

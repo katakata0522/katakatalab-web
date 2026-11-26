@@ -373,7 +373,7 @@
 
       const activeFilter = document.querySelector('.shelf-nav-btn.active');
       const filterId = safeToken(activeFilter && activeFilter.getAttribute('data-filter'), 'all');
-      const resultCount = document.querySelectorAll('#projects-grid .card, #secondary-projects-grid .card').length;
+      const resultCount = document.querySelectorAll('#projects .projects-grid .card').length;
       const signature = [query, filterId, resultCount].join(':');
       if (signature === lastSignature) return;
       lastSignature = signature;

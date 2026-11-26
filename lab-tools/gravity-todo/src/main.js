@@ -1,4 +1,4 @@
-import { PhysicsEngine } from './PhysicsEngine.js';
+import { PhysicsEngine } from './PhysicsEngine.js?v=20261121-task-controls';
 import { SettingsManager } from './SettingsManager.js';
 import { normalizeTaskText } from './taskText.js';
 
@@ -29,6 +29,12 @@ document.addEventListener('DOMContentLoaded', () => {
   const hintBar   = document.getElementById('hint-bar');
   const hintClose = document.getElementById('hint-close');
   let hintDismissed = false;
+  if (hintBar && typeof ResizeObserver === 'function') {
+    const hintObserver = new ResizeObserver(() => {
+      document.documentElement.style.setProperty('--hint-height', `${hintBar.offsetHeight}px`);
+    });
+    hintObserver.observe(hintBar);
+  }
 
   function hideHint() {
     if (!hintBar || hintDismissed) return;
@@ -37,6 +43,7 @@ document.addEventListener('DOMContentLoaded', () => {
     setTimeout(() => {
       hintBar.classList.add('hidden');
       hintBar.classList.remove('hint-bar--hiding');
+      document.documentElement.style.setProperty('--hint-height', '0px');
     }, 400);
   }
   hintClose?.addEventListener('click', hideHint);

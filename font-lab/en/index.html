@@ -43,7 +43,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@40,700,1,0&display=block" rel="stylesheet">
 
     <!-- Custom CSS -->
-    <link rel="stylesheet" href="./style.css?v=20260824-responsive">
+    <link rel="stylesheet" href="./style.css?v=20261121-preview">
 
     <!-- Schema.org Web Application Structured Data -->
     <script type="application/ld+json">
@@ -105,7 +105,7 @@
     </noscript>
 
     <!-- Skip Link for Accessibility -->
-    <a href="#main-content" class="sr-only" style="position: absolute; width: 1px; height: 1px; padding: 0; overflow: hidden; clip: rect(0,0,0,0); border: 0;" onfocus="this.style='position:fixed;top:1rem;left:1rem;background:#6366f1;color:white;padding:1rem;z-index:999;font-weight:bold;border-radius:12px;box-shadow:0 4px 20px rgba(0,0,0,0.15);text-decoration:none;'">Skip to content</a>
+    <a href="/font-lab/en/#main-content" class="sr-only" style="position: absolute; width: 1px; height: 1px; padding: 0; overflow: hidden; clip: rect(0,0,0,0); border: 0;" onfocus="this.style='position:fixed;top:1rem;left:1rem;background:#6366f1;color:white;padding:1rem;z-index:999;font-weight:bold;border-radius:12px;box-shadow:0 4px 20px rgba(0,0,0,0.15);text-decoration:none;'">Skip to content</a>
 
     <!-- Universal Header -->
     <header class="fontlab-header">
@@ -116,12 +116,13 @@
             </a>
             
             <nav class="header-nav" aria-label="Main navigation">
-                <a href="#section-tool" class="header-nav-link">Font tester</a>
-                <a href="#section-showcase" class="header-nav-link">Font samples</a>
-                <a href="#section-articles" class="header-nav-link">Performance notes</a>
+                <a href="/font-lab/en/#section-tool" class="header-nav-link">Font tester</a>
+                <a href="/font-lab/#section-showcase" hreflang="ja" class="header-nav-link">Font samples</a>
+                <a href="/font-lab/#section-articles" hreflang="ja" class="header-nav-link">Performance notes</a>
             </nav>
 
             <div class="header-actions">
+                <a class="header-nav-link mobile-tester-link" href="/font-lab/en/#select-font">Font tester</a>
                 <button type="button" id="dark-mode-toggle" class="header-btn" aria-label="Switch to dark mode" title="Toggle dark mode">
                     <span class="material-symbols-rounded" aria-hidden="true">dark_mode</span>
                 </button>
@@ -162,10 +163,10 @@
                         </span>
                         
                         <div class="device-toggles" role="group" aria-label="Preview width">
-                            <button type="button" id="btn-desktop" class="device-btn active" aria-label="Desktop preview" title="Desktop view">
+                            <button type="button" id="btn-desktop" class="device-btn active" aria-pressed="true" aria-label="Desktop preview" title="Desktop view">
                                 <span class="material-symbols-rounded" aria-hidden="true">desktop_windows</span>
                             </button>
-                            <button type="button" id="btn-mobile" class="device-btn" aria-label="Mobile preview" title="Mobile view">
+                            <button type="button" id="btn-mobile" class="device-btn" aria-pressed="false" aria-label="Mobile preview" title="Mobile view">
                                 <span class="material-symbols-rounded" aria-hidden="true">smartphone</span>
                             </button>
                         </div>
@@ -197,7 +198,7 @@
                 <!-- Parameters Controls Panel (Right) -->
                 <div class="glass-card control-card">
                     <h3 class="control-title">
-                        <span class="material-symbols-rounded" style="color: var(--primary);">settings_sliders</span>
+                        <svg aria-hidden="true" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="color: var(--primary); flex-shrink: 0;"><path d="M4 7h9m4 0h3M4 17h3m4 0h9"/><circle cx="15" cy="7" r="2"/><circle cx="9" cy="17" r="2"/></svg>
                         Typography controls
                     </h3>
 
@@ -207,13 +208,13 @@
                             Font family
                         </label>
                         <select id="select-font" class="control-select">
-                            <option value="'Zen Maru Gothic', sans-serif">Zen Maru Gothic (soft rounded)</option>
-                            <option value="'M PLUS Rounded 1c', sans-serif">M PLUS Rounded 1c (friendly rounded)</option>
-                            <option value="'Noto Sans JP', sans-serif">Noto Sans JP (neutral and crisp)</option>
-                            <option value="'Kiwi Maru', serif">Kiwi Maru (gentle retro Mincho)</option>
-                            <option value="'Yomogi', cursive">Yomogi (expressive handwriting)</option>
-                            <option value="'Dela Gothic One', sans-serif">Dela Gothic One (heavy display)</option>
-                            <option value="'Hachi Maru Pop', cursive">Hachi Maru Pop (playful handwriting)</option>
+                            <option value="'Zen Maru Gothic', sans-serif">Zen Maru Gothic</option>
+                            <option value="'M PLUS Rounded 1c', sans-serif">M PLUS Rounded 1c</option>
+                            <option value="'Noto Sans JP', sans-serif">Noto Sans JP</option>
+                            <option value="'Kiwi Maru', serif">Kiwi Maru</option>
+                            <option value="'Yomogi', cursive">Yomogi</option>
+                            <option value="'Dela Gothic One', sans-serif">Dela Gothic One</option>
+                            <option value="'Hachi Maru Pop', cursive">Hachi Maru Pop</option>
                         </select>
                     </div>
 
@@ -267,7 +268,7 @@
                                 </button>
                             </div>
                             <div id="panel-css" class="code-tab-panel active" role="tabpanel">
-                                <pre class="article-code-block" style="margin: 0; padding: 1rem; font-size: 0.75rem;"><span class="code-block-header">css</span><code id="output-css"></code></pre>
+                                <pre class="article-code-block" style="margin: 0; padding: 1rem; font-size: 0.75rem;"><span class="code-block-header">Body text CSS</span><code id="output-css"></code></pre>
                             </div>
                             <div id="panel-html" class="code-tab-panel" role="tabpanel">
                                 <pre class="article-code-block" style="margin: 0; padding: 1rem; font-size: 0.75rem;"><span class="code-block-header">html</span><code id="output-html"></code></pre>
@@ -341,7 +342,7 @@
     </button>
 
     <!-- Core Logic Script -->
-    <script src="./script.js?v=20260817-2"></script>
+    <script src="./script.js?v=20261121-preview"></script>
   <!-- Dynamic UI is localized in script.js; editable preview text must remain unchanged. -->
 </body>
 </html>

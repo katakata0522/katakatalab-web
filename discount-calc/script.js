@@ -8,8 +8,7 @@ document.addEventListener('DOMContentLoaded', () => {
       PRICE_MAX: 999999999, // 9桁
       RATE_MAX: 100,
       RATE_MIN: 0
-    },
-    SCROLL_THRESHOLD: 10
+    }
   };
 
   /**
@@ -73,7 +72,6 @@ document.addEventListener('DOMContentLoaded', () => {
     taxRateRadios: document.querySelectorAll('input[name="taxRate"]'),
     taxTypeRadios: document.querySelectorAll('input[name="taxType"]'),
     extraToggle: document.getElementById('extraToggle'),
-    stickyHeader: document.getElementById('stickyHeader'),
     quickBtns: document.querySelectorAll('.quick-add-buttons button'),
 
     // カート用のDOM要素
@@ -266,7 +264,7 @@ document.addEventListener('DOMContentLoaded', () => {
         els.customRate.value = rate;
         renderCustomRow();
         UI.triggerFlash(els.customRate);
-        UI.showToast(`${rate}%割引を適用しました`);
+        UI.showToast(canCalculate() ? `支払額 ¥${NumUtils.format(Calculator.exec(state.price, rate, state).finalPrice)}` : `${rate}%割引を適用しました`);
       });
     });
 
@@ -277,22 +275,6 @@ document.addEventListener('DOMContentLoaded', () => {
       });
       input.addEventListener('focus', function() { this.select(); });
     });
-
-    // --- Scroll Performance ---
-    let ticking = false;
-    window.addEventListener('scroll', () => {
-      if (!ticking) {
-        window.requestAnimationFrame(() => {
-          if (window.scrollY > CONFIG.SCROLL_THRESHOLD) {
-            els.stickyHeader.classList.add('is-scrolled');
-          } else {
-            els.stickyHeader.classList.remove('is-scrolled');
-          }
-          ticking = false;
-        });
-        ticking = true;
-      }
-    }, { passive: true });
 
     els.cartClearBtn.addEventListener('click', () => {
       if (!state.cart.length || !confirm('この端末の買物メモをすべて削除しますか？')) return;
@@ -442,7 +424,10 @@ document.addEventListener('DOMContentLoaded', () => {
       radio.disabled = !excluded;
     });
     const group = document.getElementById('taxRateGroup');
-    if (group) group.classList.toggle('is-disabled', !excluded);
+    if (group) {
+      group.hidden = !excluded;
+      group.classList.toggle('is-disabled', !excluded);
+    }
     if (els.taxHelp) {
       els.taxHelp.textContent = excluded
         ? '税抜額に、選んだ税率を掛けて支払額を出します。'
@@ -473,7 +458,7 @@ document.addEventListener('DOMContentLoaded', () => {
     els.cartCount.textContent = count;
     els.cartOriginalTotal.textContent = `¥${NumUtils.format(originalTotal)}`;
     els.cartFinalTotal.textContent = `¥${NumUtils.format(finalTotal)}`;
-    els.cartSaveTotal.textContent = `🉐 -¥${NumUtils.format(saveTotal)}`;
+    els.cartSaveTotal.textContent = formatSaving(saveTotal);
 
     if (count === 0) {
       els.cartDrawer.classList.add('hidden');
@@ -567,6 +552,10 @@ document.addEventListener('DOMContentLoaded', () => {
   };
 
   // チラつきを100%防止するため、リスト項目の「骨組みDOM」を初回のみ作成
+  function formatSaving(amount) {
+    return `🉐 ${amount > 0 ? '-' : ''}¥${NumUtils.format(amount)}`;
+  }
+
   function renderBaseRows() {
     const fragment = document.createDocumentFragment();
     CONFIG.DISCOUNTS.forEach(percent => {
@@ -578,7 +567,7 @@ document.addEventListener('DOMContentLoaded', () => {
         <button type="button" class="col-rate btn-select-rate" data-percent="${percent}" data-field="rate" aria-label="${percent}%を選ぶ">${percent}<span class="unit">%OFF</span></button>
         <div class="col-price" data-field="price"><span>¥</span>0</div>
         <div class="col-save-wrapper">
-          <div class="col-save" data-field="save">🉐 -0</div>
+          <div class="col-save" data-field="save">🉐 ¥0</div>
 
         </div>
       `;
@@ -621,7 +610,7 @@ document.addEventListener('DOMContentLoaded', () => {
       rateEl.textContent = '';
       rateEl.appendChild(document.createTextNode(formatRateLabel(percent, extra)));
       priceEl.innerHTML = `<span>¥</span>${NumUtils.format(res.finalPrice)}`;
-      saveEl.textContent = `🉐 -${NumUtils.format(res.savedAmount)}`;
+      saveEl.textContent = formatSaving(res.savedAmount);
     });
   }
 
@@ -641,7 +630,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     const res = Calculator.exec(state.price, state.customRate, state);
     els.customPrice.innerHTML = `<span>¥</span>${NumUtils.format(res.finalPrice)}`;
-    els.customSave.textContent = `🉐 -${NumUtils.format(res.savedAmount)}`;
+    els.customSave.textContent = formatSaving(res.savedAmount);
     els.customPrice.disabled = false;
     els.btnCartCustom.disabled = false;
   }

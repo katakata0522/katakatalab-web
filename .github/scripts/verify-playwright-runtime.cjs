@@ -4,6 +4,7 @@
 const assert = require('node:assert/strict');
 const path = require('node:path');
 const fs = require('node:fs');
+require('../../scripts/picomatch-hardening.cjs').harden({ apply: true });
 const packageFile = require.resolve('playwright/package.json', { paths: [process.cwd()] });
 const { version } = require(packageFile);
 assert.equal(version, '1.60.0', 'Playwrightのlockfileと固定CIイメージを同時に更新してください');

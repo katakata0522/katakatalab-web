@@ -6,7 +6,9 @@
 (() => {
     const LOGIC_CONSTANTS = {
         BRIGHTNESS_THRESHOLD: 128,
-        COLOR_NAME_THRESHOLD: 45
+        COLOR_NAME_THRESHOLD: 45,
+        COLOR_NAME_THRESHOLD_SQ: 45 * 45,
+        MAX_RGB_DISTANCE: Math.sqrt(255 * 255 * 3)
     };
 
     // 主要なカラーネーム代表値テーブル
@@ -103,13 +105,11 @@
         }
         const safeCurrent = normalizeRgbTuple(current);
         const safeTarget = normalizeRgbTuple(target);
-        const dist = Math.sqrt(
-            Math.pow(safeCurrent[0] - safeTarget[0], 2) +
-            Math.pow(safeCurrent[1] - safeTarget[1], 2) +
-            Math.pow(safeCurrent[2] - safeTarget[2], 2)
-        );
-        const maxDist = Math.sqrt(255 * 255 * 3);
-        return Math.max(0, Math.floor(100 - (dist / maxDist * 100)));
+        const dr = safeCurrent[0] - safeTarget[0];
+        const dg = safeCurrent[1] - safeTarget[1];
+        const db = safeCurrent[2] - safeTarget[2];
+        const dist = Math.sqrt(dr * dr + dg * dg + db * db);
+        return Math.max(0, Math.floor(100 - (dist / LOGIC_CONSTANTS.MAX_RGB_DISTANCE * 100)));
     }
 
     /**
@@ -282,18 +282,18 @@
 
         for (const color of COLOR_NAMES) {
             const [tr, tg, tb] = color.rgb;
-            const dist = (
-                Math.pow(curR - tr, 2) +
-                Math.pow(curG - tg, 2) +
-                Math.pow(curB - tb, 2)
-            );
+            const dr = curR - tr;
+            const dg = curG - tg;
+            const db = curB - tb;
+            const dist = dr * dr + dg * dg + db * db;
+            if (dist === 0) return color.name;
             if (dist < minDistance) {
                 minDistance = dist;
                 closestName = color.name;
             }
         }
 
-        if (minDistance < LOGIC_CONSTANTS.COLOR_NAME_THRESHOLD ** 2) {
+        if (minDistance < LOGIC_CONSTANTS.COLOR_NAME_THRESHOLD_SQ) {
             return closestName;
         }
         return "カスタムカラー";

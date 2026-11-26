@@ -2,8 +2,9 @@
 
 :root {
   /* KatakataLab 本サイト寄せ */
-  --c-primary: #FF7675;
-  --c-primary-hover: #D63031;
+  --c-primary: #ab3e43;
+  --c-primary-hover: #923139;
+  --c-on-primary: #fff;
   --c-bg: #FFFBF0;
   --c-card-bg: #ffffff;
   --c-text-main: #2D3436;
@@ -27,9 +28,10 @@
 }
 
 @media (prefers-color-scheme: dark) {
-  :root {
+  :root:not([data-theme="light"]) {
     --c-primary: #ff9b9a;
     --c-primary-hover: #ff7675;
+    --c-on-primary: #321d26;
     --c-bg: #0b132b;
     --c-card-bg: #1c2541;
     --c-text-main: #f8fafc;
@@ -54,6 +56,7 @@
 body.dark-mode {
   --c-primary: #ff9b9a;
   --c-primary-hover: #ff7675;
+  --c-on-primary: #321d26;
   --c-bg: #0b132b;
   --c-card-bg: #1c2541;
   --c-text-main: #f8fafc;
@@ -61,6 +64,18 @@ body.dark-mode {
   --c-border: rgba(255, 255, 255, 0.12);
   --c-input-bg: #0b132b;
   --c-accent-bg: rgba(255, 118, 117, 0.12);
+  --c-box-bg: #020617;
+  --c-box-text: #f8fafc;
+  --c-error: #f87171;
+  --c-error-bg: #450a0a;
+  --c-bezel: #0f172a;
+  --c-bezel-reflection: rgba(255, 255, 255, 0.05);
+  --c-screen-shadow: 0 20px 45px -10px rgba(0, 0, 0, 0.6);
+  --shadow-card: 0 10px 30px -5px rgba(0, 0, 0, 0.3);
+}
+
+body.dark-mode .preview-area {
+  background-color: rgba(11, 19, 43, 0.55);
 }
 
 body {
@@ -118,10 +133,10 @@ body {
   background: var(--c-primary);
 }
 .btn-preset.active .ratio-text {
-  color: #ffffff;
+  color: var(--c-on-primary);
 }
 .btn-preset.active .ratio-label {
-  color: rgba(255, 255, 255, 0.8);
+  color: var(--c-on-primary);
 }
 .ratio-text { font-weight: 800; font-size: 1rem; color: var(--c-text-main); transition: color 0.2s; }
 .ratio-label { font-size: 0.7rem; color: var(--c-text-sub); margin-top: 2px; transition: color 0.2s; }
@@ -182,7 +197,7 @@ input.input-error {
 }
 
 .separator { font-weight: bold; color: var(--c-text-sub); font-size: 1.2rem; }
-.divider { display: flex; align-items: center; justify-content: center; opacity: 0.5; font-size: 1.5rem; }
+.divider { display: flex; align-items: center; justify-content: center; opacity: 0.5; font-size: 1.5rem; pointer-events: none; }
 
 /* Icons & Buttons */
 .btn-icon {
@@ -211,7 +226,7 @@ input.input-error {
   transition: all 0.2s;
   display: flex; align-items: center; justify-content: center; gap: 5px;
 }
-.btn-detect:hover { background: var(--c-primary); color: #fff; }
+.btn-detect:hover { background: var(--c-primary); color: var(--c-on-primary); }
 .btn-detect:active { transform: scale(0.95); }
 
 /* Preview Area */
@@ -568,12 +583,22 @@ body.dark-mode .btn-snippet .copy-badge {
 /* Mobile Optimization */
 @media (max-width: 640px) {
   body {
-    padding: 10px;
+    padding: 8px;
   }
-  .tool-wrapper { padding: 20px 15px; }
-  .calc-panel { flex-direction: column; gap: 20px; padding: 20px; }
-  .divider { transform: rotate(90deg); margin: 10px 0; }
-  .inputs-row input { font-size: 1.2rem; }
+  .tool-wrapper { padding: 14px 12px; }
+  .tool-header { margin-bottom: 14px; }
+  .app-title { font-size: 1.65rem; }
+  .app-desc { font-size: 0.84rem; margin-top: 4px; line-height: 1.5; }
+  .preset-area { margin-bottom: 14px; }
+  .calc-panel { flex-direction: column; gap: 10px; padding: 14px; margin-bottom: 18px; }
+  .section-header { margin-bottom: 6px; }
+  .divider { font-size: 1rem; margin: -4px 0; }
+  .divider .chain-icon { transform: rotate(90deg); }
+  .btn-detect { margin-top: 8px; padding: 8px 10px; font-size: 0.8rem; }
+  .preset-grid { grid-template-columns: repeat(auto-fit, minmax(64px, 1fr)); gap: 6px; }
+  .btn-preset { min-height: 46px; padding: 4px; }
+  .calc-panel .inputs-row, .calc-panel .input-col, .calc-panel .input-number { min-width: 0; }
+  .inputs-row input { font-size: 1.1rem; padding: 9px; }
   
   .preview-header {
     flex-direction: column;
@@ -582,6 +607,7 @@ body.dark-mode .btn-snippet .copy-badge {
   .controls-row {
     width: 100%;
     justify-content: space-between;
+    flex-wrap: wrap;
   }
   
   .preview-canvas { height: 260px; }
@@ -590,4 +616,33 @@ body.dark-mode .btn-snippet .copy-badge {
   /* スマホ版スタンドを調整 */
   .device-wrapper.frame-monitor::after { bottom: -28px; height: 15px; }
   .device-wrapper.frame-monitor::before { bottom: -32px; }
+}
+
+/* Extracted from inline styles */
+.guide-cta-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+  margin-top: 0.75rem;
+}
+
+.guide-cta-title {
+  color: var(--c-primary, #6c5ce7);
+}
+
+.guide-cta-desc {
+  font-size: 0.85rem;
+  color: var(--c-text-sub);
+}
+
+.btn-guide-link {
+  padding: 0.4rem 0.85rem;
+  font-size: 0.85rem;
+  text-decoration: none;
+  border-radius: 4px;
+  font-weight: bold;
+  background: var(--c-primary);
+  color: var(--c-on-primary);
 }

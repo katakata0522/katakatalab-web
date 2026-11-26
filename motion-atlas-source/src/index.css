@@ -1,0 +1,328 @@
+@import "tailwindcss" source("./");
+
+/* 公開版のCSSを初回ビルドでも再現するため、従来のビルドが拾っていたユーティリティーを明示する。 */
+@source inline("visible -left-1 z-0 mx-0 mt-0 mt-6 mr-0 mr-1 ml-0 inline h-0 w-80 -translate-x-1 scale-x-100 scroll-pl-2 gap-0 space-y-0 gap-y-2 border-rose-400 bg-amber-300 bg-blue-500 via-white px-0 py-0 pr-0 pb-0 pb-9 opacity-70 ring-blue-600 blur-none filter!");
+
+@layer base {
+  :root {
+    --paper-bg: #faf9f6;
+    --surface-bg: #ffffff;
+    --ink-primary: #18181b;
+    --ink-secondary: #52525b;
+    --ink-muted: #71717a;
+    --border-subtle: #e4e4e7;
+    --accent-blue: #2563eb;
+    --xray-orange: #ea580c;
+  }
+
+  html {
+    background-color: var(--paper-bg);
+    color: var(--ink-primary);
+    font-family:
+      "Hiragino Sans", "Hiragino Kaku Gothic ProN", "Yu Gothic UI", "BIZ UDPGothic",
+      "Meiryo", system-ui, -apple-system, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    scroll-behavior: smooth;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+
+    /* 待機中の常時ループ演出を抑止し、ユーザーが明示再生したときのみ確認できるようにする */
+    .atlas-idle-loop {
+      animation: none !important;
+    }
+  }
+
+  body {
+    margin: 0;
+    min-height: 100vh;
+    background-color: var(--paper-bg);
+    overflow-x: hidden;
+  }
+
+  code,
+  pre,
+  .font-mono {
+    font-family:
+      ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono",
+      "Courier New", monospace;
+  }
+}
+
+/* ノート方眼ドット背景（ステージ内で動きの距離や位置関係を直感的に見やすくする） */
+.stage-dot-grid {
+  background-color: #ffffff;
+  background-image: radial-gradient(#d4d4d8 1px, transparent 1px);
+  background-size: 20px 20px;
+  background-position: 10px 10px;
+}
+
+.page-dot-grid {
+  background-color: #faf9f6;
+  background-image: radial-gradient(#e4e4e7 1px, transparent 1px);
+  background-size: 28px 28px;
+}
+
+/* カスタムレンジスライダー（操作しやすく視覚ノイズを抑えた設計） */
+input[type="range"].atlas-slider {
+  -webkit-appearance: none;
+  appearance: none;
+  height: 6px;
+  border-radius: 9999px;
+  background: #e4e4e7;
+  outline: none;
+  cursor: pointer;
+}
+
+input[type="range"].atlas-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 16px;
+  height: 16px;
+  border-radius: 9999px;
+  background: #2563eb;
+  border: 2px solid #ffffff;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
+  transition: transform 120ms ease;
+}
+
+input[type="range"].atlas-slider::-webkit-slider-thumb:hover {
+  transform: scale(1.12);
+}
+
+input[type="range"].atlas-slider::-moz-range-thumb {
+  width: 16px;
+  height: 16px;
+  border-radius: 9999px;
+  background: #2563eb;
+  border: 2px solid #ffffff;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
+  cursor: pointer;
+}
+
+/* ============================================================================
+   各アニメーションパターンの Keyframes（CSS変数で速度・距離・イージングを動的制御）
+   ============================================================================ */
+
+@keyframes atlasSlideUp {
+  0% {
+    opacity: 0;
+    transform: translate3d(0, var(--anim-dist, 44px), 0);
+  }
+  100% {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+@keyframes atlasSweepRight {
+  0% {
+    opacity: 0.25;
+    transform: translate3d(calc(var(--anim-dist, 48px) * -1), 0, 0);
+    clip-path: inset(0 100% 0 0);
+  }
+  100% {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+    clip-path: inset(0 0 0 0);
+  }
+}
+
+@keyframes atlasCharRise {
+  0% {
+    opacity: 0;
+    transform: translate3d(0, var(--anim-dist, 26px), 0) scale(0.94);
+  }
+  100% {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+}
+
+@keyframes atlasMarkerSweep {
+  0% {
+    transform: scaleX(0);
+  }
+  100% {
+    transform: scaleX(1);
+  }
+}
+
+@keyframes atlasFadeLift {
+  0% {
+    opacity: 0;
+    transform: translate3d(0, var(--anim-dist, 28px), 0) scale(0.97);
+  }
+  100% {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+}
+
+@keyframes atlasCurtainRevealContent {
+  0%,
+  44% {
+    opacity: 0;
+  }
+  45%,
+  100% {
+    opacity: 1;
+  }
+}
+
+@keyframes atlasCurtainBlock {
+  0% {
+    transform-origin: left center;
+    transform: scaleX(0);
+  }
+  45% {
+    transform-origin: left center;
+    transform: scaleX(1);
+  }
+  46% {
+    transform-origin: right center;
+    transform: scaleX(1);
+  }
+  100% {
+    transform-origin: right center;
+    transform: scaleX(0);
+  }
+}
+
+@keyframes atlasStaggerCard {
+  0% {
+    opacity: 0;
+    transform: translate3d(0, var(--anim-dist, 24px), 0) scale(0.95);
+  }
+  100% {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+}
+
+@keyframes atlasFlip3D {
+  0% {
+    opacity: 0;
+    transform: perspective(700px) rotateX(var(--anim-deg, -65deg)) translate3d(0, 12px, 0);
+  }
+  100% {
+    opacity: 1;
+    transform: perspective(700px) rotateX(0deg) translate3d(0, 0, 0);
+  }
+}
+
+@keyframes atlasMarqueeScroll {
+  0% {
+    transform: translate3d(0, 0, 0);
+  }
+  100% {
+    transform: translate3d(-50%, 0, 0);
+  }
+}
+
+@keyframes atlasSkeletonShimmer {
+  0% {
+    transform: translate3d(-100%, 0, 0);
+  }
+  100% {
+    transform: translate3d(100%, 0, 0);
+  }
+}
+
+@keyframes atlasRippleOut {
+  0% {
+    opacity: 0.5;
+    transform: translate(-50%, -50%) scale(0);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(2.8);
+  }
+}
+
+@keyframes atlasCaretBlink {
+  0%,
+  49% {
+    opacity: 1;
+  }
+  50%,
+  100% {
+    opacity: 0;
+  }
+}
+
+@keyframes atlasShakeX {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0);
+  }
+  20%,
+  60% {
+    transform: translate3d(-6px, 0, 0);
+  }
+  40%,
+  80% {
+    transform: translate3d(6px, 0, 0);
+  }
+}
+
+@keyframes atlasHeartPop {
+  0% {
+    transform: scale(1);
+  }
+  35% {
+    transform: scale(1.36);
+  }
+  65% {
+    transform: scale(0.92);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+@keyframes atlasSpinSlow {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+/* スクロールバー控えめ調整 */
+.atlas-scroll::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+.atlas-scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.atlas-scroll::-webkit-scrollbar-thumb {
+  background: #d4d4d8;
+  border-radius: 9999px;
+}
+
+.atlas-scroll::-webkit-scrollbar-thumb:hover {
+  background: #a1a1aa;
+}
+
+.no-scrollbar {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+/* 100枚一括表示時の画面外カード描画コストをブラウザに自動スキップさせる（検索・アンカー移動互換） */
+.atlas-card-perf {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 460px;
+}

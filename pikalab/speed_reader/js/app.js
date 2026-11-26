@@ -1036,6 +1036,9 @@ class SpeedReaderApp {
 
         const display = this.els.readerDisplay;
         display.textContent = '';
+        const target = typeof document.createDocumentFragment === 'function'
+            ? document.createDocumentFragment()
+            : display;
 
         if (!word.includes('{')) {
             const characters = this.splitDisplayCharacters(word);
@@ -1046,15 +1049,16 @@ class SpeedReaderApp {
                 const span = document.createElement('span');
                 span.className = 'orp-char';
                 span.textContent = word;
-                display.appendChild(span);
+                target.appendChild(span);
             } else {
-                display.appendChild(document.createTextNode(characters.slice(0, mid).join('')));
+                target.appendChild(document.createTextNode(characters.slice(0, mid).join('')));
                 const orpSpan = document.createElement('span');
                 orpSpan.className = 'orp-char';
                 orpSpan.textContent = characters[mid];
-                display.appendChild(orpSpan);
-                display.appendChild(document.createTextNode(characters.slice(mid + 1).join('')));
+                target.appendChild(orpSpan);
+                target.appendChild(document.createTextNode(characters.slice(mid + 1).join('')));
             }
+            if (target !== display) display.appendChild(target);
             this.fitReaderDisplay();
             return;
         }
@@ -1081,18 +1085,15 @@ class SpeedReaderApp {
         let orpIndex = Math.floor(plainLength / 2);
 
         // 記号や空白を避けるインテリジェントORP選択
-        const isNoiseChar = (c) => /^[\s。、！？!?.,;:「」『』（）［］【】〈〉《》｢()]+$/.test(c);
-        if (isNoiseChar(chars[orpIndex].char)) {
-            let found = false;
+        const noisePattern = this._orpNoisePattern || (this._orpNoisePattern = /^[\s。、！？!?.,;:「」『』（）［］【】〈〉《》｢()]+$/);
+        if (noisePattern.test(chars[orpIndex].char)) {
             for (let offset = 1; offset < plainLength; offset++) {
-                if (orpIndex - offset >= 0 && !isNoiseChar(chars[orpIndex - offset].char)) {
+                if (orpIndex - offset >= 0 && !noisePattern.test(chars[orpIndex - offset].char)) {
                     orpIndex = orpIndex - offset;
-                    found = true;
                     break;
                 }
-                if (orpIndex + offset < plainLength && !isNoiseChar(chars[orpIndex + offset].char)) {
+                if (orpIndex + offset < plainLength && !noisePattern.test(chars[orpIndex + offset].char)) {
                     orpIndex = orpIndex + offset;
-                    found = true;
                     break;
                 }
             }
@@ -1125,7 +1126,7 @@ class SpeedReaderApp {
                     const rt = document.createElement('rt');
                     rt.textContent = item.ruby;
                     currentRubyEl.appendChild(rt);
-                    display.appendChild(currentRubyEl);
+                    target.appendChild(currentRubyEl);
                     currentRubyEl = null;
                     currentRubyText = null;
                 }
@@ -1134,12 +1135,13 @@ class SpeedReaderApp {
                     const span = document.createElement('span');
                     span.className = 'orp-char';
                     span.textContent = item.char;
-                    display.appendChild(span);
+                    target.appendChild(span);
                 } else {
-                    display.appendChild(document.createTextNode(item.char));
+                    target.appendChild(document.createTextNode(item.char));
                 }
             }
         }
+        if (target !== display) display.appendChild(target);
         this.fitReaderDisplay();
     }
 
