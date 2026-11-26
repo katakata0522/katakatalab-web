@@ -173,6 +173,31 @@ test('空の差分、手動実行、視覚維持ラベルは全検証する', ()
     assert.equal(classifyChanges(['pikalab/paper_gen/script.js'], { preserveVisual: true }).full, true);
 });
 
+test('本文と出典に限る記事PRを実Gitで選び、共有コード・能動要素は全件へ戻す', t => {
+    const cwd = mkdtempSync(join(tmpdir(), 'pika-article-scope-'));
+    t.after(() => rmSync(cwd, { recursive: true, force: true }));
+    const git = (...args) => execFileSync('git', args, { cwd, encoding: 'utf8', stdio: 'pipe' }).trim();
+    git('init'); git('config', 'user.name', 'CI scope'); git('config', 'user.email', 'ci@example.invalid');
+    const name = 'pikalab/articles/science.html';
+    mkdirSync(join(cwd, 'pikalab/articles'), { recursive: true });
+    const commit = (html) => {
+        writeFileSync(join(cwd, name), '<html><body><main>' + html + '</main></body></html>');
+        git('add', name); git('commit', '-m', '記事比較');
+    };
+    commit('<p>旧本文</p>');
+    const base = git('rev-parse', 'HEAD');
+    commit('<p>新本文 <a href="https://example.com/source">出典</a></p>');
+    assert.equal(readScope(base, {}, cwd).visual_directories, 'articles');
+    commit('<p onclick="openGuide()">本文</p>');
+    assert.equal(readScope(base, {}, cwd).full, true);
+    commit('<script>const x = "<p>本文</p>"</script>');
+    assert.equal(readScope(base, {}, cwd).full, true);
+    assert.equal(classifyChanges([name, 'pikalab/style.css'], { articleCopy: true }).full, true);
+    const mixed = classifyChanges(['pikalab/space_lab/index.html', 'lab-tools/kids-smile-land/service-worker.js']);
+    assert.equal(mixed.full, false);
+    assert.ok(mixed.eduplay && mixed.space);
+});
+
 test('PR基点から全コミットを比較し、ラボ間renameの両パスを検証する', () => {
     const cwd = mkdtempSync(join(tmpdir(), 'pikalab-ci-scope-'));
     const git = (...args) => execFileSync('git', args, { cwd, encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'] }).trim();
@@ -259,8 +284,13 @@ test('共通検証の失敗は全ラボE2Eの起動を止め、必須validateに
     }
     for (const name of ['space-browser', 'focus-browser', 'paper-browser', 'quest-browser', 'book-browser']) {
         assert.match(jobs[name], /needs: scope/);
-        assert.doesNotMatch(jobs[name].split('    steps:')[0], /always\(|!cancelled\(|failure\(/,
-            '通常のsuccess依存で共通失敗時にrunnerを起動しない');
+        const condition = jobs[name].match(/    if: "\$\{\{ (.*?) \}\}"/)[1];
+        const lab = name.split('-')[0];
+        for (const result of ['success', 'failure', 'skipped', 'cancelled']) {
+            const context = { github: { event_name: 'push' }, cancelled: () => result === 'cancelled',
+                needs: { scope: { result, outputs: { [lab]: 'true' } } } };
+            assert.equal(evaluate(condition, context), result === 'success');
+        }
     }
 });
 
@@ -542,7 +572,9 @@ test('Kanjiの実ブラウザは専用指定時だけ起動し通常の全Node�
 
 test('Kanji統合後も教育プライバシー監査とscope一度だけの全体検証を維持する', () => {
     const jobs = workflowJobs(readWorkflow());
-    assert.match(jobs.scope, /node scripts\/education-no-tracking\.cjs --pikalab-build/);
+    const scripts = require('../../pikalab/package.json').scripts;
+    assert.match(jobs.scope, /npm run verify:build/);
+    assert.match(scripts['verify:build'], /node \.\.\/scripts\/education-no-tracking\.cjs --pikalab-build/);
     assert.match(jobs.scope, /node \.github\/scripts\/education-privacy-e2e\.cjs --root-build --pikalab-build/);
     assert.ok(jobs.scope.indexOf('education-privacy-e2e.cjs') < jobs.scope.indexOf('name: Run all PikaLab tests'));
     assert.equal((readWorkflow().match(/^          npm test$/gm) || []).length, 1);
@@ -568,8 +600,8 @@ test('Bookの基点・Draft条件・証跡先は実際のPRとE2E実行先に対
     for (const event_name of ['pull_request', 'workflow_dispatch']) {
         for (const draft of [false, true]) {
             for (const selected of [false, true]) {
-                const context = { github: { event_name, event: { pull_request: { draft } } },
-                    needs: { scope: { outputs: { book: String(selected) } } } };
+                const context = { github: { event_name, event: { pull_request: { draft } } }, cancelled: () => false,
+                    needs: { scope: { result: 'success', outputs: { book: String(selected) } } } };
                 assert.equal(evaluate(expression, context), selected && (event_name !== 'pull_request' || !draft));
             }
         }

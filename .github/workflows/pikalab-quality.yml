@@ -36,6 +36,7 @@ defaults:
 
 jobs:
   relevance:
+    if: github.event_name == 'push'
     runs-on: ubuntu-24.04
     timeout-minutes: 5
     outputs:
@@ -58,7 +59,7 @@ jobs:
     name: ${{ (github.event_name != 'pull_request' || !github.event.pull_request.draft) && 'scope' || 'Draft scope' }}
     # 共通検証を一度通してから、変更対象の重いE2Eを起動する。
     needs: relevance
-    if: "${{ needs.relevance.outputs.pikalab == 'true' && (github.event_name != 'pull_request' || !github.event.pull_request.draft) }}"
+    if: "${{ !cancelled() && (github.event_name != 'push' || needs.relevance.outputs.pikalab == 'true') && (github.event_name != 'pull_request' || !github.event.pull_request.draft) }}"
     runs-on: ubuntu-latest
     # package-lockのPlaywrightと同版。ブラウザ・font・OS依存は公式の固定イメージで準備する。
     container:
@@ -181,9 +182,6 @@ jobs:
           set -euo pipefail
           cd pikalab
           npm run verify:code-studio-security
-
-      - name: Verify PikaLab has no ads or third-party tracking
-        run: node scripts/education-no-tracking.cjs --pikalab-build
 
       - name: Verify education tracking and legacy PWA isolation in Chromium
         env:
@@ -321,7 +319,7 @@ jobs:
       - name: Run PikaLab visual regression guard
         if: "${{ !cancelled() && (success() || env.PIKALAB_COLLECT_ALL_FAILURES == 'true') && steps.verified_build.outcome == 'success' && steps.browser_setup.outcome == 'success' && needs.scope.result == 'success' && matrix.group != 'practice' }}"
         env:
-          VISUAL_GUARD_SCREENSHOTS: "1"
+          VISUAL_GUARD_SCREENSHOTS: ${{ (env.PIKALAB_COMPARE_BASELINE == 'true' || env.PIKALAB_COLLECT_ALL_FAILURES == 'true') && '1' || '0' }}
           VISUAL_GUARD_DIRECTORIES: ${{ needs.scope.outputs.visual_directories }}
         run: |
           set -euo pipefail
@@ -431,7 +429,7 @@ jobs:
     name: ${{ (github.event_name != 'pull_request' || !github.event.pull_request.draft) && 'space-browser' || 'Draft space-browser' }}
     needs: scope
     # 共有変更では必ず実行し、ラボ内だけの変更は該当E2Eを実行する。
-    if: "${{ (github.event_name != 'pull_request' || !github.event.pull_request.draft) && needs.scope.outputs.space == 'true' }}"
+    if: "${{ !cancelled() && needs.scope.result == 'success' && (github.event_name != 'pull_request' || !github.event.pull_request.draft) && needs.scope.outputs.space == 'true' }}"
     runs-on: ubuntu-latest
     # package-lockのPlaywrightと同版。ブラウザ・font・OS依存は公式の固定イメージで準備する。
     container:
@@ -497,7 +495,7 @@ jobs:
     name: ${{ (github.event_name != 'pull_request' || !github.event.pull_request.draft) && 'focus-browser' || 'Draft focus-browser' }}
     needs: scope
     # 共有変更では必ず実行し、ラボ内だけの変更は該当E2Eを実行する。
-    if: "${{ (github.event_name != 'pull_request' || !github.event.pull_request.draft) && needs.scope.outputs.focus == 'true' }}"
+    if: "${{ !cancelled() && needs.scope.result == 'success' && (github.event_name != 'pull_request' || !github.event.pull_request.draft) && needs.scope.outputs.focus == 'true' }}"
     runs-on: ubuntu-latest
     # package-lockのPlaywrightと同版。ブラウザ・font・OS依存は公式の固定イメージで準備する。
     container:
@@ -563,7 +561,7 @@ jobs:
     name: ${{ (github.event_name != 'pull_request' || !github.event.pull_request.draft) && 'paper-browser' || 'Draft paper-browser' }}
     needs: scope
     # 共有変更では必ず実行し、ラボ内だけの変更は該当E2Eを実行する。
-    if: "${{ (github.event_name != 'pull_request' || !github.event.pull_request.draft) && needs.scope.outputs.paper == 'true' }}"
+    if: "${{ !cancelled() && needs.scope.result == 'success' && (github.event_name != 'pull_request' || !github.event.pull_request.draft) && needs.scope.outputs.paper == 'true' }}"
     runs-on: ubuntu-latest
     # package-lockのPlaywrightと同版。ブラウザ・font・OS依存は公式の固定イメージで準備する。
     container:
@@ -629,7 +627,7 @@ jobs:
     name: ${{ (github.event_name != 'pull_request' || !github.event.pull_request.draft) && 'quest-browser' || 'Draft quest-browser' }}
     needs: scope
     # 共有変更では必ず実行し、ラボ内だけの変更は該当E2Eを実行する。
-    if: "${{ (github.event_name != 'pull_request' || !github.event.pull_request.draft) && needs.scope.outputs.quest == 'true' }}"
+    if: "${{ !cancelled() && needs.scope.result == 'success' && (github.event_name != 'pull_request' || !github.event.pull_request.draft) && needs.scope.outputs.quest == 'true' }}"
     runs-on: ubuntu-latest
     # package-lockのPlaywrightと同版。ブラウザ・font・OS依存は公式の固定イメージで準備する。
     container:
@@ -694,7 +692,7 @@ jobs:
     name: ${{ (github.event_name != 'pull_request' || !github.event.pull_request.draft) && 'book-browser' || 'Draft book-browser' }}
     needs: scope
     # 共有変更では必ず実行し、ラボ内だけの変更は該当E2Eを実行する。
-    if: "${{ (github.event_name != 'pull_request' || !github.event.pull_request.draft) && needs.scope.outputs.book == 'true' }}"
+    if: "${{ !cancelled() && needs.scope.result == 'success' && (github.event_name != 'pull_request' || !github.event.pull_request.draft) && needs.scope.outputs.book == 'true' }}"
     runs-on: ubuntu-latest
     # package-lockのPlaywrightと同版。ブラウザ・font・OS依存は公式の固定イメージで準備する。
     container:
@@ -752,7 +750,7 @@ jobs:
           BOOK_REPORT_BASELINE_ROOT=../.book-baseline/pikalab/dist npm run test:book-e2e
 
   completion:
-    if: ${{ always() && needs.relevance.result == 'success' && needs.relevance.outputs.pikalab == 'true' }}
+    if: ${{ always() && (github.event_name != 'push' || (needs.relevance.result == 'success' && needs.relevance.outputs.pikalab == 'true')) && (github.event_name != 'pull_request' || !github.event.pull_request.draft) }}
     needs: [relevance, scope, validate, space-browser, focus-browser, paper-browser, quest-browser, book-browser]
     runs-on: ubuntu-24.04
     timeout-minutes: 5

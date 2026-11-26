@@ -3,6 +3,10 @@ on:
   push:
     branches: [main]
   workflow_call:
+    inputs:
+      root_mode:
+        type: string
+        default: all
   workflow_dispatch:
 permissions:
   contents: read
@@ -15,9 +19,28 @@ defaults:
     shell: bash
 
 jobs:
+  relevance:
+    if: github.event_name == 'push'
+    runs-on: ubuntu-24.04
+    outputs:
+      root: ${{ steps.select.outputs.root }}
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Select Root checks from the whole push
+        id: select
+        env:
+          BASE_SHA: ${{ github.event.before }}
+        run: node .github/scripts/public-pr-gate.cjs root-push
+
   quality:
+    needs: relevance
+    env:
+      ROOT_BROWSER_SCOPE: ${{ inputs.root_mode || 'all' }}
     name: ${{ (github.event_name != 'pull_request' || !github.event.pull_request.draft) && 'quality' || 'Draft quality' }}
-    if: ${{ github.event_name != 'pull_request' || !github.event.pull_request.draft }}
+    if: ${{ !cancelled() && (github.event_name != 'push' || needs.relevance.outputs.root == 'true') && (github.event_name != 'pull_request' || !github.event.pull_request.draft) }}
     # Playwright 1.60.0のheadless shellが対応するOSを使用する。
     runs-on: ubuntu-24.04
     # package-lockのPlaywrightと同版。ブラウザ・font・OS依存は公式の固定イメージで準備する。
@@ -53,6 +76,7 @@ jobs:
           node .github/scripts/build-public-root.cjs
           test ! -e public-build/motion-atlas-source
       - name: Verify Motion Atlas matches the published assets
+        if: env.ROOT_BROWSER_SCOPE == 'all' || env.ROOT_BROWSER_SCOPE == 'motion-atlas-source'
         working-directory: motion-atlas-source
         run: |
           npm audit --package-lock-only --ignore-scripts --audit-level=low
@@ -69,10 +93,20 @@ jobs:
         env:
           NODE_PATH: ${{ github.workspace }}/node_modules
         run: |
-          node .github/scripts/local-tools-e2e.mjs
-          node qrcode/tests/quality-browser-smoke.cjs
-          node emphasis-lines/tests/browser-regression.cjs
-          node .github/scripts/education-privacy-e2e.cjs --root-build
+          set -euo pipefail
+          case "$ROOT_BROWSER_SCOPE" in
+            home) node .github/scripts/local-tools-e2e.mjs ;;
+            qrcode) node qrcode/tests/quality-browser-smoke.cjs ;;
+            emphasis-lines) node emphasis-lines/tests/browser-regression.cjs ;;
+            motion-atlas-source) ;; # 上のステップで専用ビルドと掲載物を照合済み。
+            all)
+              node .github/scripts/local-tools-e2e.mjs
+              node qrcode/tests/quality-browser-smoke.cjs
+              node emphasis-lines/tests/browser-regression.cjs
+              node .github/scripts/education-privacy-e2e.cjs --root-build
+              ;;
+            *) exit 1 ;;
+          esac
       - name: Publication contracts
         run: |
           node scripts/education-no-tracking.cjs --root-build

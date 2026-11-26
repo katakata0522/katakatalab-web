@@ -242,7 +242,7 @@ async function inspectRoute({ route, viewport, theme, baseUrl, browser }) {
     result.errors.push(`navigation/evaluation failed: ${String(error.message || error).slice(0, 300)}`);
   }
 
-  const shouldScreenshot = alwaysScreenshot || result.errors.length > 0 || result.warnings.length > 0;
+  const shouldScreenshot = alwaysScreenshot || result.errors.length > 0;
   if (shouldScreenshot) {
     const fileName = `${route.id}-${viewport.id}-${theme}.png`;
     const screenshot = path.join(artifactDir, fileName);

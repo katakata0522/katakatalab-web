@@ -1,5 +1,6 @@
 const { execFileSync } = require('node:child_process');
 const { appendFileSync } = require('node:fs');
+const path = require('node:path');
 const { isDeepStrictEqual } = require('node:util');
 const { LAB_E2E_FILES, LAB_E2E_SCRIPTS } = require('./pikalab-e2e-inputs.cjs');
 
@@ -38,17 +39,30 @@ function classifyPackageScripts(before, after) {
     return [...labs];
 }
 
+const articlePage = /^pikalab\/articles\/(?!index\.html$)[a-z0-9-]+\.html$/;
+const kidsFiles = new Set(['app.js', 'index.html', 'service-worker.js', 'style.css']
+    .map(file => 'lab-tools/kids-smile-land/' + file));
+
 function fullScope(reason) {
     return { full: true, reason, visual_directories: '', ...Object.fromEntries(Object.keys(LABS).map(key => [key, true])) };
 }
 
-function classifyChanges(files, { eventName = 'pull_request', preserveVisual = false, packageBefore, packageAfter } = {}) {
+function classifyChanges(files, { eventName = 'pull_request', preserveVisual = false, packageBefore, packageAfter, articleCopy = false } = {}) {
     if (eventName !== 'pull_request' || preserveVisual) return fullScope('手動実行または全画面の比較指定');
     if (!Array.isArray(files) || files.length === 0) return fullScope('変更一覧を確定できない');
     const selected = new Set();
     for (const file of files) {
         if (typeof file !== 'string' || file.includes('\\') || file.split('/').some(part => !part || part === '..' || part === '.')) {
             return fullScope('不正または未知のパス');
+        }
+        if (articleCopy && articlePage.test(file)) {
+            selected.add('articles');
+            continue;
+        }
+        if (kidsFiles.has(file)) {
+            // 別アプリの公開導線は本体と教育PWAの統合検査でも確認する。
+            selected.add('eduplay');
+            continue;
         }
         if (file === 'pikalab/package.json') {
             const labs = classifyPackageScripts(packageBefore, packageAfter);
@@ -69,7 +83,7 @@ function classifyChanges(files, { eventName = 'pull_request', preserveVisual = f
     }
     const directories = [...selected].sort();
     // オフライン更新・ルート定義はラボ内にあっても全画面の検証を残す。
-    const siteWideVisual = files.some(file => /(?:^|\/)(?:sw[.-]|service[-_]?worker|manifest[.-]|routes?[.-]|router[.-])|\.webmanifest$/i.test(file));
+    const siteWideVisual = files.some(file => !kidsFiles.has(file) && /(?:^|\/)(?:sw[.-]|service[-_]?worker|manifest[.-]|routes?[.-]|router[.-])|\.webmanifest$/i.test(file));
     return { full: false, reason: `ラボまたは専用E2Eの変更: ${directories.join(', ')}`,
         visual_directories: siteWideVisual ? '' : directories.join(','),
         ...Object.fromEntries(Object.entries(LABS).map(([key, directory]) => [key, selected.has(directory)])) };
@@ -85,7 +99,16 @@ function readScope(baseSha, options = {}, cwd) {
     const files = readChanges(baseSha, cwd);
     const packages = files.includes('pikalab/package.json')
         ? { packageBefore: readPackageRevision(baseSha, cwd), packageAfter: readPackageRevision('HEAD', cwd) } : {};
-    return classifyChanges(files, { ...options, ...packages });
+    const articles = files.filter(file => articlePage.test(file));
+    let articleCopy = false;
+    if (articles.length) {
+        try {
+            execFileSync(process.env.PYTHON || (process.platform === 'win32' ? 'python' : 'python3'),
+                [path.join(__dirname, 'article-copy-scope.py'), baseSha, 'HEAD', ...articles], { cwd, stdio: 'pipe' });
+            articleCopy = true;
+        } catch { /* 共有コード・新規ページ・不明な差分は全件確認する。 */ }
+    }
+    return classifyChanges(files, { ...options, ...packages, articleCopy });
 }
 
 function readChanges(baseSha, cwd) {
