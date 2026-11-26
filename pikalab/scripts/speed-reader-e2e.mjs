@@ -1209,6 +1209,9 @@ async function storageSuite() {
 
 try {
     await mkdir(artifactDir, { recursive: true });
+    const appVersion = createHash('sha256').update(await readFile(path.join(dist, 'speed_reader/js/app.js'))).digest('hex').slice(0, 16);
+    const indexHtml = await readFile(path.join(dist, 'speed_reader/index.html'), 'utf8');
+    assert.ok(indexHtml.includes(`src="./js/app.js?v=${appVersion}"`), '配信HTMLのスクリプトURLは成果物の内容に対応する');
     candidateUrl = await serveDist(dist);
     await writeAssetManifest(dist, 'candidate');
     if (process.env.SPEED_READER_BASELINE_ROOT) {

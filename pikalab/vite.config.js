@@ -1,4 +1,5 @@
 import { defineConfig } from 'vite'
+import { createHash } from 'node:crypto'
 import fs from 'node:fs'
 import path from 'node:path'
 import { VitePWA } from 'vite-plugin-pwa'
@@ -42,9 +43,12 @@ function pikalabLearningEvolution() {
       }
 
       if (isLabPage(context, 'speed_reader')) {
+        const appVersion = createHash('sha256')
+          .update(fs.readFileSync(path.join(__dirname, 'speed_reader/js/app.js')))
+          .digest('hex').slice(0, 16);
         const speedScripts = [
           './js/constants.js',
-          './js/app.js?v=20261003-speed1',
+          `./js/app.js?v=${appVersion}`,
           './js/comprehension.js?v=20261003-speed1'
         ];
 
