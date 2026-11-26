@@ -39,7 +39,7 @@ function classifyPackageScripts(before, after) {
 }
 
 function fullScope(reason) {
-    return { full: true, reason, ...Object.fromEntries(Object.keys(LABS).map(key => [key, true])) };
+    return { full: true, reason, visual_directories: '', ...Object.fromEntries(Object.keys(LABS).map(key => [key, true])) };
 }
 
 function classifyChanges(files, { eventName = 'pull_request', preserveVisual = false, packageBefore, packageAfter } = {}) {
@@ -67,7 +67,11 @@ function classifyChanges(files, { eventName = 'pull_request', preserveVisual = f
         }
         selected.add(parts[1]);
     }
-    return { full: false, reason: `ラボまたは専用E2Eの変更: ${[...selected].sort().join(', ')}`,
+    const directories = [...selected].sort();
+    // オフライン更新・ルート定義はラボ内にあっても全画面の検証を残す。
+    const siteWideVisual = files.some(file => /(?:^|\/)(?:sw[.-]|service[-_]?worker|manifest[.-]|routes?[.-]|router[.-])|\.webmanifest$/i.test(file));
+    return { full: false, reason: `ラボまたは専用E2Eの変更: ${directories.join(', ')}`,
+        visual_directories: siteWideVisual ? '' : directories.join(','),
         ...Object.fromEntries(Object.entries(LABS).map(([key, directory]) => [key, selected.has(directory)])) };
 }
 
@@ -111,7 +115,7 @@ function run() {
     if (process.env.GITHUB_STEP_SUMMARY) {
         const selected = Object.keys(LABS).filter(key => scope[key]).join(', ') || 'なし';
         appendFileSync(process.env.GITHUB_STEP_SUMMARY,
-            `### PikaLab E2E対象\n\n${scope.reason.replace(/[\r\n]/g, ' ')}\n\n対象: ${selected}\n\n構造・依存関係・型・全体ビルド・生成差分・セキュリティ・PWA・全画面visual guard・全単体テストは毎回実行。\n`);
+            `### PikaLab E2E対象\n\n${scope.reason.replace(/[\r\n]/g, ' ')}\n\n対象: ${selected}\n画面検証: ${scope.visual_directories ? 'トップと ' + scope.visual_directories : '全画面'}\n\n構造・依存関係・型・全体ビルド・生成差分・セキュリティ・PWA・全単体テストは毎回実行。\n`);
     }
 }
 

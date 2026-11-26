@@ -23,4 +23,19 @@ function collectPublishedHtmlRoutes(buildRoot) {
   return routes.sort((a, b) => a.urlPath.localeCompare(b.urlPath));
 }
 
-module.exports = { collectPublishedHtmlRoutes };
+function selectVisualRoutes(routes, directories) {
+  if (!directories) return routes;
+  const requested = new Set(directories.split(','));
+  const found = new Set();
+  const selected = routes.filter(route => {
+    if (route.urlPath === '/') return true;
+    const directory = /^\/([^/]+)\//.exec(route.urlPath)?.[1];
+    if (!requested.has(directory)) return false;
+    found.add(directory);
+    return true;
+  });
+  // 指定したラボの公開経路を特定できなければ、全件を検証する。
+  return found.size === requested.size ? selected : routes;
+}
+
+module.exports = { collectPublishedHtmlRoutes, selectVisualRoutes };

@@ -68,6 +68,7 @@ jobs:
     outputs:
       baseline_sha: ${{ steps.baseline.outputs.sha }}
       full: ${{ steps.scope.outputs.full }}
+      visual_directories: ${{ steps.scope.outputs.visual_directories }}
       deepsea: ${{ steps.scope.outputs.deepsea }}
       color: ${{ steps.scope.outputs.color }}
       kanji: ${{ steps.scope.outputs.kanji }}
@@ -321,6 +322,7 @@ jobs:
         if: "${{ !cancelled() && (success() || env.PIKALAB_COLLECT_ALL_FAILURES == 'true') && steps.verified_build.outcome == 'success' && steps.browser_setup.outcome == 'success' && needs.scope.result == 'success' && matrix.group != 'practice' }}"
         env:
           VISUAL_GUARD_SCREENSHOTS: "1"
+          VISUAL_GUARD_DIRECTORIES: ${{ needs.scope.outputs.visual_directories }}
         run: |
           set -euo pipefail
           cd pikalab

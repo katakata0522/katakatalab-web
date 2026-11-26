@@ -5,7 +5,7 @@ import { fileURLToPath } from 'node:url';
 import { chromium } from 'playwright';
 import publishedHtmlRoutes from './published-html-routes.cjs';
 
-const { collectPublishedHtmlRoutes } = publishedHtmlRoutes;
+const { collectPublishedHtmlRoutes, selectVisualRoutes } = publishedHtmlRoutes;
 
 const rootDir = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const distDir = path.join(rootDir, 'dist');
@@ -91,7 +91,9 @@ try {
     ? Math.min(6, Math.max(1, requestedConcurrency))
     : 3;
   const tasks = [];
-  for (const route of routes) {
+  const selectedRoutes = selectVisualRoutes(routes, process.env.VISUAL_GUARD_DIRECTORIES);
+  console.log(`[visual-guard] ${selectedRoutes.length}/${routes.length} routes`);
+  for (const route of selectedRoutes) {
     const routeThemes = route.darkShouldBeDark ? ['light', 'dark'] : ['light'];
     const routeViewports = catalogPaths.has(route.urlPath)
       ? viewports
