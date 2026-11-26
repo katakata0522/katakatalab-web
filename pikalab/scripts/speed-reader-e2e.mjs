@@ -410,12 +410,30 @@ function compareLayout(actual, expected, name) {
     return comparedNodes.length;
 }
 
+function readLibraryPreviews(page, replacements = null) {
+    return page.locator('.lib-card > p').evaluateAll((elements, texts) => Object.fromEntries(elements.map(element => {
+        const id = element.parentElement.dataset.param;
+        const original = element.textContent;
+        if (texts) element.textContent = texts[id];
+        return [id, original];
+    })), replacements);
+}
+
 async function layoutSuite() {
     for (const viewport of VIEWPORTS) {
         await runCase(`layout-${viewport.width}x${viewport.height}`, async (page, record) => {
             const baseline = baselineUrl ? await createCase(viewport) : null;
             try {
                 if (baseline) await ready(baseline, baselineUrl);
+                const libraryPreviews = await (baseline?.page ?? page).evaluate(() => {
+                    const segmenter = new Intl.Segmenter('ja', { granularity: 'grapheme' });
+                    return Object.fromEntries(Object.entries(libraries).map(([id, { text }]) => {
+                        const plainText = splitRubyParts(text).map(part => part.ruby ? part.base : part.text).join('');
+                        const characters = Array.from(segmenter.segment(plainText), entry => entry.segment);
+                        return [id, characters.slice(0, 40).join('') + (characters.length > 40 ? '...' : '')];
+                    }));
+                });
+                assert.deepEqual(await readLibraryPreviews(page), libraryPreviews, '全教材のカードにルビ記法を除いた40文字までの抜粋を表示する');
                 record.baselineComparison = baseline ? 'compared' : 'skipped: SPEED_READER_BASELINE_ROOT is unset';
                 record.states = [];
                 for (const state of ['library', 'input', 'settings', 'parents']) {
@@ -431,7 +449,13 @@ async function layoutSuite() {
                     if (viewport.width <= 640) assertMobileControls(actual);
                     const badge = key => actual.nodes.find(node => node.key === key).box;
                     assert.ok(badge('#chunk-badge').x + badge('#chunk-badge').width < badge('#source-badge').x, '速度・語数と教材名が重ならない');
-                    const expected = baseline ? await layoutSnapshot(baseline.page) : null;
+                    let expected = null;
+                    if (baseline) {
+                        // 基準版の見た目には、今回の抜粋文だけを反映して計測する。
+                        const originals = await readLibraryPreviews(baseline.page, libraryPreviews);
+                        try { expected = await layoutSnapshot(baseline.page); }
+                        finally { await readLibraryPreviews(baseline.page, originals); }
+                    }
                     await writeFile(path.join(artifactDir, `${label}-geometry.json`), `${JSON.stringify({ candidate: actual, baseline: expected }, null, 2)}\n`);
                     await screenshot(page, `${label}-candidate`);
                     let comparedElements = 0;
