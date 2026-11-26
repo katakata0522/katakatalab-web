@@ -6,6 +6,32 @@
     'use strict';
 
     const WHITESPACE_SPLIT_REGEX = /\s+/;
+    const LEGACY_CATEGORY_MAP = {
+        '読書': '勉強・学習習慣',
+        '算数': '勉強・学習習慣',
+        '集中': '勉強・学習習慣',
+        '学習習慣': '勉強・学習習慣',
+        '考え方': 'やる気・心の力',
+        'やる気': 'やる気・心の力',
+        '心の力': 'やる気・心の力',
+        '親子関係': '親子の関わり・声かけ',
+        '声かけ': '親子の関わり・声かけ',
+        '親子の対話': '親子の関わり・声かけ',
+        '遊びと学び': '遊び・探究・未来',
+        '学ぶ意味': '遊び・探究・未来',
+        '好奇心': '遊び・探究・未来',
+        '探究': '遊び・探究・未来',
+        '未来の学び': '遊び・探究・未来',
+        '学校との関係': '生活・学校・デジタル',
+        '生活リズム': '生活・学校・デジタル',
+        'デジタル': '生活・学校・デジタル',
+    };
+
+    function normalizeCategoryFilter(value) {
+        const raw = (value || '').trim();
+        if (!raw || raw === 'all') return 'all';
+        return LEGACY_CATEGORY_MAP[raw] || raw;
+    }
 
     function initHub() {
         const articleList = document.getElementById('article-list');
@@ -44,7 +70,7 @@
 
         // Read initial state from URL parameters
         const urlParams = new URLSearchParams(window.location.search);
-        let currentFilter = urlParams.get('category') || 'all';
+        let currentFilter = normalizeCategoryFilter(urlParams.get('category') || 'all');
         let searchQuery = (urlParams.get('q') || '').trim();
         let currentlyVisible = INITIAL_COUNT;
 
@@ -68,10 +94,14 @@
         function updatePillUI() {
             for (let i = 0; i < pillEntries.length; i++) {
                 const { pill, filter } = pillEntries[i];
-                if (filter === currentFilter) {
+                const isSelected = filter === currentFilter;
+                if (isSelected) {
                     pill.classList.add('active-pill');
                 } else {
                     pill.classList.remove('active-pill');
+                }
+                if (typeof pill.setAttribute === 'function') {
+                    pill.setAttribute('aria-pressed', isSelected ? 'true' : 'false');
                 }
             }
         }
@@ -188,6 +218,10 @@
                 currentlyVisible = INITIAL_COUNT;
                 applyLimitAndFilter();
 
+                if (typeof pill.scrollIntoView === 'function') {
+                    pill.scrollIntoView({ block: 'nearest', inline: 'nearest' });
+                }
+
                 // Smooth scroll up if user is past the list top
                 const rect = articleList.getBoundingClientRect();
                 if (rect.top < 0) {
@@ -223,7 +257,10 @@
         window.addEventListener('popstate', (e) => {
             const state = e.state || {};
             const params = new URLSearchParams(window.location.search);
-            currentFilter = state.category || params.get('category') || 'all';
+            currentFilter = normalizeCategoryFilter(state.category || params.get('category') || 'all');
+            if (!validFilterSet.has(currentFilter) && currentFilter !== 'all') {
+                currentFilter = 'all';
+            }
             searchQuery = (state.q !== undefined ? state.q : params.get('q')) || '';
             searchInputs.forEach(input => { input.value = searchQuery; });
             currentlyVisible = INITIAL_COUNT;

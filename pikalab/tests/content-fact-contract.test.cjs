@@ -29,6 +29,7 @@ test('個別記事のカテゴリ表示は記事ハブと一致し、重複表�
     const cards = [...hub.matchAll(
         /<article[^>]+data-category="([^"]+)"[\s\S]*?<a href="([^"]+\.html)" class="read-more/g
     )];
+    const categories = new Set(cards.map(([, category]) => category));
 
     const articleDirectory = path.join(pikalabRoot, 'articles');
     const articleFiles = fs.readdirSync(articleDirectory)
@@ -42,11 +43,15 @@ test('個別記事のカテゴリ表示は記事ハブと一致し、重複表�
 
     for (const [, expectedCategory, fileName] of cards) {
         const html = read(`articles/${fileName}`);
-        const category = html.match(
-            /<span class="inline-flex[^"]*"[^>]*>[\s\S]*?material-symbols-rounded[\s\S]*?<\/span>\s*([^<]+)\s*<\/span>/
-        )?.[1]?.trim();
+        const articleHeader = html.match(/<article\b[^>]*>[\s\S]*?<header\b[^>]*>([\s\S]*?)<\/header>/)?.[1];
+        assert.ok(articleHeader, `${fileName}: 記事の見出しが必要です`);
+        const categoryLabels = articleHeader
+            .replace(/<h1\b[^>]*>[\s\S]*?<\/h1>/, '')
+            .split(/<[^>]+>/)
+            .map((label) => label.trim())
+            .filter((label) => categories.has(label));
 
-        assert.equal(category, expectedCategory, `${fileName}: 記事ハブとカテゴリを合わせる`);
+        assert.deepEqual(categoryLabels, [expectedCategory], `${fileName}: 記事ハブと同じカテゴリを一度だけ表示する`);
         assert.doesNotMatch(
             html,
             /<\/span>\s*考え方\s*<\/div>/,
