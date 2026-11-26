@@ -40,6 +40,8 @@ body {
 .lab-card-pattern {
     background-image: radial-gradient(#000 1px, transparent 1px);
     background-size: 20px 20px;
+    pointer-events: none;
+    z-index: 0;
 }
 
 .blob-shape {
@@ -1158,13 +1160,17 @@ body {
     }
 
     #view-lab .lab-dressup-trigger {
-        position: static !important;
+        position: relative !important;
+        inset: auto !important;
+        z-index: 10;
         order: 1;
         flex-shrink: 0;
     }
 
     #view-lab .lab-speech-bubble {
-        position: static !important;
+        position: relative !important;
+        inset: auto !important;
+        z-index: 10;
         order: 2;
         flex: 1 1 auto;
         min-width: 0;
@@ -1182,6 +1188,8 @@ body {
     }
 
     #view-lab #blob-character {
+        position: relative !important;
+        z-index: 10;
         order: 3;
         flex: 0 0 auto;
         width: 148px !important;
@@ -1190,7 +1198,9 @@ body {
     }
 
     #view-lab .lab-color-code-bar {
-        position: static !important;
+        position: relative !important;
+        inset: auto !important;
+        z-index: 10;
         order: 4;
         flex: 0 0 100%;
         width: 100%;
@@ -1334,6 +1344,14 @@ body {
         width: 100%;
         padding: 0.75rem 1rem;
         border-radius: 1.25rem;
+    }
+
+    #game-complete {
+        height: auto !important;
+        min-height: 100%;
+        justify-content: flex-start !important;
+        padding-top: 1rem;
+        padding-bottom: 1.5rem;
     }
 }
 

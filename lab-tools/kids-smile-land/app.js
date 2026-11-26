@@ -701,7 +701,7 @@
         const btnBackHome = document.getElementById('btn-back-home');
         const navigatorArea = document.getElementById('navigator-area');
         document.body?.classList?.toggle('in-game', tabId !== 'home');
-        if (!silent && typeof window.scrollTo === 'function') {
+        if (!silent && typeof window !== 'undefined' && typeof window.scrollTo === 'function') {
             window.scrollTo(0, 0);
         }
 
