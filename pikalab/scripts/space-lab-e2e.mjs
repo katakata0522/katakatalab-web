@@ -33,7 +33,10 @@ let resultWrites = Promise.resolve();
 const productionUrl = process.env.SPACE_LAB_PRODUCTION_URL ? new URL(process.env.SPACE_LAB_PRODUCTION_URL).href : null;
 const writeJSON = (name, data) => writeFile(path.join(artifactDir, name), `${JSON.stringify(data, null, 2)}\n`);
 const content = async (page, selector) => (await page.locator(selector).textContent()).trim();
-const screenshot = (page, name) => page.screenshot({ path: path.join(artifactDir, `${name}.png`), fullPage: true, animations: 'disabled' });
+const reviewImages = process.env.SPACE_LAB_SCREENSHOTS !== '0';
+function screenshot(page, name, { failure = false, animations = 'disabled' } = {}) {
+    if (reviewImages || failure) return page.screenshot({ path: path.join(artifactDir, `${name}.png`), fullPage: true, animations });
+}
 
 async function serveDist(directory) {
     await access(path.join(directory, 'space_lab/index.html'));
@@ -188,7 +191,7 @@ async function runCase(name, work, options = {}, viewport = VIEWPORTS[1]) {
         record.status = 'failed'; record.error = error.stack || String(error); failures.push(new Error(`${name}: ${error.message}`, { cause: error }));
         console.error(`[FAIL] Space Lab: ${name}: ${error.message}`);
         if (current?.page) {
-            try { await screenshot(current.page, `${name}-failure`); record.failureGeometry = await overflowGeometry(current.page); }
+            try { await screenshot(current.page, `${name}-failure`, { failure: true }); record.failureGeometry = await overflowGeometry(current.page); }
             catch (captureError) { record.captureError = captureError.message; }
         }
     } finally {
@@ -499,7 +502,11 @@ async function quizzesAndCompletionSuite() {
             const stored = await storage(page); assert.ok(JSON.parse(stored.visited).includes(planet.id), 'Completion is persisted immediately before the stamp timer');
             record.completedPlanets.push(planet.id);
             if (index < PLANETS.length - 1) {
-                await page.waitForTimeout(2100); await screenshot(page, `quiz-complete-${planet.id}`); await closePlanet(page);
+                if (reviewImages) {
+                    await page.waitForTimeout(2100);
+                    await screenshot(page, `quiz-complete-${planet.id}`);
+                }
+                await closePlanet(page);
             }
         }
         assert.equal(record.questions.length, 27);
@@ -691,14 +698,14 @@ async function ufoSuite() {
         for (let index = 0; index < 3; index++) { samples.push({ label: `flight-${index}`, ...await overflowGeometry(page) }); await page.waitForTimeout(index === 0 ? 6500 : 3500); }
         await page.waitForFunction(() => document.querySelector('#ufo-btn').getBoundingClientRect().left >= innerWidth, null, { timeout: 7000 });
         record.candidate = await overflowGeometry(page); await noOverflow(page, record, 'ufo-outbound');
-        await page.screenshot({ path: path.join(artifactDir, 'ufo-outbound-candidate.png'), fullPage: true, animations: 'allow' }); record.samples = samples;
+        await screenshot(page, 'ufo-outbound-candidate', { animations: 'allow' }); record.samples = samples;
         if (baselineUrl) {
             const prior = await createCase(VIEWPORTS[3], { theme: 'dark', forceUFO: true });
             try {
                 await ready(prior, baselineUrl); await prior.page.waitForFunction(() => !document.querySelector('#ufo-btn').classList.contains('opacity-0'), null, { timeout: 13_000 });
                 await prior.page.waitForFunction(() => document.querySelector('#ufo-btn').getBoundingClientRect().left >= innerWidth, null, { timeout: 16_000 });
                 record.baseline = await overflowGeometry(prior.page);
-                await prior.page.screenshot({ path: path.join(artifactDir, 'ufo-outbound-baseline.png'), fullPage: true, animations: 'allow' });
+                await screenshot(prior.page, 'ufo-outbound-baseline', { animations: 'allow' });
                 record.overflowReductionPx = Math.max(record.baseline.document, record.baseline.body) - Math.max(record.candidate.document, record.candidate.body);
                 assert.ok(record.overflowReductionPx >= 0, 'UFO overflow must not get worse when the baseline already includes a fix');
                 imagePairs.push({ name: 'UFO outbound overflow', candidate: 'ufo-outbound-candidate.png', baseline: 'ufo-outbound-baseline.png', geometry: 'ufo-overflow.json' });
@@ -762,7 +769,7 @@ async function performanceSuite() {
             }
             record.method = 'One4-workflow warmup, three4-workflow batches, same focus/UI with completed transitions, double V8/Blink garbage collection per sample. Timing and heap are recorded evidence, not noisy pass thresholds.';
             if (record.violations.length) {
-                await screenshot(page, 'retention-failure');
+                await screenshot(page, 'retention-failure', { failure: true });
                 await writeJSON('retention-dom-snapshot.json', await cdp.send('DOMSnapshot.captureSnapshot', { computedStyles: ['display', 'transform'], includeDOMRects: true }));
                 const chunks = [], listener = ({ chunk }) => chunks.push(chunk); cdp.on('HeapProfiler.addHeapSnapshotChunk', listener);
                 try { await cdp.send('HeapProfiler.takeHeapSnapshot', { reportProgress: false }); await writeFile(path.join(artifactDir, 'retention-failure.heapsnapshot'), chunks.join('')); }
@@ -905,7 +912,8 @@ try {
     await writeJSON('run-error.json', { error: error.stack || String(error), completedCases: results.length }).catch(() => {}); throw error;
 } finally {
     try {
-        await writeJSON('asset-verification-after.json', await Promise.all([...manifests.keys()].map(verifyAssets))); await imageReview();
+        await writeJSON('asset-verification-after.json', await Promise.all([...manifests.keys()].map(verifyAssets)));
+        if (reviewImages) await imageReview();
         await writeJSON('results.json', results);
         await writeJSON('summary.json', { total: results.length, passed: results.filter(item => item.status === 'passed').length, failed: failures.length,
             baselineComparison: baselineDist ? 'requested' : 'explicitly skipped', artifactDir });

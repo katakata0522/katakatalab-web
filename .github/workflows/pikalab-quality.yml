@@ -113,7 +113,7 @@ jobs:
         id: scope
         env:
           CI_EVENT_NAME: ${{ github.event_name }}
-          CI_BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          CI_BASE_SHA: ${{ github.event_name == 'push' && github.event.before || github.event.pull_request.base.sha }}
           CI_PRESERVE_VISUAL: ${{ env.PIKALAB_COMPARE_BASELINE }}
         run: node .github/scripts/pikalab-ci-scope.cjs
 
@@ -486,6 +486,8 @@ jobs:
           cd pikalab
           node ../.github/scripts/verify-playwright-runtime.cjs
       - name: Run Space Lab browser E2E
+        env:
+          SPACE_LAB_SCREENSHOTS: ${{ env.PIKALAB_COLLECT_ALL_FAILURES == 'true' && '1' || '0' }}
         run: |
           set -euo pipefail
           cd pikalab

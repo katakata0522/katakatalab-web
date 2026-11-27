@@ -4,7 +4,7 @@ const { mkdtempSync, writeFileSync, mkdirSync, rmSync } = require('node:fs');
 const { tmpdir } = require('node:os');
 const { join } = require('node:path');
 const { execFileSync } = require('node:child_process');
-const { LABS, LAB_RUNTIME_FILES, classifyChanges, readChanges, readScope } = require('./pikalab-ci-scope.cjs');
+const { LABS, LAB_RUNTIME_FILES, classifyChanges, readChanges, readScope, selectScope } = require('./pikalab-ci-scope.cjs');
 const { LAB_E2E_FILES, LAB_E2E_SCRIPTS } = require('./pikalab-e2e-inputs.cjs');
 const readWorkflow = () => require('node:fs').readFileSync(join(__dirname, '../workflows/pikalab-quality.yml'), 'utf8').replace(/\r\n/g, '\n');
 const workflowJobs = workflow => Object.fromEntries(
@@ -173,7 +173,7 @@ test('空の差分、手動実行、視覚維持ラベルは全検証する', ()
     assert.equal(classifyChanges(['pikalab/paper_gen/script.js'], { preserveVisual: true }).full, true);
 });
 
-test('本文と出典に限る記事PRを実Gitで選び、共有コード・能動要素は全件へ戻す', t => {
+test('本文と出典に限る記事を実Gitで選び、mainでは公開済み基点も照合する', async t => {
     const cwd = mkdtempSync(join(tmpdir(), 'pika-article-scope-'));
     t.after(() => rmSync(cwd, { recursive: true, force: true }));
     const git = (...args) => execFileSync('git', args, { cwd, encoding: 'utf8', stdio: 'pipe' }).trim();
@@ -188,6 +188,13 @@ test('本文と出典に限る記事PRを実Gitで選び、共有コード・能
     const base = git('rev-parse', 'HEAD');
     commit('<p>新本文 <a href="https://example.com/source">出典</a></p>');
     assert.equal(readScope(base, {}, cwd).visual_directories, 'articles');
+    const main = { eventName: 'push' };
+    const marker = value => async () => new Response(value);
+    assert.equal((await selectScope(base, main, cwd, marker(base))).visual_directories, 'articles');
+    assert.equal((await selectScope(base, main, cwd, marker('unpublished'))).full, true);
+    assert.equal((await selectScope(base, main, cwd, async () => new Response(base, { status: 503 }))).full, true);
+    commit('<p>もう一つの本文</p>');
+    assert.equal((await selectScope(base, main, cwd, marker(base))).full, true);
     commit('<p onclick="openGuide()">本文</p>');
     assert.equal(readScope(base, {}, cwd).full, true);
     commit('<script>const x = "<p>本文</p>"</script>');
@@ -460,10 +467,9 @@ test('baselineの教育監査モジュールはビルド前に必ず取得する
         const marker = '          path: .' + name + '-baseline\n';
         assert.equal(workflow.split(marker).length, 2, name + ' baseline checkout must exist exactly once');
         const checkout = workflow.split(marker)[1].split(/\n      - name:/)[0];
-        assert.doesNotMatch(checkout, /sparse-checkout:/, name + ': full checkout includes all public audit inputs');
+        assert.doesNotMatch(checkout, /^\s*sparse-checkout:/m, name + ': full checkout includes all public audit inputs');
         assert.ok(workflow.includes('prepare.py --root .' + name + '-baseline'), name + ': baseline media must be prepared before build');
     }
-    assert.doesNotMatch(workflow, /sparse-checkout:/);
 });
 
 test('全比較ジョブは単一の不変baselineを共有し、単独PikaLab検証へRoot素材を持ち込まない', () => {
