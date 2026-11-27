@@ -42,6 +42,10 @@ function classifyPackageScripts(before, after) {
 const articlePage = /^pikalab\/articles\/(?!index\.html$)[a-z0-9-]+\.html$/;
 const kidsFiles = new Set(['app.js', 'index.html', 'service-worker.js', 'style.css']
     .map(file => 'lab-tools/kids-smile-land/' + file));
+const mainLabFiles = new Set([
+    'pikalab/fraction_lab/index.html', 'pikalab/fraction_lab/style.css', 'pikalab/scripts/fraction-lab-e2e.mjs',
+    'pikalab/rhythm_lab/index.html', 'pikalab/rhythm_lab/style.css', 'pikalab/rhythm_lab/tests/browser-regressions.mjs'
+]);
 
 function fullScope(reason) {
     return { full: true, reason, visual_directories: '', ...Object.fromEntries(Object.keys(LABS).map(key => [key, true])) };
@@ -122,19 +126,66 @@ function readChanges(baseSha, cwd) {
     return output.split('\0').filter(Boolean);
 }
 
-async function selectScope(baseSha, options, cwd, fetchMarker = fetch) {
+async function verifiedLabPull(base, head, tree, request = fetch) {
+    const repo = 'katakata0522/katakatalab-web';
+    const sha = /^[0-9a-f]{40}$/;
+    const api = async path => {
+        const result = await request(`https://api.github.com/repos/${repo}/${path}`, {
+            redirect: 'error', signal: AbortSignal.timeout(4000)
+        });
+        if (!result.ok) throw new Error('PR検証記録を取得できない');
+        return result.json();
+    };
+    const pulls = await api(`commits/${head}/pulls`);
+    const pr = pulls.find(pull => pull.merged_at && pull.merge_commit_sha === head && pull.base.ref === 'main'
+        && pull.base.repo.full_name === repo && pull.head.repo?.full_name === repo && sha.test(pull.head.sha));
+    if (!pr) return false;
+    const history = await api(`actions/workflows/public-pr-gate.yml/runs?event=pull_request&head_sha=${pr.head.sha}&per_page=1`);
+    const run = history.workflow_runs?.[0];
+    if (run?.status !== 'completed' || run.conclusion !== 'success' || run.event !== 'pull_request'
+        || run.path !== '.github/workflows/public-pr-gate.yml' || run.head_sha !== pr.head.sha
+        || run.head_repository?.full_name !== repo) return false;
+    // GitHubが実際に呼び出したPikaLab workflowは、PRの仮マージコミットに固定されている。
+    const called = run.referenced_workflows?.find(w => w.ref === `refs/pull/${pr.number}/merge` && sha.test(w.sha)
+        && w.path === `${repo}/.github/workflows/pikalab-quality.yml@${w.sha}`);
+    if (!called) return false;
+    const [tested, attempt] = await Promise.all([
+        api(`git/commits/${called.sha}`), api(`actions/runs/${run.id}/attempts/${run.run_attempt}/jobs?per_page=100`)
+    ]);
+    return tested.sha === called.sha && tested.tree.sha === tree && tested.parents.length === 2
+        && tested.parents[0].sha === base && tested.parents[1].sha === pr.head.sha
+        && ['public-pr-gate', 'pikalab / validate'].every(name =>
+            attempt.jobs.some(job => job.name === name && job.conclusion === 'success'));
+}
+
+async function selectScope(baseSha, options, cwd, fetchMarker = fetch, verifyPull = verifiedLabPull) {
     if (!['pull_request', 'push'].includes(options.eventName) || options.preserveVisual) {
         return fullScope('手動実行または全画面の比較指定');
     }
     const scope = readScope(baseSha, options, cwd);
-    if (options.eventName !== 'push' || scope.full) return scope;
-    // 公開済みの直前版を基点にできた場合だけ、記事本文・出典の限定検証を採用する。
-    const parent = execFileSync('git', ['rev-parse', 'HEAD^1'], { cwd, encoding: 'utf8' }).trim();
+    if (options.eventName !== 'push') return scope;
+    const git = (...args) => execFileSync('git', args, { cwd, encoding: 'utf8' });
+    let files;
+    if (scope.full) {
+        const entries = git('diff', '--raw', '--no-renames', '-z', baseSha, 'HEAD', '--').split('\0');
+        if (entries.pop() !== '' || !entries.length || entries.length % 2) return scope;
+        files = [];
+        for (let i = 0; i < entries.length; i += 2) {
+            if (!/^:100644 100644 [0-9a-f]+ [0-9a-f]+ M$/.test(entries[i]) || !mainLabFiles.has(entries[i + 1])) return scope;
+            files.push(entries[i + 1]);
+        }
+    }
+    const parent = git('rev-parse', 'HEAD^1').trim();
     if (parent !== baseSha) return fullScope('push直前の版を単一の親と照合できない');
     const marker = await fetchMarker('https://katakatalab.com/pikalab/public-source-version.txt', {
         cache: 'no-store', redirect: 'error', signal: AbortSignal.timeout(4000)
     });
-    return marker.ok && (await marker.text()).trim() === baseSha ? scope : fullScope('公開済み基点と一致しない');
+    if (!marker.ok || (await marker.text()).trim() !== baseSha) return fullScope('公開済み基点と一致しない');
+    if (!files) return scope;
+    if (!await verifyPull(baseSha, git('rev-parse', 'HEAD').trim(), git('rev-parse', 'HEAD^{tree}').trim())) {
+        return fullScope('同じ基点・ツリーに対するPR検証を確認できない');
+    }
+    return classifyChanges(files);
 }
 
 async function run() {
@@ -158,5 +209,5 @@ async function run() {
     }
 }
 
-module.exports = { LABS, LAB_RUNTIME_FILES, classifyChanges, classifyPackageScripts, readChanges, readScope, selectScope };
+module.exports = { LABS, LAB_RUNTIME_FILES, classifyChanges, classifyPackageScripts, readChanges, readScope, selectScope, verifiedLabPull };
 if (require.main === module) run();
