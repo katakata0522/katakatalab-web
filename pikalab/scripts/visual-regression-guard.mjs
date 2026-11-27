@@ -125,9 +125,7 @@ try {
       const index = results.length;
       if (result.errors.length) {
         console.error(`[FAIL] [${index}/${totalTasks}] ${label}: ${result.errors.join('; ')}`);
-      } else if (result.warnings.length) {
-        console.warn(`[WARN] [${index}/${totalTasks}] ${label}: ${result.warnings.join('; ')}`);
-      } else {
+      } else if (!result.warnings.length) {
         console.log(`[OK] [${index}/${totalTasks}] ${label}`);
       }
     }
@@ -141,6 +139,17 @@ try {
 
 const failures = results.filter((result) => result.errors.length > 0);
 const warnings = results.filter((result) => result.warnings.length > 0);
+const warningGroups = new Map();
+for (const result of warnings) {
+  for (const warning of new Set(result.warnings)) {
+    const group = warningGroups.get(warning);
+    if (group) group.count++;
+    else warningGroups.set(warning, { count: 1, example: `${result.route.id}/${result.viewport.id}/${result.theme}` });
+  }
+}
+for (const [warning, group] of [...warningGroups].sort((a, b) => b[1].count - a[1].count || a[0].localeCompare(b[0]))) {
+  console.warn(`[WARN] ${group.count} checks, e.g. ${group.example}: ${warning}`);
+}
 const report = {
   generatedAt: new Date().toISOString(),
   baseUrl,
@@ -352,8 +361,8 @@ function applyGenericAssertions(result) {
   ));
   if (localHttpErrors.length) result.errors.push(`local HTTP error: ${localHttpErrors[0]}`);
   if (nativeConsoleErrors.length) result.errors.push(`console error: ${nativeConsoleErrors[0].slice(0, 160)}`);
-  if (metrics.smallInteractive.length) {
-    result.warnings.push(`small interactive controls: ${metrics.smallInteractive.map((item) => `${item.tag}${item.id ? `#${item.id}` : ''} ${item.width}x${item.height}`).join(', ')}`);
+  for (const item of metrics.smallInteractive) {
+    result.warnings.push(`small interactive control: ${item.tag}${item.id ? `#${item.id}` : ''} ${item.width}x${item.height}`);
   }
 }
 

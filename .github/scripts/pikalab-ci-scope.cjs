@@ -48,8 +48,11 @@ function fullScope(reason) {
 }
 
 function classifyChanges(files, { eventName = 'pull_request', preserveVisual = false, packageBefore, packageAfter, articleCopy = false } = {}) {
-    if (eventName !== 'pull_request' || preserveVisual) return fullScope('手動実行または全画面の比較指定');
+    if (!['pull_request', 'push'].includes(eventName) || preserveVisual) return fullScope('手動実行または全画面の比較指定');
     if (!Array.isArray(files) || files.length === 0) return fullScope('変更一覧を確定できない');
+    if (eventName === 'push' && !(articleCopy && files.every(file => articlePage.test(file)))) {
+        return fullScope('mainの教材・共有入力・構造に関わる変更');
+    }
     const selected = new Set();
     for (const file of files) {
         if (typeof file !== 'string' || file.includes('\\') || file.split('/').some(part => !part || part === '..' || part === '.')) {
@@ -119,14 +122,27 @@ function readChanges(baseSha, cwd) {
     return output.split('\0').filter(Boolean);
 }
 
-function run() {
+async function selectScope(baseSha, options, cwd, fetchMarker = fetch) {
+    if (!['pull_request', 'push'].includes(options.eventName) || options.preserveVisual) {
+        return fullScope('手動実行または全画面の比較指定');
+    }
+    const scope = readScope(baseSha, options, cwd);
+    if (options.eventName !== 'push' || scope.full) return scope;
+    // 公開済みの直前版を基点にできた場合だけ、記事本文・出典の限定検証を採用する。
+    const parent = execFileSync('git', ['rev-parse', 'HEAD^1'], { cwd, encoding: 'utf8' }).trim();
+    if (parent !== baseSha) return fullScope('push直前の版を単一の親と照合できない');
+    const marker = await fetchMarker('https://katakatalab.com/pikalab/public-source-version.txt', {
+        cache: 'no-store', redirect: 'error', signal: AbortSignal.timeout(4000)
+    });
+    return marker.ok && (await marker.text()).trim() === baseSha ? scope : fullScope('公開済み基点と一致しない');
+}
+
+async function run() {
     let scope;
     try {
         const eventName = process.env.CI_EVENT_NAME;
         const preserveVisual = process.env.CI_PRESERVE_VISUAL === 'true';
-        scope = eventName !== 'pull_request' || preserveVisual
-            ? fullScope('手動実行または全画面の比較指定')
-            : readScope(process.env.CI_BASE_SHA, { eventName, preserveVisual });
+        scope = await selectScope(process.env.CI_BASE_SHA, { eventName, preserveVisual });
     } catch (error) {
         scope = fullScope(`変更取得失敗のため全検証: ${error.message.split('\n')[0]}`);
     }
@@ -142,5 +158,5 @@ function run() {
     }
 }
 
-module.exports = { LABS, LAB_RUNTIME_FILES, classifyChanges, classifyPackageScripts, readChanges, readScope };
+module.exports = { LABS, LAB_RUNTIME_FILES, classifyChanges, classifyPackageScripts, readChanges, readScope, selectScope };
 if (require.main === module) run();
