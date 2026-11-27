@@ -4,7 +4,7 @@ const { mkdtempSync, writeFileSync, mkdirSync, rmSync } = require('node:fs');
 const { tmpdir } = require('node:os');
 const { join } = require('node:path');
 const { execFileSync } = require('node:child_process');
-const { LABS, LAB_RUNTIME_FILES, classifyChanges, readChanges, readScope, selectScope } = require('./pikalab-ci-scope.cjs');
+const { LABS, LAB_RUNTIME_FILES, classifyChanges, readChanges, readScope, selectScope, verifiedLabPull } = require('./pikalab-ci-scope.cjs');
 const { LAB_E2E_FILES, LAB_E2E_SCRIPTS } = require('./pikalab-e2e-inputs.cjs');
 const readWorkflow = () => require('node:fs').readFileSync(join(__dirname, '../workflows/pikalab-quality.yml'), 'utf8').replace(/\r\n/g, '\n');
 const workflowJobs = workflow => Object.fromEntries(
@@ -203,6 +203,59 @@ test('本文と出典に限る記事を実Gitで選び、mainでは公開済み�
     const mixed = classifyChanges(['pikalab/space_lab/index.html', 'lab-tools/kids-smile-land/service-worker.js']);
     assert.equal(mixed.full, false);
     assert.ok(mixed.eduplay && mixed.space);
+});
+
+test('mainの専用教材は公開済みの親と合格した同一ツリーが揃う時だけ選ぶ', async t => {
+    const cwd = mkdtempSync(join(tmpdir(), 'pika-lab-scope-'));
+    t.after(() => rmSync(cwd, { recursive: true, force: true }));
+    const git = (...args) => execFileSync('git', args, { cwd, encoding: 'utf8', stdio: 'pipe' }).trim();
+    git('init'); git('config', 'user.name', 'CI'); git('config', 'user.email', 'ci@example.invalid');
+    for (const lab of ['fraction_lab', 'rhythm_lab']) {
+        mkdirSync(join(cwd, 'pikalab', lab), { recursive: true });
+        writeFileSync(join(cwd, 'pikalab', lab, 'index.html'), 'old');
+    }
+    const commit = () => { git('add', '.'); git('commit', '-m', 'scope'); return git('rev-parse', 'HEAD'); };
+    const base = commit();
+    for (const lab of ['fraction_lab', 'rhythm_lab']) writeFileSync(join(cwd, 'pikalab', lab, 'index.html'), 'new');
+    const head = commit(), tree = git('rev-parse', 'HEAD^{tree}');
+    const check = (parent, live, proof) => selectScope(parent, { eventName: 'push' }, cwd, async () => new Response(live), proof);
+    const result = await check(base, base, async (...ids) => { assert.deepEqual(ids, [base, head, tree]); return true; });
+    assert.deepEqual(Object.keys(LABS).filter(lab => result[lab]), ['rhythm', 'fraction']);
+    assert.equal((await check(base, base, async () => false)).full, true);
+    const unexpected = () => assert.fail('対象外でPR照合を実行した');
+    assert.equal((await check(base, 'stale', unexpected)).full, true);
+    writeFileSync(join(cwd, 'pikalab/fraction_lab/style.css'), 'added');
+    const added = commit();
+    assert.equal((await check(head, head, unexpected)).full, true);
+    git('rm', 'pikalab/fraction_lab/index.html'); commit();
+    assert.equal((await check(added, added, unexpected)).full, true);
+});
+
+test('通常PRでのPikaLab合格・仮マージの両親・ツリーを照合する', async () => {
+    const [base, head, tree, branch, merge] = ['a', 'b', 'c', 'd', 'e'].map(ch => ch.repeat(40));
+    const repo = 'katakata0522/katakatalab-web';
+    const pull = { number: 1, merged_at: 'today', merge_commit_sha: head, base: {ref: 'main', repo: {full_name: repo}},
+        head: {sha: branch, repo: {full_name: repo}} };
+    const run = { id: 5, run_attempt: 2, status: 'completed', conclusion: 'success', event: 'pull_request',
+        path: '.github/workflows/public-pr-gate.yml', head_sha: branch, head_repository: {full_name: repo},
+        referenced_workflows: [{ref: 'refs/pull/1/merge', sha: merge, path: `${repo}/.github/workflows/pikalab-quality.yml@${merge}`}] };
+    const commit = { sha: merge, tree: {sha: tree}, parents: [{sha: base}, {sha: branch}] };
+    const jobs = ['public-pr-gate', 'pikalab / validate'].map(name => ({name, conclusion: 'success'}));
+    const check = (overrides = {}) => {
+        const responses = {
+            [`commits/${head}/pulls`]: [overrides.pull || pull],
+            [`actions/workflows/public-pr-gate.yml/runs?event=pull_request&head_sha=${branch}&per_page=1`]:
+                {workflow_runs: [overrides.run || run]},
+            [`git/commits/${merge}`]: overrides.commit || commit,
+            'actions/runs/5/attempts/2/jobs?per_page=100': {jobs: overrides.jobs || jobs}
+        };
+        return verifiedLabPull(base, head, tree, async url => Response.json(responses[url.slice(`https://api.github.com/repos/${repo}/`.length)]));
+    };
+    assert.equal(await check(), true);
+    for (const overrides of [{pull: {...pull, merged_at: null}}, {run: {...run, conclusion: 'failure'}},
+        {run: {...run, referenced_workflows: []}}, {commit: {...commit, tree: {sha: base}}},
+        {commit: {...commit, parents: [{sha: head}, {sha: branch}]}}, {jobs: [jobs[1]]},
+        {jobs: [jobs[0], {...jobs[1], conclusion: 'skipped'}]}]) assert.equal(await check(overrides), false);
 });
 
 test('PR基点から全コミットを比較し、ラボ間renameの両パスを検証する', () => {

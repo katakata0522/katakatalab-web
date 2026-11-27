@@ -602,9 +602,11 @@ async function layoutSuite() {
             try {
                 if (baseline) await ready(baseline, baselineUrl);
                 for (const state of TABS) {
-                    for (const target of [page, baseline?.page].filter(Boolean)) {
-                        await target.locator(`#tab-${state}`).click(); await scrollMainTop(target); await target.waitForTimeout(450);
-                    }
+                    await Promise.all([page, baseline?.page].filter(Boolean).map(async target => {
+                        await target.locator(`#tab-${state}`).click();
+                        await scrollMainTop(target);
+                        await target.waitForTimeout(450);
+                    }));
                     const name = `${theme}-${viewport.width}x${viewport.height}-${state}`;
                     if (state === 'whatis') {
                         const mark = page.locator('.fraction-intro-mark[aria-hidden="true"]');
