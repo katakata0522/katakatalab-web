@@ -11,7 +11,9 @@ from concurrent.futures import ThreadPoolExecutor
 import hashlib
 import http.client
 import json
+import os
 from pathlib import Path, PurePosixPath
+import random
 import struct
 import time
 import threading
@@ -32,7 +34,7 @@ def published_bytes(entry):
         if parts.scheme!='https' or parts.netloc!='katakatalab.com' or parts.query or parts.fragment:
             raise ValueError('Only anonymous published site dependencies are allowed')
         if not getattr(connections,'https',None):
-            connections.https=http.client.HTTPSConnection('katakatalab.com',timeout=40)
+            connections.https=http.client.HTTPSConnection('katakatalab.com',timeout=20)
         connection=connections.https
         connection.request('GET',parts.path or '/',headers={'User-Agent':'public-source-ci','Cache-Control':'no-cache'})
         response=connection.getresponse()
@@ -87,7 +89,7 @@ def materialize(root,entry,reuse_root=None):
                 if len(candidate)==entry['bytes'] and hashlib.sha256(candidate).hexdigest()==entry['sha256']:
                     data=candidate
         if data is None:
-            for attempt in range(3):
+            for attempt in range(5):
                 try:
                     try:
                         data=published_bytes(entry)
@@ -100,8 +102,8 @@ def materialize(root,entry,reuse_root=None):
                     break
                 except (OSError,http.client.HTTPException) as error:
                     if getattr(connections,'https',None):connections.https.close();connections.https=None
-                    if attempt==2:raise RuntimeError('Published dependency unavailable: '+entry['path']) from error
-                    time.sleep(2*(attempt+1))
+                    if attempt==4:raise RuntimeError('Published dependency unavailable: '+entry['path']) from error
+                    time.sleep(min(20.0, 1.5*(2**attempt)) + random.uniform(0.3, 1.8))
         if len(data)!=entry['bytes'] or hashlib.sha256(data).hexdigest()!=entry['sha256']:
             raise ValueError('Published dependency changed: '+entry['path'])
     target.parent.mkdir(parents=True,exist_ok=True)
@@ -122,7 +124,9 @@ def main():
     reuse_root=options.reuse_root.resolve() if options.reuse_root else None
     spec=json.loads((root/'qa/published-dependencies.json').read_text(encoding='utf8'))
     entries=selected_entries(spec['files'],options.area)
-    with ThreadPoolExecutor(max_workers=3) as pool:list(pool.map(lambda entry:materialize(root,entry,reuse_root),entries))
+    if reuse_root is None and os.environ.get('CI') == 'true':
+        time.sleep(random.uniform(0.0, 6.0))
+    with ThreadPoolExecutor(max_workers=2) as pool:list(pool.map(lambda entry:materialize(root,entry,reuse_root),entries))
     # Test fixtures contain only already-public response headers; actual Apache
     # routing, directory/auth rules and PHP configuration remain private.
     for entry in selected_entries(spec.get('server_fixtures',[]),options.area):

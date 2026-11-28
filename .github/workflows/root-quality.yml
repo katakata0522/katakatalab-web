@@ -22,6 +22,7 @@ jobs:
   relevance:
     if: github.event_name == 'push'
     runs-on: ubuntu-24.04
+    timeout-minutes: 5
     outputs:
       root: ${{ steps.select.outputs.root }}
     steps:
@@ -51,10 +52,12 @@ jobs:
     steps:
       - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803
         with:
+          fetch-depth: 1
           persist-credentials: false
       - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38
         with:
           node-version-file: ".node-version"
+          cache: npm
       - name: Prepare required command-line tools
         run: |
           git config --global --add safe.directory "$GITHUB_WORKSPACE"
@@ -80,7 +83,7 @@ jobs:
         working-directory: motion-atlas-source
         run: |
           npm audit --package-lock-only --ignore-scripts --audit-level=low
-          npm ci --ignore-scripts --no-audit --no-fund
+          npm install --ignore-scripts --prefer-offline --no-audit --no-fund
           npm run lint
           npm run build
           npm test
@@ -88,7 +91,7 @@ jobs:
       - name: Install locked browser tools
         if: env.ROOT_BROWSER_SCOPE != 'motion-atlas-source'
         run: |
-          npm ci --ignore-scripts --no-audit --no-fund
+          npm install --ignore-scripts --prefer-offline --no-audit --no-fund
           node .github/scripts/verify-playwright-runtime.cjs
       - name: Existing public tools and education privacy browser checks
         env:
