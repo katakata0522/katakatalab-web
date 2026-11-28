@@ -24,7 +24,7 @@
   "headline": "【IT用語】「クラウド」とは？空の上ではなく、必要な時に使えるIT資源",
   "description": "クラウドの意味を、IaaS・PaaS・SaaSの違い、オンプレミスとの比較、費用と安全性の注意点まで初心者向けに整理します。",
   "datePublished": "2026-07-13",
-  "dateModified": "2026-08-04",
+  "dateModified": "2026-11-28",
   "mainEntityOfPage": "https://katakatalab.com/guides/it-basics/cloud.html",
   "inLanguage": "ja",
   "author": {
@@ -90,7 +90,7 @@
         <h1>【IT用語】「クラウド」とは？空の上ではなく、必要な時に使えるIT資源</h1>
         <p class="article-lead">クラウドの意味を、IaaS・PaaS・SaaSの違い、オンプレミスとの比較、費用と安全性の注意点まで初心者向けに整理します。</p>
         <div class="article-meta" aria-label="記事情報">
-          <span>作成者：かたかた</span><span>公開日：2026年7月13日</span><span>更新日：2026年8月4日</span>
+          <span>作成者：かたかた</span><span>公開日：2026年7月13日</span><span>更新日：2026年11月28日</span>
         </div>
       </header>
       <div class="article-layout">
@@ -116,6 +116,18 @@
 <li><strong>クラウド：</strong> 必要な時にレンタカーやカーシェアを利用する。</li>
 </ul>
 <p>自分で設備を所有するか、用意された資源を必要に応じて使うか。その違いをイメージすると分かりやすくなります。</p>
+
+<figure class="diagram-figure">
+  <svg viewBox="0 0 640 195" width="100%" role="img" aria-label="オンプレミス（自前管理）とクラウド（外部基盤を借りる）の比較図解">
+    <defs>
+      <marker id="arr" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+        <path d="M 0 1 L 10 5 L 0 9 z" fill="currentColor" opacity="0.7"/>
+      </marker>
+    </defs>
+    <rect x="24" y="30" width="276" height="134" rx="8" fill="#b45309" fill-opacity="0.1" stroke="#b45309" stroke-width="1.8"/><text x="162" y="93" text-anchor="middle" font-size="13" font-weight="700" fill="currentColor">自前サーバー（オンプレミス）</text><text x="162" y="111" text-anchor="middle" font-size="10.5" fill="currentColor" opacity="0.78">機器購入・電源・障害対応をすべて自前管理</text><rect x="340" y="30" width="276" height="134" rx="8" fill="#1f5c99" fill-opacity="0.1" stroke="#1f5c99" stroke-width="1.8"/><text x="478" y="93" text-anchor="middle" font-size="13" font-weight="700" fill="currentColor">クラウド（外部サービス）</text><text x="478" y="111" text-anchor="middle" font-size="10.5" fill="currentColor" opacity="0.78">ブラウザから必要な分だけ利用・拡張が速い</text><text x="162" y="138" text-anchor="middle" font-size="11" fill="currentColor" opacity="0.8">初期費用・保守の負担が大きい</text><text x="478" y="138" text-anchor="middle" font-size="11" fill="currentColor" opacity="0.8">静的配信・DB・認証をすぐ試せる</text>
+  </svg>
+  <figcaption>図解: 機器の購入・保守まで自前で行うオンプレミスと、必要なぶんだけネットワーク越しに使うクラウドの違い</figcaption>
+</figure>
 </section>
 <section class="article-section" aria-labelledby="section-2"><h2 id="section-2">クラウドにも種類がある</h2>
 <p>「クラウド＝サーバーを借りること」だけではありません。</p>
@@ -166,6 +178,8 @@
             <p class="eyebrow">FROM THE LAB</p>
             <h2 id="lab-example-title">KatakataLabでの実例</h2>
             <p>KatakataLabでは、ソースコードの管理と自動処理にGitHub、公開ファイルの配信にXserverを使っています。ひとまとめに「クラウド」と呼ばれがちですが、サービスごとに担当する役割は異なります。</p>
+            
+            <div class="tool-link-banner"><strong>関連ツールで試す：<a href="../../qrcode/">QR Maker Lab →</a></strong>クラウドへ入力データを送らず、ブラウザ内完結でQRコードを生成する設計を実体験できます。</div>
             <p class="related-heading">この実例につながるページ</p>
             <ul class="related-links"><li><a href="server.html">関連用語：サーバー</a></li>
 <li><a href="../../updates.html">公開後の更新記録</a></li></ul>

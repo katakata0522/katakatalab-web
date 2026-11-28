@@ -13,7 +13,7 @@
   <meta property="og:url" content="https://katakatalab.com/guides/case-studies.html">
   <meta property="og:image" content="https://katakatalab.com/ogp.png">
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="KatakataLabの実例集">
+  <meta name="twitter:title" content="KatakataLabの実例集 | ツールに入力して結果を確認する流れ">
   <meta name="twitter:description" content="入力・出力・最後の確認ポイントを8つの実例で紹介します。">
   <meta name="twitter:image" content="https://katakatalab.com/ogp.png">
   <link rel="stylesheet" href="../style.css?v=20260824-responsive">
@@ -29,7 +29,7 @@
       "name": "かたかた",
       "url": "https://katakatalab.com/who-is-katakata.html"
     },
-    "dateModified": "2026-08-04",
+    "dateModified": "2026-11-28",
     "mainEntityOfPage": "https://katakatalab.com/guides/case-studies.html"
   }
   </script>
@@ -71,8 +71,10 @@
           <span class="guide-chip">QR作成</span>
           <span class="guide-chip">パスワード</span>
           <span class="guide-chip">文章比較</span>
+          <span class="guide-chip">スクショ加工</span>
+          <span class="guide-chip">同人誌収支</span>
         </div>
-        <p class="guide-note">作成者: かたかた / 更新日: 2026年8月4日</p>
+        <p class="guide-note">作成者: かたかた / 更新日: 2026年11月28日</p>
         <div class="guide-actions">
           <a href="../guides/tool-selection-guide.html" class="btn btn-primary">用途から選ぶ</a>
           <a href="../about-katakatalab.html#verification-policy" class="btn btn-secondary">検証方法を見る</a>
@@ -192,6 +194,34 @@
       </div>
 
       <div class="guide-section-card">
+        <h2>実例9: スマホのスクリーンショットから通知バーを切って個人情報を隠す</h2>
+        <p>ブログ記事や問い合わせ手順へスマホ画面を載せる前に、上部の時刻・電池残量や通知バー、個人名を消したい場面です。<a href="../screenshot-crop/">スクショ端カット</a>へ画像を選び、上下のカット量と黒塗り範囲を設定して書き出します。</p>
+        <div class="responsive-table-container"><table class="guide-table">
+          <thead><tr><th>操作</th><th>ツールの動作</th><th>作業での判断</th></tr></thead>
+          <tbody>
+            <tr><td>上下カット + 端プリセット</td><td>ステータスバー・下部バーをまとめて切り落とす</td><td>複数枚でも同じ比率で揃えられる</td></tr>
+            <tr><td>黒塗りマスク + 角丸</td><td>氏名・メールアドレス部分を塗りつぶして書き出し</td><td>ブラウザ内完結で元画像を外部送信しない</td></tr>
+          </tbody>
+        </table></div>
+        <div class="guide-callout"><strong>最後の確認:</strong> 書き出したPNGを拡大表示し、アカウントID・通知バナー・URLバーの端などに隠したい情報が残っていないか目視で確認してからアップロードします。</div>
+        <p><a href="../screenshot-crop/">スクショ端カットで画像を整える →</a></p>
+      </div>
+
+      <div class="guide-section-card">
+        <h2>実例10: 同人誌の頒布価格・損益分岐点と釣銭準備をイベント前に試算する</h2>
+        <p>印刷費28,000円・イベント参加費7,000円・交通費など諸経費4,000円（総原価39,000円）で100部刷り、1冊700円で頒布する想定を<a href="../doujin-calc/">同人の価格と釣銭</a>へ入力します。</p>
+        <div class="responsive-table-container"><table class="guide-table">
+          <thead><tr><th>確認項目</th><th>計算結果の例</th><th>イベント前の判断</th></tr></thead>
+          <tbody>
+            <tr><td>損益分岐部数（700円頒布）</td><td>56部で黒字化</td><td>完売想定の半分強で原価回収できるか確認</td></tr>
+            <tr><td>1,000円札で700円の本を購入</td><td>お釣り300円（100円玉×3枚）</td><td>700円・800円設定は100円玉の消費が激しいと把握</td></tr>
+          </tbody>
+        </table></div>
+        <div class="guide-callout"><strong>最後の確認:</strong> 委託販売の手数料や差し入れ費・当日追加の印刷代がある場合は諸経費へ足し、最終的な釣銭は銀行の両替スケジュールに合わせて余裕を持って準備します。</div>
+        <p><a href="../doujin-calc/">同人の価格と釣銭で試算する →</a> / <a href="../font-lab/">フォント比較（Font-Lab）</a> / <a href="../motion-atlas/">動きの仕組み図鑑</a></p>
+      </div>
+
+      <div class="guide-section-card">
         <h2>作業を始める前の共通チェックリスト</h2>
         <p>どの実例でも、ツールを開く前に次を決めておくとやり直しが減ります。</p>
         <ul>
@@ -234,7 +264,7 @@
         <h2>この実例の作り方と限界</h2>
         <p>数値例は、各ツールの現在の入力項目と計算ロジックに合わせて作成しています。アスペクト比は入力幅から高さを丸め、割引は基本割引後に追加割引を掛け、px / remは基準値で相互変換します。QRコードとパスワードはブラウザ内で生成し、文章比較もブラウザ内で処理します。</p>
         <p>一方、SNSや店舗の表示、端末のカメラ、税・端数処理など、外部サービスや現場環境に左右される結果をサイトだけで保証することはできません。ここで示した値を出発点に、公開・購入・印刷の直前に、手元でも最終確認してください。</p>
-        <p class="guide-note">作成者: <a href="../who-is-katakata.html">かたかた</a> / 更新日: 2026年8月4日 / 入力例の見直しや誤りのご指摘は<a href="../contact.html">お問い合わせ</a>からお知らせください。</p>
+        <p class="guide-note">作成者: <a href="../who-is-katakata.html">かたかた</a> / 更新日: 2026年11月28日 / 入力例の見直しや誤りのご指摘は<a href="../contact.html">お問い合わせ</a>からお知らせください。</p>
       </div>
 
       <div class="guide-section-card">

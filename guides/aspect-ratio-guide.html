@@ -13,6 +13,9 @@
     <title>アスペクト比の使い方ガイド | 16:9・4:3・1:1・9:16の選び方</title>
     <meta name="description" content="16:9・4:3・1:1・9:16 の違いを、YouTube・SNS・資料作成の具体例で整理したガイドです。よくあるミスと計算例、アスペクト比計算機の使いどころもまとめています。">
     <link rel="canonical" href="https://katakatalab.com/guides/aspect-ratio-guide.html">
+    <link rel="alternate" hreflang="ja" href="https://katakatalab.com/guides/aspect-ratio-guide.html">
+    <link rel="alternate" hreflang="en" href="https://katakatalab.com/guides/en/social-image-sizes.html">
+    <link rel="alternate" hreflang="x-default" href="https://katakatalab.com/guides/aspect-ratio-guide.html">
     <meta property="og:title" content="アスペクト比の使い方ガイド | 16:9・4:3・1:1・9:16の選び方">
     <meta property="og:description" content="媒体別の比率選び、サイズ計算例、よくあるミスをまとめたKatakataLab内のガイドです。">
     <meta property="og:type" content="article">
@@ -32,7 +35,7 @@
       "headline": "アスペクト比の使い方ガイド",
       "description": "16:9・4:3・1:1・9:16の違いと、媒体別の使い分けを整理したガイド。",
       "datePublished": "2026-05-25",
-      "dateModified": "2026-10-01",
+      "dateModified": "2026-11-28",
       "author": {
         "@type": "Person",
         "name": "かたかた"
@@ -95,7 +98,7 @@
                     <span class="guide-chip">資料 4:3 / 16:9</span>
                     <span class="guide-chip">SNS 1:1 / 9:16</span>
                 </div>
-                <p class="guide-note" style="margin-top: 1rem;">作成者: かたかた / 更新日: 2026年10月1日</p>
+                <p class="guide-note" style="margin-top: 1rem;">作成者: かたかた / 更新日: 2026年11月28日</p>
                 <div class="guide-actions">
                     <a href="../aspect-ratio-calc/" class="btn btn-primary">計算機を開く</a>
                     <a href="../#projects" class="btn btn-secondary">他のツールも見る</a>
@@ -202,7 +205,40 @@
                         <tr><td>縦長のショート</td><td>1080×1920</td><td>上下の操作ボタンに隠れる文字</td></tr>
                     </tbody>
                 </table></div>
-                <p>各サービスの推奨ピクセルは変わるので、この表は出発点です。公開前の合格は、投稿先の下書きで見てください。短い案内は、<a href="sns-image-size-guide.html">SNS画像サイズの考え方</a>からこの節へ戻すだけにしています。</p>
+                <p>各サービスの推奨ピクセルは変わるので、この表は出発点です。公開前の合格は、投稿先の下書きや<a href="../ogp-simulator/">OGPシミュレーター</a>のセーフゾーン表示で見てください。</p>
+                <figure style="margin: 1.5rem 0; padding: 1.2rem; border: 1px solid rgba(128,128,128,0.25); border-radius: 12px; background: rgba(128,128,128,0.04);">
+                    <svg viewBox="0 0 640 240" width="100%" role="img" aria-label="16:9横長・1:1正方形・9:16縦長のクロップ比較と中央安全域の図解" style="display: block; max-width: 640px; margin: 0 auto; height: auto;">
+                        <!-- 16:9 box -->
+                        <rect x="20" y="34" width="240" height="135" rx="8" fill="#3b82f6" fill-opacity="0.12" stroke="#3b82f6" stroke-width="2"/>
+                        <rect x="72" y="34" width="135" height="135" rx="4" fill="#ef4444" fill-opacity="0.14" stroke="#ef4444" stroke-width="2" stroke-dasharray="6 4"/>
+                        <rect x="88" y="50" width="103" height="103" rx="4" fill="#10b981" fill-opacity="0.18" stroke="#10b981" stroke-width="2"/>
+                        <text x="140" y="22" text-anchor="middle" font-size="13" font-weight="700" fill="currentColor">16:9 横長（動画・サムネ）</text>
+                        <text x="140" y="98" text-anchor="middle" font-size="12" font-weight="700" fill="currentColor">中央セーフゾーン</text>
+                        <text x="140" y="116" text-anchor="middle" font-size="11" fill="currentColor" opacity="0.8">文字・顔はここへ</text>
+                        <text x="46" y="106" text-anchor="middle" font-size="10" fill="#ef4444" font-weight="700">切れやすい</text>
+                        <text x="233" y="106" text-anchor="middle" font-size="10" fill="#ef4444" font-weight="700">切れやすい</text>
+                        <text x="140" y="190" text-anchor="middle" font-size="11" fill="currentColor" opacity="0.75">赤破線＝1:1にトリミングされたときの残存範囲</text>
+
+                        <!-- 1:1 box -->
+                        <rect x="305" y="34" width="135" height="135" rx="8" fill="#10b981" fill-opacity="0.12" stroke="#10b981" stroke-width="2"/>
+                        <rect x="321" y="50" width="103" height="103" rx="4" fill="#10b981" fill-opacity="0.16" stroke="#10b981" stroke-width="1.5" stroke-dasharray="4 3"/>
+                        <text x="372" y="22" text-anchor="middle" font-size="13" font-weight="700" fill="currentColor">1:1 正方形</text>
+                        <text x="372" y="104" text-anchor="middle" font-size="12" font-weight="700" fill="currentColor">余白 10% 確保</text>
+                        <text x="372" y="190" text-anchor="middle" font-size="11" fill="currentColor" opacity="0.75">一覧サムネ・アイコン向け</text>
+
+                        <!-- 9:16 box -->
+                        <rect x="500" y="26" width="96" height="170" rx="8" fill="#8b5cf6" fill-opacity="0.12" stroke="#8b5cf6" stroke-width="2"/>
+                        <rect x="500" y="26" width="96" height="28" rx="4" fill="#ef4444" fill-opacity="0.18"/>
+                        <rect x="500" y="152" width="96" height="44" rx="4" fill="#ef4444" fill-opacity="0.18"/>
+                        <rect x="508" y="60" width="80" height="84" rx="4" fill="#10b981" fill-opacity="0.18" stroke="#10b981" stroke-width="1.5"/>
+                        <text x="548" y="18" text-anchor="middle" font-size="13" font-weight="700" fill="currentColor">9:16 縦長</text>
+                        <text x="548" y="44" text-anchor="middle" font-size="9.5" fill="#ef4444" font-weight="700">UI被り注意</text>
+                        <text x="548" y="106" text-anchor="middle" font-size="11" font-weight="700" fill="currentColor">安全域</text>
+                        <text x="548" y="177" text-anchor="middle" font-size="9.5" fill="#ef4444" font-weight="700">キャプション被り</text>
+                        <text x="548" y="214" text-anchor="middle" font-size="11" fill="currentColor" opacity="0.75">ショート動画向け</text>
+                    </svg>
+                    <figcaption style="margin-top: 0.65rem; font-size: 0.86rem; text-align: center; opacity: 0.8;">図解: 横長（16:9）・正方形（1:1）・縦長（9:16）で切り抜きやUI被りが起きにくい中央セーフゾーンの目安</figcaption>
+                </figure>
             </div>
 
             <div class="guide-section-card">
@@ -227,7 +263,7 @@
                 <p>A. 計算機に縦横ピクセルを入れて逆算できます。近い定番比率が出たら、その比率で切り出すか、余白を足して合わせるかを決めます。</p>
                 <h3>Q. 複数SNSに同じ画像を使うとどうなる？</h3>
                 <p>A. 比率が違う枠では端が切れたり余白がついたりします。マスターを広めに作り、用途ごとに切り出すか、主要プラットフォームごとに別サイズを用意する方が安全です。実例の流れは<a href="case-studies.html">実例集</a>も参照してください。</p>
-                <p class="guide-note">更新日: 2026年10月1日 / 作成者: <a href="../who-is-katakata.html">かたかた</a></p>
+                <p class="guide-note">更新日: 2026年11月28日 / 作成者: <a href="../who-is-katakata.html">かたかた</a></p>
             </div>
 
             <div class="guide-section-card">

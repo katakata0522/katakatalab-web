@@ -45,7 +45,7 @@ def load_targets(base_url: str) -> list[Target]:
             label="PikaLabトップ",
             relative_url="pikalab/",
             expected_canonical=pikalab_base,
-            requires_noindex=False,
+            requires_noindex=True,
         )
     ]
 

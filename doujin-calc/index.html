@@ -7,13 +7,14 @@
   <meta name="description" content="部数と印刷費から、黒字になる部数と当日の釣銭枚数をブラウザだけで計算します。見本を除いた販売数、締切の目安、メロンとBOOTHの手取りも出します。">
   <link rel="canonical" href="https://katakatalab.com/doujin-calc/">
   <meta name="robots" content="index, follow">
-  <meta property="og:title" content="同人即売会の頒布価格・釣銭・損益">
+  <meta property="og:title" content="同人即売会の頒布価格・釣銭・損益 | KatakataLab">
   <meta property="og:description" content="部数と印刷費から、黒字になる部数と当日の釣銭枚数をブラウザだけで計算します。">
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://katakatalab.com/doujin-calc/">
   <meta property="og:site_name" content="KatakataLab">
   <meta property="og:image" content="https://katakatalab.com/ogp.png">
   <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="同人即売会の頒布価格・釣銭・損益 | KatakataLab">
   <meta name="twitter:image" content="https://katakatalab.com/ogp.png">
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%236366f1'/><text y='.9em' x='50%' text-anchor='middle' font-size='70'>📚</text></svg>">
   <link rel="manifest" href="./manifest.json">
@@ -840,22 +841,104 @@
 
     </div>
 
-    <!-- 8. おすすめ即売会備品紹介（アフィリエイト連携コンポーネント） -->
-    <section class="bg-white dark:bg-slate-800/90 rounded-3xl p-5 sm:p-6 border border-slate-200 dark:border-slate-700 custom-shadow mb-6">
-      <div class="flex items-center justify-between mb-4">
-        <div class="flex items-center gap-2">
-          <div class="w-8 h-8 rounded-xl bg-amber-100 dark:bg-amber-950 text-amber-700 dark:text-amber-400 flex items-center justify-center">
-            <i data-lucide="shopping-bag" class="w-4 h-4"></i>
-          </div>
-          <div>
-            <h3 class="text-sm font-black text-slate-900 dark:text-white">即売会の必需品！おすすめサークル備品セレクション</h3>
-            <p class="text-[11px] text-slate-500 dark:text-slate-400">お釣りミス防止・設営時短・キャッシュレス対応</p>
-          </div>
-        </div>
-        <span class="text-[10px] text-slate-600 dark:text-slate-200 bg-slate-100 dark:bg-slate-700 px-2 py-0.5 rounded font-bold">PR</span>
-      </div>
-
+    <!-- 8. 備品紹介枠（設定で有効時のみ表示） -->
+    <section id="supplies-section" hidden class="bg-white dark:bg-slate-800/90 rounded-3xl p-5 sm:p-6 border border-slate-200 dark:border-slate-700 custom-shadow mb-6">
       <div class="grid grid-cols-1 sm:grid-cols-3 gap-3" id="supplies-grid-container"></div>
+    </section>
+
+    <!-- 8.4 頒布価格別の釣銭準備シミュレーション早見表 -->
+    <section aria-labelledby="doujin-change-table-title" class="bg-white dark:bg-slate-800/90 rounded-3xl p-5 sm:p-6 border border-slate-200 dark:border-slate-700 custom-shadow mb-6">
+      <div class="flex items-center gap-2 mb-3">
+        <div class="w-8 h-8 rounded-xl bg-amber-100 dark:bg-amber-950 text-amber-700 dark:text-amber-300 flex items-center justify-center">
+          <i data-lucide="coins" class="w-4 h-4"></i>
+        </div>
+        <div>
+          <h2 id="doujin-change-table-title" class="text-sm font-black text-slate-900 dark:text-white">頒布価格ごとの釣銭準備シミュレーション早見表（100部・標準設定）</h2>
+          <p class="text-[10px] text-slate-500 dark:text-slate-400">当ツールの釣銭ロジックで算出した、千円札・500円玉・100円玉の必要枚数比較</p>
+        </div>
+      </div>
+      <p class="text-xs text-slate-600 dark:text-slate-300 mb-3 leading-relaxed">
+        同じ100部頒布でも、価格を<strong>600円〜800円</strong>にすると千円札支払い時の100円玉消費が急増します。500円または1,000円との差を事前に比べておくと、当日の釣銭切れと硬貨の持ち運び重量を両方見通しやすくなります。
+      </p>
+      <div class="overflow-x-auto">
+        <table class="w-full text-left border-collapse text-xs">
+          <thead>
+            <tr class="border-b-2 border-slate-200 dark:border-slate-700 text-slate-500 dark:text-slate-400">
+              <th class="py-2 px-2.5 font-bold whitespace-nowrap">頒布価格</th>
+              <th class="py-2 px-2.5 font-bold whitespace-nowrap">千円札払いのお釣り</th>
+              <th class="py-2 px-2.5 font-bold whitespace-nowrap">1,000円札</th>
+              <th class="py-2 px-2.5 font-bold whitespace-nowrap">500円玉</th>
+              <th class="py-2 px-2.5 font-bold whitespace-nowrap">100円玉</th>
+              <th class="py-2 px-2.5 font-bold whitespace-nowrap">釣銭準備金合計</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-slate-100 dark:divide-slate-700/60 text-slate-700 dark:text-slate-200">
+            <tr>
+              <td class="py-2 px-2.5 font-black text-slate-900 dark:text-white">500円</td>
+              <td class="py-2 px-2.5">500円（500円×1）</td>
+              <td class="py-2 px-2.5 font-mono">25枚</td>
+              <td class="py-2 px-2.5 font-mono font-bold text-indigo-700 dark:text-indigo-300">35枚</td>
+              <td class="py-2 px-2.5 font-mono">0枚</td>
+              <td class="py-2 px-2.5 font-mono font-bold">42,500円</td>
+            </tr>
+            <tr class="bg-amber-50/60 dark:bg-amber-950/20">
+              <td class="py-2 px-2.5 font-black text-slate-900 dark:text-white">600円</td>
+              <td class="py-2 px-2.5">400円（100円×4）</td>
+              <td class="py-2 px-2.5 font-mono">25枚</td>
+              <td class="py-2 px-2.5 font-mono">0枚</td>
+              <td class="py-2 px-2.5 font-mono font-bold text-amber-700 dark:text-amber-300">160枚</td>
+              <td class="py-2 px-2.5 font-mono font-bold">41,000円</td>
+            </tr>
+            <tr>
+              <td class="py-2 px-2.5 font-black text-slate-900 dark:text-white">700円</td>
+              <td class="py-2 px-2.5">300円（100円×3）</td>
+              <td class="py-2 px-2.5 font-mono">25枚</td>
+              <td class="py-2 px-2.5 font-mono">0枚</td>
+              <td class="py-2 px-2.5 font-mono font-bold text-amber-700 dark:text-amber-300">120枚</td>
+              <td class="py-2 px-2.5 font-mono font-bold">37,000円</td>
+            </tr>
+            <tr>
+              <td class="py-2 px-2.5 font-black text-slate-900 dark:text-white">800円</td>
+              <td class="py-2 px-2.5">200円（100円×2）</td>
+              <td class="py-2 px-2.5 font-mono">25枚</td>
+              <td class="py-2 px-2.5 font-mono">0枚</td>
+              <td class="py-2 px-2.5 font-mono">80枚</td>
+              <td class="py-2 px-2.5 font-mono font-bold">33,000円</td>
+            </tr>
+            <tr>
+              <td class="py-2 px-2.5 font-black text-slate-900 dark:text-white">900円</td>
+              <td class="py-2 px-2.5">100円（100円×1）</td>
+              <td class="py-2 px-2.5 font-mono">25枚</td>
+              <td class="py-2 px-2.5 font-mono">0枚</td>
+              <td class="py-2 px-2.5 font-mono">40枚</td>
+              <td class="py-2 px-2.5 font-mono font-bold">29,000円</td>
+            </tr>
+            <tr class="bg-emerald-50/60 dark:bg-emerald-950/20">
+              <td class="py-2 px-2.5 font-black text-slate-900 dark:text-white">1,000円</td>
+              <td class="py-2 px-2.5">0円（お釣りなし）</td>
+              <td class="py-2 px-2.5 font-mono font-bold text-emerald-700 dark:text-emerald-300">30枚</td>
+              <td class="py-2 px-2.5 font-mono">10枚</td>
+              <td class="py-2 px-2.5 font-mono">0枚</td>
+              <td class="py-2 px-2.5 font-mono font-bold">35,000円</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="text-[11px] text-slate-500 dark:text-slate-400 mt-3 leading-relaxed">
+        ※ 現金決済100%・販売部数100部・「標準（安心）」モード（五千円札・一万円札の崩し用千円札およびバッファ込み）で算出しています。既刊との同時購入やキャッシュレス併用がある場合は、上部のシミュレーターで部数と決済比率を調整して確認してください。
+      </p>
+    </section>
+
+    <!-- 8.5 計算例の検証メモ -->
+    <section data-verification-note aria-labelledby="doujin-verification-title" class="bg-white dark:bg-slate-800/90 rounded-3xl p-5 sm:p-6 border border-slate-200 dark:border-slate-700 custom-shadow mb-6">
+      <h2 id="doujin-verification-title" class="text-sm font-black text-slate-900 dark:text-white mb-2">🧪 実際の入力で確認した計算例</h2>
+      <p class="text-xs text-slate-600 dark:text-slate-300 mb-2">作成者: かたかた / 更新日: 2026年11月28日 / <strong>確認日: 2026年11月28日</strong></p>
+      <ul class="text-xs text-slate-600 dark:text-slate-300 space-y-1.5 list-disc pl-5 leading-relaxed">
+        <li><strong>入力（マンガ同人誌プリセット）:</strong> 総部数100部（見本・献本2部、販売可能98部）、印刷費35,000円（通常締切）、参加費7,000円、搬入送料2,500円（総コスト44,500円・印刷単価350円）、頒布価格600円、現金決済のみ。</li>
+        <li><strong>結果:</strong> 黒字化ラインは75部（売上45,000円）、98部完売時の想定利益は+14,300円、委託試算の手残りはメロンブックス420円（30%差引）・BOOTH 521円（5.6%切上げ＋45円差引）と計算されることを確認しました。</li>
+        <li><strong>確認範囲と注意点:</strong> 入力した金額と公開条件に基づく概算シミュレーションです。実際の印刷所見積もり、イベント規定、書店委託契約や税務処理は必ず各公式案内・税理士等へ確認してください。</li>
+      </ul>
+      <p class="text-xs mt-3"><a href="../about-katakatalab.html#verification-policy" class="font-bold text-indigo-600 dark:text-indigo-400 hover:underline">KatakataLabの検証方法を見る →</a></p>
     </section>
 
     <!-- 9. よくある質問 (FAQ) -->
@@ -866,11 +949,60 @@
         </div>
         <div>
           <h3 class="text-sm font-black text-slate-900 dark:text-white">よくある質問 (FAQ)</h3>
-          <p class="text-[10px] text-slate-500 dark:text-slate-400">即売会の価格設定・お釣り・確定申告の疑問を解決</p>
+          <p class="text-[10px] text-slate-500 dark:text-slate-400">即売会の価格設定・お釣り・確定申告の疑問を整理</p>
         </div>
       </div>
 
-      <div class="space-y-2.5" id="faq-accordion-container"></div>
+      <div class="space-y-2.5" id="faq-accordion-container">
+        <details class="group bg-white dark:bg-slate-800/80 rounded-2xl border border-slate-200 dark:border-slate-700 overflow-hidden" open>
+          <summary class="flex items-center justify-between p-4 cursor-pointer font-bold text-xs sm:text-sm text-slate-800 dark:text-slate-200 select-none">
+            <span class="flex items-center gap-2">
+              <span class="w-5 h-5 rounded-full bg-indigo-100 dark:bg-indigo-950 text-indigo-600 dark:text-indigo-400 flex items-center justify-center text-xs font-black">Q</span>
+              <span>同人誌の頒布価格はどうやって決めるのが一般的ですか？</span>
+            </span>
+            <i data-lucide="chevron-down" class="w-4 h-4 text-slate-400 group-open:rotate-180 transition-transform"></i>
+          </summary>
+          <div class="px-4 pb-4 text-xs text-slate-600 dark:text-slate-300 leading-relaxed border-t border-slate-100 dark:border-slate-700/60 pt-3">
+            基本は「500円（ワンコイン）」または「1,000円（ジャスト千円）」が会計スピード・お釣りミスの観点で扱いやすい価格帯です。ページ数が多く原価が高い場合は700円〜800円に設定されることもありますが、その場合は100円玉のお釣りが多く必要になるため、事前の釣銭準備が重要になります。
+          </div>
+        </details>
+        <details class="group bg-white dark:bg-slate-800/80 rounded-2xl border border-slate-200 dark:border-slate-700 overflow-hidden">
+          <summary class="flex items-center justify-between p-4 cursor-pointer font-bold text-xs sm:text-sm text-slate-800 dark:text-slate-200 select-none">
+            <span class="flex items-center gap-2">
+              <span class="w-5 h-5 rounded-full bg-indigo-100 dark:bg-indigo-950 text-indigo-600 dark:text-indigo-400 flex items-center justify-center text-xs font-black">Q</span>
+              <span>少部数（30部〜50部）の初心者ですが、赤字になっても大丈夫ですか？</span>
+            </span>
+            <i data-lucide="chevron-down" class="w-4 h-4 text-slate-400 group-open:rotate-180 transition-transform"></i>
+          </summary>
+          <div class="px-4 pb-4 text-xs text-slate-600 dark:text-slate-300 leading-relaxed border-t border-slate-100 dark:border-slate-700/60 pt-3">
+            初参加の少部数印刷は単価が高くなりやすく、印刷費だけで黒字化しないことも珍しくありません。読者に手に取ってもらう機会づくりや次回作への経験値として、無理のない予算上限を事前に決めて参加するのが現実的です。
+          </div>
+        </details>
+        <details class="group bg-white dark:bg-slate-800/80 rounded-2xl border border-slate-200 dark:border-slate-700 overflow-hidden">
+          <summary class="flex items-center justify-between p-4 cursor-pointer font-bold text-xs sm:text-sm text-slate-800 dark:text-slate-200 select-none">
+            <span class="flex items-center gap-2">
+              <span class="w-5 h-5 rounded-full bg-indigo-100 dark:bg-indigo-950 text-indigo-600 dark:text-indigo-400 flex items-center justify-center text-xs font-black">Q</span>
+              <span>同人誌が売れ残った場合、税務（確定申告）でどう扱われますか？</span>
+            </span>
+            <i data-lucide="chevron-down" class="w-4 h-4 text-slate-400 group-open:rotate-180 transition-transform"></i>
+          </summary>
+          <div class="px-4 pb-4 text-xs text-slate-600 dark:text-slate-300 leading-relaxed border-t border-slate-100 dark:border-slate-700/60 pt-3">
+            売れ残った同人誌の製造原価は原則として「棚卸資産（在庫）」として扱い、その年の売上原価には含めません。たとえば100部刷って70部売れた場合、残り30部分の印刷費は翌期以降に繰り越し、販売や廃棄が行われた年に計上します。具体的な申告区分や処理は所轄の税務署または税理士へご確認ください。
+          </div>
+        </details>
+        <details class="group bg-white dark:bg-slate-800/80 rounded-2xl border border-slate-200 dark:border-slate-700 overflow-hidden">
+          <summary class="flex items-center justify-between p-4 cursor-pointer font-bold text-xs sm:text-sm text-slate-800 dark:text-slate-200 select-none">
+            <span class="flex items-center gap-2">
+              <span class="w-5 h-5 rounded-full bg-indigo-100 dark:bg-indigo-950 text-indigo-600 dark:text-indigo-400 flex items-center justify-center text-xs font-black">Q</span>
+              <span>新刊セット（本＋グッズ）を頒布する際のお釣りの注意点は？</span>
+            </span>
+            <i data-lucide="chevron-down" class="w-4 h-4 text-slate-400 group-open:rotate-180 transition-transform"></i>
+          </summary>
+          <div class="px-4 pb-4 text-xs text-slate-600 dark:text-slate-300 leading-relaxed border-t border-slate-100 dark:border-slate-700/60 pt-3">
+            新刊（700円）＋アクスタ（800円）を個別に会計すると100円玉のお釣りが増えやすくなりますが、「新刊セット1,500円」や「2,000円」のように500円単位のセット価格を用意すると、千円札と500円玉中心でスムーズに会計できます。
+          </div>
+        </details>
+      </div>
     </section>
 
   </main>
@@ -925,9 +1057,13 @@
         <span>•</span>
         <a href="../" class="hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors">KatakataLab</a>
         <span>•</span>
-        <a href="../contact.html" class="hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors">お問い合わせ</a>
+        <a href="../who-is-katakata.html" class="hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors">運営者情報</a>
+        <span>•</span>
+        <a href="../terms.html" class="hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors">サイトの利用規約</a>
         <span>•</span>
         <a href="../privacy.html" class="hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors">サイトのプライバシー</a>
+        <span>•</span>
+        <a href="../contact.html" class="hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors">お問い合わせ</a>
       </div>
 
       <p class="text-slate-500 dark:text-slate-400 font-medium text-[11px]">※ 本ツールは同人サークルの頒布計画・損益計算・税務管理を支援する個人開発シミュレーターです。</p>

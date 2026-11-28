@@ -480,13 +480,13 @@ ${siteFooter()}</body></html>`;
 function socialGuidePage() {
   return `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Social Image Sizes and Safe-Area Guide (2026) | KatakataLab</title><meta name="description" content="Plan social share images and video thumbnails with practical 1.91:1, 16:9, square, and vertical working sizes, source-backed notes, and crop-safe design checks.">
-<link rel="canonical" href="https://katakatalab.com/guides/en/social-image-sizes.html"><link rel="alternate" hreflang="ja" href="https://katakatalab.com/guides/sns-image-size-guide.html"><link rel="alternate" hreflang="en" href="https://katakatalab.com/guides/en/social-image-sizes.html"><link rel="alternate" hreflang="x-default" href="https://katakatalab.com/guides/sns-image-size-guide.html">
+<link rel="canonical" href="https://katakatalab.com/guides/en/social-image-sizes.html"><link rel="alternate" hreflang="ja" href="https://katakatalab.com/guides/aspect-ratio-guide.html"><link rel="alternate" hreflang="en" href="https://katakatalab.com/guides/en/social-image-sizes.html"><link rel="alternate" hreflang="x-default" href="https://katakatalab.com/guides/aspect-ratio-guide.html">
 <meta property="og:title" content="Social Image Sizes and Safe-Area Guide (2026)"><meta property="og:description" content="Source-backed working sizes and a safer workflow for social link images and thumbnails."><meta property="og:type" content="article"><meta property="og:url" content="https://katakatalab.com/guides/en/social-image-sizes.html">
 ${editorialHeadAssets()}
 <script type="application/ld+json">${JSON.stringify({'@context':'https://schema.org','@type':'Article',headline:'Social Image Sizes and Safe-Area Guide',url:'https://katakatalab.com/guides/en/social-image-sizes.html',inLanguage:'en',dateModified:UPDATED,author:{'@type':'Person',name:'Katakata'},publisher:{'@type':'Organization',name:'KatakataLab'}})}</script></head>
 <body class="english-site-shell english-guide-page">${siteHeader([
   { href: '/en/', label: 'English tools' },
-  { href: '/guides/sns-image-size-guide.html', label: '日本語', hreflang: 'ja', lang: 'ja' },
+  { href: '/guides/aspect-ratio-guide.html', label: '日本語', hreflang: 'ja', lang: 'ja' },
   { href: '/en/site-information.html', label: 'Site information' },
 ])}<main class="english-site-main english-article-main"><header class="english-article-hero"><p class="english-article-meta">Created by Katakata · Reviewed <time datetime="${UPDATED}">July 16, 2026</time></p><h1>Social image sizes: use ratios first, pixels second</h1><p>Platform layouts change, and the same link can be shown as a large card, compact card, notification, or cropped mobile tile. A reliable workflow starts with the intended aspect ratio, keeps critical content in a central safe area, and verifies the published URL with the platform’s current preview or debugger.</p></header>
 <article class="english-article-body"><h2>Practical working sizes</h2><table><thead><tr><th>Use</th><th>Working canvas</th><th>What the source supports</th></tr></thead><tbody>

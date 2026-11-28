@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CORSとは？ブラウザが異なるドメインへの通信を止める理由と直し方 | かたかたの制作ノート</title>
+  <meta name="description" content="fetch()実行時に突然出る赤い「CORSエラー」の正体を解説。同一オリジンポリシーによる安全保護の仕組みと、サーバー側ヘッダーやプロキシでの正しい対処法を整理します。">
+  <link rel="canonical" href="https://katakatalab.com/guides/it-basics/cors.html">
+  <link rel="icon" href="../../icon.svg" type="image/svg+xml">
+  <meta property="og:title" content="CORSとは？ブラウザが異なるドメインへの通信を止める理由と直し方">
+  <meta property="og:description" content="fetch()実行時に突然出る赤い「CORSエラー」の正体を解説。同一オリジンポリシーによる安全保護の仕組みと、サーバー側ヘッダーやプロキシでの正しい対処法を整理します。">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="https://katakatalab.com/guides/it-basics/cors.html">
+  <meta property="og:image" content="https://katakatalab.com/ogp.png">
+  <meta property="og:site_name" content="KatakataLab">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="CORSとは？ブラウザが異なるドメインへの通信を止める理由と直し方">
+  <meta name="twitter:description" content="fetch()実行時に突然出る赤い「CORSエラー」の正体を解説。同一オリジンポリシーによる安全保護の仕組みと、サーバー側ヘッダーやプロキシでの正しい対処法を整理します。">
+  <meta name="twitter:image" content="https://katakatalab.com/ogp.png">
+  <link rel="stylesheet" href="style.css">
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": "CORSとは？ブラウザが異なるドメインへの通信を止める理由と直し方",
+  "description": "fetch()実行時に突然出る赤い「CORSエラー」の正体を解説。同一オリジンポリシーによる安全保護の仕組みと、サーバー側ヘッダーやプロキシでの正しい対処法を整理します。",
+  "inLanguage": "ja",
+  "datePublished": "2026-11-28",
+  "dateModified": "2026-11-28",
+  "author": {
+    "@type": "Person",
+    "name": "かたかた",
+    "url": "https://katakatalab.com/who-is-katakata.html"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "KatakataLab",
+    "url": "https://katakatalab.com/",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "https://katakatalab.com/ogp.png"
+    }
+  },
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "https://katakatalab.com/guides/it-basics/cors.html"
+  },
+  "image": "https://katakatalab.com/ogp.png"
+}
+</script>
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position": 1,
+      "name": "KatakataLab",
+      "item": "https://katakatalab.com/"
+    },
+    {
+      "@type": "ListItem",
+      "position": 2,
+      "name": "かたかたの制作ノート",
+      "item": "https://katakatalab.com/guides/it-basics/"
+    },
+    {
+      "@type": "ListItem",
+      "position": 3,
+      "name": "CORSとは",
+      "item": "https://katakatalab.com/guides/it-basics/cors.html"
+    }
+  ]
+}
+</script>
+  <script defer src="../../analytics.js"></script>
+</head>
+<body class="article-page">
+  <script>try{if(localStorage.getItem('theme')==='dark')document.body.classList.add('dark-mode');}catch(e){}</script>
+  <a class="skip-link" href="#main-content">本文へ移動</a>
+  <header class="site-header">
+    <div class="header-inner">
+      <a class="brand" href="../../"><span class="brand-mark">KL</span><span>KatakataLab</span></a>
+      <nav class="site-nav" aria-label="主要ナビゲーション">
+        <a href="./">制作ノート一覧</a>
+        <a href="../../#projects">ツール一覧</a>
+        <a href="../../guides/tool-selection-guide.html">用途から選ぶ</a>
+        <a href="../../who-is-katakata.html">運営者</a>
+        <button type="button" id="it-theme-toggle" aria-label="テーマ切り替え" style="background:none;border:1px solid rgba(255,255,255,0.28);color:#fff;border-radius:6px;padding:0.2rem 0.55rem;cursor:pointer;font-size:0.9rem;line-height:1;transition:background 0.2s;" title="ダークモード切り替え">🌙</button>
+      </nav>
+    </div>
+  </header>
+  <script>
+    (function(){
+      var btn = document.getElementById('it-theme-toggle');
+      if(!btn) return;
+      function sync(){ btn.textContent = document.body.classList.contains('dark-mode') ? '☀️' : '🌙'; }
+      sync();
+      btn.addEventListener('click', function(){
+        var dark = document.body.classList.toggle('dark-mode');
+        try{ localStorage.setItem('theme', dark ? 'dark' : 'light'); }catch(e){}
+        sync();
+      });
+    })();
+  </script>
+  <main id="main-content">
+    <nav class="breadcrumbs" aria-label="パンくずリスト">
+      <ol>
+        <li><a href="../../">KatakataLab</a></li>
+        <li><a href="./">かたかたの制作ノート</a></li>
+        <li aria-current="page">CORSとは</li>
+      </ol>
+    </nav>
+    <article class="article-shell">
+      <header class="article-hero">
+        <div class="chapter-stamp" aria-hidden="true"><span>CHAPTER 07</span><strong>28</strong><small>CORS</small></div>
+        <p class="eyebrow">CHAPTER 07｜開発運用とハマりどころ</p>
+        <h1>CORSとは？ブラウザが異なるドメインへの通信を止める理由と直し方</h1>
+        <p class="article-lead">APIをJavaScriptの fetch() で呼び出した瞬間、コンソールに真っ赤な「blocked by CORS policy」の文字——。フロントエンド開発で誰もが一度は頭を抱えるCORSエラーですが、実はユーザーを守る大切な安全装置です。</p>
+        <div class="article-meta">
+          <span>執筆：<a href="../../who-is-katakata.html">かたかた</a></span>
+          <span>公開：<time datetime="2026-11-28">2026年11月28日</time></span>
+          <span>読了目安：約4分</span>
+        </div>
+        <div class="summary-strip" aria-label="ひとことで言うと">
+          <strong>ひとことで言うと</strong>
+          <p>CORSは、あるWebサイトから別オリジンのAPIやデータへアクセスしてよいかを、データ提供側サーバーの許可ヘッダーで制御する仕組みです。</p>
+        </div>
+      </header>
+      <div class="article-layout">
+        <aside class="toc" aria-label="目次">
+          <p class="toc-title">目次</p>
+          <ol>
+            <li><a href="#section-1">しくみの全体像</a></li>
+            <li><a href="#section-2">なぜcurlやPostmanでは成功するのにブラウザだけ失敗するのか</a></li>
+            <li><a href="#section-3">正しい直し方（やってはいけない対処も確認）</a></li>
+            <li><a href="#section-talk">この言葉が会話に出てくるとき</a></li>
+            <li><a href="#section-misread">勘違いしやすい点</a></li>
+            <li><a href="#section-4">まとめ</a></li>
+            <li><a href="#lab-example-title">KatakataLabでの実例</a></li>
+            <li><a href="#faq-title">よくある質問</a></li>
+            <li><a href="#references-title">参考資料</a></li>
+          </ol>
+        </aside>
+        <div class="article-content">
+          <section class="article-section" aria-labelledby="section-1">
+            <h2 id="section-1">しくみの全体像</h2>
+            <p>ブラウザには<strong>同一オリジンポリシー（Same-Origin Policy）</strong>という基本ルールがあります。もしこの制限がなければ、あなたが怪しいサイトを開いた瞬間に、そのページ内のJavaScriptが裏であなたの銀行サイトやメールAPIへアクセスし、ログイン済みCookieを使って中身を盗み読めてしまいます。</p>
+            <p>しかし正当な開発では「フロントエンドのドメインから、別ドメインのAPIを呼びたい」場面がたくさんあります。そこで「このオリジンからのアクセスなら読み取ってよい」とサーバー側が明示的に許可を出す仕組みが <strong>CORS（Cross-Origin Resource Sharing）</strong> です。</p>
+            <figure class="diagram-figure">
+  <svg viewBox="0 0 640 195" width="100%" role="img" aria-label="ブラウザの同一オリジンポリシーとサーバー側Access-Control-Allow-OriginヘッダーによるCORS許可の図解">
+    <defs>
+      <marker id="arr" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+        <path d="M 0 1 L 10 5 L 0 9 z" fill="currentColor" opacity="0.7"/>
+      </marker>
+    </defs>
+    <rect x="18" y="44" width="154" height="96" rx="8" fill="#1f5c99" fill-opacity="0.1" stroke="#1f5c99" stroke-width="1.8"/><text x="95" y="88" text-anchor="middle" font-size="12.5" font-weight="700" fill="currentColor">サイトAのJS</text><text x="95" y="106" text-anchor="middle" font-size="10.5" fill="currentColor" opacity="0.78">https://a.example
+fetch(サイトB)</text><line x1="176" y1="72" x2="260" y2="72" stroke="#1f5c99" stroke-width="2" marker-end="url(#arr)"/><text x="218" y="62" text-anchor="middle" font-size="10.5" font-weight="700" fill="#1f5c99">要求</text><rect x="266" y="44" width="146" height="96" rx="8" fill="#b45309" fill-opacity="0.1" stroke="#b45309" stroke-width="1.8"/><text x="339" y="88" text-anchor="middle" font-size="12.5" font-weight="700" fill="currentColor">ブラウザ（検問）</text><text x="339" y="106" text-anchor="middle" font-size="10.5" fill="currentColor" opacity="0.78">許可ヘッダーを確認
+無許可ならブロック</text><line x1="416" y1="72" x2="464" y2="72" stroke="#1f5c99" stroke-width="2" marker-end="url(#arr)"/><text x="440" y="62" text-anchor="middle" font-size="10.5" font-weight="700" fill="#1f5c99">送信</text><rect x="470" y="44" width="152" height="96" rx="8" fill="#0f766e" fill-opacity="0.1" stroke="#0f766e" stroke-width="1.8"/><text x="546" y="88" text-anchor="middle" font-size="12.5" font-weight="700" fill="currentColor">APIサーバーB</text><text x="546" y="106" text-anchor="middle" font-size="10.5" fill="currentColor" opacity="0.78">https://api.b.test
+Allow-Originを返す</text><line x1="464" y1="114" x2="416" y2="114" stroke="#0f766e" stroke-width="2" marker-end="url(#arr)"/><text x="440" y="134" text-anchor="middle" font-size="10.5" font-weight="700" fill="#0f766e">ヘッダー</text><line x1="260" y1="114" x2="176" y2="114" stroke="#0f766e" stroke-width="2" marker-end="url(#arr)"/><text x="218" y="134" text-anchor="middle" font-size="10.5" font-weight="700" fill="#0f766e">許可時のみ渡す</text>
+  </svg>
+  <figcaption>図解: ブラウザは別オリジンへの通信結果を守る。提供側サーバーが許可ヘッダーを返したときだけJSがレスポンスを読める</figcaption>
+</figure>
+          </section>
+          <section class="article-section" aria-labelledby="section-2">
+            <h2 id="section-2">なぜcurlやPostmanでは成功するのにブラウザだけ失敗するのか</h2>
+            <p>開発者が最も混乱するのが「ターミナルのcurlで叩いたら200 OKが返るのに、ブラウザからfetchするとCORSエラーになる」という現象です。</p>
+            <p>理由はシンプルで、<strong>CORSの制限を強制しているのはブラウザ</strong>だからです。サーバーが返したレスポンスに <code>Access-Control-Allow-Origin</code> などの許可ヘッダーが入っていないと、ブラウザが安全のためにJavaScript側へデータを渡さずエラーにします。</p>
+          </section>
+          <section class="article-section" aria-labelledby="section-3">
+            <h2 id="section-3">正しい直し方（やってはいけない対処も確認）</h2>
+            <ul><li><strong>自分のAPIサーバー側で許可ヘッダーを返す：</strong>許可するオリジン（例：<code>https://example.com</code>）を明示的に設定します。Cookieや認証情報付き通信ではワイルドカード <code>*</code> は使えません。</li><li><strong>同一オリジンのバックエンド経由（プロキシ）で呼ぶ：</strong>外部APIがブラウザ直呼びを想定していない場合は、自前サーバーの <code>/api/...</code> 経由で通信します。秘密のAPIキーも隠せるため一石二鳥です。</li><li><strong>NG例：</strong>「ブラウザ拡張機能でCORSを無効化する」のは自分のPCで一時的に見え方が変わるだけで、他の訪問者の画面では直りません。</li></ul>
+          </section>
+          <section class="article-section" aria-labelledby="section-talk">
+            <h2 id="section-talk">この言葉が会話に出てくるとき</h2>
+            <p><strong>「ブラウザから直接OGPのURLを読み込めないの？」</strong><br>他人のWebサイトは通常CORS許可ヘッダーを出していないため、ブラウザのJSだけでは他サイトのHTMLを直接取得できません。</p>
+<p><strong>「プリフライト（OPTIONS）リクエストで弾かれてる」</strong><br>JSON送信やカスタムヘッダー付き通信の前に、ブラウザがサーバーへ事前確認（OPTIONS）を送り、そこで許可が得られていない状態です。</p>
+          </section>
+          <section class="article-section" aria-labelledby="section-misread">
+            <h2 id="section-misread">勘違いしやすい点</h2>
+            <ul>
+              <li><strong>誤解1：CORSエラーはフロントエンドのJavaScript構文ミス。</strong>原因の大半は通信先サーバーの許可ヘッダー不足、またはブラウザから直接叩くべきでないAPIを呼んでいる設計です。</li>
+<li><strong>誤解2：CORSがあればサーバーの認証チェックは不要。</strong>curl等の非ブラウザ通信はCORS制限を受けないため、サーバー側の認証・認可チェックは必須です。</li>
+            </ul>
+          </section>
+          <section class="article-section" aria-labelledby="section-4">
+            <h2 id="section-4">まとめ</h2>
+            <ul>
+              <li>CORSは「別オリジンのデータを勝手に読み取らせない」ブラウザの安全機構。</li>
+<li>解決はブラウザ側ではなく、APIサーバー側の許可ヘッダー設定か、自前バックエンド経由の呼び出しで行う。</li>
+<li>他サイトのHTMLをブラウザだけで勝手に読めないのも、この仕組みが働いているから。</li>
+            </ul>
+          </section>
+          <aside class="lab-example" aria-labelledby="lab-example-title">
+            <p class="eyebrow">FROM THE LAB</p>
+            <h2 id="lab-example-title">KatakataLabでの実例</h2>
+            <p>KatakataLabのOGPシミュレーターが「URLを入力して自動でog:タグを取ってくる機能」を付けず、手入力＋ローカル画像方式にしている理由のひとつも、このCORSとブラウザ完結設計（外部サーバー通信を持たない方針）にあります。</p>
+            <div class="tool-link-banner"><strong>関連ツールで試す：<a href="../../ogp-simulator/">OGPシミュレーター →</a></strong>外部サーバー通信を使わず、手入力したタイトル・説明・画像をブラウザ内だけで安全にプレビューできます。</div>
+            <p class="related-heading">この実例につながるページ</p>
+            <ul class="related-links">
+              <li><a href="domain.html">関連用語：ドメインとサブドメイン</a></li>
+<li><a href="api.html">関連用語：API</a></li>
+<li><a href="security.html">関連用語：セキュリティ</a></li>
+            </ul>
+          </aside>
+          <section class="article-section faq" aria-labelledby="faq-title">
+            <p class="eyebrow">QUICK CHECK</p>
+            <h2 id="faq-title">よくある質問</h2>
+            <h3>画像タグ（&lt;img src="..."&gt;）なら別ドメインでも表示できるのに、なぜCanvas操作でエラーになるのですか？</h3>
+<p>表示自体はできても、別ドメイン画像のピクセル情報をCanvasからJavaScriptで読み出すと機密漏えいにつながるため、CORS許可（crossorigin属性とサーバーヘッダー）が必要になります。</p>
+<h3>localhost:3000 と localhost:8080 は同じオリジンですか？</h3>
+<p>いいえ。ポート番号が違うと別オリジン扱いになるため、ローカル開発中でもフロントとAPIでポートが違うとCORS設定が必要です。</p>
+          </section>
+          <section class="article-section references" aria-labelledby="references-title">
+            <h2 id="references-title">参考資料</h2>
+            <p>用語の定義や仕様を確認するため、公式文書・標準文書を参照しています。リンク先の内容は更新される場合があります。</p>
+            <ul>
+              <li><a href="https://developer.mozilla.org/ja/docs/Web/HTTP/Guides/CORS" target="_blank" rel="noopener noreferrer">MDN Web Docs「オリジン間リソース共有 (CORS)」</a></li>
+<li><a href="https://developer.mozilla.org/ja/docs/Web/Security/Same-origin_policy" target="_blank" rel="noopener noreferrer">MDN Web Docs「同一オリジンポリシー」</a></li>
+            </ul>
+          </section>
+          <nav class="chapter-nav" aria-label="前後の記事">
+            <a class="chapter-link previous" href="env-vars.html"><small>前の記事</small><span>← ENV VARS</span></a>
+            <a class="chapter-link next" href="library-framework.html"><small>次の記事</small><span>LIB / FW →</span></a>
+          </nav>
+        </div>
+      </div>
+    </article>
+  </main>
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <p><strong>KatakataLab</strong><br><span>作って、つまずいて、分かったことを残す小さな研究室。</span></p>
+      <nav aria-label="フッターナビゲーション">
+        <a href="../../contact.html">お問い合わせ</a>
+        <a href="../../who-is-katakata.html">運営者情報</a>
+        <a href="../../privacy.html">プライバシーポリシー</a>
+        <a href="../../sitemap.html">サイトマップ</a>
+      </nav>
+    </div>
+    <p class="copyright">&copy; 2024-2026 KatakataLab</p>
+  </footer>
+</body>
+</html>

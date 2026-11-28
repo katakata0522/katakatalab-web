@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ビルドとトランスパイルとは？書いたコードから公開ファイルを作る工程 | かたかたの制作ノート</title>
+  <meta name="description" content="TypeScriptやReactで書いたコードを公開用ファイルへ変換する「ビルド」「バンドル」「トランスパイル」「ミニファイ」の違いを初心者向けに整理します。">
+  <link rel="canonical" href="https://katakatalab.com/guides/it-basics/build.html">
+  <link rel="icon" href="../../icon.svg" type="image/svg+xml">
+  <meta property="og:title" content="ビルドとトランスパイルとは？書いたコードから公開ファイルを作る工程">
+  <meta property="og:description" content="TypeScriptやReactで書いたコードを公開用ファイルへ変換する「ビルド」「バンドル」「トランスパイル」「ミニファイ」の違いを初心者向けに整理します。">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="https://katakatalab.com/guides/it-basics/build.html">
+  <meta property="og:image" content="https://katakatalab.com/ogp.png">
+  <meta property="og:site_name" content="KatakataLab">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="ビルドとトランスパイルとは？書いたコードから公開ファイルを作る工程">
+  <meta name="twitter:description" content="TypeScriptやReactで書いたコードを公開用ファイルへ変換する「ビルド」「バンドル」「トランスパイル」「ミニファイ」の違いを初心者向けに整理します。">
+  <meta name="twitter:image" content="https://katakatalab.com/ogp.png">
+  <link rel="stylesheet" href="style.css">
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": "ビルドとトランスパイルとは？書いたコードから公開ファイルを作る工程",
+  "description": "TypeScriptやReactで書いたコードを公開用ファイルへ変換する「ビルド」「バンドル」「トランスパイル」「ミニファイ」の違いを初心者向けに整理します。",
+  "inLanguage": "ja",
+  "datePublished": "2026-11-28",
+  "dateModified": "2026-11-28",
+  "author": {
+    "@type": "Person",
+    "name": "かたかた",
+    "url": "https://katakatalab.com/who-is-katakata.html"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "KatakataLab",
+    "url": "https://katakatalab.com/",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "https://katakatalab.com/ogp.png"
+    }
+  },
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "https://katakatalab.com/guides/it-basics/build.html"
+  },
+  "image": "https://katakatalab.com/ogp.png"
+}
+</script>
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position": 1,
+      "name": "KatakataLab",
+      "item": "https://katakatalab.com/"
+    },
+    {
+      "@type": "ListItem",
+      "position": 2,
+      "name": "かたかたの制作ノート",
+      "item": "https://katakatalab.com/guides/it-basics/"
+    },
+    {
+      "@type": "ListItem",
+      "position": 3,
+      "name": "ビルドとトランスパイルとは",
+      "item": "https://katakatalab.com/guides/it-basics/build.html"
+    }
+  ]
+}
+</script>
+  <script defer src="../../analytics.js"></script>
+</head>
+<body class="article-page">
+  <script>try{if(localStorage.getItem('theme')==='dark')document.body.classList.add('dark-mode');}catch(e){}</script>
+  <a class="skip-link" href="#main-content">本文へ移動</a>
+  <header class="site-header">
+    <div class="header-inner">
+      <a class="brand" href="../../"><span class="brand-mark">KL</span><span>KatakataLab</span></a>
+      <nav class="site-nav" aria-label="主要ナビゲーション">
+        <a href="./">制作ノート一覧</a>
+        <a href="../../#projects">ツール一覧</a>
+        <a href="../../guides/tool-selection-guide.html">用途から選ぶ</a>
+        <a href="../../who-is-katakata.html">運営者</a>
+        <button type="button" id="it-theme-toggle" aria-label="テーマ切り替え" style="background:none;border:1px solid rgba(255,255,255,0.28);color:#fff;border-radius:6px;padding:0.2rem 0.55rem;cursor:pointer;font-size:0.9rem;line-height:1;transition:background 0.2s;" title="ダークモード切り替え">🌙</button>
+      </nav>
+    </div>
+  </header>
+  <script>
+    (function(){
+      var btn = document.getElementById('it-theme-toggle');
+      if(!btn) return;
+      function sync(){ btn.textContent = document.body.classList.contains('dark-mode') ? '☀️' : '🌙'; }
+      sync();
+      btn.addEventListener('click', function(){
+        var dark = document.body.classList.toggle('dark-mode');
+        try{ localStorage.setItem('theme', dark ? 'dark' : 'light'); }catch(e){}
+        sync();
+      });
+    })();
+  </script>
+  <main id="main-content">
+    <nav class="breadcrumbs" aria-label="パンくずリスト">
+      <ol>
+        <li><a href="../../">KatakataLab</a></li>
+        <li><a href="./">かたかたの制作ノート</a></li>
+        <li aria-current="page">ビルドとトランスパイルとは</li>
+      </ol>
+    </nav>
+    <article class="article-shell">
+      <header class="article-hero">
+        <div class="chapter-stamp" aria-hidden="true"><span>CHAPTER 06</span><strong>24</strong><small>BUILD</small></div>
+        <p class="eyebrow">CHAPTER 06｜制作と実装のしくみ</p>
+        <h1>ビルドとトランスパイルとは？書いたコードから公開ファイルを作る工程</h1>
+        <p class="article-lead">開発中のフォルダには TypeScript や JSX がたくさんあるのに、公開する `dist/` の中は数本の短いJSとCSSだけ——。この変身を行う工程が「ビルド」です。よく一緒に出てくるトランスパイル・バンドル・ミニファイとの違いも整理します。</p>
+        <div class="article-meta">
+          <span>執筆：<a href="../../who-is-katakata.html">かたかた</a></span>
+          <span>公開：<time datetime="2026-11-28">2026年11月28日</time></span>
+          <span>読了目安：約4分</span>
+        </div>
+        <div class="summary-strip" aria-label="ひとことで言うと">
+          <strong>ひとことで言うと</strong>
+          <p>ビルドは人間が書きやすいソースコードを、ブラウザが速く安全に実行できる公開用ファイル一式へ変換・まとめる工程です。</p>
+        </div>
+      </header>
+      <div class="article-layout">
+        <aside class="toc" aria-label="目次">
+          <p class="toc-title">目次</p>
+          <ol>
+            <li><a href="#section-1">しくみの全体像</a></li>
+            <li><a href="#section-2">ビルドの中で起きている3つの変換</a></li>
+            <li><a href="#section-3">「ローカルでは動くのにビルドが落ちる」理由</a></li>
+            <li><a href="#section-talk">この言葉が会話に出てくるとき</a></li>
+            <li><a href="#section-misread">勘違いしやすい点</a></li>
+            <li><a href="#section-4">まとめ</a></li>
+            <li><a href="#lab-example-title">KatakataLabでの実例</a></li>
+            <li><a href="#faq-title">よくある質問</a></li>
+            <li><a href="#references-title">参考資料</a></li>
+          </ol>
+        </aside>
+        <div class="article-content">
+          <section class="article-section" aria-labelledby="section-1">
+            <h2 id="section-1">しくみの全体像</h2>
+            <p>素のHTML・CSS・JavaScriptだけで作るサイトなら、書いたファイルをそのままサーバーへ置けます。しかし、TypeScript・React・SCSSなど現代の開発技術は、そのままではブラウザが直接解釈できません。</p>
+            <p>そこで、開発用に書きやすく整理したコードから、ブラウザが確実に速く動かせる公開用ファイル群（<code>dist/</code> や <code>build/</code>）を作り出す一連の工程を <strong>ビルド（Build）</strong> と呼びます。</p>
+            <figure class="diagram-figure">
+  <svg viewBox="0 0 640 195" width="100%" role="img" aria-label="ソースコード（TS/JSX/SCSS）がトランスパイル・バンドル・ミニファイを経て公開用distファイルになる図解">
+    <defs>
+      <marker id="arr" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+        <path d="M 0 1 L 10 5 L 0 9 z" fill="currentColor" opacity="0.7"/>
+      </marker>
+    </defs>
+    <rect x="18" y="34" width="152" height="122" rx="8" fill="#1f5c99" fill-opacity="0.1" stroke="#1f5c99" stroke-width="1.8"/><text x="94" y="91" text-anchor="middle" font-size="12.5" font-weight="700" fill="currentColor">開発用ソース</text><text x="94" y="109" text-anchor="middle" font-size="10.5" fill="currentColor" opacity="0.78">TypeScript (.ts)
+JSX / 分割CSS
+人間が読みやすい</text><line x1="174" y1="95" x2="224" y2="95" stroke="#1f5c99" stroke-width="2" marker-end="url(#arr)"/><text x="199" y="84" text-anchor="middle" font-size="10.5" font-weight="700" fill="#1f5c99">build</text><rect x="230" y="34" width="180" height="122" rx="8" fill="#7c3aed" fill-opacity="0.1" stroke="#7c3aed" stroke-width="1.8"/><text x="320" y="91" text-anchor="middle" font-size="12.5" font-weight="700" fill="currentColor">ビルドツール (Vite等)</text><text x="320" y="109" text-anchor="middle" font-size="10.5" fill="currentColor" opacity="0.78">1. トランスパイル
+2. バンドル（結合）
+3. ミニファイ（圧縮）</text><line x1="414" y1="95" x2="464" y2="95" stroke="#0f766e" stroke-width="2" marker-end="url(#arr)"/><text x="439" y="84" text-anchor="middle" font-size="10.5" font-weight="700" fill="#0f766e">出力</text><rect x="470" y="34" width="152" height="122" rx="8" fill="#0f766e" fill-opacity="0.1" stroke="#0f766e" stroke-width="1.8"/><text x="546" y="91" text-anchor="middle" font-size="12.5" font-weight="700" fill="currentColor">公開用 (dist/)</text><text x="546" y="109" text-anchor="middle" font-size="10.5" fill="currentColor" opacity="0.78">軽量な JS / CSS
+ハッシュ付きファイル名
+ブラウザがすぐ実行</text>
+  </svg>
+  <figcaption>図解: 開発用の読みやすいファイル群を、Vite等のビルドツールが変換・結合・圧縮して公開用ファイルにまとめる</figcaption>
+</figure>
+          </section>
+          <section class="article-section" aria-labelledby="section-2">
+            <h2 id="section-2">ビルドの中で起きている3つの変換</h2>
+            <p>ビルドという言葉の中には、主に次の3つの処理が含まれています。</p>
+            <ul><li><strong>トランスパイル（Transpile）：</strong>TypeScriptの型注釈を取り除いたり、JSXを通常のJavaScript関数へ変換したり、新しい記法を幅広いブラウザで動くJavaScriptへ翻訳する処理です。</li><li><strong>バンドル（Bundle）：</strong>数十個に分けて書いたJavaScriptファイルやライブラリを依存関係どおりにまとめ、通信回数を減らす処理です。</li><li><strong>ミニファイ（Minify）：</strong>実行に不要な空白・改行・コメントを削り、変数名を短くしてファイル容量を軽くする処理です。</li></ul>
+          </section>
+          <section class="article-section" aria-labelledby="section-3">
+            <h2 id="section-3">「ローカルでは動くのにビルドが落ちる」理由</h2>
+            <p>開発サーバー（<code>npm run dev</code>）は速さを優先して最低限の変換だけで動かすことが多く、型エラーや未使用インポート、ファイルパスの大文字・小文字の違いを見逃す場合があります。一方、本番ビルド（<code>npm run build</code>）は全体を厳密に検査してまとめるため、公開前に潜在的なミスを止めてくれる防波堤の役割も果たします。</p>
+          </section>
+          <section class="article-section" aria-labelledby="section-talk">
+            <h2 id="section-talk">この言葉が会話に出てくるとき</h2>
+            <p><strong>「PR出す前にローカルで npm run build が通るか確認しておこう」</strong><br>開発中の画面では見えていなかった型エラーや参照切れを、公開前に洗い出す習慣です。</p>
+<p><strong>「ビルド成果物のファイル名にハッシュが付いた」</strong><br>内容が変わるたびにファイル名も変わるため、ブラウザに古いキャッシュが残る問題も同時に解決できます。</p>
+          </section>
+          <section class="article-section" aria-labelledby="section-misread">
+            <h2 id="section-misread">勘違いしやすい点</h2>
+            <ul>
+              <li><strong>誤解1：すべてのWeb制作で必ずビルドツールが必要。</strong>小規模な静的ページや素のJSツールなら、ビルドなしで直接書いた方がシンプルで長期保守しやすいことも多いです。</li>
+<li><strong>誤解2：ビルド後の dist/ ファイルを直接編集すれば手っ取り早い。</strong>次にビルドした瞬間に上書きされて消える（先祖返りする）ため、修正は必ずソースコード側で行います。</li>
+            </ul>
+          </section>
+          <section class="article-section" aria-labelledby="section-4">
+            <h2 id="section-4">まとめ</h2>
+            <ul>
+              <li>ビルドは「人間が書きやすいコード」を「ブラウザが速く読める公開ファイル」へ変換する工程。</li>
+<li>トランスパイル（翻訳）・バンドル（結合）・ミニファイ（圧縮）の3要素で成り立つ。</li>
+<li>素のHTML/JSで十分な小ツールと、ビルドが活きる大きめアプリを使い分けると保守が楽になる。</li>
+            </ul>
+          </section>
+          <aside class="lab-example" aria-labelledby="lab-example-title">
+            <p class="eyebrow">FROM THE LAB</p>
+            <h2 id="lab-example-title">KatakataLabでの実例</h2>
+            <p>KatakataLabでは、素のHTML/JSで軽快に動くツール群はビルド不要のシンプル構成にしつつ、100パターンのアニメーションを扱う「動きの仕組み図鑑（Motion Atlas）」ではViteによるビルド構成を採用して用途ごとに使い分けています。</p>
+            <div class="tool-link-banner"><strong>関連ツールで試す：<a href="../../motion-atlas/">動きの仕組み図鑑 (Motion Atlas) →</a></strong>ビルド最適化されたモダンフロントエンド構成で、100パターンのUIアニメーションを滑らかに再生できます。</div>
+            <p class="related-heading">この実例につながるページ</p>
+            <ul class="related-links">
+              <li><a href="library-framework.html">関連用語：ライブラリとフレームワーク</a></li>
+<li><a href="deploy.html">関連用語：デプロイ</a></li>
+<li><a href="cache.html">関連用語：キャッシュ</a></li>
+            </ul>
+          </aside>
+          <section class="article-section faq" aria-labelledby="faq-title">
+            <p class="eyebrow">QUICK CHECK</p>
+            <h2 id="faq-title">よくある質問</h2>
+            <h3>コンパイルとトランスパイルはどう違いますか？</h3>
+<p>広い意味ではどちらも変換ですが、CやRustのように機械語へ落とすのをコンパイル、TypeScript→JavaScriptのように近い水準の別言語へ変換するのをトランスパイルと呼び分けるのが一般的です。</p>
+<h3>ミニファイしたコードのエラー位置はどう追うのですか？</h3>
+<p>ビルド時にソースマップ（.mapファイル）を生成しておくと、開発者ツール上で元のソース行番号へ対応づけてデバッグできます。</p>
+          </section>
+          <section class="article-section references" aria-labelledby="references-title">
+            <h2 id="references-title">参考資料</h2>
+            <p>用語の定義や仕様を確認するため、公式文書・標準文書を参照しています。リンク先の内容は更新される場合があります。</p>
+            <ul>
+              <li><a href="https://developer.mozilla.org/ja/docs/Learn_web_development/Extensions/Client-side_tools/Overview" target="_blank" rel="noopener noreferrer">MDN Web Docs「クライアントサイドのWeb開発ツール」</a></li>
+<li><a href="https://vite.dev/guide/build.html" target="_blank" rel="noopener noreferrer">Vite公式ドキュメント「Building for Production」</a></li>
+            </ul>
+          </section>
+          <nav class="chapter-nav" aria-label="前後の記事">
+            <a class="chapter-link previous" href="responsive.html"><small>前の記事</small><span>← RESPONSIVE</span></a>
+            <a class="chapter-link next" href="cdn.html"><small>次の記事</small><span>CDN →</span></a>
+          </nav>
+        </div>
+      </div>
+    </article>
+  </main>
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <p><strong>KatakataLab</strong><br><span>作って、つまずいて、分かったことを残す小さな研究室。</span></p>
+      <nav aria-label="フッターナビゲーション">
+        <a href="../../contact.html">お問い合わせ</a>
+        <a href="../../who-is-katakata.html">運営者情報</a>
+        <a href="../../privacy.html">プライバシーポリシー</a>
+        <a href="../../sitemap.html">サイトマップ</a>
+      </nav>
+    </div>
+    <p class="copyright">&copy; 2024-2026 KatakataLab</p>
+  </footer>
+</body>
+</html>

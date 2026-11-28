@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>HTTPSとSSL/TLSとは？鍵マークの意味と暗号化の仕組み | かたかたの制作ノート</title>
+  <meta name="description" content="URLの先頭にあるhttps://の役割を解説。盗聴・改ざん・なりすましを防ぐ仕組み、SSL証明書の更新、混在コンテンツでつまずく原因まで整理します。">
+  <link rel="canonical" href="https://katakatalab.com/guides/it-basics/https.html">
+  <link rel="icon" href="../../icon.svg" type="image/svg+xml">
+  <meta property="og:title" content="HTTPSとSSL/TLSとは？鍵マークの意味と暗号化の仕組み">
+  <meta property="og:description" content="URLの先頭にあるhttps://の役割を解説。盗聴・改ざん・なりすましを防ぐ仕組み、SSL証明書の更新、混在コンテンツでつまずく原因まで整理します。">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="https://katakatalab.com/guides/it-basics/https.html">
+  <meta property="og:image" content="https://katakatalab.com/ogp.png">
+  <meta property="og:site_name" content="KatakataLab">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="HTTPSとSSL/TLSとは？鍵マークの意味と暗号化の仕組み">
+  <meta name="twitter:description" content="URLの先頭にあるhttps://の役割を解説。盗聴・改ざん・なりすましを防ぐ仕組み、SSL証明書の更新、混在コンテンツでつまずく原因まで整理します。">
+  <meta name="twitter:image" content="https://katakatalab.com/ogp.png">
+  <link rel="stylesheet" href="style.css">
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": "HTTPSとSSL/TLSとは？鍵マークの意味と暗号化の仕組み",
+  "description": "URLの先頭にあるhttps://の役割を解説。盗聴・改ざん・なりすましを防ぐ仕組み、SSL証明書の更新、混在コンテンツでつまずく原因まで整理します。",
+  "inLanguage": "ja",
+  "datePublished": "2026-11-28",
+  "dateModified": "2026-11-28",
+  "author": {
+    "@type": "Person",
+    "name": "かたかた",
+    "url": "https://katakatalab.com/who-is-katakata.html"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "KatakataLab",
+    "url": "https://katakatalab.com/",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "https://katakatalab.com/ogp.png"
+    }
+  },
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "https://katakatalab.com/guides/it-basics/https.html"
+  },
+  "image": "https://katakatalab.com/ogp.png"
+}
+</script>
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position": 1,
+      "name": "KatakataLab",
+      "item": "https://katakatalab.com/"
+    },
+    {
+      "@type": "ListItem",
+      "position": 2,
+      "name": "かたかたの制作ノート",
+      "item": "https://katakatalab.com/guides/it-basics/"
+    },
+    {
+      "@type": "ListItem",
+      "position": 3,
+      "name": "HTTPSとSSL/TLSとは",
+      "item": "https://katakatalab.com/guides/it-basics/https.html"
+    }
+  ]
+}
+</script>
+  <script defer src="../../analytics.js"></script>
+</head>
+<body class="article-page">
+  <script>try{if(localStorage.getItem('theme')==='dark')document.body.classList.add('dark-mode');}catch(e){}</script>
+  <a class="skip-link" href="#main-content">本文へ移動</a>
+  <header class="site-header">
+    <div class="header-inner">
+      <a class="brand" href="../../"><span class="brand-mark">KL</span><span>KatakataLab</span></a>
+      <nav class="site-nav" aria-label="主要ナビゲーション">
+        <a href="./">制作ノート一覧</a>
+        <a href="../../#projects">ツール一覧</a>
+        <a href="../../guides/tool-selection-guide.html">用途から選ぶ</a>
+        <a href="../../who-is-katakata.html">運営者</a>
+        <button type="button" id="it-theme-toggle" aria-label="テーマ切り替え" style="background:none;border:1px solid rgba(255,255,255,0.28);color:#fff;border-radius:6px;padding:0.2rem 0.55rem;cursor:pointer;font-size:0.9rem;line-height:1;transition:background 0.2s;" title="ダークモード切り替え">🌙</button>
+      </nav>
+    </div>
+  </header>
+  <script>
+    (function(){
+      var btn = document.getElementById('it-theme-toggle');
+      if(!btn) return;
+      function sync(){ btn.textContent = document.body.classList.contains('dark-mode') ? '☀️' : '🌙'; }
+      sync();
+      btn.addEventListener('click', function(){
+        var dark = document.body.classList.toggle('dark-mode');
+        try{ localStorage.setItem('theme', dark ? 'dark' : 'light'); }catch(e){}
+        sync();
+      });
+    })();
+  </script>
+  <main id="main-content">
+    <nav class="breadcrumbs" aria-label="パンくずリスト">
+      <ol>
+        <li><a href="../../">KatakataLab</a></li>
+        <li><a href="./">かたかたの制作ノート</a></li>
+        <li aria-current="page">HTTPSとSSL/TLSとは</li>
+      </ol>
+    </nav>
+    <article class="article-shell">
+      <header class="article-hero">
+        <div class="chapter-stamp" aria-hidden="true"><span>CHAPTER 05</span><strong>18</strong><small>HTTPS</small></div>
+        <p class="eyebrow">CHAPTER 05｜Webの裏側と配信</p>
+        <h1>HTTPSとSSL/TLSとは？鍵マークの意味と暗号化の仕組み</h1>
+        <p class="article-lead">今のWebサイトはほとんどが「https://」で始まります。昔ながらの「http://」と何が違い、なぜ暗号化が必須になったのか。さらに「HTTPSだから絶対安全」と思い込む落とし穴まで、制作者の目線で整理します。</p>
+        <div class="article-meta">
+          <span>執筆：<a href="../../who-is-katakata.html">かたかた</a></span>
+          <span>公開：<time datetime="2026-11-28">2026年11月28日</time></span>
+          <span>読了目安：約4分</span>
+        </div>
+        <div class="summary-strip" aria-label="ひとことで言うと">
+          <strong>ひとことで言うと</strong>
+          <p>HTTPSは、ブラウザとサーバー間の通信をTLSで暗号化し、盗聴・改ざん・なりすましを防ぐ仕組みです。</p>
+        </div>
+      </header>
+      <div class="article-layout">
+        <aside class="toc" aria-label="目次">
+          <p class="toc-title">目次</p>
+          <ol>
+            <li><a href="#section-1">しくみの全体像</a></li>
+            <li><a href="#section-2">HTTPSが守ってくれる3つのこと</a></li>
+            <li><a href="#section-3">制作でよく踏む「混在コンテンツ」と証明書切れ</a></li>
+            <li><a href="#section-talk">この言葉が会話に出てくるとき</a></li>
+            <li><a href="#section-misread">勘違いしやすい点</a></li>
+            <li><a href="#section-4">まとめ</a></li>
+            <li><a href="#lab-example-title">KatakataLabでの実例</a></li>
+            <li><a href="#faq-title">よくある質問</a></li>
+            <li><a href="#references-title">参考資料</a></li>
+          </ol>
+        </aside>
+        <div class="article-content">
+          <section class="article-section" aria-labelledby="section-1">
+            <h2 id="section-1">しくみの全体像</h2>
+            <p>Webページを見るとき、ブラウザとサーバーは「HTTP」という手順でやり取りします。これに暗号化と本人確認（TLS、昔の名残でSSLとも呼ばれます）を組み合わせたものが <strong>HTTPS（HTTP Over TLS）</strong> です。</p>
+            <p>たとえばカフェの無料Wi-Fiを使っているとき、HTTPのままでは途中の通信経路を覗かれると入力内容や閲覧ページが丸見えになります。HTTPSにしておけば、通信内容が暗号化されるため、途中で盗み見られたり、勝手に偽の広告やスクリプトを差し込まれたりするリスクを大きく減らせます。</p>
+            <figure class="diagram-figure">
+  <svg viewBox="0 0 640 195" width="100%" role="img" aria-label="HTTPの平文通信とHTTPSのTLS暗号化通信の違いを比較する図解">
+    <defs>
+      <marker id="arr" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+        <path d="M 0 1 L 10 5 L 0 9 z" fill="currentColor" opacity="0.7"/>
+      </marker>
+    </defs>
+    <rect x="20" y="22" width="140" height="62" rx="8" fill="#b45309" fill-opacity="0.1" stroke="#b45309" stroke-width="1.8"/><text x="90" y="49" text-anchor="middle" font-size="12.5" font-weight="700" fill="currentColor">ブラウザ</text><text x="90" y="67" text-anchor="middle" font-size="10.5" fill="currentColor" opacity="0.78">入力内容・Cookie</text><line x1="164" y1="53" x2="474" y2="53" stroke="#d94b3f" stroke-width="2" marker-end="url(#arr)"/><text x="319" y="42" text-anchor="middle" font-size="10.5" font-weight="700" fill="#d94b3f">HTTP：そのままの文字（平文）で通過</text><rect x="480" y="22" width="140" height="62" rx="8" fill="#b45309" fill-opacity="0.1" stroke="#b45309" stroke-width="1.8"/><text x="550" y="49" text-anchor="middle" font-size="12.5" font-weight="700" fill="currentColor">サーバー</text><text x="550" y="67" text-anchor="middle" font-size="10.5" fill="currentColor" opacity="0.78">http://...</text><rect x="20" y="110" width="140" height="64" rx="8" fill="#0f766e" fill-opacity="0.1" stroke="#0f766e" stroke-width="1.8"/><text x="90" y="138" text-anchor="middle" font-size="12.5" font-weight="700" fill="currentColor">ブラウザ</text><text x="90" y="156" text-anchor="middle" font-size="10.5" fill="currentColor" opacity="0.78">証明書を検証</text><line x1="164" y1="142" x2="474" y2="142" stroke="#0f766e" stroke-width="2" marker-end="url(#arr)"/><text x="319" y="130" text-anchor="middle" font-size="10.5" font-weight="700" fill="#0f766e">HTTPS：TLS暗号化トンネルで保護（改ざん検知）</text><rect x="480" y="110" width="140" height="64" rx="8" fill="#0f766e" fill-opacity="0.1" stroke="#0f766e" stroke-width="1.8"/><text x="550" y="138" text-anchor="middle" font-size="12.5" font-weight="700" fill="currentColor">サーバー</text><text x="550" y="156" text-anchor="middle" font-size="10.5" fill="currentColor" opacity="0.78">https://...（証明書あり）</text>
+  </svg>
+  <figcaption>図解: HTTPは途中の経路から中身が見えやすいが、HTTPSはTLSで暗号化し証明書で通信相手も確認する</figcaption>
+</figure>
+          </section>
+          <section class="article-section" aria-labelledby="section-2">
+            <h2 id="section-2">HTTPSが守ってくれる3つのこと</h2>
+            <p>HTTPSの役割は単なる「暗号化」だけではありません。次の3つを同時に実現しています。</p>
+            <ul><li><strong>盗聴防止（機密性）：</strong>送信データやCookieを暗号化し、第三者に読まれないようにします。</li><li><strong>改ざん検知（完全性）：</strong>通信の途中で1バイトでも書き換えられたらブラウザが検知して止めます。</li><li><strong>なりすまし防止（認証）：</strong>「証明書」を使って、本当にそのドメインの持ち主が用意したサーバーかを確かめます。</li></ul>
+            <p>また、現代のブラウザではクリップボードAPI（<code>navigator.clipboard</code>）やカメラ機能、暗号論的乱数を使う一部機能など、HTTPS（または開発用のlocalhost）でないと動かない仕組みが増えています。</p>
+          </section>
+          <section class="article-section" aria-labelledby="section-3">
+            <h2 id="section-3">制作でよく踏む「混在コンテンツ」と証明書切れ</h2>
+            <p>サイトをHTTPS化したのにブラウザに警告が出るとき、よくある原因が<strong>混在コンテンツ（Mixed Content）</strong>です。ページ本体は <code>https://</code> なのに、中の画像やCSSをうっかり <code>http://</code> のURLで読み込んでいると、安全ではない要素としてブロックされます。</p>
+            <p>もう一つはSSL/TLS証明書の有効期限切れです。最近はLet’s Encryptなどの自動更新が一般的ですが、DNS設定を変更した拍子に自動更新が止まることもあるため、公開後は期限とリダイレクト（http→https）を必ず確認します。</p>
+          </section>
+          <section class="article-section" aria-labelledby="section-talk">
+            <h2 id="section-talk">この言葉が会話に出てくるとき</h2>
+            <p><strong>「本番でコピーボタンが動かないと思ったらHTTPのまま開いていた」</strong><br>クリップボード書き込みなどのブラウザAPIは安全なコンテキスト（HTTPS / localhost）が前提です。</p>
+<p><strong>「httpでアクセスされたら301でhttpsへ飛ばしておこう」</strong><br>古いリンクから来た訪問者も自動で暗号化通信へ案内する定番設定です。</p>
+          </section>
+          <section class="article-section" aria-labelledby="section-misread">
+            <h2 id="section-misread">勘違いしやすい点</h2>
+            <ul>
+              <li><strong>誤解1：HTTPSのサイトなら運営者も内容も絶対に信頼できる。</strong>証明書は「このドメインへの通信が暗号化されていること」を示すだけで、詐欺サイトやフィッシングサイトもHTTPSを取得できます。</li>
+<li><strong>誤解2：HTTPSにすればパスワード管理やXSS対策はいらない。</strong>HTTPSが守るのは「通信経路」までです。アプリ側の脆弱性やパスワード使い回しは別の対策が必要です。</li>
+            </ul>
+          </section>
+          <section class="article-section" aria-labelledby="section-4">
+            <h2 id="section-4">まとめ</h2>
+            <ul>
+              <li>HTTPSは通信の「盗聴防止・改ざん検知・相手確認」を行う現代Webの標準。</li>
+<li>ページ内の画像やスクリプトもすべて https://（または相対パス）に揃える。</li>
+<li>HTTPSは経路を守る仕組みであり、サイトの信頼性やアプリ内部の安全を保証するものではない。</li>
+            </ul>
+          </section>
+          <aside class="lab-example" aria-labelledby="lab-example-title">
+            <p class="eyebrow">FROM THE LAB</p>
+            <h2 id="lab-example-title">KatakataLabでの実例</h2>
+            <p>KatakataLabのパスワード生成ツールやテキスト差分ツールの「コピー」ボタンも、HTTPS環境で安全に動作するブラウザAPIを前提にしています。また、各ページのcanonical URLやOGP画像URLもすべて https:// に統一して混在を防いでいます。</p>
+            <div class="tool-link-banner"><strong>関連ツールで試す：<a href="../../password-generator/">強力パスワード生成ツール →</a></strong>HTTPS環境下のブラウザ標準暗号乱数（crypto.getRandomValues）で安全に文字列を生成します。</div>
+            <p class="related-heading">この実例につながるページ</p>
+            <ul class="related-links">
+              <li><a href="security.html">関連用語：セキュリティ</a></li>
+<li><a href="dns.html">関連用語：DNS</a></li>
+<li><a href="cookie-storage.html">関連用語：CookieとlocalStorage</a></li>
+            </ul>
+          </aside>
+          <section class="article-section faq" aria-labelledby="faq-title">
+            <p class="eyebrow">QUICK CHECK</p>
+            <h2 id="faq-title">よくある質問</h2>
+            <h3>SSLとTLSはどう使い分ければいいですか？</h3>
+<p>現在は技術的に後継規格の「TLS（TLS 1.2 / 1.3）」が使われていますが、慣習的に「SSL証明書」「SSL/TLS」と表記されることも多く、実務ではほぼ同じ文脈を指します。</p>
+<h3>無料証明書と有料証明書で暗号の強さは違いますか？</h3>
+<p>通信の暗号化アルゴリズム自体は同じです。有料証明書は企業実在性の審査や長期保証などの付加要素が異なる場合があります。</p>
+          </section>
+          <section class="article-section references" aria-labelledby="references-title">
+            <h2 id="references-title">参考資料</h2>
+            <p>用語の定義や仕様を確認するため、公式文書・標準文書を参照しています。リンク先の内容は更新される場合があります。</p>
+            <ul>
+              <li><a href="https://developer.mozilla.org/ja/docs/Glossary/HTTPS" target="_blank" rel="noopener noreferrer">MDN Web Docs「HTTPS」</a></li>
+<li><a href="https://developer.mozilla.org/ja/docs/Web/Security/Mixed_content" target="_blank" rel="noopener noreferrer">MDN Web Docs「混在コンテンツ」</a></li>
+            </ul>
+          </section>
+          <nav class="chapter-nav" aria-label="前後の記事">
+            <a class="chapter-link previous" href="dns.html"><small>前の記事</small><span>← DNS</span></a>
+            <a class="chapter-link next" href="domain.html"><small>次の記事</small><span>DOMAIN →</span></a>
+          </nav>
+        </div>
+      </div>
+    </article>
+  </main>
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <p><strong>KatakataLab</strong><br><span>作って、つまずいて、分かったことを残す小さな研究室。</span></p>
+      <nav aria-label="フッターナビゲーション">
+        <a href="../../contact.html">お問い合わせ</a>
+        <a href="../../who-is-katakata.html">運営者情報</a>
+        <a href="../../privacy.html">プライバシーポリシー</a>
+        <a href="../../sitemap.html">サイトマップ</a>
+      </nav>
+    </div>
+    <p class="copyright">&copy; 2024-2026 KatakataLab</p>
+  </footer>
+</body>
+</html>

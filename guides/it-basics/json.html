@@ -24,7 +24,7 @@
   "headline": "【IT用語】「JSON」とは？データを受け渡すためのシンプルな書式",
   "description": "JSONとは何かを、文字列・数値・真偽値・配列・オブジェクト、Excelとの用途の違い、構文エラーと入力検証の必要性から解説します。",
   "datePublished": "2026-07-13",
-  "dateModified": "2026-08-04",
+  "dateModified": "2026-11-28",
   "mainEntityOfPage": "https://katakatalab.com/guides/it-basics/json.html",
   "inLanguage": "ja",
   "author": {
@@ -90,7 +90,7 @@
         <h1>【IT用語】「JSON」とは？データを受け渡すためのシンプルな書式</h1>
         <p class="article-lead">JSONとは何かを、文字列・数値・真偽値・配列・オブジェクト、Excelとの用途の違い、構文エラーと入力検証の必要性から解説します。</p>
         <div class="article-meta" aria-label="記事情報">
-          <span>作成者：かたかた</span><span>公開日：2026年7月13日</span><span>更新日：2026年8月4日</span>
+          <span>作成者：かたかた</span><span>公開日：2026年7月13日</span><span>更新日：2026年11月28日</span>
         </div>
       </header>
       <div class="article-layout">
@@ -112,6 +112,18 @@
 <p>JSONは、JavaScript Object Notationの略です。</p>
 <p><strong>軽量なテキスト形式で、プログラミング言語に依存せず、構造化されたデータを表現できます。</strong></p>
 <p>JavaScriptから生まれた形式ですが、Python、Java、PHP、Goなど、多くの言語で扱えます。</p>
+
+<figure class="diagram-figure">
+  <svg viewBox="0 0 640 195" width="100%" role="img" aria-label="JSONのキーと値（文字列・数値・配列・真偽値）の構造図解">
+    <defs>
+      <marker id="arr" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+        <path d="M 0 1 L 10 5 L 0 9 z" fill="currentColor" opacity="0.7"/>
+      </marker>
+    </defs>
+    <rect x="24" y="24" width="320" height="148" rx="8" fill="#1f5c99" fill-opacity="0.07" stroke="#1f5c99" stroke-width="1.8"/><text x="42" y="50" font-size="12.5" font-family="monospace" fill="currentColor">{</text><text x="58" y="72" font-size="12.5" font-family="monospace" fill="currentColor">"name": "KatakataLab",</text><text x="58" y="94" font-size="12.5" font-family="monospace" fill="currentColor">"terms": 30,</text><text x="58" y="116" font-size="12.5" font-family="monospace" fill="currentColor">"free": true,</text><text x="58" y="138" font-size="12.5" font-family="monospace" fill="currentColor">"tags": ["web", "tool"]</text><text x="42" y="160" font-size="12.5" font-family="monospace" fill="currentColor">}</text><rect x="370" y="28" width="244" height="40" rx="8" fill="#b45309" fill-opacity="0.1" stroke="#b45309" stroke-width="1.8"/><text x="492" y="53" text-anchor="middle" font-size="13" font-weight="700" fill="currentColor">キーは必ず二重引用符 " "</text><rect x="370" y="78" width="244" height="40" rx="8" fill="#0f766e" fill-opacity="0.1" stroke="#0f766e" stroke-width="1.8"/><text x="492" y="103" text-anchor="middle" font-size="13" font-weight="700" fill="currentColor">文字列・数値・true/false・配列</text><rect x="370" y="128" width="244" height="40" rx="8" fill="#d94b3f" fill-opacity="0.1" stroke="#d94b3f" stroke-width="1.8"/><text x="492" y="153" text-anchor="middle" font-size="13" font-weight="700" fill="currentColor">末尾の余計なカンマはエラー</text>
+  </svg>
+  <figcaption>図解: JSONは「"キー": 値」のペアを波括弧 { } で束ねた、人間にもプログラムにも読みやすいデータ形式</figcaption>
+</figure>
 </section>
 <section class="article-section" aria-labelledby="section-2"><h2 id="section-2">「ダンボール」で例えると？</h2>
 <p>引越しの箱に「食器」「本」と書けば、開ける前に中身を想像できます。</p>
@@ -194,6 +206,8 @@
             <p class="eyebrow">FROM THE LAB</p>
             <h2 id="lab-example-title">KatakataLabでの実例</h2>
             <p>KatakataLabのトップページでは、作品名や説明、リンク先などをprojects.jsonにまとめ、JavaScriptが読み込んで作品カードを表示します。JSONは見た目ではなく、プログラムが扱いやすい形で情報を渡す役目です。</p>
+            
+            <div class="tool-link-banner"><strong>関連ツールで試す：<a href="../../text-diff/">テキスト差分チェック →</a></strong>JSON設定ファイルの改定前後を比較するサンプルも収録しており、変更箇所を即座に見つけられます。</div>
             <p class="related-heading">この実例につながるページ</p>
             <ul class="related-links"><li><a href="api.html">関連用語：API</a></li>
 <li><a href="../../">作品一覧を組み立てるKatakataLabトップ</a></li></ul>

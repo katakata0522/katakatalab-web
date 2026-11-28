@@ -136,7 +136,8 @@ export const DOUJIN_CONFIG = {
     { id: 'item_battery', text: 'スマホ充電用モバイルバッテリー (大容量)', checked: false }
   ],
 
-  // おすすめ備品セレクション
+  // おすすめ備品セレクション（広告・アフィリエイト方針に合わせ現在は非表示）
+  SHOW_AFFILIATE_SUPPLIES: false,
   AFFILIATE_SUPPLIES: [
     {
       id: 'coin_case',

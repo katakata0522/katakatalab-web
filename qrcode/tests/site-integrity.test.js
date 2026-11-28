@@ -339,12 +339,12 @@ test('SEO 用 robots / sitemap は現行の公開方針と本番URLを指す', (
   assert.doesNotMatch(sitemap, /<loc>https:\/\/katakatalab\.com\/qrcode\/(?:guides|guide-|lp-|pro-plan|terms|privacy)/);
 });
 
-test('ルート sitemap はQR本体と規約系だけを公開導線として持つ', () => {
+test('ルート sitemap はQR本体を公開導線として持ち、個別規約ページはnoindexで除外する', () => {
   const rootSitemap = fs.readFileSync(path.join(ROOT, '..', 'sitemap.xml'), 'utf8');
   assert.match(rootSitemap, /<loc>https:\/\/katakatalab\.com\/qrcode\/<\/loc>/);
-  assert.match(rootSitemap, /<loc>https:\/\/katakatalab\.com\/qrcode\/terms\.html<\/loc>/);
-  assert.match(rootSitemap, /<loc>https:\/\/katakatalab\.com\/qrcode\/privacy\.html<\/loc>/);
-  assert.doesNotMatch(rootSitemap, /<loc>https:\/\/katakatalab\.com\/qrcode\/(?:guides|guide-|lp-|pro-plan)/);
+  assert.doesNotMatch(rootSitemap, /<loc>https:\/\/katakatalab\.com\/qrcode\/(?:guides|guide-|lp-|pro-plan|terms|privacy)/);
+  assert.match(read('terms.html'), /<meta[^>]+name="robots"[^>]+content="[^"]*noindex/i);
+  assert.match(read('privacy.html'), /<meta[^>]+name="robots"[^>]+content="[^"]*noindex/i);
 });
 
 test('PWA アイコンが存在する', () => {

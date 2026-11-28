@@ -148,14 +148,12 @@ test('sitemap掲載ガイドとツールは現行の信頼導線を持つ', () =
     'guides/px-rem-guide.html',
     'guides/password-guide.html',
   ];
-  // SNS画像ガイドは英語版との多言語ペアとして検索公開するが、広告は載せない。
-  const indexableAdFreeGuideFiles = [
-    'guides/sns-image-size-guide.html',
-  ];
-  // 役割が補助的で内容が近いガイドはnoindexを維持する。
+  // 役割が補助的・案内中心のガイドはnoindexを維持し、sitemapから外す。
   const thinAuxGuideFiles = [
+    'guides/sns-image-size-guide.html',
     'guides/css-size-scale-guide.html',
     'guides/password-storage-guide.html',
+    'guides/discount-guide.html',
   ];
   const toolFiles = [
     'text-diff/index.html',
@@ -171,18 +169,12 @@ test('sitemap掲載ガイドとツールは現行の信頼導線を持つ', () =
     assert.match(sitemapHtml, new RegExp(relativePath.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')));
   }
 
-  for (const relativePath of indexableAdFreeGuideFiles) {
-    const html = readFile(relativePath);
-    assert.doesNotMatch(html, /pagead2\.googlesyndication\.com|adsbygoogle/);
-    assert.doesNotMatch(html, /noindex/i);
-    assert.match(sitemapHtml, new RegExp(relativePath.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')));
-  }
-
   for (const relativePath of thinAuxGuideFiles) {
     const html = readFile(relativePath);
     assert.doesNotMatch(html, /pagead2\.googlesyndication\.com|adsbygoogle/);
     assert.match(html, /noindex/i);
     assert.doesNotMatch(sitemapHtml, new RegExp(relativePath.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')));
+    assert.doesNotMatch(readFile('sitemap.xml'), new RegExp(`<loc>https://katakatalab\\.com/${relativePath.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}</loc>`));
   }
   for (const relativePath of toolFiles) {
     const canonicalPath = relativePath.replace(/index\.html$/, '');
@@ -218,16 +210,26 @@ test('sitemapのlastmodはページの構造化更新日と矛盾しない', () 
   }
 });
 
-test('薄い補助ページは noindex かつメインsitemap外', () => {
+test('薄い補助ページ・一覧専用ページ・個別アプリ法務ページは noindex かつメインsitemap外', () => {
   const sitemap = readFile('sitemap.xml');
   const thin = [
     ['lab-tools/gravity-todo/index.html', 'https://katakatalab.com/lab-tools/gravity-todo/'],
     ['lab-tools/kids-smile-land/index.html', 'https://katakatalab.com/lab-tools/kids-smile-land/'],
     ['qrcode/guide-wifi.html', 'https://katakatalab.com/qrcode/guide-wifi.html'],
     ['emphasis-lines/index.html', 'https://katakatalab.com/emphasis-lines/'],
+    ['guides/sns-image-size-guide.html', 'https://katakatalab.com/guides/sns-image-size-guide.html'],
+    ['other-projects.html', 'https://katakatalab.com/other-projects.html'],
+    ['qrcode/privacy.html', 'https://katakatalab.com/qrcode/privacy.html'],
+    ['qrcode/terms.html', 'https://katakatalab.com/qrcode/terms.html'],
   ];
-  for (const [relativePath, canonical] of thin) {
-    assert.match(readFile(relativePath), /noindex/i, `${relativePath} に noindex が必要です`);
+  const privacyDirs = fs.readdirSync(path.join(rootDir, 'privacy'), { withFileTypes: true })
+    .filter((entry) => entry.isDirectory())
+    .map((entry) => [`privacy/${entry.name}/index.html`, `https://katakatalab.com/privacy/${entry.name}/`]);
+
+  for (const [relativePath, canonical] of [...thin, ...privacyDirs]) {
+    const html = readFile(relativePath);
+    assert.match(html, /<meta[^>]+name=["']robots["'][^>]+content=["'][^"']*noindex/i, `${relativePath} に noindex が必要です`);
+    assert.doesNotMatch(html, /pagead2\.googlesyndication\.com|adsbygoogle/, `${relativePath} に広告スクリプトを載せないでください`);
     // 完全一致で判定（emphasis-lines/en/ を誤検出しない）
     assert.equal(
       sitemap.includes(`<loc>${canonical}</loc>`),
@@ -235,6 +237,11 @@ test('薄い補助ページは noindex かつメインsitemap外', () => {
       `${canonical} をメインsitemapから外してください`
     );
   }
+
+  assert.match(readFile('other-projects.html'), /href="privacy\.html"/);
+  assert.match(readFile('other-projects.html'), /href="contact\.html"/);
+  assert.match(readFile('motion-atlas/index.html'), /収録しているUI・アニメーションの分類/);
+  assert.match(readFile('motion-atlas/index.html'), /この図鑑の使い方と活用シーン/);
 });
 
 test('掲載済み小型ツールの既知不備を防ぐ', () => {
@@ -426,4 +433,30 @@ test('Katakata Font-Labの品質・SEO・信頼導線の検証', () => {
   assert.match(css, /--primary/);
   assert.match(script, /document\.addEventListener\('DOMContentLoaded'/);
 });
+
+test('主要ツールの品質穴ふさぎ（検証メモ・所有確認meta・同人PR非表示）を維持する', () => {
+  const indexHtml = readFile('index.html');
+  assert.match(indexHtml, /<meta name="google-adsense-account" content="ca-pub-3845885843809455">/);
+  assert.doesNotMatch(indexHtml, /pagead2\.googlesyndication\.com|adsbygoogle/);
+
+  const doujinConfig = readFile('doujin-calc/js/config.js');
+  const doujinHtml = readFile('doujin-calc/index.html');
+  assert.match(doujinConfig, /SHOW_AFFILIATE_SUPPLIES:\s*false/);
+  assert.match(doujinHtml, /<section id="supplies-section" hidden/);
+  assert.match(doujinHtml, /data-verification-note/);
+  assert.match(doujinHtml, /id="faq-accordion-container"[\s\S]*?<details/);
+
+  for (const relativePath of [
+    'font-lab/index.html',
+    'px-rem-converter/index.html',
+    'screenshot-crop/index.html',
+    'ogp-simulator/index.html',
+    'text-diff/index.html',
+  ]) {
+    const html = readFile(relativePath);
+    assert.match(html, /data-verification-note/, `${relativePath} に検証メモが必要です`);
+    assert.match(html, /作成者[:：]\s*かたかた/, `${relativePath} に作成者表記が必要です`);
+  }
+});
+
 

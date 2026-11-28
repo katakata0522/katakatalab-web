@@ -92,7 +92,17 @@ document.addEventListener('DOMContentLoaded', () => {
     let deferredInstallPrompt = null;
     let vaultUiSession = 0;
     let isPinMode = false;
+    let genMode = 'random';
     let resultsHidden = false;
+    const modeRandomBtn = $('mode-random');
+    const modePassphraseBtn = $('mode-passphrase');
+    const passphraseOptions = $('passphrase-options');
+    const randomModeBlock = $('random-mode-block');
+    const ppWords = $('pp-words');
+    const ppWordsVal = $('pp-words-val');
+    const ppSeparator = $('pp-separator');
+    const ppCapitalize = $('pp-capitalize');
+    const ppNumber = $('pp-number');
     const sessionHistory = [];
     const isEnterOrSpace = (event) => event.key === 'Enter' || event.key === ' ';
 
@@ -358,24 +368,60 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // ===== 生成 =====
+    function setGenMode(mode) {
+        genMode = mode === 'passphrase' ? 'passphrase' : 'random';
+        const isPass = genMode === 'passphrase';
+        if (modeRandomBtn) {
+            modeRandomBtn.classList.toggle('active', !isPass);
+            modeRandomBtn.setAttribute('aria-pressed', String(!isPass));
+        }
+        if (modePassphraseBtn) {
+            modePassphraseBtn.classList.toggle('active', isPass);
+            modePassphraseBtn.setAttribute('aria-pressed', String(isPass));
+        }
+        if (passphraseOptions) passphraseOptions.hidden = !isPass;
+        if (randomModeBlock) randomModeBlock.hidden = isPass;
+        const lengthWrap = inputs.length ? inputs.length.closest('.pwd-slider-wrapper') : null;
+        if (lengthWrap) lengthWrap.hidden = isPass;
+        [inputs.useLower, inputs.useUpper, inputs.useNumber, inputs.useSymbol, inputs.excludeAmbiguous].forEach(cb => {
+            const wrap = cb ? cb.closest('.pwd-checkbox-wrapper') : null;
+            if (wrap) wrap.hidden = isPass;
+        });
+        if (inputs.customSymbolWrap) inputs.customSymbolWrap.hidden = isPass || !inputs.useSymbol.checked;
+        generate();
+    }
+
     function generate() {
-        isPinMode = inputs.useNumber.checked && !inputs.useLower.checked && !inputs.useUpper.checked && !inputs.useSymbol.checked;
+        const isPassphrase = typeof genMode !== 'undefined' && genMode === 'passphrase';
+        isPinMode = !isPassphrase && inputs.useNumber.checked && !inputs.useLower.checked && !inputs.useUpper.checked && !inputs.useSymbol.checked;
         const purpose = $('generation-purpose');
-        if (purpose) purpose.textContent = isPinMode
-            ? '数字PIN：端末・サービスが数字の暗証番号を指定する場合に使用してください。一般的なログイン用パスワードには英字も加えてください。'
-            : 'パスワード：利用先の条件に合わせ、サービスごとに使い回さず設定してください。';
+        if (purpose) purpose.textContent = isPassphrase
+            ? 'パスフレーズ：覚えやすい英単語を暗号学的乱数で連結します。端末ロック解除やマスターパスワードの候補に向いています。'
+            : (isPinMode
+                ? '数字PIN：端末・サービスが数字の暗証番号を指定する場合に使用してください。一般的なログイン用パスワードには英字も加えてください。'
+                : 'パスワード：利用先の条件に合わせ、サービスごとに使い回さず設定してください。');
         let len = parseInt(inputs.length.value, 10);
         let cnt = parseInt(inputs.count.value, 10);
         len = clampLength(len);
         cnt = clampCount(cnt);
         try {
-            currentPasswords = logic.generate({
-                length: len, count: cnt,
-                useLower: inputs.useLower.checked, useUpper: inputs.useUpper.checked,
-                useNumber: inputs.useNumber.checked, useSymbol: inputs.useSymbol.checked,
-                customSymbols: normalizeCustomSymbols(inputs.customSymbols.value).trim(),
-                excludeAmbiguous: inputs.excludeAmbiguous.checked,
-            });
+            if (isPassphrase) {
+                currentPasswords = logic.generatePassphrase({
+                    wordCount: ppWords ? parseInt(ppWords.value, 10) : 4,
+                    separator: ppSeparator ? ppSeparator.value : '-',
+                    capitalize: ppCapitalize ? ppCapitalize.checked : true,
+                    appendNumber: ppNumber ? ppNumber.checked : true,
+                    count: cnt,
+                });
+            } else {
+                currentPasswords = logic.generate({
+                    length: len, count: cnt,
+                    useLower: inputs.useLower.checked, useUpper: inputs.useUpper.checked,
+                    useNumber: inputs.useNumber.checked, useSymbol: inputs.useSymbol.checked,
+                    customSymbols: normalizeCustomSymbols(inputs.customSymbols.value).trim(),
+                    excludeAmbiguous: inputs.excludeAmbiguous.checked,
+                });
+            }
             renderResults(currentPasswords);
             addToHistory(currentPasswords);
         } catch (e) {
@@ -399,7 +445,9 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
         passwords.forEach(pwd => {
-            const strength = logic.checkStrength(pwd, logic.lastGeneratedPoolSize);
+            const strength = typeof logic.lastGeneratedEntropyBits === 'number'
+                ? Math.min(100, Math.round((logic.lastGeneratedEntropyBits / 64) * 100))
+                : logic.checkStrength(pwd, logic.lastGeneratedPoolSize);
             const label = logic.getStrengthLabel(strength);
 
             const item = document.createElement('div');
@@ -549,6 +597,17 @@ document.addEventListener('DOMContentLoaded', () => {
         debouncedGenerate();
     });
     inputs.genBtn.addEventListener('click', () => { generate(); showMobileResults(); });
+    if (modeRandomBtn) modeRandomBtn.addEventListener('click', () => setGenMode('random'));
+    if (modePassphraseBtn) modePassphraseBtn.addEventListener('click', () => setGenMode('passphrase'));
+    if (ppWords) {
+        ppWords.addEventListener('input', () => {
+            if (ppWordsVal) ppWordsVal.textContent = `${ppWords.value}語`;
+            debouncedGenerate();
+        });
+    }
+    [ppSeparator, ppCapitalize, ppNumber].forEach(el => {
+        if (el) el.addEventListener('change', () => generate());
+    });
     if (inputs.resetBtn) inputs.resetBtn.addEventListener('click', resetSettings);
     if (inputs.saveHistory) {
         inputs.saveHistory.addEventListener('change', () => {

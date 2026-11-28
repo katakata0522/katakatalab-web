@@ -24,7 +24,7 @@
   "headline": "【IT用語】「データベース(DB)」とは？情報を整理して取り出す仕組み",
   "description": "データベースとは何かを、Excelとの違い、検索を助けるインデックス、安全な更新に必要なトランザクション、SQLの例から解説します。",
   "datePublished": "2026-07-13",
-  "dateModified": "2026-08-04",
+  "dateModified": "2026-11-28",
   "mainEntityOfPage": "https://katakatalab.com/guides/it-basics/database.html",
   "inLanguage": "ja",
   "author": {
@@ -90,7 +90,7 @@
         <h1>【IT用語】「データベース(DB)」とは？情報を整理して取り出す仕組み</h1>
         <p class="article-lead">データベースとは何かを、Excelとの違い、検索を助けるインデックス、安全な更新に必要なトランザクション、SQLの例から解説します。</p>
         <div class="article-meta" aria-label="記事情報">
-          <span>作成者：かたかた</span><span>公開日：2026年7月13日</span><span>更新日：2026年8月4日</span>
+          <span>作成者：かたかた</span><span>公開日：2026年7月13日</span><span>更新日：2026年11月28日</span>
         </div>
       </header>
       <div class="article-layout">
@@ -109,6 +109,18 @@
 <section class="article-section" aria-labelledby="section-1"><h2 id="section-1">結論：「データベース」＝「情報を整理し、必要な時に取り出す仕組み」</h2>
 <p>データベースとは、<strong>「大量のデータを一定のルールで保存し、検索・追加・更新・削除しやすくする仕組み」</strong>です。</p>
 <p>ただ保存するだけではありません。どんな項目を持つか、どう関連づけるか、誰が操作できるかといったルールも管理します。</p>
+
+<figure class="diagram-figure">
+  <svg viewBox="0 0 640 195" width="100%" role="img" aria-label="データベースのテーブル構造（行と列）と検索・更新の流れ">
+    <defs>
+      <marker id="arr" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+        <path d="M 0 1 L 10 5 L 0 9 z" fill="currentColor" opacity="0.7"/>
+      </marker>
+    </defs>
+    <rect x="24" y="54" width="155" height="82" rx="8" fill="#1f5c99" fill-opacity="0.1" stroke="#1f5c99" stroke-width="1.8"/><text x="101.5" y="91" text-anchor="middle" font-size="13" font-weight="700" fill="currentColor">Webアプリ</text><text x="101.5" y="109" text-anchor="middle" font-size="10.5" fill="currentColor" opacity="0.78">検索・登録・更新を依頼</text><line x1="182" y1="95" x2="240" y2="95" stroke="#1f5c99" stroke-width="2" marker-end="url(#arr)"/><text x="211" y="84" text-anchor="middle" font-size="10.5" font-weight="700" fill="#1f5c99">SQL等</text><rect x="246" y="28" width="370" height="136" rx="8" fill="#0f766e" fill-opacity="0.06" stroke="#0f766e" stroke-width="1.8"/><text x="431" y="50" text-anchor="middle" font-size="12.5" font-weight="700" fill="currentColor">テーブル例：tools（ツール一覧）</text><line x1="258" y1="62" x2="604" y2="62" stroke="currentColor" stroke-opacity="0.25"/><text x="274" y="80" font-size="11" font-weight="700" fill="currentColor">id</text><text x="330" y="80" font-size="11" font-weight="700" fill="currentColor">name</text><text x="480" y="80" font-size="11" font-weight="700" fill="currentColor">category</text><line x1="258" y1="88" x2="604" y2="88" stroke="currentColor" stroke-opacity="0.18"/><text x="274" y="108" font-size="11" fill="currentColor">01</text><text x="330" y="108" font-size="11" fill="currentColor">QR Maker Lab</text><text x="480" y="108" font-size="11" fill="currentColor">ユーティリティ</text><text x="274" y="130" font-size="11" fill="currentColor">02</text><text x="330" y="130" font-size="11" fill="currentColor">テキスト差分チェック</text><text x="480" y="130" font-size="11" fill="currentColor">開発・文章</text><text x="274" y="152" font-size="10.5" fill="currentColor" opacity="0.75">※ 条件を指定して必要な行だけを瞬時に抽出できる</text>
+  </svg>
+  <figcaption>図解: データベースは「列（項目）」と「行（1件のデータ）」で整理し、アプリからの検索・保存を高速に行う</figcaption>
+</figure>
 </section>
 <section class="article-section" aria-labelledby="section-2"><h2 id="section-2">「図書館」で例えると？</h2>
 <p>本が数冊なら、棚を上から眺めるだけでも探せます。ところが、何十万冊もあれば、それでは時間がかかります。</p>
@@ -163,6 +175,8 @@
             <p class="eyebrow">FROM THE LAB</p>
             <h2 id="lab-example-title">KatakataLabでの実例</h2>
             <p>KatakataLabの計算ツールには、入力をブラウザ内で処理し、データベースを使わずに完結するものもあります。保存・共有・大量検索が必要かを考え、必要な場所だけにデータベースを使うことも大切な設計判断です。</p>
+            
+            <div class="tool-link-banner"><strong>関連ツールで試す：<a href="../../doujin-calc/">同人の価格と釣銭 →</a></strong>入力データを表形式で整理して損益と釣銭を集計する実例として試せます。</div>
             <p class="related-heading">この実例につながるページ</p>
             <ul class="related-links"><li><a href="json.html">関連用語：JSON</a></li>
 <li><a href="../../password-generator/">ブラウザ内で処理するパスワード生成</a></li></ul>

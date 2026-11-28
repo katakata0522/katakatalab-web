@@ -25,7 +25,7 @@
       "headline": "QRにする前に、中身と紙の2つだけ決める",
       "description": "QRを配る前に決める中身と、印刷で読めなくなるポイント。",
       "datePublished": "2026-10-01",
-      "dateModified": "2026-10-01",
+      "dateModified": "2026-11-28",
       "author": {"@type": "Person", "name": "かたかた"},
       "publisher": {
         "@type": "Organization",
@@ -80,7 +80,7 @@
                     <span class="guide-chip">イベント</span>
                     <span class="guide-chip">Wi-Fi共有</span>
                 </div>
-                <p class="guide-note" style="margin-top: 1rem;">作成者: かたかた / 更新日: 2026年10月1日</p>
+                <p class="guide-note" style="margin-top: 1rem;">作成者: かたかた / 更新日: 2026年11月28日</p>
                 <div class="guide-actions">
                     <a href="../qrcode/" class="btn btn-primary">QRを作る</a>
                     <a href="case-studies.html" class="btn btn-secondary">実例を見る</a>
@@ -119,6 +119,59 @@
                 <p>背景とコードの明暗が足りないと、画面では見えても印刷では読めません。暗いコードに、明るい背景が無難です。</p>
                 <h3>小さく印刷した</h3>
                 <p>画面では読めても、離れた壁の紙では読めないことがあります。配る場所の距離で、もう一度読み取ってください。</p>
+                <figure style="margin: 1.5rem 0; padding: 1.2rem; border: 1px solid rgba(128,128,128,0.25); border-radius: 12px; background: rgba(128,128,128,0.04);">
+                    <svg viewBox="0 0 640 230" width="100%" role="img" aria-label="QRコード周囲に4モジュール以上の余白（クワイエットゾーン）が必要な理由の図解" style="display: block; max-width: 640px; margin: 0 auto; height: auto;">
+                        <!-- Good QR -->
+                        <rect x="20" y="20" width="280" height="190" rx="10" fill="#10b981" fill-opacity="0.06" stroke="#10b981" stroke-width="1.8"/>
+                        <text x="160" y="42" text-anchor="middle" font-size="13" font-weight="700" fill="#059669">〇 周囲に十分な余白がある（推奨: 4セル分以上）</text>
+                        <rect x="102" y="54" width="116" height="116" rx="4" fill="#ffffff" stroke="#10b981" stroke-width="1.5" stroke-dasharray="4 3"/>
+                        <rect x="122" y="74" width="76" height="76" fill="#111827" fill-opacity="0.08" stroke="#111827" stroke-width="1"/>
+                        <!-- Finder patterns -->
+                        <rect x="125" y="77" width="18" height="18" fill="none" stroke="#111827" stroke-width="3"/><rect x="131" y="83" width="6" height="6" fill="#111827"/>
+                        <rect x="177" y="77" width="18" height="18" fill="none" stroke="#111827" stroke-width="3"/><rect x="183" y="83" width="6" height="6" fill="#111827"/>
+                        <rect x="125" y="129" width="18" height="18" fill="none" stroke="#111827" stroke-width="3"/><rect x="131" y="135" width="6" height="6" fill="#111827"/>
+                        <!-- Sample modules -->
+                        <rect x="150" y="84" width="8" height="8" fill="#111827"/><rect x="162" y="96" width="8" height="8" fill="#111827"/><rect x="148" y="110" width="12" height="8" fill="#111827"/><rect x="170" y="114" width="10" height="10" fill="#111827"/><rect x="154" y="130" width="10" height="10" fill="#111827"/><rect x="174" y="134" width="14" height="8" fill="#111827"/>
+                        <text x="160" y="192" text-anchor="middle" font-size="11" fill="currentColor" opacity="0.8">白縁（クワイエットゾーン）が境界を認識させる</text>
+
+                        <!-- Bad QR -->
+                        <rect x="340" y="20" width="280" height="190" rx="10" fill="#ef4444" fill-opacity="0.06" stroke="#ef4444" stroke-width="1.8"/>
+                        <text x="480" y="42" text-anchor="middle" font-size="13" font-weight="700" fill="#dc2626">✕ 枠線や写真が密着している（読み取り失敗）</text>
+                        <rect x="434" y="66" width="92" height="92" fill="#374151"/>
+                        <rect x="442" y="74" width="76" height="76" fill="#ffffff"/>
+                        <rect x="445" y="77" width="18" height="18" fill="none" stroke="#111827" stroke-width="3"/><rect x="451" y="83" width="6" height="6" fill="#111827"/>
+                        <rect x="497" y="77" width="18" height="18" fill="none" stroke="#111827" stroke-width="3"/><rect x="503" y="83" width="6" height="6" fill="#111827"/>
+                        <rect x="445" y="129" width="18" height="18" fill="none" stroke="#111827" stroke-width="3"/><rect x="451" y="135" width="6" height="6" fill="#111827"/>
+                        <rect x="470" y="84" width="8" height="8" fill="#111827"/><rect x="482" y="96" width="8" height="8" fill="#111827"/><rect x="468" y="110" width="12" height="8" fill="#111827"/><rect x="490" y="114" width="10" height="10" fill="#111827"/><rect x="474" y="130" width="10" height="10" fill="#111827"/>
+                        <text x="480" y="192" text-anchor="middle" font-size="11" fill="currentColor" opacity="0.8">濃い背景や罫線が接すると位置検出に失敗しやすい</text>
+                    </svg>
+                    <figcaption style="margin-top: 0.65rem; font-size: 0.86rem; text-align: center; opacity: 0.8;">図解: QRコードの読み取り精度を左右するクワイエットゾーン（ISO/IEC 18004推奨の4モジュール余白）</figcaption>
+                </figure>
+            </div>
+
+            <div class="guide-section-card">
+                <h2>誤り訂正レベル（L / M / Q / H）と印刷サイズの目安</h2>
+                <p>QRコードの国際規格（ISO/IEC 18004）には、汚れや欠損をどこまで復元できるかを決める4段階の誤り訂正レベルがあります。レベルを上げるほど復元力は高まりますが、コードのマス目（モジュール）が細かくなるため、印刷サイズも少し大きめが必要になります。</p>
+                <div class="responsive-table-container"><table class="guide-table">
+                    <thead><tr><th>レベル</th><th>復元目安（コード語）</th><th>向いている用途</th><th>注意点</th></tr></thead>
+                    <tbody>
+                        <tr><td><strong>L</strong>（Low）</td><td>約 7%</td><td>画面表示・短いURLの極小印刷</td><td>汚れや折れに弱く、ロゴ重ねは非推奨</td></tr>
+                        <tr><td><strong>M</strong>（Medium）</td><td>約 15%</td><td>名刺・チラシ・一般的な紙配布（標準）</td><td>バランスが良く迷ったらまずMから試す</td></tr>
+                        <tr><td><strong>Q</strong>（Quartile）</td><td>約 25%</td><td>屋外掲示・少しこすれやすい環境</td><td>文字数が多いと目が細かくなる</td></tr>
+                        <tr><td><strong>H</strong>（High）</td><td>約 30%</td><td>中央へ小さなロゴを重ねる掲示物</td><td>「面積の30%を隠せる」わけではない。実機確認が必須</td></tr>
+                    </tbody>
+                </table></div>
+                <h3>読み取り距離と印刷サイズの実務目安</h3>
+                <p>一般的な目安として、<strong>印刷幅 ≒ 読み取り距離 ÷ 10</strong>（名刺や手元配布なら最低20mm〜25mm以上）を基準に考えると失敗が減ります。</p>
+                <div class="responsive-table-container"><table class="guide-table">
+                    <thead><tr><th>掲示場所・配布物</th><th>想定する読み取り距離</th><th>印刷サイズ目安（一辺）</th></tr></thead>
+                    <tbody>
+                        <tr><td>名刺・ショップカード</td><td>15〜25cm（手元）</td><td>20〜25mm 以上</td></tr>
+                        <tr><td>テーブルPOP・メニュー</td><td>30〜50cm</td><td>30〜50mm 以上</td></tr>
+                        <tr><td>A4チラシ・壁面ポスター</td><td>50〜100cm</td><td>50〜100mm 以上</td></tr>
+                        <tr><td>イベント看板・遠距離掲示</td><td>1.5〜3m</td><td>150〜300mm 以上</td></tr>
+                    </tbody>
+                </table></div>
             </div>
 
             <div class="guide-section-card">
@@ -161,7 +214,7 @@
                 <p>A. 使えます。できたQR画像そのものに、KatakataLabは権利を主張しません。ロゴや写真を載せるときは、その素材の権利を自分で確認してください。</p>
                 <h3>Q. 画面で読めたのに、印刷すると読めません。</h3>
                 <p>A. 生成と、現場で読めることは別です。余白、明暗、紙のサイズ、明るさを戻して、もう一度実物を読み取ってください。</p>
-                <p class="guide-note">更新日: 2026年10月1日 / 作成者: <a href="../who-is-katakata.html">かたかた</a></p>
+                <p class="guide-note">更新日: 2026年11月28日 / 作成者: <a href="../who-is-katakata.html">かたかた</a></p>
             </div>
 
             <div class="guide-section-card">

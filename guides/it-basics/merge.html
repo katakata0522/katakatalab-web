@@ -24,7 +24,7 @@
   "headline": "【IT用語】「マージ」とは？別々の変更を1つに合流する作業",
   "description": "マージとは何かを、ブランチの合流、コンフリクトが起きる理由、人が判断するポイント、統合後に必要なテストまでやさしく解説します。",
   "datePublished": "2026-07-13",
-  "dateModified": "2026-08-04",
+  "dateModified": "2026-11-28",
   "mainEntityOfPage": "https://katakatalab.com/guides/it-basics/merge.html",
   "inLanguage": "ja",
   "author": {
@@ -90,7 +90,7 @@
         <h1>【IT用語】「マージ」とは？別々の変更を1つに合流する作業</h1>
         <p class="article-lead">マージとは何かを、ブランチの合流、コンフリクトが起きる理由、人が判断するポイント、統合後に必要なテストまでやさしく解説します。</p>
         <div class="article-meta" aria-label="記事情報">
-          <span>作成者：かたかた</span><span>公開日：2026年7月13日</span><span>更新日：2026年8月4日</span>
+          <span>作成者：かたかた</span><span>公開日：2026年7月13日</span><span>更新日：2026年11月28日</span>
         </div>
       </header>
       <div class="article-layout">
@@ -117,6 +117,18 @@
 <li><strong>マージ：</strong> 別の車線から本線へ合流する作業。</li>
 </ul>
 <p>本線で直接大きな工事をする代わりに、別の場所で変更を作り、確認してから合流させます。</p>
+
+<figure class="diagram-figure">
+  <svg viewBox="0 0 640 195" width="100%" role="img" aria-label="2つのブランチの変更を1本に合流させるマージとコンフリクトの図解">
+    <defs>
+      <marker id="arr" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+        <path d="M 0 1 L 10 5 L 0 9 z" fill="currentColor" opacity="0.7"/>
+      </marker>
+    </defs>
+    <line x1="55" y1="68" x2="580" y2="68" stroke="#1f5c99" stroke-width="3"/><path d="M 165 68 Q 210 132 275 132 L 395 132 Q 445 132 480 68" fill="none" stroke="#0f766e" stroke-width="3"/><circle cx="165" cy="68" r="9" fill="#1f5c99"/><circle cx="330" cy="68" r="9" fill="#1f5c99"/><circle cx="330" cy="132" r="9" fill="#0f766e"/><circle cx="480" cy="68" r="11" fill="#d94b3f"/><text x="330" y="48" text-anchor="middle" font-size="11" fill="currentColor">main側の更新</text><text x="330" y="158" text-anchor="middle" font-size="11" fill="#0f766e" font-weight="700">feature側の更新</text><text x="480" y="45" text-anchor="middle" font-size="11.5" font-weight="700" fill="#d94b3f">マージ地点（合流）</text>
+  </svg>
+  <figcaption>図解: 別ブランチの作業をmainへ合流させるのがマージ。同じ行を両方から書き換えるとコンフリクトが起きる</figcaption>
+</figure>
 </section>
 <section class="article-section" aria-labelledby="section-2"><h2 id="section-2">なぜブランチを分けるの？</h2>
 <p>ブランチを分けると、作業途中の変更が、すぐに本流へ混ざるのを防げます。</p>
@@ -182,6 +194,8 @@
             <p class="eyebrow">FROM THE LAB</p>
             <h2 id="lab-example-title">KatakataLabでの実例</h2>
             <p>サイトでは、記事本文、HTML、トップページ、サイトマップの変更が互いに関係します。Gitがファイルを自動でマージできても、リンク先や日付まで意味が合っているとは限らないため、統合後のテストが必要です。</p>
+            
+            <div class="tool-link-banner"><strong>関連ツールで試す：<a href="../../text-diff/">テキスト差分チェック →</a></strong>マージ時に競合した2つのファイル内容を左右に並べて違いを確認するのに役立ちます。</div>
             <p class="related-heading">この実例につながるページ</p>
             <ul class="related-links"><li><a href="pull-request.html">関連用語：プルリクエスト</a></li>
 <li><a href="../case-studies.html">ツールの入力・出力実例</a></li></ul>

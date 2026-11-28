@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CookieとlocalStorageとは？ブラウザ内データ保存の違いと注意点 | かたかたの制作ノート</title>
+  <meta name="description" content="ブラウザに情報を覚えておくCookie・localStorage・sessionStorageの違いを解説。ダークモード設定やログイン維持の仕組みと、入れてはいけない秘密情報を整理します。">
+  <link rel="canonical" href="https://katakatalab.com/guides/it-basics/cookie-storage.html">
+  <link rel="icon" href="../../icon.svg" type="image/svg+xml">
+  <meta property="og:title" content="CookieとlocalStorageとは？ブラウザ内データ保存の違いと注意点">
+  <meta property="og:description" content="ブラウザに情報を覚えておくCookie・localStorage・sessionStorageの違いを解説。ダークモード設定やログイン維持の仕組みと、入れてはいけない秘密情報を整理します。">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="https://katakatalab.com/guides/it-basics/cookie-storage.html">
+  <meta property="og:image" content="https://katakatalab.com/ogp.png">
+  <meta property="og:site_name" content="KatakataLab">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="CookieとlocalStorageとは？ブラウザ内データ保存の違いと注意点">
+  <meta name="twitter:description" content="ブラウザに情報を覚えておくCookie・localStorage・sessionStorageの違いを解説。ダークモード設定やログイン維持の仕組みと、入れてはいけない秘密情報を整理します。">
+  <meta name="twitter:image" content="https://katakatalab.com/ogp.png">
+  <link rel="stylesheet" href="style.css">
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": "CookieとlocalStorageとは？ブラウザ内データ保存の違いと注意点",
+  "description": "ブラウザに情報を覚えておくCookie・localStorage・sessionStorageの違いを解説。ダークモード設定やログイン維持の仕組みと、入れてはいけない秘密情報を整理します。",
+  "inLanguage": "ja",
+  "datePublished": "2026-11-28",
+  "dateModified": "2026-11-28",
+  "author": {
+    "@type": "Person",
+    "name": "かたかた",
+    "url": "https://katakatalab.com/who-is-katakata.html"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "KatakataLab",
+    "url": "https://katakatalab.com/",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "https://katakatalab.com/ogp.png"
+    }
+  },
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "https://katakatalab.com/guides/it-basics/cookie-storage.html"
+  },
+  "image": "https://katakatalab.com/ogp.png"
+}
+</script>
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position": 1,
+      "name": "KatakataLab",
+      "item": "https://katakatalab.com/"
+    },
+    {
+      "@type": "ListItem",
+      "position": 2,
+      "name": "かたかたの制作ノート",
+      "item": "https://katakatalab.com/guides/it-basics/"
+    },
+    {
+      "@type": "ListItem",
+      "position": 3,
+      "name": "CookieとlocalStorageとは",
+      "item": "https://katakatalab.com/guides/it-basics/cookie-storage.html"
+    }
+  ]
+}
+</script>
+  <script defer src="../../analytics.js"></script>
+</head>
+<body class="article-page">
+  <script>try{if(localStorage.getItem('theme')==='dark')document.body.classList.add('dark-mode');}catch(e){}</script>
+  <a class="skip-link" href="#main-content">本文へ移動</a>
+  <header class="site-header">
+    <div class="header-inner">
+      <a class="brand" href="../../"><span class="brand-mark">KL</span><span>KatakataLab</span></a>
+      <nav class="site-nav" aria-label="主要ナビゲーション">
+        <a href="./">制作ノート一覧</a>
+        <a href="../../#projects">ツール一覧</a>
+        <a href="../../guides/tool-selection-guide.html">用途から選ぶ</a>
+        <a href="../../who-is-katakata.html">運営者</a>
+        <button type="button" id="it-theme-toggle" aria-label="テーマ切り替え" style="background:none;border:1px solid rgba(255,255,255,0.28);color:#fff;border-radius:6px;padding:0.2rem 0.55rem;cursor:pointer;font-size:0.9rem;line-height:1;transition:background 0.2s;" title="ダークモード切り替え">🌙</button>
+      </nav>
+    </div>
+  </header>
+  <script>
+    (function(){
+      var btn = document.getElementById('it-theme-toggle');
+      if(!btn) return;
+      function sync(){ btn.textContent = document.body.classList.contains('dark-mode') ? '☀️' : '🌙'; }
+      sync();
+      btn.addEventListener('click', function(){
+        var dark = document.body.classList.toggle('dark-mode');
+        try{ localStorage.setItem('theme', dark ? 'dark' : 'light'); }catch(e){}
+        sync();
+      });
+    })();
+  </script>
+  <main id="main-content">
+    <nav class="breadcrumbs" aria-label="パンくずリスト">
+      <ol>
+        <li><a href="../../">KatakataLab</a></li>
+        <li><a href="./">かたかたの制作ノート</a></li>
+        <li aria-current="page">CookieとlocalStorageとは</li>
+      </ol>
+    </nav>
+    <article class="article-shell">
+      <header class="article-hero">
+        <div class="chapter-stamp" aria-hidden="true"><span>CHAPTER 05</span><strong>21</strong><small>STORAGE</small></div>
+        <p class="eyebrow">CHAPTER 05｜Webの裏側と配信</p>
+        <h1>CookieとlocalStorageとは？ブラウザ内データ保存の違いと注意点</h1>
+        <p class="article-lead">一度ダークモードに切り替えると、次にページを開いたときも暗いままになっている。ログイン状態を維持してくれる。こうした「ブラウザが覚えていてくれる」機能の裏側には、CookieとlocalStorageの使い分けがあります。</p>
+        <div class="article-meta">
+          <span>執筆：<a href="../../who-is-katakata.html">かたかた</a></span>
+          <span>公開：<time datetime="2026-11-28">2026年11月28日</time></span>
+          <span>読了目安：約4分</span>
+        </div>
+        <div class="summary-strip" aria-label="ひとことで言うと">
+          <strong>ひとことで言うと</strong>
+          <p>Cookieはサーバー通信に自動添付される小さなメモ、localStorageはブラウザ内だけで使う大きめの保存棚です。</p>
+        </div>
+      </header>
+      <div class="article-layout">
+        <aside class="toc" aria-label="目次">
+          <p class="toc-title">目次</p>
+          <ol>
+            <li><a href="#section-1">しくみの全体像</a></li>
+            <li><a href="#section-2">3つの保存方法の使い分け</a></li>
+            <li><a href="#section-3">ブラウザ保存で気をつけたい3つの落とし穴</a></li>
+            <li><a href="#section-talk">この言葉が会話に出てくるとき</a></li>
+            <li><a href="#section-misread">勘違いしやすい点</a></li>
+            <li><a href="#section-4">まとめ</a></li>
+            <li><a href="#lab-example-title">KatakataLabでの実例</a></li>
+            <li><a href="#faq-title">よくある質問</a></li>
+            <li><a href="#references-title">参考資料</a></li>
+          </ol>
+        </aside>
+        <div class="article-content">
+          <section class="article-section" aria-labelledby="section-1">
+            <h2 id="section-1">しくみの全体像</h2>
+            <p>Webの通信（HTTP）は本来「前のやり取りを覚えていない（ステートレス）」仕組みです。そのため、ログイン状態やダークモードの好み、フォームの途中入力などを維持するには、ブラウザ側に小さな記憶領域を持たせる必要があります。</p>
+            <p>代表的なのが <strong>Cookie（クッキー）</strong> と <strong>Web Storage（localStorage / sessionStorage）</strong> です。名前は似ていますが、役割とセキュリティ上の扱いが大きく異なります。</p>
+            <figure class="diagram-figure">
+  <svg viewBox="0 0 640 195" width="100%" role="img" aria-label="Cookie・localStorage・sessionStorageの保存場所・サーバー送信有無・寿命の比較図解">
+    <defs>
+      <marker id="arr" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+        <path d="M 0 1 L 10 5 L 0 9 z" fill="currentColor" opacity="0.7"/>
+      </marker>
+    </defs>
+    <rect x="18" y="28" width="192" height="138" rx="8" fill="#b45309" fill-opacity="0.1" stroke="#b45309" stroke-width="1.8"/><text x="114" y="93" text-anchor="middle" font-size="12.5" font-weight="700" fill="currentColor">Cookie（約4KB）</text><text x="114" y="111" text-anchor="middle" font-size="10.5" fill="currentColor" opacity="0.78">サーバー通信に自動送信
+ログイン認証・期限設定可</text><rect x="224" y="28" width="192" height="138" rx="8" fill="#0f766e" fill-opacity="0.1" stroke="#0f766e" stroke-width="1.8"/><text x="320" y="93" text-anchor="middle" font-size="12.5" font-weight="700" fill="currentColor">localStorage（約5MB）</text><text x="320" y="111" text-anchor="middle" font-size="10.5" fill="currentColor" opacity="0.78">ブラウザ内のみ（自動送信なし）
+ダークモード・入力下書き</text><rect x="430" y="28" width="192" height="138" rx="8" fill="#1f5c99" fill-opacity="0.1" stroke="#1f5c99" stroke-width="1.8"/><text x="526" y="93" text-anchor="middle" font-size="12.5" font-weight="700" fill="currentColor">sessionStorage（約5MB）</text><text x="526" y="111" text-anchor="middle" font-size="10.5" fill="currentColor" opacity="0.78">タブを閉じると消去
+一時的な入力状態向き</text>
+  </svg>
+  <figcaption>図解: Cookieはリクエストのたびにサーバーへ送られるのに対し、localStorageとsessionStorageはブラウザ内だけで完結する</figcaption>
+</figure>
+          </section>
+          <section class="article-section" aria-labelledby="section-2">
+            <h2 id="section-2">3つの保存方法の使い分け</h2>
+            <ul><li><strong>Cookie：</strong>容量は数KBと小さいですが、サーバーへ通信するたびにHTTPヘッダーへ自動で載せられます。ログインセッションの維持など「サーバー側が毎回確認したい情報」に向いています。<code>HttpOnly</code> 属性を付ければJavaScriptから読み取れなくでき、安全性も高められます。</li><li><strong>localStorage：</strong>ブラウザ内だけに数MBほど保存でき、サーバーへは自動送信されません。タブを閉じても残るため、ダークモード設定・ツールの前回入力値・お気に入りプリセットなどの保存に最適です。</li><li><strong>sessionStorage：</strong>localStorageと使い方は同じですが、そのタブを閉じると自動で消えます。一時的なウィザード入力や、その場限りの状態保持に向いています。</li></ul>
+          </section>
+          <section class="article-section" aria-labelledby="section-3">
+            <h2 id="section-3">ブラウザ保存で気をつけたい3つの落とし穴</h2>
+            <p>便利なブラウザ保存ですが、実装時に次の3点を見落とすと不具合やセキュリティ事故につながります。</p>
+            <ul><li><strong>プライベートブラウズや容量上限でエラーになる：</strong><code>localStorage.setItem()</code> は設定や空き容量によって例外を投げることがあるため、必ず <code>try / catch</code> で囲みます。</li><li><strong>秘密情報や生パスワードは置かない：</strong>localStorageは同じオリジン上で動くJavaScriptから読めるため、XSS脆弱性があると盗み出されるリスクがあります。</li><li><strong>共有PCでは他人に残る：</strong>localStorageは手動で消さない限り残ります。個人情報を扱うツールでは「消去ボタン」や「保存しない設計」を明示するのが親切です。</li></ul>
+          </section>
+          <section class="article-section" aria-labelledby="section-talk">
+            <h2 id="section-talk">この言葉が会話に出てくるとき</h2>
+            <p><strong>「テーマ設定はサーバーに送る必要ないから localStorage にしよう」</strong><br>見た目の設定はブラウザ内完結で十分なので、CookieよりlocalStorageの方が通信量も増えずシンプルです。</p>
+<p><strong>「認証トークンは HttpOnly Cookie にしたい」</strong><br>JavaScriptから直接アクセスできないCookieにすることで、XSSによるトークン抜き取りを防ぐ設計判断です。</p>
+          </section>
+          <section class="article-section" aria-labelledby="section-misread">
+            <h2 id="section-misread">勘違いしやすい点</h2>
+            <ul>
+              <li><strong>誤解1：localStorageに保存したデータは別のスマホやPCにも同期される。</strong>ブラウザ内のローカル領域なので、同じ端末・同じブラウザでしか共有されません。</li>
+<li><strong>誤解2：シークレットモードを閉じても設定が残る。</strong>シークレットウィンドウのストレージは閉じた時点で破棄されます。</li>
+            </ul>
+          </section>
+          <section class="article-section" aria-labelledby="section-4">
+            <h2 id="section-4">まとめ</h2>
+            <ul>
+              <li>サーバーへ毎回伝えたい認証情報にはCookie（HttpOnly等を活用）、ブラウザ内完結の設定にはlocalStorageを使う。</li>
+<li>タブを閉じたら消したい一時データにはsessionStorageが向く。</li>
+<li>localStorage操作は必ず try/catch で保護し、秘密情報や生パスワードは保存しない。</li>
+            </ul>
+          </section>
+          <aside class="lab-example" aria-labelledby="lab-example-title">
+            <p class="eyebrow">FROM THE LAB</p>
+            <h2 id="lab-example-title">KatakataLabでの実例</h2>
+            <p>KatakataLabでは、全ページ共通のダークモード設定（theme）や一部ツールのプリセット保存にlocalStorageを使い、すべて try/catch で安全にガードしています。一方、パスワード生成ツールで生成した文字列自体は外部送信も自動保存もしない設計にしています。</p>
+            <div class="tool-link-banner"><strong>関連ツールで試す：<a href="../../password-generator/">強力パスワード生成ツール →</a></strong>生成結果をサーバーへ送らず、ブラウザ内だけで安全にパスワードやパスフレーズを作成できます。</div>
+            <p class="related-heading">この実例につながるページ</p>
+            <ul class="related-links">
+              <li><a href="security.html">関連用語：セキュリティ</a></li>
+<li><a href="https.html">関連用語：HTTPSとSSL/TLS</a></li>
+<li><a href="domain.html">関連用語：ドメインとサブドメイン</a></li>
+            </ul>
+          </aside>
+          <section class="article-section faq" aria-labelledby="faq-title">
+            <p class="eyebrow">QUICK CHECK</p>
+            <h2 id="faq-title">よくある質問</h2>
+            <h3>サイトで「Cookieを許可しますか？」とよく出るのはなぜですか？</h3>
+<p>ログイン維持だけでなく、アクセス解析や広告配信のために複数サイトをまたぐ識別子としてCookieが使われることがあり、プライバシー保護の観点から同意や説明が求められるためです。</p>
+<h3>localStorageの中身はどこで確認できますか？</h3>
+<p>ブラウザの開発者ツール（F12）を開き、「Application（アプリケーション）」タブの「Local Storage」から一覧確認や削除ができます。</p>
+          </section>
+          <section class="article-section references" aria-labelledby="references-title">
+            <h2 id="references-title">参考資料</h2>
+            <p>用語の定義や仕様を確認するため、公式文書・標準文書を参照しています。リンク先の内容は更新される場合があります。</p>
+            <ul>
+              <li><a href="https://developer.mozilla.org/ja/docs/Web/HTTP/Guides/Cookies" target="_blank" rel="noopener noreferrer">MDN Web Docs「HTTP Cookieの使用」</a></li>
+<li><a href="https://developer.mozilla.org/ja/docs/Web/API/Window/localStorage" target="_blank" rel="noopener noreferrer">MDN Web Docs「Window: localStorage」</a></li>
+            </ul>
+          </section>
+          <nav class="chapter-nav" aria-label="前後の記事">
+            <a class="chapter-link previous" href="cache.html"><small>前の記事</small><span>← CACHE</span></a>
+            <a class="chapter-link next" href="static-dynamic.html"><small>次の記事</small><span>STATIC / DYNAMIC →</span></a>
+          </nav>
+        </div>
+      </div>
+    </article>
+  </main>
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <p><strong>KatakataLab</strong><br><span>作って、つまずいて、分かったことを残す小さな研究室。</span></p>
+      <nav aria-label="フッターナビゲーション">
+        <a href="../../contact.html">お問い合わせ</a>
+        <a href="../../who-is-katakata.html">運営者情報</a>
+        <a href="../../privacy.html">プライバシーポリシー</a>
+        <a href="../../sitemap.html">サイトマップ</a>
+      </nav>
+    </div>
+    <p class="copyright">&copy; 2024-2026 KatakataLab</p>
+  </footer>
+</body>
+</html>

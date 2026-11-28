@@ -1065,3 +1065,53 @@ body.dark-mode .btn-copy-meta:hover {
 /* Keep keyboard focus visible without changing the selected theme. */
 .toggle-switch-theme input:focus-visible + .slider { outline: 2px solid currentColor; outline-offset: 4px; }
 .tab-btn:focus-visible, #dropZone:focus-visible, #removeImageBtn:focus-visible, .btn-copy-meta:focus-visible { outline: 2px solid currentColor; outline-offset: 3px; }
+
+.preview-control-tools {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.safe-zone-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--c-text-sub);
+  cursor: pointer;
+  white-space: nowrap;
+}
+.safe-zone-toggle input[type="checkbox"] {
+  width: 15px;
+  height: 15px;
+  accent-color: var(--c-primary);
+  cursor: pointer;
+}
+.preview-canvas.show-safe-zone .card-image-wrapper.aspect-191-100::after {
+  content: "1:1 SAFE";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  height: 100%;
+  aspect-ratio: 1 / 1;
+  border-left: 2px dashed rgba(250, 204, 21, 0.95);
+  border-right: 2px dashed rgba(250, 204, 21, 0.95);
+  background: rgba(250, 204, 21, 0.08);
+  box-shadow: inset 0 0 0 1px rgba(15, 23, 42, 0.35);
+  color: #fef08a;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.85);
+  font-size: 0.7rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding-top: 6px;
+  pointer-events: none;
+  z-index: 6;
+  box-sizing: border-box;
+}
+

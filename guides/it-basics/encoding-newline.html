@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>文字コードと改行コードとは？UTF-8・CRLF/LFと文字化け・差分ノイズの原因 | かたかたの制作ノート</title>
+  <meta name="description" content="日本語が文字化けする原因「文字コード（UTF-8 / Shift_JIS）」と、Git差分が真っ赤になる原因「改行コード（CRLF / LF）」を解説。制作で事故を防ぐ統一ルールを整理します。">
+  <link rel="canonical" href="https://katakatalab.com/guides/it-basics/encoding-newline.html">
+  <link rel="icon" href="../../icon.svg" type="image/svg+xml">
+  <meta property="og:title" content="文字コードと改行コードとは？UTF-8・CRLF/LFと文字化け・差分ノイズの原因">
+  <meta property="og:description" content="日本語が文字化けする原因「文字コード（UTF-8 / Shift_JIS）」と、Git差分が真っ赤になる原因「改行コード（CRLF / LF）」を解説。制作で事故を防ぐ統一ルールを整理します。">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="https://katakatalab.com/guides/it-basics/encoding-newline.html">
+  <meta property="og:image" content="https://katakatalab.com/ogp.png">
+  <meta property="og:site_name" content="KatakataLab">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="文字コードと改行コードとは？UTF-8・CRLF/LFと文字化け・差分ノイズの原因">
+  <meta name="twitter:description" content="日本語が文字化けする原因「文字コード（UTF-8 / Shift_JIS）」と、Git差分が真っ赤になる原因「改行コード（CRLF / LF）」を解説。制作で事故を防ぐ統一ルールを整理します。">
+  <meta name="twitter:image" content="https://katakatalab.com/ogp.png">
+  <link rel="stylesheet" href="style.css">
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": "文字コードと改行コードとは？UTF-8・CRLF/LFと文字化け・差分ノイズの原因",
+  "description": "日本語が文字化けする原因「文字コード（UTF-8 / Shift_JIS）」と、Git差分が真っ赤になる原因「改行コード（CRLF / LF）」を解説。制作で事故を防ぐ統一ルールを整理します。",
+  "inLanguage": "ja",
+  "datePublished": "2026-11-28",
+  "dateModified": "2026-11-28",
+  "author": {
+    "@type": "Person",
+    "name": "かたかた",
+    "url": "https://katakatalab.com/who-is-katakata.html"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "KatakataLab",
+    "url": "https://katakatalab.com/",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "https://katakatalab.com/ogp.png"
+    }
+  },
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "https://katakatalab.com/guides/it-basics/encoding-newline.html"
+  },
+  "image": "https://katakatalab.com/ogp.png"
+}
+</script>
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position": 1,
+      "name": "KatakataLab",
+      "item": "https://katakatalab.com/"
+    },
+    {
+      "@type": "ListItem",
+      "position": 2,
+      "name": "かたかたの制作ノート",
+      "item": "https://katakatalab.com/guides/it-basics/"
+    },
+    {
+      "@type": "ListItem",
+      "position": 3,
+      "name": "文字コードと改行コードとは",
+      "item": "https://katakatalab.com/guides/it-basics/encoding-newline.html"
+    }
+  ]
+}
+</script>
+  <script defer src="../../analytics.js"></script>
+</head>
+<body class="article-page">
+  <script>try{if(localStorage.getItem('theme')==='dark')document.body.classList.add('dark-mode');}catch(e){}</script>
+  <a class="skip-link" href="#main-content">本文へ移動</a>
+  <header class="site-header">
+    <div class="header-inner">
+      <a class="brand" href="../../"><span class="brand-mark">KL</span><span>KatakataLab</span></a>
+      <nav class="site-nav" aria-label="主要ナビゲーション">
+        <a href="./">制作ノート一覧</a>
+        <a href="../../#projects">ツール一覧</a>
+        <a href="../../guides/tool-selection-guide.html">用途から選ぶ</a>
+        <a href="../../who-is-katakata.html">運営者</a>
+        <button type="button" id="it-theme-toggle" aria-label="テーマ切り替え" style="background:none;border:1px solid rgba(255,255,255,0.28);color:#fff;border-radius:6px;padding:0.2rem 0.55rem;cursor:pointer;font-size:0.9rem;line-height:1;transition:background 0.2s;" title="ダークモード切り替え">🌙</button>
+      </nav>
+    </div>
+  </header>
+  <script>
+    (function(){
+      var btn = document.getElementById('it-theme-toggle');
+      if(!btn) return;
+      function sync(){ btn.textContent = document.body.classList.contains('dark-mode') ? '☀️' : '🌙'; }
+      sync();
+      btn.addEventListener('click', function(){
+        var dark = document.body.classList.toggle('dark-mode');
+        try{ localStorage.setItem('theme', dark ? 'dark' : 'light'); }catch(e){}
+        sync();
+      });
+    })();
+  </script>
+  <main id="main-content">
+    <nav class="breadcrumbs" aria-label="パンくずリスト">
+      <ol>
+        <li><a href="../../">KatakataLab</a></li>
+        <li><a href="./">かたかたの制作ノート</a></li>
+        <li aria-current="page">文字コードと改行コードとは</li>
+      </ol>
+    </nav>
+    <article class="article-shell">
+      <header class="article-hero">
+        <div class="chapter-stamp" aria-hidden="true"><span>CHAPTER 07</span><strong>30</strong><small>UTF-8 / EOL</small></div>
+        <p class="eyebrow">CHAPTER 07｜開発運用とハマりどころ</p>
+        <h1>文字コードと改行コードとは？UTF-8・CRLF/LFと文字化け・差分ノイズの原因</h1>
+        <p class="article-lead">CSVをExcelで開いたら漢字が謎の記号になった。1行しか直していないのにGitの差分チェックで全行が変更扱いになった——。こうした地味だけど厄介なトラブルの正体が「文字コード」と「改行コード」です。</p>
+        <div class="article-meta">
+          <span>執筆：<a href="../../who-is-katakata.html">かたかた</a></span>
+          <span>公開：<time datetime="2026-11-28">2026年11月28日</time></span>
+          <span>読了目安：約4分</span>
+        </div>
+        <div class="summary-strip" aria-label="ひとことで言うと">
+          <strong>ひとことで言うと</strong>
+          <p>文字コードは文字と数値の対応表（現代WebはUTF-8が標準）、改行コードは行の終わりを示す見えない記号（WindowsのCRLFとMac/LinuxのLF）です。</p>
+        </div>
+      </header>
+      <div class="article-layout">
+        <aside class="toc" aria-label="目次">
+          <p class="toc-title">目次</p>
+          <ol>
+            <li><a href="#section-1">しくみの全体像</a></li>
+            <li><a href="#section-2">見えないのに厄介な「改行コード（LF と CRLF）」</a></li>
+            <li><a href="#section-3">制作で文字化けと差分ノイズを防ぐ3つの習慣</a></li>
+            <li><a href="#section-talk">この言葉が会話に出てくるとき</a></li>
+            <li><a href="#section-misread">勘違いしやすい点</a></li>
+            <li><a href="#section-4">まとめ</a></li>
+            <li><a href="#lab-example-title">KatakataLabでの実例</a></li>
+            <li><a href="#faq-title">よくある質問</a></li>
+            <li><a href="#references-title">参考資料</a></li>
+          </ol>
+        </aside>
+        <div class="article-content">
+          <section class="article-section" aria-labelledby="section-1">
+            <h2 id="section-1">しくみの全体像</h2>
+            <p>コンピュータの内部では、すべてのデータは 0 と 1 の数字で保存されています。「あ」をどの数字で表すかという対応表が <strong>文字コード（文字エンコーディング）</strong> です。</p>
+            <p>現在のWeb制作では世界中の文字と絵文字を1つで扱える <strong>UTF-8</strong> が事実上の標準ですが、古い日本の業務システムやExcel向けCSVでは <strong>Shift_JIS（CP932）</strong> が残っており、保存時と開く時のルールが食い違うと「文字化け」が起きます。</p>
+            <figure class="diagram-figure">
+  <svg viewBox="0 0 640 195" width="100%" role="img" aria-label="文字コード（UTF-8統一）と改行コード（CRLFとLFの違い）による文字化け・差分ノイズの図解">
+    <defs>
+      <marker id="arr" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+        <path d="M 0 1 L 10 5 L 0 9 z" fill="currentColor" opacity="0.7"/>
+      </marker>
+    </defs>
+    <rect x="18" y="24" width="290" height="146" rx="8" fill="#0f766e" fill-opacity="0.1" stroke="#0f766e" stroke-width="1.8"/><text x="163" y="93" text-anchor="middle" font-size="12.5" font-weight="700" fill="currentColor">文字コード（文字 ⇄ 数値の対応表）</text><text x="163" y="111" text-anchor="middle" font-size="10.5" fill="currentColor" opacity="0.78">保存：UTF-8 → 読込：UTF-8 ＝ 正常「あいう」</text><rect x="34" y="114" width="258" height="42" rx="6" fill="#d94b3f" fill-opacity="0.12" stroke="#d94b3f"/><text x="163" y="139" text-anchor="middle" font-size="11" font-weight="700" fill="#d94b3f">保存：UTF-8 → 読込：Shift_JIS ＝ 縺ゅ＞縺・</text><rect x="332" y="24" width="290" height="146" rx="8" fill="#1f5c99" fill-opacity="0.1" stroke="#1f5c99" stroke-width="1.8"/><text x="477" y="93" text-anchor="middle" font-size="12.5" font-weight="700" fill="currentColor">改行コード（見えない行末記号）</text><text x="477" y="111" text-anchor="middle" font-size="10.5" fill="currentColor" opacity="0.78">macOS / Linux / Web標準：LF (\n)</text><rect x="348" y="114" width="258" height="42" rx="6" fill="#b45309" fill-opacity="0.12" stroke="#b45309"/><text x="477" y="139" text-anchor="middle" font-size="11" font-weight="700" fill="#b45309">Windows既定：CRLF (\r\n) 混在で全行差分</text>
+  </svg>
+  <figcaption>図解: 保存時と読込時で文字コードがズレると文字化けが起き、CRLFとLFが混在すると見た目同じでも差分が出る</figcaption>
+</figure>
+          </section>
+          <section class="article-section" aria-labelledby="section-2">
+            <h2 id="section-2">見えないのに厄介な「改行コード（LF と CRLF）」</h2>
+            <p>文章の改行も、ファイルの中では見えない制御文字として記録されています。OSの歴史的な違いから、主に2種類が混在します。</p>
+            <ul><li><strong>LF（<code>\n</code>）：</strong>macOS・Linux・Web開発やGitリポジトリの標準。</li><li><strong>CRLF（<code>\r\n</code>）：</strong>Windowsのメモ帳などで使われる2文字セットの改行。</li></ul>
+            <p>見た目はまったく同じ1回の改行でも、データ上は1バイト違うため、WindowsとMacで同じファイルを編集すると「中身は同じなのに全行が変更された」と差分ツールやGitが判定してしまいます。</p>
+          </section>
+          <section class="article-section" aria-labelledby="section-3">
+            <h2 id="section-3">制作で文字化けと差分ノイズを防ぐ3つの習慣</h2>
+            <ul><li><strong>HTMLの先頭に <code>&lt;meta charset="UTF-8"&gt;</code> を必ず書く：</strong>ブラウザへUTF-8であることを最初に伝えます。</li><li><strong>エディタとリポジトリで「UTF-8（BOMなし）・LF」に統一する：</strong><code>.editorconfig</code> や <code>.gitattributes</code> を1枚置いておくと環境差で事故らなくなります。</li><li><strong>差分比較時は「空白・改行コードの差を無視」機能も活用する：</strong>文章の中身の変更だけに集中したいとき、改行コード違いのノイズを省いて本質的な差分だけを確認できます。</li></ul>
+          </section>
+          <section class="article-section" aria-labelledby="section-talk">
+            <h2 id="section-talk">この言葉が会話に出てくるとき</h2>
+            <p><strong>「1行しか直してないのにPRの差分が500行になってるよ！」</strong><br>エディタが保存時に改行コードをLFからCRLFへ一括変換してしまった典型パターンです。</p>
+<p><strong>「CSVをExcelで開く人向けにBOM付きUTF-8にしよう」</strong><br>ExcelはBOM（先頭の目印バイト）がないUTF-8のCSVをShift_JISと誤認することがあるための実務配慮です。</p>
+          </section>
+          <section class="article-section" aria-labelledby="section-misread">
+            <h2 id="section-misread">勘違いしやすい点</h2>
+            <ul>
+              <li><strong>誤解1：文字化けしたらファイルの中身が壊れて復元できない。</strong>多くの場合データは壊れておらず、開くときの文字コード指定（UTF-8 / Shift_JIS）がズレているだけです。上書き保存さえしなければ正しく開き直せます。</li>
+<li><strong>誤解2：見た目が同じ空白や改行ならプログラムも同じとみなす。</strong>全角スペース・半角スペース・タブ・CRLF/LFはすべて別文字として扱われます。</li>
+            </ul>
+          </section>
+          <section class="article-section" aria-labelledby="section-4">
+            <h2 id="section-4">まとめ</h2>
+            <ul>
+              <li>Web制作の基本は「UTF-8（BOMなし）」と「改行コード LF」に統一すること。</li>
+<li>文字化けは保存時と読込時の文字コードの不一致、全行差分はCRLF/LF混在が主な原因。</li>
+<li>文章チェック時は、空白や改行コードの差を無視できる差分ツールを併用すると見落としが減る。</li>
+            </ul>
+          </section>
+          <aside class="lab-example" aria-labelledby="lab-example-title">
+            <p class="eyebrow">FROM THE LAB</p>
+            <h2 id="lab-example-title">KatakataLabでの実例</h2>
+            <p>KatakataLabの「テキスト差分チェック」では、まさにこのWindows（CRLF）とMac（LF）の改行コード違いや末尾空白ノイズに悩まされた経験から、「空白・改行コードの差を無視する」比較オプションを実装しました。全30語のIT用語ノートもここまで完走です！</p>
+            <div class="tool-link-banner"><strong>関連ツールで試す：<a href="../../text-diff/">テキスト差分チェック →</a></strong>「空白・改行コードの差を無視」オプションを切り替えて、改行コード違いのノイズを除いた差分比較を試せます。</div>
+            <p class="related-heading">この実例につながるページ</p>
+            <ul class="related-links">
+              <li><a href="git.html">関連用語：Git</a></li>
+<li><a href="json.html">関連用語：JSON</a></li>
+<li><a href="debug.html">関連用語：デバッグ</a></li>
+            </ul>
+          </aside>
+          <section class="article-section faq" aria-labelledby="faq-title">
+            <p class="eyebrow">QUICK CHECK</p>
+            <h2 id="faq-title">よくある質問</h2>
+            <h3>UTF-8の「BOMあり」と「BOMなし」は何が違いますか？</h3>
+<p>ファイルの先頭に「これはUTF-8ですよ」と示す3バイトの目印（Byte Order Mark）を付けるかどうかです。Excel向けCSV以外、HTML・CSS・JS・JSONでは「BOMなし」が標準です。</p>
+<h3>30語すべて読み終えたら、次はどこを見るのがおすすめですか？</h3>
+<p><a href="../tool-selection-guide.html">用途から選ぶ実用ツール案内</a>や<a href="../case-studies.html">実例集</a>を見ながら、気になった用語に関連するツールを実際に触ってみるのが一番定着します。</p>
+          </section>
+          <section class="article-section references" aria-labelledby="references-title">
+            <h2 id="references-title">参考資料</h2>
+            <p>用語の定義や仕様を確認するため、公式文書・標準文書を参照しています。リンク先の内容は更新される場合があります。</p>
+            <ul>
+              <li><a href="https://developer.mozilla.org/ja/docs/Glossary/UTF-8" target="_blank" rel="noopener noreferrer">MDN Web Docs「UTF-8」</a></li>
+<li><a href="https://developer.mozilla.org/ja/docs/Glossary/Character_encoding" target="_blank" rel="noopener noreferrer">MDN Web Docs「文字エンコーディング」</a></li>
+            </ul>
+          </section>
+          <nav class="chapter-nav" aria-label="前後の記事">
+            <a class="chapter-link previous" href="library-framework.html"><small>前の記事</small><span>← LIB / FW</span></a>
+            <a class="chapter-link next" href="./"><small>全30語を読了</small><span>記事一覧へ →</span></a>
+          </nav>
+        </div>
+      </div>
+    </article>
+  </main>
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <p><strong>KatakataLab</strong><br><span>作って、つまずいて、分かったことを残す小さな研究室。</span></p>
+      <nav aria-label="フッターナビゲーション">
+        <a href="../../contact.html">お問い合わせ</a>
+        <a href="../../who-is-katakata.html">運営者情報</a>
+        <a href="../../privacy.html">プライバシーポリシー</a>
+        <a href="../../sitemap.html">サイトマップ</a>
+      </nav>
+    </div>
+    <p class="copyright">&copy; 2024-2026 KatakataLab</p>
+  </footer>
+</body>
+</html>

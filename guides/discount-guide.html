@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex, follow">
     <title>割引の読み方ガイド | 何割引きを足し算しない</title>
     <meta name="description" content="30%OFFのあとのさらに10%OFFを、足し算せずに読むためのガイドです。税込・税抜、端数、レジとの1円差をまとめています。">
     <link rel="canonical" href="https://katakatalab.com/guides/discount-guide.html">
@@ -25,7 +26,7 @@
       "headline": "何割引きの札を、足し算しない",
       "description": "重ね割は割引後の金額へもう一度掛ける。税込の札では税率を使わない。",
       "datePublished": "2026-10-01",
-      "dateModified": "2026-10-01",
+      "dateModified": "2026-11-28",
       "author": {"@type": "Person", "name": "かたかた"},
       "publisher": {
         "@type": "Organization",
@@ -80,7 +81,7 @@
                     <span class="guide-chip">何割引き</span>
                     <span class="guide-chip">レジでもう一段</span>
                 </div>
-                <p class="guide-note" style="margin-top: 1rem;">作成者: かたかた / 更新日: 2026年10月1日</p>
+                <p class="guide-note" style="margin-top: 1rem;">作成者: かたかた / 更新日: 2026年11月28日</p>
                 <div class="guide-actions">
                     <a href="../discount-calc/" class="btn btn-primary">割引を計算する</a>
                     <a href="case-studies.html" class="btn btn-secondary">実例を見る</a>
@@ -97,6 +98,29 @@
                     <li>「さらに」は足さず、割引後の金額へ掛けます。</li>
                 </ul>
                 <p>ツールのルールは、最後の支払額だけ1円未満を切り捨てます。途中の掛け算では切り捨てません。レジが商品ごとに切り捨てる店では、1円ずれることがあります。</p>
+                <figure style="margin:1.25rem 0 0;padding:1rem;border:1px solid rgba(128,128,128,0.22);border-radius:12px;background:rgba(128,128,128,0.04);">
+                  <svg viewBox="0 0 640 190" width="100%" role="img" aria-label="10,000円の20%OFF後にさらに10%OFFすると7,200円（実質28%OFF）になり、30%OFFの7,000円とは200円異なる図解">
+                    <rect x="18" y="22" width="136" height="58" rx="9" fill="#2563eb" fill-opacity="0.1" stroke="#2563eb" stroke-width="1.8"/>
+                    <text x="86" y="47" text-anchor="middle" font-size="12" font-weight="700" fill="currentColor">元の価格</text>
+                    <text x="86" y="66" text-anchor="middle" font-size="13" font-weight="700" fill="currentColor">10,000円</text>
+                    <line x1="158" y1="51" x2="212" y2="51" stroke="#0f766e" stroke-width="2"/>
+                    <polygon points="210,45 220,51 210,57" fill="#0f766e"/>
+                    <text x="186" y="42" text-anchor="middle" font-size="10.5" font-weight="700" fill="#0f766e">× 0.8 (-20%)</text>
+                    <rect x="224" y="22" width="144" height="58" rx="9" fill="#0f766e" fill-opacity="0.1" stroke="#0f766e" stroke-width="1.8"/>
+                    <text x="296" y="47" text-anchor="middle" font-size="12" font-weight="700" fill="currentColor">1回目の割引後</text>
+                    <text x="296" y="66" text-anchor="middle" font-size="13" font-weight="700" fill="currentColor">8,000円</text>
+                    <line x1="372" y1="51" x2="428" y2="51" stroke="#0f766e" stroke-width="2"/>
+                    <polygon points="426,45 436,51 426,57" fill="#0f766e"/>
+                    <text x="401" y="42" text-anchor="middle" font-size="10.5" font-weight="700" fill="#0f766e">× 0.9 (-10%)</text>
+                    <rect x="440" y="18" width="182" height="66" rx="9" fill="#0f766e" fill-opacity="0.14" stroke="#0f766e" stroke-width="2"/>
+                    <text x="531" y="43" text-anchor="middle" font-size="12" font-weight="700" fill="#0f766e">〇 実際の支払額</text>
+                    <text x="531" y="65" text-anchor="middle" font-size="14" font-weight="700" fill="currentColor">7,200円（実質28%OFF）</text>
+                    <rect x="18" y="114" width="604" height="58" rx="9" fill="#b91c1c" fill-opacity="0.08" stroke="#b91c1c" stroke-width="1.6" stroke-dasharray="5 4"/>
+                    <text x="320" y="139" text-anchor="middle" font-size="12" font-weight="700" fill="#b91c1c">✕ よくある勘違い：20% + 10% = 30%OFF と足し算する</text>
+                    <text x="320" y="159" text-anchor="middle" font-size="11.5" fill="currentColor" opacity="0.85">10,000円 × 0.7 = 7,000円 と見積もると、レジで200円高く感じる原因になります</text>
+                  </svg>
+                  <figcaption style="margin-top:0.55rem;font-size:0.84rem;opacity:0.82;text-align:center;">図解: 重ね割は残った金額へ順番に掛けるため、割引率の単純な足し算より割引幅が小さくなる</figcaption>
+                </figure>
             </div>
 
             <div class="guide-section-card">

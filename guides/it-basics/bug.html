@@ -24,7 +24,7 @@
   "headline": "【IT用語】「バグ」とは？期待した動きとの「ずれ」",
   "description": "バグとは何かを、仕様とのずれ、実装・要件・使いやすさの問題、発生する原因、見つけた後に再発を防ぐ考え方まで解説します。",
   "datePublished": "2026-07-13",
-  "dateModified": "2026-08-04",
+  "dateModified": "2026-11-28",
   "mainEntityOfPage": "https://katakatalab.com/guides/it-basics/bug.html",
   "inLanguage": "ja",
   "author": {
@@ -90,7 +90,7 @@
         <h1>【IT用語】「バグ」とは？期待した動きとの「ずれ」</h1>
         <p class="article-lead">バグとは何かを、仕様とのずれ、実装・要件・使いやすさの問題、発生する原因、見つけた後に再発を防ぐ考え方まで解説します。</p>
         <div class="article-meta" aria-label="記事情報">
-          <span>作成者：かたかた</span><span>公開日：2026年7月13日</span><span>更新日：2026年8月4日</span>
+          <span>作成者：かたかた</span><span>公開日：2026年7月13日</span><span>更新日：2026年11月28日</span>
         </div>
       </header>
       <div class="article-layout">
@@ -118,6 +118,18 @@
 <li>権限のない人が情報を見られる</li>
 </ul>
 <p>見た目は動いていても、仕様や安全性を満たしていなければ問題です。</p>
+
+<figure class="diagram-figure">
+  <svg viewBox="0 0 640 195" width="100%" role="img" aria-label="期待する動作と実際の動作のズレ（バグ）を切り分ける図解">
+    <defs>
+      <marker id="arr" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+        <path d="M 0 1 L 10 5 L 0 9 z" fill="currentColor" opacity="0.7"/>
+      </marker>
+    </defs>
+    <rect x="24" y="48" width="178" height="92" rx="8" fill="#0f766e" fill-opacity="0.1" stroke="#0f766e" stroke-width="1.8"/><text x="113" y="90" text-anchor="middle" font-size="13" font-weight="700" fill="currentColor">期待する動作</text><text x="113" y="108" text-anchor="middle" font-size="10.5" fill="currentColor" opacity="0.78">例：1200幅→高さ675px</text><text x="234" y="100" text-anchor="middle" font-size="22" font-weight="800" fill="#d94b3f">≠</text><rect x="264" y="48" width="178" height="92" rx="8" fill="#d94b3f" fill-opacity="0.1" stroke="#d94b3f" stroke-width="1.8"/><text x="353" y="90" text-anchor="middle" font-size="13" font-weight="700" fill="currentColor">実際の動作</text><text x="353" y="108" text-anchor="middle" font-size="10.5" fill="currentColor" opacity="0.78">例：NaNや枠はみ出し</text><line x1="444" y1="94" x2="474" y2="94" stroke="#1f5c99" stroke-width="2" marker-end="url(#arr)"/><rect x="478" y="48" width="140" height="92" rx="8" fill="#1f5c99" fill-opacity="0.1" stroke="#1f5c99" stroke-width="1.8"/><text x="548" y="90" text-anchor="middle" font-size="13" font-weight="700" fill="currentColor">再現条件を特定</text><text x="548" y="108" text-anchor="middle" font-size="10.5" fill="currentColor" opacity="0.78">入力・端末・手順</text>
+  </svg>
+  <figcaption>図解: バグは「期待していた結果」と「実際に起きた結果」の差分。再現条件を固定できると原因が絞れる</figcaption>
+</figure>
 </section>
 <section class="article-section" aria-labelledby="section-2"><h2 id="section-2">「本物の虫」が語源なの？</h2>
 <p>1947年、コンピュータのリレーに蛾が挟まり、記録帳へ貼られた有名な出来事があります。</p>
@@ -180,6 +192,8 @@
             <p class="eyebrow">FROM THE LAB</p>
             <h2 id="lab-example-title">KatakataLabでの実例</h2>
             <p>KatakataLabでは、リンク切れやスマートフォン表示、公開ページの必須情報など、過去に壊したくない条件をテストとして残しています。問題を直すだけでなく、同じずれを再び見つけられる形にするのが再発防止です。</p>
+            
+            <div class="tool-link-banner"><strong>関連ツールで試す：<a href="../../text-diff/">テキスト差分チェック →</a></strong>正常に動いていた時のコードや設定と、バグが出た後の状態を比較して原因行を探せます。</div>
             <p class="related-heading">この実例につながるページ</p>
             <ul class="related-links"><li><a href="debug.html">関連用語：デバッグ</a></li>
 <li><a href="../../contact.html">不具合を伝えるお問い合わせ窓口</a></li></ul>

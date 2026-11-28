@@ -66,7 +66,7 @@ const englishPages = Object.freeze([
   {
     file: 'guides/en/social-image-sizes.html',
     canonical: 'https://katakatalab.com/guides/en/social-image-sizes.html',
-    japanese: 'https://katakatalab.com/guides/sns-image-size-guide.html',
+    japanese: 'https://katakatalab.com/guides/aspect-ratio-guide.html',
     type: 'Article',
   },
   {
@@ -85,7 +85,7 @@ const japanesePairs = Object.freeze([
   ['text-diff/index.html', 'https://katakatalab.com/text-diff/en/'],
   ['qrcode/index.html', 'https://katakatalab.com/qrcode/en/'],
   ['ogp-simulator/index.html', 'https://katakatalab.com/ogp-simulator/en/'],
-  ['guides/sns-image-size-guide.html', 'https://katakatalab.com/guides/en/social-image-sizes.html'],
+  ['guides/aspect-ratio-guide.html', 'https://katakatalab.com/guides/en/social-image-sizes.html'],
   ['guides/password-guide.html', 'https://katakatalab.com/guides/en/password-security.html'],
 ]);
 

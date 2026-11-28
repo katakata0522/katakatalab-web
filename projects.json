@@ -146,7 +146,7 @@
     "recommendationOrder": 5,
     "featured": false,
     "url": "https://katakatalab.com/qrcode/",
-    "guide": "qrcode/guides.html",
+    "guide": "guides/qr-guide.html",
     "detail": "自宅のWi-Fi接続用QRや、お店のSNSリンクをその場で作成できるツール。用途別ガイドで、作成後の設定や確認ポイントまでたどれます。",
     "tagText": "ツール",
     "tagClass": "tag-tool",

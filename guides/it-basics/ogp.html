@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>OGPとメタタグとは？SNSシェア時のカード表示を制御する仕組み | かたかたの制作ノート</title>
+  <meta name="description" content="X・LINE・FacebookでURLを共有したときに画像やタイトルを出す「OGP」と基本メタタグを解説。絶対URL必須の理由や切り抜き対策まで整理します。">
+  <link rel="canonical" href="https://katakatalab.com/guides/it-basics/ogp.html">
+  <link rel="icon" href="../../icon.svg" type="image/svg+xml">
+  <meta property="og:title" content="OGPとメタタグとは？SNSシェア時のカード表示を制御する仕組み">
+  <meta property="og:description" content="X・LINE・FacebookでURLを共有したときに画像やタイトルを出す「OGP」と基本メタタグを解説。絶対URL必須の理由や切り抜き対策まで整理します。">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="https://katakatalab.com/guides/it-basics/ogp.html">
+  <meta property="og:image" content="https://katakatalab.com/ogp.png">
+  <meta property="og:site_name" content="KatakataLab">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="OGPとメタタグとは？SNSシェア時のカード表示を制御する仕組み">
+  <meta name="twitter:description" content="X・LINE・FacebookでURLを共有したときに画像やタイトルを出す「OGP」と基本メタタグを解説。絶対URL必須の理由や切り抜き対策まで整理します。">
+  <meta name="twitter:image" content="https://katakatalab.com/ogp.png">
+  <link rel="stylesheet" href="style.css">
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": "OGPとメタタグとは？SNSシェア時のカード表示を制御する仕組み",
+  "description": "X・LINE・FacebookでURLを共有したときに画像やタイトルを出す「OGP」と基本メタタグを解説。絶対URL必須の理由や切り抜き対策まで整理します。",
+  "inLanguage": "ja",
+  "datePublished": "2026-11-28",
+  "dateModified": "2026-11-28",
+  "author": {
+    "@type": "Person",
+    "name": "かたかた",
+    "url": "https://katakatalab.com/who-is-katakata.html"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "KatakataLab",
+    "url": "https://katakatalab.com/",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "https://katakatalab.com/ogp.png"
+    }
+  },
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "https://katakatalab.com/guides/it-basics/ogp.html"
+  },
+  "image": "https://katakatalab.com/ogp.png"
+}
+</script>
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position": 1,
+      "name": "KatakataLab",
+      "item": "https://katakatalab.com/"
+    },
+    {
+      "@type": "ListItem",
+      "position": 2,
+      "name": "かたかたの制作ノート",
+      "item": "https://katakatalab.com/guides/it-basics/"
+    },
+    {
+      "@type": "ListItem",
+      "position": 3,
+      "name": "OGPとメタタグとは",
+      "item": "https://katakatalab.com/guides/it-basics/ogp.html"
+    }
+  ]
+}
+</script>
+  <script defer src="../../analytics.js"></script>
+</head>
+<body class="article-page">
+  <script>try{if(localStorage.getItem('theme')==='dark')document.body.classList.add('dark-mode');}catch(e){}</script>
+  <a class="skip-link" href="#main-content">本文へ移動</a>
+  <header class="site-header">
+    <div class="header-inner">
+      <a class="brand" href="../../"><span class="brand-mark">KL</span><span>KatakataLab</span></a>
+      <nav class="site-nav" aria-label="主要ナビゲーション">
+        <a href="./">制作ノート一覧</a>
+        <a href="../../#projects">ツール一覧</a>
+        <a href="../../guides/tool-selection-guide.html">用途から選ぶ</a>
+        <a href="../../who-is-katakata.html">運営者</a>
+        <button type="button" id="it-theme-toggle" aria-label="テーマ切り替え" style="background:none;border:1px solid rgba(255,255,255,0.28);color:#fff;border-radius:6px;padding:0.2rem 0.55rem;cursor:pointer;font-size:0.9rem;line-height:1;transition:background 0.2s;" title="ダークモード切り替え">🌙</button>
+      </nav>
+    </div>
+  </header>
+  <script>
+    (function(){
+      var btn = document.getElementById('it-theme-toggle');
+      if(!btn) return;
+      function sync(){ btn.textContent = document.body.classList.contains('dark-mode') ? '☀️' : '🌙'; }
+      sync();
+      btn.addEventListener('click', function(){
+        var dark = document.body.classList.toggle('dark-mode');
+        try{ localStorage.setItem('theme', dark ? 'dark' : 'light'); }catch(e){}
+        sync();
+      });
+    })();
+  </script>
+  <main id="main-content">
+    <nav class="breadcrumbs" aria-label="パンくずリスト">
+      <ol>
+        <li><a href="../../">KatakataLab</a></li>
+        <li><a href="./">かたかたの制作ノート</a></li>
+        <li aria-current="page">OGPとメタタグとは</li>
+      </ol>
+    </nav>
+    <article class="article-shell">
+      <header class="article-hero">
+        <div class="chapter-stamp" aria-hidden="true"><span>CHAPTER 06</span><strong>26</strong><small>OGP</small></div>
+        <p class="eyebrow">CHAPTER 06｜制作と実装のしくみ</p>
+        <h1>OGPとメタタグとは？SNSシェア時のカード表示を制御する仕組み</h1>
+        <p class="article-lead">頑張って書いた記事をSNSに貼ったのに、文字だけの味気ないリンクになってしまった——。逆に、きれいなサムネイルと要約カードがパッと出ると目を引きます。このSNSシェア時の名刺を作る仕組みが「OGP」です。</p>
+        <div class="article-meta">
+          <span>執筆：<a href="../../who-is-katakata.html">かたかた</a></span>
+          <span>公開：<time datetime="2026-11-28">2026年11月28日</time></span>
+          <span>読了目安：約4分</span>
+        </div>
+        <div class="summary-strip" aria-label="ひとことで言うと">
+          <strong>ひとことで言うと</strong>
+          <p>OGP（Open Graph Protocol）は、SNSがURLを読み込んだときに表示するタイトル・説明文・サムネイル画像をHTMLのhead内で指定する約束事です。</p>
+        </div>
+      </header>
+      <div class="article-layout">
+        <aside class="toc" aria-label="目次">
+          <p class="toc-title">目次</p>
+          <ol>
+            <li><a href="#section-1">しくみの全体像</a></li>
+            <li><a href="#section-2">最低限そろえたいOGPタグ5点セット</a></li>
+            <li><a href="#section-3">OGPでつまずきやすい3つの落とし穴</a></li>
+            <li><a href="#section-talk">この言葉が会話に出てくるとき</a></li>
+            <li><a href="#section-misread">勘違いしやすい点</a></li>
+            <li><a href="#section-4">まとめ</a></li>
+            <li><a href="#lab-example-title">KatakataLabでの実例</a></li>
+            <li><a href="#faq-title">よくある質問</a></li>
+            <li><a href="#references-title">参考資料</a></li>
+          </ol>
+        </aside>
+        <div class="article-content">
+          <section class="article-section" aria-labelledby="section-1">
+            <h2 id="section-1">しくみの全体像</h2>
+            <p>HTMLの <code>&lt;head&gt;</code> の中には、本文としては画面に出ないものの、ブラウザ・検索エンジン・SNSへ「このページは何者か」を伝える <strong>メタタグ（meta要素）</strong> が並びます。</p>
+            <p>そのうち、SNSでURLが共有されたときのカード表示（画像・タイトル・説明文・URL）を指定する共通ルールが <strong>OGP（Open Graph Protocol）</strong> です。</p>
+            <figure class="diagram-figure">
+  <svg viewBox="0 0 640 195" width="100%" role="img" aria-label="HTMLのog:title・og:description・og:imageがSNSシェアカードの各パーツへ変換される図解">
+    <defs>
+      <marker id="arr" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+        <path d="M 0 1 L 10 5 L 0 9 z" fill="currentColor" opacity="0.7"/>
+      </marker>
+    </defs>
+    <rect x="18" y="24" width="284" height="148" rx="8" fill="#1f5c99" fill-opacity="0.07" stroke="#1f5c99" stroke-width="1.8"/><text x="34" y="48" font-size="11.5" font-weight="700" fill="currentColor">&lt;head&gt; 内のOGPタグ</text><text x="34" y="74" font-size="11" font-family="monospace" fill="#0f766e">og:image → https://.../ogp.png</text><text x="34" y="100" font-size="11" font-family="monospace" fill="#1f5c99">og:title → 記事タイトル</text><text x="34" y="126" font-size="11" font-family="monospace" fill="#7c3aed">og:description → 記事の要約</text><text x="34" y="152" font-size="11" font-family="monospace" fill="#b45309">twitter:card → summary_large_image</text><line x1="306" y1="98" x2="354" y2="98" stroke="#1f5c99" stroke-width="2" marker-end="url(#arr)"/><text x="330" y="88" text-anchor="middle" font-size="10.5" font-weight="700" fill="#1f5c99">読取</text><rect x="360" y="24" width="260" height="148" rx="10" fill="none" stroke="currentColor" stroke-opacity="0.35" stroke-width="1.6"/><rect x="360" y="24" width="260" height="82" rx="8" fill="#0f766e" fill-opacity="0.16"/><text x="490" y="70" text-anchor="middle" font-size="12" font-weight="700" fill="#0f766e">og:image（横長 1.91:1）</text><text x="376" y="126" font-size="12" font-weight="700" fill="currentColor">og:title がここに表示</text><text x="376" y="148" font-size="10.5" fill="currentColor" opacity="0.75">og:description が要約として表示</text>
+  </svg>
+  <figcaption>図解: ページの<head>に書いたog:メタタグをSNSのクローラーが読み取り、サムネイル付きカードとして組み立てる</figcaption>
+</figure>
+          </section>
+          <section class="article-section" aria-labelledby="section-2">
+            <h2 id="section-2">最低限そろえたいOGPタグ5点セット</h2>
+            <ul><li><code>og:title</code>：カードの見出しになるページタイトル</li><li><code>og:description</code>：記事やツールの短い説明文</li><li><code>og:image</code>：サムネイル画像のURL（<strong>必ず https:// から始まる絶対URL</strong>）</li><li><code>og:url</code>：ページの正規URL</li><li><code>twitter:card</code>：Xでのカード形式（大きい画像なら <code>summary_large_image</code>、正方形小カードなら <code>summary</code>）</li></ul>
+          </section>
+          <section class="article-section" aria-labelledby="section-3">
+            <h2 id="section-3">OGPでつまずきやすい3つの落とし穴</h2>
+            <ul><li><strong>相対パスで書いて画像が出ない：</strong><code>og:image</code> に <code>./ogp.png</code> と書くと多くのSNSクローラーが取得に失敗します。必ず <code>https://...</code> の完全なURLにします。</li><li><strong>文字を端に寄せすぎて切り抜かれる：</strong>横長（約1.91:1）で作った画像も、通知や一覧では中央の正方形（1:1）へ切り抜かれることがあります。重要な文字や顔は中央セーフゾーンへ収めます。</li><li><strong>更新しても古い画像が出る：</strong>SNS側が画像をキャッシュしているため、ファイル名を変えるか更新後に時間を置いて確認します。</li></ul>
+          </section>
+          <section class="article-section" aria-labelledby="section-talk">
+            <h2 id="section-talk">この言葉が会話に出てくるとき</h2>
+            <p><strong>「OGP画像の文字、正方形に切られても読める位置にある？」</strong><br>横長カードだけでなく、1:1トリミング時の安全領域を確認する制作チェックです。</p>
+<p><strong>「og:image が相対パスになっててカードが出てなかった」</strong><br>OGP設定ミスの定番。絶対URLかつログインなしで200 OKが返る画像にする必要があります。</p>
+          </section>
+          <section class="article-section" aria-labelledby="section-misread">
+            <h2 id="section-misread">勘違いしやすい点</h2>
+            <ul>
+              <li><strong>誤解1：ページ内に画像を貼れば自動で理想のOGP画像になる。</strong>指定がないとSNSが意図しないバナーやアイコンを勝手に拾ったり、画像なしになったりします。</li>
+<li><strong>誤解2：すべてのSNSで同じピクセル・文字数で表示される。</strong>X・LINE・Facebook・Slackごとに切り抜きやタイトル省略の仕様が異なり、アップデートでも変わります。</li>
+            </ul>
+          </section>
+          <section class="article-section" aria-labelledby="section-4">
+            <h2 id="section-4">まとめ</h2>
+            <ul>
+              <li>OGPはSNSシェア時のカード表示を制御するHTMLメタタグ群。</li>
+<li>og:image は必ず https:// から始まる公開絶対URLで指定する。</li>
+<li>横長カードと正方形トリミングの両方で欠けないよう、主要要素を中央セーフゾーンへ置く。</li>
+            </ul>
+          </section>
+          <aside class="lab-example" aria-labelledby="lab-example-title">
+            <p class="eyebrow">FROM THE LAB</p>
+            <h2 id="lab-example-title">KatakataLabでの実例</h2>
+            <p>KatakataLabでは、公開前にタイトル文字数や画像の切り抜き位置を確認するため「OGPシミュレーター」を自作しました。横長カード上に中央正方形セーフゾーン線を重ねて確認でき、OGPメタタグのHTMLコードもそのままコピーできます。</p>
+            <div class="tool-link-banner"><strong>関連ツールで試す：<a href="../../ogp-simulator/">OGPシミュレーター →</a></strong>タイトル・説明・画像を入力してX/Facebook/LINE風のカードと中央正方形セーフゾーン線を確認できます。</div>
+            <p class="related-heading">この実例につながるページ</p>
+            <ul class="related-links">
+              <li><a href="../aspect-ratio-guide.html">関連ガイド：アスペクト比の使い方</a></li>
+<li><a href="cache.html">関連用語：キャッシュ</a></li>
+<li><a href="status-code.html">関連用語：ステータスコード</a></li>
+            </ul>
+          </aside>
+          <section class="article-section faq" aria-labelledby="faq-title">
+            <p class="eyebrow">QUICK CHECK</p>
+            <h2 id="faq-title">よくある質問</h2>
+            <h3>OGP画像のサイズはいくつで作ればよいですか？</h3>
+<p>実務の出発点としては横1200×縦630px（比率 約1.91:1）がよく使われます。重要な文字やロゴは中央寄りに配置すると安全です。</p>
+<h3>titleタグとog:titleは別々にできますか？</h3>
+<p>はい。ブラウザタブ用にはサイト名入りのtitleを置き、SNSカード用のog:titleは少し短く整えることもできますが、ページ内容と矛盾しないようにします。</p>
+          </section>
+          <section class="article-section references" aria-labelledby="references-title">
+            <h2 id="references-title">参考資料</h2>
+            <p>用語の定義や仕様を確認するため、公式文書・標準文書を参照しています。リンク先の内容は更新される場合があります。</p>
+            <ul>
+              <li><a href="https://ogp.me/" target="_blank" rel="noopener noreferrer">The Open Graph protocol 公式仕様</a></li>
+<li><a href="https://developer.mozilla.org/ja/docs/Web/HTML/Reference/Elements/meta" target="_blank" rel="noopener noreferrer">MDN Web Docs「meta要素」</a></li>
+            </ul>
+          </section>
+          <nav class="chapter-nav" aria-label="前後の記事">
+            <a class="chapter-link previous" href="cdn.html"><small>前の記事</small><span>← CDN</span></a>
+            <a class="chapter-link next" href="env-vars.html"><small>次の記事</small><span>ENV VARS →</span></a>
+          </nav>
+        </div>
+      </div>
+    </article>
+  </main>
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <p><strong>KatakataLab</strong><br><span>作って、つまずいて、分かったことを残す小さな研究室。</span></p>
+      <nav aria-label="フッターナビゲーション">
+        <a href="../../contact.html">お問い合わせ</a>
+        <a href="../../who-is-katakata.html">運営者情報</a>
+        <a href="../../privacy.html">プライバシーポリシー</a>
+        <a href="../../sitemap.html">サイトマップ</a>
+      </nav>
+    </div>
+    <p class="copyright">&copy; 2024-2026 KatakataLab</p>
+  </footer>
+</body>
+</html>

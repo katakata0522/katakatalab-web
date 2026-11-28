@@ -24,7 +24,7 @@
   "headline": "【IT用語】「API」とは？ソフトウェア同士をつなぐ窓口とルール",
   "description": "APIとは何かを、ソフトウェア同士をつなぐ窓口とルール、Web APIとの違い、認証・利用制限・エラーを確認する理由から解説します。",
   "datePublished": "2026-07-13",
-  "dateModified": "2026-08-04",
+  "dateModified": "2026-11-28",
   "mainEntityOfPage": "https://katakatalab.com/guides/it-basics/api.html",
   "inLanguage": "ja",
   "author": {
@@ -90,7 +90,7 @@
         <h1>【IT用語】「API」とは？ソフトウェア同士をつなぐ窓口とルール</h1>
         <p class="article-lead">APIとは何かを、ソフトウェア同士をつなぐ窓口とルール、Web APIとの違い、認証・利用制限・エラーを確認する理由から解説します。</p>
         <div class="article-meta" aria-label="記事情報">
-          <span>作成者：かたかた</span><span>公開日：2026年7月13日</span><span>更新日：2026年8月4日</span>
+          <span>作成者：かたかた</span><span>公開日：2026年7月13日</span><span>更新日：2026年11月28日</span>
         </div>
       </header>
       <div class="article-layout">
@@ -112,6 +112,18 @@
 <p>APIは、Application Programming Interfaceの略です。</p>
 <p>一言で言うと、<strong>「ソフトウェアの機能を、決められた方法で外部から利用するための窓口」</strong>です。</p>
 <p>使う側は、相手の内部構造をすべて理解しなくても、公開された使い方に従って機能を呼び出せます。</p>
+
+<figure class="diagram-figure">
+  <svg viewBox="0 0 640 195" width="100%" role="img" aria-label="アプリと外部サービスを窓口（API）でつなぐやり取りの図解">
+    <defs>
+      <marker id="arr" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+        <path d="M 0 1 L 10 5 L 0 9 z" fill="currentColor" opacity="0.7"/>
+      </marker>
+    </defs>
+    <rect x="24" y="52" width="165" height="86" rx="8" fill="#1f5c99" fill-opacity="0.1" stroke="#1f5c99" stroke-width="1.8"/><text x="106.5" y="91" text-anchor="middle" font-size="13" font-weight="700" fill="currentColor">自分のアプリ</text><text x="106.5" y="109" text-anchor="middle" font-size="10.5" fill="currentColor" opacity="0.78">データを使いたい側</text><rect x="248" y="52" width="144" height="86" rx="8" fill="#7c3aed" fill-opacity="0.1" stroke="#7c3aed" stroke-width="1.8"/><text x="320" y="91" text-anchor="middle" font-size="13" font-weight="700" fill="currentColor">API（窓口）</text><text x="320" y="109" text-anchor="middle" font-size="10.5" fill="currentColor" opacity="0.78">認証・ルールを確認</text><rect x="452" y="52" width="165" height="86" rx="8" fill="#0f766e" fill-opacity="0.1" stroke="#0f766e" stroke-width="1.8"/><text x="534.5" y="91" text-anchor="middle" font-size="13" font-weight="700" fill="currentColor">外部システム</text><text x="534.5" y="109" text-anchor="middle" font-size="10.5" fill="currentColor" opacity="0.78">天気・決済・DBなど</text><line x1="192" y1="80" x2="244" y2="80" stroke="#1f5c99" stroke-width="2" marker-end="url(#arr)"/><text x="218" y="70" text-anchor="middle" font-size="10.5" font-weight="700" fill="#1f5c99">要求</text><line x1="394" y1="80" x2="448" y2="80" stroke="#1f5c99" stroke-width="2" marker-end="url(#arr)"/><text x="421" y="70" text-anchor="middle" font-size="10.5" font-weight="700" fill="#1f5c99">取得</text><line x1="448" y1="114" x2="394" y2="114" stroke="#0f766e" stroke-width="2" marker-end="url(#arr)"/><text x="421" y="132" text-anchor="middle" font-size="10.5" font-weight="700" fill="#0f766e">結果</text><line x1="244" y1="114" x2="192" y2="114" stroke="#0f766e" stroke-width="2" marker-end="url(#arr)"/><text x="218" y="132" text-anchor="middle" font-size="10.5" font-weight="700" fill="#0f766e">JSON</text>
+  </svg>
+  <figcaption>図解: APIはプログラム同士が決められた書式で注文（リクエスト）と結果（レスポンス）をやり取りする窓口</figcaption>
+</figure>
 </section>
 <section class="article-section" aria-labelledby="section-2"><h2 id="section-2">接続口で例えると？</h2>
 <p>USB機器は、形や通信方法などのルールが合っていれば、内部回路を知らなくても接続できます。</p>
@@ -189,6 +201,8 @@
             <h2 id="lab-example-title">KatakataLabでの実例</h2>
             <p>KatakataLabのツールには、外部APIへ送らずブラウザ内で処理するものもあります。既存サービスとの連携が必要な時はAPI、端末内で完結できる時はローカル処理というように、目的に合わせて選びます。</p>
             <p>例えばパスワード生成やアスペクト比計算は、サーバーに送る必要がありません。一方、アクセス解析や広告配信のように外部サービスの仕組みを借りる場面ではAPI（やそれに類する連携）が出てきます。「便利だから全部外に投げる」ではなく、<strong>外に出す情報の価値</strong>で切り分けるのが実務的です。</p>
+            
+            <div class="tool-link-banner"><strong>関連ツールで試す：<a href="../../text-diff/">テキスト差分チェック →</a></strong>APIレスポンスのJSON変更前・変更後を貼り付けて項目追加や型変化を確認できます。</div>
             <p class="related-heading">この実例につながるページ</p>
             <ul class="related-links"><li><a href="endpoint.html">関連用語：エンドポイント</a></li>
 <li><a href="json.html">関連用語：JSON</a></li>

@@ -21,6 +21,9 @@ function verifyReleaseReadyPrivacy(publicRoot) {
   if (!/<h1\b[^>]*>\s*ReleaseReady プライバシーポリシー\s*<\/h1>/i.test(html)) {
     throw new Error(`ReleaseReady公開必須ページの本文を確認できません: ${PRIVACY_PATH}`);
   }
+  if (!/<meta\b[^>]*name=["']robots["'][^>]*content=["'][^"']*noindex[^"']*follow[^"']*["'][^>]*>/i.test(html)) {
+    throw new Error(`ReleaseReady公開必須ページにnoindex, followが必要です: ${PRIVACY_PATH}`);
+  }
   const anchors = html.match(/<a\b[^>]*>/gi) || [];
   for (const href of ['/contact.html', '/privacy.html', '/terms.html']) {
     if (!anchors.some(tag => tag.includes(`href="${href}"`))) {
@@ -31,8 +34,8 @@ function verifyReleaseReadyPrivacy(publicRoot) {
   const locations = fs.existsSync(sitemap)
     ? [...fs.readFileSync(sitemap, 'utf8').matchAll(/<loc>\s*([^<]+?)\s*<\/loc>/g)].map(match => match[1])
     : [];
-  if (locations.filter(location => location === PRIVACY_URL).length !== 1) {
-    throw new Error('ReleaseReady公開必須ページをsitemap.xmlへ1件登録してください');
+  if (locations.includes(PRIVACY_URL)) {
+    throw new Error('ReleaseReady公開必須ページはnoindex運用のためsitemap.xmlへ登録しないでください');
   }
   return { path: PRIVACY_PATH, canonical: PRIVACY_URL };
 }
@@ -41,7 +44,7 @@ if (require.main === module) {
   const root = path.resolve(process.argv[2] || path.join(__dirname, '..', 'public-build'));
   try {
     verifyReleaseReadyPrivacy(root);
-    console.log('ReleaseReady公開必須ページとsitemap.xmlを確認しました。');
+    console.log('ReleaseReady公開必須ページ（noindex・sitemap除外）を確認しました。');
   } catch (error) {
     console.error(error.message);
     process.exitCode = 1;

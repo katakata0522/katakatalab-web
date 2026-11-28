@@ -6,15 +6,16 @@ const path = require('node:path');
 const root = path.resolve(__dirname, '..');
 const read = name => fs.readFileSync(path.join(root, name), 'utf8');
 
-test('カタログ・トップ入口・サイトマップに新教材が存在する', () => {
+test('カタログ・トップ入口に教材が存在し、PikaLab全体方針に沿ってnoindex・sitemap外で公開される', () => {
   const app = JSON.parse(read('js/app-data.json')).apps.find(item => item.id === 'atom-craft-lab');
   assert.ok(app);
   assert.equal(app.url, 'atom_craft_lab/');
   assert.ok(app.categories.includes('rikei') && app.categories.includes('middle'));
-  assert.equal(app.indexable, true);
+  assert.equal(app.indexable, false);
   assert.match(read('index.html'), /href="atom_craft_lab\//);
+  assert.match(read('atom_craft_lab/index.html'), /<meta[^>]+name="robots"[^>]+content="[^"]*noindex/i);
   for (const file of ['sitemap.xml', 'public/sitemap.xml']) {
-    assert.match(read(file), /https:\/\/katakatalab\.com\/pikalab\/atom_craft_lab\//);
+    assert.doesNotMatch(read(file), /https:\/\/katakatalab\.com\/pikalab\/atom_craft_lab\//);
   }
 });
 

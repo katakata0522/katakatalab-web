@@ -218,6 +218,19 @@
                         </select>
                     </div>
 
+                    <!-- Recommended Pairings -->
+                    <div class="control-group pairing-group">
+                        <span class="control-label">Recommended pairings (Heading + Body)</span>
+                        <div class="pairing-grid" role="group" aria-label="Recommended font pairings">
+                            <button type="button" class="pairing-preset-btn" data-pairing="blog">Blog &amp; Guide</button>
+                            <button type="button" class="pairing-preset-btn" data-pairing="portfolio">Portfolio</button>
+                            <button type="button" class="pairing-preset-btn" data-pairing="event">Event Flyer</button>
+                            <button type="button" class="pairing-preset-btn" data-pairing="docs">Tech Docs</button>
+                            <button type="button" class="pairing-preset-btn pairing-reset-btn" data-pairing="single">Single font</button>
+                        </div>
+                        <p id="pairing-status" class="pairing-status" aria-live="polite"></p>
+                    </div>
+
                     <!-- Font Size -->
                     <div class="control-group">
                         <label for="slider-size" class="control-label">

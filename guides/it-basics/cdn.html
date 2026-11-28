@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CDNとは？画像やWebフォントを世界中の拠点から高速配信する仕組み | かたかたの制作ノート</title>
+  <meta name="description" content="Webページの表示を速くするCDN（Content Delivery Network）の仕組みを解説。Google Fontsや画像配信のメリット、外部CDN依存時の注意点まで整理します。">
+  <link rel="canonical" href="https://katakatalab.com/guides/it-basics/cdn.html">
+  <link rel="icon" href="../../icon.svg" type="image/svg+xml">
+  <meta property="og:title" content="CDNとは？画像やWebフォントを世界中の拠点から高速配信する仕組み">
+  <meta property="og:description" content="Webページの表示を速くするCDN（Content Delivery Network）の仕組みを解説。Google Fontsや画像配信のメリット、外部CDN依存時の注意点まで整理します。">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="https://katakatalab.com/guides/it-basics/cdn.html">
+  <meta property="og:image" content="https://katakatalab.com/ogp.png">
+  <meta property="og:site_name" content="KatakataLab">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="CDNとは？画像やWebフォントを世界中の拠点から高速配信する仕組み">
+  <meta name="twitter:description" content="Webページの表示を速くするCDN（Content Delivery Network）の仕組みを解説。Google Fontsや画像配信のメリット、外部CDN依存時の注意点まで整理します。">
+  <meta name="twitter:image" content="https://katakatalab.com/ogp.png">
+  <link rel="stylesheet" href="style.css">
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": "CDNとは？画像やWebフォントを世界中の拠点から高速配信する仕組み",
+  "description": "Webページの表示を速くするCDN（Content Delivery Network）の仕組みを解説。Google Fontsや画像配信のメリット、外部CDN依存時の注意点まで整理します。",
+  "inLanguage": "ja",
+  "datePublished": "2026-11-28",
+  "dateModified": "2026-11-28",
+  "author": {
+    "@type": "Person",
+    "name": "かたかた",
+    "url": "https://katakatalab.com/who-is-katakata.html"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "KatakataLab",
+    "url": "https://katakatalab.com/",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "https://katakatalab.com/ogp.png"
+    }
+  },
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "https://katakatalab.com/guides/it-basics/cdn.html"
+  },
+  "image": "https://katakatalab.com/ogp.png"
+}
+</script>
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position": 1,
+      "name": "KatakataLab",
+      "item": "https://katakatalab.com/"
+    },
+    {
+      "@type": "ListItem",
+      "position": 2,
+      "name": "かたかたの制作ノート",
+      "item": "https://katakatalab.com/guides/it-basics/"
+    },
+    {
+      "@type": "ListItem",
+      "position": 3,
+      "name": "CDNとは",
+      "item": "https://katakatalab.com/guides/it-basics/cdn.html"
+    }
+  ]
+}
+</script>
+  <script defer src="../../analytics.js"></script>
+</head>
+<body class="article-page">
+  <script>try{if(localStorage.getItem('theme')==='dark')document.body.classList.add('dark-mode');}catch(e){}</script>
+  <a class="skip-link" href="#main-content">本文へ移動</a>
+  <header class="site-header">
+    <div class="header-inner">
+      <a class="brand" href="../../"><span class="brand-mark">KL</span><span>KatakataLab</span></a>
+      <nav class="site-nav" aria-label="主要ナビゲーション">
+        <a href="./">制作ノート一覧</a>
+        <a href="../../#projects">ツール一覧</a>
+        <a href="../../guides/tool-selection-guide.html">用途から選ぶ</a>
+        <a href="../../who-is-katakata.html">運営者</a>
+        <button type="button" id="it-theme-toggle" aria-label="テーマ切り替え" style="background:none;border:1px solid rgba(255,255,255,0.28);color:#fff;border-radius:6px;padding:0.2rem 0.55rem;cursor:pointer;font-size:0.9rem;line-height:1;transition:background 0.2s;" title="ダークモード切り替え">🌙</button>
+      </nav>
+    </div>
+  </header>
+  <script>
+    (function(){
+      var btn = document.getElementById('it-theme-toggle');
+      if(!btn) return;
+      function sync(){ btn.textContent = document.body.classList.contains('dark-mode') ? '☀️' : '🌙'; }
+      sync();
+      btn.addEventListener('click', function(){
+        var dark = document.body.classList.toggle('dark-mode');
+        try{ localStorage.setItem('theme', dark ? 'dark' : 'light'); }catch(e){}
+        sync();
+      });
+    })();
+  </script>
+  <main id="main-content">
+    <nav class="breadcrumbs" aria-label="パンくずリスト">
+      <ol>
+        <li><a href="../../">KatakataLab</a></li>
+        <li><a href="./">かたかたの制作ノート</a></li>
+        <li aria-current="page">CDNとは</li>
+      </ol>
+    </nav>
+    <article class="article-shell">
+      <header class="article-hero">
+        <div class="chapter-stamp" aria-hidden="true"><span>CHAPTER 06</span><strong>25</strong><small>CDN</small></div>
+        <p class="eyebrow">CHAPTER 06｜制作と実装のしくみ</p>
+        <h1>CDNとは？画像やWebフォントを世界中の拠点から高速配信する仕組み</h1>
+        <p class="article-lead">Webフォントを読み込むときや、海外のホスティングサービスを使うときによく目にする「CDN」。物理的な距離による待ち時間を短くし、アクセス集中にも耐えられるようにする現代Webのインフラです。</p>
+        <div class="article-meta">
+          <span>執筆：<a href="../../who-is-katakata.html">かたかた</a></span>
+          <span>公開：<time datetime="2026-11-28">2026年11月28日</time></span>
+          <span>読了目安：約4分</span>
+        </div>
+        <div class="summary-strip" aria-label="ひとことで言うと">
+          <strong>ひとことで言うと</strong>
+          <p>CDNは世界各地に配置した中継サーバー（エッジ）へ画像やCSSのコピーを置き、訪問者に一番近い拠点から高速に届ける仕組みです。</p>
+        </div>
+      </header>
+      <div class="article-layout">
+        <aside class="toc" aria-label="目次">
+          <p class="toc-title">目次</p>
+          <ol>
+            <li><a href="#section-1">しくみの全体像</a></li>
+            <li><a href="#section-2">CDNを使うと何が良くなるのか</a></li>
+            <li><a href="#section-3">外部CDNへ頼りすぎるときの注意点</a></li>
+            <li><a href="#section-talk">この言葉が会話に出てくるとき</a></li>
+            <li><a href="#section-misread">勘違いしやすい点</a></li>
+            <li><a href="#section-4">まとめ</a></li>
+            <li><a href="#lab-example-title">KatakataLabでの実例</a></li>
+            <li><a href="#faq-title">よくある質問</a></li>
+            <li><a href="#references-title">参考資料</a></li>
+          </ol>
+        </aside>
+        <div class="article-content">
+          <section class="article-section" aria-labelledby="section-1">
+            <h2 id="section-1">しくみの全体像</h2>
+            <p>インターネットの通信は光の速さに近いとはいえ、日本のユーザーがアメリカにあるサーバーまで何度も往復すると、どうしても数百ミリ秒の遅延が生まれます。</p>
+            <p>そこで、画像・CSS・JavaScript・Webフォントといった静的ファイルのコピーを世界各地の拠点（エッジサーバー）に置いておき、アクセスしてきた人に<strong>地理的に一番近い拠点</strong>から届ける仕組みが <strong>CDN（Content Delivery Network）</strong> です。</p>
+            <figure class="diagram-figure">
+  <svg viewBox="0 0 640 195" width="100%" role="img" aria-label="オリジンサーバーから世界各地のCDNエッジサーバーへ配信し、利用者の最寄り拠点から返却する図解">
+    <defs>
+      <marker id="arr" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+        <path d="M 0 1 L 10 5 L 0 9 z" fill="currentColor" opacity="0.7"/>
+      </marker>
+    </defs>
+    <rect x="20" y="56" width="144" height="80" rx="8" fill="#b45309" fill-opacity="0.1" stroke="#b45309" stroke-width="1.8"/><text x="92" y="92" text-anchor="middle" font-size="12.5" font-weight="700" fill="currentColor">オリジンサーバー</text><text x="92" y="110" text-anchor="middle" font-size="10.5" fill="currentColor" opacity="0.78">元ファイルを保管
+（例：米国など遠方）</text><line x1="168" y1="76" x2="250" y2="54" stroke="#1f5c99" stroke-width="2" marker-end="url(#arr)"/><text x="209" y="54" text-anchor="middle" font-size="10.5" font-weight="700" fill="#1f5c99">配布</text><line x1="168" y1="116" x2="250" y2="136" stroke="#1f5c99" stroke-width="2" marker-end="url(#arr)"/><text x="209" y="144" text-anchor="middle" font-size="10.5" font-weight="700" fill="#1f5c99">配布</text><rect x="256" y="24" width="152" height="58" rx="8" fill="#0f766e" fill-opacity="0.1" stroke="#0f766e" stroke-width="1.8"/><text x="332" y="49" text-anchor="middle" font-size="12.5" font-weight="700" fill="currentColor">エッジ（東京）</text><text x="332" y="67" text-anchor="middle" font-size="10.5" fill="currentColor" opacity="0.78">コピーを保持</text><rect x="256" y="110" width="152" height="58" rx="8" fill="#0f766e" fill-opacity="0.1" stroke="#0f766e" stroke-width="1.8"/><text x="332" y="135" text-anchor="middle" font-size="12.5" font-weight="700" fill="currentColor">エッジ（大阪/欧州）</text><text x="332" y="153" text-anchor="middle" font-size="10.5" fill="currentColor" opacity="0.78">コピーを保持</text><line x1="412" y1="53" x2="474" y2="53" stroke="#0f766e" stroke-width="2" marker-end="url(#arr)"/><text x="443" y="43" text-anchor="middle" font-size="10.5" font-weight="700" fill="#0f766e">高速応答</text><line x1="412" y1="139" x2="474" y2="139" stroke="#0f766e" stroke-width="2" marker-end="url(#arr)"/><text x="443" y="129" text-anchor="middle" font-size="10.5" font-weight="700" fill="#0f766e">高速応答</text><rect x="480" y="24" width="140" height="58" rx="8" fill="#1f5c99" fill-opacity="0.1" stroke="#1f5c99" stroke-width="1.8"/><text x="550" y="49" text-anchor="middle" font-size="12.5" font-weight="700" fill="currentColor">日本の訪問者</text><text x="550" y="67" text-anchor="middle" font-size="10.5" fill="currentColor" opacity="0.78">近い拠点から取得</text><rect x="480" y="110" width="140" height="58" rx="8" fill="#1f5c99" fill-opacity="0.1" stroke="#1f5c99" stroke-width="1.8"/><text x="550" y="135" text-anchor="middle" font-size="12.5" font-weight="700" fill="currentColor">海外の訪問者</text><text x="550" y="153" text-anchor="middle" font-size="10.5" fill="currentColor" opacity="0.78">近い拠点から取得</text>
+  </svg>
+  <figcaption>図解: オリジンサーバーが遠くにあっても、東京など最寄りのエッジサーバーからキャッシュを返すことで往復時間を短縮する</figcaption>
+</figure>
+          </section>
+          <section class="article-section" aria-labelledby="section-2">
+            <h2 id="section-2">CDNを使うと何が良くなるのか</h2>
+            <ul><li><strong>表示速度の向上：</strong>最寄りの拠点からデータを返すため、特に画像やWebフォントの読み込み待ちが短くなります。</li><li><strong>アクセス集中への耐性：</strong>SNSで記事が拡散されて急にアクセスが増えても、大元のオリジンサーバーへ直撃する前にCDNが吸収してくれます。</li><li><strong>配信の最適化：</strong>最近のCDNはHTTPS終端、Gzip/Brotli圧縮、画像の自動最適化までまとめて担ってくれることが増えています。</li></ul>
+          </section>
+          <section class="article-section" aria-labelledby="section-3">
+            <h2 id="section-3">外部CDNへ頼りすぎるときの注意点</h2>
+            <p>公開CDN（Google FontsやjsDelivrなど）のURLを1行貼るだけでライブラリやフォントを使えるのは非常に手軽ですが、運用面では次の点も意識します。</p>
+            <ul><li><strong>外部障害・URL変更の影響を受ける：</strong>読み込み先CDNが一時停止すると、自分のサーバーが無事でもツールの機能が止まることがあります。</li><li><strong>プライバシー・CSP設計：</strong>外部ドメインへの通信が増えるため、重要ツールでは自前サーバーへライブラリを同梱（セルフホスト）する選択肢も有力です。</li></ul>
+          </section>
+          <section class="article-section" aria-labelledby="section-talk">
+            <h2 id="section-talk">この言葉が会話に出てくるとき</h2>
+            <p><strong>「重い日本語WebフォントもGoogle FontsのCDNなら分割配信されるよ」</strong><br>必要な文字ブロックだけ（unicode-range）を最寄りCDNから段階取得する仕組みの話です。</p>
+<p><strong>「重要な差分計算エンジンは外部CDNじゃなく自前で同梱しよう」</strong><br>外部サービスの障害やオフライン環境でもツールが壊れないようにする堅実な判断です。</p>
+          </section>
+          <section class="article-section" aria-labelledby="section-misread">
+            <h2 id="section-misread">勘違いしやすい点</h2>
+            <ul>
+              <li><strong>誤解1：CDNを入れれば重い20MBの画像も一瞬で開く。</strong>距離は縮められてもデータ量自体は減りません。まずは画像サイズ圧縮やWebP化が先です。</li>
+<li><strong>誤解2：CDNは常に最新のファイルを即座に返す。</strong>キャッシュ保持時間（TTL）の間は古いコピーが返るため、更新時はキャッシュクリアやファイル名変更を組み合わせます。</li>
+            </ul>
+          </section>
+          <section class="article-section" aria-labelledby="section-4">
+            <h2 id="section-4">まとめ</h2>
+            <ul>
+              <li>CDNは世界各拠点（エッジ）にコピーを置き、最寄りから届けて高速化・負荷分散する仕組み。</li>
+<li>画像やWebフォントの配信と相性が良いが、元のデータ軽量化も欠かせない。</li>
+<li>不可欠なコア機能のスクリプトは外部CDN依存を避け、自前配置も検討する。</li>
+            </ul>
+          </section>
+          <aside class="lab-example" aria-labelledby="lab-example-title">
+            <p class="eyebrow">FROM THE LAB</p>
+            <h2 id="lab-example-title">KatakataLabでの実例</h2>
+            <p>KatakataLabの「テキスト差分チェック」では、差分計算エンジンを外部CDN頼みにせず自前配置（diff-engine.js）にすることで、通信環境の影響を減らしています。また「Katakata Font-Lab」では日本語Webフォントの分割配信と読み込み容量の考え方を詳しく解説しています。</p>
+            <div class="tool-link-banner"><strong>関連ツールで試す：<a href="../../font-lab/">Katakata Font-Lab →</a></strong>日本語Webフォントの印象・ペアリングと、分割配信による軽量化の仕組みを比較・体験できます。</div>
+            <p class="related-heading">この実例につながるページ</p>
+            <ul class="related-links">
+              <li><a href="cache.html">関連用語：キャッシュ</a></li>
+<li><a href="static-dynamic.html">関連用語：静的サイトと動的サイト</a></li>
+<li><a href="https.html">関連用語：HTTPSとSSL/TLS</a></li>
+            </ul>
+          </aside>
+          <section class="article-section faq" aria-labelledby="faq-title">
+            <p class="eyebrow">QUICK CHECK</p>
+            <h2 id="faq-title">よくある質問</h2>
+            <h3>日本語Webフォントはなぜ重くなりがちなのですか？</h3>
+<p>英数字だけなら数百文字ですが、日本語はひらがな・カタカナ・数千字の漢字を含むためファイル全体が大きくなります。CDNの分割配信やサブセット化で使う文字だけ読み込むのが効果的です。</p>
+<h3>個人サイトでもCDNは使えますか？</h3>
+<p>はい。Cloudflare、GitHub Pages、Cloudflare Pages、Netlify、Vercelなどの多くは標準でCDN配信に対応しています。</p>
+          </section>
+          <section class="article-section references" aria-labelledby="references-title">
+            <h2 id="references-title">参考資料</h2>
+            <p>用語の定義や仕様を確認するため、公式文書・標準文書を参照しています。リンク先の内容は更新される場合があります。</p>
+            <ul>
+              <li><a href="https://developer.mozilla.org/ja/docs/Glossary/CDN" target="_blank" rel="noopener noreferrer">MDN Web Docs「CDN」</a></li>
+<li><a href="https://web.dev/articles/content-delivery-networks" target="_blank" rel="noopener noreferrer">web.dev「Content delivery networks (CDNs)」</a></li>
+            </ul>
+          </section>
+          <nav class="chapter-nav" aria-label="前後の記事">
+            <a class="chapter-link previous" href="build.html"><small>前の記事</small><span>← BUILD</span></a>
+            <a class="chapter-link next" href="ogp.html"><small>次の記事</small><span>OGP →</span></a>
+          </nav>
+        </div>
+      </div>
+    </article>
+  </main>
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <p><strong>KatakataLab</strong><br><span>作って、つまずいて、分かったことを残す小さな研究室。</span></p>
+      <nav aria-label="フッターナビゲーション">
+        <a href="../../contact.html">お問い合わせ</a>
+        <a href="../../who-is-katakata.html">運営者情報</a>
+        <a href="../../privacy.html">プライバシーポリシー</a>
+        <a href="../../sitemap.html">サイトマップ</a>
+      </nav>
+    </div>
+    <p class="copyright">&copy; 2024-2026 KatakataLab</p>
+  </footer>
+</body>
+</html>

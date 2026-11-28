@@ -1353,3 +1353,56 @@ body.dark-mode .pwd-item:hover {
   .breadcrumbs-tool--bar { flex-wrap: wrap; }
   .breadcrumbs-tool__index { white-space: nowrap; }
 }
+
+.pwd-mode-switch {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+  padding: 4px;
+  border-radius: 10px;
+  background: rgba(100, 116, 139, 0.12);
+  margin-bottom: 1rem;
+}
+.pwd-mode-btn {
+  border: none;
+  border-radius: 8px;
+  padding: 0.5rem 0.6rem;
+  background: transparent;
+  color: var(--c-text-light);
+  font-size: 0.82rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+.pwd-mode-btn.active {
+  background: var(--c-primary);
+  color: var(--c-on-pwd-primary, #fff);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
+}
+.pwd-passphrase-box {
+  padding: 0.9rem;
+  margin-bottom: 1rem;
+  border-radius: 10px;
+  border: 1px solid var(--c-glass-border);
+  background: rgba(99, 102, 241, 0.05);
+}
+.pwd-pp-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 0.75rem;
+}
+.pwd-pp-label {
+  font-size: 0.84rem;
+  font-weight: 700;
+  color: var(--c-text);
+  white-space: nowrap;
+}
+.pwd-pp-select {
+  max-width: 190px;
+  height: 36px;
+  padding: 0.25rem 0.6rem;
+  font-size: 0.85rem;
+}
+

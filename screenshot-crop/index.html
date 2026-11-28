@@ -17,14 +17,14 @@
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="KatakataLab">
   <meta property="og:locale" content="ja_JP">
-  <meta property="og:title" content="スクショ端カット｜投稿前に、画面の端だけサッと切る">
+  <meta property="og:title" content="スクショの上下を切る・ステータスバーを消す｜スクショ端カット - KatakataLab">
   <meta property="og:description" content="ステータスバーやナビゲーションバーなど、見せたくない画面端を選んで切り落とせます。ログイン不要・画像アップロード不要。">
   <meta property="og:url" content="https://katakatalab.com/screenshot-crop/">
   <meta property="og:image" content="https://katakatalab.com/ogp.png">
   <meta property="og:image:alt" content="KatakataLab スクショ端カット">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:site" content="@Katakata_toybox">
-  <meta name="twitter:title" content="スクショ端カット｜投稿前に、画面の端だけサッと切る">
+  <meta name="twitter:title" content="スクショの上下を切る・ステータスバーを消す｜スクショ端カット - KatakataLab">
   <meta name="twitter:description" content="ステータスバーやナビゲーションバーなど、見せたくない画面端をブラウザ内だけで切り落とします。">
   <meta name="twitter:image" content="https://katakatalab.com/ogp.png">
   <meta name="twitter:image:alt" content="KatakataLab スクショ端カット">
@@ -439,7 +439,33 @@
       <div class="explain-main">
         <p class="eyebrow">こんな時に便利</p>
         <h2 id="why-title">投稿前に、見せたくないところだけを整理。</h2>
+        <p>作成者: かたかた / 更新日: 2026年11月28日</p>
         <p>時刻や通知、ナビゲーションバーなどの端を手早く切り、必要なときだけ画像内も黒塗り・ぼかしで隠したり、角丸や背景フレームで整えたりできます。</p>
+        <figure style="margin: 18px 0 8px; padding: 14px; border: 1px solid rgba(148,163,184,0.35); border-radius: 14px; background: rgba(148,163,184,0.06);">
+          <svg viewBox="0 0 640 200" role="img" aria-label="スクショ加工のBeforeとAfterの図解（上下バー除去・黒塗り・角丸フレーム）" style="width:100%;height:auto;display:block;">
+            <rect x="24" y="14" width="230" height="172" rx="14" fill="#ffffff" stroke="#94a3b8" stroke-width="2"/>
+            <rect x="24" y="14" width="230" height="28" rx="12" fill="#fee2e2" stroke="#ef4444" stroke-width="1.5" stroke-dasharray="4 3"/>
+            <text x="139" y="32" text-anchor="middle" font-size="11" font-weight="700" fill="#b91c1c">9:41  通知・電池・時刻（切る）</text>
+            <rect x="44" y="56" width="190" height="22" rx="5" fill="#e2e8f0"/>
+            <text x="54" y="71" font-size="11" fill="#334155">@my_private_id (個人情報)</text>
+            <rect x="44" y="88" width="190" height="54" rx="8" fill="#dbeafe"/>
+            <text x="139" y="119" text-anchor="middle" font-size="12" font-weight="700" fill="#1e3a8a">共有したい画面本体</text>
+            <rect x="24" y="158" width="230" height="28" rx="12" fill="#fee2e2" stroke="#ef4444" stroke-width="1.5" stroke-dasharray="4 3"/>
+            <text x="139" y="176" text-anchor="middle" font-size="11" font-weight="700" fill="#b91c1c">下部ナビバー（切る）</text>
+
+            <path d="M276 100 L338 100" stroke="#2563eb" stroke-width="3" stroke-linecap="round"/>
+            <path d="M328 92 L340 100 L328 108" fill="none" stroke="#2563eb" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+            <text x="308" y="84" text-anchor="middle" font-size="11" font-weight="700" fill="#2563eb">ブラウザ内加工</text>
+
+            <rect x="360" y="22" width="256" height="156" rx="18" fill="#e0f2fe" stroke="#38bdf8" stroke-width="1.5"/>
+            <rect x="382" y="40" width="212" height="120" rx="14" fill="#ffffff" stroke="#0284c7" stroke-width="2"/>
+            <rect x="398" y="54" width="128" height="20" rx="4" fill="#0f172a"/>
+            <text x="462" y="68" text-anchor="middle" font-size="10" font-weight="700" fill="#f8fafc">黒塗りで完全保護</text>
+            <rect x="398" y="84" width="180" height="60" rx="8" fill="#dbeafe"/>
+            <text x="488" y="118" text-anchor="middle" font-size="12" font-weight="700" fill="#1e3a8a">端カット＋角丸フレーム完成</text>
+          </svg>
+          <figcaption style="margin-top:8px;font-size:0.8rem;color:inherit;opacity:0.8;text-align:center;">Before（上下のシステムバーやIDが映り込んだ状態）→ After（不要な端を切り、IDを黒塗りし、角丸フレームで整えた状態）</figcaption>
+        </figure>
       </div>
       <div class="use-cases">
         <article>
@@ -455,8 +481,44 @@
         <article>
           <span aria-hidden="true">↔</span>
           <h3>左右も必要なら</h3>
-          <p>画像上の黄色いバーか詳細スライダーで、4辺すべてを手動調整できます。</p>
+          <p>画像上の黄色いバーか詳細スライダーで、4辺すべてを1px単位で手動調整できます。</p>
         </article>
+      </div>
+    </section>
+
+    <section class="explain-section" aria-labelledby="checklist-title">
+      <div class="explain-main">
+        <p class="eyebrow">SNS投稿・共有前の確認</p>
+        <h2 id="checklist-title">投稿前の映り込み確認と機能の使い分け</h2>
+        <p>切り抜きの前に「どこに個人情報や環境情報が残りやすいか」を把握しておくと、見落としを減らせます。</p>
+      </div>
+      <div class="use-cases">
+        <article>
+          <span aria-hidden="true">🔍</span>
+          <h3>画面端に残りやすい情報</h3>
+          <p>スマホでは上部の時刻・通信状態・通知アイコン、PCではブラウザのタブ名・ブックマークバー・URLのパラメータやタスクバーのアイコンが映り込みやすくなります。</p>
+        </article>
+        <article>
+          <span aria-hidden="true">⬛</span>
+          <h3>黒塗りとぼかしの使い分け</h3>
+          <p>氏名・アカウントID・メールアドレス・注文番号など復元されたくない情報は、ぼかしではなく「黒塗り」で完全に塗りつぶす運用が安全です。ぼかしは背景の視線を和らげる用途に向いています。</p>
+        </article>
+        <article>
+          <span aria-hidden="true">📦</span>
+          <h3>複数枚と3枠プリセット</h3>
+          <p>1〜8枚をまとめて読み込め、よく使う切り幅はプリセット1〜3へ保存できます。同じ端末で撮った複数枚のスクショを、個別保存またはZIPでまとめて書き出せます。</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="explain-section" data-verification-note aria-labelledby="crop-verification-title">
+      <div class="explain-main">
+        <p class="eyebrow">動作確認メモ</p>
+        <h2 id="crop-verification-title">実際の操作で確認した内容と範囲</h2>
+        <p><strong>確認日: 2026年11月28日</strong>（Chrome）</p>
+        <p>「サンプル画像で試す」から画像を読み込み、上・下・左・右の辺選択、黄色いバーおよび1pxスライダーでの微調整、黒塗り・ぼかし、角丸・背景フレームの適用、Canvasからの画像書き出しがブラウザ内で完了することを確認しています。</p>
+        <p><strong>確認範囲:</strong> 自動判定は画面端の候補を出す補助機能であり、すべての端末・OS・アプリでの完全一致を保証するものではありません。書き出し前に必ずプレビューで切り位置と隠したい範囲を確認してください。</p>
+        <p><a href="../about-katakatalab.html#verification-policy">KatakataLabの検証方法を見る →</a></p>
       </div>
     </section>
 

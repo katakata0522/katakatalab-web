@@ -945,3 +945,173 @@ body.dark-mode .site-footer {
   border-top: 1px solid rgba(255, 255, 255, 0.1);
 }
 
+/* =========================================
+   Inline SVG Diagrams & Tool Link Callouts
+   ========================================= */
+.diagram-figure {
+  margin: 1.5rem 0;
+  padding: 1.1rem 1rem 0.9rem;
+  border: 1.5px solid var(--line, rgba(22, 34, 48, 0.16));
+  border-radius: 10px;
+  background: var(--white, #ffffff);
+  box-shadow: 0 6px 18px rgba(22, 34, 48, 0.05);
+}
+
+.diagram-figure svg {
+  display: block;
+  width: 100%;
+  max-width: 640px;
+  height: auto;
+  margin: 0 auto;
+  color: var(--ink, #162230);
+}
+
+.diagram-figure figcaption {
+  margin-top: 0.7rem;
+  font-size: 0.85rem;
+  line-height: 1.55;
+  color: var(--ink-soft, #4b5d70);
+  text-align: center;
+}
+
+.tool-link-banner {
+  margin: 1.25rem 0;
+  padding: 1rem 1.15rem;
+  border-left: 4px solid var(--blue, #1f5c99);
+  border-radius: 0 8px 8px 0;
+  background: rgba(31, 92, 153, 0.06);
+  font-size: 0.94rem;
+}
+
+.tool-link-banner strong {
+  display: block;
+  margin-bottom: 0.25rem;
+}
+
+body.dark-mode .diagram-figure {
+  background: #0f172a;
+  border-color: rgba(255, 255, 255, 0.14);
+  box-shadow: 0 8px 22px rgba(0, 0, 0, 0.35);
+}
+
+body.dark-mode .diagram-figure svg {
+  color: #f8fafc;
+}
+
+body.dark-mode .diagram-figure figcaption {
+  color: #94a3b8;
+}
+
+body.dark-mode .tool-link-banner {
+  background: rgba(96, 165, 250, 0.1);
+  border-left-color: #60a5fa;
+}
+
+/* Support semantic <ol> breadcrumbs, .summary-strip, and .toc in expanded articles */
+.breadcrumbs ol {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.45rem;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.breadcrumbs ol li {
+  display: inline-flex;
+  align-items: center;
+}
+
+.breadcrumbs ol li + li::before {
+  content: "/";
+  margin-right: 0.45rem;
+  color: var(--ink-soft, #5a6b7d);
+  opacity: 0.65;
+}
+
+.summary-strip {
+  margin-top: 1.4rem;
+  padding: 1rem 1.25rem;
+  background: rgba(243, 201, 75, 0.18);
+  border-left: 4px solid var(--red, #b9382c);
+  border-radius: 4px;
+}
+
+.summary-strip strong {
+  display: block;
+  font-size: 0.82rem;
+  letter-spacing: 0.04em;
+  color: var(--red-dark, #8c261c);
+  margin-bottom: 0.35rem;
+}
+
+.summary-strip p {
+  margin: 0;
+  font-size: 0.96rem;
+  line-height: 1.7;
+}
+
+.toc {
+  align-self: start;
+  position: sticky;
+  top: 1.5rem;
+  padding: 1.2rem;
+  background: var(--paper, #f7f1e1);
+  border-top: 5px solid var(--yellow, #f3c94b);
+}
+
+.toc .toc-title {
+  margin: 0;
+  font-size: 0.78rem;
+  font-weight: 900;
+}
+
+.toc ol {
+  margin: 0.8rem 0 0;
+  padding-left: 1.15rem;
+  font-size: 0.78rem;
+  line-height: 1.55;
+}
+
+.toc li + li {
+  margin-top: 0.48rem;
+}
+
+.toc a {
+  color: var(--ink-soft);
+  text-decoration: none;
+}
+
+.toc a:hover {
+  color: var(--red-dark);
+  text-decoration: underline;
+}
+
+@media (max-width: 900px) {
+  .toc {
+    position: static;
+  }
+}
+
+body.dark-mode .summary-strip {
+  background: rgba(243, 201, 75, 0.12);
+  border-left-color: #f87171;
+}
+
+body.dark-mode .summary-strip strong {
+  color: #fca5a5;
+}
+
+body.dark-mode .toc {
+  background: #0f172a;
+  border-top-color: #facc15;
+}
+
+body.dark-mode .toc a {
+  color: #cbd5e1;
+}
+
+body.dark-mode .toc a:hover {
+  color: #f87171;
+}

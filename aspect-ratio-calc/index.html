@@ -8,7 +8,7 @@
   <title>アスペクト比計算ツール【無料】16:9 / 4:3 画像・動画サイズ自動計算｜KatakataLab</title>
   <meta name="description" content="片方の幅または高さから、もう片方のピクセルを計算します。画像ファイルの読み込みや切り抜きはしません。ピクセル計算と枠プレビューの道具です。">
   
-  <meta property="og:title" content="アスペクト比計算｜片方の辺からもう片方のピクセルを出す">
+  <meta property="og:title" content="アスペクト比計算ツール【無料】16:9 / 4:3 画像・動画サイズ自動計算｜KatakataLab">
   <meta property="og:description" content="片方の幅または高さから、もう片方のピクセルを計算します。画像ファイルの読み込みや切り抜きはしません。ピクセル計算と枠プレビューの道具です。">
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://katakatalab.com/aspect-ratio-calc/">
@@ -17,7 +17,7 @@
 
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:site" content="@Katakata_toybox">
-  <meta name="twitter:title" content="アスペクト比計算｜片方の辺からもう片方のピクセルを出す">
+  <meta name="twitter:title" content="アスペクト比計算ツール【無料】16:9 / 4:3 画像・動画サイズ自動計算｜KatakataLab">
   <meta name="twitter:description" content="片方の幅または高さから、もう片方のピクセルを計算します。画像ファイルの読み込みや切り抜きはしません。ピクセル計算と枠プレビューの道具です。">
   <meta name="twitter:image" content="https://katakatalab.com/ogp.png">
 
@@ -89,6 +89,15 @@
       <button type="button" class="btn-preset special" data-w="1" data-h="1.618">
         <span class="ratio-text">Golden</span><span class="ratio-label">1 : 1.618</span>
       </button>
+    </div>
+    <div class="size-preset-row" role="group" aria-label="用途別サイズプリセット">
+      <span class="size-preset-heading">用途別サイズ:</span>
+      <button type="button" class="btn-size-preset" data-width="1920" data-height="1080" data-w="16" data-h="9">YouTube 1920×1080</button>
+      <button type="button" class="btn-size-preset" data-width="1200" data-height="630" data-w="40" data-h="21">OGP 1200×630</button>
+      <button type="button" class="btn-size-preset" data-width="1080" data-height="1080" data-w="1" data-h="1">正方形 1080×1080</button>
+      <button type="button" class="btn-size-preset" data-width="1080" data-height="1350" data-w="4" data-h="5">Instagram 1080×1350</button>
+      <button type="button" class="btn-size-preset" data-width="1080" data-height="1920" data-w="9" data-h="16">ショート 1080×1920</button>
+      <button type="button" class="btn-size-preset" data-width="1500" data-height="500" data-w="3" data-h="1">Xヘッダー 1500×500</button>
     </div>
   </section>
 
@@ -163,6 +172,28 @@
     <div id="advisorArea" class="advisor-area hidden">
       <span class="advisor-icon">💡</span>
       <span id="advisorText" class="advisor-text">ほぼ 16:9 (YouTube等) の比率です。定番比に近い目安です。</span>
+    </div>
+
+    <div class="ratio-compare-strip" aria-label="定番比率との形状比較">
+      <span class="ratio-compare-title">形状の比較（現在 vs 定番）</span>
+      <div class="ratio-compare-grid">
+        <div class="ratio-compare-item is-current">
+          <div class="ratio-compare-frame"><div id="compareCurrentRect" class="ratio-compare-rect ratio-compare-rect--current"></div></div>
+          <span id="compareCurrentLabel" class="ratio-compare-label">現在 16:9</span>
+        </div>
+        <div class="ratio-compare-item">
+          <div class="ratio-compare-frame"><div class="ratio-compare-rect ratio-compare-rect--16-9"></div></div>
+          <span class="ratio-compare-label">16:9 横長</span>
+        </div>
+        <div class="ratio-compare-item">
+          <div class="ratio-compare-frame"><div class="ratio-compare-rect ratio-compare-rect--1-1"></div></div>
+          <span class="ratio-compare-label">1:1 正方形</span>
+        </div>
+        <div class="ratio-compare-item">
+          <div class="ratio-compare-frame"><div class="ratio-compare-rect ratio-compare-rect--9-16"></div></div>
+          <span class="ratio-compare-label">9:16 縦長</span>
+        </div>
+      </div>
     </div>
 
     <!-- CSSコードスニペットコピー (Web制作・開発用) -->
@@ -278,6 +309,7 @@
         <p>A. 計算した比率をモニター風・スマホ風・シネマ風の枠に入れて見た目のバランスを確認するためのプレビューです。</p>
       </div>
     </details>
+    <p class="author-meta">作成者: かたかた / 更新日: 2026年11月28日</p>
   </article>
 
 

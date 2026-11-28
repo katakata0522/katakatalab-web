@@ -1024,3 +1024,84 @@ summary:focus-visible, #previewText:focus-visible { outline: 2px solid currentCo
   outline: 2px solid currentColor;
   outline-offset: 2px;
 }
+
+.clamp-area {
+  margin-top: 28px;
+  padding: 20px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-color);
+  background: var(--card-bg);
+}
+.clamp-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 14px;
+}
+.clamp-desc {
+  margin: 4px 0 0;
+  font-size: 0.84rem;
+  color: var(--text-sub);
+}
+.clamp-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+}
+.clamp-field {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--text-sub);
+}
+.clamp-field input {
+  padding: 9px 10px;
+  border-radius: 8px;
+  border: 1px solid var(--border-color);
+  background: var(--bg-color);
+  color: var(--text-main);
+  font-family: monospace;
+  font-size: 0.95rem;
+  font-weight: 700;
+  width: 100%;
+  box-sizing: border-box;
+}
+.clamp-output-row {
+  margin-top: 14px;
+  padding: 12px 14px;
+  border-radius: 8px;
+  background: #0f172a;
+  color: #e2e8f0;
+  overflow-x: auto;
+}
+.clamp-code {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 0.88rem;
+  white-space: nowrap;
+}
+.clamp-status {
+  margin: 8px 0 0;
+  min-height: 1.2em;
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--primary-color);
+}
+body.dark-mode .clamp-area {
+  background: #1c2541 !important;
+  border-color: rgba(255, 255, 255, 0.1) !important;
+}
+body.dark-mode .clamp-field input {
+  background: #0f172a !important;
+  color: #f8fafc !important;
+  border-color: rgba(255, 255, 255, 0.16) !important;
+}
+@media (max-width: 640px) {
+  .clamp-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
