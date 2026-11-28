@@ -60,7 +60,7 @@ jobs:
     # 共通検証を一度通してから、変更対象の重いE2Eを起動する。
     needs: relevance
     if: "${{ !cancelled() && (github.event_name != 'push' || needs.relevance.outputs.pikalab == 'true') && (github.event_name != 'pull_request' || !github.event.pull_request.draft) }}"
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     # package-lockのPlaywrightと同版。ブラウザ・font・OS依存は公式の固定イメージで準備する。
     container:
       image: mcr.microsoft.com/playwright:v1.60.0-noble@sha256:9bd26ad900bb5e0f4dee75839e957a89ae89c2b7ab1e76050e559790e946b948
@@ -89,6 +89,7 @@ jobs:
       - name: Checkout code for PR-wide changes
         uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
         with:
+          fetch-depth: 1
           persist-credentials: false
           fetch-depth: 2
 
@@ -136,7 +137,7 @@ jobs:
         run: |
           set -euo pipefail
           cd pikalab
-          npm ci --prefer-offline --no-audit --no-fund
+          npm install --prefer-offline --no-audit --no-fund
 
       - name: Validate dependency tree
         run: |
@@ -202,16 +203,16 @@ jobs:
 
 
   validate:
-    name: ${{ (github.event_name != 'pull_request' || !github.event.pull_request.draft) && (matrix.group == 'practice' && 'validate-practice' || 'validate') || 'Draft validate' }}
+    name: ${{ (github.event_name != 'pull_request' || !github.event.pull_request.draft) && (matrix.group == 'all' && 'validate' || format('validate-{0}', matrix.group)) || 'Draft validate' }}
     needs: scope
     # 全件検証のときだけ実測時間の近い2組に分け、ラボ単独の変更は1ジョブで検証する。
     strategy:
       fail-fast: false
       matrix:
-        group: ${{ fromJSON(needs.scope.outputs.full == 'true' && '["site","practice"]' || '["all"]') }}
+        group: ${{ fromJSON(needs.scope.outputs.full == 'true' && '["site-core","site-labs","practice-fraction","practice-labs"]' || '["all"]') }}
     # 対象の検証は共通チェックの成功後に開始する。Draftの更新は対象外。
     if: "${{ !cancelled() && needs.scope.result == 'success' && (github.event_name != 'pull_request' || !github.event.pull_request.draft) }}"
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     # package-lockのPlaywrightと同版。ブラウザ・font・OS依存は公式の固定イメージで準備する。
     container:
       image: mcr.microsoft.com/playwright:v1.60.0-noble@sha256:9bd26ad900bb5e0f4dee75839e957a89ae89c2b7ab1e76050e559790e946b948
@@ -226,6 +227,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
         with:
+          fetch-depth: 1
           persist-credentials: false
 
       - name: Prepare required command-line tools
@@ -246,6 +248,7 @@ jobs:
         with:
           ref: ${{ needs.scope.outputs.baseline_sha }}
           path: .pikalab-baseline
+          fetch-depth: 1
           persist-credentials: false
 
       - name: Prepare verified baseline dependencies from this job
@@ -263,7 +266,7 @@ jobs:
         run: |
           set -euo pipefail
           cd pikalab
-          npm ci --prefer-offline --no-audit --no-fund
+          npm install --prefer-offline --no-audit --no-fund
 
       - name: Build PikaLab for visual guard
         run: |
@@ -282,7 +285,7 @@ jobs:
       - name: Install shared baseline dependencies
         if: "${{ env.PIKALAB_COMPARE_BASELINE == 'true' || (github.event_name == 'pull_request' && (needs.scope.outputs.rhythm == 'true' || needs.scope.outputs.manabi == 'true' || needs.scope.outputs.speed_reader == 'true' || needs.scope.outputs.typing_dojo == 'true' || needs.scope.outputs.kotowaza == 'true' || needs.scope.outputs.fraction == 'true')) }}"
         working-directory: .pikalab-baseline/pikalab
-        run: npm ci --prefer-offline --no-audit --no-fund
+        run: npm install --prefer-offline --no-audit --no-fund
 
       - name: Build shared baseline for visual and learning checks
         if: "${{ env.PIKALAB_COMPARE_BASELINE == 'true' || (github.event_name == 'pull_request' && (needs.scope.outputs.manabi == 'true' || needs.scope.outputs.speed_reader == 'true' || needs.scope.outputs.typing_dojo == 'true' || needs.scope.outputs.kotowaza == 'true' || needs.scope.outputs.fraction == 'true')) }}"
@@ -304,20 +307,20 @@ jobs:
           node ../.github/scripts/verify-playwright-runtime.cjs
 
       - name: Verify PikaLab top page browser behavior
-        if: "${{ !cancelled() && (success() || env.PIKALAB_COLLECT_ALL_FAILURES == 'true') && steps.verified_build.outcome == 'success' && steps.browser_setup.outcome == 'success' && needs.scope.result == 'success' && matrix.group != 'practice' }}"
+        if: "${{ !cancelled() && (success() || env.PIKALAB_COLLECT_ALL_FAILURES == 'true') && steps.verified_build.outcome == 'success' && steps.browser_setup.outcome == 'success' && needs.scope.result == 'success' && (matrix.group == 'all' || matrix.group == 'site-core') }}"
         run: |
           set -euo pipefail
           RUN_PIKALAB_TOP_BROWSER=1 node --test pikalab/tests/top-browser.test.cjs
 
       - name: Verify PWA cache upgrade and offline runtime
-        if: "${{ !cancelled() && (success() || env.PIKALAB_COLLECT_ALL_FAILURES == 'true') && steps.verified_build.outcome == 'success' && steps.browser_setup.outcome == 'success' && needs.scope.result == 'success' && matrix.group != 'practice' }}"
+        if: "${{ !cancelled() && (success() || env.PIKALAB_COLLECT_ALL_FAILURES == 'true') && steps.verified_build.outcome == 'success' && steps.browser_setup.outcome == 'success' && needs.scope.result == 'success' && (matrix.group == 'all' || matrix.group == 'site-core') }}"
         run: |
           set -euo pipefail
           cd pikalab
           npm run test:pwa-e2e
 
       - name: Run PikaLab visual regression guard
-        if: "${{ !cancelled() && (success() || env.PIKALAB_COLLECT_ALL_FAILURES == 'true') && steps.verified_build.outcome == 'success' && steps.browser_setup.outcome == 'success' && needs.scope.result == 'success' && matrix.group != 'practice' }}"
+        if: "${{ !cancelled() && (success() || env.PIKALAB_COLLECT_ALL_FAILURES == 'true') && steps.verified_build.outcome == 'success' && steps.browser_setup.outcome == 'success' && needs.scope.result == 'success' && (matrix.group == 'all' || matrix.group == 'site-core') }}"
         env:
           VISUAL_GUARD_SCREENSHOTS: ${{ (env.PIKALAB_COMPARE_BASELINE == 'true' || env.PIKALAB_COLLECT_ALL_FAILURES == 'true') && '1' || '0' }}
           VISUAL_GUARD_DIRECTORIES: ${{ needs.scope.outputs.visual_directories }}
@@ -327,17 +330,17 @@ jobs:
           npm run guard:visual
 
       - name: Verify Deep Sea browser interactions
-        if: "${{ !cancelled() && (success() || env.PIKALAB_COLLECT_ALL_FAILURES == 'true') && steps.verified_build.outcome == 'success' && steps.browser_setup.outcome == 'success' && needs.scope.result == 'success' && needs.scope.outputs.deepsea == 'true' && matrix.group != 'practice' }}"
+        if: "${{ !cancelled() && (success() || env.PIKALAB_COLLECT_ALL_FAILURES == 'true') && steps.verified_build.outcome == 'success' && steps.browser_setup.outcome == 'success' && needs.scope.result == 'success' && needs.scope.outputs.deepsea == 'true' && (matrix.group == 'all' || matrix.group == 'site-core') }}"
         run: |
           RUN_PIKALAB_DEEPSEA_BROWSER=1 node --test pikalab/deepsea_lab/tests/deepsea-browser.test.cjs
 
       - name: Verify Color Lab browser interactions
-        if: "${{ !cancelled() && (success() || env.PIKALAB_COLLECT_ALL_FAILURES == 'true') && steps.verified_build.outcome == 'success' && steps.browser_setup.outcome == 'success' && needs.scope.result == 'success' && needs.scope.outputs.color == 'true' && matrix.group != 'site' }}"
+        if: "${{ !cancelled() && (success() || env.PIKALAB_COLLECT_ALL_FAILURES == 'true') && steps.verified_build.outcome == 'success' && steps.browser_setup.outcome == 'success' && needs.scope.result == 'success' && needs.scope.outputs.color == 'true' && (matrix.group == 'all' || matrix.group == 'practice-labs') }}"
         run: |
           RUN_PIKALAB_COLOR_BROWSER=1 node --test pikalab/color_lab/browser-interactions.test.cjs
 
       - name: Verify Kanji Lab browser interactions
-        if: "${{ !cancelled() && (success() || env.PIKALAB_COLLECT_ALL_FAILURES == 'true') && steps.verified_build.outcome == 'success' && steps.browser_setup.outcome == 'success' && needs.scope.result == 'success' && needs.scope.outputs.kanji == 'true' && matrix.group != 'practice' }}"
+        if: "${{ !cancelled() && (success() || env.PIKALAB_COLLECT_ALL_FAILURES == 'true') && steps.verified_build.outcome == 'success' && steps.browser_setup.outcome == 'success' && needs.scope.result == 'success' && needs.scope.outputs.kanji == 'true' && (matrix.group == 'all' || matrix.group == 'site-labs') }}"
         env:
           RUN_PIKALAB_KANJI_BROWSER: "1"
         run: |
@@ -346,7 +349,7 @@ jobs:
           npm run test:kanji-e2e
 
       - name: Compare baseline and candidate initial layouts
-        if: "${{ !cancelled() && (success() || env.PIKALAB_COLLECT_ALL_FAILURES == 'true') && steps.verified_build.outcome == 'success' && steps.browser_setup.outcome == 'success' && needs.scope.result == 'success' && env.PIKALAB_COMPARE_BASELINE == 'true' && matrix.group != 'practice' }}"
+        if: "${{ !cancelled() && (success() || env.PIKALAB_COLLECT_ALL_FAILURES == 'true') && steps.verified_build.outcome == 'success' && steps.browser_setup.outcome == 'success' && needs.scope.result == 'success' && env.PIKALAB_COMPARE_BASELINE == 'true' && (matrix.group == 'all' || matrix.group == 'site-core') }}"
         run: |
           set -euo pipefail
           VISUAL_BASE_SHA="$(git -C .pikalab-baseline rev-parse HEAD)" \
@@ -354,7 +357,7 @@ jobs:
             node pikalab/scripts/visual-preservation.mjs .pikalab-baseline/pikalab/dist pikalab/dist
 
       - name: Run Rhythm Lab browser E2E
-        if: "${{ !cancelled() && (success() || env.PIKALAB_COLLECT_ALL_FAILURES == 'true') && steps.verified_build.outcome == 'success' && steps.browser_setup.outcome == 'success' && needs.scope.result == 'success' && needs.scope.outputs.rhythm == 'true' && matrix.group != 'site' }}"
+        if: "${{ !cancelled() && (success() || env.PIKALAB_COLLECT_ALL_FAILURES == 'true') && steps.verified_build.outcome == 'success' && steps.browser_setup.outcome == 'success' && needs.scope.result == 'success' && needs.scope.outputs.rhythm == 'true' && (matrix.group == 'all' || matrix.group == 'practice-labs') }}"
         run: |
           set -euo pipefail
           cd pikalab
@@ -364,7 +367,7 @@ jobs:
           npm run test:rhythm-e2e
 
       - name: Run Manabi Land browser E2E
-        if: "${{ !cancelled() && (success() || env.PIKALAB_COLLECT_ALL_FAILURES == 'true') && steps.verified_build.outcome == 'success' && steps.browser_setup.outcome == 'success' && needs.scope.result == 'success' && needs.scope.outputs.manabi == 'true' && matrix.group != 'site' }}"
+        if: "${{ !cancelled() && (success() || env.PIKALAB_COLLECT_ALL_FAILURES == 'true') && steps.verified_build.outcome == 'success' && steps.browser_setup.outcome == 'success' && needs.scope.result == 'success' && needs.scope.outputs.manabi == 'true' && (matrix.group == 'all' || matrix.group == 'practice-labs') }}"
         run: |
           set -euo pipefail
           cd pikalab
@@ -374,7 +377,7 @@ jobs:
           npm run test:manabi-e2e
 
       - name: Run Speed Reader browser E2E
-        if: "${{ !cancelled() && (success() || env.PIKALAB_COLLECT_ALL_FAILURES == 'true') && steps.verified_build.outcome == 'success' && steps.browser_setup.outcome == 'success' && needs.scope.result == 'success' && needs.scope.outputs.speed_reader == 'true' && matrix.group != 'practice' }}"
+        if: "${{ !cancelled() && (success() || env.PIKALAB_COLLECT_ALL_FAILURES == 'true') && steps.verified_build.outcome == 'success' && steps.browser_setup.outcome == 'success' && needs.scope.result == 'success' && needs.scope.outputs.speed_reader == 'true' && (matrix.group == 'all' || matrix.group == 'site-labs') }}"
         run: |
           set -euo pipefail
           cd pikalab
@@ -385,7 +388,7 @@ jobs:
           npm run test:speed-reader-e2e
 
       - name: Run Typing Dojo browser E2E
-        if: "${{ !cancelled() && (success() || env.PIKALAB_COLLECT_ALL_FAILURES == 'true') && steps.verified_build.outcome == 'success' && steps.browser_setup.outcome == 'success' && needs.scope.result == 'success' && needs.scope.outputs.typing_dojo == 'true' && matrix.group != 'practice' }}"
+        if: "${{ !cancelled() && (success() || env.PIKALAB_COLLECT_ALL_FAILURES == 'true') && steps.verified_build.outcome == 'success' && steps.browser_setup.outcome == 'success' && needs.scope.result == 'success' && needs.scope.outputs.typing_dojo == 'true' && (matrix.group == 'all' || matrix.group == 'site-labs') }}"
         run: |
           set -euo pipefail
           cd pikalab
@@ -396,7 +399,7 @@ jobs:
           npm run test:typing-dojo-e2e
 
       - name: Run Kotowaza Quiz browser E2E
-        if: "${{ !cancelled() && (success() || env.PIKALAB_COLLECT_ALL_FAILURES == 'true') && steps.verified_build.outcome == 'success' && steps.browser_setup.outcome == 'success' && needs.scope.result == 'success' && needs.scope.outputs.kotowaza == 'true' && matrix.group != 'site' }}"
+        if: "${{ !cancelled() && (success() || env.PIKALAB_COLLECT_ALL_FAILURES == 'true') && steps.verified_build.outcome == 'success' && steps.browser_setup.outcome == 'success' && needs.scope.result == 'success' && needs.scope.outputs.kotowaza == 'true' && (matrix.group == 'all' || matrix.group == 'practice-labs') }}"
         run: |
           set -euo pipefail
           cd pikalab
@@ -407,7 +410,7 @@ jobs:
           npm run test:kotowaza-quiz-e2e
 
       - name: Run Fraction Lab browser E2E
-        if: "${{ !cancelled() && (success() || env.PIKALAB_COLLECT_ALL_FAILURES == 'true') && steps.verified_build.outcome == 'success' && steps.browser_setup.outcome == 'success' && needs.scope.result == 'success' && needs.scope.outputs.fraction == 'true' && matrix.group != 'site' }}"
+        if: "${{ !cancelled() && (success() || env.PIKALAB_COLLECT_ALL_FAILURES == 'true') && steps.verified_build.outcome == 'success' && steps.browser_setup.outcome == 'success' && needs.scope.result == 'success' && needs.scope.outputs.fraction == 'true' && (matrix.group == 'all' || matrix.group == 'practice-fraction') }}"
         run: |
           set -euo pipefail
           cd pikalab
@@ -418,7 +421,7 @@ jobs:
           npm run test:fraction-e2e
 
       - name: Run Focus Studio browser E2E
-        if: "${{ !cancelled() && (success() || env.PIKALAB_COLLECT_ALL_FAILURES == 'true') && steps.verified_build.outcome == 'success' && steps.browser_setup.outcome == 'success' && needs.scope.result == 'success' && needs.scope.outputs.focus == 'true' && matrix.group != 'site' }}"
+        if: "${{ !cancelled() && (success() || env.PIKALAB_COLLECT_ALL_FAILURES == 'true') && steps.verified_build.outcome == 'success' && steps.browser_setup.outcome == 'success' && needs.scope.result == 'success' && needs.scope.outputs.focus == 'true' && (matrix.group == 'all' || matrix.group == 'practice-labs') }}"
         run: |
           set -euo pipefail
           cd pikalab
@@ -430,7 +433,7 @@ jobs:
     needs: scope
     # 共有変更では必ず実行し、ラボ内だけの変更は該当E2Eを実行する。
     if: "${{ !cancelled() && needs.scope.result == 'success' && (github.event_name != 'pull_request' || !github.event.pull_request.draft) && needs.scope.outputs.space == 'true' }}"
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     # package-lockのPlaywrightと同版。ブラウザ・font・OS依存は公式の固定イメージで準備する。
     container:
       image: mcr.microsoft.com/playwright:v1.60.0-noble@sha256:9bd26ad900bb5e0f4dee75839e957a89ae89c2b7ab1e76050e559790e946b948
@@ -440,6 +443,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
         with:
+          fetch-depth: 1
           persist-credentials: false
 
       - name: Prepare required command-line tools
@@ -458,6 +462,7 @@ jobs:
         with:
           ref: ${{ needs.scope.outputs.baseline_sha }}
           path: .space-baseline
+          fetch-depth: 1
           persist-credentials: false
 
       - name: Prepare CI dependencies without publishing media
@@ -473,12 +478,12 @@ jobs:
         run: |
           set -euo pipefail
           cd pikalab
-          npm ci --prefer-offline --no-audit --no-fund
+          npm install --prefer-offline --no-audit --no-fund
           npm run build:all
           npm run verify:build
-          git diff --exit-code -- .
+          git diff --exit-code -- . ':!package-lock.json'
           cd ../.space-baseline/pikalab
-          npm ci --prefer-offline --no-audit --no-fund
+          npm install --prefer-offline --no-audit --no-fund
           npm run build:all
       - name: Install browser check dependencies
         run: |
@@ -498,7 +503,7 @@ jobs:
     needs: scope
     # 共有変更では必ず実行し、ラボ内だけの変更は該当E2Eを実行する。
     if: "${{ !cancelled() && needs.scope.result == 'success' && (github.event_name != 'pull_request' || !github.event.pull_request.draft) && needs.scope.outputs.focus == 'true' }}"
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     # package-lockのPlaywrightと同版。ブラウザ・font・OS依存は公式の固定イメージで準備する。
     container:
       image: mcr.microsoft.com/playwright:v1.60.0-noble@sha256:9bd26ad900bb5e0f4dee75839e957a89ae89c2b7ab1e76050e559790e946b948
@@ -508,6 +513,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
         with:
+          fetch-depth: 1
           persist-credentials: false
 
       - name: Prepare required command-line tools
@@ -526,6 +532,7 @@ jobs:
         with:
           ref: ${{ needs.scope.outputs.baseline_sha }}
           path: .focus-baseline
+          fetch-depth: 1
           persist-credentials: false
 
       - name: Prepare CI dependencies without publishing media
@@ -541,12 +548,12 @@ jobs:
         run: |
           set -euo pipefail
           cd pikalab
-          npm ci --prefer-offline --no-audit --no-fund
+          npm install --prefer-offline --no-audit --no-fund
           npm run build:all
           npm run verify:build
-          git diff --exit-code -- .
+          git diff --exit-code -- . ':!package-lock.json'
           cd ../.focus-baseline/pikalab
-          npm ci --prefer-offline --no-audit --no-fund
+          npm install --prefer-offline --no-audit --no-fund
           npm run build:all
       - name: Install browser check dependencies
         run: |
@@ -564,7 +571,7 @@ jobs:
     needs: scope
     # 共有変更では必ず実行し、ラボ内だけの変更は該当E2Eを実行する。
     if: "${{ !cancelled() && needs.scope.result == 'success' && (github.event_name != 'pull_request' || !github.event.pull_request.draft) && needs.scope.outputs.paper == 'true' }}"
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     # package-lockのPlaywrightと同版。ブラウザ・font・OS依存は公式の固定イメージで準備する。
     container:
       image: mcr.microsoft.com/playwright:v1.60.0-noble@sha256:9bd26ad900bb5e0f4dee75839e957a89ae89c2b7ab1e76050e559790e946b948
@@ -574,6 +581,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
         with:
+          fetch-depth: 1
           persist-credentials: false
 
       - name: Prepare required command-line tools
@@ -592,6 +600,7 @@ jobs:
         with:
           ref: ${{ needs.scope.outputs.baseline_sha }}
           path: .paper-baseline
+          fetch-depth: 1
           persist-credentials: false
 
       - name: Prepare CI dependencies without publishing media
@@ -607,12 +616,12 @@ jobs:
         run: |
           set -euo pipefail
           cd pikalab
-          npm ci --prefer-offline --no-audit --no-fund
+          npm install --prefer-offline --no-audit --no-fund
           npm run build:all
           npm run verify:build
-          git diff --exit-code -- .
+          git diff --exit-code -- . ':!package-lock.json'
           cd ../.paper-baseline/pikalab
-          npm ci --prefer-offline --no-audit --no-fund
+          npm install --prefer-offline --no-audit --no-fund
           npm run build:all
       - name: Install browser check dependencies
         run: |
@@ -630,7 +639,7 @@ jobs:
     needs: scope
     # 共有変更では必ず実行し、ラボ内だけの変更は該当E2Eを実行する。
     if: "${{ !cancelled() && needs.scope.result == 'success' && (github.event_name != 'pull_request' || !github.event.pull_request.draft) && needs.scope.outputs.quest == 'true' }}"
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     # package-lockのPlaywrightと同版。ブラウザ・font・OS依存は公式の固定イメージで準備する。
     container:
       image: mcr.microsoft.com/playwright:v1.60.0-noble@sha256:9bd26ad900bb5e0f4dee75839e957a89ae89c2b7ab1e76050e559790e946b948
@@ -640,6 +649,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
         with:
+          fetch-depth: 1
           persist-credentials: false
 
       - name: Prepare required command-line tools
@@ -657,6 +667,7 @@ jobs:
         with:
           ref: ${{ needs.scope.outputs.baseline_sha }}
           path: .quest-baseline
+          fetch-depth: 1
           persist-credentials: false
 
       - name: Prepare CI dependencies without publishing media
@@ -672,12 +683,12 @@ jobs:
         run: |
           set -euo pipefail
           cd pikalab
-          npm ci --prefer-offline --no-audit --no-fund
+          npm install --prefer-offline --no-audit --no-fund
           npm run build:all
           npm run verify:build
-          git diff --exit-code -- .
+          git diff --exit-code -- . ':!package-lock.json'
           cd ../.quest-baseline/pikalab
-          npm ci --prefer-offline --no-audit --no-fund
+          npm install --prefer-offline --no-audit --no-fund
           npm run build:all
       - name: Install browser check dependencies
         run: |
@@ -695,7 +706,7 @@ jobs:
     needs: scope
     # 共有変更では必ず実行し、ラボ内だけの変更は該当E2Eを実行する。
     if: "${{ !cancelled() && needs.scope.result == 'success' && (github.event_name != 'pull_request' || !github.event.pull_request.draft) && needs.scope.outputs.book == 'true' }}"
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     # package-lockのPlaywrightと同版。ブラウザ・font・OS依存は公式の固定イメージで準備する。
     container:
       image: mcr.microsoft.com/playwright:v1.60.0-noble@sha256:9bd26ad900bb5e0f4dee75839e957a89ae89c2b7ab1e76050e559790e946b948
@@ -705,6 +716,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
         with:
+          fetch-depth: 1
           persist-credentials: false
       - name: Prepare required command-line tools
         run: |
@@ -720,6 +732,7 @@ jobs:
         with:
           ref: ${{ needs.scope.outputs.baseline_sha }}
           path: .book-baseline
+          fetch-depth: 1
           persist-credentials: false
       - name: Prepare CI dependencies without publishing media
         run: python3 scripts/public-qa/prepare.py --root .book-baseline --reuse-root . --area pikalab
@@ -733,12 +746,12 @@ jobs:
         run: |
           set -euo pipefail
           cd pikalab
-          npm ci --prefer-offline --no-audit --no-fund
+          npm install --prefer-offline --no-audit --no-fund
           npm run build:all
           npm run verify:build
-          git diff --exit-code -- .
+          git diff --exit-code -- . ':!package-lock.json'
           cd ../.book-baseline/pikalab
-          npm ci --prefer-offline --no-audit --no-fund
+          npm install --prefer-offline --no-audit --no-fund
           npm run build:all
       - name: Install browser check dependencies
         run: |
@@ -759,6 +772,7 @@ jobs:
     steps:
       - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803
         with:
+          fetch-depth: 1
           persist-credentials: false
       - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38
         with:

@@ -363,7 +363,7 @@ test('全件と差分のどちらでも、選んだブラウザー検査をち�
     assert.match(validate, /fail-fast: false/);
     const selection = validate.match(/group: \$\{\{ (.*?) \}\}/)[1];
     const groups = full => evaluate(selection, { needs: { scope: { outputs: { full } } }, fromJSON: JSON.parse });
-    assert.deepEqual(groups('true'), ['site', 'practice']);
+    assert.deepEqual(groups('true'), ['site-core', 'site-labs', 'practice-fraction', 'practice-labs']);
     assert.deepEqual(groups('false'), ['all']);
     const steps = [...validate.matchAll(/      - name: (.*?)\n        if: "\$\{\{ (.*?) \}\}"/g)]
         .filter(([, , condition]) => condition.includes('steps.browser_setup.outcome'));
@@ -379,7 +379,7 @@ test('全件と差分のどちらでも、選んだブラウザー検査をち�
             used.add(running[0]);
         }
     }
-    assert.deepEqual([...used].sort(), ['all', 'practice', 'site']);
+    assert.deepEqual([...used].sort(), ['all', 'practice-fraction', 'practice-labs', 'site-core', 'site-labs']);
 });
 
 test('通常PRは先行ブラウザ失敗後に停止し、全件診断は続行し、中断・未検証build・ブラウザ準備失敗は起動しない', () => {

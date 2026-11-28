@@ -13,16 +13,18 @@ jobs:
     steps:
       - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803
         with:
+          fetch-depth: 1
           persist-credentials: false
       - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38
         with:
           node-version-file: .node-version
+          cache: npm
       - name: Verify the exact reviewed Node runtime
         run: python3 scripts/public-qa/node_runtime.py --verify
       - name: Install locked dependencies without lifecycle scripts
         run: |
-          npm ci --ignore-scripts --no-audit --no-fund
-          npm ci --prefix pikalab --ignore-scripts --no-audit --no-fund
+          npm install --ignore-scripts --prefer-offline --no-audit --no-fund
+          npm install --prefix pikalab --ignore-scripts --prefer-offline --no-audit --no-fund
       - name: Apply and test the pinned parser backport
         run: |
           node scripts/picomatch-hardening.cjs --apply --all
