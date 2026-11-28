@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>環境変数と.envとは？APIキーや設定をソースコードから分離する理由 | かたかたの制作ノート</title>
+  <meta name="description" content="開発・本番の設定やAPIキーをコードに直書きせず管理する「環境変数」と.envファイルの仕組みを解説。.gitignore漏れの事故防止とフロントエンド公開の注意点も整理します。">
+  <link rel="canonical" href="https://katakatalab.com/guides/it-basics/env-vars.html">
+  <link rel="icon" href="../../icon.svg" type="image/svg+xml">
+  <meta property="og:title" content="環境変数と.envとは？APIキーや設定をソースコードから分離する理由">
+  <meta property="og:description" content="開発・本番の設定やAPIキーをコードに直書きせず管理する「環境変数」と.envファイルの仕組みを解説。.gitignore漏れの事故防止とフロントエンド公開の注意点も整理します。">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="https://katakatalab.com/guides/it-basics/env-vars.html">
+  <meta property="og:image" content="https://katakatalab.com/ogp.png">
+  <meta property="og:site_name" content="KatakataLab">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="環境変数と.envとは？APIキーや設定をソースコードから分離する理由">
+  <meta name="twitter:description" content="開発・本番の設定やAPIキーをコードに直書きせず管理する「環境変数」と.envファイルの仕組みを解説。.gitignore漏れの事故防止とフロントエンド公開の注意点も整理します。">
+  <meta name="twitter:image" content="https://katakatalab.com/ogp.png">
+  <link rel="stylesheet" href="style.css">
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": "環境変数と.envとは？APIキーや設定をソースコードから分離する理由",
+  "description": "開発・本番の設定やAPIキーをコードに直書きせず管理する「環境変数」と.envファイルの仕組みを解説。.gitignore漏れの事故防止とフロントエンド公開の注意点も整理します。",
+  "inLanguage": "ja",
+  "datePublished": "2026-11-28",
+  "dateModified": "2026-11-28",
+  "author": {
+    "@type": "Person",
+    "name": "かたかた",
+    "url": "https://katakatalab.com/who-is-katakata.html"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "KatakataLab",
+    "url": "https://katakatalab.com/",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "https://katakatalab.com/ogp.png"
+    }
+  },
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "https://katakatalab.com/guides/it-basics/env-vars.html"
+  },
+  "image": "https://katakatalab.com/ogp.png"
+}
+</script>
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position": 1,
+      "name": "KatakataLab",
+      "item": "https://katakatalab.com/"
+    },
+    {
+      "@type": "ListItem",
+      "position": 2,
+      "name": "かたかたの制作ノート",
+      "item": "https://katakatalab.com/guides/it-basics/"
+    },
+    {
+      "@type": "ListItem",
+      "position": 3,
+      "name": "環境変数と.envとは",
+      "item": "https://katakatalab.com/guides/it-basics/env-vars.html"
+    }
+  ]
+}
+</script>
+  <script defer src="../../analytics.js"></script>
+</head>
+<body class="article-page">
+  <script>try{if(localStorage.getItem('theme')==='dark')document.body.classList.add('dark-mode');}catch(e){}</script>
+  <a class="skip-link" href="#main-content">本文へ移動</a>
+  <header class="site-header">
+    <div class="header-inner">
+      <a class="brand" href="../../"><span class="brand-mark">KL</span><span>KatakataLab</span></a>
+      <nav class="site-nav" aria-label="主要ナビゲーション">
+        <a href="./">制作ノート一覧</a>
+        <a href="../../#projects">ツール一覧</a>
+        <a href="../../guides/tool-selection-guide.html">用途から選ぶ</a>
+        <a href="../../who-is-katakata.html">運営者</a>
+        <button type="button" id="it-theme-toggle" aria-label="テーマ切り替え" style="background:none;border:1px solid rgba(255,255,255,0.28);color:#fff;border-radius:6px;padding:0.2rem 0.55rem;cursor:pointer;font-size:0.9rem;line-height:1;transition:background 0.2s;" title="ダークモード切り替え">🌙</button>
+      </nav>
+    </div>
+  </header>
+  <script>
+    (function(){
+      var btn = document.getElementById('it-theme-toggle');
+      if(!btn) return;
+      function sync(){ btn.textContent = document.body.classList.contains('dark-mode') ? '☀️' : '🌙'; }
+      sync();
+      btn.addEventListener('click', function(){
+        var dark = document.body.classList.toggle('dark-mode');
+        try{ localStorage.setItem('theme', dark ? 'dark' : 'light'); }catch(e){}
+        sync();
+      });
+    })();
+  </script>
+  <main id="main-content">
+    <nav class="breadcrumbs" aria-label="パンくずリスト">
+      <ol>
+        <li><a href="../../">KatakataLab</a></li>
+        <li><a href="./">かたかたの制作ノート</a></li>
+        <li aria-current="page">環境変数と.envとは</li>
+      </ol>
+    </nav>
+    <article class="article-shell">
+      <header class="article-hero">
+        <div class="chapter-stamp" aria-hidden="true"><span>CHAPTER 07</span><strong>27</strong><small>ENV VARS</small></div>
+        <p class="eyebrow">CHAPTER 07｜開発運用とハマりどころ</p>
+        <h1>環境変数と.envとは？APIキーや設定をソースコードから分離する理由</h1>
+        <p class="article-lead">APIキーをうっかりコードに直書きしたままGitHubへ公開してしまった——開発現場で最も冷や汗をかく事故のひとつです。設定値と秘密情報を安全に切り離す「環境変数」と「.env」の基本を整理します。</p>
+        <div class="article-meta">
+          <span>執筆：<a href="../../who-is-katakata.html">かたかた</a></span>
+          <span>公開：<time datetime="2026-11-28">2026年11月28日</time></span>
+          <span>読了目安：約4分</span>
+        </div>
+        <div class="summary-strip" aria-label="ひとことで言うと">
+          <strong>ひとことで言うと</strong>
+          <p>環境変数は、プログラムのソースコードの外側から設定値や秘密キーを注入する仕組み。公開コードと秘密情報を切り離すために使います。</p>
+        </div>
+      </header>
+      <div class="article-layout">
+        <aside class="toc" aria-label="目次">
+          <p class="toc-title">目次</p>
+          <ol>
+            <li><a href="#section-1">しくみの全体像</a></li>
+            <li><a href="#section-2">安全な運用の基本3ルール</a></li>
+            <li><a href="#section-3">万が一秘密キーをpushしてしまったら？</a></li>
+            <li><a href="#section-talk">この言葉が会話に出てくるとき</a></li>
+            <li><a href="#section-misread">勘違いしやすい点</a></li>
+            <li><a href="#section-4">まとめ</a></li>
+            <li><a href="#lab-example-title">KatakataLabでの実例</a></li>
+            <li><a href="#faq-title">よくある質問</a></li>
+            <li><a href="#references-title">参考資料</a></li>
+          </ol>
+        </aside>
+        <div class="article-content">
+          <section class="article-section" aria-labelledby="section-1">
+            <h2 id="section-1">しくみの全体像</h2>
+            <p>同じアプリでも、「自分のパソコンで試すとき（開発環境）」と「実際に公開するとき（本番環境）」では、接続先データベースやAPIキー、動作モードが異なります。</p>
+            <p>こうした環境ごとの設定値や秘密キーをソースコードの中に直接書かず、OSやサーバーの外側から名前付きで渡す仕組みが <strong>環境変数（Environment Variables）</strong> です。ローカル開発ではこれを <code>.env</code> という設定ファイルにまとめて読み込むのが一般的です。</p>
+            <figure class="diagram-figure">
+  <svg viewBox="0 0 640 195" width="100%" role="img" aria-label="ソースコード（Git公開）と.env環境変数（非公開・環境別に差し替え）を分離する図解">
+    <defs>
+      <marker id="arr" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+        <path d="M 0 1 L 10 5 L 0 9 z" fill="currentColor" opacity="0.7"/>
+      </marker>
+    </defs>
+    <rect x="20" y="26" width="200" height="142" rx="8" fill="#1f5c99" fill-opacity="0.1" stroke="#1f5c99" stroke-width="1.8"/><text x="120" y="93" text-anchor="middle" font-size="12.5" font-weight="700" fill="currentColor">ソースコード（Git管理）</text><text x="120" y="111" text-anchor="middle" font-size="10.5" fill="currentColor" opacity="0.78">const key = process.env.API_KEY;
+※ 秘密の値は一切書かない
+（.env.exampleに枠だけ記載）</text><line x1="224" y1="68" x2="290" y2="68" stroke="#1f5c99" stroke-width="2" marker-end="url(#arr)"/><text x="257" y="58" text-anchor="middle" font-size="10.5" font-weight="700" fill="#1f5c99">読込</text><line x1="224" y1="130" x2="290" y2="130" stroke="#1f5c99" stroke-width="2" marker-end="url(#arr)"/><text x="257" y="120" text-anchor="middle" font-size="10.5" font-weight="700" fill="#1f5c99">読込</text><rect x="296" y="26" width="322" height="62" rx="8" fill="#b45309" fill-opacity="0.1" stroke="#b45309" stroke-width="1.8"/><text x="457" y="53" text-anchor="middle" font-size="12.5" font-weight="700" fill="currentColor">開発PCの .env（.gitignoreで除外）</text><text x="457" y="71" text-anchor="middle" font-size="10.5" fill="currentColor" opacity="0.78">API_KEY=dev_test_key / DB=localhost</text><rect x="296" y="106" width="322" height="62" rx="8" fill="#0f766e" fill-opacity="0.1" stroke="#0f766e" stroke-width="1.8"/><text x="457" y="133" text-anchor="middle" font-size="12.5" font-weight="700" fill="currentColor">本番サーバーの環境変数設定画面</text><text x="457" y="151" text-anchor="middle" font-size="10.5" fill="currentColor" opacity="0.78">API_KEY=prod_secret_key / DB=prod</text>
+  </svg>
+  <figcaption>図解: コードには process.env.API_KEY のように名前だけを書き、実際の値は手元や本番サーバーの環境変数から渡す</figcaption>
+</figure>
+          </section>
+          <section class="article-section" aria-labelledby="section-2">
+            <h2 id="section-2">安全な運用の基本3ルール</h2>
+            <ul><li><strong><code>.env</code> は必ず <code>.gitignore</code> に入れる：</strong>本物の秘密キーが入ったファイルをGitにコミットしないための絶対ルールです。</li><li><strong><code>.env.example</code> で「必要な項目名だけ」を共有する：</strong>値を空にした見本ファイル（例：<code>API_KEY=</code>）だけリポジトリに置くと、他の環境でも迷わずセットアップできます。</li><li><strong>クライアント側（ブラウザ）に届く変数に秘密を入れない：</strong>Viteの <code>VITE_</code> やNext.jsの <code>NEXT_PUBLIC_</code> が付いた変数はブラウザ用のJavaScriptへ埋め込まれます。秘密キーは必ずサーバー側だけで扱います。</li></ul>
+          </section>
+          <section class="article-section" aria-labelledby="section-3">
+            <h2 id="section-3">万が一秘密キーをpushしてしまったら？</h2>
+            <p>「次のコミットで消せば大丈夫」は<strong>危険な誤解</strong>です。Gitは過去の変更履歴を丸ごと保持しているため、一度公開リポジトリへpushした秘密キーは履歴から誰でも見られます。漏えいした可能性があるキーは、まず提供元の管理画面で即座に無効化（ローテーション・再発行）するのが最優先です。</p>
+          </section>
+          <section class="article-section" aria-labelledby="section-talk">
+            <h2 id="section-talk">この言葉が会話に出てくるとき</h2>
+            <p><strong>「.envはコミットせず、項目名だけ .env.example に追加しておいて」</strong><br>秘密情報を守りつつ、新しい環境で何を設定すれば動くかを伝えるチーム開発の定番手順です。</p>
+<p><strong>「そのAPIキー、ブラウザから直接呼ぶと丸見えになるよ」</strong><br>フロントエンドのコードは誰でも開発者ツールで読めるため、秘密キーはサーバー側API経由にすべきという指摘です。</p>
+          </section>
+          <section class="article-section" aria-labelledby="section-misread">
+            <h2 id="section-misread">勘違いしやすい点</h2>
+            <ul>
+              <li><strong>誤解1：環境変数に入れればフロントエンドのコードでも隠せる。</strong>ブラウザへ配信されるJSに展開される変数は利用者から丸見えになります。秘密キーはサーバー側専用です。</li>
+<li><strong>誤解2：コミットを削除すればキーは安全に戻る。</strong>公開リポジトリは数秒で自動スキャンされることもあるため、必ずキー自体の無効化と再発行が必要です。</li>
+            </ul>
+          </section>
+          <section class="article-section" aria-labelledby="section-4">
+            <h2 id="section-4">まとめ</h2>
+            <ul>
+              <li>環境変数は「コード」と「環境別の設定・秘密キー」を切り離す仕組み。</li>
+<li>.envはGit管理外にし、見本として値なしの .env.example を用意する。</li>
+<li>秘密キーはブラウザ側へ渡さずサーバー側で扱い、誤公開時は即座に無効化・再発行する。</li>
+            </ul>
+          </section>
+          <aside class="lab-example" aria-labelledby="lab-example-title">
+            <p class="eyebrow">FROM THE LAB</p>
+            <h2 id="lab-example-title">KatakataLabでの実例</h2>
+            <p>KatakataLabの公開リポジトリでも、秘密情報やサーバー設定を持ち込まないルールを徹底しています。さらに、強力な管理用パスワードやランダムなシークレット文字列を用意したいときは、ブラウザ完結のパスワード生成ツールを使っています。</p>
+            <div class="tool-link-banner"><strong>関連ツールで試す：<a href="../../password-generator/">強力パスワード生成ツール →</a></strong>ランダム文字列・パスフレーズをブラウザ内だけで安全に生成できます。</div>
+            <p class="related-heading">この実例につながるページ</p>
+            <ul class="related-links">
+              <li><a href="security.html">関連用語：セキュリティ</a></li>
+<li><a href="git.html">関連用語：Git</a></li>
+<li><a href="api.html">関連用語：API</a></li>
+            </ul>
+          </aside>
+          <section class="article-section faq" aria-labelledby="faq-title">
+            <p class="eyebrow">QUICK CHECK</p>
+            <h2 id="faq-title">よくある質問</h2>
+            <h3>.envファイルが無くても環境変数は使えますか？</h3>
+<p>はい。本番のクラウドサービス（Cloud Run、Vercel、GitHub Actionsなど）では、ファイルではなく管理画面のSecrets/環境変数設定から注入するのが一般的です。</p>
+<h3>なぜ「変数」なのに書き換えない値を入れるのですか？</h3>
+<p>実行する「環境（開発・検証・本番）」によって中身が変わる値を受け取る箱だからです。</p>
+          </section>
+          <section class="article-section references" aria-labelledby="references-title">
+            <h2 id="references-title">参考資料</h2>
+            <p>用語の定義や仕様を確認するため、公式文書・標準文書を参照しています。リンク先の内容は更新される場合があります。</p>
+            <ul>
+              <li><a href="https://12factor.net/ja/config" target="_blank" rel="noopener noreferrer">The Twelve-Factor App「III. 設定」</a></li>
+<li><a href="https://docs.github.com/ja/code-security/secret-scanning/about-secret-scanning" target="_blank" rel="noopener noreferrer">GitHub Docs「シークレットスキャンについて」</a></li>
+            </ul>
+          </section>
+          <nav class="chapter-nav" aria-label="前後の記事">
+            <a class="chapter-link previous" href="ogp.html"><small>前の記事</small><span>← OGP</span></a>
+            <a class="chapter-link next" href="cors.html"><small>次の記事</small><span>CORS →</span></a>
+          </nav>
+        </div>
+      </div>
+    </article>
+  </main>
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <p><strong>KatakataLab</strong><br><span>作って、つまずいて、分かったことを残す小さな研究室。</span></p>
+      <nav aria-label="フッターナビゲーション">
+        <a href="../../contact.html">お問い合わせ</a>
+        <a href="../../who-is-katakata.html">運営者情報</a>
+        <a href="../../privacy.html">プライバシーポリシー</a>
+        <a href="../../sitemap.html">サイトマップ</a>
+      </nav>
+    </div>
+    <p class="copyright">&copy; 2024-2026 KatakataLab</p>
+  </footer>
+</body>
+</html>

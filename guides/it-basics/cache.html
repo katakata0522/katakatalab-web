@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>キャッシュとは？表示を速くする仕組みと「更新が反映されない」原因 | かたかたの制作ノート</title>
+  <meta name="description" content="ブラウザキャッシュ・CDNキャッシュの仕組みを解説。更新したCSSやOGP画像が変わらない原因と、スーパーリロードやキャッシュバスティングでの解決法を整理します。">
+  <link rel="canonical" href="https://katakatalab.com/guides/it-basics/cache.html">
+  <link rel="icon" href="../../icon.svg" type="image/svg+xml">
+  <meta property="og:title" content="キャッシュとは？表示を速くする仕組みと「更新が反映されない」原因">
+  <meta property="og:description" content="ブラウザキャッシュ・CDNキャッシュの仕組みを解説。更新したCSSやOGP画像が変わらない原因と、スーパーリロードやキャッシュバスティングでの解決法を整理します。">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="https://katakatalab.com/guides/it-basics/cache.html">
+  <meta property="og:image" content="https://katakatalab.com/ogp.png">
+  <meta property="og:site_name" content="KatakataLab">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="キャッシュとは？表示を速くする仕組みと「更新が反映されない」原因">
+  <meta name="twitter:description" content="ブラウザキャッシュ・CDNキャッシュの仕組みを解説。更新したCSSやOGP画像が変わらない原因と、スーパーリロードやキャッシュバスティングでの解決法を整理します。">
+  <meta name="twitter:image" content="https://katakatalab.com/ogp.png">
+  <link rel="stylesheet" href="style.css">
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": "キャッシュとは？表示を速くする仕組みと「更新が反映されない」原因",
+  "description": "ブラウザキャッシュ・CDNキャッシュの仕組みを解説。更新したCSSやOGP画像が変わらない原因と、スーパーリロードやキャッシュバスティングでの解決法を整理します。",
+  "inLanguage": "ja",
+  "datePublished": "2026-11-28",
+  "dateModified": "2026-11-28",
+  "author": {
+    "@type": "Person",
+    "name": "かたかた",
+    "url": "https://katakatalab.com/who-is-katakata.html"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "KatakataLab",
+    "url": "https://katakatalab.com/",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "https://katakatalab.com/ogp.png"
+    }
+  },
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "https://katakatalab.com/guides/it-basics/cache.html"
+  },
+  "image": "https://katakatalab.com/ogp.png"
+}
+</script>
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position": 1,
+      "name": "KatakataLab",
+      "item": "https://katakatalab.com/"
+    },
+    {
+      "@type": "ListItem",
+      "position": 2,
+      "name": "かたかたの制作ノート",
+      "item": "https://katakatalab.com/guides/it-basics/"
+    },
+    {
+      "@type": "ListItem",
+      "position": 3,
+      "name": "キャッシュとは",
+      "item": "https://katakatalab.com/guides/it-basics/cache.html"
+    }
+  ]
+}
+</script>
+  <script defer src="../../analytics.js"></script>
+</head>
+<body class="article-page">
+  <script>try{if(localStorage.getItem('theme')==='dark')document.body.classList.add('dark-mode');}catch(e){}</script>
+  <a class="skip-link" href="#main-content">本文へ移動</a>
+  <header class="site-header">
+    <div class="header-inner">
+      <a class="brand" href="../../"><span class="brand-mark">KL</span><span>KatakataLab</span></a>
+      <nav class="site-nav" aria-label="主要ナビゲーション">
+        <a href="./">制作ノート一覧</a>
+        <a href="../../#projects">ツール一覧</a>
+        <a href="../../guides/tool-selection-guide.html">用途から選ぶ</a>
+        <a href="../../who-is-katakata.html">運営者</a>
+        <button type="button" id="it-theme-toggle" aria-label="テーマ切り替え" style="background:none;border:1px solid rgba(255,255,255,0.28);color:#fff;border-radius:6px;padding:0.2rem 0.55rem;cursor:pointer;font-size:0.9rem;line-height:1;transition:background 0.2s;" title="ダークモード切り替え">🌙</button>
+      </nav>
+    </div>
+  </header>
+  <script>
+    (function(){
+      var btn = document.getElementById('it-theme-toggle');
+      if(!btn) return;
+      function sync(){ btn.textContent = document.body.classList.contains('dark-mode') ? '☀️' : '🌙'; }
+      sync();
+      btn.addEventListener('click', function(){
+        var dark = document.body.classList.toggle('dark-mode');
+        try{ localStorage.setItem('theme', dark ? 'dark' : 'light'); }catch(e){}
+        sync();
+      });
+    })();
+  </script>
+  <main id="main-content">
+    <nav class="breadcrumbs" aria-label="パンくずリスト">
+      <ol>
+        <li><a href="../../">KatakataLab</a></li>
+        <li><a href="./">かたかたの制作ノート</a></li>
+        <li aria-current="page">キャッシュとは</li>
+      </ol>
+    </nav>
+    <article class="article-shell">
+      <header class="article-hero">
+        <div class="chapter-stamp" aria-hidden="true"><span>CHAPTER 05</span><strong>20</strong><small>CACHE</small></div>
+        <p class="eyebrow">CHAPTER 05｜Webの裏側と配信</p>
+        <h1>キャッシュとは？表示を速くする仕組みと「更新が反映されない」原因</h1>
+        <p class="article-lead">CSSを直して本番へ公開したのに「画面がまったく変わらない！」と10分悩んで、実はブラウザが古いファイルを覚えていただけだった——Web制作で誰もが一度は通る道です。便利な高速化機能「キャッシュ」の正体を押さえましょう。</p>
+        <div class="article-meta">
+          <span>執筆：<a href="../../who-is-katakata.html">かたかた</a></span>
+          <span>公開：<time datetime="2026-11-28">2026年11月28日</time></span>
+          <span>読了目安：約4分</span>
+        </div>
+        <div class="summary-strip" aria-label="ひとことで言うと">
+          <strong>ひとことで言うと</strong>
+          <p>キャッシュは一度取得した画像やCSSを手元や中継地点に一時保存し、次回からの表示を速くする仕組みです。</p>
+        </div>
+      </header>
+      <div class="article-layout">
+        <aside class="toc" aria-label="目次">
+          <p class="toc-title">目次</p>
+          <ol>
+            <li><a href="#section-1">しくみの全体像</a></li>
+            <li><a href="#section-2">制作者がつまずく3つのキャッシュ層</a></li>
+            <li><a href="#section-3">確実に最新を読ませる「キャッシュバスティング」</a></li>
+            <li><a href="#section-talk">この言葉が会話に出てくるとき</a></li>
+            <li><a href="#section-misread">勘違いしやすい点</a></li>
+            <li><a href="#section-4">まとめ</a></li>
+            <li><a href="#lab-example-title">KatakataLabでの実例</a></li>
+            <li><a href="#faq-title">よくある質問</a></li>
+            <li><a href="#references-title">参考資料</a></li>
+          </ol>
+        </aside>
+        <div class="article-content">
+          <section class="article-section" aria-labelledby="section-1">
+            <h2 id="section-1">しくみの全体像</h2>
+            <p>Webページを開くたびに、ロゴ画像や巨大なスタイルシートを毎回サーバーから取り直していると、表示が遅くなり通信量も増えます。そこで、一度ダウンロードしたファイルをブラウザや途中のCDNサーバーに一時保存しておき、次からはそれを再利用する仕組みが <strong>キャッシュ（Cache）</strong> です。</p>
+            <p>身近な例でいえば、毎回倉庫（サーバー）まで取りに行く代わりに、よく使う道具だけ机の上（キャッシュ）に置いておくイメージです。</p>
+            <figure class="diagram-figure">
+  <svg viewBox="0 0 640 195" width="100%" role="img" aria-label="キャッシュなし（毎回サーバー取得）とキャッシュあり（ローカル・CDNから即返却）の比較図解">
+    <defs>
+      <marker id="arr" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+        <path d="M 0 1 L 10 5 L 0 9 z" fill="currentColor" opacity="0.7"/>
+      </marker>
+    </defs>
+    <rect x="20" y="26" width="136" height="62" rx="8" fill="#1f5c99" fill-opacity="0.1" stroke="#1f5c99" stroke-width="1.8"/><text x="88" y="53" text-anchor="middle" font-size="12.5" font-weight="700" fill="currentColor">ブラウザ</text><text x="88" y="71" text-anchor="middle" font-size="10.5" fill="currentColor" opacity="0.78">初回アクセス</text><line x1="160" y1="57" x2="466" y2="57" stroke="#b45309" stroke-width="2" marker-end="url(#arr)"/><text x="313" y="46" text-anchor="middle" font-size="10.5" font-weight="700" fill="#b45309">毎回サーバーまで往復（時間がかかる）</text><rect x="472" y="26" width="148" height="62" rx="8" fill="#b45309" fill-opacity="0.1" stroke="#b45309" stroke-width="1.8"/><text x="546" y="53" text-anchor="middle" font-size="12.5" font-weight="700" fill="currentColor">オリジンサーバー</text><text x="546" y="71" text-anchor="middle" font-size="10.5" fill="currentColor" opacity="0.78">画像・CSSを送信</text><rect x="20" y="112" width="136" height="64" rx="8" fill="#0f766e" fill-opacity="0.1" stroke="#0f766e" stroke-width="1.8"/><text x="88" y="140" text-anchor="middle" font-size="12.5" font-weight="700" fill="currentColor">ブラウザ</text><text x="88" y="158" text-anchor="middle" font-size="10.5" fill="currentColor" opacity="0.78">2回目以降</text><line x1="160" y1="144" x2="262" y2="144" stroke="#0f766e" stroke-width="2" marker-end="url(#arr)"/><text x="211" y="134" text-anchor="middle" font-size="10.5" font-weight="700" fill="#0f766e">確認</text><rect x="268" y="112" width="180" height="64" rx="8" fill="#0f766e" fill-opacity="0.1" stroke="#0f766e" stroke-width="1.8"/><text x="358" y="140" text-anchor="middle" font-size="12.5" font-weight="700" fill="currentColor">キャッシュ（手元/CDN）</text><text x="358" y="158" text-anchor="middle" font-size="10.5" fill="currentColor" opacity="0.78">保存済みを即返却！</text><text x="536" y="148" text-anchor="middle" font-size="11" fill="currentColor" opacity="0.75">サーバー負荷も削減</text>
+  </svg>
+  <figcaption>図解: 初回はオリジンサーバーから取得して保存し、2回目以降は近いキャッシュから即座に返すため表示が速くなる</figcaption>
+</figure>
+          </section>
+          <section class="article-section" aria-labelledby="section-2">
+            <h2 id="section-2">制作者がつまずく3つのキャッシュ層</h2>
+            <p>「更新したのに反映されない」ときは、どの層に古い情報が残っているかを切り分けるとすぐ解決できます。</p>
+            <ul><li><strong>ブラウザキャッシュ：</strong>見ている人のChromeやSafariの中に残るキャッシュ。PCならスーパーリロード（Ctrl+Shift+R / Cmd+Shift+R）やシークレットウィンドウで確認できます。</li><li><strong>CDNキャッシュ：</strong>Cloudflareやホスティング基盤のエッジサーバーに残るキャッシュ。サーバー側の設定（Cache-Control）で保持時間が決まります。</li><li><strong>SNSのOGPキャッシュ：</strong>XやLINEなどのSNS側がシェア画像を数時間〜数日覚えているケース。サイトを更新してもSNSカードだけ古いままになりがちです。</li></ul>
+          </section>
+          <section class="article-section" aria-labelledby="section-3">
+            <h2 id="section-3">確実に最新を読ませる「キャッシュバスティング」</h2>
+            <p>読者全員に「スーパーリロードしてください」と頼むわけにはいきません。そこで実務では、CSSやJSを読み込むURLの後ろに <code>style.css?v=20261128</code> のようにバージョン文字列を付けたり、ビルド時にファイル名へハッシュ値（例：<code>index-BYKMi0Tu.css</code>）を入れたりします。</p>
+            <p>URLが1文字でも変わればブラウザは「別ファイルだ」と判断して新しい内容を取りに行ってくれます。この手法を<strong>キャッシュバスティング（Cache Busting）</strong>と呼びます。</p>
+          </section>
+          <section class="article-section" aria-labelledby="section-talk">
+            <h2 id="section-talk">この言葉が会話に出てくるとき</h2>
+            <p><strong>「画面崩れ直したはずなのに変わってないよ？」「キャッシュ残ってるかも、シークレットで見てみて」</strong><br>古いCSSがブラウザに残っている状態を疑う定番のやり取りです。</p>
+<p><strong>「OGP画像を差し替えたのに古いサムネが出る」</strong><br>SNS側のキャッシュが残っている現象。ファイル名を変えるか公式デバッガで再取得します。</p>
+          </section>
+          <section class="article-section" aria-labelledby="section-misread">
+            <h2 id="section-misread">勘違いしやすい点</h2>
+            <ul>
+              <li><strong>誤解1：キャッシュは邪魔だから全部オフにした方がいい。</strong>キャッシュを切るとページ遷移のたびに全画像を再取得して体感が重くなり、通信量も増えます。</li>
+<li><strong>誤解2：更新が反映されないのはデプロイ失敗だと思い込む。</strong>まずDevToolsのネットワークタブで「Disable cache」をオンにして確かめると無駄な再デプロイを防げます。</li>
+            </ul>
+          </section>
+          <section class="article-section" aria-labelledby="section-4">
+            <h2 id="section-4">まとめ</h2>
+            <ul>
+              <li>キャッシュは表示を速くしサーバー負荷も下げる大切な仕組み。</li>
+<li>更新が見えないときは「ブラウザ・CDN・SNS」のどこに残っているかを切り分ける。</li>
+<li>CSS/JSのURLにバージョン番号やハッシュを付けると、訪問者にも確実に最新版を届けられる。</li>
+            </ul>
+          </section>
+          <aside class="lab-example" aria-labelledby="lab-example-title">
+            <p class="eyebrow">FROM THE LAB</p>
+            <h2 id="lab-example-title">KatakataLabでの実例</h2>
+            <p>KatakataLabでも各ページのCSS読み込みに ?v=20261125 のようなバージョン番号を付け、レイアウト修正後に古いCSSが残らないよう運用しています。またOGP画像の確認時は、公開前にOGPシミュレーターで見た目を固めてから差し替えています。</p>
+            <div class="tool-link-banner"><strong>関連ツールで試す：<a href="../../ogp-simulator/">OGPシミュレーター →</a></strong>SNSのキャッシュに古い画像が残る前に、手元でタイトル・説明・画像の切り抜きを確認できます。</div>
+            <p class="related-heading">この実例につながるページ</p>
+            <ul class="related-links">
+              <li><a href="cdn.html">関連用語：CDN</a></li>
+<li><a href="ogp.html">関連用語：OGPとメタタグ</a></li>
+<li><a href="deploy.html">関連用語：デプロイ</a></li>
+            </ul>
+          </aside>
+          <section class="article-section faq" aria-labelledby="faq-title">
+            <p class="eyebrow">QUICK CHECK</p>
+            <h2 id="faq-title">よくある質問</h2>
+            <h3>スーパーリロードをしても変わらないときは？</h3>
+<p>ブラウザではなくCDNやホスティング側のキャッシュ、またはビルド・デプロイ自体が別ブランチに向いている可能性があります。HTMLソース（Ctrl+U）を見て最新コードが届いているか確認します。</p>
+<h3>Cache-Controlヘッダーとは何ですか？</h3>
+<p>サーバーが「このファイルは何秒キャッシュしてよいか」「毎回サーバーへ鮮度確認すべきか」をブラウザやCDNへ指示するHTTPヘッダーです。</p>
+          </section>
+          <section class="article-section references" aria-labelledby="references-title">
+            <h2 id="references-title">参考資料</h2>
+            <p>用語の定義や仕様を確認するため、公式文書・標準文書を参照しています。リンク先の内容は更新される場合があります。</p>
+            <ul>
+              <li><a href="https://developer.mozilla.org/ja/docs/Web/HTTP/Guides/Caching" target="_blank" rel="noopener noreferrer">MDN Web Docs「HTTPキャッシュ」</a></li>
+<li><a href="https://developer.mozilla.org/ja/docs/Web/HTTP/Reference/Headers/Cache-Control" target="_blank" rel="noopener noreferrer">MDN Web Docs「Cache-Control」</a></li>
+            </ul>
+          </section>
+          <nav class="chapter-nav" aria-label="前後の記事">
+            <a class="chapter-link previous" href="domain.html"><small>前の記事</small><span>← DOMAIN</span></a>
+            <a class="chapter-link next" href="cookie-storage.html"><small>次の記事</small><span>STORAGE →</span></a>
+          </nav>
+        </div>
+      </div>
+    </article>
+  </main>
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <p><strong>KatakataLab</strong><br><span>作って、つまずいて、分かったことを残す小さな研究室。</span></p>
+      <nav aria-label="フッターナビゲーション">
+        <a href="../../contact.html">お問い合わせ</a>
+        <a href="../../who-is-katakata.html">運営者情報</a>
+        <a href="../../privacy.html">プライバシーポリシー</a>
+        <a href="../../sitemap.html">サイトマップ</a>
+      </nav>
+    </div>
+    <p class="copyright">&copy; 2024-2026 KatakataLab</p>
+  </footer>
+</body>
+</html>

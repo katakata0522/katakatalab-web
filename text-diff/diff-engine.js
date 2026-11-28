@@ -226,11 +226,24 @@
     });
   }
 
+  function normalizeForCompare(text, ignoreWhitespace) {
+    var str = String(text == null ? '' : text);
+    if (!ignoreWhitespace) return str;
+    var normalized = str.replace(/\r\n/g, '\n').replace(/\r/g, '\n');
+    return normalized
+      .split('\n')
+      .map(function (line) {
+        return line.replace(/[ \t]+$/g, '').replace(/[ \t]+/g, ' ');
+      })
+      .join('\n');
+  }
+
   var Diff = {
     diffArrays: diffArrays,
     diffLines: diffLines,
     diffChars: diffChars,
-    splitLinesWithEnding: splitLinesWithEnding
+    splitLinesWithEnding: splitLinesWithEnding,
+    normalizeForCompare: normalizeForCompare
   };
 
   if (root) {

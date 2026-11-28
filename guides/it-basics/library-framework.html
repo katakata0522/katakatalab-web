@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ライブラリとフレームワークとは？「道具を借りる」か「枠組みに乗る」か | かたかたの制作ノート</title>
+  <meta name="description" content="よく混同されるライブラリとフレームワークの違いを解説。「制御の反転（誰が誰を呼ぶか）」のイメージと、個人開発で選定するときの判断軸を整理します。">
+  <link rel="canonical" href="https://katakatalab.com/guides/it-basics/library-framework.html">
+  <link rel="icon" href="../../icon.svg" type="image/svg+xml">
+  <meta property="og:title" content="ライブラリとフレームワークとは？「道具を借りる」か「枠組みに乗る」か">
+  <meta property="og:description" content="よく混同されるライブラリとフレームワークの違いを解説。「制御の反転（誰が誰を呼ぶか）」のイメージと、個人開発で選定するときの判断軸を整理します。">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="https://katakatalab.com/guides/it-basics/library-framework.html">
+  <meta property="og:image" content="https://katakatalab.com/ogp.png">
+  <meta property="og:site_name" content="KatakataLab">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="ライブラリとフレームワークとは？「道具を借りる」か「枠組みに乗る」か">
+  <meta name="twitter:description" content="よく混同されるライブラリとフレームワークの違いを解説。「制御の反転（誰が誰を呼ぶか）」のイメージと、個人開発で選定するときの判断軸を整理します。">
+  <meta name="twitter:image" content="https://katakatalab.com/ogp.png">
+  <link rel="stylesheet" href="style.css">
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": "ライブラリとフレームワークとは？「道具を借りる」か「枠組みに乗る」か",
+  "description": "よく混同されるライブラリとフレームワークの違いを解説。「制御の反転（誰が誰を呼ぶか）」のイメージと、個人開発で選定するときの判断軸を整理します。",
+  "inLanguage": "ja",
+  "datePublished": "2026-11-28",
+  "dateModified": "2026-11-28",
+  "author": {
+    "@type": "Person",
+    "name": "かたかた",
+    "url": "https://katakatalab.com/who-is-katakata.html"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "KatakataLab",
+    "url": "https://katakatalab.com/",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "https://katakatalab.com/ogp.png"
+    }
+  },
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "https://katakatalab.com/guides/it-basics/library-framework.html"
+  },
+  "image": "https://katakatalab.com/ogp.png"
+}
+</script>
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position": 1,
+      "name": "KatakataLab",
+      "item": "https://katakatalab.com/"
+    },
+    {
+      "@type": "ListItem",
+      "position": 2,
+      "name": "かたかたの制作ノート",
+      "item": "https://katakatalab.com/guides/it-basics/"
+    },
+    {
+      "@type": "ListItem",
+      "position": 3,
+      "name": "ライブラリとフレームワークとは",
+      "item": "https://katakatalab.com/guides/it-basics/library-framework.html"
+    }
+  ]
+}
+</script>
+  <script defer src="../../analytics.js"></script>
+</head>
+<body class="article-page">
+  <script>try{if(localStorage.getItem('theme')==='dark')document.body.classList.add('dark-mode');}catch(e){}</script>
+  <a class="skip-link" href="#main-content">本文へ移動</a>
+  <header class="site-header">
+    <div class="header-inner">
+      <a class="brand" href="../../"><span class="brand-mark">KL</span><span>KatakataLab</span></a>
+      <nav class="site-nav" aria-label="主要ナビゲーション">
+        <a href="./">制作ノート一覧</a>
+        <a href="../../#projects">ツール一覧</a>
+        <a href="../../guides/tool-selection-guide.html">用途から選ぶ</a>
+        <a href="../../who-is-katakata.html">運営者</a>
+        <button type="button" id="it-theme-toggle" aria-label="テーマ切り替え" style="background:none;border:1px solid rgba(255,255,255,0.28);color:#fff;border-radius:6px;padding:0.2rem 0.55rem;cursor:pointer;font-size:0.9rem;line-height:1;transition:background 0.2s;" title="ダークモード切り替え">🌙</button>
+      </nav>
+    </div>
+  </header>
+  <script>
+    (function(){
+      var btn = document.getElementById('it-theme-toggle');
+      if(!btn) return;
+      function sync(){ btn.textContent = document.body.classList.contains('dark-mode') ? '☀️' : '🌙'; }
+      sync();
+      btn.addEventListener('click', function(){
+        var dark = document.body.classList.toggle('dark-mode');
+        try{ localStorage.setItem('theme', dark ? 'dark' : 'light'); }catch(e){}
+        sync();
+      });
+    })();
+  </script>
+  <main id="main-content">
+    <nav class="breadcrumbs" aria-label="パンくずリスト">
+      <ol>
+        <li><a href="../../">KatakataLab</a></li>
+        <li><a href="./">かたかたの制作ノート</a></li>
+        <li aria-current="page">ライブラリとフレームワークとは</li>
+      </ol>
+    </nav>
+    <article class="article-shell">
+      <header class="article-hero">
+        <div class="chapter-stamp" aria-hidden="true"><span>CHAPTER 07</span><strong>29</strong><small>LIB / FW</small></div>
+        <p class="eyebrow">CHAPTER 07｜開発運用とハマりどころ</p>
+        <h1>ライブラリとフレームワークとは？「道具を借りる」か「枠組みに乗る」か</h1>
+        <p class="article-lead">開発の記事を読むと「Reactはライブラリ」「Next.jsはフレームワーク」「素のJSで十分」といった表現が飛び交います。どちらも便利な再利用コードの集まりですが、設計の主導権がどちらにあるかが大きな違いです。</p>
+        <div class="article-meta">
+          <span>執筆：<a href="../../who-is-katakata.html">かたかた</a></span>
+          <span>公開：<time datetime="2026-11-28">2026年11月28日</time></span>
+          <span>読了目安：約4分</span>
+        </div>
+        <div class="summary-strip" aria-label="ひとことで言うと">
+          <strong>ひとことで言うと</strong>
+          <p>ライブラリは自分のコードから必要なときだけ呼び出す「道具箱」、フレームワークは決められた枠組みに沿って自分のコードを当てはめる「骨組み」です。</p>
+        </div>
+      </header>
+      <div class="article-layout">
+        <aside class="toc" aria-label="目次">
+          <p class="toc-title">目次</p>
+          <ol>
+            <li><a href="#section-1">しくみの全体像</a></li>
+            <li><a href="#section-2">依存を増やす前に考えたいトレードオフ</a></li>
+            <li><a href="#section-3">最初は標準機能（Web標準）を知っておくと強い</a></li>
+            <li><a href="#section-talk">この言葉が会話に出てくるとき</a></li>
+            <li><a href="#section-misread">勘違いしやすい点</a></li>
+            <li><a href="#section-4">まとめ</a></li>
+            <li><a href="#lab-example-title">KatakataLabでの実例</a></li>
+            <li><a href="#faq-title">よくある質問</a></li>
+            <li><a href="#references-title">参考資料</a></li>
+          </ol>
+        </aside>
+        <div class="article-content">
+          <section class="article-section" aria-labelledby="section-1">
+            <h2 id="section-1">しくみの全体像</h2>
+            <p>どちらも「よく使う機能をゼロから書き直さなくて済むようにまとめたコード集」ですが、最大の違いは<strong>どちらが主導権（制御）を握るか</strong>です。</p>
+            <p><strong>ライブラリ（Library）</strong>は、日付計算や差分計算・QRコード生成など特定機能の部品集です。自分のプログラムから「ここだけお願い」と必要なタイミングで呼び出します。</p>
+            <p><strong>フレームワーク（Framework）</strong>は、ルーティング・画面描画・データ取得などの全体構造とルールが先に決まっている土台です。開発者は決められた場所へ自分の処理をはめ込み、実行タイミングはフレームワーク側が管理します（これを<strong>制御の反転</strong>と呼びます）。</p>
+            <figure class="diagram-figure">
+  <svg viewBox="0 0 640 195" width="100%" role="img" aria-label="自分のコードが呼び出すライブラリと、枠組み側が自分のコードを呼び出すフレームワークの制御方向の違い">
+    <defs>
+      <marker id="arr" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+        <path d="M 0 1 L 10 5 L 0 9 z" fill="currentColor" opacity="0.7"/>
+      </marker>
+    </defs>
+    <rect x="20" y="22" width="282" height="148" rx="8" fill="#0f766e" fill-opacity="0.1" stroke="#0f766e" stroke-width="1.8"/><text x="161" y="92" text-anchor="middle" font-size="12.5" font-weight="700" fill="currentColor">ライブラリ（道具箱）</text><text x="161" y="110" text-anchor="middle" font-size="10.5" fill="currentColor" opacity="0.78">主導権：自分のコード</text><rect x="44" y="102" width="96" height="44" rx="6" fill="#0f766e" fill-opacity="0.16" stroke="#0f766e"/><text x="92" y="128" text-anchor="middle" font-size="11" font-weight="700" fill="currentColor">自分のコード</text><line x1="144" y1="124" x2="180" y2="124" stroke="#0f766e" stroke-width="2" marker-end="url(#arr)"/><text x="162" y="114" text-anchor="middle" font-size="10.5" font-weight="700" fill="#0f766e">呼ぶ</text><rect x="184" y="102" width="96" height="44" rx="6" fill="rgba(128,128,128,0.12)" stroke="#0f766e"/><text x="232" y="128" text-anchor="middle" font-size="11" font-weight="700" fill="currentColor">便利関数群</text><rect x="338" y="22" width="282" height="148" rx="8" fill="#7c3aed" fill-opacity="0.1" stroke="#7c3aed" stroke-width="1.8"/><text x="479" y="92" text-anchor="middle" font-size="12.5" font-weight="700" fill="currentColor">フレームワーク（骨組み）</text><text x="479" y="110" text-anchor="middle" font-size="10.5" fill="currentColor" opacity="0.78">主導権：枠組み（制御の反転）</text><rect x="362" y="102" width="96" height="44" rx="6" fill="#7c3aed" fill-opacity="0.16" stroke="#7c3aed"/><text x="410" y="128" text-anchor="middle" font-size="11" font-weight="700" fill="currentColor">フレームワーク</text><line x1="462" y1="124" x2="498" y2="124" stroke="#7c3aed" stroke-width="2" marker-end="url(#arr)"/><text x="480" y="114" text-anchor="middle" font-size="10.5" font-weight="700" fill="#7c3aed">呼ぶ</text><rect x="502" y="102" width="96" height="44" rx="6" fill="rgba(128,128,128,0.12)" stroke="#7c3aed"/><text x="550" y="128" text-anchor="middle" font-size="11" font-weight="700" fill="currentColor">自分のコード</text>
+  </svg>
+  <figcaption>図解: ライブラリは自分のコードが主導権を持って呼び出す。フレームワークは骨組み側がルールどおりに自分のコードを呼び出す</figcaption>
+</figure>
+          </section>
+          <section class="article-section" aria-labelledby="section-2">
+            <h2 id="section-2">依存を増やす前に考えたいトレードオフ</h2>
+            <p>便利なライブラリやフレームワークを使うと開発スピードは劇的に上がりますが、タダではありません。</p>
+            <ul><li><strong>メリット：</strong>車輪の再発明を防ぎ、実績のある書き方やセキュリティ対策を取り入れやすい。チームでも構造を共有しやすい。</li><li><strong>コスト：</strong>バージョンアップへの追従、学習コスト、バンドルサイズ増加、脆弱性対応のメンテナンスが発生する。</li></ul>
+            <p>「3行の標準JavaScriptで書ける計算のために巨大なライブラリを入れない」「複雑な状態管理や大規模UIにはフレームワークの力を借りる」という見極めが大切です。</p>
+          </section>
+          <section class="article-section" aria-labelledby="section-3">
+            <h2 id="section-3">最初は標準機能（Web標準）を知っておくと強い</h2>
+            <p>フレームワークは数年で流行が移り変わりますが、その土台にあるHTML・CSS・DOM・Fetch・Web Cryptoなどの<strong>ブラウザ標準機能</strong>は10年単位で通用します。KatakataLabでも、小さな計算ツールは素のHTML/CSS/JSで作ることで、数年放置してもビルドエラーで動かなくなるリスクを減らしています。</p>
+          </section>
+          <section class="article-section" aria-labelledby="section-talk">
+            <h2 id="section-talk">この言葉が会話に出てくるとき</h2>
+            <p><strong>「この機能、標準の Intl や crypto API だけで書けるからライブラリ要らないね」</strong><br>外部依存を増やさずにブラウザ標準機能でシンプルに保つ判断です。</p>
+<p><strong>「画面遷移と状態が多いからフレームワークに乗せた方が保守しやすい」</strong><br>規模が大きくなったときに手書き管理の破綻を防ぐための採用判断です。</p>
+          </section>
+          <section class="article-section" aria-labelledby="section-misread">
+            <h2 id="section-misread">勘違いしやすい点</h2>
+            <ul>
+              <li><strong>誤解1：フレームワークを使わない開発は時代遅れ。</strong>ページの目的に対して過剰な仕組みを入れないのは、表示速度と長期保守の面で立派な技術選定です。</li>
+<li><strong>誤解2：人気ナンバーワンのフレームワークを選べば必ず速く作れる。</strong>小規模な静的ページでは、環境構築と設定だけで素のHTML作成より時間がかかることもあります。</li>
+            </ul>
+          </section>
+          <section class="article-section" aria-labelledby="section-4">
+            <h2 id="section-4">まとめ</h2>
+            <ul>
+              <li>ライブラリ＝自分から呼ぶ部品箱、フレームワーク＝枠組み側が自分を呼ぶ土台。</li>
+<li>導入の速さだけでなく、更新保守・ファイル容量・学習コストも含めて選ぶ。</li>
+<li>ブラウザ標準機能で足りる小さな道具は、依存を少なくするほど長持ちしやすい。</li>
+            </ul>
+          </section>
+          <aside class="lab-example" aria-labelledby="lab-example-title">
+            <p class="eyebrow">FROM THE LAB</p>
+            <h2 id="lab-example-title">KatakataLabでの実例</h2>
+            <p>KatakataLabでは、アスペクト比計算機やpx/rem変換は依存ゼロの素のJSで組み、差分計算やQR生成など専門アルゴリズムが要る箇所だけピンポイントでライブラリを採用し、UI図鑑のMotion AtlasではReact＋Vite構成を使うなど規模に応じて使い分けています。</p>
+            <div class="tool-link-banner"><strong>関連ツールで試す：<a href="../../motion-atlas/">動きの仕組み図鑑 (Motion Atlas) →</a></strong>素のHTML+CSSコードとTailwindコードの両方を比較しながらUIの動きを確認できます。</div>
+            <p class="related-heading">この実例につながるページ</p>
+            <ul class="related-links">
+              <li><a href="build.html">関連用語：ビルドとトランスパイル</a></li>
+<li><a href="static-dynamic.html">関連用語：静的サイトと動的サイト</a></li>
+<li><a href="git.html">関連用語：Git</a></li>
+            </ul>
+          </aside>
+          <section class="article-section faq" aria-labelledby="faq-title">
+            <p class="eyebrow">QUICK CHECK</p>
+            <h2 id="faq-title">よくある質問</h2>
+            <h3>パッケージマネージャー（npmなど）とは何ですか？</h3>
+<p>ライブラリやフレームワークのバージョンを package.json で記録し、コマンドひとつで安全にインストール・更新してくれる管理ツールです。</p>
+<h3>Reactはライブラリですか、フレームワークですか？</h3>
+<p>React単体はUI描画に特化したライブラリとして位置づけられます。ルーティングやサーバー処理まで含んだNext.jsやRemixなどがフレームワークにあたります。</p>
+          </section>
+          <section class="article-section references" aria-labelledby="references-title">
+            <h2 id="references-title">参考資料</h2>
+            <p>用語の定義や仕様を確認するため、公式文書・標準文書を参照しています。リンク先の内容は更新される場合があります。</p>
+            <ul>
+              <li><a href="https://developer.mozilla.org/ja/docs/Learn_web_development/Core/Frameworks_libraries/Introduction" target="_blank" rel="noopener noreferrer">MDN Web Docs「クライアントサイドフレームワーク入門」</a></li>
+<li><a href="https://developer.mozilla.org/ja/docs/Web/API" target="_blank" rel="noopener noreferrer">MDN Web Docs「Web API」</a></li>
+            </ul>
+          </section>
+          <nav class="chapter-nav" aria-label="前後の記事">
+            <a class="chapter-link previous" href="cors.html"><small>前の記事</small><span>← CORS</span></a>
+            <a class="chapter-link next" href="encoding-newline.html"><small>次の記事</small><span>UTF-8 / EOL →</span></a>
+          </nav>
+        </div>
+      </div>
+    </article>
+  </main>
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <p><strong>KatakataLab</strong><br><span>作って、つまずいて、分かったことを残す小さな研究室。</span></p>
+      <nav aria-label="フッターナビゲーション">
+        <a href="../../contact.html">お問い合わせ</a>
+        <a href="../../who-is-katakata.html">運営者情報</a>
+        <a href="../../privacy.html">プライバシーポリシー</a>
+        <a href="../../sitemap.html">サイトマップ</a>
+      </nav>
+    </div>
+    <p class="copyright">&copy; 2024-2026 KatakataLab</p>
+  </footer>
+</body>
+</html>

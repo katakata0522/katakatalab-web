@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DNSとは？ドメイン名をIPアドレスへつなぐインターネットの住所録 | かたかたの制作ノート</title>
+  <meta name="description" content="URLを入力してからサーバーへ届くまでの仕組み「DNS」を解説。Aレコード・CNAME・浸透待ち（TTL）の正体まで、サイト公開でつまずきやすいポイントを整理します。">
+  <link rel="canonical" href="https://katakatalab.com/guides/it-basics/dns.html">
+  <link rel="icon" href="../../icon.svg" type="image/svg+xml">
+  <meta property="og:title" content="DNSとは？ドメイン名をIPアドレスへつなぐインターネットの住所録">
+  <meta property="og:description" content="URLを入力してからサーバーへ届くまでの仕組み「DNS」を解説。Aレコード・CNAME・浸透待ち（TTL）の正体まで、サイト公開でつまずきやすいポイントを整理します。">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="https://katakatalab.com/guides/it-basics/dns.html">
+  <meta property="og:image" content="https://katakatalab.com/ogp.png">
+  <meta property="og:site_name" content="KatakataLab">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="DNSとは？ドメイン名をIPアドレスへつなぐインターネットの住所録">
+  <meta name="twitter:description" content="URLを入力してからサーバーへ届くまでの仕組み「DNS」を解説。Aレコード・CNAME・浸透待ち（TTL）の正体まで、サイト公開でつまずきやすいポイントを整理します。">
+  <meta name="twitter:image" content="https://katakatalab.com/ogp.png">
+  <link rel="stylesheet" href="style.css">
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": "DNSとは？ドメイン名をIPアドレスへつなぐインターネットの住所録",
+  "description": "URLを入力してからサーバーへ届くまでの仕組み「DNS」を解説。Aレコード・CNAME・浸透待ち（TTL）の正体まで、サイト公開でつまずきやすいポイントを整理します。",
+  "inLanguage": "ja",
+  "datePublished": "2026-11-28",
+  "dateModified": "2026-11-28",
+  "author": {
+    "@type": "Person",
+    "name": "かたかた",
+    "url": "https://katakatalab.com/who-is-katakata.html"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "KatakataLab",
+    "url": "https://katakatalab.com/",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "https://katakatalab.com/ogp.png"
+    }
+  },
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "https://katakatalab.com/guides/it-basics/dns.html"
+  },
+  "image": "https://katakatalab.com/ogp.png"
+}
+</script>
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position": 1,
+      "name": "KatakataLab",
+      "item": "https://katakatalab.com/"
+    },
+    {
+      "@type": "ListItem",
+      "position": 2,
+      "name": "かたかたの制作ノート",
+      "item": "https://katakatalab.com/guides/it-basics/"
+    },
+    {
+      "@type": "ListItem",
+      "position": 3,
+      "name": "DNSとは",
+      "item": "https://katakatalab.com/guides/it-basics/dns.html"
+    }
+  ]
+}
+</script>
+  <script defer src="../../analytics.js"></script>
+</head>
+<body class="article-page">
+  <script>try{if(localStorage.getItem('theme')==='dark')document.body.classList.add('dark-mode');}catch(e){}</script>
+  <a class="skip-link" href="#main-content">本文へ移動</a>
+  <header class="site-header">
+    <div class="header-inner">
+      <a class="brand" href="../../"><span class="brand-mark">KL</span><span>KatakataLab</span></a>
+      <nav class="site-nav" aria-label="主要ナビゲーション">
+        <a href="./">制作ノート一覧</a>
+        <a href="../../#projects">ツール一覧</a>
+        <a href="../../guides/tool-selection-guide.html">用途から選ぶ</a>
+        <a href="../../who-is-katakata.html">運営者</a>
+        <button type="button" id="it-theme-toggle" aria-label="テーマ切り替え" style="background:none;border:1px solid rgba(255,255,255,0.28);color:#fff;border-radius:6px;padding:0.2rem 0.55rem;cursor:pointer;font-size:0.9rem;line-height:1;transition:background 0.2s;" title="ダークモード切り替え">🌙</button>
+      </nav>
+    </div>
+  </header>
+  <script>
+    (function(){
+      var btn = document.getElementById('it-theme-toggle');
+      if(!btn) return;
+      function sync(){ btn.textContent = document.body.classList.contains('dark-mode') ? '☀️' : '🌙'; }
+      sync();
+      btn.addEventListener('click', function(){
+        var dark = document.body.classList.toggle('dark-mode');
+        try{ localStorage.setItem('theme', dark ? 'dark' : 'light'); }catch(e){}
+        sync();
+      });
+    })();
+  </script>
+  <main id="main-content">
+    <nav class="breadcrumbs" aria-label="パンくずリスト">
+      <ol>
+        <li><a href="../../">KatakataLab</a></li>
+        <li><a href="./">かたかたの制作ノート</a></li>
+        <li aria-current="page">DNSとは</li>
+      </ol>
+    </nav>
+    <article class="article-shell">
+      <header class="article-hero">
+        <div class="chapter-stamp" aria-hidden="true"><span>CHAPTER 05</span><strong>17</strong><small>DNS</small></div>
+        <p class="eyebrow">CHAPTER 05｜Webの裏側と配信</p>
+        <h1>DNSとは？ドメイン名をIPアドレスへつなぐインターネットの住所録</h1>
+        <p class="article-lead">独自ドメインを取ったのに「まだページが開けない」と焦った経験はありませんか。その裏側で働いているのがDNS（Domain Name System）です。人間が読みやすい名前を、コンピュータが通信に使うIPアドレスへ変換する仕組みを整理します。</p>
+        <div class="article-meta">
+          <span>執筆：<a href="../../who-is-katakata.html">かたかた</a></span>
+          <span>公開：<time datetime="2026-11-28">2026年11月28日</time></span>
+          <span>読了目安：約4分</span>
+        </div>
+        <div class="summary-strip" aria-label="ひとことで言うと">
+          <strong>ひとことで言うと</strong>
+          <p>DNSは、katakatalab.comのようなドメイン名をサーバーのIPアドレス（数字の住所）へ変換する仕組みです。</p>
+        </div>
+      </header>
+      <div class="article-layout">
+        <aside class="toc" aria-label="目次">
+          <p class="toc-title">目次</p>
+          <ol>
+            <li><a href="#section-1">しくみの全体像</a></li>
+            <li><a href="#section-2">よく出てくるレコードの種類（A / CNAME / TXT）</a></li>
+            <li><a href="#section-3">「DNSの浸透待ち」はなぜ起きるのか</a></li>
+            <li><a href="#section-talk">この言葉が会話に出てくるとき</a></li>
+            <li><a href="#section-misread">勘違いしやすい点</a></li>
+            <li><a href="#section-4">まとめ</a></li>
+            <li><a href="#lab-example-title">KatakataLabでの実例</a></li>
+            <li><a href="#faq-title">よくある質問</a></li>
+            <li><a href="#references-title">参考資料</a></li>
+          </ol>
+        </aside>
+        <div class="article-content">
+          <section class="article-section" aria-labelledby="section-1">
+            <h2 id="section-1">しくみの全体像</h2>
+            <p>私たちがブラウザのアドレスバーに「https://katakatalab.com/」と打つと、一瞬でサイトが表示されます。しかし、ネットワーク機器同士が通信するときに実際に使っているのは「93.184.216.34」のような数字の羅列（IPアドレス）です。</p>
+            <p>人間にとって数字の羅列を覚えるのは大変ですが、文字のドメイン名なら覚えやすい。この両者のあいだに入って「katakatalab.com の今のIPアドレスはこれですよ」と教えてくれる仕組みが <strong>DNS（Domain Name System）</strong> です。電話帳や住所録にたとえられることが多いのはこのためです。</p>
+            <figure class="diagram-figure">
+  <svg viewBox="0 0 640 195" width="100%" role="img" aria-label="ブラウザがDNSサーバーに問い合わせてIPアドレスを取得しWebサーバーへ接続する図解">
+    <defs>
+      <marker id="arr" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+        <path d="M 0 1 L 10 5 L 0 9 z" fill="currentColor" opacity="0.7"/>
+      </marker>
+    </defs>
+    <rect x="20" y="26" width="150" height="68" rx="8" fill="#1f5c99" fill-opacity="0.1" stroke="#1f5c99" stroke-width="1.8"/><text x="95" y="56" text-anchor="middle" font-size="12.5" font-weight="700" fill="currentColor">1. ブラウザ</text><text x="95" y="74" text-anchor="middle" font-size="10.5" fill="currentColor" opacity="0.78">katakatalab.com へ行く</text><line x1="174" y1="58" x2="240" y2="58" stroke="#1f5c99" stroke-width="2" marker-end="url(#arr)"/><text x="207" y="48" text-anchor="middle" font-size="10.5" font-weight="700" fill="#1f5c99">住所は？</text><rect x="246" y="26" width="158" height="68" rx="8" fill="#7c3aed" fill-opacity="0.1" stroke="#7c3aed" stroke-width="1.8"/><text x="325" y="56" text-anchor="middle" font-size="12.5" font-weight="700" fill="currentColor">2. DNSサーバー</text><text x="325" y="74" text-anchor="middle" font-size="10.5" fill="currentColor" opacity="0.78">ドメイン ⇄ IP 住所録</text><line x1="240" y1="82" x2="174" y2="82" stroke="#0f766e" stroke-width="2" marker-end="url(#arr)"/><text x="207" y="98" text-anchor="middle" font-size="10.5" font-weight="700" fill="#0f766e">IP返却</text><line x1="174" y1="134" x2="444" y2="134" stroke="#0f766e" stroke-width="2" marker-end="url(#arr)"/><text x="310" y="124" text-anchor="middle" font-size="10.5" font-weight="700" fill="#0f766e">3. 判明したIPアドレスへ直接リクエスト</text><rect x="20" y="112" width="150" height="56" rx="8" fill="#1f5c99" fill-opacity="0.1" stroke="#1f5c99" stroke-width="1.8"/><text x="95" y="136" text-anchor="middle" font-size="12.5" font-weight="700" fill="currentColor">ブラウザ</text><text x="95" y="154" text-anchor="middle" font-size="10.5" fill="currentColor" opacity="0.78">IP宛てに接続開始</text><rect x="450" y="102" width="170" height="68" rx="8" fill="#0f766e" fill-opacity="0.1" stroke="#0f766e" stroke-width="1.8"/><text x="535" y="132" text-anchor="middle" font-size="12.5" font-weight="700" fill="currentColor">4. Webサーバー</text><text x="535" y="150" text-anchor="middle" font-size="10.5" fill="currentColor" opacity="0.78">HTMLや画像を返す</text>
+  </svg>
+  <figcaption>図解: ブラウザは最初にDNSへドメイン名のIPアドレスを尋ね、返ってきた住所を使って目的のサーバーへ接続する</figcaption>
+</figure>
+          </section>
+          <section class="article-section" aria-labelledby="section-2">
+            <h2 id="section-2">よく出てくるレコードの種類（A / CNAME / TXT）</h2>
+            <p>ドメインを管理画面で設定するとき、急に「Aレコード」「CNAME」「TXT」といった言葉が並んで戸惑うことがあります。最初のうちは、次の3つだけ押さえておけば大抵の公開作業は乗り切れます。</p>
+            <ul><li><strong>Aレコード（AAAAレコード）：</strong>ドメイン名とIPアドレス（IPv4はA、IPv6はAAAA）を直接結びつける基本設定です。</li><li><strong>CNAMEレコード：</strong>ある名前を別のドメイン名の「別名」として指し示します。たとえば <code>www.example.com</code> をホスティング先のホスト名へ向けるときによく使います。</li><li><strong>TXTレコード：</strong>任意の短いテキストを載せる欄です。Google Search Consoleの所有権確認や、メールのなりすまし対策（SPF・DKIM）でよく指定されます。</li></ul>
+          </section>
+          <section class="article-section" aria-labelledby="section-3">
+            <h2 id="section-3">「DNSの浸透待ち」はなぜ起きるのか</h2>
+            <p>ドメイン設定を変えた直後に「反映まで最大24〜48時間かかることがあります」と案内されることがあります。これは情報が世界中のサーバーへゆっくり流れているからではなく、途中のDNSリゾルバやスマホ・PCが<strong>過去の問い合わせ結果を一時記憶（キャッシュ）している</strong>ためです。</p>
+            <p>この記憶をどれくらい保持するかを決める秒数を <strong>TTL（Time To Live）</strong> と呼びます。たとえばTTLが3600秒（1時間）なら、前の結果を持っている端末は最大1時間ほど古いIPアドレスを見続けることがあります。引っ越し作業の前日にTTLを短くしておくのは、切り替え後のズレを減らす実務上のコツです。</p>
+          </section>
+          <section class="article-section" aria-labelledby="section-talk">
+            <h2 id="section-talk">この言葉が会話に出てくるとき</h2>
+            <p><strong>「DNSの切り替えは終わったけど、まだ古いサーバーが見えてるかも」</strong><br>自分のPCやルーターのDNSキャッシュが残っている状態を指します。別回線（スマホのモバイル通信など）から確認すると切り分けやすいです。</p>
+<p><strong>「所有権確認のTXTレコードをDNSに足してください」</strong><br>外部サービスに「このドメインの本当の管理者です」と証明するため、指定された文字列をDNS管理画面へ1行追加する作業です。</p>
+          </section>
+          <section class="article-section" aria-labelledby="section-misread">
+            <h2 id="section-misread">勘違いしやすい点</h2>
+            <ul>
+              <li><strong>誤解1：ドメインを買えば自動でサイトが表示される。</strong>ドメインは「表札」にすぎず、DNSでサーバーの住所を結びつけない限り画面は出ません。</li>
+<li><strong>誤解2：DNSを変えたらページのデータも移動する。</strong>DNSが変えるのは「案内先」だけです。HTMLや画像ファイル自体は新サーバー側へ別途デプロイしておく必要があります。</li>
+            </ul>
+          </section>
+          <section class="article-section" aria-labelledby="section-4">
+            <h2 id="section-4">まとめ</h2>
+            <ul>
+              <li>DNSは「ドメイン名」を「IPアドレス」へ引き当てるインターネットの住所録。</li>
+<li>公開設定では A / CNAME / TXT の3種類をまず覚えれば迷いにくい。</li>
+<li>反映が遅いときはTTLによるキャッシュ残りを疑い、別回線でも確認する。</li>
+            </ul>
+          </section>
+          <aside class="lab-example" aria-labelledby="lab-example-title">
+            <p class="eyebrow">FROM THE LAB</p>
+            <h2 id="lab-example-title">KatakataLabでの実例</h2>
+            <p>KatakataLabでも独自ドメインとホスティング先を結びつける際にDNSレコードとTXT所有権確認を設定しています。設定変更のたびに「スマホ回線では見えるのにPCでは古いまま」という現象に何度も出会い、TTLの仕組みを理解してからは慌てなくなりました。</p>
+            <div class="tool-link-banner"><strong>関連ツールで試す：<a href="../../ogp-simulator/">OGPシミュレーター →</a></strong>独自ドメイン公開後にSNSへ貼るカードの見え方を、公開前でも手元で確認できます。</div>
+            <p class="related-heading">この実例につながるページ</p>
+            <ul class="related-links">
+              <li><a href="domain.html">関連用語：ドメインとサブドメイン</a></li>
+<li><a href="https.html">関連用語：HTTPSとSSL/TLS</a></li>
+<li><a href="server.html">関連用語：サーバー</a></li>
+            </ul>
+          </aside>
+          <section class="article-section faq" aria-labelledby="faq-title">
+            <p class="eyebrow">QUICK CHECK</p>
+            <h2 id="faq-title">よくある質問</h2>
+            <h3>DNS設定を間違えるとデータは消えますか？</h3>
+<p>サーバー内のファイル自体は消えません。ただし案内先がズレて一時的にサイトやメールが届かなくなるため、変更前の設定値はメモを残してから編集するのが安全です。</p>
+<h3>IPv4とIPv6でレコードは違いますか？</h3>
+<p>はい。IPv4アドレスにはAレコード、より長いIPv6アドレスにはAAAAレコードを使います。</p>
+          </section>
+          <section class="article-section references" aria-labelledby="references-title">
+            <h2 id="references-title">参考資料</h2>
+            <p>用語の定義や仕様を確認するため、公式文書・標準文書を参照しています。リンク先の内容は更新される場合があります。</p>
+            <ul>
+              <li><a href="https://developer.mozilla.org/ja/docs/Glossary/DNS" target="_blank" rel="noopener noreferrer">MDN Web Docs「DNS」</a></li>
+<li><a href="https://www.rfc-editor.org/rfc/rfc1035" target="_blank" rel="noopener noreferrer">RFC 1035「Domain Names - Implementation and Specification」</a></li>
+            </ul>
+          </section>
+          <nav class="chapter-nav" aria-label="前後の記事">
+            <a class="chapter-link previous" href="security.html"><small>前の記事</small><span>← SECURITY</span></a>
+            <a class="chapter-link next" href="https.html"><small>次の記事</small><span>HTTPS →</span></a>
+          </nav>
+        </div>
+      </div>
+    </article>
+  </main>
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <p><strong>KatakataLab</strong><br><span>作って、つまずいて、分かったことを残す小さな研究室。</span></p>
+      <nav aria-label="フッターナビゲーション">
+        <a href="../../contact.html">お問い合わせ</a>
+        <a href="../../who-is-katakata.html">運営者情報</a>
+        <a href="../../privacy.html">プライバシーポリシー</a>
+        <a href="../../sitemap.html">サイトマップ</a>
+      </nav>
+    </div>
+    <p class="copyright">&copy; 2024-2026 KatakataLab</p>
+  </footer>
+</body>
+</html>

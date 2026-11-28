@@ -13,13 +13,14 @@
   <link rel="alternate" hreflang="en" href="https://katakatalab.com/text-diff/en/">
   <link rel="alternate" hreflang="x-default" href="https://katakatalab.com/text-diff/">
   
-  <meta property="og:title" content="テキスト差分チェックツール - Text Diff Tool">
-  <meta property="og:description" content="ブラウザ完結で安全。文章・コードの差分を一瞬で可視化。">
+  <meta property="og:title" content="テキスト差分チェックツール【無料】文章・コードの差分を比較（ブラウザ完結・安全） - KatakataLab">
+  <meta property="og:description" content="ブラウザ完結で安全。文章・コードの差分を文字単位・行単位で比較表示。">
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://katakatalab.com/text-diff/">
   <meta property="og:image" content="https://katakatalab.com/ogp.png">
   <meta property="og:site_name" content="KatakataLab">
   <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="テキスト差分チェックツール【無料】文章・コードの差分を比較（ブラウザ完結・安全） - KatakataLab">
 
   <link rel="icon" href="/favicon.ico">
   <link rel="stylesheet" href="style.css?v=20261125-refactored">
@@ -98,7 +99,19 @@
       </div>
     </div>
     
+    <div class="control-group">
+      <label class="ignore-ws-label">
+        <input type="checkbox" id="ignoreWhitespace">
+        <span>空白・改行差を無視</span>
+      </label>
+    </div>
+
     <div class="actions">
+      <select id="sampleSelect" class="sample-select" aria-label="サンプルの種類">
+        <option value="pricing">例: 料金改定</option>
+        <option value="email">例: メール推敲</option>
+        <option value="json">例: JSON設定</option>
+      </select>
       <button type="button" id="sampleBtn" class="btn-secondary" aria-label="サンプル文章を入力して差分を試す" title="サンプルで試す">
         <span class="icon-sample">✨</span> サンプル
       </button>
@@ -218,47 +231,64 @@
 
   <article class="article-content">
     <h2>テキスト差分チェックツールの使い方</h2>
-    <p>作成者: かたかた / 更新日: 2026年7月22日</p>
+    <p>作成者: かたかた / 更新日: 2026年11月28日</p>
 
     <div class="feature-box">
       <h3>💡 クイック使い方とポイント</h3>
-      <p>変更前（Original）と変更後（New）のテキストを入力し、「差分を比較」を押すだけで追加・削除された箇所をハイライト表示します。入力した文章は外部送信せず、比較処理はすべてブラウザ内で完結します。</p>
+      <p>変更前（Original）と変更後（New）のテキストを入力し、「差分を比較」（または <code>Ctrl+Enter</code> / <code>Cmd+Enter</code>）を押すと、追加・削除された箇所を色分け表示します。差分処理は同梱スクリプト（<code>diff-engine.js</code>）でブラウザ内完結しており、入力した文章は比較のために外部送信しません。</p>
     </div>
 
     <section class="feature-box" data-verification-note aria-labelledby="diff-verification-title">
       <h3 id="diff-verification-title">🧪 実際の入力で確認した結果</h3>
-      <p><strong>確認日: 2026年7月22日</strong>（Windows版Chrome）</p>
+      <p><strong>確認日: 2026年11月28日</strong>（Chrome）</p>
       <ul>
         <li><strong>入力:</strong> 「料金は1,000円です。」から「料金は1,200円（税込）です。」へ変更。</li>
         <li><strong>結果:</strong> 文字単位の比較で、削除1箇所・追加2箇所として金額の変更と「（税込）」の追加が表示されることを確認しました。</li>
-        <li><strong>確認範囲:</strong> 文字・行の差分表示までです。文章の正しさ、計算内容、コードの動作までは判定しません。</li>
+        <li><strong>確認範囲:</strong> 文字・行の差分表示、▲/▼ジャンプ、差分テキスト／変更後全文のコピーまでです。文章の正しさ、計算内容、コードの動作までは判定しません。</li>
       </ul>
       <p><a href="../about-katakatalab.html#verification-policy" class="guide-link">KatakataLabの検証方法を見る →</a> | <a href="../guides/case-studies.html" class="guide-link">料金案内を比較する入力・出力例を見る →</a></p>
     </section>
 
     <!-- アコーディオン 1: 差分結果の読み方と使いどころ -->
-    <details class="tool-accordion">
+    <details class="tool-accordion" open>
       <summary class="tool-accordion__summary">
         <span>🧩 差分結果の読み方と使いどころ（文字単位・行単位の比較）</span>
         <span class="tool-accordion__icon">▼</span>
       </summary>
       <div class="tool-accordion__body">
         <h4>文字単位 vs 行単位の使い分け</h4>
-        <p>比較前に「文字単位」か「行単位」かを選ぶと、目的に合った見え方になります。短い文章の誤字脱字チェックや推敲は文字単位、プログラムコードや長い段落原稿の変更確認は行単位の比較が向いています。</p>
+        <p>比較前に「文字単位」か「行単位」かを選ぶと、目的に合った見え方になります。短い文章の誤字脱字チェックや推敲は文字単位（絵文字などのサロゲートペアもコードポイント単位で比較）、プログラムコードや設定ファイル、長い原稿の変更確認は行単位（左右分割・統合ビュー切替対応）が向いています。</p>
 
-        <h4>ハイライト色の意味</h4>
+        <h4>ハイライト色と操作補助機能</h4>
         <ul>
           <li><strong>追加（緑）:</strong> 新しい文章にだけ存在する部分を示します。</li>
           <li><strong>削除（赤）:</strong> 元の文章にだけ存在する部分を示します。</li>
-          <li><strong>行単位の比較:</strong> 段落やコードのまとまりを確認しやすく、前後の文脈を保ったままレビューできます。</li>
+          <li><strong>差分ジャンプ（▲ / ▼）:</strong> 長いテキストでも、変更箇所だけを順番にたどって確認できます。</li>
+          <li><strong>コピー出力:</strong> <code>+</code> / <code>-</code> 付きの差分テキスト（WindowsではCRLF、その他ではLF改行）または変更後の全文を選んでコピーできます。</li>
+          <li><strong>誤消去対策:</strong> 「全クリア」を押しても5秒間は「元に戻す (Undo)」から入力を戻せます。</li>
         </ul>
 
         <h4>ファイル読み込みとサイズ目安</h4>
-        <p>テキストファイルを直接ドラッグ＆ドロップまたはファイル選択で読み込めます。2MBを超えるファイルや5万文字を超える入力は、端末によって動作が重くなるため分割比較をおすすめします。</p>
+        <p>テキストファイルはファイル選択またはドラッグ＆ドロップで直接読み込めます。対応拡張子は <code>.txt</code> / <code>.md</code> / <code>.js</code> / <code>.css</code> / <code>.html</code> / <code>.json</code> / <code>.xml</code> / <code>.csv</code> / <code>.yaml</code> / <code>.yml</code>（上限2MB・UTF-8読み込み）です。5万文字を超える入力は端末によって動作が重くなるため、分割比較をおすすめします。</p>
       </div>
     </details>
 
-    <!-- アコーディオン 2: よくある質問 -->
+    <!-- アコーディオン 2: 全体が差分に見えるときの確認ポイント -->
+    <details class="tool-accordion">
+      <summary class="tool-accordion__summary">
+        <span>🔎 同じ文章に見えるのに差分が出る主な原因</span>
+        <span class="tool-accordion__icon">▼</span>
+      </summary>
+      <div class="tool-accordion__body">
+        <ul>
+          <li><strong>改行コードの違い（CRLF と LF）:</strong> Windows と macOS / Linux のファイルをそのまま貼り付けると、見た目が同じでも改行文字の差として検出されることがあります。</li>
+          <li><strong>行末スペースや全角・半角スペースの混在:</strong> 見た目がほぼ同じでも、文末の半角スペースや全角空白の増減は差分として赤・緑で表示されます。</li>
+          <li><strong>全角・半角の数字や記号:</strong> 「1000」と「１０００」、ハイフン「-」と長音「ー」の違いなどは、文字単位モードに切り替えると該当の1文字だけを追いやすくなります。</li>
+        </ul>
+      </div>
+    </details>
+
+    <!-- アコーディオン 3: よくある質問 -->
     <details class="tool-accordion">
       <summary class="tool-accordion__summary">
         <span>❓ よくある質問 (FAQ)</span>
@@ -266,32 +296,32 @@
       </summary>
       <div class="tool-accordion__body">
         <h4>Q. セキュリティは安全ですか？社外秘の文章を入れても大丈夫？</h4>
-        <p>A. 入力した文章は外部サーバーへ送信せず、比較処理はブラウザ内（ローカル環境）で行われます。詳しくは<a href="../privacy.html">プライバシーポリシー</a>をご確認ください。</p>
+        <p>A. 入力した文章は比較処理のために外部サーバーへ送信せず、ブラウザ内（ローカル環境）だけで処理します。ブラウザ拡張機能など端末側の環境までは本ツールで制御できません。詳しくは<a href="../privacy.html">プライバシーポリシー</a>をご確認ください。</p>
 
         <h4>Q. 比較できる文字数に制限はありますか？</h4>
-        <p>A. 推奨は5万文字以内です。それ以上の長文も比較可能ですが、お使いの端末スペックによっては動作が重くなる場合があります。</p>
+        <p>A. 推奨は5万文字以内（ファイル読み込みの上限は2MB）です。それ以上の長文も比較可能ですが、お使いの端末スペックによっては動作が重くなる場合があります。</p>
 
         <h4>Q. 改行だけの違いや空白文字の違いも検出できますか？</h4>
-        <p>A. はい。改行コードの増減やスペースの有無も差分として検出します。</p>
+        <p>A. はい。改行の増減やスペースの有無も差分として検出します。</p>
       </div>
     </details>
   </article>
 
     <section class="sister-tools">
-      <h3>🧪 他の実験ツールも試してみませんか？</h3>
+      <h3>🧪 関連ツール</h3>
       <div class="sister-grid">
         <a href="../aspect-ratio-calc/" class="sister-card">
           <div class="sister-icon">📐</div>
           <div class="sister-info">
             <h4>アスペクト比計算ツール</h4>
-            <p>画像トリミングや動画の比率を瞬時に計算！SNSの見切れ防止に大活躍します。</p>
+            <p>画像トリミングや動画の比率を計算し、SNS・サムネイル用の縦横サイズを確認できます。</p>
           </div>
         </a>
         <a href="../discount-calc/" class="sister-card">
           <div class="sister-icon">🛍️</div>
           <div class="sister-info">
             <h4>割引価格計算ツール</h4>
-            <p>「〇％引き」「さらにポイント還元」を視覚的にスッキリ可視化して計算します！</p>
+            <p>「〇％引き」や重ね割・ポイント還元を含めた支払額の目安を一覧で確認できます。</p>
           </div>
         </a>
       </div>
@@ -337,7 +367,7 @@
       {
         "@type": "Question",
         "name": "セキュリティは安全ですか？",
-        "acceptedAnswer": { "@type": "Answer", "text": "入力した文章は比較処理のために外部送信しません。ページ表示時には差分表示用ライブラリをCDNから読み込みますが、入力した文章がCDNへ送られることはありません。この操作画面では広告スクリプトを読み込みません。" }
+        "acceptedAnswer": { "@type": "Answer", "text": "入力した文章は比較処理のために外部送信しません。差分計算は同サイト内のスクリプト（diff-engine.js）を使ってブラウザ内で完結し、この操作画面では広告スクリプトを読み込みません。" }
       },
       {
         "@type": "Question",

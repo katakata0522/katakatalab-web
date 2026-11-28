@@ -12,7 +12,7 @@
 
     <!-- SEO & OGP -->
     <meta name="description" content="【登録不要・無料】ブラウザ内で動作するパスワード一括生成ツール。生成内容のサーバー送信なし。文字種の設定と強さの参考表示を利用できます。">
-    <meta property="og:title" content="【登録不要】パスワード一括生成ツール - KatakataLab">
+    <meta property="og:title" content="【登録不要】パスワード一括生成ツール【ブラウザ完結】 - KatakataLab">
     <meta property="og:description" content="ブラウザ内で動作するパスワード一括生成ツール。文字種の設定と強さの参考表示を利用できます。">
     <meta property="og:type" content="website">
     <meta property="og:locale" content="ja_JP">
@@ -20,7 +20,7 @@
     <meta property="og:image" content="https://katakatalab.com/ogp.png">
     <meta property="og:site_name" content="KatakataLab Tools">
     <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="【登録不要】パスワード一括生成ツール - KatakataLab">
+    <meta name="twitter:title" content="【登録不要】パスワード一括生成ツール【ブラウザ完結】 - KatakataLab">
     <meta name="twitter:description" content="ブラウザ内で動作するパスワード一括生成ツール。文字種の設定と強さの参考表示を利用できます。">
     <meta name="twitter:image" content="https://katakatalab.com/ogp.png">
     <link rel="canonical" href="https://katakatalab.com/password-generator/">
@@ -137,6 +137,39 @@
                         <div>
                             <h2>⚙️ 生成設定</h2>
                             <form id="settings-form" onsubmit="return false;">
+                                <div class="pwd-mode-switch" role="group" aria-label="生成方式の切り替え">
+                                    <button type="button" id="mode-random" class="pwd-mode-btn active" data-gen-mode="random" aria-pressed="true">ランダム文字列</button>
+                                    <button type="button" id="mode-passphrase" class="pwd-mode-btn" data-gen-mode="passphrase" aria-pressed="false">パスフレーズ（単語連結）</button>
+                                </div>
+
+                                <div id="passphrase-options" class="pwd-passphrase-box" hidden>
+                                    <div class="pwd-slider-wrapper">
+                                        <div class="pwd-slider-label">
+                                            <span>連結する単語数</span>
+                                            <strong id="pp-words-val">4語</strong>
+                                        </div>
+                                        <input type="range" class="pwd-range" id="pp-words" min="3" max="8" value="4" aria-label="パスフレーズの単語数">
+                                    </div>
+                                    <div class="pwd-pp-row">
+                                        <label for="pp-separator" class="pwd-pp-label">区切り文字</label>
+                                        <select id="pp-separator" class="pwd-select pwd-pp-select" aria-label="単語の区切り文字">
+                                            <option value="-">ハイフン (-)</option>
+                                            <option value="_">アンダースコア (_)</option>
+                                            <option value=".">ドット (.)</option>
+                                            <option value="">なし</option>
+                                        </select>
+                                    </div>
+                                    <div class="pwd-checkbox-wrapper" onclick="document.getElementById('pp-capitalize').click();">
+                                        <input type="checkbox" id="pp-capitalize" class="pwd-checkbox" checked onclick="event.stopPropagation();" aria-label="単語の先頭を大文字にする">
+                                        <span class="pwd-checkbox-label">単語の先頭を大文字にする</span>
+                                    </div>
+                                    <div class="pwd-checkbox-wrapper" onclick="document.getElementById('pp-number').click();">
+                                        <input type="checkbox" id="pp-number" class="pwd-checkbox" checked onclick="event.stopPropagation();" aria-label="末尾に2桁の数字を付ける">
+                                        <span class="pwd-checkbox-label">末尾に2桁の数字を付ける</span>
+                                    </div>
+                                </div>
+
+                                <div id="random-mode-block">
                                 <div class="pwd-presets-label">パスワード用プリセット</div>
                                 <div class="pwd-presets-group">
                                     <button type="button" class="pwd-preset-btn preset-btn" data-preset="standard">📋 標準</button>
@@ -148,6 +181,7 @@
                                 <div class="pwd-presets-group">
                                     <button type="button" class="pwd-preset-btn preset-btn" data-preset="pin">🔢 数字4桁（PIN）</button>
                                     <button type="button" class="pwd-preset-btn preset-btn" data-preset="bank">🔢 数字6桁（PIN）</button>
+                                </div>
                                 </div>
                                 <p id="generation-purpose" class="small text-muted">パスワード：利用先の条件に合わせ、サービスごとに使い回さず設定してください。</p>
                                 <a class="pwd-result-jump" href="#generated-passwords">生成結果を見る</a>
@@ -328,23 +362,23 @@
               </div>
             </div>
 
-            <!-- アコーディオン式極上コラムセクション (detailsタグでスマート収納！) -->
+            <!-- アコーディオン式開発メモセクション -->
             <details class="pwd-column-details">
                 <summary class="pwd-column-summary">
                     📖 開発ストーリーと「パスワード難民」の寄り添いコラムを読む (クリックで展開)
                 </summary>
                 <div class="pwd-column-content card pwd-column-card">
-                    <h3 style="color: var(--c-primary); margin-top: 0; font-weight: 800; display: flex; align-items: center; gap: 0.5rem;">🧪 スマホ時代の「パスワード難民」だった私（わたくし）の開発話</h3>
+                    <h3 style="color: var(--c-primary); margin-top: 0; font-weight: 800; display: flex; align-items: center; gap: 0.5rem;">🧪 スマホ時代の「パスワード難民」だった私の開発話</h3>
                     <p>
                         「最近はスマホの指紋認証や顔認証でログインできるし、ブラウザが勝手に記憶してくれるから、パスワードなんて覚えなくていいよね！」<br>
-                        そう思って油断していた私（わたくし）は、かつて立て続けに絶望的なシチュエーションに襲われました……！
+                        そう思って油断していた私は、かつて立て続けに困った場面に出会いました。
                     </p>
                     <p>
-                        それは、<strong>PCのブラウザで登録したサービスを、スマホの「アプリ」でログインしようとした瞬間</strong>。なんと、Googleの自動保存やキーチェーンがうまく連携してくれず、「手動でパスワードを入力してください」と冷たく突きつけられたのです。さらに追い打ちをかけるように、いつも指紋でスッと入っていたアプリが、アプデや再起動のタイミングで突然<strong>「登録時の生パスワード」</strong>を求めてきて、完全に頭が真っ白になりました。笑
+                        それは、<strong>PCのブラウザで登録したサービスを、スマホの「アプリ」でログインしようとした瞬間</strong>。Googleの自動保存やキーチェーンがうまく連携せず、「手動でパスワードを入力してください」と表示されたのです。さらに、いつも生体認証で入っていたアプリがアップデートや再起動のタイミングで突然<strong>「登録時の生パスワード」</strong>を求めてきて、思い出せずに困ってしまいました。
                     </p>
                     <p>
-                        「パスワード、なんだっけ……？ ていうか、どこにも書いてないし思い出せない……！！」<br>
-                        そんな、スマホ社会が生んだ現代の「パスワード難民」から脱出するために、このツールを作りました。
+                        「パスワード、なんだっけ……？ どこにも控えてないし思い出せない……」<br>
+                        そんな、スマホ社会で起こりがちな「パスワード難民」にならないために、このツールを作りました。
                     </p>
                     <p>
                         ブラウザでもスマホでも、使い回さないパスワードを作れるようにしました。生成後は専用のパスワードマネージャーへ保管し、利用先ごとに使い分けてください。
@@ -354,7 +388,7 @@
                         <h4 style="color: var(--c-primary); margin-top: 0; font-weight: 800; font-size: 1.05rem; margin-bottom: 0.5rem;">🚪 物理の「鍵」でたとえるパスワードの使い回し</h4>
                         <p style="margin: 0; font-size: 0.92rem; line-height: 1.7;">
                             「パスワードなんて、めちゃくちゃ複雑なやつを1コ作って、全部で使い回せば安全でしょ！」<br>
-                            かつて、私（わたくし）もそう信じ込んでいた時期がありました。でも、それはITの世界では<strong>「自宅も、車も、オフィスのロッカーも、実家の金庫も、すべて同じ1本の鍵で開くようにしている状態」</strong>と同じなのです……！<br>
+                            かつて、私もそう信じ込んでいた時期がありました。でも、それはITの世界では<strong>「自宅も、車も、オフィスのロッカーも、実家の金庫も、すべて同じ1本の鍵で開くようにしている状態」</strong>と同じです。<br>
                             もし、どこか1つのサービスからその1本が漏えいすると、同じ認証情報を使うほかのサービスも不正ログインを試される可能性があります。だからこそ、<strong>「鍵はサービスごとに変える」</strong>ことが重要です。
                         </p>
                     </div>
@@ -362,7 +396,7 @@
                     <div style="background: var(--c-bg); border-left: 4px solid var(--c-primary); border-radius: 0 var(--radius-md) var(--radius-md) 0; padding: 1.25rem; margin: 1.5rem 0;">
                         <h4 style="color: var(--c-primary); margin-top: 0; font-weight: 800; font-size: 1.05rem; margin-bottom: 0.5rem;">🔑 鍵の種類を使い分ける「3つの防衛レベル」</h4>
                         <p style="margin: 0; font-size: 0.92rem; line-height: 1.7;">
-                            「でも、何十個も別々のパスワードなんて覚えられないよ！」というあなたへ。記憶だけに頼らず、信頼できるパスワードマネージャーも活用してください。サービスが許す範囲で、以下を目安にできます。<br>
+                            「でも、何十個も別々のパスワードなんて覚えられないよ！」という場合、記憶だけに頼らず、信頼できるパスワードマネージャーも活用してください。サービスが許す範囲で、以下を目安にできます。<br>
                             <strong>🔒 レベル1：重要アカウント（24文字以上）</strong><br>メール、銀行、主要SNSなど、ほかのアカウントの復旧にも関わる場所。多要素認証も併用します。<br>
                             <strong>🔑 レベル2：通常アカウント（16文字以上）</strong><br>ショッピングサイトや有料サブスクなど。サービスごとに異なる文字列を使います。<br>
                             <strong>🚪 レベル3：文字数制限があるサービス</strong><br>上限まで長くし、使い回さず、利用できる場合は多要素認証を有効にします。<br>
@@ -371,16 +405,16 @@
                     </div>
 
                     <div style="background: var(--c-bg); border-left: 4px solid var(--c-primary); border-radius: 0 var(--radius-md) var(--radius-md) 0; padding: 1.25rem; margin: 1.5rem 0;">
-                        <h4 style="color: var(--c-primary); margin-top: 0; font-weight: 800; font-size: 1.05rem; margin-bottom: 0.5rem;">💡 「i」と「l」と「1」が判別できなくて泣かないために</h4>
+                        <h4 style="color: var(--c-primary); margin-top: 0; font-weight: 800; font-size: 1.05rem; margin-bottom: 0.5rem;">💡 「i」と「l」と「1」が判別できなくて迷わないために</h4>
                         <p style="margin: 0; font-size: 0.92rem; line-height: 1.7;">
-                            パスワードを紙にメモしたり、スマホの画面を目で追いながら手動でアプリに入力しているとき、<strong>「大文字のアイ(I)なのか、小文字のエル(l)なのか、数字のイチ(1)なのか見分けがつかない！！」</strong>と電卓や画面の前で絶望した経験はありませんか？<br>
-                            私（わたくし）は深夜のログイン画面で3回連続で間違えて、アカウントをロックされ、ガチで涙を流したことがあります。笑<br>
-                            そんな悲劇をこの世から抹殺するために、このツールには<strong>「紛らわしい文字を除外」</strong>という超親切なオプションをデフォルトで搭載しました！見た目がそっくりな文字をあらかじめ排除して生成するため、手入力が必要な場面でもノンストレスでログインできます。ぜひ、この快適さを体感してください！
+                            パスワードを紙にメモしたり、スマホの画面を目で追いながら手動でアプリに入力しているとき、<strong>「大文字のアイ(I)なのか、小文字のエル(l)なのか、数字のイチ(1)なのか見分けがつかない」</strong>と困った経験はありませんか？<br>
+                            私もログイン画面で何度か間違えてロックされた経験があります。<br>
+                            こうした見間違いを減らすために、このツールには<strong>「紛らわしい文字を除外」</strong>するオプションを初期設定で有効にしています。見た目が似ている文字をあらかじめ省いて生成できるため、手入力が必要な場面でも入力ミスを抑えやすくなります。
                         </p>
                     </div>
 
                     <p style="margin-bottom: 0; font-weight: bold; color: var(--c-primary);">
-                        強固なパスワードを賢く管理し、あなたの安全なデジタルライフにお役立てください。最後までお読みいただきありがとうございました！🧪
+                        サービスごとの使い分けとパスワードマネージャーの併用で、日々のアカウント管理にお役立てください。
                     </p>
                 </div>
             </details>
@@ -422,7 +456,7 @@
 
             <section class="pwd-card" data-verification-note aria-labelledby="password-verification-title">
                 <h2 id="password-verification-title" style="font-size: 1.1rem;">🧪 実際の設定で確認した結果</h2>
-                <p><strong>確認日: 2026年7月22日</strong>（Windows版Chrome）</p>
+                <p>作成者: かたかた / 更新日: 2026年11月28日 / <strong>確認日: 2026年7月22日</strong>（Windows版Chrome）</p>
                 <ul>
                     <li><strong>入力:</strong> 20文字、小文字・大文字・数字・記号を使用、紛らわしい文字を除外、5個生成。</li>
                     <li><strong>結果:</strong> 5個すべてが20文字で、指定した4種類を各1文字以上含み、除外対象の i / l / 1 / L / o / O / 0 を含まないことを確認しました。</li>

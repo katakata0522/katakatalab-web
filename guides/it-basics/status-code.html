@@ -24,7 +24,7 @@
   "headline": "【IT用語】「HTTPステータスコード」とは？通信結果を伝える3桁の番号",
   "description": "HTTPステータスコードとは何かを、2xx・3xx・4xx・5xxの分類と、401・403・404・500・503の違い、調査時の読み方から解説します。",
   "datePublished": "2026-07-13",
-  "dateModified": "2026-08-04",
+  "dateModified": "2026-11-28",
   "mainEntityOfPage": "https://katakatalab.com/guides/it-basics/status-code.html",
   "inLanguage": "ja",
   "author": {
@@ -90,7 +90,7 @@
         <h1>【IT用語】「HTTPステータスコード」とは？通信結果を伝える3桁の番号</h1>
         <p class="article-lead">HTTPステータスコードとは何かを、2xx・3xx・4xx・5xxの分類と、401・403・404・500・503の違い、調査時の読み方から解説します。</p>
         <div class="article-meta" aria-label="記事情報">
-          <span>作成者：かたかた</span><span>公開日：2026年7月13日</span><span>更新日：2026年8月4日</span>
+          <span>作成者：かたかた</span><span>公開日：2026年7月13日</span><span>更新日：2026年11月28日</span>
         </div>
       </header>
       <div class="article-layout">
@@ -115,6 +115,22 @@
 <li><strong>5xx：サーバーエラー</strong> — 有効に見えるリクエストをサーバーが処理できない</li>
 </ul>
 <p>4xxだからユーザー本人が悪い、5xxだから担当者が悪い、と決めつけるための番号ではありません。問題の方向を切り分ける手がかりです。</p>
+
+<figure class="diagram-figure">
+  <svg viewBox="0 0 640 195" width="100%" role="img" aria-label="HTTPステータスコードの2xx・3xx・4xx・5xxの4分類図解">
+    <defs>
+      <marker id="arr" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+        <path d="M 0 1 L 10 5 L 0 9 z" fill="currentColor" opacity="0.7"/>
+      </marker>
+    </defs>
+    <rect x="18" y="42" width="144" height="112" rx="8" fill="#0f766e" fill-opacity="0.1" stroke="#0f766e" stroke-width="1.8"/><text x="90" y="94" text-anchor="middle" font-size="13" font-weight="700" fill="currentColor">2xx 成功</text><text x="90" y="112" text-anchor="middle" font-size="10.5" fill="currentColor" opacity="0.78">200 OK など
+正常に取得完了</text><rect x="172" y="42" width="144" height="112" rx="8" fill="#1f5c99" fill-opacity="0.1" stroke="#1f5c99" stroke-width="1.8"/><text x="244" y="94" text-anchor="middle" font-size="13" font-weight="700" fill="currentColor">3xx 転送</text><text x="244" y="112" text-anchor="middle" font-size="10.5" fill="currentColor" opacity="0.78">301 / 302 など
+別URLへ案内</text><rect x="326" y="42" width="144" height="112" rx="8" fill="#b45309" fill-opacity="0.1" stroke="#b45309" stroke-width="1.8"/><text x="398" y="94" text-anchor="middle" font-size="13" font-weight="700" fill="currentColor">4xx 依頼側エラー</text><text x="398" y="112" text-anchor="middle" font-size="10.5" fill="currentColor" opacity="0.78">403 / 404 など
+URL・権限を確認</text><rect x="480" y="42" width="144" height="112" rx="8" fill="#d94b3f" fill-opacity="0.1" stroke="#d94b3f" stroke-width="1.8"/><text x="552" y="94" text-anchor="middle" font-size="13" font-weight="700" fill="currentColor">5xx サーバー障害</text><text x="552" y="112" text-anchor="middle" font-size="10.5" fill="currentColor" opacity="0.78">500 / 503 など
+提供側で異常発生</text>
+  </svg>
+  <figcaption>図解: 3桁の数字の「先頭1桁」を見るだけで、成功・転送・依頼側ミス・サーバー側障害をすぐ切り分けられる</figcaption>
+</figure>
 </section>
 <section class="article-section" aria-labelledby="section-2"><h2 id="section-2">よく見るステータスコード</h2>
 <h3>200 OK</h3>
@@ -176,6 +192,8 @@
             <p class="eyebrow">FROM THE LAB</p>
             <h2 id="lab-example-title">KatakataLabでの実例</h2>
             <p>KatakataLabの公開確認では、まずページが200で返るかを見ます。ただし200でも古い本文が返る場合があるため、番号だけで終わらず、期待する内容やリンクまで確認します。</p>
+            
+            <div class="tool-link-banner"><strong>関連ツールで試す：<a href="../../ogp-simulator/">OGPシミュレーター →</a></strong>SNSクローラーが404や403を受け取るとOGP画像が出ません。公開URL確認と合わせて使えます。</div>
             <p class="related-heading">この実例につながるページ</p>
             <ul class="related-links"><li><a href="../../404.html">KatakataLabの404ページ</a></li>
 <li><a href="endpoint.html">関連用語：エンドポイント</a></li></ul>

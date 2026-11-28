@@ -21,10 +21,12 @@ test('TailSnap専用ポリシーが実装と公開要件を説明する', () => 
   assert.doesNotMatch(html, /googlesyndication|google-analytics|gtag\(/i);
 });
 
-test('公開ビルドとsitemapがTailSnap専用ポリシーを含む', () => {
+test('公開ビルドはTailSnap専用ポリシーを含み、検索sitemapからは除外する', () => {
   const buildScript = read('.github/scripts/build-public-root.cjs');
   const sitemap = read('sitemap.xml');
+  const html = read('privacy/tailsnap/index.html');
 
   assert.match(buildScript, /'privacy'/);
-  assert.match(sitemap, /https:\/\/katakatalab\.com\/privacy\/tailsnap\//);
+  assert.match(html, /<meta\s+name="robots"\s+content="noindex,\s*follow"/i);
+  assert.doesNotMatch(sitemap, /https:\/\/katakatalab\.com\/privacy\/tailsnap\//);
 });

@@ -78,6 +78,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // 3. 入力イベントの監視
     els.rootBase.addEventListener('input', () => {
       disarmReset();
+      updateClampPreview();
       (lastEdited === 'rem' ? syncFromRem : syncFromPx)();
       generateTable();
       updatePresetState();
@@ -163,6 +164,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // 初期表示生成
     generateTable();
     syncFromPx(); // デフォルト値を反映
+    initClampAndScale();
   }
 
   /* =========================================
@@ -531,6 +533,91 @@ document.addEventListener('DOMContentLoaded', () => {
       }
       area.remove();
     });
+  }
+
+  // --- Responsive clamp() & CSS typography scale helpers (null-guarded for unit harnesses) ---
+  const clampEls = {
+    minPx: document.getElementById('clampMinPx'),
+    maxPx: document.getElementById('clampMaxPx'),
+    minVw: document.getElementById('clampMinVw'),
+    maxVw: document.getElementById('clampMaxVw'),
+    output: document.getElementById('clampOutput'),
+    copyBtn: document.getElementById('copyClampBtn'),
+    status: document.getElementById('clampStatus'),
+    copyScaleBtn: document.getElementById('copyScaleBtn')
+  };
+  let currentClampCss = '';
+
+  function updateClampPreview() {
+    if (!clampEls.output || !clampEls.minPx || !clampEls.maxPx || !clampEls.minVw || !clampEls.maxVw) return;
+    const rootVal = getRoot();
+    const math = typeof window !== 'undefined' ? window.PxRemClampMath : null;
+    if (!math || !Number.isFinite(rootVal)) {
+      currentClampCss = '';
+      clampEls.output.textContent = pageLang === 'en' ? 'Enter a valid root size and positive numbers.' : '有効な基準サイズと正の数値を入力してください。';
+      return;
+    }
+    const result = math.buildClampExpression({
+      minPx: parseFloat(clampEls.minPx.value),
+      maxPx: parseFloat(clampEls.maxPx.value),
+      minVw: parseFloat(clampEls.minVw.value),
+      maxVw: parseFloat(clampEls.maxVw.value),
+      root: rootVal
+    });
+    if (!result) {
+      currentClampCss = '';
+      clampEls.output.textContent = pageLang === 'en' ? 'Ensure Max viewport width > Min viewport width and all values > 0.' : '最大画面幅 > 最小画面幅かつすべて正の数値を入力してください。';
+      return;
+    }
+    currentClampCss = `font-size: ${result.css};`;
+    clampEls.output.textContent = currentClampCss;
+  }
+
+  function initClampAndScale() {
+    [clampEls.minPx, clampEls.maxPx, clampEls.minVw, clampEls.maxVw].forEach(el => {
+      if (el && typeof el.addEventListener === 'function') {
+        el.addEventListener('input', updateClampPreview);
+      }
+    });
+    if (els.rootPresets && typeof els.rootPresets.forEach === 'function') {
+      els.rootPresets.forEach(btn => {
+        if (btn && typeof btn.addEventListener === 'function') {
+          btn.addEventListener('click', () => setTimeout(updateClampPreview, 0));
+        }
+      });
+    }
+    if (clampEls.copyBtn && typeof clampEls.copyBtn.addEventListener === 'function') {
+      clampEls.copyBtn.addEventListener('click', () => {
+        updateClampPreview();
+        if (!currentClampCss) return;
+        copyText(currentClampCss).then(() => {
+          if (clampEls.status) clampEls.status.textContent = pageLang === 'en' ? 'Copied clamp() CSS.' : 'clamp() のCSSをコピーしました。';
+        }).catch(() => {
+          if (clampEls.status) clampEls.status.textContent = pageLang === 'en' ? 'Copy failed. Select the expression above manually.' : 'コピーに失敗しました。上の式を手動でコピーしてください。';
+        });
+      });
+    }
+    if (clampEls.copyScaleBtn && typeof clampEls.copyScaleBtn.addEventListener === 'function') {
+      clampEls.copyScaleBtn.addEventListener('click', () => {
+        const math = typeof window !== 'undefined' ? window.PxRemClampMath : null;
+        const rootVal = getRoot();
+        const scaleCss = math ? math.buildCssScaleVariables(rootVal) : null;
+        if (!scaleCss) return;
+        copyText(scaleCss).then(() => {
+          showListMessage(pageLang === 'en' ? 'Copied typography scale variables (--text-xs to --text-3xl).' : '文字スケールCSS変数（--text-xs 〜 --text-3xl）をコピーしました。');
+        }).catch(() => {
+          const manualCopy = document.getElementById('manualCopyCode');
+          if (manualCopy) {
+            manualCopy.value = scaleCss;
+            manualCopy.hidden = false;
+            manualCopy.focus();
+            manualCopy.select();
+          }
+          showListMessage(pageLang === 'en' ? 'Copy failed. Select the text manually.' : 'コピーに失敗しました。手動で選択してコピーしてください。');
+        });
+      });
+    }
+    updateClampPreview();
   }
 
   init();

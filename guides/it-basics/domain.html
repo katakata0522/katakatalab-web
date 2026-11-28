@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ドメインとサブドメインとは？URLの構造と使い分けの判断基準 | かたかたの制作ノート</title>
+  <meta name="description" content="ドメイン・サブドメイン・サブディレクトリの違いを解説。ブログやツール群をどう分けると運用・Cookie・検索面で整理しやすいかを具体例で紹介します。">
+  <link rel="canonical" href="https://katakatalab.com/guides/it-basics/domain.html">
+  <link rel="icon" href="../../icon.svg" type="image/svg+xml">
+  <meta property="og:title" content="ドメインとサブドメインとは？URLの構造と使い分けの判断基準">
+  <meta property="og:description" content="ドメイン・サブドメイン・サブディレクトリの違いを解説。ブログやツール群をどう分けると運用・Cookie・検索面で整理しやすいかを具体例で紹介します。">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="https://katakatalab.com/guides/it-basics/domain.html">
+  <meta property="og:image" content="https://katakatalab.com/ogp.png">
+  <meta property="og:site_name" content="KatakataLab">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="ドメインとサブドメインとは？URLの構造と使い分けの判断基準">
+  <meta name="twitter:description" content="ドメイン・サブドメイン・サブディレクトリの違いを解説。ブログやツール群をどう分けると運用・Cookie・検索面で整理しやすいかを具体例で紹介します。">
+  <meta name="twitter:image" content="https://katakatalab.com/ogp.png">
+  <link rel="stylesheet" href="style.css">
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": "ドメインとサブドメインとは？URLの構造と使い分けの判断基準",
+  "description": "ドメイン・サブドメイン・サブディレクトリの違いを解説。ブログやツール群をどう分けると運用・Cookie・検索面で整理しやすいかを具体例で紹介します。",
+  "inLanguage": "ja",
+  "datePublished": "2026-11-28",
+  "dateModified": "2026-11-28",
+  "author": {
+    "@type": "Person",
+    "name": "かたかた",
+    "url": "https://katakatalab.com/who-is-katakata.html"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "KatakataLab",
+    "url": "https://katakatalab.com/",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "https://katakatalab.com/ogp.png"
+    }
+  },
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "https://katakatalab.com/guides/it-basics/domain.html"
+  },
+  "image": "https://katakatalab.com/ogp.png"
+}
+</script>
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position": 1,
+      "name": "KatakataLab",
+      "item": "https://katakatalab.com/"
+    },
+    {
+      "@type": "ListItem",
+      "position": 2,
+      "name": "かたかたの制作ノート",
+      "item": "https://katakatalab.com/guides/it-basics/"
+    },
+    {
+      "@type": "ListItem",
+      "position": 3,
+      "name": "ドメインとサブドメインとは",
+      "item": "https://katakatalab.com/guides/it-basics/domain.html"
+    }
+  ]
+}
+</script>
+  <script defer src="../../analytics.js"></script>
+</head>
+<body class="article-page">
+  <script>try{if(localStorage.getItem('theme')==='dark')document.body.classList.add('dark-mode');}catch(e){}</script>
+  <a class="skip-link" href="#main-content">本文へ移動</a>
+  <header class="site-header">
+    <div class="header-inner">
+      <a class="brand" href="../../"><span class="brand-mark">KL</span><span>KatakataLab</span></a>
+      <nav class="site-nav" aria-label="主要ナビゲーション">
+        <a href="./">制作ノート一覧</a>
+        <a href="../../#projects">ツール一覧</a>
+        <a href="../../guides/tool-selection-guide.html">用途から選ぶ</a>
+        <a href="../../who-is-katakata.html">運営者</a>
+        <button type="button" id="it-theme-toggle" aria-label="テーマ切り替え" style="background:none;border:1px solid rgba(255,255,255,0.28);color:#fff;border-radius:6px;padding:0.2rem 0.55rem;cursor:pointer;font-size:0.9rem;line-height:1;transition:background 0.2s;" title="ダークモード切り替え">🌙</button>
+      </nav>
+    </div>
+  </header>
+  <script>
+    (function(){
+      var btn = document.getElementById('it-theme-toggle');
+      if(!btn) return;
+      function sync(){ btn.textContent = document.body.classList.contains('dark-mode') ? '☀️' : '🌙'; }
+      sync();
+      btn.addEventListener('click', function(){
+        var dark = document.body.classList.toggle('dark-mode');
+        try{ localStorage.setItem('theme', dark ? 'dark' : 'light'); }catch(e){}
+        sync();
+      });
+    })();
+  </script>
+  <main id="main-content">
+    <nav class="breadcrumbs" aria-label="パンくずリスト">
+      <ol>
+        <li><a href="../../">KatakataLab</a></li>
+        <li><a href="./">かたかたの制作ノート</a></li>
+        <li aria-current="page">ドメインとサブドメインとは</li>
+      </ol>
+    </nav>
+    <article class="article-shell">
+      <header class="article-hero">
+        <div class="chapter-stamp" aria-hidden="true"><span>CHAPTER 05</span><strong>19</strong><small>DOMAIN</small></div>
+        <p class="eyebrow">CHAPTER 05｜Webの裏側と配信</p>
+        <h1>ドメインとサブドメインとは？URLの構造と使い分けの判断基準</h1>
+        <p class="article-lead">サイトが増えたり新しい企画を始めたりすると、「sub.example.com（サブドメイン）に分けるべきか、example.com/sub/（サブディレクトリ）に置くべきか」で必ず一度は悩みます。URLの構造から整理すると、迷いがすっと減ります。</p>
+        <div class="article-meta">
+          <span>執筆：<a href="../../who-is-katakata.html">かたかた</a></span>
+          <span>公開：<time datetime="2026-11-28">2026年11月28日</time></span>
+          <span>読了目安：約4分</span>
+        </div>
+        <div class="summary-strip" aria-label="ひとことで言うと">
+          <strong>ひとことで言うと</strong>
+          <p>ドメインはWeb上の固有の名前。サブドメインは別棟の建物を建てる分け方、サブディレクトリは同じ建物内の部屋分けに近いです。</p>
+        </div>
+      </header>
+      <div class="article-layout">
+        <aside class="toc" aria-label="目次">
+          <p class="toc-title">目次</p>
+          <ol>
+            <li><a href="#section-1">しくみの全体像</a></li>
+            <li><a href="#section-2">サブドメインとサブディレクトリはどう使い分ける？</a></li>
+            <li><a href="#section-3">ブラウザ上の「オリジン」の違いにも注意</a></li>
+            <li><a href="#section-talk">この言葉が会話に出てくるとき</a></li>
+            <li><a href="#section-misread">勘違いしやすい点</a></li>
+            <li><a href="#section-4">まとめ</a></li>
+            <li><a href="#lab-example-title">KatakataLabでの実例</a></li>
+            <li><a href="#faq-title">よくある質問</a></li>
+            <li><a href="#references-title">参考資料</a></li>
+          </ol>
+        </aside>
+        <div class="article-content">
+          <section class="article-section" aria-labelledby="section-1">
+            <h2 id="section-1">しくみの全体像</h2>
+            <p>URLの中で「katakatalab.com」にあたる部分が<strong>ドメイン（ルートドメイン）</strong>です。インターネット上に同じ名前は2つ存在できない、世界にひとつだけの看板です。</p>
+            <p>その前にドットで区切って付ける名前（例：<code>docs.example.com</code> や <code>shop.example.com</code>）が<strong>サブドメイン</strong>、後ろにスラッシュで続ける階層（例：<code>example.com/guides/</code>）が<strong>サブディレクトリ（パス）</strong>です。</p>
+            <figure class="diagram-figure">
+  <svg viewBox="0 0 640 195" width="100%" role="img" aria-label="URLのスキーム・サブドメイン・ルートドメイン・パスの構造図解">
+    <defs>
+      <marker id="arr" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+        <path d="M 0 1 L 10 5 L 0 9 z" fill="currentColor" opacity="0.7"/>
+      </marker>
+    </defs>
+    <rect x="20" y="28" width="600" height="44" rx="8" fill="#1f5c99" fill-opacity="0.08" stroke="#1f5c99" stroke-width="1.6"/><text x="320" y="55" text-anchor="middle" font-size="14" font-family="monospace" font-weight="700" fill="currentColor">https:// tools . katakatalab.com / qrcode /</text><rect x="22" y="96" width="134" height="72" rx="8" fill="#7c3aed" fill-opacity="0.1" stroke="#7c3aed" stroke-width="1.8"/><text x="89" y="128" text-anchor="middle" font-size="12.5" font-weight="700" fill="currentColor">サブドメイン</text><text x="89" y="146" text-anchor="middle" font-size="10.5" fill="currentColor" opacity="0.78">tools.
+別サービス・別サーバー向き</text><rect x="170" y="96" width="210" height="72" rx="8" fill="#1f5c99" fill-opacity="0.1" stroke="#1f5c99" stroke-width="1.8"/><text x="275" y="128" text-anchor="middle" font-size="12.5" font-weight="700" fill="currentColor">ルートドメイン</text><text x="275" y="146" text-anchor="middle" font-size="10.5" fill="currentColor" opacity="0.78">katakatalab.com
+サイト全体のブランド名</text><rect x="394" y="96" width="224" height="72" rx="8" fill="#0f766e" fill-opacity="0.1" stroke="#0f766e" stroke-width="1.8"/><text x="506" y="128" text-anchor="middle" font-size="12.5" font-weight="700" fill="currentColor">サブディレクトリ（パス）</text><text x="506" y="146" text-anchor="middle" font-size="10.5" fill="currentColor" opacity="0.78">/qrcode/
+同じサイト内の機能・カテゴリ</text>
+  </svg>
+  <figcaption>図解: サブドメインはドメイン名の前に付く別区画、サブディレクトリはスラッシュ以降に続く同じサイト内の部屋分け</figcaption>
+</figure>
+          </section>
+          <section class="article-section" aria-labelledby="section-2">
+            <h2 id="section-2">サブドメインとサブディレクトリはどう使い分ける？</h2>
+            <p>「どちらが絶対正解」ということはなく、運用体制とテーマの近さで選ぶのが現実的です。</p>
+            <ul><li><strong>サブディレクトリ向き：</strong>同じサイトの一部として統一感を持たせたいツール群、ガイド記事、ヘルプページなど。デザインやヘッダー・フッター、ローカル設定を共有しやすいのが利点です。</li><li><strong>サブドメイン向き：</strong>まったく別のテーマや別システム（たとえばショップ基盤・別ホスティング・実験環境）を独立させたいとき。DNSレコード単位で別のサーバーへ向けられるため、システム構成をきれいに分離できます。</li></ul>
+          </section>
+          <section class="article-section" aria-labelledby="section-3">
+            <h2 id="section-3">ブラウザ上の「オリジン」の違いにも注意</h2>
+            <p>開発をしていて意外と効いてくるのが、ブラウザの<strong>オリジン（Origin）</strong>という境界です。オリジンは「スキーム（https）＋ホスト名＋ポート番号」の組で決まります。</p>
+            <p>そのため、同じ親ドメインでも <code>katakatalab.com</code> と <code>sub.katakatalab.com</code> は別オリジン扱いになります。localStorage（ダークモード設定など）は自動で共有されず、API通信にもCORSの設定が必要になります。「同じアプリ群で設定を引き継ぎたい」ならサブディレクトリの方がシンプルです。</p>
+          </section>
+          <section class="article-section" aria-labelledby="section-talk">
+            <h2 id="section-talk">この言葉が会話に出てくるとき</h2>
+            <p><strong>「検証環境だけ stg.example.com のサブドメインに立てよう」</strong><br>本番とサーバー・設定を完全に分けつつ、同じ所有ドメイン配下で管理する定番のやり方です。</p>
+<p><strong>「wwwあり・なしはどっちかに正規化しておこう」</strong><br>両方開けるとURLが分散するため、どちらかへリダイレクト＋canonical統一するのが基本です。</p>
+          </section>
+          <section class="article-section" aria-labelledby="section-misread">
+            <h2 id="section-misread">勘違いしやすい点</h2>
+            <ul>
+              <li><strong>誤解1：サブドメインを作ると追加でドメイン代がかかる。</strong>通常は取得済みドメインのDNS設定だけでいくつでも追加できます（サーバー側の費用は別）。</li>
+<li><strong>誤解2：サブディレクトリなら何でも混ぜてよい。</strong>テーマがまったく無関係な企画を混ぜすぎると、読者にとって「何のサイトか」が分かりにくくなります。</li>
+            </ul>
+          </section>
+          <section class="article-section" aria-labelledby="section-4">
+            <h2 id="section-4">まとめ</h2>
+            <ul>
+              <li>ルートドメインはサイトの看板、サブドメインは別棟、サブディレクトリは同じ建物内の部屋。</li>
+<li>別システムや別テーマを切り離したいときはサブドメイン、統一体験でまとめるならサブディレクトリが扱いやすい。</li>
+<li>サブドメインを分けるとブラウザのオリジンも別になり、localStorageの共有などが切り離される。</li>
+            </ul>
+          </section>
+          <aside class="lab-example" aria-labelledby="lab-example-title">
+            <p class="eyebrow">FROM THE LAB</p>
+            <h2 id="lab-example-title">KatakataLabでの実例</h2>
+            <p>KatakataLabでは、実用ツール（/qrcode/ や /text-diff/）と解説ガイド（/guides/）をサブディレクトリ構成でまとめ、ダークモード設定やナビゲーションをシームレスに共有できるようにしています。</p>
+            <div class="tool-link-banner"><strong>関連ツールで試す：<a href="../../qrcode/">QR Maker Lab →</a></strong>長いサブディレクトリ付きURLでもQRコード化して実機アクセスをすぐテストできます。</div>
+            <p class="related-heading">この実例につながるページ</p>
+            <ul class="related-links">
+              <li><a href="dns.html">関連用語：DNS</a></li>
+<li><a href="cors.html">関連用語：CORS</a></li>
+<li><a href="cookie-storage.html">関連用語：CookieとlocalStorage</a></li>
+            </ul>
+          </aside>
+          <section class="article-section faq" aria-labelledby="faq-title">
+            <p class="eyebrow">QUICK CHECK</p>
+            <h2 id="faq-title">よくある質問</h2>
+            <h3>www.example.com の www もサブドメインですか？</h3>
+<p>はい、仕組み上は「www」という名前のサブドメインのひとつです。近年は www なしを正規URLにするサイトも増えています。</p>
+<h3>ドメインの末尾（.com や .jp）で機能に違いはありますか？</h3>
+<p>技術的なWeb表示機能に差はありませんが、.jpは日本国内の住所が必要など登録条件や更新料金が異なります。</p>
+          </section>
+          <section class="article-section references" aria-labelledby="references-title">
+            <h2 id="references-title">参考資料</h2>
+            <p>用語の定義や仕様を確認するため、公式文書・標準文書を参照しています。リンク先の内容は更新される場合があります。</p>
+            <ul>
+              <li><a href="https://developer.mozilla.org/ja/docs/Learn_web_development/Howto/Web_mechanics/What_is_a_domain_name" target="_blank" rel="noopener noreferrer">MDN Web Docs「ドメイン名とは何か」</a></li>
+<li><a href="https://developer.mozilla.org/ja/docs/Glossary/Origin" target="_blank" rel="noopener noreferrer">MDN Web Docs「オリジン」</a></li>
+            </ul>
+          </section>
+          <nav class="chapter-nav" aria-label="前後の記事">
+            <a class="chapter-link previous" href="https.html"><small>前の記事</small><span>← HTTPS</span></a>
+            <a class="chapter-link next" href="cache.html"><small>次の記事</small><span>CACHE →</span></a>
+          </nav>
+        </div>
+      </div>
+    </article>
+  </main>
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <p><strong>KatakataLab</strong><br><span>作って、つまずいて、分かったことを残す小さな研究室。</span></p>
+      <nav aria-label="フッターナビゲーション">
+        <a href="../../contact.html">お問い合わせ</a>
+        <a href="../../who-is-katakata.html">運営者情報</a>
+        <a href="../../privacy.html">プライバシーポリシー</a>
+        <a href="../../sitemap.html">サイトマップ</a>
+      </nav>
+    </div>
+    <p class="copyright">&copy; 2024-2026 KatakataLab</p>
+  </footer>
+</body>
+</html>

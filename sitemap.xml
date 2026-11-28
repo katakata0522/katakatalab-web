@@ -7,7 +7,7 @@
 <!-- 2026-08-04: 薄いページは noindex + 本sitemapから除外（AdSense審査向け品質集中） -->
 <url>
   <loc>https://katakatalab.com/</loc>
-  <lastmod>2026-11-17T00:00:00+00:00</lastmod>
+  <lastmod>2026-11-28T00:00:00+00:00</lastmod>
   <priority>1.00</priority>
 </url>
 <url>
@@ -17,7 +17,7 @@
 </url>
 <url>
   <loc>https://katakatalab.com/about-katakatalab.html</loc>
-  <lastmod>2026-08-04T00:00:00+00:00</lastmod>
+  <lastmod>2026-11-28T00:00:00+00:00</lastmod>
   <priority>0.90</priority>
 </url>
 <url>
@@ -27,42 +27,37 @@
 </url>
 <url>
   <loc>https://katakatalab.com/updates.html</loc>
-  <lastmod>2026-08-04T00:00:00+00:00</lastmod>
+  <lastmod>2026-11-28T00:00:00+00:00</lastmod>
   <priority>0.80</priority>
 </url>
 <url>
   <loc>https://katakatalab.com/guides/tool-selection-guide.html</loc>
-  <lastmod>2026-08-04T00:00:00+00:00</lastmod>
+  <lastmod>2026-11-28T00:00:00+00:00</lastmod>
   <priority>0.95</priority>
 </url>
 <url>
   <loc>https://katakatalab.com/guides/case-studies.html</loc>
-  <lastmod>2026-08-04T00:00:00+00:00</lastmod>
+  <lastmod>2026-11-28T00:00:00+00:00</lastmod>
   <priority>0.95</priority>
 </url>
 <url>
   <loc>https://katakatalab.com/guides/aspect-ratio-guide.html</loc>
-  <lastmod>2026-10-01T00:00:00+00:00</lastmod>
+  <lastmod>2026-11-28T00:00:00+00:00</lastmod>
   <priority>0.92</priority>
 </url>
 <url>
   <loc>https://katakatalab.com/guides/qr-guide.html</loc>
-  <lastmod>2026-10-01T00:00:00+00:00</lastmod>
-  <priority>0.92</priority>
-</url>
-<url>
-  <loc>https://katakatalab.com/guides/discount-guide.html</loc>
-  <lastmod>2026-10-01T00:00:00+00:00</lastmod>
+  <lastmod>2026-11-28T00:00:00+00:00</lastmod>
   <priority>0.92</priority>
 </url>
 <url>
   <loc>https://katakatalab.com/guides/px-rem-guide.html</loc>
-  <lastmod>2026-09-22T00:00:00+00:00</lastmod>
+  <lastmod>2026-11-28T00:00:00+00:00</lastmod>
   <priority>0.92</priority>
 </url>
 <url>
   <loc>https://katakatalab.com/guides/password-guide.html</loc>
-  <lastmod>2026-09-22T00:00:00+00:00</lastmod>
+  <lastmod>2026-11-28T00:00:00+00:00</lastmod>
   <priority>0.92</priority>
 </url>
 <url>
@@ -72,142 +67,212 @@
 </url>
 <url>
   <loc>https://katakatalab.com/guides/playpoint-guide.html</loc>
-  <lastmod>2026-08-04T00:00:00+00:00</lastmod>
+  <lastmod>2026-11-28T00:00:00+00:00</lastmod>
   <priority>0.88</priority>
 </url>
 <url>
   <loc>https://katakatalab.com/guides/it-basics/</loc>
-  <lastmod>2026-08-04T00:00:00+00:00</lastmod>
+  <lastmod>2026-11-28T00:00:00+00:00</lastmod>
   <priority>0.94</priority>
 </url>
 <url>
   <loc>https://katakatalab.com/guides/it-basics/server.html</loc>
-  <lastmod>2026-08-04T00:00:00+00:00</lastmod>
+  <lastmod>2026-11-28T00:00:00+00:00</lastmod>
   <priority>0.82</priority>
 </url>
 <url>
   <loc>https://katakatalab.com/guides/it-basics/cloud.html</loc>
-  <lastmod>2026-08-04T00:00:00+00:00</lastmod>
+  <lastmod>2026-11-28T00:00:00+00:00</lastmod>
   <priority>0.82</priority>
 </url>
 <url>
   <loc>https://katakatalab.com/guides/it-basics/database.html</loc>
-  <lastmod>2026-08-04T00:00:00+00:00</lastmod>
+  <lastmod>2026-11-28T00:00:00+00:00</lastmod>
   <priority>0.82</priority>
 </url>
 <url>
   <loc>https://katakatalab.com/guides/it-basics/git.html</loc>
-  <lastmod>2026-08-04T00:00:00+00:00</lastmod>
+  <lastmod>2026-11-28T00:00:00+00:00</lastmod>
   <priority>0.82</priority>
 </url>
 <url>
   <loc>https://katakatalab.com/guides/it-basics/commit.html</loc>
-  <lastmod>2026-08-04T00:00:00+00:00</lastmod>
+  <lastmod>2026-11-28T00:00:00+00:00</lastmod>
   <priority>0.82</priority>
 </url>
 <url>
   <loc>https://katakatalab.com/guides/it-basics/merge.html</loc>
-  <lastmod>2026-08-04T00:00:00+00:00</lastmod>
+  <lastmod>2026-11-28T00:00:00+00:00</lastmod>
   <priority>0.82</priority>
 </url>
 <url>
   <loc>https://katakatalab.com/guides/it-basics/pull-request.html</loc>
-  <lastmod>2026-08-04T00:00:00+00:00</lastmod>
+  <lastmod>2026-11-28T00:00:00+00:00</lastmod>
   <priority>0.82</priority>
 </url>
 <url>
   <loc>https://katakatalab.com/guides/it-basics/deploy.html</loc>
-  <lastmod>2026-08-04T00:00:00+00:00</lastmod>
+  <lastmod>2026-11-28T00:00:00+00:00</lastmod>
   <priority>0.86</priority>
 </url>
 <url>
   <loc>https://katakatalab.com/guides/it-basics/bug.html</loc>
-  <lastmod>2026-08-04T00:00:00+00:00</lastmod>
+  <lastmod>2026-11-28T00:00:00+00:00</lastmod>
   <priority>0.82</priority>
 </url>
 <url>
   <loc>https://katakatalab.com/guides/it-basics/debug.html</loc>
-  <lastmod>2026-08-04T00:00:00+00:00</lastmod>
+  <lastmod>2026-11-28T00:00:00+00:00</lastmod>
   <priority>0.82</priority>
 </url>
 <url>
   <loc>https://katakatalab.com/guides/it-basics/senzogaeri.html</loc>
-  <lastmod>2026-08-04T00:00:00+00:00</lastmod>
+  <lastmod>2026-11-28T00:00:00+00:00</lastmod>
   <priority>0.82</priority>
 </url>
 <url>
   <loc>https://katakatalab.com/guides/it-basics/api.html</loc>
-  <lastmod>2026-08-04T00:00:00+00:00</lastmod>
+  <lastmod>2026-11-28T00:00:00+00:00</lastmod>
   <priority>0.86</priority>
 </url>
 <url>
   <loc>https://katakatalab.com/guides/it-basics/endpoint.html</loc>
-  <lastmod>2026-08-04T00:00:00+00:00</lastmod>
+  <lastmod>2026-11-28T00:00:00+00:00</lastmod>
   <priority>0.82</priority>
 </url>
 <url>
   <loc>https://katakatalab.com/guides/it-basics/json.html</loc>
-  <lastmod>2026-08-04T00:00:00+00:00</lastmod>
+  <lastmod>2026-11-28T00:00:00+00:00</lastmod>
   <priority>0.82</priority>
 </url>
 <url>
   <loc>https://katakatalab.com/guides/it-basics/status-code.html</loc>
-  <lastmod>2026-08-04T00:00:00+00:00</lastmod>
+  <lastmod>2026-11-28T00:00:00+00:00</lastmod>
   <priority>0.82</priority>
 </url>
 <url>
   <loc>https://katakatalab.com/guides/it-basics/security.html</loc>
-  <lastmod>2026-08-04T00:00:00+00:00</lastmod>
+  <lastmod>2026-11-28T00:00:00+00:00</lastmod>
   <priority>0.86</priority>
 </url>
 <url>
+  <loc>https://katakatalab.com/guides/it-basics/dns.html</loc>
+  <lastmod>2026-11-28T00:00:00+00:00</lastmod>
+  <priority>0.84</priority>
+</url>
+<url>
+  <loc>https://katakatalab.com/guides/it-basics/https.html</loc>
+  <lastmod>2026-11-28T00:00:00+00:00</lastmod>
+  <priority>0.84</priority>
+</url>
+<url>
+  <loc>https://katakatalab.com/guides/it-basics/domain.html</loc>
+  <lastmod>2026-11-28T00:00:00+00:00</lastmod>
+  <priority>0.84</priority>
+</url>
+<url>
+  <loc>https://katakatalab.com/guides/it-basics/cache.html</loc>
+  <lastmod>2026-11-28T00:00:00+00:00</lastmod>
+  <priority>0.84</priority>
+</url>
+<url>
+  <loc>https://katakatalab.com/guides/it-basics/cookie-storage.html</loc>
+  <lastmod>2026-11-28T00:00:00+00:00</lastmod>
+  <priority>0.84</priority>
+</url>
+<url>
+  <loc>https://katakatalab.com/guides/it-basics/static-dynamic.html</loc>
+  <lastmod>2026-11-28T00:00:00+00:00</lastmod>
+  <priority>0.84</priority>
+</url>
+<url>
+  <loc>https://katakatalab.com/guides/it-basics/responsive.html</loc>
+  <lastmod>2026-11-28T00:00:00+00:00</lastmod>
+  <priority>0.84</priority>
+</url>
+<url>
+  <loc>https://katakatalab.com/guides/it-basics/build.html</loc>
+  <lastmod>2026-11-28T00:00:00+00:00</lastmod>
+  <priority>0.84</priority>
+</url>
+<url>
+  <loc>https://katakatalab.com/guides/it-basics/cdn.html</loc>
+  <lastmod>2026-11-28T00:00:00+00:00</lastmod>
+  <priority>0.84</priority>
+</url>
+<url>
+  <loc>https://katakatalab.com/guides/it-basics/ogp.html</loc>
+  <lastmod>2026-11-28T00:00:00+00:00</lastmod>
+  <priority>0.84</priority>
+</url>
+<url>
+  <loc>https://katakatalab.com/guides/it-basics/env-vars.html</loc>
+  <lastmod>2026-11-28T00:00:00+00:00</lastmod>
+  <priority>0.84</priority>
+</url>
+<url>
+  <loc>https://katakatalab.com/guides/it-basics/cors.html</loc>
+  <lastmod>2026-11-28T00:00:00+00:00</lastmod>
+  <priority>0.84</priority>
+</url>
+<url>
+  <loc>https://katakatalab.com/guides/it-basics/library-framework.html</loc>
+  <lastmod>2026-11-28T00:00:00+00:00</lastmod>
+  <priority>0.84</priority>
+</url>
+<url>
+  <loc>https://katakatalab.com/guides/it-basics/encoding-newline.html</loc>
+  <lastmod>2026-11-28T00:00:00+00:00</lastmod>
+  <priority>0.84</priority>
+</url>
+<url>
   <loc>https://katakatalab.com/password-generator/</loc>
-  <lastmod>2026-08-04T00:00:00+00:00</lastmod>
+  <lastmod>2026-11-28T00:00:00+00:00</lastmod>
   <priority>0.88</priority>
 </url>
 <url>
   <loc>https://katakatalab.com/qrcode/</loc>
-  <lastmod>2026-10-01T00:00:00+00:00</lastmod>
+  <lastmod>2026-11-28T00:00:00+00:00</lastmod>
   <priority>0.92</priority>
 </url>
 <url>
   <loc>https://katakatalab.com/aspect-ratio-calc/</loc>
-  <lastmod>2026-10-01T00:00:00+00:00</lastmod>
+  <lastmod>2026-11-28T00:00:00+00:00</lastmod>
   <priority>0.86</priority>
 </url>
 <url>
   <loc>https://katakatalab.com/screenshot-crop/</loc>
-  <lastmod>2026-10-01T00:00:00+00:00</lastmod>
+  <lastmod>2026-11-28T00:00:00+00:00</lastmod>
   <priority>0.88</priority>
 </url>
 <url>
   <loc>https://katakatalab.com/px-rem-converter/</loc>
-  <lastmod>2026-10-01T00:00:00+00:00</lastmod>
+  <lastmod>2026-11-28T00:00:00+00:00</lastmod>
   <priority>0.86</priority>
 </url>
 <url>
   <loc>https://katakatalab.com/doujin-calc/</loc>
-  <lastmod>2026-10-27T00:00:00+00:00</lastmod>
+  <lastmod>2026-11-28T00:00:00+00:00</lastmod>
   <priority>0.9</priority>
 </url>
 <url>
   <loc>https://katakatalab.com/text-diff/</loc>
-  <lastmod>2026-10-01T00:00:00+00:00</lastmod>
+  <lastmod>2026-11-28T00:00:00+00:00</lastmod>
   <priority>0.84</priority>
 </url>
 <url>
   <loc>https://katakatalab.com/ogp-simulator/</loc>
-  <lastmod>2026-10-01T00:00:00+00:00</lastmod>
+  <lastmod>2026-11-28T00:00:00+00:00</lastmod>
   <priority>0.84</priority>
 </url>
 <url>
   <loc>https://katakatalab.com/font-lab/</loc>
-  <lastmod>2026-10-01T00:00:00+00:00</lastmod>
+  <lastmod>2026-11-28T00:00:00+00:00</lastmod>
   <priority>0.86</priority>
 </url>
 <url>
   <loc>https://katakatalab.com/motion-atlas/</loc>
-  <lastmod>2026-11-13T00:00:00+00:00</lastmod>
+  <lastmod>2026-11-28T00:00:00+00:00</lastmod>
   <priority>0.86</priority>
 </url>
 <url>
@@ -217,19 +282,19 @@
 </url>
 <url>
   <loc>https://katakatalab.com/aspect-ratio-calc/en/</loc>
-  <lastmod>2026-10-01T00:00:00+00:00</lastmod>
+  <lastmod>2026-11-28T00:00:00+00:00</lastmod>
 </url>
 <url>
   <loc>https://katakatalab.com/font-lab/en/</loc>
-  <lastmod>2026-10-01T00:00:00+00:00</lastmod>
+  <lastmod>2026-11-28T00:00:00+00:00</lastmod>
 </url>
 <url>
   <loc>https://katakatalab.com/ogp-simulator/en/</loc>
-  <lastmod>2026-10-01T00:00:00+00:00</lastmod>
+  <lastmod>2026-11-28T00:00:00+00:00</lastmod>
 </url>
 <url>
   <loc>https://katakatalab.com/px-rem-converter/en/</loc>
-  <lastmod>2026-10-01T00:00:00+00:00</lastmod>
+  <lastmod>2026-11-28T00:00:00+00:00</lastmod>
 </url>
 <url>
   <loc>https://katakatalab.com/qrcode/en/</loc>
@@ -237,12 +302,7 @@
 </url>
 <url>
   <loc>https://katakatalab.com/text-diff/en/</loc>
-  <lastmod>2026-10-01T00:00:00+00:00</lastmod>
-</url>
-<url>
-  <loc>https://katakatalab.com/guides/sns-image-size-guide.html</loc>
-  <lastmod>2026-10-01T00:00:00+00:00</lastmod>
-  <priority>0.82</priority>
+  <lastmod>2026-11-28T00:00:00+00:00</lastmod>
 </url>
 <url>
   <loc>https://katakatalab.com/guides/en/social-image-sizes.html</loc>
@@ -263,68 +323,5 @@
   <loc>https://katakatalab.com/privacy.html</loc>
   <lastmod>2026-09-22T00:00:00+00:00</lastmod>
   <priority>0.70</priority>
-</url>
-<url>
-  <loc>https://katakatalab.com/privacy/tailsnap/</loc>
-  <lastmod>2026-10-01T00:00:00+00:00</lastmod>
-  <priority>0.65</priority>
-</url>
-<url>
-  <loc>https://katakatalab.com/privacy/uikata/</loc>
-  <lastmod>2026-10-15T00:00:00+00:00</lastmod>
-  <priority>0.65</priority>
-</url>
-<url>
-  <loc>https://katakatalab.com/privacy/kakusave/</loc>
-  <lastmod>2026-10-01T00:00:00+00:00</lastmod>
-  <priority>0.65</priority>
-</url>
-<url>
-  <loc>https://katakatalab.com/privacy/pomomemo/</loc>
-  <lastmod>2026-10-01T00:00:00+00:00</lastmod>
-  <priority>0.65</priority>
-</url>
-<url>
-  <loc>https://katakatalab.com/privacy/releaseready/</loc>
-  <lastmod>2026-10-10T00:00:00+00:00</lastmod>
-  <priority>0.65</priority>
-</url>
-<url>
-  <loc>https://katakatalab.com/privacy/writer-checker/</loc>
-  <lastmod>2026-10-13T00:00:00+00:00</lastmod>
-  <priority>0.65</priority>
-</url>
-<url>
-  <loc>https://katakatalab.com/privacy/maskweb/</loc>
-  <lastmod>2026-10-15T00:00:00+00:00</lastmod>
-  <priority>0.65</priority>
-</url>
-<url>
-  <loc>https://katakatalab.com/privacy/pricemaster/</loc>
-  <lastmod>2026-10-15T00:00:00+00:00</lastmod>
-  <priority>0.65</priority>
-</url>
-<url>
-  <loc>https://katakatalab.com/privacy/thumbpreview/</loc>
-  <lastmod>2026-10-15T00:00:00+00:00</lastmod>
-  <priority>0.65</priority>
-</url>
-<url>
-  <loc>https://katakatalab.com/privacy/adscript/</loc>
-  <lastmod>2026-10-15T00:00:00+00:00</lastmod>
-  <priority>0.65</priority>
-</url>
-<url>
-  <loc>https://katakatalab.com/qrcode/terms.html</loc>
-  <lastmod>2026-08-04T00:00:00+00:00</lastmod>
-  <priority>0.65</priority>
-</url>
-<url>
-  <loc>https://katakatalab.com/qrcode/privacy.html</loc>
-  <lastmod>2026-08-04T00:00:00+00:00</lastmod>
-  <priority>0.65</priority>
-</url>
-<url>
-  <loc>https://katakatalab.com/other-projects.html</loc>
 </url>
 </urlset>

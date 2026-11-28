@@ -19,6 +19,8 @@ document.addEventListener('DOMContentLoaded', () => {
     editBtn: document.getElementById('editBtn'),
     swapBtn: document.getElementById('swapBtn'),
     sampleBtn: document.getElementById('sampleBtn'),
+    sampleSelect: document.getElementById('sampleSelect'),
+    ignoreWhitespace: document.getElementById('ignoreWhitespace'),
     pasteBtns: document.querySelectorAll('.btn-paste'),
     
     inputSection: document.getElementById('inputSection'),
@@ -147,41 +149,51 @@ document.addEventListener('DOMContentLoaded', () => {
       els.sampleBtn.addEventListener('click', () => {
         cancelAllFileReads();
         if (isEnglish) {
-          els.textOriginal.value = [
-            'Release Checklist (v1.0)',
-            '- Plan price: $10 / month',
-            '- Privacy: Runs locally in your browser',
-            '- Support hours: 10:00-17:00 JST',
-            '- Export format: CSV'
-          ].join('\n');
-          els.textNew.value = [
-            'Release Checklist (v1.1)',
-            '- Plan price: $12 / month (tax included)',
-            '- Privacy: Runs locally in your browser',
-            '- Support hours: 10:00-18:00 JST',
-            '- Export format: CSV / JSON',
-            '- Dark mode: Supported across tools'
-          ].join('\n');
+          const preset = els.sampleSelect ? els.sampleSelect.value : 'pricing';
+          const enSamples = {
+            pricing: [
+              ['Release Checklist (v1.0)', '- Plan price: $10 / month', '- Privacy: Runs locally in your browser', '- Support hours: 10:00-17:00 JST', '- Export format: CSV'].join('\n'),
+              ['Release Checklist (v1.1)', '- Plan price: $12 / month (tax included)', '- Privacy: Runs locally in your browser', '- Support hours: 10:00-18:00 JST', '- Export format: CSV / JSON', '- Dark mode: Supported across tools'].join('\n')
+            ],
+            email: [
+              ['Subject: Schedule confirmation', 'Hi Sato,', 'Could we review the draft at 14:00 on Tuesday?', 'Best regards,', 'Katakata'].join('\n'),
+              ['Subject: Schedule confirmation (updated)', 'Hi Sato,', 'Could we review the final draft at 15:00 on Wednesday?', 'Please let me know if another slot works better.', 'Best regards,', 'Katakata'].join('\n')
+            ],
+            json: [
+              ['{', '  "theme": "light",', '  "timeoutMs": 3000,', '  "retry": false', '}'].join('\n'),
+              ['{', '  "theme": "system",', '  "timeoutMs": 5000,', '  "retry": true,', '  "maxRetries": 2', '}'].join('\n')
+            ]
+          };
+          const selected = enSamples[preset] || enSamples.pricing;
+          els.textOriginal.value = selected[0];
+          els.textNew.value = selected[1];
         } else {
-          els.textOriginal.value = [
-            '【お知らせ】料金プラン改定のご案内',
-            '基本料金: 1,000円（税別）',
-            'データ処理: ブラウザ内で完結（外部送信なし）',
-            '受付時間: 平日 10:00〜17:00',
-            '対応形式: PNG / JPEG'
-          ].join('\n');
-          els.textNew.value = [
-            '【お知らせ】料金プラン改定のご案内（2026年版）',
-            '基本料金: 1,200円（税込）',
-            'データ処理: ブラウザ内で完結（外部送信なし）',
-            '受付時間: 平日 10:00〜18:00',
-            '対応形式: PNG / JPEG / WebP',
-            '備考: ダークモード切り替えにも対応しました。'
-          ].join('\n');
+          const preset = els.sampleSelect ? els.sampleSelect.value : 'pricing';
+          const jaSamples = {
+            pricing: [
+              ['【お知らせ】料金プラン改定のご案内', '基本料金: 1,000円（税別）', 'データ処理: ブラウザ内で完結（外部送信なし）', '受付時間: 平日 10:00〜17:00', '対応形式: PNG / JPEG'].join('\n'),
+              ['【お知らせ】料金プラン改定のご案内（2026年版）', '基本料金: 1,200円（税込）', 'データ処理: ブラウザ内で完結（外部送信なし）', '受付時間: 平日 10:00〜18:00', '対応形式: PNG / JPEG / WebP', '備考: ダークモード切り替えにも対応しました。'].join('\n')
+            ],
+            email: [
+              ['件名: お打ち合わせ日程のご確認', '佐藤様', 'お世話になっております。', '火曜日の14:00より構成案のすり合わせをお願いできますでしょうか。', 'よろしくお願いいたします。'].join('\n'),
+              ['件名: お打ち合わせ日程のご確認（時間変更）', '佐藤様', 'いつもお世話になっております。', '水曜日の15:00より最終構成案のすり合わせをお願いできますでしょうか。', 'ご都合が合わない場合は別候補をお知らせください。', 'よろしくお願いいたします。'].join('\n')
+            ],
+            json: [
+              ['{', '  "theme": "light",', '  "timeoutMs": 3000,', '  "retry": false', '}'].join('\n'),
+              ['{', '  "theme": "system",', '  "timeoutMs": 5000,', '  "retry": true,', '  "maxRetries": 2', '}'].join('\n')
+            ]
+          };
+          const selected = jaSamples[preset] || jaSamples.pricing;
+          els.textOriginal.value = selected[0];
+          els.textNew.value = selected[1];
         }
         updateCharCounts();
         runCompare();
       });
+    }
+
+    if (els.ignoreWhitespace && typeof els.ignoreWhitespace.addEventListener === 'function') {
+      els.ignoreWhitespace.addEventListener('change', invalidateComparison);
     }
 
     // View切り替え（ジャンプターゲットのインテリジェント継承）
@@ -427,7 +439,16 @@ document.addEventListener('DOMContentLoaded', () => {
       return;
     }
 
-    if (original === newTxt) {
+    const ignoreWs = Boolean(els.ignoreWhitespace && els.ignoreWhitespace.checked);
+    const normalizeText = (value) => {
+      if (!ignoreWs) return value;
+      if (typeof Diff.normalizeForCompare === 'function') return Diff.normalizeForCompare(value, true);
+      return String(value).replace(/\r\n/g, '\n').replace(/\r/g, '\n').split('\n').map(line => line.replace(/[ \t]+$/g, '').replace(/[ \t]+/g, ' ')).join('\n');
+    };
+    const compOriginal = normalizeText(original);
+    const compNew = normalizeText(newTxt);
+
+    if (compOriginal === compNew) {
       els.statusMessage.style.display = 'inline-flex';
     } else {
       els.statusMessage.style.display = 'none';
@@ -436,18 +457,18 @@ document.addEventListener('DOMContentLoaded', () => {
     try {
       let diff;
       if (mode === 'lines') {
-        diff = Diff.diffLines(original, newTxt);
+        diff = Diff.diffLines(compOriginal, compNew);
       } else {
         // jsdiff 5 diffChars splits UTF-16 surrogate pairs. Compare code points,
         // without Unicode normalization or changes to the user's original text.
-        diff = Diff.diffArrays(Array.from(original), Array.from(newTxt))
+        diff = Diff.diffArrays(Array.from(compOriginal), Array.from(compNew))
           .map(part => ({ ...part, value: part.value.join('') }));
       }
 
       renderSplitView(diff, mode);
       renderUnifiedView(diff);
       // Copy is derived from raw line differences, never reconstructed from HTML.
-      unifiedLinesCache = rawDiffLines(Diff.diffLines(original, newTxt));
+      unifiedLinesCache = rawDiffLines(Diff.diffLines(compOriginal, compNew));
       lastComparison = { original, newText: newTxt, mode };
       comparisonDirty = false;
       els.btnCopyDiff.disabled = false;
@@ -458,7 +479,7 @@ document.addEventListener('DOMContentLoaded', () => {
       els.resultSection.classList.toggle('code-mode', mode === 'lines');
       toggleSection('result');
       
-      calculateDiffStats(diff);
+      calculateDiffStats(diff, compOriginal === compNew);
 
       setTimeout(() => {
         if (generation !== comparisonGeneration || comparisonDirty) return;
@@ -675,7 +696,7 @@ document.addEventListener('DOMContentLoaded', () => {
     return result;
   }
 
-  function calculateDiffStats(diff) {
+  function calculateDiffStats(diff, isIdentical = false) {
     let addCount = 0;
     let delCount = 0;
 
@@ -684,7 +705,7 @@ document.addEventListener('DOMContentLoaded', () => {
       if (part.removed) delCount++;
     });
 
-    if ((addCount > 0 || delCount > 0) && els.textOriginal.value !== els.textNew.value) {
+    if ((addCount > 0 || delCount > 0) && !isIdentical) {
       els.diffNav.style.display = 'flex';
       els.diffStat.innerHTML = `
         <span class="del-count">${isEnglish ? 'Removed: ' : '削除: '}${delCount}${isEnglish ? ' regions' : '箇所'}</span>

@@ -3,6 +3,7 @@ const AspectRatioLogic = (() => {
 
   const STANDARD_RATIOS = [
     { ratio: 16 / 9, display: "16:9", label: "YouTube・標準ワイド動画", labelEn: "YouTube and standard widescreen video" },
+    { ratio: 1200 / 630, display: "1.91:1 (OGP)", label: "SNSシェア画像・OGPカード推奨比", labelEn: "recommended social share (OGP) card image ratio" },
     { ratio: 9 / 16, display: "9:16", label: "スマホ縦長動画・ショート・リール", labelEn: "vertical mobile video, Shorts, and Reels" },
     { ratio: 4 / 3, display: "4:3", label: "スタンダード・旧テレビ・iPad画面", labelEn: "standard video, older TV, and iPad displays" },
     { ratio: 3 / 4, display: "3:4", label: "縦型スタンダード", labelEn: "vertical standard layouts" },
@@ -409,6 +410,24 @@ if (typeof document !== 'undefined') {
       if (els.snippetRatioVal) els.snippetRatioVal.textContent = `${displayW} / ${displayH}`;
       if (els.snippetDimsVal) els.snippetDimsVal.textContent = `${width} × ${height}`;
 
+      const compareRect = document.getElementById('compareCurrentRect');
+      const compareLabel = document.getElementById('compareCurrentLabel');
+      if (compareRect && ratioW > 0 && ratioH > 0) {
+        compareRect.style.aspectRatio = `${ratioW} / ${ratioH}`;
+        if (targetRatio >= 1) {
+          compareRect.style.width = '52px';
+          compareRect.style.height = 'auto';
+          compareRect.style.maxHeight = '42px';
+        } else {
+          compareRect.style.width = 'auto';
+          compareRect.style.height = '42px';
+          compareRect.style.maxWidth = '52px';
+        }
+      }
+      if (compareLabel) {
+        compareLabel.textContent = `${t('現在', 'Now')} ${displayW}:${displayH}`;
+      }
+
       checkAdvisor(ratioW, ratioH);
     }
 
@@ -463,6 +482,29 @@ if (typeof document !== 'undefined') {
           setRatio(parseFloat(button.dataset.w), parseFloat(button.dataset.h));
           button.style.transform = 'scale(0.95)';
           setTimeout(() => button.style.transform = '', 150);
+        });
+      });
+
+      const sizePresetBtns = document.querySelectorAll('.btn-size-preset');
+      sizePresetBtns.forEach((button) => {
+        button.addEventListener('click', () => {
+          const w = parseFloat(button.dataset.w);
+          const h = parseFloat(button.dataset.h);
+          const widthPx = parseInt(button.dataset.width, 10);
+          const heightPx = parseInt(button.dataset.height, 10);
+          if (!isValidInput(w) || !isValidInput(h) || !isValidInput(widthPx) || !isValidInput(heightPx)) return;
+          setRatioLock(true);
+          els.ratioW.value = w;
+          els.ratioH.value = h;
+          els.width.value = widthPx;
+          els.height.value = heightPx;
+          [els.ratioW, els.ratioH, els.width, els.height].forEach((el) => {
+            if (!el) return;
+            el.classList.remove('input-error');
+            el.setAttribute('aria-invalid', 'false');
+          });
+          setStatus('');
+          updatePreview();
         });
       });
 

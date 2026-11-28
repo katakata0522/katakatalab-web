@@ -24,7 +24,7 @@
   "headline": "【IT用語】「先祖返り」とは？直した問題が戻ってくる現象",
   "description": "IT現場でいう「先祖返り」を、古いファイルの上書き、マージ、公開元、キャッシュ、別変更による再発と、その予防策から解説します。",
   "datePublished": "2026-07-13",
-  "dateModified": "2026-08-04",
+  "dateModified": "2026-11-28",
   "mainEntityOfPage": "https://katakatalab.com/guides/it-basics/senzogaeri.html",
   "inLanguage": "ja",
   "author": {
@@ -90,7 +90,7 @@
         <h1>【IT用語】「先祖返り」とは？直した問題が戻ってくる現象</h1>
         <p class="article-lead">IT現場でいう「先祖返り」を、古いファイルの上書き、マージ、公開元、キャッシュ、別変更による再発と、その予防策から解説します。</p>
         <div class="article-meta" aria-label="記事情報">
-          <span>作成者：かたかた</span><span>公開日：2026年7月13日</span><span>更新日：2026年8月4日</span>
+          <span>作成者：かたかた</span><span>公開日：2026年7月13日</span><span>更新日：2026年11月28日</span>
         </div>
       </header>
       <div class="article-layout">
@@ -108,6 +108,18 @@
 <section class="article-section" aria-labelledby="section-1"><h2 id="section-1">結論：「先祖返り」＝「修正した内容が失われ、以前の問題が戻ること」</h2>
 <p>先祖返りは、厳密に1つの操作を指す正式な技術用語ではありません。</p>
 <p>現場では、古いファイルで上書きした場合だけでなく、変更の取り込み漏れや不完全なデプロイなどによって、以前の不具合が戻ったように見える状態を広く表すことがあります。「デグレード」や「リグレッション（回帰）」と呼ばれることもあります。</p>
+
+<figure class="diagram-figure">
+  <svg viewBox="0 0 640 195" width="100%" role="img" aria-label="古いファイルの上書きで修正が消える「先祖返り」の図解">
+    <defs>
+      <marker id="arr" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+        <path d="M 0 1 L 10 5 L 0 9 z" fill="currentColor" opacity="0.7"/>
+      </marker>
+    </defs>
+    <rect x="20" y="32" width="175" height="56" rx="8" fill="#0f766e" fill-opacity="0.1" stroke="#0f766e" stroke-width="1.8"/><text x="107.5" y="56" text-anchor="middle" font-size="13" font-weight="700" fill="currentColor">本番 v1.2（最新）</text><text x="107.5" y="74" text-anchor="middle" font-size="10.5" fill="currentColor" opacity="0.78">バグ修正A・文言修正Bあり</text><rect x="20" y="108" width="175" height="56" rx="8" fill="#b45309" fill-opacity="0.1" stroke="#b45309" stroke-width="1.8"/><text x="107.5" y="132" text-anchor="middle" font-size="13" font-weight="700" fill="currentColor">古い手元コピー v1.0</text><text x="107.5" y="150" text-anchor="middle" font-size="10.5" fill="currentColor" opacity="0.78">修正A・Bが入っていない</text><line x1="198" y1="136" x2="310" y2="104" stroke="#d94b3f" stroke-width="2" marker-end="url(#arr)"/><text x="278" y="152" text-anchor="middle" font-size="10.5" font-weight="700" fill="#d94b3f">最新を取らずに編集して上書き</text><rect x="316" y="58" width="300" height="82" rx="8" fill="#d94b3f" fill-opacity="0.1" stroke="#d94b3f" stroke-width="1.8"/><text x="466" y="95" text-anchor="middle" font-size="13" font-weight="700" fill="currentColor">上書き後の本番（先祖返り）</text><text x="466" y="113" text-anchor="middle" font-size="10.5" fill="currentColor" opacity="0.78">修正A・Bが消えて昔のバグが復活！</text>
+  </svg>
+  <figcaption>図解: 最新の本番ファイルを取り込まずに古い手元版を上書きすると、過去の修正が丸ごと消えてしまう</figcaption>
+</figure>
 </section>
 <section class="article-section" aria-labelledby="section-2"><h2 id="section-2">「古い図面」で例えると？</h2>
 <p>家の雨漏りを直したあと、別の業者が修理前の図面だけを見て工事をしたとします。</p>
@@ -164,6 +176,8 @@
             <p class="eyebrow">FROM THE LAB</p>
             <h2 id="lab-example-title">KatakataLabでの実例</h2>
             <p>Webサイトは、サーバーが新しくてもブラウザやService Workerのキャッシュに古い内容が残る場合があります。KatakataLabでは公開後に実際の本文を確認し、必要に応じてキャッシュの版も更新します。</p>
+            
+            <div class="tool-link-banner"><strong>関連ツールで試す：<a href="../../text-diff/">テキスト差分チェック →</a></strong>アップロード前に本番ファイルと手元ファイルを比較すれば、先祖返りを未然に防げます。</div>
             <p class="related-heading">この実例につながるページ</p>
             <ul class="related-links"><li><a href="git.html">関連用語：Git</a></li>
 <li><a href="../case-studies.html">ツールの入力・出力実例</a></li></ul>

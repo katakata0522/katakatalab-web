@@ -116,6 +116,17 @@
         .tag-content { background: linear-gradient(135deg, #00997a, #00b894); color: white; padding: 2px 8px; border-radius: 12px; font-size: 0.75rem; font-weight: bold; }
         .tag-fix { background: linear-gradient(135deg, #e17055, #ff7675); color: white; padding: 2px 8px; border-radius: 12px; font-size: 0.75rem; font-weight: bold; }
 
+        .update-period-heading {
+            font-size: 1.35rem;
+            font-weight: 800;
+            margin: 2.2rem 0 1rem -2rem;
+            padding: 0.45rem 0.9rem;
+            border-left: 4px solid var(--c-primary, #ff7675);
+            background: rgba(255, 118, 117, 0.08);
+            border-radius: 0 8px 8px 0;
+            color: var(--c-text, #2d3436);
+        }
+
         .update-title {
             font-size: 1.2rem;
             font-weight: 700;
@@ -207,6 +218,27 @@
 
         <div class="update-timeline">
 
+            <h2 class="update-period-heading">2026年後半のアップデート</h2>
+
+            <!-- 2026/11/28 主力ツール機能進化・IT用語30語拡張・ガイド統合 -->
+            <div class="update-entry">
+                <div class="update-header">
+                    <span class="update-date">2026.11.28</span>
+                    <span class="update-version">v2.9.0</span>
+                    <span class="tag-system">Feature</span>
+                    <span class="tag-content">Content</span>
+                </div>
+                <h3 class="update-title">主力ツールの機能強化・IT用語ノート30語化・ガイド統合</h3>
+                <div class="update-body">
+                    日々使う主力ツールの機能追加と、入門ガイド・図解の大幅な拡充を行いました。
+                    <ul>
+                        <li><strong>IT用語ノートを16語→30語へ拡張:</strong> DNS・HTTPS・キャッシュ・レスポンシブ・OGP・CORS・環境変数など14記事を新設し、全30記事にオリジナルSVG図解と関連ツール導線を追加しました。</li>
+                        <li><strong>主力ツールの機能追加:</strong> アスペクト比計算機の用途プリセット＆比較プレビュー、テキスト差分の空白/改行コード無視＆サンプル切替、OGPシミュレーターの中央正方形セーフゾーン線、px/rem変換の<code>clamp()</code>計算＆CSS変数スケール一括コピー、Font-Labのおすすめフォントペアリング、パスワード生成のパスフレーズモードを実装しました。</li>
+                        <li><strong>ガイド統合とナビ整理:</strong> QR・サイズ・パスワード関連の重複ガイドの導線をメインガイドへ統合し、トップページフッターの不要リンクを整理しました。</li>
+                    </ul>
+                </div>
+            </div>
+
             <!-- 2026/08/04 品質集中（薄いページ整理とガイド増厚） -->
             <div class="update-entry">
                 <div class="update-header">
@@ -295,6 +327,8 @@
                     </ul>
                 </div>
             </div>
+
+            <h2 class="update-period-heading">2026年前半のアップデート</h2>
 
             <!-- 2026/05/28 大型更新 -->
             <div class="update-entry">
@@ -525,6 +559,8 @@
                     必要な情報へたどり着きやすい構成にしました。
                 </div>
             </div>
+
+            <h2 class="update-period-heading">2025年のアップデート</h2>
 
             <!-- 2025/12/31 -->
             <div class="update-entry">

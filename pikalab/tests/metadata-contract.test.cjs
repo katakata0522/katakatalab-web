@@ -134,9 +134,10 @@ test('サイトマップはindex対象だけを正規URLで持ち、noindexペ�
 
     assert.ok(allRootUrls.includes('https://katakatalab.com/'), 'ルートサイトマップのトップURLを維持する');
     assert.ok(allRootUrls.some((url) => !url.startsWith(publicBaseUrl)), 'PikaLab以外のURLを維持する');
-    assert.deepEqual(rootUrls, [], 'PikaLab URLは専用サイトマップだけで管理する');
-    assert.deepEqual(localUrls, expectedUrls, 'PikaLabサイトマップのindex対象URL');
-    assert.deepEqual(publicUrls, expectedUrls, 'Vite publicサイトマップのindex対象URL');
+    assert.deepEqual(rootUrls, [], 'PikaLab URLはルートサイトマップへ載せない');
+    assert.deepEqual(expectedUrls, [], 'PikaLab配下は全ページnoindexとして検索対象外にする');
+    assert.deepEqual(localUrls, expectedUrls, 'PikaLabサイトマップはnoindex方針に合わせて空を維持する');
+    assert.deepEqual(publicUrls, expectedUrls, 'Vite publicサイトマップも空を維持する');
 
     for (const url of [...localUrls, ...publicUrls]) {
         assert.doesNotMatch(url, /\/index\.html$/, `${url}: canonicalと異なるURL`);
@@ -147,12 +148,7 @@ test('サイトマップはindex対象だけを正規URLで持ち、noindexペ�
     }
 });
 
-function findSitemapBlock(sitemap, url) {
-    return (sitemap.match(/<url>[\s\S]*?<\/url>/g) || [])
-        .find((block) => block.includes(`<loc>${url}</loc>`));
-}
-
-test('記事のdateModifiedをPikaLabサイトマップへ反映する', () => {
+test('記事ページはnoindexを維持しつつ構造化データdateModifiedを保持し、サイトマップには載せない', () => {
     const sitemapFiles = [path.join(root, 'sitemap.xml'), path.join(root, 'public', 'sitemap.xml')];
     const articleDir = path.join(root, 'articles');
     for (const name of fs.readdirSync(articleDir).filter((file) => file.endsWith('.html') && file !== 'index.html')) {
@@ -160,11 +156,11 @@ test('記事のdateModifiedをPikaLabサイトマップへ反映する', () => {
         const html = fs.readFileSync(filePath, 'utf8');
         const data = articleJsonLd(html, name);
         const canonical = expectedCanonical(filePath);
+        assert.match(html, /<meta[^>]+name="robots"[^>]+content="[^"]*noindex/i, `${name}: noindexが必要`);
+        assert.match(data.dateModified || '', /^\d{4}-\d{2}-\d{2}$/, `${name}: dateModified形式`);
         for (const sitemapFile of sitemapFiles) {
             const sitemap = fs.readFileSync(sitemapFile, 'utf8');
-            const block = findSitemapBlock(sitemap, canonical);
-            assert.ok(block, `${path.basename(sitemapFile)}: ${name}のURL`);
-            assert.match(block, new RegExp(`<lastmod>${data.dateModified}</lastmod>`), `${path.basename(sitemapFile)}: ${name}のlastmod`);
+            assert.equal(sitemap.includes(`<loc>${canonical}</loc>`), false, `${path.basename(sitemapFile)}: ${name}を除外`);
         }
     }
 });

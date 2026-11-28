@@ -190,6 +190,38 @@ document.addEventListener('DOMContentLoaded', () => {
     // Cached unhighlighted raw text code strings for absolute copy fidelity
     let rawCSSCode = '';
     let rawHTMLCode = '';
+    let activeHeadingFont = null;
+
+    const PAIRING_PRESETS = {
+        blog: {
+            heading: "'Zen Maru Gothic', sans-serif",
+            body: "'Noto Sans JP', sans-serif",
+            size: '16', weight: '400', spacing: '0.03', height: '1.8',
+            labelJa: '見出し: Zen Maru Gothic / 本文: Noto Sans JP',
+            labelEn: 'Heading: Zen Maru Gothic / Body: Noto Sans JP'
+        },
+        portfolio: {
+            heading: "'Kiwi Maru', serif",
+            body: "'Noto Sans JP', sans-serif",
+            size: '16', weight: '400', spacing: '0.05', height: '1.9',
+            labelJa: '見出し: Kiwi Maru / 本文: Noto Sans JP',
+            labelEn: 'Heading: Kiwi Maru / Body: Noto Sans JP'
+        },
+        event: {
+            heading: "'Dela Gothic One', sans-serif",
+            body: "'M PLUS Rounded 1c', sans-serif",
+            size: '16', weight: '500', spacing: '0.04', height: '1.7',
+            labelJa: '見出し: Dela Gothic One / 本文: M PLUS Rounded 1c',
+            labelEn: 'Heading: Dela Gothic One / Body: M PLUS Rounded 1c'
+        },
+        docs: {
+            heading: "'Noto Sans JP', sans-serif",
+            body: "'Noto Sans JP', sans-serif",
+            size: '15', weight: '400', spacing: '0.02', height: '1.8',
+            labelJa: '見出し: Noto Sans JP (700) / 本文: Noto Sans JP (400)',
+            labelEn: 'Heading: Noto Sans JP (700) / Body: Noto Sans JP (400)'
+        }
+    };
 
     // Available weights per font (to dynamically filter select option)
     const updateWeightOptions = (selectedFont) => {
@@ -211,8 +243,8 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
-    const generateCSSString = (font, size, weight, spacing, height) => {
-        return `.font-lab-custom {
+    const generateCSSString = (font, size, weight, spacing, height, headingFont) => {
+        const bodyRule = `.font-lab-custom {
     font-family: ${font};
     font-size: ${size}px;
     font-weight: ${weight};
@@ -220,6 +252,16 @@ document.addEventListener('DOMContentLoaded', () => {
     line-height: ${height};
     font-feature-settings: "palt", "chws";
 }`;
+        if (!headingFont || headingFont === font) return bodyRule;
+        return `.font-lab-heading {
+    font-family: ${headingFont};
+    font-size: ${Math.round(size * 1.5)}px;
+    font-weight: 700;
+    letter-spacing: ${spacing}em;
+    line-height: 1.4;
+}
+
+${bodyRule}`;
     };
 
     const generateLicenseComment = (font) => {
@@ -233,8 +275,17 @@ document.addEventListener('DOMContentLoaded', () => {
      ${note.page} -->`;
     };
 
-    const generateHTMLString = (font) => {
+    const generateHTMLString = (font, headingFont) => {
         const licenseComment = generateLicenseComment(font);
+        if (headingFont && headingFont !== font) {
+            const qHeading = fontUrlMap[headingFont] || 'Zen+Maru+Gothic:wght@400;500;700;900';
+            const qBody = fontUrlMap[font] || 'Noto+Sans+JP:wght@400;500;700;900';
+            return `${licenseComment}
+<!-- Paired Heading & Body Google Fonts -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=${qHeading}&family=${qBody}&display=swap" rel="stylesheet">`;
+        }
         if (font.includes('Zen Maru Gothic')) {
             return `${licenseComment}
 <!-- Zen Maru Gothic is preloaded synchronously -->
@@ -342,22 +393,24 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Apply styles to main preview paper
         previewContainer.style.fontFamily = font;
+        previewTitle.style.fontFamily = activeHeadingFont || font;
         previewTitle.style.fontSize = `${Math.round(size * 1.5)}px`;
-        previewTitle.style.fontWeight = weight === '900' ? '900' : (weight === '700' ? '700' : '500');
+        previewTitle.style.fontWeight = activeHeadingFont ? '700' : (weight === '900' ? '900' : (weight === '700' ? '700' : '500'));
         previewTitle.style.letterSpacing = `${spacing}em`;
         previewTitle.style.lineHeight = height;
 
+        previewPara.style.fontFamily = font;
         previewPara.style.fontSize = `${size}px`;
         previewPara.style.fontWeight = weight;
         previewPara.style.letterSpacing = `${spacing}em`;
         previewPara.style.lineHeight = height;
 
-        previewBtn.style.fontFamily = font;
+        previewBtn.style.fontFamily = activeHeadingFont || font;
         previewBtn.style.fontWeight = weight === '900' ? '900' : '700';
 
         // Cache raw code strings
-        rawCSSCode = generateCSSString(font, size, weight, spacing, height);
-        rawHTMLCode = generateHTMLString(font);
+        rawCSSCode = generateCSSString(font, size, weight, spacing, height, activeHeadingFont);
+        rawHTMLCode = generateHTMLString(font, activeHeadingFont);
 
         // Inject colorized rich highlight code
         outputCss.innerHTML = highlightCSS(rawCSSCode);
@@ -387,7 +440,41 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // --- 7. 見本市は書体別サンプル文を残し、フォントだけ遅延読み込みする ---
+    const pairingBtns = document.querySelectorAll('.pairing-preset-btn');
+    const pairingStatus = document.getElementById('pairing-status');
+    const clearPairingUI = () => {
+        activeHeadingFont = null;
+        pairingBtns.forEach(b => b.classList.remove('active'));
+        if (pairingStatus) pairingStatus.textContent = '';
+    };
+
+    pairingBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+            const key = btn.getAttribute('data-pairing');
+            if (key === 'single' || !PAIRING_PRESETS[key]) {
+                clearPairingUI();
+                applyTypography();
+                return;
+            }
+            const p = PAIRING_PRESETS[key];
+            activeHeadingFont = p.heading;
+            fontSelect.value = p.body;
+            updateWeightOptions(p.body);
+            weightSelect.value = p.weight;
+            sizeSlider.value = p.size;
+            spacingSlider.value = p.spacing;
+            heightSlider.value = p.height;
+            pairingBtns.forEach(b => b.classList.toggle('active', b === btn));
+            if (pairingStatus) pairingStatus.textContent = message(p.labelJa, p.labelEn);
+            if (p.heading !== p.body) {
+                loadFontOnDemand(p.heading).catch(() => {});
+            }
+            applyTypography();
+        });
+    });
+
     fontSelect.addEventListener('change', () => {
+        clearPairingUI();
         updateWeightOptions(fontSelect.value);
         applyTypography();
     });

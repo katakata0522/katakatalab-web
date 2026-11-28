@@ -195,7 +195,7 @@ test('作品データの内部URLはcanonicalと同じディレクトリURLを�
   }
 });
 
-test('子ども向けPikaLabと法務ページは広告スクリプトを読み込まない', () => {
+test('子ども向けPikaLabと法務ページは広告スクリプトを読み込まず、PikaLab全体はnoindexで運用する', () => {
   const pikalabFiles = collectHtml('pikalab');
   assert.ok(pikalabFiles.length > 0, 'PikaLab配下のHTMLを列挙できていません');
   assert.ok(
@@ -205,8 +205,12 @@ test('子ども向けPikaLabと法務ページは広告スクリプトを読み�
 
   for (const filePath of pikalabFiles) {
     const html = read(filePath);
-    assert.doesNotMatch(html, /pagead2\.googlesyndication\.com|adsbygoogle/);
+    const label = path.relative(repositoryRoot, filePath).replaceAll('\\', '/');
+    assert.doesNotMatch(html, /pagead2\.googlesyndication\.com|adsbygoogle/, `${label} に広告スクリプトがあります`);
+    assert.match(html, /<meta[^>]+name=["']robots["'][^>]+content=["'][^"']*noindex/i, `${label} に noindex が必要です`);
   }
+
+  assert.doesNotMatch(read('robots.txt'), /pikalab\/sitemap\.xml/, 'robots.txt から PikaLab sitemap を外してください');
 
   for (const relativePath of ['privacy.html', 'terms.html', 'contact.html', 'sitemap.html', '404.html']) {
     assert.doesNotMatch(read(relativePath), /pagead2\.googlesyndication\.com|adsbygoogle/);

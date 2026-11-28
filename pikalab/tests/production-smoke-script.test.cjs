@@ -32,7 +32,7 @@ test('本番スモーク対象はカタログの公開Lab集合から生成さ�
         'pikalab/',
         ...launchableApps.map((app) => `pikalab/${app.url}`)
     ];
-    const expectedNoindexCount = launchableApps.filter((app) => app.indexable !== true).length;
+    const expectedNoindexCount = 1 + launchableApps.filter((app) => app.indexable !== true).length;
 
     const source = `
 import runpy

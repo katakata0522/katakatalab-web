@@ -24,7 +24,7 @@
   "headline": "【IT用語】「デプロイ」とは？作ったものを利用できる場所へ届けること",
   "description": "デプロイとは何かを、開発・検証・本番環境の違い、ビルドとテスト、CI/CD、キャッシュを含む公開後確認まで初心者向けに解説します。",
   "datePublished": "2026-07-13",
-  "dateModified": "2026-08-04",
+  "dateModified": "2026-11-28",
   "mainEntityOfPage": "https://katakatalab.com/guides/it-basics/deploy.html",
   "inLanguage": "ja",
   "author": {
@@ -90,7 +90,7 @@
         <h1>【IT用語】「デプロイ」とは？作ったものを利用できる場所へ届けること</h1>
         <p class="article-lead">デプロイとは何かを、開発・検証・本番環境の違い、ビルドとテスト、CI/CD、キャッシュを含む公開後確認まで初心者向けに解説します。</p>
         <div class="article-meta" aria-label="記事情報">
-          <span>作成者：かたかた</span><span>公開日：2026年7月13日</span><span>更新日：2026年8月4日</span>
+          <span>作成者：かたかた</span><span>公開日：2026年7月13日</span><span>更新日：2026年11月28日</span>
         </div>
       </header>
       <div class="article-layout">
@@ -117,6 +117,18 @@
 <li><strong>本番環境：</strong> 実際のユーザーが使う場所。</li>
 </ul>
 <p>厨房で作った料理を、確認してから客席へ届ける。その流れがデプロイのイメージです。</p>
+
+<figure class="diagram-figure">
+  <svg viewBox="0 0 640 195" width="100%" role="img" aria-label="ローカル開発からビルド・検査を経て本番公開（デプロイ）される流れ">
+    <defs>
+      <marker id="arr" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+        <path d="M 0 1 L 10 5 L 0 9 z" fill="currentColor" opacity="0.7"/>
+      </marker>
+    </defs>
+    <rect x="18" y="56" width="134" height="80" rx="8" fill="#1f5c99" fill-opacity="0.1" stroke="#1f5c99" stroke-width="1.8"/><text x="85" y="92" text-anchor="middle" font-size="13" font-weight="700" fill="currentColor">ローカルPC</text><text x="85" y="110" text-anchor="middle" font-size="10.5" fill="currentColor" opacity="0.78">編集・手元確認</text><line x1="154" y1="96" x2="184" y2="96" stroke="#1f5c99" stroke-width="2" marker-end="url(#arr)"/><text x="169" y="85" text-anchor="middle" font-size="10.5" font-weight="700" fill="#1f5c99">push</text><rect x="188" y="56" width="136" height="80" rx="8" fill="#b45309" fill-opacity="0.1" stroke="#b45309" stroke-width="1.8"/><text x="256" y="92" text-anchor="middle" font-size="13" font-weight="700" fill="currentColor">ビルド・テスト</text><text x="256" y="110" text-anchor="middle" font-size="10.5" fill="currentColor" opacity="0.78">自動チェック実行</text><line x1="326" y1="96" x2="356" y2="96" stroke="#1f5c99" stroke-width="2" marker-end="url(#arr)"/><text x="341" y="85" text-anchor="middle" font-size="10.5" font-weight="700" fill="#1f5c99">配備</text><rect x="360" y="56" width="130" height="80" rx="8" fill="#0f766e" fill-opacity="0.1" stroke="#0f766e" stroke-width="1.8"/><text x="425" y="92" text-anchor="middle" font-size="13" font-weight="700" fill="currentColor">本番サーバー</text><text x="425" y="110" text-anchor="middle" font-size="10.5" fill="currentColor" opacity="0.78">公開ファイル更新</text><line x1="492" y1="96" x2="520" y2="96" stroke="#1f5c99" stroke-width="2" marker-end="url(#arr)"/><text x="506" y="85" text-anchor="middle" font-size="10.5" font-weight="700" fill="#1f5c99">表示</text><rect x="524" y="56" width="100" height="80" rx="8" fill="#7c3aed" fill-opacity="0.1" stroke="#7c3aed" stroke-width="1.8"/><text x="574" y="92" text-anchor="middle" font-size="13" font-weight="700" fill="currentColor">利用者</text><text x="574" y="110" text-anchor="middle" font-size="10.5" fill="currentColor" opacity="0.78">URLで閲覧</text>
+  </svg>
+  <figcaption>図解: 手元のパソコンでの修正はそのままでは外から見えない。ビルドと確認を経て本番サーバーへ配備して初めて公開される</figcaption>
+</figure>
 </section>
 <section class="article-section" aria-labelledby="section-2"><h2 id="section-2">デプロイでは何をするの？</h2>
 <p>システムによって内容は異なりますが、次のような作業があります。</p>
@@ -193,6 +205,8 @@
             <p class="eyebrow">FROM THE LAB</p>
             <h2 id="lab-example-title">KatakataLabでの実例</h2>
             <p>KatakataLabでは、mainブランチの公開対象が変わるとGitHub Actionsが動き、テスト後にXserverへファイルを同期します。処理が成功したかだけでなく、公開URLで新しい本文が読めるかまで確認して、反映完了と判断します。</p>
+            
+            <div class="tool-link-banner"><strong>関連ツールで試す：<a href="../../ogp-simulator/">OGPシミュレーター →</a></strong>デプロイ公開後にSNSへシェアしたときの見え方を事前にシミュレーションできます。</div>
             <p class="related-heading">この実例につながるページ</p>
             <ul class="related-links"><li><a href="status-code.html">関連用語：ステータスコード</a></li>
 <li><a href="../../updates.html">公開後の更新記録</a></li>

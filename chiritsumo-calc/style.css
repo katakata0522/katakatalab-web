@@ -1052,6 +1052,9 @@ body.dark-mode .cross-promo-btn { color: #a5b4fc; }
   color: var(--c-text-muted);
   line-height: 1.6;
 }
+.article-guide .katakata-advice-box {
+  margin-top: 1.5rem;
+}
 
 .sound-toggle-btn {
   background: var(--c-surface-hover);

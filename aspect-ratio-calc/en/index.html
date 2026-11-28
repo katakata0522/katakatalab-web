@@ -86,6 +86,15 @@
         <span class="ratio-text">Golden</span><span class="ratio-label">1 : 1.618</span>
       </button>
     </div>
+    <div class="size-preset-row" role="group" aria-label="Destination size presets">
+      <span class="size-preset-heading">Quick sizes:</span>
+      <button type="button" class="btn-size-preset" data-width="1920" data-height="1080" data-w="16" data-h="9">YouTube 1920×1080</button>
+      <button type="button" class="btn-size-preset" data-width="1200" data-height="630" data-w="40" data-h="21">OGP 1200×630</button>
+      <button type="button" class="btn-size-preset" data-width="1080" data-height="1080" data-w="1" data-h="1">Square 1080×1080</button>
+      <button type="button" class="btn-size-preset" data-width="1080" data-height="1350" data-w="4" data-h="5">Instagram 1080×1350</button>
+      <button type="button" class="btn-size-preset" data-width="1080" data-height="1920" data-w="9" data-h="16">Shorts 1080×1920</button>
+      <button type="button" class="btn-size-preset" data-width="1500" data-height="500" data-w="3" data-h="1">X Header 1500×500</button>
+    </div>
   </section>
 
   <section class="calc-panel">
@@ -163,11 +172,33 @@
       <span class="advisor-icon">💡</span>
       <span id="advisorText" class="advisor-text">Approximately 16:9 (YouTube, etc.). Use it as a common-ratio reference.</span>
     </div>
+
+    <div class="ratio-compare-strip" aria-label="Shape comparison with standard ratios">
+      <span class="ratio-compare-title">Shape comparison (current vs. standard)</span>
+      <div class="ratio-compare-grid">
+        <div class="ratio-compare-item is-current">
+          <div class="ratio-compare-frame"><div id="compareCurrentRect" class="ratio-compare-rect ratio-compare-rect--current"></div></div>
+          <span id="compareCurrentLabel" class="ratio-compare-label">Current 16:9</span>
+        </div>
+        <div class="ratio-compare-item">
+          <div class="ratio-compare-frame"><div class="ratio-compare-rect ratio-compare-rect--16-9"></div></div>
+          <span class="ratio-compare-label">16:9 Wide</span>
+        </div>
+        <div class="ratio-compare-item">
+          <div class="ratio-compare-frame"><div class="ratio-compare-rect ratio-compare-rect--1-1"></div></div>
+          <span class="ratio-compare-label">1:1 Square</span>
+        </div>
+        <div class="ratio-compare-item">
+          <div class="ratio-compare-frame"><div class="ratio-compare-rect ratio-compare-rect--9-16"></div></div>
+          <span class="ratio-compare-label">9:16 Vertical</span>
+        </div>
+      </div>
+    </div>
   </section>
 
   <section class="article-content english-content" aria-labelledby="english-guide-title">
     <header>
-      <p><strong>Created by Katakata</strong> · Last reviewed <time datetime="2026-07-16">July 16, 2026</time></p>
+      <p><strong>Created by Katakata</strong> · Last reviewed <time datetime="2026-11-28">November 28, 2026</time></p>
       <h2 id="english-guide-title">How to use Aspect Ratio Calculator</h2>
       <p>Use this calculator when an image, video, embed, or CSS box must keep the same proportions at a new size. Enter a ratio and either width or height; the missing dimension is calculated immediately and the preview helps catch an accidental portrait or landscape orientation.</p>
     </header>

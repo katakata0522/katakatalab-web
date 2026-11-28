@@ -15,7 +15,7 @@
   <link rel="alternate" hreflang="en" href="https://katakatalab.com/ogp-simulator/en/">
   <link rel="alternate" hreflang="x-default" href="https://katakatalab.com/ogp-simulator/">
 
-  <meta property="og:title" content="OGPシミュレーター - OGP Preview Tool">
+  <meta property="og:title" content="OGPシミュレーター【無料】X・LINE・Facebook表示確認＆画像比率チェック - KatakataLab">
   <meta property="og:description" content="SNS風モックで画像と文章の配置を比較。公式表示とは異なります。サイズ目安表付き。">
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://katakatalab.com/ogp-simulator/">
@@ -23,6 +23,7 @@
   <meta property="og:image" content="https://katakatalab.com/ogp-simulator/ogp.png">
   <meta property="og:image:alt" content="OGPシミュレーターの紹介画像">
   <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="OGPシミュレーター【無料】X・LINE・Facebook表示確認＆画像比率チェック - KatakataLab">
   <meta name="twitter:image" content="https://katakatalab.com/ogp-simulator/ogp.png">
 
   <link rel="icon" href="/favicon.ico">
@@ -128,13 +129,19 @@
             <button type="button" class="tab-btn" data-target="line">LINE</button>
           </div>
         </div>
-        <div class="theme-toggle-wrapper" title="ダークモード切り替え">
-          <label class="toggle-switch-theme">
-            <input type="checkbox" id="previewThemeToggle" aria-label="このモックをダークモードで表示">
-            <span class="slider round"></span>
-            <span class="theme-icon icon-sun">☀️</span>
-            <span class="theme-icon icon-moon">🌙</span>
+        <div class="preview-control-tools">
+          <label class="safe-zone-toggle">
+            <input type="checkbox" id="safeZoneToggle">
+            <span>中央1:1セーフゾーン線</span>
           </label>
+          <div class="theme-toggle-wrapper" title="ダークモード切り替え">
+            <label class="toggle-switch-theme">
+              <input type="checkbox" id="previewThemeToggle" aria-label="このモックをダークモードで表示">
+              <span class="slider round"></span>
+              <span class="theme-icon icon-sun">☀️</span>
+              <span class="theme-icon icon-moon">🌙</span>
+            </label>
+          </div>
         </div>
       </div>
 
@@ -286,12 +293,24 @@
 
   <article class="article-content">
     <h2>OGPシミュレーターの使い方と推奨サイズ</h2>
+    <p>作成者: かたかた / 更新日: 2026年11月28日</p>
     <p>公開前に、手入力したタイトル・説明・画像がシェアカード風の枠でどう見えるかを確認するツールです。URLからの自動取得は行わず、画像はサーバーへ送信せずブラウザ内だけで処理します。</p>
 
     <div class="feature-box">
       <h3>💡 クイック使い方とポイント</h3>
-      <p>タイトル、説明文、画像を入力・選択すると、X（旧Twitter）、Facebook、LINE風の表示枠に反映されます。このモック内での画像の見切れや文章の収まりを比較し、最後は各サービスの実表示を確認してください。</p>
+      <p>タイトル、説明文、画像を入力・選択すると、X（旧Twitter）、Facebook、LINE風の表示枠とHTMLメタタグ欄にリアルタイム反映されます。このモック内での画像の見切れや文章の収まりを比較し、公開後は各サービスの実表示を確認してください。</p>
     </div>
+
+    <section class="feature-box" data-verification-note aria-labelledby="ogp-verification-title">
+      <h3 id="ogp-verification-title">🧪 実際の入力で確認した結果</h3>
+      <p><strong>確認日: 2026年11月28日</strong>（Chrome）</p>
+      <ul>
+        <li><strong>入力:</strong> タイトル・説明文・サイト名と画像ファイル（10MiB以下）を手入力し、X (Large / Small)・Facebook・LINEタブと明暗切替を操作。</li>
+        <li><strong>結果:</strong> 横長枠の比率判定（1.8:1〜2.0:1の範囲外で注意メッセージ表示）、カード種別に応じた <code>twitter:card</code>（<code>summary_large_image</code> / <code>summary</code>）切替、HTMLメタタグの自動生成とコピー動作がブラウザ内で完結することを確認しました。</li>
+        <li><strong>確認範囲:</strong> 手入力内容に対するモック表示とメタタグ雛形生成までです。公開URLのHTTP応答、外部クローラーの取得可否、各SNSの最新仕様やキャッシュ状態は検証しません。</li>
+      </ul>
+      <p><a href="../about-katakatalab.html#verification-policy">KatakataLabの検証方法を見る →</a> | <a href="../guides/aspect-ratio-guide.html">画像比率とSNS見切れのガイドを見る →</a></p>
+    </section>
 
     <!-- 姉妹ツール（アスペクト比計算ツール）へのバナー導線 -->
     <div class="sister-banner-card">
@@ -302,13 +321,13 @@
     </div>
 
     <!-- アコーディオン 1: SNS別推奨サイズ -->
-    <details class="tool-accordion">
+    <details class="tool-accordion" open>
       <summary class="tool-accordion__summary">
         <span>📏 SNS別推奨OGPサイズ・比率一覧表（X・Facebook・LINE）</span>
         <span class="tool-accordion__icon">▼</span>
       </summary>
       <div class="tool-accordion__body">
-        <p>作業用の推奨目安一覧です。確認日: 2026年8月17日。</p>
+        <p>作業用の推奨目安一覧です。確認日: 2026年11月28日。</p>
         <div class="table-wrapper">
           <table class="size-table">
             <thead>
@@ -344,7 +363,23 @@
       </div>
     </details>
 
-    <!-- アコーディオン 2: よくある質問 -->
+    <!-- アコーディオン 2: OGPタグ設定と公開前チェックのポイント -->
+    <details class="tool-accordion">
+      <summary class="tool-accordion__summary">
+        <span>🏷️ OGPタグ設定と公開前チェックのポイント</span>
+        <span class="tool-accordion__icon">▼</span>
+      </summary>
+      <div class="tool-accordion__body">
+        <ul>
+          <li><strong><code>og:image</code> は絶対HTTPS URLで指定する:</strong> 下部の「HTMLメタタグ」欄に出力される <code>https://.../ogp.png</code> は雛形です。公開時は実際の画像ファイルへ直接到達できる <code>https://</code> 始まりの絶対URLに置き換えてください（相対パスではSNS側が画像を取得できないことがあります）。</li>
+          <li><strong>基本の必須メタタグを揃える:</strong> <code>og:title</code>・<code>og:description</code>・<code>og:type</code>・<code>og:url</code>・<code>og:image</code> と、X用の <code>twitter:card</code>（横長画像なら <code>summary_large_image</code>、正方形枠なら <code>summary</code>）を <code>&lt;head&gt;</code> 内に記述します。</li>
+          <li><strong>画像形式と容量に注意する:</strong> このツールでは10MiB以下の画像を読み込めますが、実際のSNS側には各サービスごとの容量上限・対応形式（PNG / JPEG など）があります。公開用画像は軽量なPNGまたはJPEGで用意し、公式の受付条件も合わせて確認してください。</li>
+          <li><strong>公開後の反映・キャッシュ確認:</strong> 画像や文言を差し替えた直後は古いキャッシュが残ることがあります。Facebook は Sharing Debugger、X は投稿画面のプレビューなど、各サービスの公式手段で実表示を最終確認してください。</li>
+        </ul>
+      </div>
+    </details>
+
+    <!-- アコーディオン 3: よくある質問 -->
     <details class="tool-accordion">
       <summary class="tool-accordion__summary">
         <span>❓ よくある質問 (FAQ)</span>

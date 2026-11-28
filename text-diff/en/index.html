@@ -94,7 +94,17 @@
       </div>
     </div>
     
+    <label class="checkbox-label" title="Normalize CRLF, trailing spaces, and repeated spaces before comparing">
+      <input type="checkbox" id="ignoreWhitespace">
+      <span>Ignore whitespace &amp; line-ending diffs</span>
+    </label>
+
     <div class="actions">
+      <select id="sampleSelect" class="sample-select" aria-label="Sample type">
+        <option value="pricing">Example: Pricing update</option>
+        <option value="email">Example: Email edit</option>
+        <option value="json">Example: JSON config</option>
+      </select>
       <button type="button" id="sampleBtn" class="btn-secondary" aria-label="Load sample text and compare" title="Try Sample">
         <span class="icon-sample">✨</span> Sample
       </button>

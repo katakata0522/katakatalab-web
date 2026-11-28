@@ -37,6 +37,7 @@ document.addEventListener('DOMContentLoaded', () => {
     metaDescs: document.querySelectorAll('.meta-desc'),
     
     previewThemeToggle: document.getElementById('previewThemeToggle'),
+    safeZoneToggle: document.getElementById('safeZoneToggle'),
     previewCanvas: document.getElementById('previewCanvas'),
     ogpCodeOutput: document.getElementById('ogpCodeOutput'),
     copyOgpMetaBtn: document.getElementById('copyOgpMetaBtn'),
@@ -119,7 +120,7 @@ document.addEventListener('DOMContentLoaded', () => {
       });
     });
 
-    // 4. Dark Mode
+    // 4. Dark Mode & Safe Zone Guide
     els.previewThemeToggle.addEventListener('change', (e) => {
       if (e.target.checked) {
         els.previewCanvas.classList.remove('theme-light');
@@ -129,6 +130,12 @@ document.addEventListener('DOMContentLoaded', () => {
         els.previewCanvas.classList.add('theme-light');
       }
     });
+
+    if (els.safeZoneToggle && typeof els.safeZoneToggle.addEventListener === 'function') {
+      els.safeZoneToggle.addEventListener('change', (e) => {
+        els.previewCanvas.classList.toggle('show-safe-zone', Boolean(e.target.checked));
+      });
+    }
 
     // 5. Copy Generated OGP Meta Tags
     if (els.copyOgpMetaBtn && typeof els.copyOgpMetaBtn.addEventListener === 'function') {

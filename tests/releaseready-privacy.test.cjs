@@ -64,14 +64,18 @@ test('ReleaseReadyの問い合わせ導線の欠落を拒否する', t => {
   assert.throws(() => verifyReleaseReadyPrivacy(root), /案内リンクがありません/);
 });
 
-test('ReleaseReadyのsitemap登録欠落と重複を拒否する', t => {
+test('ReleaseReadyのnoindex欠落とsitemap混入を拒否する', t => {
   const root = builtPrivacyFixture(t);
+  const page = path.join(root, PRIVACY_PATH);
+  const originalPage = fs.readFileSync(page, 'utf8');
+  fs.writeFileSync(page, originalPage.replace('<meta name="robots" content="noindex, follow">', ''));
+  assert.throws(() => verifyReleaseReadyPrivacy(root), /noindex, follow/);
+  fs.writeFileSync(page, originalPage);
+
   const sitemap = path.join(root, 'sitemap.xml');
   const original = fs.readFileSync(sitemap, 'utf8');
-  fs.writeFileSync(sitemap, original.replace(`<loc>${PRIVACY_URL}</loc>`, ''));
-  assert.throws(() => verifyReleaseReadyPrivacy(root), /sitemap.xmlへ1件/);
   fs.writeFileSync(sitemap, original.replace('</urlset>', `<url><loc>${PRIVACY_URL}</loc></url></urlset>`));
-  assert.throws(() => verifyReleaseReadyPrivacy(root), /sitemap.xmlへ1件/);
+  assert.throws(() => verifyReleaseReadyPrivacy(root), /sitemap.xmlへ登録しないでください/);
 });
 
 test('ReleaseReadyポリシーはローカル処理と意図しない機密情報混入を説明する', () => {
@@ -88,13 +92,14 @@ test('ReleaseReadyポリシーはローカル処理と意図しない機密情�
   assert.doesNotMatch(html, /tag-none">取得しない</);
 });
 
-test('公開URL検証はReleaseReadyのHTTP成功と本文およびsitemapを要求する', async () => {
+test('公開URL検証はReleaseReadyのHTTP成功とnoindex本文を要求しsitemapには含めない', async () => {
   const baseUrl = 'https://preview.example';
   const canonicalBaseUrl = 'https://katakatalab.com';
   const checks = createDefaultChecks(baseUrl, canonicalBaseUrl);
   const privacy = checks.find(check => check.path === '/privacy/releaseready/');
   assert.ok(privacy);
-  assert.ok(checks.find(check => check.path === '/sitemap.xml').markers.includes(`<loc>${PRIVACY_URL}</loc>`));
+  assert.ok(privacy.markers.includes('<meta name="robots" content="noindex, follow">'));
+  assert.equal(checks.find(check => check.path === '/sitemap.xml').markers.includes(`<loc>${PRIVACY_URL}</loc>`), false);
   const body = fs.readFileSync(path.join(sourceRoot, PRIVACY_PATH), 'utf8');
   const run = (status, text) => verifyPublicSite({
     baseUrl, canonicalBaseUrl, checks: [privacy],

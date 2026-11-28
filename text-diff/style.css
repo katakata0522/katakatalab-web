@@ -856,3 +856,42 @@ body.dark-mode .sister-card:hover {
   #compareBtn { grid-column: 1 / -1; }
   .code-mode .diff-line-content { min-width: 0; white-space: pre-wrap; overflow-wrap: anywhere; }
 }
+
+.ignore-ws-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--c-text-main);
+  cursor: pointer;
+  white-space: nowrap;
+}
+.ignore-ws-label input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+  accent-color: var(--c-primary);
+  cursor: pointer;
+}
+.sample-select {
+  padding: 7px 10px;
+  border: 1px solid var(--c-border);
+  border-radius: 8px;
+  background: var(--c-card-bg);
+  color: var(--c-text-main);
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+body.dark-mode .sample-select {
+  background: #1e293b;
+  color: #f8fafc;
+  border-color: rgba(255, 255, 255, 0.16);
+}
+@media (max-width: 768px) {
+  .sample-select {
+    grid-column: 1 / -1;
+    min-height: 40px;
+  }
+}
+

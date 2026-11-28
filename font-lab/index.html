@@ -134,7 +134,7 @@
         <!-- COLUMN 1: INTERACTIVE TYPOGRAPHY SIMULATOR -->
         <section id="section-tool" style="margin-top: 2rem; scroll-margin-top: 100px;">
             <h2 class="section-title">
-                <span class="section-title-icon"><span class="material-symbols-rounded">tune</span></span>
+                <span class="section-title-icon" aria-hidden="true"><span class="material-symbols-rounded" aria-hidden="true">tune</span></span>
                 フォント比較とCSS
             </h2>
             
@@ -143,7 +143,7 @@
                 <div class="glass-card canvas-card">
                     <div class="canvas-header">
                         <span class="text-slate-400 font-bold flex items-center gap-1.5 text-xs">
-                            <span class="material-symbols-rounded" style="font-size: 16px;">border_color</span>
+                            <span class="material-symbols-rounded" aria-hidden="true" style="font-size: 16px;">border_color</span>
                             枠内のテキストは自由に編集可能です！
                         </span>
                         
@@ -186,6 +186,19 @@
                         <svg aria-hidden="true" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="color: var(--primary); flex-shrink: 0;"><path d="M4 7h9m4 0h3M4 17h3m4 0h9"/><circle cx="15" cy="7" r="2"/><circle cx="9" cy="17" r="2"/></svg>
                         タイポグラフィ調整
                     </h3>
+
+                    <!-- Recommended Font Pairings -->
+                    <div class="control-group">
+                        <span class="control-label">おすすめペアリング（見出し＋本文）</span>
+                        <div class="pairing-preset-group" role="group" aria-label="おすすめフォントペアリング">
+                            <button type="button" class="pairing-preset-btn" data-pairing="blog">ブログ・解説</button>
+                            <button type="button" class="pairing-preset-btn" data-pairing="portfolio">ポートフォリオ</button>
+                            <button type="button" class="pairing-preset-btn" data-pairing="event">同人誌・告知</button>
+                            <button type="button" class="pairing-preset-btn" data-pairing="docs">技術ドキュメント</button>
+                            <button type="button" class="pairing-preset-btn pairing-preset-reset" data-pairing="single">単一書体に戻す</button>
+                        </div>
+                        <p id="pairing-status" class="pairing-status" aria-live="polite"></p>
+                    </div>
 
                     <!-- Font Family -->
                     <div class="control-group">
@@ -246,10 +259,10 @@
                         <div class="code-tabs">
                             <div class="code-tabs-header" role="tablist">
                                 <button type="button" class="code-tab-btn active" data-tab="css" role="tab" aria-selected="true" aria-controls="panel-css">
-                                    <span class="material-symbols-rounded" style="font-size: 15px;">css</span> CSSコード
+                                    <span class="material-symbols-rounded" aria-hidden="true" style="font-size: 15px;">css</span> CSSコード
                                 </button>
                                 <button type="button" class="code-tab-btn" data-tab="html" role="tab" aria-selected="false" aria-controls="panel-html">
-                                    <span class="material-symbols-rounded" style="font-size: 15px;">code</span> HTMLインポート
+                                    <span class="material-symbols-rounded" aria-hidden="true" style="font-size: 15px;">code</span> HTMLインポート
                                 </button>
                             </div>
                             <div id="panel-css" class="code-tab-panel active" role="tabpanel">
@@ -263,7 +276,7 @@
 
                     <!-- 3D Copy Button -->
                     <button type="button" id="copy-css-btn" class="btn-primary-3d">
-                        <span class="material-symbols-rounded">content_copy</span>
+                        <span class="material-symbols-rounded" aria-hidden="true">content_copy</span>
                         <span class="btn-text">CSSコードをコピー</span>
                     </button>
                 </div>
@@ -282,7 +295,7 @@
         <!-- COLUMN 2: PREMIUM FONT SHOWCASE -->
         <section id="section-showcase" style="scroll-margin-top: 100px;">
             <h2 class="section-title">
-                <span class="section-title-icon"><span class="material-symbols-rounded">view_cozy</span></span>
+                <span class="section-title-icon" aria-hidden="true"><span class="material-symbols-rounded" aria-hidden="true">view_cozy</span></span>
                 2. 個性溢れる「日本語フォント見本市」
             </h2>
             
@@ -332,7 +345,7 @@
                         </div>
                         <div class="font-preview-box" style="font-family: 'M PLUS Rounded 1c', sans-serif;">
                             <div class="font-preview-title">ぷっくりかわいい見出し</div>
-                            <div class="font-preview-para">圧倒的な「かわいさ」と温厚さ。一目で見る人を笑顔にする極上フォント！</div>
+                            <div class="font-preview-para">親しみやすさとやわらかさが伝わる丸ゴシック。見出しや案内文にも使いやすい書体です。</div>
                         </div>
                         <p class="text-sm font-bold text-slate-500" style="margin-bottom: 1.5rem; line-height: 1.6;">
                             「あ」や「お」の懐が広く、ぷっくりとした絶妙な太さの丸ゴシック。こども向けアプリや、親しみやすさを優先したタイトルデザインで、力強くやわらかな印象をつくれます。
@@ -518,8 +531,8 @@
         <!-- COLUMN 3: TECHNICAL ARTICLES -->
         <section id="section-articles" style="scroll-margin-top: 100px;">
             <h2 class="section-title">
-                <span class="section-title-icon"><span class="material-symbols-rounded">menu_book</span></span>
-                3. 日本語Webフォントの「超軽量化」の教科書
+                <span class="section-title-icon" aria-hidden="true"><span class="material-symbols-rounded" aria-hidden="true">menu_book</span></span>
+                3. 日本語Webフォントの軽量化の教科書
             </h2>
             
             <div class="article-section">
@@ -604,17 +617,17 @@
                     </header>
                     <div class="article-body">
                         <p>
-                            「Google Fontsは便利だけれど、サードパーティ（外部ドメイン）との通信が発生するため、ネットワーク遅延やセキュリティポリシー(CSP)の観点から自前のサーバー（Xserverなど）からフォントを配信したい！」という場面は多々あります。しかし、フォントファイルをそのまま自分のサーバーに置くと、数MBのファイルをユーザーに丸ごと配ることになり、サーバーの転送帯域が圧迫され、表示速度も最悪になってしまいます。
+                            「Google Fontsは便利だけれど、サードパーティ（外部ドメイン）との通信が発生するため、ネットワーク遅延やセキュリティポリシー(CSP)の観点から自前のサーバー（Xserverなど）からフォントを配信したい！」という場面は多々あります。しかし、フォントファイルをそのまま自分のサーバーに置くと、数MBのファイルをユーザーに丸ごと配ることになり、サーバーの転送帯域を圧迫し、表示速度の低下につながります。
                         </p>
                         <p>
-                            この問題を解決するプロの技が、<strong>「サブセット化」</strong>と<strong>「WOFF2超圧縮」</strong>の掛け算です。
+                            この問題を抑える基本手法が、<strong>「サブセット化」</strong>と<strong>「WOFF2圧縮」</strong>の組み合わせです。
                         </p>
                         <h3>ステップ1：使わない文字をハサミで切り落とす（サブセット化）</h3>
                         <p>
                             日本語フォントには多数の漢字や記号が含まれています。実際に使う文字集合へ絞り込む作業がサブセット化です。必要な文字はサイトごとに異なるため、固定の文字数だけで判断せず、固有名詞や記号の欠落も確認します。
                         </p>
                         <p>
-                            「サブセットフォントメーカー」などの無料ツールを使うと、フォントファイルをドラッグ＆ドロップするだけで、数メガバイトのファイルを一撃で <strong>数百キロバイト程度</strong> まで小さく削減できます。
+                            「サブセットフォントメーカー」などの無料ツールを使うと、フォントファイルを指定して必要な文字だけに絞り込み、数メガバイトのファイルを <strong>数百キロバイト程度</strong> まで小さく削減できる場合があります。
                         </p>
                         <h3>ステップ2：Web向けのWOFF2形式へ変換する</h3>
                         <p>
@@ -635,6 +648,25 @@
   font-display: swap;
   unicode-range: U+3040-30FF, U+FF66-FF9F; /* ひらがな・カタカナ */
 }</code></pre>
+                    </div>
+                </article>
+
+                <article class="article-card" data-verification-note aria-labelledby="fontlab-verification-title">
+                    <header class="article-header">
+                        <div class="article-meta">
+                            <span>作成者: かたかた</span>
+                            <span>更新日: 2026年11月28日</span>
+                            <span>確認日: 2026年11月28日</span>
+                        </div>
+                        <h3 id="fontlab-verification-title" class="article-title">🧪 ツールの動作と確認範囲</h3>
+                    </header>
+                    <div class="article-body">
+                        <ul>
+                            <li><strong>入力・操作:</strong> 7書体（Zen Maru Gothic / M PLUS Rounded 1c / Noto Sans JP / Kiwi Maru / Yomogi / Dela Gothic One / Hachi Maru Pop）の切り替え、本文サイズ12〜28px、字間-0.05〜0.3em、行間1.2〜2.4の調整とCSS／HTMLコード生成。</li>
+                            <li><strong>結果:</strong> 書体・ウェイト・数値の変更がプレビュー枠と出力コードに同期し、コピーボタンで出力できることを確認しています。</li>
+                            <li><strong>確認範囲と限界:</strong> 見た目の比較とCSS／HTMLコード生成までが対象です。実際のサイトでの読み込み時間やCLSへの影響、各フォントの最新ライセンス条文は、配布元（Google Fonts等）と実ページの開発者ツールで確認してください。</li>
+                        </ul>
+                        <p><a href="../about-katakatalab.html#verification-policy">KatakataLabの検証方法を見る →</a></p>
                     </div>
                 </article>
 

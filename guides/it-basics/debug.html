@@ -24,7 +24,7 @@
   "headline": "【IT用語】「デバッグ」とは？不具合の原因を一つずつ確かめる作業",
   "description": "デバッグとは何かを、症状の確認、再現、原因の切り分け、ログ・ブレークポイント・テスト・Git履歴の使い方から具体的に解説します。",
   "datePublished": "2026-07-13",
-  "dateModified": "2026-08-04",
+  "dateModified": "2026-11-28",
   "mainEntityOfPage": "https://katakatalab.com/guides/it-basics/debug.html",
   "inLanguage": "ja",
   "author": {
@@ -90,7 +90,7 @@
         <h1>【IT用語】「デバッグ」とは？不具合の原因を一つずつ確かめる作業</h1>
         <p class="article-lead">デバッグとは何かを、症状の確認、再現、原因の切り分け、ログ・ブレークポイント・テスト・Git履歴の使い方から具体的に解説します。</p>
         <div class="article-meta" aria-label="記事情報">
-          <span>作成者：かたかた</span><span>公開日：2026年7月13日</span><span>更新日：2026年8月4日</span>
+          <span>作成者：かたかた</span><span>公開日：2026年7月13日</span><span>更新日：2026年11月28日</span>
         </div>
       </header>
       <div class="article-layout">
@@ -110,6 +110,18 @@
 <section class="article-section" aria-labelledby="section-1"><h2 id="section-1">結論：「デバッグ」＝「不具合を再現し、原因を特定して、修正を確かめること」</h2>
 <p>デバッグとは、<strong>「ソフトウェアが期待通りに動かない原因を調べ、修正する一連の作業」</strong>です。</p>
 <p>いきなり思いつきでコードを書き換えると、別の問題を増やすことがあります。まず症状を整理し、原因の候補を一つずつ確かめます。</p>
+
+<figure class="diagram-figure">
+  <svg viewBox="0 0 640 195" width="100%" role="img" aria-label="デバッグの4ステップ（再現・観察・仮説・検証）の循環図解">
+    <defs>
+      <marker id="arr" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+        <path d="M 0 1 L 10 5 L 0 9 z" fill="currentColor" opacity="0.7"/>
+      </marker>
+    </defs>
+    <rect x="20" y="56" width="134" height="80" rx="8" fill="#1f5c99" fill-opacity="0.1" stroke="#1f5c99" stroke-width="1.8"/><text x="87" y="92" text-anchor="middle" font-size="13" font-weight="700" fill="currentColor">1. 再現する</text><text x="87" y="110" text-anchor="middle" font-size="10.5" fill="currentColor" opacity="0.78">毎回同じ現象を出す</text><line x1="156" y1="96" x2="182" y2="96" stroke="#1f5c99" stroke-width="2" marker-end="url(#arr)"/><rect x="186" y="56" width="134" height="80" rx="8" fill="#b45309" fill-opacity="0.1" stroke="#b45309" stroke-width="1.8"/><text x="253" y="92" text-anchor="middle" font-size="13" font-weight="700" fill="currentColor">2. 観察する</text><text x="253" y="110" text-anchor="middle" font-size="10.5" fill="currentColor" opacity="0.78">エラー・値を確認</text><line x1="322" y1="96" x2="348" y2="96" stroke="#1f5c99" stroke-width="2" marker-end="url(#arr)"/><rect x="352" y="56" width="134" height="80" rx="8" fill="#7c3aed" fill-opacity="0.1" stroke="#7c3aed" stroke-width="1.8"/><text x="419" y="92" text-anchor="middle" font-size="13" font-weight="700" fill="currentColor">3. 仮説と修正</text><text x="419" y="110" text-anchor="middle" font-size="10.5" fill="currentColor" opacity="0.78">原因を1つ直す</text><line x1="488" y1="96" x2="514" y2="96" stroke="#1f5c99" stroke-width="2" marker-end="url(#arr)"/><rect x="518" y="56" width="104" height="80" rx="8" fill="#0f766e" fill-opacity="0.1" stroke="#0f766e" stroke-width="1.8"/><text x="570" y="92" text-anchor="middle" font-size="13" font-weight="700" fill="currentColor">4. 再テスト</text><text x="570" y="110" text-anchor="middle" font-size="10.5" fill="currentColor" opacity="0.78">直ったか確認</text>
+  </svg>
+  <figcaption>図解: デバッグは勘で書き直す作業ではなく「再現→観察→仮説→修正と確認」を小さく回す手順</figcaption>
+</figure>
 </section>
 <section class="article-section" aria-labelledby="section-2"><h2 id="section-2">診察のように進める</h2>
 <h3>1. 症状を確認する</h3>
@@ -174,6 +186,8 @@
             <p class="eyebrow">FROM THE LAB</p>
             <h2 id="lab-example-title">KatakataLabでの実例</h2>
             <p>KatakataLabの公開確認では、HTTP 200だけでなく、公開ページの本文に今回の変更が含まれるかを調べます。「アクセスできる」と「正しい内容が反映された」を分けると、原因の範囲を狭めやすくなります。</p>
+            
+            <div class="tool-link-banner"><strong>関連ツールで試す：<a href="../../pikalab/code-studio/">CodeStudio →</a></strong>小さなHTML/CSS/JSの挙動をその場で動かしながらデバッグの感覚を試せます。</div>
             <p class="related-heading">この実例につながるページ</p>
             <ul class="related-links"><li><a href="bug.html">関連用語：バグ</a></li>
 <li><a href="../../pikalab/code-studio/">コードを試せるKatakataLab CodeStudio</a></li></ul>

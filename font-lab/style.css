@@ -1123,6 +1123,41 @@ body.dark-mode .scroll-btn:hover {
     }
 }
 
+.pairing-preset-group {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: 4px;
+}
+.pairing-preset-btn {
+    padding: 5px 10px;
+    border-radius: 8px;
+    border: 1px solid var(--border-color, #cbd5e1);
+    background: var(--card-bg, #fff);
+    color: var(--text-main, #0f172a);
+    font-size: 0.76rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+.pairing-preset-btn:hover,
+.pairing-preset-btn.active {
+    border-color: var(--primary, #6366f1);
+    background: var(--primary, #6366f1);
+    color: #fff;
+}
+.pairing-preset-reset {
+    opacity: 0.85;
+}
+.pairing-status {
+    margin: 6px 0 0;
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: var(--primary, #6366f1);
+    min-height: 1.1em;
+}
+
+
 
 
 

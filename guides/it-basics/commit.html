@@ -24,7 +24,7 @@
   "headline": "【IT用語】「コミット」とは？変更を履歴に残すセーブポイント",
   "description": "コミットとは何かを、上書き保存との違い、良い単位とメッセージ、revert・restore・resetの違い、バックアップとの関係から解説します。",
   "datePublished": "2026-07-13",
-  "dateModified": "2026-08-04",
+  "dateModified": "2026-11-28",
   "mainEntityOfPage": "https://katakatalab.com/guides/it-basics/commit.html",
   "inLanguage": "ja",
   "author": {
@@ -90,7 +90,7 @@
         <h1>【IT用語】「コミット」とは？変更を履歴に残すセーブポイント</h1>
         <p class="article-lead">コミットとは何かを、上書き保存との違い、良い単位とメッセージ、revert・restore・resetの違い、バックアップとの関係から解説します。</p>
         <div class="article-meta" aria-label="記事情報">
-          <span>作成者：かたかた</span><span>公開日：2026年7月13日</span><span>更新日：2026年8月4日</span>
+          <span>作成者：かたかた</span><span>公開日：2026年7月13日</span><span>更新日：2026年11月28日</span>
         </div>
       </header>
       <div class="article-layout">
@@ -111,6 +111,18 @@
 <section class="article-section" aria-labelledby="section-1"><h2 id="section-1">結論：「コミット」＝「選んだ変更を、履歴として記録すること」</h2>
 <p>Gitにおけるコミットとは、<strong>「記録したい変更をひとまとまりにして、履歴へ残すこと」</strong>です。</p>
 <p>ゲームでセーブした時点へ戻れるように、コミットを残しておけば、あとから変更内容を確認したり、問題のある変更を打ち消したりできます。</p>
+
+<figure class="diagram-figure">
+  <svg viewBox="0 0 640 195" width="100%" role="img" aria-label="作業ツリーからステージングを経てコミットされる3段階の図解">
+    <defs>
+      <marker id="arr" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+        <path d="M 0 1 L 10 5 L 0 9 z" fill="currentColor" opacity="0.7"/>
+      </marker>
+    </defs>
+    <rect x="22" y="54" width="164" height="84" rx="8" fill="#b45309" fill-opacity="0.1" stroke="#b45309" stroke-width="1.8"/><text x="104" y="92" text-anchor="middle" font-size="13" font-weight="700" fill="currentColor">1. ファイルを編集</text><text x="104" y="110" text-anchor="middle" font-size="10.5" fill="currentColor" opacity="0.78">Working Tree</text><line x1="188" y1="96" x2="232" y2="96" stroke="#1f5c99" stroke-width="2" marker-end="url(#arr)"/><text x="210" y="84" text-anchor="middle" font-size="10.5" font-weight="700" fill="#1f5c99">git add</text><rect x="238" y="54" width="164" height="84" rx="8" fill="#1f5c99" fill-opacity="0.1" stroke="#1f5c99" stroke-width="1.8"/><text x="320" y="92" text-anchor="middle" font-size="13" font-weight="700" fill="currentColor">2. 記録対象を選ぶ</text><text x="320" y="110" text-anchor="middle" font-size="10.5" fill="currentColor" opacity="0.78">Staging Area</text><line x1="404" y1="96" x2="448" y2="96" stroke="#0f766e" stroke-width="2" marker-end="url(#arr)"/><text x="426" y="84" text-anchor="middle" font-size="10.5" font-weight="700" fill="#0f766e">commit</text><rect x="454" y="54" width="164" height="84" rx="8" fill="#0f766e" fill-opacity="0.1" stroke="#0f766e" stroke-width="1.8"/><text x="536" y="92" text-anchor="middle" font-size="13" font-weight="700" fill="currentColor">3. 履歴に確定</text><text x="536" y="110" text-anchor="middle" font-size="10.5" fill="currentColor" opacity="0.78">メッセージ＋差分保存</text>
+  </svg>
+  <figcaption>図解: ファイルを編集（作業ツリー）→ 記録する変更を選ぶ（add）→ 理由を添えて確定（commit）の3ステップ</figcaption>
+</figure>
 </section>
 <section class="article-section" aria-labelledby="section-2"><h2 id="section-2">上書き保存とは何が違う？</h2>
 <p><code>Ctrl + S</code>で保存すると、作業中のファイルが更新されます。しかし、それだけでは「どこを、なぜ変えたのか」という履歴はGitに残りません。</p>
@@ -180,6 +192,8 @@
             <p class="eyebrow">FROM THE LAB</p>
             <h2 id="lab-example-title">KatakataLabでの実例</h2>
             <p>KatakataLabでは、記事だけでなくトップページの導線やサイトマップも公開前に差分として確認します。関連する変更を意味のある単位でコミットすると、あとから「なぜこの導線を加えたか」を追いやすくなります。</p>
+            
+            <div class="tool-link-banner"><strong>関連ツールで試す：<a href="../../text-diff/">テキスト差分チェック →</a></strong>コミット前に「意図しない改行や余計な修正が混ざっていないか」を差分チェックで確認できます。</div>
             <p class="related-heading">この実例につながるページ</p>
             <ul class="related-links"><li><a href="git.html">関連用語：Git</a></li>
 <li><a href="../../updates.html">公開後の更新記録</a></li></ul>

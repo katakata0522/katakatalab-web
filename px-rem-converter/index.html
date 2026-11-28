@@ -124,6 +124,9 @@
         <button type="button" id="copyCssBtn" class="btn-secondary">
           <span class="icon">📋</span> コードをコピー
         </button>
+        <button type="button" id="copyScaleBtn" class="btn-secondary" title="よく使う文字サイズ変数(--text-xs〜--text-3xl)をまとめてコピー">
+          <span class="icon">📐</span> 文字スケール変数コピー
+        </button>
       </div>
     </div>
     <p class="copy-hint">コピーには現在の早見表の全行を含みます（追加したサイズも含む）。</p>
@@ -161,6 +164,38 @@
     </div>
   </section>
 
+  <section class="clamp-area" id="clampSection" aria-labelledby="clampTitle">
+    <div class="clamp-header">
+      <div>
+        <h2 id="clampTitle" class="sub-title">レスポンシブ clamp() 自動計算</h2>
+        <p class="clamp-desc">画面幅（最小〜最大vw）に合わせて滑らかに伸縮するCSSの <code>clamp()</code> 式を、現在の基準サイズ（Root）から算出します。</p>
+      </div>
+      <button type="button" id="copyClampBtn" class="btn-secondary">📋 clamp() をコピー</button>
+    </div>
+    <div class="clamp-grid">
+      <label class="clamp-field">
+        <span>最小文字サイズ (px)</span>
+        <input type="number" id="clampMinPx" value="16" min="1" max="300" step="any" inputmode="decimal">
+      </label>
+      <label class="clamp-field">
+        <span>最大文字サイズ (px)</span>
+        <input type="number" id="clampMaxPx" value="28" min="1" max="300" step="any" inputmode="decimal">
+      </label>
+      <label class="clamp-field">
+        <span>最小画面幅 (px)</span>
+        <input type="number" id="clampMinVw" value="375" min="100" max="3840" step="1" inputmode="numeric">
+      </label>
+      <label class="clamp-field">
+        <span>最大画面幅 (px)</span>
+        <input type="number" id="clampMaxVw" value="1280" min="100" max="3840" step="1" inputmode="numeric">
+      </label>
+    </div>
+    <div class="clamp-output-row">
+      <code id="clampOutput" class="clamp-code">font-size: clamp(1rem, 0.6892rem + 1.326vw, 1.75rem);</code>
+    </div>
+    <p id="clampStatus" class="clamp-status" role="status" aria-live="polite"></p>
+  </section>
+
   <section class="article-content">
     <h2>1秒でもコーディングを速くするために──pxとremのやさしい使い分け</h2>
     <p>
@@ -169,7 +204,7 @@
     </p>
     <p>
       フロントエンドのコーディングをしていて、こんな風に電卓アプリとエディタを往復した経験はありませんか？<br>
-      私（わたくし）は数え切れないほどあります。笑
+      私も数え切れないほどありました。
     </p>
     <p>
       この<strong>「PX / REM Converter」</strong>は、そんな地味で、毎日発生する「暗算のイライラ」から開発者を救うために作られた、完全ブラウザ完結型の実験場です。<br>
@@ -275,7 +310,18 @@
         </div>
     </details>
 
-    <!-- 姉妹ツール誘導バナー (極上ガラスモフィズム) -->
+    <section class="feature-box" data-verification-note aria-labelledby="pxrem-verification-title">
+      <h3 id="pxrem-verification-title">🧪 実際の入力で確認した換算結果</h3>
+      <p><strong>確認日: 2026年11月28日</strong></p>
+      <ul>
+        <li><strong>入力:</strong> 基準16pxで24px・14pxを入力、および基準10pxで14pxを入力。</li>
+        <li><strong>結果:</strong> 基準16pxで 24px → 1.5rem・14px → 0.875rem、基準10pxで 14px → 1.4rem と換算され、CSS変数・SCSS変数・Tailwind・CSSクラス形式でコピー出力できることを確認しています。</li>
+        <li><strong>確認範囲:</strong> <code>px ÷ 基準 = rem</code>（REMは小数第4位、PXは小数第2位で丸め）の換算とプレビュー表示までです。実際のブラウザ文字サイズ設定での見え方は実装先ページで確認してください。</li>
+      </ul>
+      <p><a href="../about-katakatalab.html#verification-policy" class="guide-link">KatakataLabの検証方法を見る →</a></p>
+    </section>
+
+    <!-- 姉妹ツール誘導バナー -->
     <section class="sister-tools">
       <h3>🧪 他の実験ツールも試してみませんか？</h3>
       <div class="sister-grid">
@@ -283,14 +329,14 @@
           <div class="sister-icon">📐</div>
           <div class="sister-info">
             <h4>アスペクト比計算ツール</h4>
-            <p>画像トリミングや動画の比率を瞬時に計算！SNS画像の見切れ防止に大活躍します。</p>
+            <p>画像トリミングや動画の比率を計算できます。SNS画像の見切れ確認に役立ちます。</p>
           </div>
         </a>
         <a href="../discount-calc/" class="sister-card" target="_blank" rel="noopener noreferrer">
           <div class="sister-icon">🛍️</div>
           <div class="sister-info">
             <h4>割引価格計算ツール</h4>
-            <p>「〇％引き」「さらにポイント還元」を視覚的にスッキリ可視化して計算します！</p>
+            <p>「〇％引き」「さらにポイント還元」をまとめて計算できます。</p>
           </div>
         </a>
       </div>
@@ -299,7 +345,7 @@
     <!-- 著者・更新情報 -->
     <div class="author-meta">
       <span>作成者: かたかた</span>
-      <span>更新日: 2026年8月17日</span>
+      <span>更新日: 2026年11月28日</span>
     </div>
 
   </section>
@@ -337,7 +383,8 @@
 </script>
 
 <script src="../theme-sync.js?v=20261125" defer></script>
-<script src="script.js?v=20261125" defer></script>
+<script src="clamp-math.js?v=20261128" defer></script>
+<script src="script.js?v=20261128" defer></script>
 
 </body>
 </html>

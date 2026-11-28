@@ -14,6 +14,26 @@ class PasswordLogic {
         });
         // 紛らわしい文字の定義
         this.AMBIGUOUS_CHARS = /[il1LoO0]/g;
+        // 視認性と入力しやすさを重視した128語リスト（2^7通り/語）
+        this.PASSPHRASE_WORDS = Object.freeze([
+            'acorn', 'amber', 'anchor', 'apple', 'apron', 'arrow', 'aspen', 'atlas',
+            'badge', 'baker', 'bamboo', 'banjo', 'basil', 'beacon', 'berry', 'birch',
+            'bison', 'bloom', 'breeze', 'bridge', 'brook', 'brush', 'cabin', 'cactus',
+            'camel', 'canal', 'candle', 'canon', 'canyon', 'cedar', 'cello', 'chalk',
+            'cherry', 'cider', 'citrus', 'clover', 'cobalt', 'comet', 'copper', 'coral',
+            'crane', 'creek', 'crest', 'crown', 'crystal', 'daisy', 'delta', 'dune',
+            'eagle', 'ember', 'fable', 'falcon', 'fern', 'fjord', 'flint', 'flute',
+            'forest', 'fossil', 'frost', 'garden', 'garnet', 'gecko', 'ginger', 'glade',
+            'globe', 'granite', 'grove', 'harbor', 'hazel', 'heron', 'hollow', 'honey',
+            'indigo', 'island', 'ivory', 'jasper', 'jigsaw', 'juniper', 'kayak', 'kelp',
+            'kettle', 'koala', 'lagoon', 'lantern', 'larch', 'laurel', 'lemon', 'lilac',
+            'linden', 'lotus', 'magnet', 'mango', 'maple', 'marble', 'meadow', 'melon',
+            'meteor', 'mint', 'mirror', 'moss', 'nectar', 'nickel', 'nimbus', 'nutmeg',
+            'olive', 'onyx', 'orchid', 'osprey', 'otter', 'paddle', 'panda', 'pebble',
+            'pepper', 'petal', 'pine', 'planet', 'plover', 'poplar', 'prism', 'quartz',
+            'raven', 'redwood', 'ribbon', 'ridge', 'river', 'robin', 'saffron', 'willow'
+        ]);
+        this.lastGeneratedEntropyBits = null;
     }
 
     /**
@@ -78,11 +98,51 @@ class PasswordLogic {
         if (length < requiredSets.length) return [];
 
         this.lastGeneratedPoolSize = new Set(charPool.split('')).size;
+        this.lastGeneratedEntropyBits = null;
         const passwords = [];
         for (let i = 0; i < count; i++) {
             passwords.push(this._createSingle(charPool, length, requiredSets));
         }
         return passwords;
+    }
+
+    /**
+     * CSPRNGベースのパスフレーズ（単語連結）を生成する
+     * @param {Object} options
+     * @param {number} [options.wordCount=4] - 単語数（3〜8）
+     * @param {string} [options.separator='-'] - 区切り文字
+     * @param {boolean} [options.capitalize=true] - 各単語の先頭を大文字にする
+     * @param {boolean} [options.appendNumber=true] - 末尾に2桁の数字を付与する
+     * @param {number} [options.count=1] - 生成個数
+     * @returns {string[]}
+     */
+    generatePassphrase(options = {}) {
+        const wordCount = Math.max(3, Math.min(8, parseInt(options.wordCount, 10) || 4));
+        const separator = typeof options.separator === 'string' ? options.separator : '-';
+        const capitalize = options.capitalize !== false;
+        const appendNumber = Boolean(options.appendNumber);
+        const count = Math.max(1, Math.min(20, parseInt(options.count, 10) || 1));
+
+        const list = this.PASSPHRASE_WORDS;
+        const results = [];
+        for (let i = 0; i < count; i++) {
+            const words = [];
+            for (let w = 0; w < wordCount; w++) {
+                let word = list[this._getRandomInt(list.length)];
+                if (capitalize) {
+                    word = word.charAt(0).toUpperCase() + word.slice(1);
+                }
+                words.push(word);
+            }
+            if (appendNumber) {
+                const num = String(this._getRandomInt(100)).padStart(2, '0');
+                words[words.length - 1] += num;
+            }
+            results.push(words.join(separator));
+        }
+        this.lastGeneratedPoolSize = 0;
+        this.lastGeneratedEntropyBits = wordCount * Math.log2(list.length) + (appendNumber ? Math.log2(100) : 0);
+        return results;
     }
 
     /**

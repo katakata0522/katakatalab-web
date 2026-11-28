@@ -32,7 +32,7 @@
       "headline": "px / rem の使い方ガイド | 変換の考え方と実務の基準",
       "description": "px と rem の違い、root の font-size と rem の関係、文字サイズと余白の考え方を実例で整理したガイドです。",
       "datePublished": "2026-05-25",
-      "dateModified": "2026-09-22",
+      "dateModified": "2026-11-28",
       "author": {
         "@type": "Person",
         "name": "かたかた"
@@ -88,14 +88,14 @@
         <section class="section">
             <div class="guide-hero-card">
                 <span class="guide-kicker">PX / REM Guide</span>
-                <h1>pxとrem、どっちで書けばいいの？──「なんとなく」使い分けていた私（わたくし）が調べた記録</h1>
-                <p class="guide-intro">Web制作をしていて「font-size: 24px」と書くか「1.5rem」と書くか、迷ったことはありませんか？ 以前の私（わたくし）は「なんとなくpxが分かりやすいから」とずっとpxばかり使っていました。しかし、「アクセシビリティ（誰にとっても読みやすいこと）」を意識し始めると、remの重要性に気づかされました。このページでは、その時に調べまくって整理した「文字サイズと余白の単位選びの基準」をまとめます。もう「なんとなく」での単位選びは卒業しましょう。</p>
+                <h1>pxとrem、どっちで書けばいいの？──「なんとなく」使い分けていた私が調べた記録</h1>
+                <p class="guide-intro">Web制作をしていて「font-size: 24px」と書くか「1.5rem」と書くか、迷ったことはありませんか？ 以前の私は「なんとなくpxが分かりやすいから」とずっとpxばかり使っていました。しかし、「アクセシビリティ（誰にとっても読みやすいこと）」を意識し始めると、remの重要性に気づかされました。このページでは、その時に整理した「文字サイズと余白の単位選びの基準」をまとめます。</p>
                 <div class="guide-summary">
                     <span class="guide-chip">文字サイズ</span>
                     <span class="guide-chip">余白スケール</span>
                     <span class="guide-chip">アクセシビリティ</span>
                 </div>
-                <p class="guide-note" style="margin-top: 1rem;">作成者: かたかた / 更新日: 2026年9月22日</p>
+                <p class="guide-note" style="margin-top: 1rem;">作成者: かたかた / 更新日: 2026年11月28日</p>
                 <div class="guide-actions">
                     <a href="../px-rem-converter/" class="btn btn-primary">変換ツールを開く</a>
                     <a href="../#featured-guides" class="btn btn-secondary">他のガイドも読む</a>
@@ -109,6 +109,30 @@
                 <p>動かしたくないものはpx、ユーザーに合わせて伸び縮みしてほしいものはrem。これが基本線です。</p>
                 <p>たとえばボーダー線の1pxやアイコンの微調整は、ユーザーがブラウザの文字サイズ設定を変えても「この太さで固定してほしい」。だからpx。本文の文字サイズや余白は、ブラウザの設定で文字を大きくしている人にも合わせて伸びてほしい。だからrem。</p>
                 <p>ちなみに「全部の単位をremにしろ」と言われることがありますが、それは極端です。使い分けが正解です。</p>
+                <figure style="margin: 1.5rem 0; padding: 1.2rem; border: 1px solid rgba(128,128,128,0.25); border-radius: 12px; background: rgba(128,128,128,0.04);">
+                    <svg viewBox="0 0 640 220" width="100%" role="img" aria-label="ブラウザの文字サイズ設定が変わったときのpx固定とrem連動の違い" style="display: block; max-width: 640px; margin: 0 auto; height: auto;">
+                        <!-- Left: px fixed -->
+                        <rect x="18" y="18" width="286" height="184" rx="10" fill="#ef4444" fill-opacity="0.06" stroke="#ef4444" stroke-width="1.8"/>
+                        <text x="161" y="42" text-anchor="middle" font-size="13.5" font-weight="700" fill="#dc2626">px 指定（絶対値で固定）</text>
+                        <rect x="36" y="58" width="250" height="54" rx="6" fill="rgba(128,128,128,0.08)" stroke="rgba(128,128,128,0.3)"/>
+                        <text x="48" y="77" font-size="11" fill="currentColor" opacity="0.75">通常設定（root = 16px）</text>
+                        <text x="48" y="99" font-size="16" font-weight="700" fill="currentColor">本文 16px（そのまま）</text>
+                        <rect x="36" y="126" width="250" height="60" rx="6" fill="rgba(128,128,128,0.08)" stroke="rgba(128,128,128,0.3)"/>
+                        <text x="48" y="145" font-size="11" fill="currentColor" opacity="0.75">文字を「大」に変更（root = 20px）</text>
+                        <text x="48" y="169" font-size="16" font-weight="700" fill="currentColor">本文 16px のまま変わらない</text>
+
+                        <!-- Right: rem scaled -->
+                        <rect x="336" y="18" width="286" height="184" rx="10" fill="#10b981" fill-opacity="0.08" stroke="#10b981" stroke-width="1.8"/>
+                        <text x="479" y="42" text-anchor="middle" font-size="13.5" font-weight="700" fill="#059669">rem 指定（root に連動して伸縮）</text>
+                        <rect x="354" y="58" width="250" height="54" rx="6" fill="rgba(128,128,128,0.08)" stroke="rgba(128,128,128,0.3)"/>
+                        <text x="366" y="77" font-size="11" fill="currentColor" opacity="0.75">通常設定（root = 16px）</text>
+                        <text x="366" y="99" font-size="16" font-weight="700" fill="currentColor">本文 1rem = 16px</text>
+                        <rect x="354" y="126" width="250" height="60" rx="6" fill="#10b981" fill-opacity="0.14" stroke="#10b981"/>
+                        <text x="366" y="145" font-size="11" fill="currentColor" opacity="0.75">文字を「大」に変更（root = 20px）</text>
+                        <text x="366" y="172" font-size="20" font-weight="700" fill="currentColor">本文 1rem = 20px に拡大</text>
+                    </svg>
+                    <figcaption style="margin-top: 0.65rem; font-size: 0.86rem; text-align: center; opacity: 0.8;">図解: ユーザーがブラウザの文字サイズ設定を大きくしたとき、px固定とrem相対指定で起きる表示の違い</figcaption>
+                </figure>
             </div>
 
             <div class="guide-section-card">
@@ -153,7 +177,7 @@
                 <p><code>html { font-size: 62.5%; }</code> として計算を簡単にする方法もあります。ただし、<strong>ブラウザ側の基準が16px相当なら1remが10px相当になる</strong>という話で、常に10pxへ固定されるわけではありません。ユーザーの文字サイズ設定を尊重したい場合は、rootの基準値を上書きしない設計も検討します。</p>
                 <p>ただし！<strong>複数人でコードを触る時はこのルールを共有してないと大カオスになります。</strong>「え、1remって16pxじゃないの？」って人が混ざるとレイアウトがすべてズレます。個人開発なら好きなほうでいい。チームなら先に決めてREADMEに書く。</p>
                 <div class="guide-callout">
-                    <strong>私（わたくし）の結論:</strong> KatakataLabでは16px基準で統一して開発しています。他の人のコードやライブラリと混ぜたときに事故りにくいのが一番の理由です。
+                    <strong>私の結論:</strong> KatakataLabでは16px基準で統一して開発しています。他の人のコードやライブラリと混ぜたときに事故りにくいのが一番の理由です。
                 </div>
             </div>
 
@@ -219,7 +243,7 @@
                 <h3>Q. デザインがpx指定なのに実装はrem。どう付き合う？</h3>
                 <p>A. まず基準（多くの場合16）を合意し、変換表で往復できるようにします。レビュー時は「この24pxは1.5remか」をツールで確認し、感覚のズレを減らします。</p>
                 <p class="guide-note">参考: <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Values/length" target="_blank" rel="noopener noreferrer">MDN &lt;length&gt; — rem</a>（remはrootのfont-sizeに対する相対値。16pxは一般的なブラウザ初期値で、ユーザー設定により変わり得ます。）</p>
-                <p class="guide-note">更新日: 2026年9月22日 / 作成者: <a href="../who-is-katakata.html">かたかた</a></p>
+                <p class="guide-note">更新日: 2026年11月28日 / 作成者: <a href="../who-is-katakata.html">かたかた</a></p>
             </div>
 
             <div class="guide-section-card">

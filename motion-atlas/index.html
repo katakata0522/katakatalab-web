@@ -41,8 +41,89 @@
     <div id="root">
       <main>
         <h1>動きの仕組み図鑑｜KatakataLab Motion Atlas</h1>
-        <p>WebアニメーションやUIの置き方・動きの仕組みを100パターン収録。再生・スロー再生・種明かし図解で確認し、AIへの指示文やコードをコピーできます。</p>
-        <p><a href="../">KatakataLabへ戻る</a></p>
+        <p>WebアニメーションやUIの置き方・動きの仕組みを100パターン収録した、インタラクティブな動きのリファレンス図鑑です。各カードでアニメーションの通常再生・スロー再生・コマ送り確認ができるほか、動きが成立する仕組みの種明かし図解と、制作やAIへの指示にそのまま使えるプロンプト文・HTML＋CSS／Tailwindコードをコピーできます。</p>
+        <section>
+          <h2>収録しているUI・アニメーションの分類と用途の早見表</h2>
+          <table>
+            <thead>
+              <tr>
+                <th>カテゴリ</th>
+                <th>代表的な表現例</th>
+                <th>主なCSSプロパティ</th>
+                <th>使いどころ</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>文字の出現と演出</td>
+                <td>フェードイン、クリップマスク表示、文字間隔アニメーション</td>
+                <td><code>opacity</code> / <code>transform</code> / <code>clip-path</code></td>
+                <td>ファーストビュー見出し、セクション導入</td>
+              </tr>
+              <tr>
+                <td>レイアウトとカード配置</td>
+                <td>スタガー展開、ホバー時の浮き上がり、グリッド並び替え</td>
+                <td><code>transform</code> / <code>box-shadow</code> / <code>grid-template-rows</code></td>
+                <td>ツール一覧、ポートフォリオカード、FAQアコーディオン</td>
+              </tr>
+              <tr>
+                <td>ボタンとマイクロインタラクション</td>
+                <td>押下フィードバック、トグル切替、コピー完了マイクロ表示</td>
+                <td><code>transform: scale()</code> / <code>transition</code></td>
+                <td>フォーム送信、設定切替、コピーボタンの応答</td>
+              </tr>
+              <tr>
+                <td>スクロール連動と画面遷移</td>
+                <td>スティッキーヘッダー、ドロワー開閉、トースト通知</td>
+                <td><code>position: sticky</code> / <code>translate3d()</code></td>
+                <td>長文ガイドの目次追従、モバイルメニュー</td>
+              </tr>
+            </tbody>
+          </table>
+        </section>
+        <section>
+          <h2>基本となるCSS記述と動きを抑える設定への配慮</h2>
+          <p>Webアニメーションを軽く滑らかに保つ基本は、レイアウト再計算を伴う <code>top</code> / <code>left</code> / <code>width</code> ではなく、合成レイヤーで処理されやすい <code>transform</code> と <code>opacity</code> を中心に設計することです。さらに、OS側で「視差効果を減らす」を有効にしている利用者のために <code>prefers-reduced-motion: reduce</code> を必ず用意します。</p>
+          <pre><code>.card-reveal {
+  opacity: 0;
+  transform: translateY(12px);
+  transition: opacity 280ms cubic-bezier(0.22, 1, 0.36, 1),
+              transform 280ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+.card-reveal.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+@media (prefers-reduced-motion: reduce) {
+  .card-reveal {
+    transition: none;
+    transform: none;
+  }
+}</code></pre>
+        </section>
+        <section>
+          <h2>この図鑑の使い方と活用シーン</h2>
+          <p>「イメージに近い動きの名前が分からない」「実装の前にイージングや遅延のタイミングを目で確かめたい」「デザインカンプや制作メモに具体的な動きを言語化して伝えたい」といった場面を想定して作っています。気になるパターンを一覧から絞り込み、スロー再生で変化の順序を確認したうえで、必要な形式のコードや指示文をコピーして手元の制作に組み込めます。</p>
+          <p>すべてのプレビュー再生や検索・コピー操作はブラウザ内で完結し、登録不要ですぐ試せます。</p>
+          <div data-verification-note="true">
+            <h3>制作・検証メモ</h3>
+            <p>収録100パターンのプレビュー再生・速度変更・コードコピー機能はデスクトップ版およびモバイル幅のChrome系ブラウザで動作確認しています。CSSアニメーションの見た目やフレームレートは利用端末のリフレッシュレート・OSの視覚効果設定に依存します。詳しい確認方針は<a href="../about-katakatalab.html#verification-policy">KatakataLabの検証ポリシー</a>をご覧ください。</p>
+            <p>作成者: かたかた / 更新日: 2026年11月28日</p>
+          </div>
+        </section>
+        <nav aria-label="関連ページ">
+          <ul>
+            <li><a href="../">KatakataLab トップへ戻る</a></li>
+            <li><a href="../guides/tool-selection-guide.html">用途から選ぶ実用ツール案内</a></li>
+            <li><a href="../guides/case-studies.html">ツール入力・出力の実例集</a></li>
+            <li><a href="../px-rem-converter/">px / rem 変換ラボ</a></li>
+            <li><a href="../font-lab/">Katakata Font-Lab</a></li>
+            <li><a href="../who-is-katakata.html">運営者情報</a></li>
+            <li><a href="../terms.html">利用規約</a></li>
+            <li><a href="../privacy.html">プライバシーポリシー</a></li>
+            <li><a href="../contact.html">お問い合わせ</a></li>
+          </ul>
+        </nav>
       </main>
     </div>
   </body>

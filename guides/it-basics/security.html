@@ -24,7 +24,7 @@
   "headline": "【IT用語】「セキュリティ」とは？情報とサービスを守る考え方",
   "description": "セキュリティとは何かを、機密性・完全性・可用性、認証と認可、パスワード保存、多要素認証、多層防御の基本から解説します。",
   "datePublished": "2026-07-13",
-  "dateModified": "2026-08-04",
+  "dateModified": "2026-11-28",
   "mainEntityOfPage": "https://katakatalab.com/guides/it-basics/security.html",
   "inLanguage": "ja",
   "author": {
@@ -90,7 +90,7 @@
         <h1>【IT用語】「セキュリティ」とは？情報とサービスを守る考え方</h1>
         <p class="article-lead">セキュリティとは何かを、機密性・完全性・可用性、認証と認可、パスワード保存、多要素認証、多層防御の基本から解説します。</p>
         <div class="article-meta" aria-label="記事情報">
-          <span>作成者：かたかた</span><span>公開日：2026年7月13日</span><span>更新日：2026年8月4日</span>
+          <span>作成者：かたかた</span><span>公開日：2026年7月13日</span><span>更新日：2026年11月28日</span>
         </div>
       </header>
       <div class="article-layout">
@@ -116,6 +116,22 @@
 <li><strong>可用性：</strong> 必要な時にサービスを利用できる。</li>
 </ul>
 <p>「誰にも触らせない」だけでは、サービスとして役に立ちません。守ることと、正しく使えることの両方が必要です。</p>
+
+<figure class="diagram-figure">
+  <svg viewBox="0 0 640 195" width="100%" role="img" aria-label="通信・認証・入力・秘密情報の4層で守るWebセキュリティ図解">
+    <defs>
+      <marker id="arr" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+        <path d="M 0 1 L 10 5 L 0 9 z" fill="currentColor" opacity="0.7"/>
+      </marker>
+    </defs>
+    <rect x="22" y="34" width="142" height="122" rx="8" fill="#1f5c99" fill-opacity="0.1" stroke="#1f5c99" stroke-width="1.8"/><text x="93" y="91" text-anchor="middle" font-size="13" font-weight="700" fill="currentColor">1. 通信保護</text><text x="93" y="109" text-anchor="middle" font-size="10.5" fill="currentColor" opacity="0.78">HTTPS暗号化で
+盗聴・改ざん防止</text><rect x="174" y="34" width="142" height="122" rx="8" fill="#0f766e" fill-opacity="0.1" stroke="#0f766e" stroke-width="1.8"/><text x="245" y="91" text-anchor="middle" font-size="13" font-weight="700" fill="currentColor">2. 認証強化</text><text x="245" y="109" text-anchor="middle" font-size="10.5" fill="currentColor" opacity="0.78">固有パスワード＋
+2FA / パスキー</text><rect x="326" y="34" width="142" height="122" rx="8" fill="#b45309" fill-opacity="0.1" stroke="#b45309" stroke-width="1.8"/><text x="397" y="91" text-anchor="middle" font-size="13" font-weight="700" fill="currentColor">3. 入力検証</text><text x="397" y="109" text-anchor="middle" font-size="10.5" fill="currentColor" opacity="0.78">XSSや想定外入力
+を無害化</text><rect x="478" y="34" width="142" height="122" rx="8" fill="#d94b3f" fill-opacity="0.1" stroke="#d94b3f" stroke-width="1.8"/><text x="549" y="91" text-anchor="middle" font-size="13" font-weight="700" fill="currentColor">4. 秘密分離</text><text x="549" y="109" text-anchor="middle" font-size="10.5" fill="currentColor" opacity="0.78">APIキー等を
+公開コードに出さない</text>
+  </svg>
+  <figcaption>図解: セキュリティは1つの対策で完結しない。「通信・認証・入力検証・秘密情報分離」の層を重ねて穴を減らす</figcaption>
+</figure>
 </section>
 <section class="article-section" aria-labelledby="section-2"><h2 id="section-2">認証と認可の違い</h2>
 <p>似ているようで、役割が違います。</p>
@@ -178,7 +194,7 @@
 <li><strong>認可</strong> ＝ <strong>「何をしてよいかを決める」</strong></li>
 <li><strong>基本</strong> ＝ <strong>「1つの対策に頼らず、複数の守りを重ねる」</strong></li>
 </ul>
-<p>この章で、本書の16用語をすべて紹介しました。</p>
+<p>ここまでで基本の4章（16語）を一通り確認しました。次のCHAPTER 05からは、DNS・HTTPS・キャッシュなどWebの裏側と制作運用の14語へ進みます。</p>
 <p>最初は呪文に聞こえた言葉も、役割と使われ方が分かれば、少しずつ自分の言葉に変わっていきます。</p>
 <p>ここまでお付き合いいただき、心からありがとうございました！</p>
 </section>
@@ -186,6 +202,8 @@
             <p class="eyebrow">FROM THE LAB</p>
             <h2 id="lab-example-title">KatakataLabでの実例</h2>
             <p>KatakataLabでは、入力を外部送信しないツールはその範囲をページ上で説明し、CodeStudioのプレビューはiframeのsandboxで権限を絞っています。安全性は一言で断言せず、実装した境界を具体的に伝えることが重要です。</p>
+            
+            <div class="tool-link-banner"><strong>関連ツールで試す：<a href="../../password-generator/">強力パスワード生成ツール →</a></strong>ランダム文字列やパスフレーズをブラウザ内完結で生成し、使い回しゼロの運用を始められます。</div>
             <p class="related-heading">この実例につながるページ</p>
             <ul class="related-links"><li><a href="../password-guide.html">パスワードの考え方ガイド</a></li>
 <li><a href="../../privacy.html">プライバシーポリシー</a></li>
@@ -209,7 +227,7 @@
             <h2 id="faq-title">よくある質問</h2>
             <h3>長いパスワードだけで十分ですか？</h3>
             <p>長さは重要ですが、使い回しを避けること、パスワードマネージャー、多要素認証やパスキー、サービス側の適切な保存など、複数の対策を重ねるほうが安全です。</p>
-            <h3>最初から読み直すなら？</h3><p><a href="server.html">サーバーの記事</a>から読むと、16語のつながりを順番に確認できます。</p>
+            <h3>最初から読み直すなら？</h3><p><a href="server.html">サーバーの記事</a>から読むと、全30語のつながりを順番に確認できます。</p>
           </section>
           <section class="article-section references" aria-labelledby="references-title">
             <h2 id="references-title">参考資料</h2>
@@ -219,7 +237,7 @@
           </section>
           <nav class="chapter-nav" aria-label="前後の記事">
             <a class="chapter-link previous" href="status-code.html"><small>前の記事</small><span>← STATUS CODE</span></a>
-            <a class="chapter-link next" href="./"><small>読み終えたら</small><span>記事一覧へ →</span></a>
+            <a class="chapter-link next" href="dns.html"><small>次の記事（CHAPTER 05）</small><span>DNS →</span></a>
           </nav>
         </div>
       </div>

@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>静的サイトと動的サイトとは？仕組み・表示速度・運用の違い | かたかたの制作ノート</title>
+  <meta name="description" content="あらかじめ用意したHTMLを配る「静的サイト」と、アクセスごとにサーバーで生成する「動的サイト」の違いを解説。ツールサイトやブログでの選び方を整理します。">
+  <link rel="canonical" href="https://katakatalab.com/guides/it-basics/static-dynamic.html">
+  <link rel="icon" href="../../icon.svg" type="image/svg+xml">
+  <meta property="og:title" content="静的サイトと動的サイトとは？仕組み・表示速度・運用の違い">
+  <meta property="og:description" content="あらかじめ用意したHTMLを配る「静的サイト」と、アクセスごとにサーバーで生成する「動的サイト」の違いを解説。ツールサイトやブログでの選び方を整理します。">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="https://katakatalab.com/guides/it-basics/static-dynamic.html">
+  <meta property="og:image" content="https://katakatalab.com/ogp.png">
+  <meta property="og:site_name" content="KatakataLab">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="静的サイトと動的サイトとは？仕組み・表示速度・運用の違い">
+  <meta name="twitter:description" content="あらかじめ用意したHTMLを配る「静的サイト」と、アクセスごとにサーバーで生成する「動的サイト」の違いを解説。ツールサイトやブログでの選び方を整理します。">
+  <meta name="twitter:image" content="https://katakatalab.com/ogp.png">
+  <link rel="stylesheet" href="style.css">
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": "静的サイトと動的サイトとは？仕組み・表示速度・運用の違い",
+  "description": "あらかじめ用意したHTMLを配る「静的サイト」と、アクセスごとにサーバーで生成する「動的サイト」の違いを解説。ツールサイトやブログでの選び方を整理します。",
+  "inLanguage": "ja",
+  "datePublished": "2026-11-28",
+  "dateModified": "2026-11-28",
+  "author": {
+    "@type": "Person",
+    "name": "かたかた",
+    "url": "https://katakatalab.com/who-is-katakata.html"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "KatakataLab",
+    "url": "https://katakatalab.com/",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "https://katakatalab.com/ogp.png"
+    }
+  },
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "https://katakatalab.com/guides/it-basics/static-dynamic.html"
+  },
+  "image": "https://katakatalab.com/ogp.png"
+}
+</script>
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position": 1,
+      "name": "KatakataLab",
+      "item": "https://katakatalab.com/"
+    },
+    {
+      "@type": "ListItem",
+      "position": 2,
+      "name": "かたかたの制作ノート",
+      "item": "https://katakatalab.com/guides/it-basics/"
+    },
+    {
+      "@type": "ListItem",
+      "position": 3,
+      "name": "静的サイトと動的サイトとは",
+      "item": "https://katakatalab.com/guides/it-basics/static-dynamic.html"
+    }
+  ]
+}
+</script>
+  <script defer src="../../analytics.js"></script>
+</head>
+<body class="article-page">
+  <script>try{if(localStorage.getItem('theme')==='dark')document.body.classList.add('dark-mode');}catch(e){}</script>
+  <a class="skip-link" href="#main-content">本文へ移動</a>
+  <header class="site-header">
+    <div class="header-inner">
+      <a class="brand" href="../../"><span class="brand-mark">KL</span><span>KatakataLab</span></a>
+      <nav class="site-nav" aria-label="主要ナビゲーション">
+        <a href="./">制作ノート一覧</a>
+        <a href="../../#projects">ツール一覧</a>
+        <a href="../../guides/tool-selection-guide.html">用途から選ぶ</a>
+        <a href="../../who-is-katakata.html">運営者</a>
+        <button type="button" id="it-theme-toggle" aria-label="テーマ切り替え" style="background:none;border:1px solid rgba(255,255,255,0.28);color:#fff;border-radius:6px;padding:0.2rem 0.55rem;cursor:pointer;font-size:0.9rem;line-height:1;transition:background 0.2s;" title="ダークモード切り替え">🌙</button>
+      </nav>
+    </div>
+  </header>
+  <script>
+    (function(){
+      var btn = document.getElementById('it-theme-toggle');
+      if(!btn) return;
+      function sync(){ btn.textContent = document.body.classList.contains('dark-mode') ? '☀️' : '🌙'; }
+      sync();
+      btn.addEventListener('click', function(){
+        var dark = document.body.classList.toggle('dark-mode');
+        try{ localStorage.setItem('theme', dark ? 'dark' : 'light'); }catch(e){}
+        sync();
+      });
+    })();
+  </script>
+  <main id="main-content">
+    <nav class="breadcrumbs" aria-label="パンくずリスト">
+      <ol>
+        <li><a href="../../">KatakataLab</a></li>
+        <li><a href="./">かたかたの制作ノート</a></li>
+        <li aria-current="page">静的サイトと動的サイトとは</li>
+      </ol>
+    </nav>
+    <article class="article-shell">
+      <header class="article-hero">
+        <div class="chapter-stamp" aria-hidden="true"><span>CHAPTER 06</span><strong>22</strong><small>STATIC / DYNAMIC</small></div>
+        <p class="eyebrow">CHAPTER 06｜制作と実装のしくみ</p>
+        <h1>静的サイトと動的サイトとは？仕組み・表示速度・運用の違い</h1>
+        <p class="article-lead">Webサイトを作ろうとすると「静的サイトで十分」「ここは動的サーバーが必要」といった言葉が出てきます。計算ツールのように動きがあるページでも、実は「静的サイト」として公開できるケースは多いのです。その違いを分かりやすく整理します。</p>
+        <div class="article-meta">
+          <span>執筆：<a href="../../who-is-katakata.html">かたかた</a></span>
+          <span>公開：<time datetime="2026-11-28">2026年11月28日</time></span>
+          <span>読了目安：約4分</span>
+        </div>
+        <div class="summary-strip" aria-label="ひとことで言うと">
+          <strong>ひとことで言うと</strong>
+          <p>静的サイトは用意済みのHTML/CSS/JSをそのまま配る方式、動的サイトはアクセスごとにサーバーがHTMLやデータを組み立てる方式です。</p>
+        </div>
+      </header>
+      <div class="article-layout">
+        <aside class="toc" aria-label="目次">
+          <p class="toc-title">目次</p>
+          <ol>
+            <li><a href="#section-1">しくみの全体像</a></li>
+            <li><a href="#section-2">それぞれの得意分野とメリット・デメリット</a></li>
+            <li><a href="#section-3">個人開発で最初に選ぶならどっち？</a></li>
+            <li><a href="#section-talk">この言葉が会話に出てくるとき</a></li>
+            <li><a href="#section-misread">勘違いしやすい点</a></li>
+            <li><a href="#section-4">まとめ</a></li>
+            <li><a href="#lab-example-title">KatakataLabでの実例</a></li>
+            <li><a href="#faq-title">よくある質問</a></li>
+            <li><a href="#references-title">参考資料</a></li>
+          </ol>
+        </aside>
+        <div class="article-content">
+          <section class="article-section" aria-labelledby="section-1">
+            <h2 id="section-1">しくみの全体像</h2>
+            <p><strong>静的サイト（Static Site）</strong>は、あらかじめサーバー上に置かれたHTML・CSS・JavaScript・画像ファイルを、誰がアクセスしてもそのまま返す方式です。よく誤解されますが、「画面に動きがないサイト」という意味ではありません。ブラウザ内でJavaScriptが動いて計算したりグラフを描いたりしても、サーバー側で毎回HTMLを組み立てていなければ静的サイトです。</p>
+            <p>一方、<strong>動的サイト（Dynamic Site）</strong>は、ユーザーがアクセスするたびにサーバー上のプログラム（Node.js、PHP、Pythonなど）がデータベースを参照し、「このログインユーザー向けの画面」をその場で組み立てて返します。</p>
+            <figure class="diagram-figure">
+  <svg viewBox="0 0 640 195" width="100%" role="img" aria-label="静的サイト（用意済みファイル配信）と動的サイト（リクエスト毎にサーバー処理＋DB照会）の比較図解">
+    <defs>
+      <marker id="arr" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+        <path d="M 0 1 L 10 5 L 0 9 z" fill="currentColor" opacity="0.7"/>
+      </marker>
+    </defs>
+    <rect x="18" y="22" width="128" height="62" rx="8" fill="#0f766e" fill-opacity="0.1" stroke="#0f766e" stroke-width="1.8"/><text x="82" y="49" text-anchor="middle" font-size="12.5" font-weight="700" fill="currentColor">静的サイト</text><text x="82" y="67" text-anchor="middle" font-size="10.5" fill="currentColor" opacity="0.78">ブラウザへ即返却</text><line x1="150" y1="53" x2="214" y2="53" stroke="#0f766e" stroke-width="2" marker-end="url(#arr)"/><text x="182" y="43" text-anchor="middle" font-size="10.5" font-weight="700" fill="#0f766e">取得</text><rect x="220" y="22" width="398" height="62" rx="8" fill="#0f766e" fill-opacity="0.1" stroke="#0f766e" stroke-width="1.8"/><text x="419" y="49" text-anchor="middle" font-size="12.5" font-weight="700" fill="currentColor">公開済み HTML / CSS / JS / 画像ファイル</text><text x="419" y="67" text-anchor="middle" font-size="10.5" fill="currentColor" opacity="0.78">軽量・高速・サーバー障害が起きにくい（JSで画面操作は可能）</text><rect x="18" y="110" width="128" height="64" rx="8" fill="#1f5c99" fill-opacity="0.1" stroke="#1f5c99" stroke-width="1.8"/><text x="82" y="138" text-anchor="middle" font-size="12.5" font-weight="700" fill="currentColor">動的サイト</text><text x="82" y="156" text-anchor="middle" font-size="10.5" fill="currentColor" opacity="0.78">毎回生成</text><line x1="150" y1="142" x2="200" y2="142" stroke="#1f5c99" stroke-width="2" marker-end="url(#arr)"/><text x="175" y="132" text-anchor="middle" font-size="10.5" font-weight="700" fill="#1f5c99">要求</text><rect x="206" y="110" width="186" height="64" rx="8" fill="#1f5c99" fill-opacity="0.1" stroke="#1f5c99" stroke-width="1.8"/><text x="299" y="138" text-anchor="middle" font-size="12.5" font-weight="700" fill="currentColor">アプリサーバー</text><text x="299" y="156" text-anchor="middle" font-size="10.5" fill="currentColor" opacity="0.78">認証・HTML生成・集計</text><line x1="396" y1="142" x2="444" y2="142" stroke="#7c3aed" stroke-width="2" marker-end="url(#arr)"/><text x="420" y="132" text-anchor="middle" font-size="10.5" font-weight="700" fill="#7c3aed">照会</text><rect x="450" y="110" width="168" height="64" rx="8" fill="#7c3aed" fill-opacity="0.1" stroke="#7c3aed" stroke-width="1.8"/><text x="534" y="138" text-anchor="middle" font-size="12.5" font-weight="700" fill="currentColor">データベース</text><text x="534" y="156" text-anchor="middle" font-size="10.5" fill="currentColor" opacity="0.78">会員・在庫・投稿</text>
+  </svg>
+  <figcaption>図解: 静的サイトはあらかじめ作ったファイルを即返却。動的サイトは毎回サーバーとDBが処理して画面を作る</figcaption>
+</figure>
+          </section>
+          <section class="article-section" aria-labelledby="section-2">
+            <h2 id="section-2">それぞれの得意分野とメリット・デメリット</h2>
+            <ul><li><strong>静的サイトの強み：</strong>サーバー処理が不要なので表示が速く、CDNと相性が抜群です。データベース管理やサーバーの常時監視が要らず、ホスティング費用も抑えられます。セキュリティ上の攻撃面も小さく保てます。</li><li><strong>動的サイトの強み：</strong>会員ログイン、買い物カート、リアルタイム在庫、ユーザー投稿型SNSなど、全員に違う最新データを見せる仕組みに不可欠です。</li></ul>
+            <p>最近は両方のいいとこ取りをして、ページ自体は静的に配りつつ、必要なデータ取得やログイン部分だけをAPI経由でつなぐ構成も広く使われています。</p>
+          </section>
+          <section class="article-section" aria-labelledby="section-3">
+            <h2 id="section-3">個人開発で最初に選ぶならどっち？</h2>
+            <p>ポートフォリオ、解説ブログ、ブラウザ完結の計算ツールであれば、まず静的サイトから始めるのが圧倒的に続けやすいです。データベースのバックアップやサーバーのOSアップデートに追われず、コンテンツやツールの改善に時間を使えるからです。</p>
+            <p>「複数人でデータを共有保存したい」「会員登録や課金管理をしたい」という明確な理由が出たタイミングで動的機能やAPIを足すのが、破綻しにくい進め方です。</p>
+          </section>
+          <section class="article-section" aria-labelledby="section-talk">
+            <h2 id="section-talk">この言葉が会話に出てくるとき</h2>
+            <p><strong>「この計算ツール、ログイン不要なら静的サイトで十分じゃない？」</strong><br>ブラウザ側のJavaScriptだけで計算できるなら、サーバー処理を持たない方が速くて保守も楽だという判断です。</p>
+<p><strong>「記事が増えたから静的サイトジェネレーター（SSG）でビルドしよう」</strong><br>Markdown等から事前にHTMLを一括生成し、配信時は静的サイトとして高速に出す手法です。</p>
+          </section>
+          <section class="article-section" aria-labelledby="section-misread">
+            <h2 id="section-misread">勘違いしやすい点</h2>
+            <ul>
+              <li><strong>誤解1：静的サイトではボタン操作やアニメーションができない。</strong>インタラクティブな操作の多くはブラウザ側のJavaScriptとCSSで完結できるため、静的サイトでも高機能なツールが作れます。</li>
+<li><strong>誤解2：動的サイトの方が必ず高機能で優れている。</strong>不要なサーバー処理を抱えるとコスト・障害リスク・表示遅延が増えるため、目的に合った軽さが重要です。</li>
+            </ul>
+          </section>
+          <section class="article-section" aria-labelledby="section-4">
+            <h2 id="section-4">まとめ</h2>
+            <ul>
+              <li>静的＝用意済みファイルを配る、動的＝アクセスごとにサーバーが組み立てる。</li>
+<li>ブラウザ完結のツールやガイドは静的サイトにすると高速・低コスト・低障害で運用しやすい。</li>
+<li>ユーザーごとの保存や共有データが必要になったときに動的サーバーやAPIを組み合わせる。</li>
+            </ul>
+          </section>
+          <aside class="lab-example" aria-labelledby="lab-example-title">
+            <p class="eyebrow">FROM THE LAB</p>
+            <h2 id="lab-example-title">KatakataLabでの実例</h2>
+            <p>KatakataLabの主力ツール（アスペクト比計算、px/rem変換、テキスト差分、OGPシミュレーター、パスワード生成など）はすべて静的配信＋ブラウザ内JavaScriptで構成しています。サーバー負荷を気にせず無料で公開し続けられるのは、この設計のおかげです。</p>
+            <div class="tool-link-banner"><strong>関連ツールで試す：<a href="../../pikalab/code-studio/">CodeStudio →</a></strong>HTML・CSS・JavaScriptだけで動くミニWebアプリをブラウザ上で試作できます。</div>
+            <p class="related-heading">この実例につながるページ</p>
+            <ul class="related-links">
+              <li><a href="server.html">関連用語：サーバー</a></li>
+<li><a href="cdn.html">関連用語：CDN</a></li>
+<li><a href="build.html">関連用語：ビルドとトランスパイル</a></li>
+            </ul>
+          </aside>
+          <section class="article-section faq" aria-labelledby="faq-title">
+            <p class="eyebrow">QUICK CHECK</p>
+            <h2 id="faq-title">よくある質問</h2>
+            <h3>WordPressは静的サイトですか、動的サイトですか？</h3>
+<p>基本はPHPとデータベースでページを生成する動的サイトです。ただしキャッシュプラグインや静的書き出しツールを使って静的サイトに近い配信にすることもあります。</p>
+<h3>静的サイトでお問い合わせフォームは作れますか？</h3>
+<p>はい。フォームの送信先だけ外部のフォームサービスや小さなサーバーレスAPIに向ければ、サイト本体は静的のまま運用できます。</p>
+          </section>
+          <section class="article-section references" aria-labelledby="references-title">
+            <h2 id="references-title">参考資料</h2>
+            <p>用語の定義や仕様を確認するため、公式文書・標準文書を参照しています。リンク先の内容は更新される場合があります。</p>
+            <ul>
+              <li><a href="https://developer.mozilla.org/ja/docs/Learn_web_development/Extensions/Server-side/First_steps/Client-Server_overview" target="_blank" rel="noopener noreferrer">MDN Web Docs「クライアント-サーバーの概要」</a></li>
+<li><a href="https://developer.mozilla.org/ja/docs/Glossary/World_Wide_Web" target="_blank" rel="noopener noreferrer">MDN Web Docs「World Wide Web」</a></li>
+            </ul>
+          </section>
+          <nav class="chapter-nav" aria-label="前後の記事">
+            <a class="chapter-link previous" href="cookie-storage.html"><small>前の記事</small><span>← STORAGE</span></a>
+            <a class="chapter-link next" href="responsive.html"><small>次の記事</small><span>RESPONSIVE →</span></a>
+          </nav>
+        </div>
+      </div>
+    </article>
+  </main>
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <p><strong>KatakataLab</strong><br><span>作って、つまずいて、分かったことを残す小さな研究室。</span></p>
+      <nav aria-label="フッターナビゲーション">
+        <a href="../../contact.html">お問い合わせ</a>
+        <a href="../../who-is-katakata.html">運営者情報</a>
+        <a href="../../privacy.html">プライバシーポリシー</a>
+        <a href="../../sitemap.html">サイトマップ</a>
+      </nav>
+    </div>
+    <p class="copyright">&copy; 2024-2026 KatakataLab</p>
+  </footer>
+</body>
+</html>

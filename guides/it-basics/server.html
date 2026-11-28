@@ -24,7 +24,7 @@
   "headline": "【IT用語】「サーバー」とは？雲の上ではなく、サービスを支える働き手",
   "description": "サーバーとは何かを、クライアントとの関係、Web・メール・データベースの役割、障害が起きる理由まで初心者向けにやさしく解説します。",
   "datePublished": "2026-07-13",
-  "dateModified": "2026-08-04",
+  "dateModified": "2026-11-28",
   "mainEntityOfPage": "https://katakatalab.com/guides/it-basics/server.html",
   "inLanguage": "ja",
   "author": {
@@ -90,7 +90,7 @@
         <h1>【IT用語】「サーバー」とは？雲の上ではなく、サービスを支える働き手</h1>
         <p class="article-lead">サーバーとは何かを、クライアントとの関係、Web・メール・データベースの役割、障害が起きる理由まで初心者向けにやさしく解説します。</p>
         <div class="article-meta" aria-label="記事情報">
-          <span>作成者：かたかた</span><span>公開日：2026年7月13日</span><span>更新日：2026年8月4日</span>
+          <span>作成者：かたかた</span><span>公開日：2026年7月13日</span><span>更新日：2026年11月28日</span>
         </div>
       </header>
       <div class="article-layout">
@@ -116,6 +116,18 @@
 <li><strong>サーバー：</strong> お店。「はい、こちらです」とデータを返す。</li>
 </ul>
 <p>サーバーは、要求を待ち受け、受け取った内容に応じて処理を行います。</p>
+
+<figure class="diagram-figure">
+  <svg viewBox="0 0 640 195" width="100%" role="img" aria-label="ブラウザ（クライアント）とサーバーのリクエスト・レスポンス往復図解">
+    <defs>
+      <marker id="arr" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+        <path d="M 0 1 L 10 5 L 0 9 z" fill="currentColor" opacity="0.7"/>
+      </marker>
+    </defs>
+    <rect x="24" y="52" width="168" height="86" rx="8" fill="#1f5c99" fill-opacity="0.1" stroke="#1f5c99" stroke-width="1.8"/><text x="108" y="91" text-anchor="middle" font-size="13" font-weight="700" fill="currentColor">クライアント</text><text x="108" y="109" text-anchor="middle" font-size="10.5" fill="currentColor" opacity="0.78">ブラウザ / スマホ</text><rect x="448" y="52" width="168" height="86" rx="8" fill="#0f766e" fill-opacity="0.1" stroke="#0f766e" stroke-width="1.8"/><text x="532" y="91" text-anchor="middle" font-size="13" font-weight="700" fill="currentColor">サーバー</text><text x="532" y="109" text-anchor="middle" font-size="10.5" fill="currentColor" opacity="0.78">HTML・画像・APIを保管</text><line x1="196" y1="78" x2="442" y2="78" stroke="#1f5c99" stroke-width="2" marker-end="url(#arr)"/><text x="320" y="68" text-anchor="middle" font-size="10.5" font-weight="700" fill="#1f5c99">① リクエスト（このページをください）</text><line x1="442" y1="114" x2="196" y2="114" stroke="#0f766e" stroke-width="2" marker-end="url(#arr)"/><text x="320" y="134" text-anchor="middle" font-size="10.5" font-weight="700" fill="#0f766e">② レスポンス（HTML・CSS・画像を返却）</text>
+  </svg>
+  <figcaption>図解: クライアント（ブラウザ）がリクエストを送り、サーバーがHTMLやデータをレスポンスとして返す基本構造</figcaption>
+</figure>
 </section>
 <section class="article-section" aria-labelledby="section-2"><h2 id="section-2">サーバーにはどんな種類がある？</h2>
 <p>何を提供するかによって、役割が変わります。</p>
@@ -168,6 +180,8 @@
             <p class="eyebrow">FROM THE LAB</p>
             <h2 id="lab-example-title">KatakataLabでの実例</h2>
             <p>KatakataLabの公開ページも、ブラウザからの要求に応じてHTML・CSS・画像などを返すWebサーバー上に置かれています。ページを見る時、手元のブラウザがクライアント、公開先がサーバーという関係です。</p>
+            
+            <div class="tool-link-banner"><strong>関連ツールで試す：<a href="../../ogp-simulator/">OGPシミュレーター →</a></strong>サーバーから返されるHTMLのメタ情報（タイトル・説明・画像）の見え方をブラウザ内で確認できます。</div>
             <p class="related-heading">この実例につながるページ</p>
             <ul class="related-links"><li><a href="cloud.html">関連用語：クラウド</a></li>
 <li><a href="../../about-katakatalab.html">KatakataLabの制作方針</a></li></ul>

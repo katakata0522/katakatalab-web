@@ -175,6 +175,13 @@ export class UIRenderer {
   }
 
   renderAffiliateSupplies() {
+    const section = document.getElementById('supplies-section');
+    if (!DOUJIN_CONFIG.SHOW_AFFILIATE_SUPPLIES) {
+      if (section) section.hidden = true;
+      if (this.dom.suppliesContainer) this.dom.suppliesContainer.innerHTML = '';
+      return;
+    }
+    if (section) section.hidden = false;
     if (!this.dom.suppliesContainer) return;
     this.dom.suppliesContainer.innerHTML = DOUJIN_CONFIG.AFFILIATE_SUPPLIES.map(item => `
       <a href="${item.url}" target="_blank" rel="noopener noreferrer" class="p-3.5 rounded-2xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/80 hover:bg-amber-50/40 dark:hover:bg-amber-950/30 hover:border-amber-300 transition-all flex flex-col justify-between group focus:ring-2 focus:ring-amber-400" aria-label="${item.title}">
@@ -195,6 +202,7 @@ export class UIRenderer {
 
   renderFaqs() {
     if (!this.dom.faqContainer) return;
+    if (this.dom.faqContainer.querySelector('details')) return;
     this.dom.faqContainer.innerHTML = DOUJIN_CONFIG.FAQS.map((faq, idx) => `
       <details class="group bg-white dark:bg-slate-800/80 rounded-2xl border border-slate-200 dark:border-slate-700 overflow-hidden" ${idx === 0 ? 'open' : ''}>
         <summary class="flex items-center justify-between p-4 cursor-pointer font-bold text-xs sm:text-sm text-slate-800 dark:text-slate-200 select-none">

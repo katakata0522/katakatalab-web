@@ -119,6 +119,9 @@
         <button type="button" id="copyCssBtn" class="btn-secondary">
           <span class="icon">📋</span> Copy code
         </button>
+        <button type="button" id="copyScaleBtn" class="btn-secondary" title="Copy common typography scale CSS variables (--text-xs to --text-3xl)">
+          <span class="icon">🎨</span> Copy type scale
+        </button>
       </div>
     </div>
     <p class="copy-hint">Copy includes every row currently in the reference table, including custom sizes.</p>
@@ -156,9 +159,39 @@
     </div>
   </section>
 
+  <section id="clampSection" class="clamp-area" aria-labelledby="clamp-title">
+    <div class="clamp-header">
+      <h2 id="clamp-title" class="sub-title">Responsive clamp() Generator</h2>
+      <p class="clamp-desc">Calculate a smooth CSS <code>clamp()</code> expression across a minimum and maximum viewport width using the active root font size.</p>
+    </div>
+    <div class="clamp-grid">
+      <div class="clamp-field">
+        <label for="clampMinPx">Min size (px)</label>
+        <input type="number" id="clampMinPx" value="16" min="1" max="300" step="1" inputmode="decimal">
+      </div>
+      <div class="clamp-field">
+        <label for="clampMaxPx">Max size (px)</label>
+        <input type="number" id="clampMaxPx" value="28" min="1" max="300" step="1" inputmode="decimal">
+      </div>
+      <div class="clamp-field">
+        <label for="clampMinVw">Min viewport (px)</label>
+        <input type="number" id="clampMinVw" value="375" min="100" max="3840" step="1" inputmode="numeric">
+      </div>
+      <div class="clamp-field">
+        <label for="clampMaxVw">Max viewport (px)</label>
+        <input type="number" id="clampMaxVw" value="1280" min="100" max="3840" step="1" inputmode="numeric">
+      </div>
+    </div>
+    <div class="clamp-result-row">
+      <code id="clampOutput" class="clamp-output">font-size: clamp(1rem, 0.6889rem + 1.326vw, 1.75rem);</code>
+      <button type="button" id="copyClampBtn" class="btn-secondary">📋 Copy clamp()</button>
+    </div>
+    <p id="clampStatus" class="helper-text" role="status" aria-live="polite"></p>
+  </section>
+
   <section class="article-content english-content" aria-labelledby="english-guide-title">
     <header>
-      <p><strong>Created by Katakata</strong> · Last reviewed <time datetime="2026-07-16">July 16, 2026</time></p>
+      <p><strong>Created by Katakata</strong> · Last reviewed <time datetime="2026-11-28">November 28, 2026</time></p>
       <h2 id="english-guide-title">How to use PX to REM Converter</h2>
       <p>REM units scale from the document root. They follow user font-size preferences only when the root itself follows those preferences; a fixed-pixel root does not guarantee this. This converter handles both directions, makes the root size explicit, and turns selected values into reusable CSS, SCSS, or class snippets.</p>
     </header>
@@ -217,7 +250,8 @@
   </script>
 
 <script src="../theme-sync.js?v=20261125" defer></script>
-<script src="script.js?v=20261125" defer></script>
+<script src="clamp-math.js?v=20261128" defer></script>
+<script src="script.js?v=20261128" defer></script>
 
   <script src="/international/english-runtime.js" defer></script>
 </body>
